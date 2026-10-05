@@ -1,0 +1,467 @@
+{
+ "title": "YouCoded name and icon ideas: pick what you like",
+ "key": "brand-identity-r3",
+ "out": "brand-identity.r3.html",
+ "images": "images/brand-identity.r3",
+ "runs": {
+  "today": "runs/r3"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "w1": [
+   "brand",
+   "w1",
+   "1200x620+0+0"
+  ],
+  "w2": [
+   "brand",
+   "w2",
+   "1200x620+0+0"
+  ],
+  "w3": [
+   "brand",
+   "w3",
+   "1200x620+0+0"
+  ],
+  "w4": [
+   "brand",
+   "w4",
+   "1200x620+0+0"
+  ],
+  "w5": [
+   "brand",
+   "w5",
+   "1200x620+0+0"
+  ],
+  "w6": [
+   "brand",
+   "w6",
+   "1200x620+0+0"
+  ],
+  "w7": [
+   "brand",
+   "w7",
+   "1200x620+0+0"
+  ],
+  "w8": [
+   "brand",
+   "w8",
+   "1200x620+0+0"
+  ],
+  "w9": [
+   "brand",
+   "w9",
+   "1200x620+0+0"
+  ],
+  "w10": [
+   "brand",
+   "w10",
+   "1200x620+0+0"
+  ],
+  "w11": [
+   "brand",
+   "w11",
+   "1200x620+0+0"
+  ],
+  "w12": [
+   "brand",
+   "w12",
+   "1200x620+0+0"
+  ],
+  "l1": [
+   "brand",
+   "l1",
+   "1200x620+0+0"
+  ],
+  "l2": [
+   "brand",
+   "l2",
+   "1200x620+0+0"
+  ],
+  "l3": [
+   "brand",
+   "l3",
+   "1200x620+0+0"
+  ],
+  "l4": [
+   "brand",
+   "l4",
+   "1200x620+0+0"
+  ],
+  "l5": [
+   "brand",
+   "l5",
+   "1200x620+0+0"
+  ],
+  "l6": [
+   "brand",
+   "l6",
+   "1200x620+0+0"
+  ],
+  "l7": [
+   "brand",
+   "l7",
+   "1200x620+0+0"
+  ],
+  "l8": [
+   "brand",
+   "l8",
+   "1200x620+0+0"
+  ],
+  "a1": [
+   "brand",
+   "a1",
+   "1200x470+0+0"
+  ],
+  "a2": [
+   "brand",
+   "a2",
+   "1200x470+0+0"
+  ],
+  "a3": [
+   "brand",
+   "a3",
+   "1200x470+0+0"
+  ],
+  "a4": [
+   "brand",
+   "a4",
+   "1200x470+0+0"
+  ],
+  "a5": [
+   "brand",
+   "a5",
+   "1200x470+0+0"
+  ],
+  "a6": [
+   "brand",
+   "a6",
+   "1200x470+0+0"
+  ],
+  "a7": [
+   "brand",
+   "a7",
+   "1200x470+0+0"
+  ],
+  "a8": [
+   "brand",
+   "a8",
+   "1200x470+0+0"
+  ],
+  "a9": [
+   "brand",
+   "a9",
+   "1200x470+0+0"
+  ],
+  "a10": [
+   "brand",
+   "a10",
+   "1200x470+0+0"
+  ],
+  "f1": [
+   "brand",
+   "f1",
+   "1200x390+0+0"
+  ],
+  "f2": [
+   "brand",
+   "f2",
+   "1200x390+0+0"
+  ],
+  "f3": [
+   "brand",
+   "f3",
+   "1200x390+0+0"
+  ],
+  "f4": [
+   "brand",
+   "f4",
+   "1200x390+0+0"
+  ],
+  "f5": [
+   "brand",
+   "f5",
+   "1200x390+0+0"
+  ],
+  "f6": [
+   "brand",
+   "f6",
+   "1200x390+0+0"
+  ],
+  "f7": [
+   "brand",
+   "f7",
+   "1200x480+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "N-1",
+   "surface": "The name",
+   "path": "Website header, app, everywhere the name is written",
+   "headline": "Which ways of writing YouCoded do you like? Pick as many as you want.",
+   "notice": "Each is shown big, in today's website header, and in three other themes (bottom row) to show it still works when the colours change.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "w1",
+     "label": "W1 DM Sans, bold",
+     "crop": "w1",
+     "summary": "Today's site font, cleaned up: \"You\" in the theme colour."
+    },
+    {
+     "id": "w2",
+     "label": "W2 DM Sans, lowercase",
+     "crop": "w2",
+     "summary": "Same font, softer in lowercase."
+    },
+    {
+     "id": "w3",
+     "label": "W3 Comfortaa",
+     "crop": "w3",
+     "summary": "The Cotton Candy theme's own font: round, airy."
+    },
+    {
+     "id": "w4",
+     "label": "W4 Nunito, extra bold",
+     "crop": "w4",
+     "summary": "The Meadow Mist theme's font: rounded but sturdy."
+    },
+    {
+     "id": "w5",
+     "label": "W5 Fredoka",
+     "crop": "w5",
+     "summary": "Bubbly, matches the mascot's soft corners."
+    },
+    {
+     "id": "w6",
+     "label": "W6 Baloo, lowercase",
+     "crop": "w6",
+     "summary": "Chunky and friendly, like a sticker."
+    },
+    {
+     "id": "w7",
+     "label": "W7 Quicksand",
+     "crop": "w7",
+     "summary": "Light and rounded; the quietest option."
+    },
+    {
+     "id": "w8",
+     "label": "W8 Bricolage",
+     "crop": "w8",
+     "summary": "A bit of quirk in the letter shapes; still clean."
+    },
+    {
+     "id": "w9",
+     "label": "W9 Serif \"You\"",
+     "crop": "w9",
+     "summary": "\"You\" in a soft italic serif, \"Coded\" in the site font: the \"yours\" message, written in."
+    },
+    {
+     "id": "w10",
+     "label": "W10 Wide capitals",
+     "crop": "w10",
+     "summary": "Today's header idea (all caps), redone in one wide font."
+    },
+    {
+     "id": "w11",
+     "label": "W11 Gradient",
+     "crop": "w11",
+     "summary": "DM Sans with a fill that runs from the theme colour into pink."
+    },
+    {
+     "id": "w12",
+     "label": "W12 Pixel",
+     "crop": "w12",
+     "summary": "For game-style themes; reads as playful."
+    }
+   ]
+  },
+  {
+   "id": "N-2",
+   "surface": "Name + mascot",
+   "path": "Website header, app welcome screen",
+   "headline": "Which ways of putting the name and mascot together do you like?",
+   "notice": "Shown with the plain bold lettering (W1) so only the combination changes. The mascot is whichever theme is on: the Cotton Candy mascot at the top, then the other themes' mascots underneath.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "l1",
+     "label": "L1 Mascot tile + name",
+     "crop": "l1",
+     "summary": "Today's header, simplified: the theme's mascot in a glass tile, then the name. No \"Assistant\" or tagline."
+    },
+    {
+     "id": "l2",
+     "label": "L2 Mascot + name, no tile",
+     "crop": "l2",
+     "summary": "The mascot stands free next to the name."
+    },
+    {
+     "id": "l3",
+     "label": "L3 Mascot is the \"o\"",
+     "crop": "l3",
+     "summary": "The mascot's body takes the place of the first \"o\"."
+    },
+    {
+     "id": "l4",
+     "label": "L4 Eyes in both \"o\"s",
+     "crop": "l4",
+     "summary": "Both \"o\"s become the mascot's rounded head with its two eyes."
+    },
+    {
+     "id": "l5",
+     "label": "L5 Peeking over",
+     "crop": "l5",
+     "summary": "The mascot peeks over the top of the name."
+    },
+    {
+     "id": "l6",
+     "label": "L6 Sitting on the name",
+     "crop": "l6",
+     "summary": "The mascot sits on top of the \"C\", feet on the letter."
+    },
+    {
+     "id": "l7",
+     "label": "L7 Stacked",
+     "crop": "l7",
+     "summary": "Mascot above, name below. For the app's welcome screen, splash and social posts."
+    },
+    {
+     "id": "l8",
+     "label": "L8 Name in a glass pill",
+     "crop": "l8",
+     "summary": "The name sits in a glass pill, with the mascot popping out of its left end."
+    }
+   ]
+  },
+  {
+   "id": "N-3",
+   "surface": "App icon",
+   "path": "Taskbar, Mac Dock, Start menu",
+   "headline": "Which app icon ideas do you like?",
+   "notice": "All use the mascot from today's app icon. Small sizes on the left are real pixels, the way the taskbar shows them.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "a1",
+     "label": "A1 Today",
+     "crop": "a1",
+     "summary": "The current icon, for comparison."
+    },
+    {
+     "id": "a2",
+     "label": "A2 Purple tile",
+     "crop": "a2",
+     "summary": "Same mascot, on the site's purple instead of pale lilac: easier to spot in a taskbar."
+    },
+    {
+     "id": "a3",
+     "label": "A3 Sky tile",
+     "crop": "a3",
+     "summary": "The website's Cotton Candy sky as the background."
+    },
+    {
+     "id": "a4",
+     "label": "A4 Close-up face",
+     "crop": "a4",
+     "summary": "Zoomed in on the mascot's face so its eyes stay clear when the icon is small."
+    },
+    {
+     "id": "a5",
+     "label": "A5 Peeking up",
+     "crop": "a5",
+     "summary": "The mascot rises from the bottom edge and waves."
+    },
+    {
+     "id": "a6",
+     "label": "A6 \"Y\" with mascot",
+     "crop": "a6",
+     "summary": "A big \"Y\" for YouCoded, the mascot sitting in its fork."
+    },
+    {
+     "id": "a7",
+     "label": "A7 \"yc\" + mascot",
+     "crop": "a7",
+     "summary": "Lowercase \"yc\" with the mascot peeking over the letters."
+    },
+    {
+     "id": "a8",
+     "label": "A8 Glass tile",
+     "crop": "a8",
+     "summary": "A frosted glass tile, like the mascot tiles across the top of the website."
+    },
+    {
+     "id": "a9",
+     "label": "A9 No tile",
+     "crop": "a9",
+     "summary": "Just the mascot, no square behind it."
+    },
+    {
+     "id": "a10",
+     "label": "A10 Follows your theme",
+     "crop": "a10",
+     "summary": "The icon swaps to your theme's mascot and colours. The default is the purple tile; these are other themes."
+    }
+   ]
+  },
+  {
+   "id": "N-4",
+   "surface": "Website tab icon",
+   "path": "The little icon in a browser tab",
+   "headline": "Which browser-tab icons do you like?",
+   "notice": "The tab icon is drawn at 16 pixels, so it's shown real size in light and dark browsers, and magnified so you can see what survives.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "f1",
+     "label": "F1 Today",
+     "crop": "f1",
+     "summary": "Purple square with the flat white mascot (squint eyes)."
+    },
+    {
+     "id": "f2",
+     "label": "F2 Same as app icon",
+     "crop": "f2",
+     "summary": "The app icon's purple tile, so the tab and the taskbar match."
+    },
+    {
+     "id": "f3",
+     "label": "F3 Mascot, no tile",
+     "crop": "f3",
+     "summary": "Just the glossy mascot."
+    },
+    {
+     "id": "f4",
+     "label": "F4 Face only",
+     "crop": "f4",
+     "summary": "The mascot's face filling a purple circle: two eyes read even at tab size."
+    },
+    {
+     "id": "f5",
+     "label": "F5 \"Y\" in purple",
+     "crop": "f5",
+     "summary": "A white \"Y\" on the purple tile."
+    },
+    {
+     "id": "f6",
+     "label": "F6 \"yc\" in purple",
+     "crop": "f6",
+     "summary": "Lowercase \"yc\" on the purple tile."
+    },
+    {
+     "id": "f7",
+     "label": "F7 Follows the site theme",
+     "crop": "f7",
+     "summary": "The tab icon changes with the site's theme, using that theme's mascot."
+    }
+   ]
+  }
+ ]
+}

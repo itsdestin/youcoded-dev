@@ -1,0 +1,204 @@
+{
+ "title": "YouCoded name and icons \u2014 round 5, fewer and deeper",
+ "key": "brand-identity-v2",
+ "out": "brand-identity-v2.html",
+ "images": "images/brand-identity-v2",
+ "runs": {
+  "today": "runs/v2"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "n1": [
+   "brand",
+   "n1",
+   "1200x700+0+0"
+  ],
+  "n2": [
+   "brand",
+   "n2",
+   "1200x700+0+0"
+  ],
+  "n3": [
+   "brand",
+   "n3",
+   "1200x700+0+0"
+  ],
+  "n4": [
+   "brand",
+   "n4",
+   "1200x700+0+0"
+  ],
+  "n5": [
+   "brand",
+   "n5",
+   "1200x700+0+0"
+  ],
+  "n6": [
+   "brand",
+   "n6",
+   "1200x700+0+0"
+  ],
+  "i1": [
+   "brand",
+   "i1",
+   "1200x700+0+0"
+  ],
+  "i2": [
+   "brand",
+   "i2",
+   "1200x700+0+0"
+  ],
+  "i3": [
+   "brand",
+   "i3",
+   "1200x700+0+0"
+  ],
+  "i4": [
+   "brand",
+   "i4",
+   "1200x700+0+0"
+  ],
+  "i5": [
+   "brand",
+   "i5",
+   "1200x700+0+0"
+  ],
+  "d1": [
+   "brand",
+   "d1",
+   "1200x700+0+0"
+  ],
+  "d2": [
+   "brand",
+   "d2",
+   "1200x700+0+0"
+  ],
+  "d3": [
+   "brand",
+   "d3",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "NAME",
+   "surface": "The name",
+   "path": "Website header, help pages, marketing \u2014 everywhere \"YouCoded\" is written",
+   "headline": "Which ways of writing the name do you like? Pick as many as you want.",
+   "notice": "Each is shown big on today's website, in the header, in three other themes, and on a plain help page.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "n1",
+     "label": "N1 Letters built from the mascot",
+     "crop": "n1",
+     "summary": "Hand-drawn letters: every round letter is the mascot's rounded-square body. Unique to us; the mascot is in the shapes, not pasted in."
+    },
+    {
+     "id": "n2",
+     "label": "N2 \"You\" wears your theme",
+     "crop": "n2",
+     "summary": "\"Coded\" never changes; \"You\" takes the font and colour of your theme. The name shows off what the app does."
+    },
+    {
+     "id": "n3",
+     "label": "N3 The cursor",
+     "crop": "n3",
+     "summary": "The site's label font, ending in a block cursor with the mascot's legs. Strongest on technical pages."
+    },
+    {
+     "id": "n4",
+     "label": "N4 Sticker, with the \"o\" that stands",
+     "crop": "n4",
+     "summary": "Your W6 + L3 picks, redone: the mascot-\"o\" is a proper letter first, legs hanging below like the \"y\" tail."
+    },
+    {
+     "id": "n5",
+     "label": "N5 Matches the headline",
+     "crop": "n5",
+     "summary": "The website's big-headline lettering with your W11 fade on \"You\". Safest: already matches the site."
+    },
+    {
+     "id": "n6",
+     "label": "N6 The name is the body",
+     "crop": "n6",
+     "summary": "\"you / coded\" stacked inside the mascot's body. A badge, sticker or profile picture as much as a name."
+    }
+   ]
+  },
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, Mac dock, browser tab, Mac menu bar / Linux tray",
+   "headline": "Which app icons do you like? Pick as many as you want.",
+   "notice": "Each board shows it at true size on a Windows taskbar, a Mac dock, a browser tab and a one-colour menu bar, next to today's icon, and wearing five themes.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "i1",
+     "label": "I1 Your wallpaper, our shape",
+     "crop": "i1",
+     "summary": "Tile shows your theme's scenery; the mascot is a dark cut-out in front. Changes with every theme."
+    },
+    {
+     "id": "i2",
+     "label": "I2 The icon is the mascot",
+     "crop": "i2",
+     "summary": "No tile: the mascot's outline is the icon. The clearest when small, and unlike anything else on a taskbar."
+    },
+    {
+     "id": "i3",
+     "label": "I3 The cursor",
+     "crop": "i3",
+     "summary": "Dark screen, prompt arrow, a cursor that is the mascot. Pairs with name N3."
+    },
+    {
+     "id": "i4",
+     "label": "I4 Just the squint",
+     "crop": "i4",
+     "summary": "The \"> <\" face plus a small smile, as a symbol. Most abstract; boldest when tiny."
+    },
+    {
+     "id": "i5",
+     "label": "I5 Peeking",
+     "crop": "i5",
+     "summary": "The mascot climbing up from the bottom edge of a night-sky tile. Most \"cute character\"."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe / .dmg",
+   "headline": "Which installer icons do you like? Pick as many as you want.",
+   "notice": "Shown in a Downloads folder next to ordinary files, and beside today's installer icon at 96, 32 and 16 pixels.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "d1",
+     "label": "D1 Arriving in a box",
+     "crop": "d1",
+     "summary": "The mascot pops out of an opened parcel, waving. The friendliest file in the folder."
+    },
+    {
+     "id": "d2",
+     "label": "D2 App icon + download badge",
+     "crop": "d2",
+     "summary": "Whichever app icon wins, with a green download badge. The conventional, instantly-understood choice."
+    },
+    {
+     "id": "d3",
+     "label": "D3 Dropping in",
+     "crop": "d3",
+     "summary": "The mascot floats down under a striped parachute: \"download\", literally."
+    }
+   ]
+  }
+ ]
+}

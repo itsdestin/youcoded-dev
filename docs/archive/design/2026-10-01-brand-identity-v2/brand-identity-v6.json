@@ -1,0 +1,204 @@
+{
+ "title": "YouCoded name and icons \u2014 round 6: the real mascot, doing things",
+ "key": "brand-identity-v6",
+ "out": "brand-identity-v6.html",
+ "images": "images/brand-identity-v6",
+ "runs": {
+  "today": "runs/v6"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "a1": [
+   "brand",
+   "a1",
+   "1200x700+0+0"
+  ],
+  "a2": [
+   "brand",
+   "a2",
+   "1200x700+0+0"
+  ],
+  "a3": [
+   "brand",
+   "a3",
+   "1200x700+0+0"
+  ],
+  "a4": [
+   "brand",
+   "a4",
+   "1200x700+0+0"
+  ],
+  "a5": [
+   "brand",
+   "a5",
+   "1200x700+0+0"
+  ],
+  "b1": [
+   "brand",
+   "b1",
+   "1200x700+0+0"
+  ],
+  "b2": [
+   "brand",
+   "b2",
+   "1200x700+0+0"
+  ],
+  "b3": [
+   "brand",
+   "b3",
+   "1200x700+0+0"
+  ],
+  "b4": [
+   "brand",
+   "b4",
+   "1200x700+0+0"
+  ],
+  "b5": [
+   "brand",
+   "b5",
+   "1200x700+0+0"
+  ],
+  "b6": [
+   "brand",
+   "b6",
+   "1200x700+0+0"
+  ],
+  "c1": [
+   "brand",
+   "c1",
+   "1200x700+0+0"
+  ],
+  "c2": [
+   "brand",
+   "c2",
+   "1200x700+0+0"
+  ],
+  "c3": [
+   "brand",
+   "c3",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "NAME",
+   "surface": "The name",
+   "path": "Website header, marketing \u2014 and help pages, where the name stands alone",
+   "headline": "Which name ideas do you like? Pick as many as you want.",
+   "notice": "Every mascot is your app-icon mascot with its exact body, arms and legs \u2014 only its pose and face change. Each is shown big, in the header, in three themes, and alone on a help page.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "a1",
+     "label": "A1 The punch",
+     "crop": "a1",
+     "summary": "Your intro animation frozen: the mascot uppercuts the Y and knocks it back. Site headline lettering."
+    },
+    {
+     "id": "a2",
+     "label": "A2 Peeking over",
+     "crop": "a2",
+     "summary": "The mascot-shaped letters (N1) with the mascot hiding behind them, peeking over between \"you\" and \"coded\"."
+    },
+    {
+     "id": "a3",
+     "label": "A3 Sitting on the \"d\"",
+     "crop": "a3",
+     "summary": "Chunky sticker letters (N4) with the mascot perched on the last \"d\", waving."
+    },
+    {
+     "id": "a4",
+     "label": "A4 Holding up the C",
+     "crop": "a4",
+     "summary": "The mascot stands in the word and lifts the \"C\" over its head like a trophy."
+    },
+    {
+     "id": "a5",
+     "label": "A5 Between you and coded",
+     "crop": "a5",
+     "summary": "The mascot holds a hand out to each half: it's what connects you to the code."
+    }
+   ]
+  },
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, Mac dock, browser tab",
+   "headline": "Which app icons do you like? Pick as many as you want.",
+   "notice": "Each is shown at true size on a Windows taskbar, Mac dock and browser tab, next to today's icon, and dressed in three other themes.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "b1",
+     "label": "B1 Punching the Y",
+     "crop": "b1",
+     "summary": "The intro's punch as an icon, on the light tile you chose in September."
+    },
+    {
+     "id": "b2",
+     "label": "B2 Peeking over the edge",
+     "crop": "b2",
+     "summary": "The mascot pulls itself up over the icon's bottom edge, mitts on the ledge."
+    },
+    {
+     "id": "b3",
+     "label": "B3 Building with Y and C",
+     "crop": "b3",
+     "summary": "Toy blocks: the mascot lifting the C into place. \"Build your own\", literally."
+    },
+    {
+     "id": "b4",
+     "label": "B4 Mid-hop",
+     "crop": "b4",
+     "summary": "Caught at the top of a happy hop, shadow below. All character, clearest when tiny."
+    },
+    {
+     "id": "b5",
+     "label": "B5 Costume change",
+     "crop": "b5",
+     "summary": "Half purple mascot, half Strawberry Kitty: same body, any look."
+    },
+    {
+     "id": "b6",
+     "label": "B6 Hanging off the Y",
+     "crop": "b6",
+     "summary": "A big white Y on deep purple, the mascot swinging from its arm."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which installer icons do you like? Pick as many as you want.",
+   "notice": "All three stay in the app icon's family: same light tile, same mascot. Shown in a Downloads folder and next to today's installer icon.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "c1",
+     "label": "C1 Moving in",
+     "crop": "c1",
+     "summary": "The mascot carries a box with a download arrow on it onto your computer."
+    },
+    {
+     "id": "c2",
+     "label": "C2 Riding the arrow down",
+     "crop": "c2",
+     "summary": "The mascot rides a big download arrow down like a slide."
+    },
+    {
+     "id": "c3",
+     "label": "C3 Jumping into the strip",
+     "crop": "c3",
+     "summary": "Today's installer (your September pick) with the mascot leaping into the download strip."
+    }
+   ]
+  }
+ ]
+}

@@ -3,15 +3,6 @@ Filing test: is it about youcoded.ai, promotion, the company's legal paperwork o
 Not here: the download builds themselves, installer signing and store uploads (dev-workspace → release), or anything inside the app.
 seen-on is always n/a here.
 
-- [ ] The new site header does not match the two logos nearest it, and both were consciously
-      deferred on 2026-09-04 rather than decided. The header is now a glass tile with the robot
-      in the theme colour and a wide-caps wordmark; the FOOTER logo a few screens down still
-      wears the old solid tile and mixed-case name, and the four theme mascots directly beneath
-      the header are master's newer full-bodied art while the header's robot is still the app's
-      flat icon. Destin saw both and said leave them for now, so this is a decision waiting to
-      be made, not a defect
-      `n/a` `decision` `checked 2026-09-04`
-
 - [ ] Landing copy note, recorded so it is not re-derived: conversation tags, private notes and
       one-tap prompt chips are unique (0 of 8 competitors on 2026-08-31) but must not lead the
       landing page — uniqueness is not the argument

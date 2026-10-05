@@ -1,0 +1,84 @@
+{
+ "title": "YouCoded \u2014 round 18: the soft smile",
+ "key": "brand-identity-v18",
+ "out": "brand-identity-v18.html",
+ "images": "images/brand-identity-v18",
+ "runs": {
+  "today": "runs/v18"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "mj": [
+   "brand",
+   "mouths4",
+   "220x630+24+62"
+  ],
+  "sm1": [
+   "brand",
+   "mouths4",
+   "220x630+256+62"
+  ],
+  "sm2": [
+   "brand",
+   "mouths4",
+   "220x630+488+62"
+  ],
+  "sm3": [
+   "brand",
+   "mouths4",
+   "220x630+720+62"
+  ],
+  "o1": [
+   "brand",
+   "mouths4",
+   "220x630+952+62"
+  ]
+ },
+ "steps": [
+  {
+   "id": "MOUTH",
+   "surface": "App icon",
+   "path": "The final icon's face",
+   "headline": "Which mouth is the one?",
+   "notice": "Three soft smiles between your open oval and half-moon: a smile shape with rounded corners, in three widths. The two originals are on either side for comparison.",
+   "variants": [
+    {
+     "id": "mj",
+     "label": "Open oval (before)",
+     "crop": "mj",
+     "summary": "Your earlier pick."
+    },
+    {
+     "id": "sm1",
+     "label": "Soft smile \u00b7 narrow",
+     "crop": "sm1",
+     "summary": "Closest to the oval."
+    },
+    {
+     "id": "sm2",
+     "label": "Soft smile \u00b7 medium",
+     "crop": "sm2",
+     "summary": "Halfway."
+    },
+    {
+     "id": "sm3",
+     "label": "Soft smile \u00b7 wide",
+     "crop": "sm3",
+     "summary": "Closest to the half-moon."
+    },
+    {
+     "id": "o1",
+     "label": "Half-moon (before)",
+     "crop": "o1",
+     "summary": "Your earlier pick."
+    }
+   ]
+  }
+ ]
+}

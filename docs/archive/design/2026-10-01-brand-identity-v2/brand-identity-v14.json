@@ -1,0 +1,135 @@
+{
+ "title": "YouCoded \u2014 sign-off: final icon, final installer, logo set with the final icon",
+ "key": "brand-identity-v14",
+ "out": "brand-identity-v14.html",
+ "images": "images/brand-identity-v14",
+ "runs": {
+  "today": "runs/v14"
+ },
+ "labels": {
+  "today": "Final"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "fin": [
+   "brand",
+   "fin",
+   "1200x700+0+0"
+  ],
+  "fini": [
+   "brand",
+   "fini",
+   "1200x700+0+0"
+  ],
+  "l1": [
+   "brand",
+   "l1",
+   "1200x700+0+0"
+  ],
+  "l2": [
+   "brand",
+   "l2",
+   "1200x700+0+0"
+  ],
+  "l4": [
+   "brand",
+   "l4",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "FIN",
+   "surface": "App icon",
+   "path": "Everywhere it appears",
+   "crop": "fin",
+   "headline": "Is this the final app icon?",
+   "changed": "R1 with each theme's own eyes and the thin theme-coloured rim (your pick C).",
+   "notice": "It re-dresses itself in every theme, as the app already does with its icon.",
+   "risk": "The rim is drawn in each theme's deep colour, so the outline colour changes per theme.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "FINI",
+   "surface": "Installer icon",
+   "path": "Everywhere it appears",
+   "crop": "fini",
+   "headline": "Is this the final installer icon?",
+   "changed": "U1 with your notes: face a little lower, streaks spread wider and a touch shorter.",
+   "notice": "It matches the app icon's glass and face, so download and app read as one family.",
+   "risk": "At 16px the box and streaks merge; the face still carries it.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L1",
+   "surface": "The logo set",
+   "path": "Everywhere it appears",
+   "crop": "l1",
+   "headline": "Do the lockups still work with the final icon?",
+   "changed": "Your approved L1, redrawn with the final icon in place of the stand-in.",
+   "notice": "Nothing else changed from what you approved.",
+   "risk": "The \"yc\" tile (bottom right) is still the older wallpaper style; say if it should match the final white-glass icon.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L2",
+   "surface": "The logo set",
+   "path": "Everywhere it appears",
+   "crop": "l2",
+   "headline": "Do the colour versions still work with the final icon?",
+   "changed": "Your approved L2 with the final icon, including its theme versions.",
+   "notice": "Nothing else changed.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L4",
+   "surface": "The logo set",
+   "path": "Everywhere it appears",
+   "crop": "l4",
+   "headline": "Does the set in use still work with the final icon?",
+   "changed": "Your approved L4 with the final icon on the header, title bar, tab and footer.",
+   "notice": "Nothing else changed.",
+   "risk": "The title-bar icon is 18px, where the rim and eyes are at their smallest.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  }
+ ]
+}

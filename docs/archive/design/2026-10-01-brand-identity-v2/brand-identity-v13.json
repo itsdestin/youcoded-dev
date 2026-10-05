@@ -1,0 +1,104 @@
+{
+ "title": "YouCoded \u2014 round 13: each theme's own eyes, face vs background, the box installer",
+ "key": "brand-identity-v13",
+ "out": "brand-identity-v13.html",
+ "images": "images/brand-identity-v13",
+ "runs": {
+  "today": "runs/v13"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "ca": [
+   "brand",
+   "ca",
+   "1200x700+0+0"
+  ],
+  "cb": [
+   "brand",
+   "cb",
+   "1200x700+0+0"
+  ],
+  "cc": [
+   "brand",
+   "cc",
+   "1200x700+0+0"
+  ],
+  "cd": [
+   "brand",
+   "cd",
+   "1200x700+0+0"
+  ],
+  "u1": [
+   "brand",
+   "u1",
+   "1200x700+0+0"
+  ],
+  "u2": [
+   "brand",
+   "u2",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "CONTRAST",
+   "surface": "App icon (R1)",
+   "path": "Every theme, big and at taskbar/tab size",
+   "headline": "Which version makes the face and eyes clearest in every theme?",
+   "notice": "All four give each theme its own eye colour. B and C add one fix each for the face blending into its background; D has both. Each board shows all six themes on a dark taskbar, a light one, and that theme's own picture.",
+   "variants": [
+    {
+     "id": "ca",
+     "label": "A Each theme's own eyes",
+     "crop": "ca",
+     "summary": "Eye colour and sparkle from each theme; nothing else changed."
+    },
+    {
+     "id": "cb",
+     "label": "B + tile tinted in the theme",
+     "crop": "cb",
+     "summary": "The white tile takes the theme's colour, so the face stands against it."
+    },
+    {
+     "id": "cc",
+     "label": "C + thin theme-coloured rim",
+     "crop": "cc",
+     "summary": "A crisp outline around the face, even at 16px."
+    },
+    {
+     "id": "cd",
+     "label": "D + tint + rim",
+     "crop": "cd",
+     "summary": "Both fixes; the most separation."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which box installer do you like?",
+   "notice": "Round 11's Q2 exactly, with only the flaps spread wider. The difference is the motion marks.",
+   "variants": [
+    {
+     "id": "u1",
+     "label": "U1 Short streaks",
+     "crop": "u1",
+     "summary": "Three short, thin streaks just under the face."
+    },
+    {
+     "id": "u2",
+     "label": "U2 Whoosh marks",
+     "crop": "u2",
+     "summary": "Two small curved marks off the face's corners."
+    }
+   ]
+  }
+ ]
+}

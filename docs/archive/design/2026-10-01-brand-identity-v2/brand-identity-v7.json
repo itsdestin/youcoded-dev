@@ -1,0 +1,182 @@
+{
+ "title": "YouCoded name and icons \u2014 round 7: glass, minimal, the mascot's silhouette",
+ "key": "brand-identity-v7",
+ "out": "brand-identity-v7.html",
+ "images": "images/brand-identity-v7",
+ "runs": {
+  "today": "runs/v7"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "w1": [
+   "brand",
+   "w1",
+   "1200x700+0+0"
+  ],
+  "w2": [
+   "brand",
+   "w2",
+   "1200x700+0+0"
+  ],
+  "w3": [
+   "brand",
+   "w3",
+   "1200x700+0+0"
+  ],
+  "g1": [
+   "brand",
+   "g1",
+   "1200x700+0+0"
+  ],
+  "g2": [
+   "brand",
+   "g2",
+   "1200x700+0+0"
+  ],
+  "g3": [
+   "brand",
+   "g3",
+   "1200x700+0+0"
+  ],
+  "g4": [
+   "brand",
+   "g4",
+   "1200x700+0+0"
+  ],
+  "g5": [
+   "brand",
+   "g5",
+   "1200x700+0+0"
+  ],
+  "g6": [
+   "brand",
+   "g6",
+   "1200x700+0+0"
+  ],
+  "h1": [
+   "brand",
+   "h1",
+   "1200x700+0+0"
+  ],
+  "h2": [
+   "brand",
+   "h2",
+   "1200x700+0+0"
+  ],
+  "h3": [
+   "brand",
+   "h3",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "NAME",
+   "surface": "The name",
+   "path": "Website header, marketing \u2014 and help pages, where the name stands alone",
+   "headline": "Which name ideas do you like? Pick as many as you want.",
+   "notice": "Lowercase \"youcoded\" in the site's own lettering. The mascot appears only as its silhouette in the site's colour-glass.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "w1",
+     "label": "W1 Peeking over",
+     "crop": "w1",
+     "summary": "Your A2, in glass: the body rises behind the word, just its eyes clearing the letters."
+    },
+    {
+     "id": "w2",
+     "label": "W2 Between you and coded",
+     "crop": "w2",
+     "summary": "Your A5, in glass: the exact silhouette in the gap, a hand to each half."
+    },
+    {
+     "id": "w3",
+     "label": "W3 Icon + word",
+     "crop": "w3",
+     "summary": "The classic lockup: the app icon beside a clean lowercase word."
+    }
+   ]
+  },
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, Mac dock, browser tab",
+   "headline": "Which app icons do you like? Pick as many as you want.",
+   "notice": "Rendered big and shrunk to true taskbar, dock and tab sizes, next to today's icon, and dressed in three other themes (each takes that theme's wallpaper and colour).",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "g1",
+     "label": "G1 Glass silhouette",
+     "crop": "g1",
+     "summary": "A pane of frosted glass in the mascot's shape over your theme's colour. Fades when tiny."
+    },
+    {
+     "id": "g2",
+     "label": "G2 Glass silhouette, with eyes",
+     "crop": "g2",
+     "summary": "G1 plus the two eyes; reads as a character even at taskbar size."
+    },
+    {
+     "id": "g3",
+     "label": "G3 The site's mascot tile",
+     "crop": "g3",
+     "summary": "The frosted tile from youcoded.ai with a lit colour-glass silhouette inside."
+    },
+    {
+     "id": "g4",
+     "label": "G4 Peeking up from the edge",
+     "crop": "g4",
+     "summary": "Colour-glass body rising from the bottom of a frosted tile, eyes showing."
+    },
+    {
+     "id": "g5",
+     "label": "G5 The icon stands up",
+     "crop": "g5",
+     "summary": "The tile is the body, on glass legs with arms at its sides, \"yc\" on its face."
+    },
+    {
+     "id": "g6",
+     "label": "G6 Just the eyes",
+     "crop": "g6",
+     "summary": "A glass panel in the body's shape and two eyes. The most minimal."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which installer icons do you like? Pick as many as you want.",
+   "notice": "Same glass family as the icons. Shown in a Downloads folder and next to today's installer icon.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "h1",
+     "label": "H1 Icon + glass badge",
+     "crop": "h1",
+     "summary": "The app icon with a frosted download badge. The most familiar."
+    },
+    {
+     "id": "h2",
+     "label": "H2 Arriving on a beam",
+     "crop": "h2",
+     "summary": "The glass mascot descending onto a frosted tile in a column of light."
+    },
+    {
+     "id": "h3",
+     "label": "H3 Download strip, in glass",
+     "crop": "h3",
+     "summary": "Your September strip-and-arrow, rebuilt as a frosted band."
+    }
+   ]
+  }
+ ]
+}
