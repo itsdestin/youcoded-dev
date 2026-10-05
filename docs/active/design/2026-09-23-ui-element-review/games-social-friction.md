@@ -150,3 +150,34 @@ dropdown **`ui/Select`** (as in Settings → Providers), the **sessions menu row
 - Status dropdown says "Online" while offline (it is your choice, not your connection) — not said on
   the deck; could confuse.
 - The add box, once open, sits over the last row of the list (it grows upward inside the box).
+
+## Round 3 (2026-10-05) — after Destin's games-social-2 answers
+
+Deck `games-social-3.json` (before `runs/gs2-after`, after `runs/gs3-after`). References: round 1's
+Online pill, **Settings → Account's profile row**, the **sessions menu** (rows with status pills),
+a **detail page's one-line chip row**, the **⋯ row menu** popover, the **Settings list** (boxed rows).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R3-1 | Your status is the status pill itself, clickable (new shared `PillButton` in `ui/Pill.tsx`: the pill + the dropdown chevron), opening a small menu — Online / Incognito, one explaining line each. The `Select` is gone. | G2-2 ("keep the styling of the online pill, but make it clickable"). Guide "Buttons": an edit control is shaped like the things it edits (a pill among pills). **Tooling gap:** no shared anchored menu — the ⋯ menu and this one share a small local hook (`useAnchoredMenu`), not a primitive. |
+| R3-2 | Three concepts behind `?statusLook=`: **account** (shipped; your name + clickable pill, "2 of 4 friends online · 1 request" under it, arrow right — Account's profile row), **roster** (you as the first row, then requests and online friends, "All friends 4" opens the rest — the sessions menu), **strip** (your pill, then online friends as green pills and a request pill on one line, "+N" past three — a chip row). Same opened list in all three. | G2C-1 ("reimagine … self status and friend status"). **Invented:** the strip's thin vertical divider between your pill and theirs (no app piece for it). The roster's "All friends 4" uses the guide's count style (word, then a smaller fainter number). |
+| R3-3 | Rows: name only, its pill directly right, both in one 20px line box centred (`NameWithPill`); ⋯ at the right edge of every friend row, a 28px square (the header ✕'s size) centred on the row; the @handle is the ⋯ menu's header. Same name+pill on the game page. | G2-3, G2-7. Guide "Actions live on the right" / the setting row's control slot. Checked at 1.5×: name and pill centres within about 1px. **Tooling gap:** "parts agree" can't check this — it wants every child the SAME height, and a name and a pill are deliberately different heights; a "centres agree" mode (`data-centres-agree`) would. I left the rows unmarked rather than mark something the check would fail. |
+| R3-4 | No internet / server down: the whole friends card is replaced by one notice box (title, sentence, Try again inside). Incognito keeps the normal card; the pill reads Incognito. | G2-5. Guide "Status and notices"; error-message standards (same wording rules as round 2). |
+| R3-5 | Challenge is filled. | G2-8. **Contradicts** guide principle 6 ("one filled button per view") whenever two friends are online, and change 47's reason for outlining it. Done as asked; noted on the slide. |
+| R3-6 | Game page: boxed rows only (Settings list); `?lobbyRows=` and the sessions-menu variant removed. | G2C-2. |
+
+### Tooling friction this round
+1. **Choice pictures that are two states each** (folded + opened) had to be hand-composed again
+   (`runs/gs3-after/shots-concepts/`), as did the three error states. Third round running.
+2. **A `sameAs` was needed** because the shipped concept opened (`#look-account-open`) is pixel-equal
+   to `#requests` — honest here, but the list grows with every variant round.
+3. The menu-open state needed its own practice switch (`?statusMenu=1`) — `shoot` has no "click this
+   first" step for a screen state, and `explore` pictures can't go on a deck.
+4. `verify --full` 9/9 PASS. New tests: the pill's menu switches to Incognito; rows hide the handle and
+   the ⋯ menu shows it (broke it, saw it fail, restored); error card replaces the card.
+
+### Not done / unsure
+- The roster concept's "Show online only" row sits at the bottom of the scrolling list, under the
+  pinned Add a friend, so it's only reachable by scrolling.
+- Two filled Challenge buttons when two friends are online (R3-5).
+- Danger notice titles are red text — the shared notice box's own style, not changed here.

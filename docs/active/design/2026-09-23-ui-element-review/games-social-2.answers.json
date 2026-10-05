@@ -1,0 +1,113 @@
+{
+ "deck": "games-social-2",
+ "started": "2026-10-05T22:23:19.628Z",
+ "submitted": "2026-10-05T22:30:11Z",
+ "cur": 13,
+ "answers": {
+  "G2-1": {
+   "v": "yes",
+   "t": 1791239004737,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-2": {
+   "note": "don't like this dropdown. i wanted to keep the styling of the online pill, but make it clickable. and it looks weirdly positioned in this card.",
+   "t": 1791239058653,
+   "v": "other",
+   "seconds": 54,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-3": {
+   "v": "other",
+   "t": 1791239154263,
+   "note": "i don't like the positioning of the online chips and 3 dot menus",
+   "seconds": 96,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-4": {
+   "v": "yes",
+   "t": 1791239159906,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-5": {
+   "v": "other",
+   "t": 1791239254523,
+   "note": "it looks a little weird to replace the dropdown label in this way but idk. could probably just replace the whole card with the error state?",
+   "seconds": 91,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-6": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791239264979
+  },
+  "G2-7": {
+   "v": "other",
+   "t": 1791239330472,
+   "note": "i think in this page and the main friends menu we can just hide the @ tag in favor of the name. only show @ tags in the manage friend/3 dot menu. i like the online chip right next to the name. vertical alignement is a bit off though",
+   "seconds": 65,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-8": {
+   "v": "yes",
+   "t": 1791239346134,
+   "note": "challenge button should be dark probably",
+   "seconds": 16,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-9": {
+   "v": "yes",
+   "t": 1791239351556,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-10": {
+   "v": "yes",
+   "t": 1791239354480,
+   "seconds": 3,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-11": {
+   "v": "yes",
+   "t": 1791239357256,
+   "seconds": 3,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2-12": {
+   "v": "yes",
+   "t": 1791239359729,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2C-1": {
+   "v": "other",
+   "t": 1791239393668,
+   "note": "don't really love either of these. want to reimainge a bit how we display self status and friend status",
+   "seconds": 34,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G2C-2": {
+   "v": "pick",
+   "pick": "settings",
+   "t": 1791239410185,
+   "seconds": 17,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
