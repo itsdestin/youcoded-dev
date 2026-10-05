@@ -92,7 +92,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       schedule or trigger without the user (cron / "run now", budgets as hard stops, an inbox of
       runs). Verified 2026-09-01: zero scheduling code exists in either app. Blocked on Destin's
       "Assistants made of Duties" ruling, plus cost accounting and the specialists durable journal
-      `all` `blocked` `checked 2026-09-01` → docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#12): postponed — "but significant for 1.3.2/1.3.3"
+      `all` `blocked` `checked 2026-09-01` `v1.3.2` → docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 
 - [ ] Goal layer — checkable goals and a goal queue on top of the existing step-budget and
       doom-loop machinery (super-agent roadmap step 8). Deliberately last in that program:
@@ -353,7 +354,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)
-      `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#17): postponed with the delete-a-conversation feature it waits on; no longer a 1.3.1 item
+      `desktop` `blocked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11
@@ -390,6 +392,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       settings screen to add, edit or remove one, and servers Claude Code already knows about
       stay invisible to the app's own agent (desktop; deferred from phase 1, 2026-08-05; still
       unbuilt 2026-09-01)
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#10): postponed until after 1.3.1
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
 - [ ] **v1.3.1 release blocker — native-only users need a YouCoded-owned skills home.** Today the
@@ -398,6 +401,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
       as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
       is Claude Code parity only and must be superseded or expanded before implementation.
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#8): do next — "we can do with 15, but this should be a top priority i think" (15 = per-project skills and tools, youcoded#571)
       `all` `blocked` `checked 2026-09-05` `v1.3.1`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a

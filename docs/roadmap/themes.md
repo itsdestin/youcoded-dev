@@ -18,12 +18,6 @@ here: installing or browsing themes (marketplace).
       (`generate-previews.js`), and Android, which makes no preview at all
       `settings/themes` `all` `confirmed` `checked 2026-09-24`
 
-- [ ] Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it
-      gives every small button its own blur, and on Windows a screen full of separately
-      blurred cards has twice stopped drawing (blank cards). Destin chose to ship it as is
-      (2026-09-24); if it breaks, Reduce Visual Effects turns the blur off
-      `window-chrome` `desktop` `needs-verify` `checked 2026-09-24` `v1.3.1`
-
 - [ ] On the light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty, and since 2026-09-22 Morning Rounds) the provider brand colours — the
       Claude orange on the model chip and friends — are still hard to read; 27 colour/theme

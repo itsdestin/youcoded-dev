@@ -25,13 +25,6 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       remote-access refactor to move every feature into one list; that refactor (R0–R6) is
       complete and ready to merge as feat/one-core (2026-10-04), so A2 is unblocked once it
       lands. Start at the one-core START-HERE
-      `android` `in-flight` `checked 2026-10-04` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#3): postponed — "1.3.2+. rebuild will be tied to google play/iphone listings."
+      `android` `in-flight` `checked 2026-10-04` `v1.3.2` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
 
-- [ ] The Android half of the one-core work has never run on a real Android device. The desktop
-      checks (types, tests, screenshots, a throwaway dev instance) cover only the computer side;
-      Android got its own checks only where a build kit happened to be installed. Still to see
-      on a phone: the app starts and shows the same screens; the Android app's own assistant
-      (which keeps no session record, so draws its own dividers and queue) behaves as before;
-      features the phone cannot do answer with a plain "not on the phone" notice rather than
-      a blank; and pairing to a computer still works with the new connection handshake
-      `android` `needs-verify` `checked 2026-10-04`

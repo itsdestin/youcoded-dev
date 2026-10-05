@@ -22,6 +22,7 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
 - [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
       them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
       conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#23): postponed until after 1.3.1
       `settings/sync` `all` `decision` `checked 2026-09-16`
 
 - [ ] If a conversation is over the sync size limit on this device AND another device changes its older
@@ -129,7 +130,8 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       deck Q-6: "we need to add a better resolution mechanism/ui to the roadmap for split conversations
       with multiple copies." Include conversation-specific resolution, not just a warning; design remains open.
       Also: the panel can show a green "All synced" right beside that amber line (seen 2026-09-23).
-      `settings/sync` `desktop` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#22): postponed — "1.3.3"
+      `settings/sync` `desktop` `decision` `checked 2026-09-23` `v1.3.3` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 
 - [ ] Idea: same-machine takeover handoff without the hub — two installs sharing `~/YouCoded` (dev instance + built
       app) can see each other's lease files but can't deliver a takeover request when the SyncHub is down, since

@@ -110,7 +110,8 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       view (~148 of 236 real hints), which Destin deferred until those files are touched anyway.
       Settled: the ~1 s delay stays (he rejected a shorter one) and there is no circled-i — every
       hint, long ones included, is a hover hint. 2026-09-23: Destin made the remainder a 1.3.1 blocker in his triage
-      `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#19): "want to deal with all in 1.3.2" (reverses the 2026-09-23 1.3.1-blocker call)
+      `all` `confirmed` `checked 2026-09-10` `v1.3.2` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
 - [ ] Error messages still guess at causes in many places — the app-wide re-audit is done and
       batch 1 of 7 (the seventeen messages that stated something false) shipped 2026-09-11;
@@ -228,7 +229,8 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       publishes "intelligence", so it is either a curated band or a benchmark we choose and
       defend), what a local model shows for cost (nothing? "free"?), and whether three tags fit
       a row that already carries a name, a source and a favourite star.
-      `model-picker` `all` `confirmed` `checked 2026-09-06`
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#11): postponed — "but a significant priority for 1.3.2/1.3.3"
+      `model-picker` `all` `confirmed` `checked 2026-09-06` `v1.3.2`
 
 - [ ] Closing a dialog opened from the Development menu closes the menu behind it too, and
       "Known issues" closes everything with nothing on screen acknowledging it. Found by a

@@ -42,50 +42,43 @@ harness and the local engine.
 Target: `v1.3.1`
 - chat-data: The replayed-turn record's type is ambiguous (D11 in the simplification plan), a v1.3.1 release blocker
 - dev-workspace: Waiting on CI runs eats whole sessions
-- dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
 - dev-workspace: Every macOS download since 2026-07-23 is unopenable, and the download page sends people to a button that no…
 - dev-workspace: macOS installers still hit the security wall
-- dev-workspace: No Google Play listing
 - files: Searching a big project's files still stops at the first 2,000 files and says "This folder is large
 - files: Searching inside files' text in a project stops at 200 matches (20 per file, 5 seconds) and shows "200+",…
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
 - local-models: The file downloader exists three times (model files, the engine, voice assets) and the checksum helper four…
-- marketplace: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
 - native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested and not thought through…
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
 - native-harness: Native Runtime Parity Program
 - native-harness: The one object that runs a native conversation is 4,756 lines because it also orchestrates the helper agents…
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does not have it…
 - native-harness: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
-- native-harness: Helper (specialist) transcripts pile up in the sessions folder forever
 - native-harness: native-only users need a YouCoded-owned skills home
 - operations: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
-- other-features: The Linux buddy has never been tried on two screens
 - perf: v1.3.1 blocker, blocked on simplification phase 5: two small reads still take whole files, catalog fetches…
-- themes: Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it gives every small…
-- user-interface: Browser-default hover tooltips look foreign to the app
 - user-interface: Error messages still guess at causes in many places
 - user-interface: The settings screen exists twice
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 32 | 4 | 11 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 31 | 4 | 11 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 42 | 19 | 3 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 13 | 2 | 5 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 7 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 4 | 6 | 7 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 23 | 9 | 7 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 21 | 3 | 1 | 5 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 20 | 2 | 1 | 5 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 5 | 0 | 5 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 5 | 1 | 5 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 9 | 2 | 2 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 9 | 4 | 0 | 3 |
-| [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 1 | 0 | 0 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
+| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 0 | 0 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,

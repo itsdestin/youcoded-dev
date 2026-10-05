@@ -75,23 +75,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Planned: A5 (phone-native work).
       `android` `confirmed` `checked 2026-09-09`
 
-- [ ] Destin's real-phone pass of the whole one-core work is owed before it ships to users. Cover:
-      first connect and how long the white screen lasts; a dropped connection catching up (and
-      sounding at most once however many chats are waiting); the instant buttons (Stop, a
-      permission answer, Close, Send, the mode chip) and the note when a send is lost; the phone,
-      the buddy and the computer's window agreeing on dividers, queued messages, the model name
-      and the "working" dots; a chat running on the computer driven from the phone; and the
-      abilities opened to phones (theme and marketplace browse, install, publish, rate; session
-      flags; clear; skill commands). Also covers the owed checks from the 2026-09-11 batch 2/3
-      build and the 2026-09-23 remote fixes: conversation restoration and file reading from the
-      phone; the phone-browser touch terminal (smaller text; a finger drag scrolls instead of
-      selecting; typing goes through the input bar, so a tablet keyboard also loses direct typing
-      into the terminal); the paired Android app's terminal; removing a paired computer on
-      Android and its error message; screens refilling after a reconnect; files attached from the
-      phone. The 2026-09-11 dev window served a day-old copy, so every phone check that day is void.
-      Tests and a throwaway dev instance have covered everything else, never a real phone
-      `remote` `needs-verify` `checked 2026-10-04`
-
 - [ ] The blue "reply ready" dot is remembered per screen: a reply read on the computer still
       shows blue on the phone, and the other way round. Making "seen" shared through the
       computer's record was offered on 2026-10-02 and Destin parked it: "leave it for now"

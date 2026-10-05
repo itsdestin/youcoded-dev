@@ -805,13 +805,6 @@ seen-on is always n/a here.
       but-completed check master requires
       `n/a` `confirmed` `checked 2026-09-20`
 
-- [ ] The Linux package update path has never run on real hardware: `pkexec` raising the password
-      dialog, `pacman -U` over a running /opt install, and the relaunch. A dev build reports its
-      install kind as `unknown` by design, so only a packaged beta can prove it. Ask Destin to
-      click Update on his Arch install once a beta carrying youcoded#546 ships; the macOS halves
-      (Rosetta detection, the removed any-dmg fallback) have no machine here at all
-      `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
-
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
       from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
@@ -874,4 +867,5 @@ seen-on is always n/a here.
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
       data-safety form, content rating and account-deletion link. Destin 2026-10-01: "google play
       isnt priority" — Apple and Windows signing first (reverses 2026-09-10's deck Q-3)
-      `android` `parked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#2): "1.3.2+. not a current priority just yet"
+      `android` `parked` `checked 2026-10-01` `v1.3.2` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
