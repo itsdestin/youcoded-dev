@@ -27,7 +27,7 @@ Other docs keep their jobs and point here:
 
 ## The order
 
-Rows with the same **When** can run side by side; **Needs first** is the hard dependency.
+Rows with the same **When** can run side by side (R0–R6 are built and land together; see Status); **Needs first** is the hard dependency.
 
 | When | Phase | What | Needs first | Release |
 |---|---|---|---|---|
@@ -37,12 +37,12 @@ Rows with the same **When** can run side by side; **Needs first** is the hard de
 | Done | R0 | Edit-lock check in `close-out.sh` (lock retired 2026-10-04); the owed real-phone pass moved to after the merge (roadmap, remote-access). Branches editing the door files did NOT block — they are rewritten onto the new layout after the merge | — | — |
 | Now, any time | A5 (design only) | Phone default-UI mockup round and other A5 design decks | — | — |
 | After A1 | A6 | Google Play listing (Android decision 6: list right after A1, or wait for A4) | A1 | v1.3.1 roadmap item |
-| 1 | R1 | Hoist the runtime out of the desktop door; `Platform` interface; runtime loads with no Electron | R0 | v1.3.1 |
-| 2 | R2 | One contract; `window.claude` typed from it; object arguments | R1 | v1.3.1 |
-| 3 | R3 | Move feature families into the table, lowest risk first; native family group last | R2 | v1.3.1 |
-| 4 | R4 + A2 | R4: capabilities + protocol version, one platform module, one translator (D3), typed events (M5). A2: the built-in assistant on the phone | R3 (A2 needs R3's last group and A1) | R4's D3/M5: v1.3.1 |
-| 5 | R5 + Phase 5 + A3 | R5: computer keeps the record, per-session delivery, resume. Simplification Phase 5 (also needs the native-session-host test split). A3: delete the Kotlin copies family by family | R4 (R5, Phase 5); A2 (A3) | Phase 5: v1.3.1 |
-| 6 | R6 · A4 | R6: native sessions from the phone, instant buttons, more features over remote. A4: Node owns the phone's socket | R5 (R6); A3 + R5 (A4) | — |
+| Done | R1 | Hoist the runtime out of the desktop door; `Platform` interface; runtime loads with no Electron | R0 | v1.3.1 |
+| Done | R2 | One contract; `window.claude` typed from it; object arguments | R1 | v1.3.1 |
+| Done | R3 | Move feature families into the table, lowest risk first; native family group last | R2 | v1.3.1 |
+| R4 done; A2 next | R4 + A2 | R4: capabilities + protocol version, one platform module, one translator (D3), typed events (M5). A2: the built-in assistant on the phone | R3 (A2 needs R3's last group and A1) | R4's D3/M5: v1.3.1 |
+| R5 done; Phase 5, A3 next | R5 + Phase 5 + A3 | R5: computer keeps the record, per-session delivery, resume. Simplification Phase 5 (also needs the native-session-host test split). A3: delete the Kotlin copies family by family | R4 (R5, Phase 5); A2 (A3) | Phase 5: v1.3.1 |
+| R6 done; A4 next | R6 · A4 | R6: native sessions from the phone, instant buttons, more features over remote. A4: Node owns the phone's socket | R5 (R6); A3 + R5 (A4) | — |
 | 7 | A5 (build) | Phone-native features, each after its design round | A4 | — |
 
 **The edit lock (retired 2026-10-04).** It froze the two door files during R1–R2 and then one
@@ -60,7 +60,7 @@ so.** Each run's log is in the plan's R3/R4/R5/R6 sections.
   run listed (all four are filed in `docs/roadmap/`). Parked by Destin: the shared blue "seen" dot;
   `folders:add` stays as it is.
 - **Next:** archive the plan after the merge, then the Android rebuild's A-phases (A0 and A1 can
-  start any time; A2 needs R3's last group, which is done).
+  start any time; A2 is unblocked once this merge lands, since R3's last group is in it).
 - **Release:** Phase 4 (R1–R4) is part of this merge. Phase 5 stays a v1.3.1 blocker and still
   waits on the native-session-host test split.
 

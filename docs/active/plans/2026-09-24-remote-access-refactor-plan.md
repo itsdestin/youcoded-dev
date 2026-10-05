@@ -218,12 +218,12 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 > `dev:log-tail`, `favorites:set`, `game:setIncognito` and two `first-run` local-download
 > channels.
 > **Carry into R3:**
-> (1) The `ChannelDef` fields `sessionScoped`, `messageKind` and `rejectOnNotOk` are not read
-> anywhere yet. Implement them before the first entry relies on them, or drop them.
+> (1) The `ChannelDef` fields `sessionScoped`, `messageKind` and `rejectOnNotOk` were not read
+> anywhere. Resolved in R3-1: dropped.
 > (2) The phone door consults the table *before* its switch, so every remote-only guard in a
 > case body must be restated in the entry.
-> (3) The `first-run` local-download handlers ignore the `sessionId` they receive; this is
-> kept as a `TODO(one-core R3)`.
+> (3) The `first-run` local-download handlers ignored the `sessionId` they received.
+> Resolved in R3-3: the preload no longer sends it and the handlers take no argument.
 > (4) The wire-shape guard missed the submodule channel maps (artifacts, git, project,
 > chatsearch, voice); a follow-up commit on the R2 branch closes this.
 
