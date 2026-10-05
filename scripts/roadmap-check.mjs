@@ -49,7 +49,19 @@ export const SHIPPED_MAX = 300;   // characters per shipped.md line; see parseSh
 
 export const SEEN_ON = ['desktop', 'android', 'remote', 'all', 'n/a'];
 export const STATUS = ['confirmed', 'needs-verify', 'in-flight', 'blocked', 'decision', 'parked'];
-export const FLAGS = ['urgent', 'needs-repro', 'performance', 'security', 'regression'];
+// WHY no `urgent` flag any more (2026-10-05): priority P1 says it, and two ways to say
+// "do this first" meant neither was trusted.
+export const FLAGS = ['needs-repro', 'performance', 'security', 'regression'];
+// Priority tiers (Destin, 2026-10-05). Required on every entry, so "what matters most" is a
+// sort, not a re-read of 400 items:
+//   P1 — urgent: app-breaking, a release blocker, or a top-priority feature to build next
+//   P2 — major: big ideas and things hit repeatedly, but not the immediate next step
+//   P3 — leisure: smaller bugs and miscellany, done whenever
+export const PRIORITY = ['P1', 'P2', 'P3'];
+// WHY a budget (Destin, 2026-10-05): "i just don't think the roadmap should be able to read
+// 400+ items. that's impossible to understand and maintain". Past this many entries the run
+// says so; small related items belong in ONE bundled entry, not one entry each.
+export const ROADMAP_MAX = 150;
 export const RELEASE_RE = /^v\d+\.\d+(\.\d+)?$/;
 export const CHECKED_RE = /^checked (\d{4}-\d{2}-\d{2})$/;
 export const SURFACES = [
@@ -73,12 +85,13 @@ export const SUBLEVELS = {
 
 // ---------- entry grammar (spec §2) ----------
 
-const KIND_ORDER = ['surface', 'seen-on', 'status', 'checked', 'flag'];
+const KIND_ORDER = ['surface', 'seen-on', 'status', 'priority', 'checked', 'flag'];
 
 export function classifyToken(tok) {
   if (SURFACES.includes(tok)) return 'surface';
   if (SEEN_ON.includes(tok)) return 'seen-on';
   if (STATUS.includes(tok)) return 'status';
+  if (PRIORITY.includes(tok)) return 'priority';
   if (CHECKED_RE.test(tok)) return 'checked';
   if (FLAGS.includes(tok) || RELEASE_RE.test(tok)) return 'flag';
   return null;
@@ -96,6 +109,7 @@ export function vocabHelp() {
     `surface (optional, one of ${SURFACES.length}): ${SURFACES.join(' · ')}`,
     `seen-on: ${SEEN_ON.join(' · ')}`,
     `status: ${STATUS.join(' · ')}`,
+    `priority: ${PRIORITY.join(' · ')} (P1 urgent · P2 major, not next · P3 at leisure)`,
     'checked: `checked YYYY-MM-DD`',
     `flags: ${FLAGS.join(' · ')} — or a release like v1.3.1`,
     ...Object.entries(SUBLEVELS).map(([a, subs]) => `## sublevels in ${a}.md: ${subs.join(' · ')}`),
@@ -106,7 +120,7 @@ export function vocabHelp() {
 // surfaces behind a command, so the message stays readable inside a hook's stderr.
 export function tokenVocabLine() {
   return `allowed tokens are a surface (\`node scripts/roadmap-check.mjs --vocab\` lists all ${SURFACES.length}), `
-    + `seen-on (${SEEN_ON.join(' · ')}), status (${STATUS.join(' · ')}), `
+    + `seen-on (${SEEN_ON.join(' · ')}), status (${STATUS.join(' · ')}), priority (${PRIORITY.join(' · ')}), `
     + '`checked YYYY-MM-DD`, then flags '
     + `(${FLAGS.join(' · ')}) or a release like \`v1.3.1\``;
 }
@@ -128,7 +142,7 @@ function editDistance(a, b) {
 }
 
 export function suggestToken(tok) {
-  const best = [...SURFACES, ...SEEN_ON, ...STATUS, ...FLAGS]
+  const best = [...SURFACES, ...SEEN_ON, ...STATUS, ...PRIORITY, ...FLAGS]
     .map(c => ({ c, d: editDistance(tok, c) }))
     .sort((x, y) => x.d - y.d)[0];
   return best && best.d <= 2 && best.d < tok.length ? best.c : null;
@@ -143,7 +157,7 @@ function isRealDate(ymd) {
 // Parses the LAST line of an entry: backticked tokens in vocabulary order, then `→ <path>`.
 export function parseMetadata(line) {
   const errors = [];
-  const meta = { surface: null, seenOn: null, status: null, checked: null, flags: [], release: null, link: null };
+  const meta = { surface: null, seenOn: null, status: null, priority: null, checked: null, flags: [], release: null, link: null };
   const linkM = line.match(/→\s*(\S+)\s*$/);
   if (linkM) meta.link = linkM[1];
   const body = linkM ? line.slice(0, linkM.index) : line;
@@ -151,7 +165,7 @@ export function parseMetadata(line) {
   if (outside) errors.push(`metadata line has text outside backticks: "${outside.slice(0, 60)}" — the last line of an entry is tokens only`);
   const tokens = [...body.matchAll(/`([^`]+)`/g)].map(m => m[1]);
   if (tokens.length === 0) {
-    errors.push('entry has no metadata line (last line must be backticked tokens: seen-on, status, checked)');
+    errors.push('entry has no metadata line (last line must be backticked tokens: seen-on, status, priority, checked)');
     return { ...meta, errors };
   }
   let lastKind = -1;
@@ -166,17 +180,19 @@ export function parseMetadata(line) {
       continue;
     }
     const idx = KIND_ORDER.indexOf(kind);
-    if (idx < lastKind) errors.push(`token \`${tok}\` is out of order (order is surface, seen-on, status, checked, flags)`);
+    if (idx < lastKind) errors.push(`token \`${tok}\` is out of order (order is surface, seen-on, status, priority, checked, flags)`);
     lastKind = Math.max(lastKind, idx);
     if (kind === 'surface') { if (meta.surface) errors.push('two surface tokens'); meta.surface = tok; }
     else if (kind === 'seen-on') { if (meta.seenOn) errors.push('two seen-on tokens'); meta.seenOn = tok; }
     else if (kind === 'status') { if (meta.status) errors.push('two status tokens'); meta.status = tok; }
+    else if (kind === 'priority') { if (meta.priority) errors.push('two priority tokens'); meta.priority = tok; }
     else if (kind === 'checked') { if (meta.checked) errors.push('two checked tokens'); meta.checked = tok.match(CHECKED_RE)[1]; }
     else if (RELEASE_RE.test(tok)) { if (meta.release) errors.push('two release flags'); meta.release = tok; }
     else meta.flags.push(tok);
   }
   if (!meta.seenOn) errors.push('missing seen-on token (desktop · android · remote · all · n/a)');
   if (!meta.status) errors.push(`missing status token (${STATUS.join(' · ')})`);
+  if (!meta.priority) errors.push(`missing priority token (${PRIORITY.join(' · ')}) — P1 urgent, P2 major but not next, P3 at leisure`);
   if (!meta.checked) errors.push('missing `checked YYYY-MM-DD` token');
   else if (!isRealDate(meta.checked)) errors.push(`checked date ${meta.checked} is not a real date`);
   return { ...meta, errors };
@@ -222,7 +238,7 @@ export function parseAreaFile(text, fileName) {
       i++;
       while (i < lines.length && lines[i].trim() !== '' && !/^- \[/.test(lines[i]) && !/^#/.test(lines[i])) { block.push(lines[i].trim()); i++; }
       if (m[1] === 'x') { errors.push({ line: start + 1, message: '`[x]` belongs in shipped.md — delete the entry here and append one line there' }); continue; }
-      if (block.length < 2) { errors.push({ line: start + 1, message: 'entry has no metadata line (last line must be backticked tokens: seen-on, status, checked)' }); continue; }
+      if (block.length < 2) { errors.push({ line: start + 1, message: 'entry has no metadata line (last line must be backticked tokens: seen-on, status, priority, checked)' }); continue; }
       const meta = parseMetadata(block[block.length - 1]);
       for (const e of meta.errors) errors.push({ line: start + 1, message: e });
       const { errors: _drop, ...fields } = meta;
@@ -239,7 +255,7 @@ export function parseAreaFile(text, fileName) {
 }
 
 // ---------- index (spec §1.1) ----------
-const ROW_RE = /^\| \[([^\]]+)\]\(docs\/roadmap\/([^)]+)\.md\) — (.*?) \| (\d+) \| (\d+) \| (\d+) \| (\d+) \|$/;
+const ROW_RE = /^\| \[([^\]]+)\]\(docs\/roadmap\/([^)]+)\.md\) — (.*?) \| (\d+) \| (\d+) \| (\d+) \| (\d+) \| (\d+) \| (\d+) \| (\d+) \|$/;
 const TARGET_RE = /^Target:\s*`?(v\d+\.\d+(?:\.\d+)?)`?\s*$/;
 
 export function parseIndex(text) {
@@ -261,21 +277,31 @@ export function parseIndex(text) {
       if (/^- /.test(lines[j])) { if (nrStart === -1) nrStart = j; nrEnd = j; nextRelease.push(lines[j]); }
     }
   }
+  // Top-priority list: the `- ` lines under `## Top priority (P1)`, up to the next `## `.
+  // Optional — an index without the heading simply has no such list to keep.
+  const topLine = lines.findIndex(l => /^## Top priority/.test(l));
+  const topPriority = [];
+  let tpStart = -1, tpEnd = -1;
+  if (topLine !== -1) {
+    for (let j = topLine + 1; j < lines.length && !/^## /.test(lines[j]); j++) {
+      if (/^- /.test(lines[j])) { if (tpStart === -1) tpStart = j; tpEnd = j; topPriority.push(lines[j]); }
+    }
+  }
   const rows = [];
   let tableStart = -1, tableEnd = -1;
   lines.forEach((l, idx) => {
     const rm = l.match(ROW_RE);
     if (rm) {
       if (rm[1] !== rm[2]) errors.push({ line: idx + 1, message: `row link text "${rm[1]}" does not match its file ${rm[2]}.md` });
-      rows.push({ area: rm[2], heading: rm[3], open: +rm[4], needsVerify: +rm[5], decisions: +rm[6], parked: +rm[7], line: idx });
+      rows.push({ area: rm[2], heading: rm[3], open: +rm[4], p1: +rm[5], p2: +rm[6], p3: +rm[7], needsVerify: +rm[8], decisions: +rm[9], parked: +rm[10], line: idx });
       if (tableStart === -1) tableStart = idx;
       tableEnd = idx;
     }
     if (/^- \[ \]/.test(l)) errors.push({ line: idx + 1, message: 'the index holds no entries — file this in docs/roadmap/<area>.md, the file whose Filing test says yes (see "Filing an item" at the bottom of ROADMAP.md)' });
     if (/^- \[x\]/.test(l)) errors.push({ line: idx + 1, message: 'closed items go to docs/roadmap/shipped.md, one line each' });
   });
-  if (rows.length === 0) errors.push({ line: 0, message: 'index has no backlog table rows (| [area](docs/roadmap/area.md) — heading | n | n | n | n |)' });
-  return { lines, target, targetLine, nextRelease, nrStart, nrEnd, rows, tableStart, tableEnd, errors };
+  if (rows.length === 0) errors.push({ line: 0, message: 'index has no backlog table rows (| [area](docs/roadmap/area.md) — heading | n | n | n | n | n | n | n |)' });
+  return { lines, target, targetLine, nextRelease, nrStart, nrEnd, topLine, topPriority, tpStart, tpEnd, rows, tableStart, tableEnd, errors };
 }
 
 // ---------- shipped.md (spec §1.3) ----------
@@ -482,13 +508,17 @@ export function expectedIndex(rm) {
     area: a.area,
     heading: a.heading,
     open: a.entries.length,
+    p1: a.entries.filter(e => e.priority === 'P1').length,
+    p2: a.entries.filter(e => e.priority === 'P2').length,
+    p3: a.entries.filter(e => e.priority === 'P3').length,
     needsVerify: a.entries.filter(e => e.status === 'needs-verify').length,
     decisions: a.entries.filter(e => e.status === 'decision').length,
     parked: a.entries.filter(e => e.status === 'parked').length,
   })).sort((x, y) => y.open - x.open || (x.area < y.area ? -1 : 1));
   const target = rm.index?.target ?? null;
   const nextRelease = rm.areas.flatMap(a => a.entries.filter(e => e.release === target).map(e => `- ${a.area}: ${headline(e)}`));
-  return { rows, nextRelease };
+  const topPriority = rm.areas.flatMap(a => a.entries.filter(e => e.priority === 'P1').map(e => `- ${a.area}: ${headline(e)}`));
+  return { rows, nextRelease, topPriority };
 }
 
 // An entry's headline: its first sentence, cut at a word boundary.
@@ -504,7 +534,7 @@ export function headline(e, max = 110) {
 }
 
 export function renderRow(r) {
-  return `| [${r.area}](${ROADMAP_DIR}/${r.area}.md) — ${r.heading} | ${r.open} | ${r.needsVerify} | ${r.decisions} | ${r.parked} |`;
+  return `| [${r.area}](${ROADMAP_DIR}/${r.area}.md) — ${r.heading} | ${r.open} | ${r.p1} | ${r.p2} | ${r.p3} | ${r.needsVerify} | ${r.decisions} | ${r.parked} |`;
 }
 
 export function diffIndex(rm) {
@@ -522,18 +552,25 @@ export function diffIndex(rm) {
   const actualNr = rm.index.nextRelease.join('\n');
   const wantNr = ex.nextRelease.join('\n');
   if (actualNr !== wantNr) drift.push({ message: `Next release list is stale — flags give:\n${wantNr || '(no items carry the target flag)'}` });
+  if (rm.index.topLine !== -1 && rm.index.topPriority.join('\n') !== ex.topPriority.join('\n')) {
+    drift.push({ message: `Top priority list is stale — P1 entries give:\n${ex.topPriority.join('\n') || '(no P1 entries)'}` });
+  }
   return drift;
 }
 
-// Rewrites ONLY the table rows and the next-release lines. Everything else — the
+// Rewrites ONLY the table rows, the next-release lines and the top-priority lines. Everything else — the
 // "where the app stands" prose, the filing rule — is byte-identical afterwards.
 export function rewriteIndex(rm) {
   const ex = expectedIndex(rm);
   const lines = [...rm.index.lines];
-  // Table first (it sits below Next release, so its line numbers are the ones that must not shift yet).
-  if (rm.index.tableStart !== -1) lines.splice(rm.index.tableStart, rm.index.tableEnd - rm.index.tableStart + 1, ...ex.rows.map(renderRow));
-  if (rm.index.nrStart !== -1) lines.splice(rm.index.nrStart, rm.index.nrEnd - rm.index.nrStart + 1, ...ex.nextRelease);
-  else if (rm.index.targetLine !== -1) lines.splice(rm.index.targetLine + 1, 0, ...ex.nextRelease);
+  // Three regions, spliced bottom-up so an earlier region's line numbers have not shifted yet.
+  const regions = [];
+  if (rm.index.tableStart !== -1) regions.push({ at: rm.index.tableStart, del: rm.index.tableEnd - rm.index.tableStart + 1, ins: ex.rows.map(renderRow) });
+  if (rm.index.nrStart !== -1) regions.push({ at: rm.index.nrStart, del: rm.index.nrEnd - rm.index.nrStart + 1, ins: ex.nextRelease });
+  else if (rm.index.targetLine !== -1) regions.push({ at: rm.index.targetLine + 1, del: 0, ins: ex.nextRelease });
+  if (rm.index.tpStart !== -1) regions.push({ at: rm.index.tpStart, del: rm.index.tpEnd - rm.index.tpStart + 1, ins: ex.topPriority });
+  else if (rm.index.topLine !== -1) regions.push({ at: rm.index.topLine + 1, del: 0, ins: ex.topPriority });
+  for (const r of regions.sort((x, y) => y.at - x.at)) lines.splice(r.at, r.del, ...r.ins);
   return lines.join('\n');
 }
 
@@ -592,6 +629,11 @@ export function run({ root, fix = false, fixClaims = false, quiet = false, struc
     say(`- ${area}:`);
     for (const e of list) say(`  - ${where(e)} ${headline(e, 90)} (${e.status}, checked ${e.checked})`);
   }
+
+  // The size budget. Printed, never an error: a session filing one item must not be blocked
+  // by a backlog it did not grow — but it is told, where Destin reads.
+  const total = rm.areas.reduce((n, a) => n + a.entries.length, 0);
+  if (total > ROADMAP_MAX) say(`- over budget: ${total} entries (budget ${ROADMAP_MAX}) — fold small related items into one bundled entry before filing more`);
 
   // 4. index
   let drift = diffIndex(rm);
