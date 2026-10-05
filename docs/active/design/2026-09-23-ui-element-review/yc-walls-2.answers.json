@@ -1,0 +1,16 @@
+{
+ "deck": "yc-walls-2",
+ "started": "2026-10-05T03:46:51.116Z",
+ "submitted": "2026-10-05T03:47:23Z",
+ "cur": 0,
+ "answers": {
+  "YW2-1": {
+   "v": "pick",
+   "pick": "gs2",
+   "t": 1791172042884,
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

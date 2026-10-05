@@ -1,0 +1,47 @@
+{
+  "title": "Start your first session — two directions",
+  "key": "welcome-1",
+  "out": "welcome-1.review.html",
+  "images": "images/welcome-1",
+  "runs": {"after": "r/after"},
+  "themes": ["midnight", "light"],
+  "crops": {"w0": ["x", "w0", "1440x900+0+0"], "d1": ["x", "d1", "1440x900+0+0"], "d2": ["x", "d2", "1440x900+0+0"]},
+  "steps": [
+    {
+      "id": "WL-1",
+      "surface": "New session screen",
+      "path": "The first screen after setup finishes (shown in Midnight, the theme a new install starts in; switch to Light at the top right)",
+      "headline": "Which first 'Start your first session' screen?",
+      "variants": [
+        {"id": "today", "label": "Today", "crop": "w0",
+         "summary": "Small form: folder, model, Skip permissions switch, Cancel and a 'Create session' button that wraps onto two lines."},
+        {"id": "D1", "label": "D1 · Roomy form", "crop": "d1",
+         "summary": "Bigger Outfit heading, a wider form so nothing wraps, no Cancel (there is nothing to go back to on the first screen), one full-width 'Start session' button.",
+         "risk": "Still asks about folder, model and Skip permissions before the user has seen anything."},
+        {"id": "D2", "label": "D2 · One button", "crop": "d2",
+         "summary": "One big 'Start your first session' button using the folder and model setup already chose; 'Change folder or model' under it opens the D1 form.",
+         "risk": "A first-timer may not notice which folder the assistant will work in; it's named in the line under the button."}
+      ]
+    },
+    {
+      "id": "WL-2", "words": true,
+      "surface": "New session screen", "path": "The theme the app opens in right after setup",
+      "headline": "Which theme should a brand-new install open in, after the lavender setup?",
+      "today": "Setup is brand lavender. The moment it finishes, the app switches to Midnight, a near-black theme, because that's the default for new installs.",
+      "problem": "Going from bright lavender straight to near-black is the sharpest jump in the whole first-run, and it happens on the first screen of the real app.",
+      "proposal": "Three ways.",
+      "options": [
+        {"id": "follow-system", "label": "Follow light or dark", "recommended": true,
+         "summary": "Light if the computer is in light mode, Midnight if it's in dark mode.",
+         "pros": ["Matches the rest of the person's computer from the first minute.", "Light users get a gentle step from lavender."],
+         "cons": ["Dark-mode users still get the lavender-to-dark jump."]},
+        {"id": "light", "label": "Always Light",
+         "pros": ["The smallest jump from setup for everyone."],
+         "cons": ["Bright for someone who keeps everything dark."]},
+        {"id": "midnight", "label": "Keep Midnight",
+         "pros": ["No change; it's the look the app is known for."],
+         "cons": ["The lavender-to-near-black jump stays."]}
+      ]
+    }
+  ]
+}

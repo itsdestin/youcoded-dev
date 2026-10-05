@@ -1,0 +1,59 @@
+{
+ "deck": "yc-theme-1",
+ "started": "2026-10-05T03:57:22.908Z",
+ "submitted": "2026-10-05T04:00:31Z",
+ "cur": 6,
+ "answers": {
+  "YT-1": {
+   "note": "i think we can make this all a bit bigger. header/mascot/text proportionallly a bit bigger compared to the menu box below, and maybe just slightly higher above",
+   "t": 1791172714483,
+   "v": "other",
+   "seconds": 72,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT-2": {
+   "v": "yes",
+   "t": 1791172734874,
+   "seconds": 20,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT-3": {
+   "v": "yes",
+   "t": 1791172750850,
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT-4": {
+   "v": "yes",
+   "t": 1791172799726,
+   "note": "separate, i thinkg the settings header divider line needs the same thickness/color as the settings card borders.",
+   "seconds": 49,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT-5": {
+   "v": "yes",
+   "t": 1791172810383,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT-6": {
+   "v": "yes",
+   "t": 1791172817238,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT-7": {
+   "v": "yes",
+   "t": 1791172829853,
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

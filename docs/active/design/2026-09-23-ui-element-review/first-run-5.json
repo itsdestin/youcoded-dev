@@ -1,0 +1,49 @@
+{
+  "title": "First-run setup — install line, sign-in note, logo without the icon",
+  "key": "first-run-5",
+  "out": "first-run-5.review.html",
+  "images": "images/first-run-5",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {
+    "install": ["x", "install", "1440x900+0+0"],
+    "signin": ["x", "signin", "1440x900+0+0"],
+    "logo-icon": ["x", "logo-icon", "1440x480+0+0"],
+    "logo-stack": ["x", "logo-stack", "1440x480+0+0"],
+    "logo-tuck": ["x", "logo-tuck", "1440x480+0+0"],
+    "logo-name": ["x", "logo-name", "1440x480+0+0"]
+  },
+  "steps": [
+    {
+      "id": "P5-1", "surface": "First-run setup", "path": "The 'getting things ready' screen",
+      "crop": "install",
+      "headline": "'Step 1 of 2' is gone: the line says what's happening, and the app's spinner turns beside the heading.",
+      "changed": "New line: 'Setting up the tools your assistant needs. This can take a few minutes.' The app's braille spinner, in the brand purple, sits left of 'Getting things ready'. On a Mac, while Git installs, the line still tells you to click Install in Apple's window.",
+      "notice": "You can see setup is working, and roughly what it's doing, without any counts to decode.",
+      "risk": "'A few minutes' is a general promise; on a very slow connection it can take longer."
+    },
+    {
+      "id": "P5-2", "surface": "First-run setup", "path": "The sign-in step",
+      "crop": "signin",
+      "headline": "The backup warning is gone from sign-in; 'You can change this at any time.' sits where it was, under the three rows.",
+      "changed": "Removed: 'With your permission, the assistant may create, change, or delete files on your device. Create backups for anything you cannot replace.' The line under the heading moved to the bottom with your new wording.",
+      "notice": "The step is just the question and the three answers.",
+      "risk": "That warning was the one every new user was guaranteed to see (your 2026-09-10 wording). The app still warns the first time someone turns on skipping permissions or full auto, but a new user who never does won't see it. It could move into the buddy's welcome tour if you want it somewhere."
+    },
+    {
+      "id": "P5-3", "surface": "First-run setup", "path": "The logo at the top of every setup step",
+      "headline": "Which logo should setup use?",
+      "variants": [
+        {"id": "icon", "label": "With the icon (now)", "crop": "logo-icon",
+         "summary": "The approved side-by-side lockup: glass icon, name, tagline tucked by the 'y'."},
+        {"id": "stack", "label": "Name, tagline under", "crop": "logo-stack",
+         "summary": "No icon; 'youcoded' bigger with 'agents for everyone' centred under it (the stacked lockup's spacing)."},
+        {"id": "tuck", "label": "Name, tagline tucked", "crop": "logo-tuck",
+         "summary": "No icon; the same tucked tagline as the side-by-side lockup."},
+        {"id": "name", "label": "Name only", "crop": "logo-name",
+         "summary": "Just 'youcoded', larger; no tagline.",
+         "risk": "The tagline never appears during setup."}
+      ]
+    }
+  ]
+}

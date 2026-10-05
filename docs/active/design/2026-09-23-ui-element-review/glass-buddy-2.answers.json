@@ -1,0 +1,24 @@
+{
+ "deck": "glass-buddy-2",
+ "started": "2026-10-05T04:35:28.654Z",
+ "submitted": "2026-10-05T04:36:52Z",
+ "cur": 1,
+ "answers": {
+  "GB2-1": {
+   "note": "the shadow/glow seems to cover the feet/hands? they look different from the body a bit",
+   "t": 1791174968760,
+   "v": "other",
+   "seconds": 40,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GB2-2": {
+   "note": "i think the hands/feet need to look like a continuation of the same background used for the body. ",
+   "t": 1791175011577,
+   "v": "other",
+   "seconds": 43,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

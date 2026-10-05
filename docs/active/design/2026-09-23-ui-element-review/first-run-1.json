@@ -1,0 +1,257 @@
+{
+ "title": "First-run setup \u2014 the brand rebuild, first look",
+ "key": "first-run-1",
+ "out": "first-run-1.review.html",
+ "images": "images/first-run-1",
+ "runs": {
+  "before": "r/before",
+  "after": "r/after"
+ },
+ "themes": [
+  "light"
+ ],
+ "crops": {
+  "install": [
+   "x",
+   "install",
+   "1440x900+0+0"
+  ],
+  "failed": [
+   "x",
+   "failed",
+   "1440x900+0+0"
+  ],
+  "signin": [
+   "x",
+   "signin",
+   "1440x900+0+0"
+  ],
+  "signin-b": [
+   "x",
+   "signin-b",
+   "1440x900+0+0"
+  ],
+  "signin-c": [
+   "x",
+   "signin-c",
+   "1440x900+0+0"
+  ],
+  "devmode": [
+   "x",
+   "devmode",
+   "1440x900+0+0"
+  ],
+  "w0": [
+   "x",
+   "w0",
+   "1440x900+0+0"
+  ],
+  "w1": [
+   "x",
+   "w1",
+   "1440x900+0+0"
+  ],
+  "w2": [
+   "x",
+   "w2",
+   "1440x900+0+0"
+  ],
+  "w3": [
+   "x",
+   "w3",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R-1",
+   "surface": "First-run setup",
+   "path": "The first screen after installing: 'getting things ready'",
+   "crop": "install",
+   "headline": "The new logo, brand lavender, an Outfit heading, and one line with a bar instead of the tool list.",
+   "changed": "The plain 'YouCoded' title is now the stacked logo (glass icon, 'youcoded', 'agents for everyone'). The screen is lavender, the heading is in the logo's font, the list of tools is gone, and the bar is the purple-to-pink gradient with no percentage.",
+   "notice": "A new user sees the brand first and only has to read 'Getting things ready \u2014 Step 2 of 2'. Tool names appear only if one fails.",
+   "risk": "Someone who wants to know what is being installed can't see it until something goes wrong."
+  },
+  {
+   "id": "R-2",
+   "surface": "First-run setup",
+   "path": "When a step fails (here: Git on a Windows computer without winget)",
+   "crop": "failed",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "New"
+   },
+   "highlight": {
+    "box": [
+     33,
+     54,
+     34,
+     13
+    ]
+   },
+   "headline": "A failure says 'Setup stopped', one plain sentence and Retry; the long message is behind 'Show details'.",
+   "changed": "The bar disappears while setup is stopped. The app's standard error card says 'Git couldn't be installed.' with Retry, and the full technical text (the winget message with its web link) folds out under 'Show details'.",
+   "notice": "No more red paragraph with a raw web address on the very first screen.",
+   "risk": "The button says 'Retry', the app's standard word, not 'Try again'."
+  },
+  {
+   "id": "R-3",
+   "surface": "First-run setup",
+   "path": "The sign-in step",
+   "headline": "Which sign-in layout explains plans, pay-as-you-go and local models best?",
+   "variants": [
+    {
+     "id": "A",
+     "label": "A \u00b7 Three cards",
+     "crop": "signin",
+     "summary": "Every choice visible at once: each kind gets a card with Cost, Privacy and Good for, and its own buttons inside.",
+     "risk": "The tallest version; on a small laptop screen the last card and the backup warning need a scroll."
+    },
+    {
+     "id": "B",
+     "label": "B \u00b7 Pick a kind first",
+     "crop": "signin-b",
+     "summary": "Three short rows; clicking one opens its facts and buttons (right half of the picture shows 'Pay as you go' opened), with Back.",
+     "risk": "One extra click, and you can't compare the facts side by side."
+    },
+    {
+     "id": "C",
+     "label": "C \u00b7 Comparison table",
+     "crop": "signin-c",
+     "summary": "One wide table: a column per kind, a row each for Cost, Privacy, Good for, buttons at the foot of each column.",
+     "risk": "Wider than every other setup screen, and the text is cramped into narrow columns."
+    }
+   ]
+  },
+  {
+   "id": "R-4",
+   "surface": "First-run setup",
+   "path": "The Windows Developer Mode step (Windows only)",
+   "crop": "devmode",
+   "headline": "The Windows Developer Mode step gets the same logo, heading and card; its words are unchanged.",
+   "changed": "Heading 'One Windows setting', the explanation and button in the app's normal card.",
+   "notice": "Same step as before, now matching the rest of setup.",
+   "risk": ""
+  },
+  {
+   "id": "R-5",
+   "surface": "New session screen",
+   "path": "The 'Start your first session' screen right after setup",
+   "headline": "Which first 'Start your first session' screen should follow setup?",
+   "variants": [
+    {
+     "id": "W0",
+     "label": "Today",
+     "crop": "w0",
+     "summary": "The theme's own buddy (the grey robot on the default themes), app font heading."
+    },
+    {
+     "id": "W1",
+     "label": "W1 \u00b7 Outfit heading only",
+     "crop": "w1",
+     "summary": "Only the heading changes to the logo's font; the theme's buddy stays.",
+     "risk": "The jump from lavender setup to a grey screen is still obvious."
+    },
+    {
+     "id": "W2",
+     "label": "W2 \u00b7 Lavender continues",
+     "crop": "w2",
+     "summary": "This first screen keeps setup's lavender and shows the glass app icon; from the next screen on, the app is in its normal theme.",
+     "risk": "The very next screen changes colour, so the jump happens one step later instead."
+    },
+    {
+     "id": "W3",
+     "label": "W3 \u00b7 Glass icon, theme colours",
+     "crop": "w3",
+     "summary": "The app's normal colours, but the glass app icon replaces the robot on this first screen only.",
+     "risk": "The buddy you'll meet in the app isn't shown here; it appears later as the theme's companion."
+    }
+   ]
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "First-run setup",
+   "path": "How setup gets Node.js and Git on Windows",
+   "headline": "Bundle Node.js and Git inside YouCoded, or download them during setup?",
+   "today": "Setup installs Node.js and Git through winget, Windows' installer tool. Without winget, setup stops (your screenshot). The Git install through winget can also pop up a Windows admin prompt.",
+   "problem": "You asked why they aren't simply bundled. Bundling works, but costs every user: the download grows by roughly 80\u2013100 MB (Node.js about 30 MB, Git about 60 MB), they can only be updated when YouCoded ships an update, and Git's licence requires us to publish where its source code lives. Most Macs and Linux computers already have Git, so the size would mostly be wasted there.",
+   "proposal": "Three ways. I recommend downloading YouCoded's own copies during setup.",
+   "options": [
+    {
+     "id": "download",
+     "label": "Download own copies",
+     "recommended": true,
+     "summary": "If Node.js or Git is missing, setup downloads the official ready-to-run versions into YouCoded's own folder. No winget, no admin prompt.",
+     "pros": [
+      "Works on every Windows computer, including school and work ones.",
+      "No admin popup in the middle of setup.",
+      "Small app download; only people missing a tool download it."
+     ],
+     "cons": [
+      "Needs internet during setup (it already does, to sign in).",
+      "Other programs on the computer don't see these copies; only YouCoded uses them."
+     ]
+    },
+    {
+     "id": "fallback",
+     "label": "Winget first, download if missing",
+     "pros": [
+      "People with winget get a normal system-wide install other programs can use."
+     ],
+     "cons": [
+      "Two paths to keep working; the winget path keeps its admin prompt."
+     ]
+    },
+    {
+     "id": "bundle",
+     "label": "Bundle in the app",
+     "pros": [
+      "Setup needs no download for these at all."
+     ],
+     "cons": [
+      "About 80\u2013100 MB more for every download and every user, even those who already have them.",
+      "Security fixes in Git or Node.js wait for a YouCoded release."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "First-run setup",
+   "path": "The small text on every setup screen",
+   "headline": "Should setup's small text use the logo's font too?",
+   "today": "Headings use Outfit (your earlier answer); the smaller lines use the app's own font, a code-style font where every letter is the same width.",
+   "problem": "In the pictures the code-style lines sit next to the rounded Outfit headings and look like two different products.",
+   "proposal": "Two ways.",
+   "options": [
+    {
+     "id": "outfit-all",
+     "label": "Outfit for all setup text",
+     "recommended": true,
+     "pros": [
+      "Setup reads as one designed piece, like the logo boards.",
+      "Softer and easier for non-technical people."
+     ],
+     "cons": [
+      "The app that opens after uses its own font, so the text style changes there."
+     ]
+    },
+    {
+     "id": "app-font",
+     "label": "Keep the app's font",
+     "pros": [
+      "Setup's small text matches the app that opens after it."
+     ],
+     "cons": [
+      "The code-style font next to Outfit headings looks mismatched."
+     ]
+    }
+   ]
+  }
+ ]
+}

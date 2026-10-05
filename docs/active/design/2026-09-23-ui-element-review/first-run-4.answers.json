@@ -1,0 +1,32 @@
+{
+ "deck": "first-run-4",
+ "started": "2026-10-05T02:36:47.352Z",
+ "submitted": "2026-10-05T02:39:12Z",
+ "cur": 2,
+ "answers": {
+  "P4-1": {
+   "v": "yes",
+   "t": 1791167852181,
+   "note": "i also don't like our step 1 of 2 copy. what does that mean? can we also add one of our loading spinners to the left of whatever the main text is above the loading bar. ",
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P4-2": {
+   "note": "remove the copy at the bottom about backups. this is a weird place for that warning. update the \"you can add others later\" to \"you can change this at any time\". move that line to where the remove bottom copy was",
+   "t": 1791167916776,
+   "v": "other",
+   "seconds": 65,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P4-3": {
+   "v": "yes",
+   "t": 1791167951349,
+   "note": "can we try a few where se drop the icon and just use the brand name/tagline?",
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

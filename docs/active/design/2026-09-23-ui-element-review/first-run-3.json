@@ -1,0 +1,85 @@
+{
+  "title": "First-run setup — round 3",
+  "key": "first-run-3",
+  "out": "first-run-3.review.html",
+  "images": "images/first-run-3",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {
+    "logo": ["x", "logo", "420x140+0+0"],
+    "install": ["x", "install", "1440x900+0+0"],
+    "failed": ["x", "failed", "1440x900+0+0"],
+    "signin": ["x", "signin", "1440x900+0+0"],
+    "cb-done": ["x", "cb-done", "1440x900+0+0"],
+    "cb-failed": ["x", "cb-failed", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "P3-1",
+      "surface": "First-run setup",
+      "path": "The logo at the top of every setup screen",
+      "crop": "logo",
+      "labels": {"before": "Approved board (round 26, C)", "after": "Setup now"},
+      "headline": "The logo now matches your approved board: the tagline sits lower, with clear space under the name.",
+      "changed": "Found the cause: the brand boards only had Outfit's semibold weight loaded, so every tagline you approved was drawn semibold. Mine used the lighter weight with fixed ratios. The logo is now laid out and measured exactly the way the board drew it, and the tagline is semibold.",
+      "notice": "Same spacing as the board you picked; setup just shows it a little bigger.",
+      "risk": "The brand notes say the tagline is regular weight; the website and other places should use semibold too, to match what you approved. I'll tell the brand session."
+    },
+    {
+      "id": "P3-2",
+      "surface": "First-run setup",
+      "path": "The 'getting things ready' screen (before = last round)",
+      "crop": "install",
+      "headline": "The install screen with the corrected logo.",
+      "changed": "Only the logo changed since last round.",
+      "notice": "The tagline no longer crowds the name.",
+      "risk": ""
+    },
+    {
+      "id": "P3-3",
+      "surface": "First-run setup",
+      "path": "When a step fails (before = last round)",
+      "crop": "failed",
+      "headline": "A square error mark sits directly left of 'Setup stopped' and the sentence under it.",
+      "changed": "The round red disc above the title became a rounded square beside it; the title and sentence are left-aligned next to it. Retry and 'Show details' are unchanged.",
+      "notice": "Reads like a notice with a clear next step.",
+      "risk": ""
+    },
+    {
+      "id": "P3-4",
+      "surface": "First-run setup",
+      "path": "The sign-in step: the three rows (left), and 'Pay as you go' opened (right)",
+      "crop": "signin",
+      "runs": ["after"],
+      "labels": {"after": "Chosen layout"},
+      "highlight": {"box": [0, 0, 100, 100]},
+      "headline": "Sign-in is your pick B only: the three rows, then one kind's facts and logo buttons.",
+      "changed": "The all-open version is removed. Nothing else changed.",
+      "notice": "This is what every new user sees to choose how their assistant runs.",
+      "risk": ""
+    },
+    {
+      "id": "P3-5",
+      "surface": "Browser sign-in",
+      "path": "The browser tab after signing in to ChatGPT or OpenRouter",
+      "crop": "cb-done",
+      "headline": "The page your browser shows after signing in gets the brand: lavender, the logo, a white card with a green check.",
+      "changed": "Before, a grey page with one line of plain text. Now the logo, 'You're signed in to ChatGPT' (or OpenRouter) and 'You can close this tab and return to YouCoded.' The icon and font are built into the page, so it loads nothing from the internet.",
+      "notice": "Signing in feels like part of YouCoded instead of a leftover web page.",
+      "risk": "Claude's own sign-in page belongs to Anthropic, so it can't be changed; Claude users still see theirs."
+    },
+    {
+      "id": "P3-6",
+      "surface": "Browser sign-in",
+      "path": "The browser tab when a sign-in didn't finish",
+      "crop": "cb-failed",
+      "runs": ["after"],
+      "labels": {"after": "New"},
+      "highlight": {"box": [35, 49, 30, 12]},
+      "headline": "A failed or timed-out sign-in shows the same page with the square error mark and what to do.",
+      "changed": "'Sign-in didn't finish' (or 'Sign-in timed out') with the existing explanation under it.",
+      "notice": "Same look as setup's failure card.",
+      "risk": ""
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+ "deck": "first-run-questions",
+ "started": "2026-10-05T01:32:50.974Z",
+ "submitted": "2026-10-05T01:36:41Z",
+ "cur": 3,
+ "answers": {
+  "B-1": {
+   "v": "picks",
+   "seconds": 20,
+   "theme": "golden-sunbreak",
+   "t": 1791164035291,
+   "picks": [
+    "lockup",
+    "brand-colours"
+   ]
+  },
+  "B-2": {
+   "v": "pick",
+   "seconds": 20,
+   "theme": "golden-sunbreak",
+   "t": 1791164035291,
+   "pick": "brand-light"
+  },
+  "B-3": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "golden-sunbreak",
+   "t": 1791164035291
+  },
+  "L-1": {
+   "v": "pick",
+   "seconds": 39,
+   "theme": "golden-sunbreak",
+   "t": 1791164148207,
+   "pick": "plain-line"
+  },
+  "L-2": {
+   "v": "yes",
+   "seconds": 39,
+   "theme": "golden-sunbreak",
+   "t": 1791164148207
+  },
+  "L-3": {
+   "v": "other",
+   "seconds": 39,
+   "theme": "golden-sunbreak",
+   "t": 1791164148207,
+   "note": "i might want to explore making this first sign-in experience a bit more explanatory and interesting. like walk the users quickly through the differences between a plan, an api key, and local models in terms of cost/privacy/etc. we should assume many app users have never messed with api or local llms. "
+  },
+  "E-1": {
+   "v": "other",
+   "dk": true,
+   "t": 1791164185492,
+   "note": "could we just start bundling these directly in the app? any reason we don't? what do oyu recommend?",
+   "seconds": 19,
+   "theme": "golden-sunbreak"
+  },
+  "E-2": {
+   "v": "yes",
+   "t": 1791164185492,
+   "seconds": 19,
+   "theme": "golden-sunbreak"
+  },
+  "C-1": {
+   "v": "yes",
+   "t": 1791164200356,
+   "seconds": 8,
+   "theme": "golden-sunbreak"
+  },
+  "C-2": {
+   "v": "yes",
+   "t": 1791164200356,
+   "seconds": 8,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "deck": "first-run-3",
+ "started": "2026-10-05T02:31:30.622Z",
+ "submitted": "2026-10-05T02:33:37Z",
+ "cur": 5,
+ "answers": {
+  "P3-1": {
+   "v": "yes",
+   "t": 1791167510267,
+   "seconds": 20,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P3-2": {
+   "v": "yes",
+   "t": 1791167560445,
+   "note": "i still think the brand stuff can be bigger and sit at a fixed upwards of center position. then the loading/action/etc menus a bit further below it",
+   "seconds": 50,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P3-3": {
+   "note": "center the text/exclamation stuff",
+   "t": 1791167577310,
+   "v": "other",
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P3-4": {
+   "v": "yes",
+   "t": 1791167603813,
+   "seconds": 27,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P3-5": {
+   "v": "yes",
+   "t": 1791167612979,
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P3-6": {
+   "v": "yes",
+   "t": 1791167616731,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

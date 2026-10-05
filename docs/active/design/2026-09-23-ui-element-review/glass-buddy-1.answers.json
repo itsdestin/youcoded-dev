@@ -1,0 +1,24 @@
+{
+ "deck": "glass-buddy-1",
+ "started": "2026-10-05T04:21:30.148Z",
+ "submitted": "2026-10-05T04:23:23Z",
+ "cur": 1,
+ "answers": {
+  "GB-1": {
+   "note": "can we make the outline width thinner to match the icon? also the icon definitely seems more colorful/saturated than this buddy render? can we fix?",
+   "t": 1791174176361,
+   "v": "yes",
+   "seconds": 69,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GB-2": {
+   "v": "yes",
+   "seconds": 44,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1791174202950,
+   "note": "buddy bigger compared to text. text slightly smaller than it is now"
+  }
+ }
+}

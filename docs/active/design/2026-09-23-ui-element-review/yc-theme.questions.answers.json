@@ -1,0 +1,48 @@
+{
+ "deck": "yc-theme-questions",
+ "started": "2026-10-05T03:28:41.115Z",
+ "submitted": "2026-10-05T03:29:37Z",
+ "cur": 0,
+ "answers": {
+  "T-1": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1791170976963,
+   "seconds": 9,
+   "theme": "cotton-candy-sky"
+  },
+  "T-2": {
+   "v": "pick",
+   "pick": "picture",
+   "t": 1791170976963,
+   "seconds": 9,
+   "theme": "cotton-candy-sky"
+  },
+  "T-3": {
+   "v": "yes",
+   "t": 1791170976963,
+   "seconds": 9,
+   "theme": "cotton-candy-sky"
+  },
+  "T-4": {
+   "v": "pick",
+   "pick": "full",
+   "t": 1791170976963,
+   "seconds": 9,
+   "theme": "cotton-candy-sky"
+  },
+  "T-5": {
+   "v": "yes",
+   "t": 1791170976963,
+   "seconds": 9,
+   "theme": "cotton-candy-sky"
+  },
+  "T-6": {
+   "v": "no",
+   "t": 1791170976963,
+   "note": "build both here probabbly. reuse what you can from the brand branch tho",
+   "seconds": 9,
+   "theme": "cotton-candy-sky"
+  }
+ }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "The glass buddy",
+  "key": "glass-buddy-1",
+  "out": "glass-buddy-1.review.html",
+  "images": "images/glass-buddy-1",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light", "dark"],
+  "crops": {"sheet": ["x", "sheet", "1280x512+0+0"], "welcome": ["x", "welcome", "1440x900+0+0"]},
+  "steps": [
+    {
+      "id": "GB-1", "surface": "Mascot", "path": "The buddy in four of its faces: YouCoded on top, YouCoded Night below, the app icon on the left",
+      "crop": "sheet", "runs": ["after"], "labels": {"after": "Glass buddy"}, "highlight": {"box": [0, 0, 100, 100]},
+      "headline": "The buddy redrawn in the app icon's glass style, in every face it has.",
+      "changed": "Same body, arms, legs and poses as today's buddy, so it still waves, peeks, gets curious or shocked, and naps. Its body shows the theme's own picture blurred, like the icon's face; a purple rim; the icon's dark oval eyes with a sparkle and its soft smile. The night version uses the night picture and a lighter rim.",
+      "notice": "Shown: resting, waving, curious, shocked. Dizzy, blink, happy and asleep are drawn the same way.",
+      "risk": "The light buddy is paler than the icon: the icon's face shows Cotton Candy Sky's picture, this one shows the YouCoded picture. It can be tinted deeper."
+    },
+    {
+      "id": "GB-2", "surface": "New session screen", "path": "The first screen after setup (Dark shows YouCoded Night)",
+      "crop": "welcome",
+      "headline": "The welcome screen with the glass buddy waving beside the heading.",
+      "changed": "The grey robot is replaced by the glass buddy in both YouCoded themes. Other themes keep their own mascots.",
+      "notice": "The same buddy appears in the floating buddy window and the guided tour.",
+      "risk": ""
+    }
+  ]
+}

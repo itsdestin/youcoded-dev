@@ -1,0 +1,19 @@
+{
+  "title": "Welcome screen — text lower",
+  "key": "glass-buddy-6",
+  "out": "glass-buddy-6.review.html",
+  "images": "images/glass-buddy-6",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {"head": ["x", "head", "900x320+0+0"]},
+  "steps": [
+    {
+      "id": "GB6-1", "surface": "New session screen", "path": "The buddy and heading (close-up at your 1.5x scale)",
+      "crop": "head",
+      "headline": "The text sits about 8px lower beside the buddy.",
+      "changed": "The heading now lines up with the lower half of the buddy's eyes, the line under it with its mouth and feet.",
+      "notice": "Say 'lower' or 'higher' again in the note if it needs one more step.",
+      "risk": ""
+    }
+  ]
+}

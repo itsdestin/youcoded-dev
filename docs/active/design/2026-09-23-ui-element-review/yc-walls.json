@@ -1,0 +1,43 @@
+{
+  "title": "YouCoded theme — the picture behind everything",
+  "key": "yc-walls",
+  "out": "yc-walls.review.html",
+  "images": "images/yc-walls",
+  "runs": {"after": "r/after"},
+  "themes": ["light"],
+  "crops": {"glow": ["x", "glow", "1280x1600+0+0"], "silk": ["x", "silk", "1280x1600+0+0"], "drift": ["x", "drift", "1280x1600+0+0"]},
+  "steps": [
+    {
+      "id": "YW-1",
+      "surface": "YouCoded theme", "path": "The picture behind the chat and panels: YouCoded on top, YouCoded Night underneath",
+      "headline": "Which picture should the YouCoded themes use? Each shows the light version above the night one.",
+      "variants": [
+        {"id": "glow", "label": "Glow", "crop": "glow",
+         "summary": "Large soft glows of lavender, violet and pink blending into each other, like setup's background but richer.",
+         "risk": "The calmest; may read as plain once panels cover most of it."},
+        {"id": "silk", "label": "Silk", "crop": "silk",
+         "summary": "Long flowing ribbons of violet and pink with a faint sheen, crossing the picture."},
+        {"id": "drift", "label": "Drift", "crop": "drift",
+         "summary": "A soft violet sky with floating out-of-focus lights.",
+         "risk": "The busiest behind see-through panels; text sits over the lights."}
+      ]
+    },
+    {
+      "id": "YW-2", "words": true,
+      "surface": "YouCoded theme", "path": "Where the picture comes from",
+      "headline": "These are drawn by the app's own code, so YouCoded owns them outright. Is an abstract picture right, or do you want an illustrated scene?",
+      "today": "Cotton Candy Sky's picture is an artist's illustration (a girl on a cliff under a big moon). We don't know who drew it, so it can't be the default theme's picture.",
+      "problem": "Abstract pictures are safe and calm, but less charming than an illustrated scene.",
+      "proposal": "Two ways.",
+      "options": [
+        {"id": "abstract", "label": "Abstract, from above", "recommended": true,
+         "pros": ["Owned outright; ready now.", "Calm behind text; works at any window size."],
+         "cons": ["No story or character in it."]},
+        {"id": "scene", "label": "An illustrated scene",
+         "summary": "A purple scene made for YouCoded: commissioned from an illustrator, or generated with an image tool and checked for its licence.",
+         "pros": ["Charming and memorable, like Cotton Candy Sky."],
+         "cons": ["Takes longer and may cost money; a generated image's licence must allow shipping it in the app."]}
+      ]
+    }
+  ]
+}

@@ -50,8 +50,9 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
 ## Status (2026-10-04)
 
 All work is on `session/ui-consistency-audit` (workspace and app), committed and pushed.
-Nothing is on master. **The app's master has moved ~335 commits since this branch last
-merged it** — merging master in is a required step before the final review.
+Nothing is on master. **Master was merged into both branches on 2026-10-04** (app 335
+commits, workspace 217; conflicts settled, full verify green afterwards); merge it again
+before the final review.
 
 **Done**
 - Element inventory, second audit and completeness check (`inventory/`, `audit/`).
@@ -80,7 +81,18 @@ merged it** — merging master in is a required step before the final review.
   left overwrote the one on screen (now only the newest read lands; pinned by a test); a
   failed tag refresh is reported on both tag editors (tested); two load-sensitive tests
   corrected (App import warmed in `beforeAll`; the random-replies budget named).
-- Tooling: `SHOOT_SCALE` for screenshots at a screen's pixel density.
+- **First run, welcome and the YouCoded themes (2026-10-04):** setup rebuilt on the brand
+  (stacked name, lavender surface, plain install line + spinner, failure card with Retry and
+  details, sign-in that explains plan / pay-as-you-go / local with company logos, fits every
+  window size); ChatGPT and OpenRouter browser sign-in pages branded; first-time welcome is
+  D1 with the buddy beside the heading; new built-in themes **YouCoded / YouCoded Night**
+  (drawn wallpaper, glass panels, Outfit, default for new installs only) with the **glass
+  buddy**; header dividers use the card-outline colour. Backlog 12 and 16 done; 18 filed
+  (the backup warning's new home). Records: `decisions.md` (First-run … Glass buddy rows).
+- Tooling: `SHOOT_SCALE` for screenshots at a screen's pixel density;
+  `scripts/brand/glass-buddy.py` (glass buddy rig from a theme picture) and
+  `scripts/brand/theme-walls.html` (the theme pictures); `theme-previews.py` knows the new
+  built-ins.
 
 **Earlier bug list (2026-09-24) — status not re-checked this session; verify in the final
 review:** Add a project / Import file close buttons; hovered vs selected rows; two
@@ -96,10 +108,9 @@ review, Android, phone login).
 
 ## Remaining steps
 
-1. **Redesign backlog** (`redesign-backlog.md`), next up first: **16 first-run installer
-   screens** and **12 welcome / new session screen** (Destin, 2026-10-04); then 9 Marketplace
-   detail pages, 10 project switcher (rows, deleting projects), 11 games lobby/friends, 13
-   submit a ticket, 17 close session prompt's editor.
+1. **Redesign backlog** (`redesign-backlog.md`): 9 Marketplace detail pages, 10 project
+   switcher (rows, deleting projects), 11 games lobby/friends, 13 submit a ticket, 17 close
+   session prompt's editor, 18 a home for the backup warning.
 2. **Close the guide's gaps** above with visual decision pages; re-run the completeness
    check.
 3. **Complete the guide** from all decisions; Destin approves it section by section and as a
@@ -110,8 +121,8 @@ review, Android, phone login).
    judges each. A miss changes the guide (approved), and a fresh builder retries.
 6. **Publish:** replace the old guide at its path, archive the old one, update pointers
    (MAP, feature-flow rule, UI-review README, Pages builder).
-7. **Merge current master into the branch** (~335 app commits behind on 2026-10-04) and
-   re-run everything.
+7. **Merge current master into the branch again** (first merged 2026-10-04) and re-run
+   everything.
 8. **Final review:** fresh code reviewer over the whole branch, full desktop suite, Android
    tests if the SDK is present, a final screenshot sweep, the 2026-09-24 bug list re-checked;
    then Destin decides on merging.

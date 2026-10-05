@@ -1,0 +1,117 @@
+{
+ "title": "YouCoded and YouCoded Night \u2014 first look in the app",
+ "key": "yc-theme-1",
+ "out": "yc-theme-1.review.html",
+ "images": "images/yc-theme-1",
+ "runs": {
+  "before": "r/before",
+  "after": "r/after"
+ },
+ "themes": [
+  "light",
+  "dark"
+ ],
+ "crops": {
+  "welcome": [
+   "x",
+   "welcome",
+   "1440x900+0+0"
+  ],
+  "chat": [
+   "x",
+   "chat",
+   "1440x900+0+0"
+  ],
+  "chat-terminal": [
+   "x",
+   "chat-terminal",
+   "1440x900+0+0"
+  ],
+  "settings": [
+   "x",
+   "settings",
+   "1440x900+0+0"
+  ],
+  "settings-appearance": [
+   "x",
+   "settings-appearance",
+   "1440x900+0+0"
+  ],
+  "projects": [
+   "x",
+   "projects",
+   "1440x900+0+0"
+  ],
+  "marketplace": [
+   "x",
+   "marketplace",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "YT-1",
+   "surface": "YouCoded theme",
+   "path": "The first screen after setup (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "welcome",
+   "headline": "The first-time welcome: your D1 form, mascot beside the heading, on the new picture.",
+   "changed": "Purple tokens tuned to pass every contrast check; the picture behind see-through panels (16px blur); Outfit for interface text, the code font kept for code and the terminal.",
+   "notice": "A new install opens in whichever of the two matches the computer's light or dark setting. People already using the app keep their theme.",
+   "risk": "The mascot is still today's grey robot; the glass buddy is the next design round."
+  },
+  {
+   "id": "YT-2",
+   "surface": "YouCoded theme",
+   "path": "A conversation (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "chat",
+   "headline": "Chat over the glow-and-silk picture with see-through panels; your messages in brand purple; text in Outfit.",
+   "changed": "Same theme; this screen shown for coverage.",
+   "notice": "Look for anything hard to read or out of place."
+  },
+  {
+   "id": "YT-3",
+   "surface": "YouCoded theme",
+   "path": "The terminal view (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "chat-terminal",
+   "headline": "The terminal sits on the pre-blurred picture; its text stays in the code font.",
+   "changed": "Same theme; this screen shown for coverage.",
+   "notice": "Look for anything hard to read or out of place."
+  },
+  {
+   "id": "YT-4",
+   "surface": "YouCoded theme",
+   "path": "Settings (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "settings",
+   "headline": "Settings panel cards over the blurred picture.",
+   "changed": "Same theme; this screen shown for coverage.",
+   "notice": "Look for anything hard to read or out of place."
+  },
+  {
+   "id": "YT-5",
+   "surface": "YouCoded theme",
+   "path": "Settings \u2192 Appearance (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "settings-appearance",
+   "headline": "YouCoded / YouCoded Night appear as built-in themes with their own preview pictures.",
+   "changed": "Same theme; this screen shown for coverage.",
+   "notice": "Look for anything hard to read or out of place."
+  },
+  {
+   "id": "YT-6",
+   "surface": "YouCoded theme",
+   "path": "Projects (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "projects",
+   "headline": "The Projects view in the new themes.",
+   "changed": "Same theme; this screen shown for coverage.",
+   "notice": "Look for anything hard to read or out of place."
+  },
+  {
+   "id": "YT-7",
+   "surface": "YouCoded theme",
+   "path": "Marketplace (before = Midnight, today's default; switch YouCoded / YouCoded Night with the light/dark buttons)",
+   "crop": "marketplace",
+   "headline": "The Marketplace in the new themes.",
+   "changed": "Same theme; this screen shown for coverage.",
+   "notice": "Look for anything hard to read or out of place."
+  }
+ ]
+}

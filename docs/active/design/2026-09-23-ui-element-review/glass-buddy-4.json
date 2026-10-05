@@ -1,0 +1,19 @@
+{
+  "title": "Welcome screen — buddy and text lined up",
+  "key": "glass-buddy-4",
+  "out": "glass-buddy-4.review.html",
+  "images": "images/glass-buddy-4",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {"head": ["x", "head", "900x320+0+0"]},
+  "steps": [
+    {
+      "id": "GB4-1", "surface": "New session screen", "path": "The buddy and heading on the first screen after setup (close-up at your 1.5x scale)",
+      "crop": "head",
+      "headline": "The whole buddy, head to feet, is now centred on the heading and line beside it.",
+      "changed": "The buddy's box centred its body, but its feet hang below, so the figure sat about 13px lower than the text. It's lifted by that much.",
+      "notice": "The top of the buddy's head and the heading start at nearly the same height, and its feet end level with the line under the heading.",
+      "risk": ""
+    }
+  ]
+}

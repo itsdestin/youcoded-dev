@@ -1,0 +1,35 @@
+{
+  "title": "First-run setup — stacked name, line back under the heading",
+  "key": "first-run-7",
+  "out": "first-run-7.review.html",
+  "images": "images/first-run-7",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {"install": ["x", "install", "1440x900+0+0"], "signin": ["x", "signin", "1440x900+0+0"], "failed": ["x", "failed", "1440x900+0+0"]},
+  "steps": [
+    {
+      "id": "P7-1", "surface": "First-run setup", "path": "The 'getting things ready' screen",
+      "crop": "install",
+      "headline": "No icon: 'youcoded' stacked over 'agents for everyone', bigger; the grey line is back under the heading, above the bar.",
+      "changed": "The stacked version you picked, at 88px, with the approved stacked board's spacing (checked side by side). Spinner and heading unchanged.",
+      "notice": "Sorry for the detour last round; I read 'bigger' as 'keep the icon'.",
+      "risk": ""
+    },
+    {
+      "id": "P7-2", "surface": "First-run setup", "path": "The sign-in step",
+      "crop": "signin",
+      "headline": "Sign-in with the stacked name.",
+      "changed": "Only the logo changed.",
+      "notice": "Same fixed spot on every step.",
+      "risk": ""
+    },
+    {
+      "id": "P7-3", "surface": "First-run setup", "path": "When a step fails",
+      "crop": "failed",
+      "headline": "The failure card with the stacked name.",
+      "changed": "Only the logo changed since you approved the card.",
+      "notice": "Every setup screen now carries the same logo.",
+      "risk": ""
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+ "deck": "first-run-8",
+ "started": "2026-10-05T03:15:17.489Z",
+ "submitted": "2026-10-05T03:15:36Z",
+ "cur": 2,
+ "answers": {
+  "P8-1": {
+   "v": "yes",
+   "t": 1791170126990,
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1.1
+  },
+  "P8-2": {
+   "v": "yes",
+   "t": 1791170130468,
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P8-3": {
+   "v": "yes",
+   "t": 1791170135941,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
