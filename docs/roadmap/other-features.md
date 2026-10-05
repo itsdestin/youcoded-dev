@@ -158,6 +158,18 @@ has passed ~8 items — graduate it to its own file.
       add a key. Revisit when Pages has sign-in, wider picture loading and background refresh
       `window-chrome` `desktop` `parked` `checked 2026-09-28`
 
+- [ ] Home page (Home Assistant) follow-ups deferred at the 2026-10-05 merge prep, never designed:
+      search across devices; selecting several devices at once in Edit (the Organise board Destin
+      picked has none); a scenes button on rooms with a single light; and see-through glass for
+      Framed-layout wallpaper themes such as Golden Sunbreak ("i want it to peek through to the real
+      theme background" — today only Floating/Minimalist layouts frost over the wallpaper)
+      `window-chrome` `desktop` `decision` `checked 2026-10-05`
+
+- [ ] Teach the page-builder skill the live device connection, camera video played by the app and
+      the see-through page background, so new pages can use them. Publish together with the app
+      release that carries them, like the Phase 2 connections update
+      `window-chrome` `all` `blocked` `checked 2026-10-05`
+
 - [ ] Pages on a phone: the page view opens with the list always beside the page and the same band
       as on desktop, and nobody has designed what that becomes at phone width — on a narrow remote
       browser it will be cramped or unusable. Needs its own small round (collapse the list, or hide
