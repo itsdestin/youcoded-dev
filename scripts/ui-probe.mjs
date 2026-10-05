@@ -60,6 +60,10 @@
 //     body with `overflow: hidden auto` — `window.scrollY` stays 0 and the
 //     element's rect never changes, so the screenshot shows the wrong place. Check
 //     `getComputedStyle(document.body).overflow` before trusting a scroll.
+//     Measured again 2026-10-04: `scrollY` read 8804 yet `--shot` still showed the
+//     FAQ, not the footer. To photograph one element, pin it instead —
+//     `el.style.cssText = 'position:fixed;left:0;right:0;top:300px;z-index:999'` —
+//     and crop by its rect (the footer crops in the brand-website decks).
 //   * Sections revealed by an intro animation sit at `opacity: 0` (the site's
 //     `body.intro-mode > section`) and the reveal runs on IntersectionObserver. A
 //     probe that does not let that observer fire photographs a blank page while the

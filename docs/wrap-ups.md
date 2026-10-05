@@ -855,3 +855,11 @@ recurred — the repetition is the data.
 - CI test builds failed once on two tests in other areas (`handoff-freshness-integration` on Linux, `sync-spaces-engine` on macOS) and passed on re-run; and master's ast-grep invariants fail (`buddy-show-refuses-before-creating`, `iframe-sandbox-no-allow-same-origin`) → checked later the same day: both invariants already pass on master (rule re-pointed in 3a10e51e after one-core); both tests passed 60/60 repeat runs on Linux, not reproducible — nothing to fix
 - Tahoe VM has no ready state; Ubuntu dock icon unverified → roadmap (dev-workspace rigs, themes)
 - deleted/merged: the old tray-mac*.png (four files, replaced by the -macTemplate pair) and ipc-handlers' icon block (moved whole into theme-icon-swap.ts)
+
+## 2026-10-04 — website logo + merge of the brand work (youcoded#605 #606, wecoded-themes#38, youcoded-dev#238 #239)
+- The icon branch sat 105 commits behind master through a long session and one-core moved `window:set-icon` into `ipc/window.ts` → four conflicts at merge time, resolved by porting the swap to `applyThemeIcons()`; verify --full + all-platform test build green → applied (no new guidance: verify.sh already warns when master moved)
+- ui-probe screenshots ignored a scroll the probe reported (`scrollY` 8804, shot showed the FAQ); three capture rounds wasted before pinning the element with `position:fixed` → applied: the pin recipe added to ui-probe's gotcha list
+- A tagline placed with `em` units landed on the name: an em on the tagline is its own (0.33×) size → applied: WHY comment at the rule in docs/index.html
+- The "master failures" reported last round were already fixed on master (rule re-pointed in 3a10e51e) → a subagent confirmed, nothing to change; ledger line corrected
+- Destin merged wecoded-themes without waiting for the app release, knowing 1.3.x users on macOS 26 see a flat theme icon in the Dock until then → recorded in the archived merge handoff
+- deleted/merged: the Sonoma Mac VM (46 GB), `docs/favicon.svg`, the empty `fix-master-checks` branch, and the round 1–4 branch (its specs + answers kept in `docs/archive/design/2026-10-01-brand-identity/`, ~98 MB of pictures dropped)
