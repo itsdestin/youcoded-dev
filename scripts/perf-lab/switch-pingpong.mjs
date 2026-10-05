@@ -547,8 +547,18 @@ async function seqProbe(ctx, kind, reps) {
       }
     }
   };
+  // Baseline: the same wheel tick (or key) with NO switch just before it, so a delay after a switch can be read against the delay at rest.
+  const idleProbes = [];
+  const baseline = async () => {
+    for (let rep = 0; rep < reps * 2; rep++) {
+      await sleep(400);
+      const nodeAt = Date.now();
+      if (kind === 'key') { const ch = letters[li++ % 26]; await cdp.evaluate(`(() => { const el = ${ctx.view === 'chat' ? `[...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]'))` : `document.querySelector('.terminal-overlay-scroll:not(.terminal-hidden) textarea')`}; if (el) el.focus(); return true; })()`); await key(cdp, 'keyDown', ch, `Key${ch.toUpperCase()}`, ch.toUpperCase().charCodeAt(0), { text: ch }); await key(cdp, 'keyUp', ch, `Key${ch.toUpperCase()}`, ch.toUpperCase().charCodeAt(0)); idleProbes.push({ ch, nodeAt }); }
+      else { await cdp.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: mid.x, y: mid.y, deltaX: 0, deltaY: -120 }); idleProbes.push({ nodeAt }); }
+    }
+  };
   const total = OFFSETS.length * reps * 2.6;
-  await withStream(ctx, total + 5, body);
+  await withStream(ctx, total + 5, async () => { await body(); await baseline(); });
   const R = await cdp.evaluate('window.__sw.read()');
   await cdp.evaluate('window.__sw.stop()').catch(() => {});
   const pds = R.ev.filter(e => e[0] === 'pointerdown' && e[3] === ids[roles.B]);
@@ -575,7 +585,8 @@ async function seqProbe(ctx, kind, reps) {
     const rs = results.filter(r => r.off === off);
     byOff[off] = { n: rs.length, lost: rs.filter(r => r.lost || !r.ok).length, queueDelayMs: summarise(rs.filter(r => r.ok).map(r => r.queueDelayMs)), echoMs: summarise(rs.map(r => r.echoMs)), actualOffsetMs: summarise(rs.filter(r => r.ok).map(r => r.actualOffsetMs)) };
   }
-  return { kind, offsets: OFFSETS, reps, note: kind === 'key' ? 'focus is forced onto the visible composer/terminal just before the key (after the pill click it naturally sits on the pill button: see focusBeforeForcedTag), so the numbers are main-thread availability, not focus behaviour' : undefined, naturalFocusAfterClick: (() => { const c = {}; for (const r of results) if (r.focusBeforeForcedTag !== undefined) c[r.focusBeforeForcedTag] = (c[r.focusBeforeForcedTag] ?? 0) + 1; return c; })(), byOffset: byOff, results, flags: R.flags };
+  const idleEv = R.ev.filter(e => e[0] === (kind === 'key' ? 'keydown' : 'wheel') && !e[3] && e[2] >= (pds.at(-1)?.[2] ?? 0) + 1500).map(e => e[1] - e[2]);
+  return { kind, offsets: OFFSETS, reps, idleBaselineQueueDelayMs: summarise(idleEv), note: kind === 'key' ? 'focus is forced onto the visible composer/terminal just before the key (after the pill click it naturally sits on the pill button: see focusBeforeForcedTag), so the numbers are main-thread availability, not focus behaviour' : undefined, naturalFocusAfterClick: (() => { const c = {}; for (const r of results) if (r.focusBeforeForcedTag !== undefined) c[r.focusBeforeForcedTag] = (c[r.focusBeforeForcedTag] ?? 0) + 1; return c; })(), byOffset: byOff, results, flags: R.flags };
 }
 
 async function seqProfile(ctx, worst) {
