@@ -29,14 +29,18 @@ Rewritten 2026-10-05 at merge prep. The code is the truth; this says where to lo
 
 **The Home page** (not shipped in the app; installed by hand): source is
 `youcoded/desktop/src/renderer/dev/workbench/fixtures/home-assistant-page*.ts` (page, -style, -look, -motion, -feel,
--redraw, -pending, -edit, -history, -live, -camera, -icons, -templates, -tv, -media, -lights, -climate, -drawer, -glass).
-Fake Home Assistant: `fixtures/fake-home-assistant.ts`. Unused options shelf: `fixtures/home-variants/`. What it does:
+-redraw, -pending, -edit, -history, -live, -camera, -icons, -templates, -tv, -media, -lights, -climate, -drawer, -glass,
+-tabs, -basic).
+Fake Home Assistant: `fixtures/fake-home-assistant.ts`. Options shelf (empty since merge prep): `fixtures/home-variants/`. What it does:
 Lights tab (a card per room, colour pop-up, scenes), Media tab, Climate, TV card with remote and app drawer,
 Cameras tab (all live) with events and play disc, Activity, Edit = Organise board, instant updates over the live
-socket. Decisions and answers: `docs/active/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
+socket, and every media player with no paired remote shows exactly the controls its supported_features allow
+(play/pause, stop, ±10 s, prev/next, volume or volume steps, mute, power, input; unpaired Google/Chromecast TVs get a
+"pair the remote" note) — `-basic.ts`, e00960ff0. Decisions and answers: `docs/active/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
 
 **Checks done:** three fresh code reviews (platform, Home page, tooling; fixes committed), earlier step reviews, a
-UX review (`docs/active/reviews/2026-10-05-ha-home-page-ux-review*.md`). Contract/grader/acceptance skipped on
+UX review (`docs/active/reviews/2026-10-05-ha-home-page-ux-review-2.md`, 17 fixed, U6/U12/U20 not, see its Triage).
+Phone access to the 7 page socket/video channels signed off by Destin (`tests/fixtures/phone-open-channels.json`). Contract/grader/acceptance skipped on
 Destin's call (`2026-10-04-home-redesign/home-redesign.contract.skipped.json`).
 
 ## Not verified on real hardware
@@ -50,6 +54,8 @@ Destin's call (`2026-10-04-home-redesign/home-redesign.contract.skipped.json`).
 - Touch drag in Edit and phone width; remote-browser video; Hue timing after the slider-target fix; the 429
   text match for Google back-off (back-off is page memory, a reload forgets it); picture stills across a real
   app restart.
+- The basic-controls pairing note's Google/Chromecast check (maker/model) and the Samsung (DLNA) controls while it is on;
+  the U17 `reading-flow` keyboard order inside Electron.
 - Android: unbuilt and untested, no JDK here. Android lists the new channels as not-implemented
   (`SessionService.kt`), so Pages there is unchanged.
 
