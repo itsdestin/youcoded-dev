@@ -1,0 +1,87 @@
+{
+  "title": "Marketplace detail pages — round 5",
+  "key": "marketplace-detail-5",
+  "out": "marketplace-detail-5.review.html",
+  "images": "images/marketplace-detail-5",
+  "runs": {
+    "today": "runs/mkd3-after",
+    "before": "runs/mkd4-after",
+    "after": "runs/mkd5-after"
+  },
+  "labels": {
+    "before": "Round 4",
+    "after": "Round 5"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "M5-1",
+      "surface": "Marketplace",
+      "path": "Marketplace → Connect your stuff → Google Workspace",
+      "crop": "marketplace/integration-detail",
+      "headline": "The integration page keeps the one-row top card you picked: tile, name and description, then the buttons.",
+      "changed": "The other two alignments are removed. Compared here with round 3's layout, since round 4 already showed this one.",
+      "notice": "The card is about a third shorter, and everything lines up on one centre line like the Account profile card.",
+      "runs": [
+        "today",
+        "after"
+      ],
+      "labels": {
+        "today": "Round 3",
+        "after": "Round 5"
+      }
+    },
+    {
+      "id": "M5-2",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Meadow Mist (installed)",
+      "crop": "marketplace/theme-detail",
+      "headline": "Theme page: no Installed pill, and the chips sit on one line that scrolls sideways when they don't fit.",
+      "changed": "The Installed pill is gone (Apply theme and Uninstall already say it). The chips no longer wrap; the row fades at the edge that has more.",
+      "notice": "Swipe, two-finger scroll or Shift + mouse wheel moves the chips; a normal wheel still scrolls the page. Plugin pages' chips scroll the same way.",
+      "risk": "A mouse user without Shift can't scroll the chips; the fade is the only hint there is more.",
+      "runs": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "id": "M5-3",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Cotton Candy Sky (not installed)",
+      "crop": "marketplace/theme-detail/not-installed",
+      "headline": "The same page for a theme you don't have: name, heart, star, share, the chips, then Install.",
+      "changed": "Nothing visible changed here from round 4 (a theme you don't have never showed the Installed pill, and its one chip fits). It follows the same rules as the installed page.",
+      "notice": "Install is full width at the top of the right column.",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          59,
+          30,
+          20,
+          20
+        ]
+      }
+    },
+    {
+      "id": "M5-4",
+      "surface": "Marketplace",
+      "path": "Marketplace on a phone (390 wide) → Meadow Mist",
+      "crop": "marketplace/theme-detail#phone",
+      "headline": "On a phone the theme page is one column; the Installed pill is gone from the name line.",
+      "changed": "Same top card as on a computer, above the picture and the colours.",
+      "notice": "Here every chip fits; when they don't, the row scrolls sideways with a swipe.",
+      "runs": [
+        "before",
+        "after"
+      ]
+    }
+  ]
+}

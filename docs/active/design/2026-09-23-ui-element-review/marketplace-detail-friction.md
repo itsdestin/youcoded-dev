@@ -214,3 +214,34 @@ App commit `7567c48bf`; deck `marketplace-detail-4.json` (before `runs/mkd3-afte
 - **`preview` renders only the first two themes** of a three-theme deck at the requested
   size, and leaves stale pages from other decks in the shared `preview/` folder (cleared it
   this round before reading).
+
+## Round 5 (2026-10-05) — after Destin's marketplace-detail-4 answers
+
+App commit `50ee98926`; deck `marketplace-detail-5.json` (before `runs/mkd4-after`,
+after `runs/mkd5-after`; step M5-1 compares with round 3, `runs/mkd3-after`, as `today`,
+because round 4 already showed the picked row layout).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R5-1 | Integration top card: `row` only; `block` removed from the code, `?integrationAlign=` gone. | M4-1. |
+| R5-2 | **No "Installed" pill on themes.** Plugins, skills and connections keep theirs. | M4-2 "remove th installed chip". Applied to themes only: plugin pages' pill was approved (MD-2) and decisions S-1 names "Installed" as the pill that "looks good". On a theme the Apply / Uninstall buttons already say it; "In use" stays because the buttons don't say that. |
+| R5-3 | **Every detail page's chip row is one line that scrolls sideways** — no scrollbar, edges fade only on the side with more (the Marketplace rails' treatment, 24px instead of 44px). Native sideways scrolling only: touch swipe, trackpad two-finger, Shift + mouse wheel. A plain vertical wheel is NOT translated. | M4-2 "chips can be scrollable left/right". **This refines decision G-9** ("the chip row never wraps: one line that fades out at its end") → "never wraps; scrolls sideways, fading at the edge that has more". Why no wheel translation: the rails don't do it, and turning vertical wheel into sideways scroll would trap the popup's own scrolling whenever the pointer crossed the row. Cost: a mouse user without Shift can't scroll the chips (said on M5-2). |
+| R5-4 | Wrap / facts / fewer drafts and `?themeChips=` removed; the heart/star/share stay on the name's line with word-only name wrapping. | M4-2. |
+
+### Tooling friction this round
+- **Correction to round 4:** `preview` renders all three themes when asked
+  (`--themes youcoded,youcoded-night,midnight`); without `--themes` it takes only the first two.
+  Not a bug, but the default silently skips a theme the deck carries.
+- **A deck can't name a third run.** Runs must be `today`, `before` or `after`, so comparing
+  with an older round meant borrowing `today` and relabelling it per slide.
+- **An approve slide with nothing changed is refused** ("nothing differs … name an element") —
+  correct, but the not-installed theme page genuinely didn't change; it needed a hand-placed box
+  and a "nothing visible changed" note to stay on the deck Destin asked for.
+- **Port 4717 still held** by `ha-pages-connection`'s `scripts/office-workbench-server.mjs`
+  (pid checked read-only, ~20 min old, so restarted by that session since round 4). Not stopped.
+- **Round 4's one-off full-suite failure did not reproduce**: 5 back-to-back full desktop runs
+  (`nice npx vitest run`, logs kept in the session scratchpad), plus verify's own full run —
+  6 of 6 green, 16,534 tests each. Without the original log the test cannot be named, so it is
+  reported, not fixed. The real gap is that verify discards the failing run's log.
+- verify this round: 8 of 9 PASS; `shoot --check` again blocked by the other session's port 4717.
+  Substitute: plain `shoot` of every marketplace and library screen, all opened (no look-alikes).

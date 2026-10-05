@@ -1,0 +1,31 @@
+{
+ "deck": "marketplace-detail-4",
+ "started": "2026-10-05T07:06:51.240Z",
+ "submitted": "2026-10-05T07:08:08Z",
+ "cur": 2,
+ "answers": {
+  "M4-1": {
+   "v": "pick",
+   "pick": "row",
+   "t": 1791184032106,
+   "seconds": 21,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M4-2": {
+   "note": "remove th installed chip. chips can be scrollable left/right.",
+   "t": 1791184073799,
+   "v": "other",
+   "seconds": 42,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M4-3": {
+   "v": "yes",
+   "t": 1791184087254,
+   "seconds": 13,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
