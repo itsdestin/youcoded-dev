@@ -255,6 +255,14 @@ shakedown. Fix what breaks, run it again, and only then record the result as a
 baseline. Ranking anything from a first run is how the rig ends up measuring itself
 (see *Reference numbers* → the retracted 3.3-second startup).
 
+Two more traps from 2026-10-04. **A fix can pass a timing leg without engaging at all**:
+the fence leg once reported a long-code-block fix as working while the fix was never used.
+Assert the mechanism (a non-zero count of the pieces the fix creates; the leg now fails on
+zero), not just the time. **A fake producer that does not behave like the real program
+produces false findings**: swallowed write errors, a blocking write loop that never reads
+stdin, and frames wider than the 80-column terminal gave three false findings in one night.
+When the app looks guilty, instrument the producer first.
+
 ---
 
 ## The two probes, and why there are two
@@ -274,7 +282,7 @@ not the conversation you are looking at, not the other five.
 
 `probe-ipc.mjs` measures that by pinging `window.claude.getPlatform()` every 100 ms and
 timing the round trip. That handler is literally `() => process.platform`
-(`ipc-handlers.ts:1387-1389`) — zero work — so every millisecond it reports is
+(`main/ipc/ui.ts, the platform:get entry`) — zero work — so every millisecond it reports is
 queueing and thread availability, never the cost of the handler itself. Its thresholds
 are chosen against what a person perceives: >100 ms a click feels laggy, >250 ms the UI
 feels stuck, >1000 ms the app looks frozen.
@@ -596,7 +604,7 @@ row is also no longer reproducible by default: `huge` was recalibrated to 3,500 
 **Mechanism, for the record:** `TranscriptWatcher.getHistory()`
 (`youcoded/desktop/src/main/transcript-watcher.ts:451-488`) does a synchronous
 `fs.readFileSync` of the entire transcript plus a full parse of every line, called from
-an IPC handler (`ipc-handlers.ts:2489`). The main process is single-threaded and serves
+an IPC handler (`main/ipc/session.ts, the session:history entry`). The main process is single-threaded and serves
 IPC for every session, so while it runs, nothing anywhere in the app can respond.
 
 ### Startup (status doc §3.4)
@@ -1051,7 +1059,7 @@ each would have silently produced a *plausible* wrong number rather than an erro
   GGUF basename without `.gguf`.
 
 **`window.claude.session.switch(id)` does nothing on desktop.** It is a parity stub
-that returns `{ ok: true }` and switches nothing (`ipc-handlers.ts:820-824` — "Switch
+that returns `{ ok: true }` and switches nothing (`main/ipc/session.ts, the session:switch entry` — "Switch
 is a client-side concern on desktop"). Timing it reports a ~0 ms switch that never
 happened, and screenshotting after it saves the *previous* conversation under the new
 name. Drive `window.__perfLab.switchTo(...)` from `scenario-workload.mjs` instead — it
