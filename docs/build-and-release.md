@@ -276,11 +276,15 @@ source is `youcoded/scripts/icons/brand-icons.html` (the glass icon from brand r
 Liquid Glass package `desktop/assets/icon.icon/`, the tray icons (one-colour `-macTemplate` pair on
 macOS) and the Android `mipmap-*` layers (needs Chrome, `rsvg-convert`, `magick`, Python with
 Pillow). `--themes <wecoded-themes checkout>` also writes each marketplace theme's icon set into
-`themes/<slug>/assets/app-icon/`. Sizes up to 48px come from a separate drawing with bigger eyes.
+`themes/<slug>/assets/app-icon/`; `--site docs/brand` writes only the website's per-theme icons
+(header, footer, browser tab; `youcoded/docs/brand/`). Sizes up to 48px come from a separate drawing with bigger eyes.
 **The Mac build needs Xcode 26+**: electron-builder compiles `icon.icon` with `actool`
 (`mac.icon` in `electron-builder.yml`). `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
-The RUNNING app swaps window, taskbar, Dock and tray icons per theme (`desktop/src/main/theme-icon-swap.ts`):
+The RUNNING app swaps window, taskbar, Dock and tray icons per theme (`window:set-icon` in
+`desktop/src/main/ipc/window.ts` → `applyThemeIcons` in `theme-icon-swap.ts`). The Windows taskbar
+button follows YouCoded's shortcuts, not the window, so `windows-taskbar-icon.ts` re-points them;
+a PINNED button changes only at the next Windows sign-in. Also:
 on macOS 26 the Dock follows the user's icon look (`app-icon.ts` → `chooseDockIcon`, the setting read
 in `mac-icon-look.ts`), and "no theme icon" hands the Dock back to the bundled Liquid Glass icon by
 passing `null` — never a flat file. `desktop/tests/app-icon-runtime.test.ts` pins that.

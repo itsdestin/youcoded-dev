@@ -1,9 +1,9 @@
 ---
 status: active
 ---
-# YouCoded brand identity — picks so far (rounds 5–18, 2026-10-01 → 10-02)
+# YouCoded brand identity — every pick (rounds 5–32, 2026-10-01 → 10-04) and where it is built
 
-**Every piece approved, one deck at a time** (last answer: `brand-identity-v26`, 2026-10-04). Every line
+**Every piece approved, one deck at a time** (last answers: `brand-identity-v31`, then the website's `brand-website-v2`, 2026-10-04). Every line
 below is a submitted deck answer (`brand-identity-v<N>.answers.json` beside this file). Applied to the app
 and themes on `session/brand-identity-v2`, and to the website on `session/brand-website` (see the end).
 
@@ -47,10 +47,11 @@ and themes on `session/brand-identity-v2`, and to the website on `session/brand-
   Morning Rounds use the **same recipe** (not the night look, not the dog ears). Built-in themes keep the default. (v27 THEMES yes, HALFTONE ha, MORNING ma)
 - The main app icon (window, taskbar button, Dock) changes with the theme, as well as the tray icon. (v27 HALFTONE note)
 - Mac: build the icon as three Liquid Glass layers (background, face, eyes+smile); older Macs get the flat version. (v27 GLASS yes)
-- Mac Dock with a theme on: picked "never swap", but asked for a middle ground (theme face on glass, not white) — open in v28. (v27 DOCK da + note)
+- Mac Dock with a theme on: picked "never swap", but asked for a middle ground (theme face on glass, not white) — settled in v28, next line. (v27 DOCK da + note)
 - Mac Dock with a theme on, by the Mac's icon look: **Default** → the theme's normal icon (white tile, theme face);
   **Dark and Clear** → the theme face on see-through clear glass (`mid1`); **Tinted** → no swap, the Liquid Glass icon stays.
-  Needs the app to read which look the Mac uses — still to be confirmed on a real Mac. (v28 DOCK note)
+  The app reads the look from the Mac's `AppleIconAppearanceTheme` setting; confirmed in the macOS 26 VM
+  (Destin: "icon switching works fine on mac!"). (v28 DOCK note)
 - Tray icon: **the app icon, shrunk** (`trT`), switching with the theme; red "needs you" dot stays. (v27 TRAY tc)
 - Mac menu bar: **one colour** (Apple's template style), **J1**: an outline face with full-size solid eyes, a sparkle cut into each eye's top right, and the eyes and
   smile raised 0.35 of the 12-unit face (`tmplJ(h, color, 'tr')` in `src27/boards.html`). (v28–v30 notes, v31 EYES j1) (v27 MENUBAR ka + note)
@@ -63,13 +64,16 @@ and themes on `session/brand-identity-v2`, and to the website on `session/brand-
   Explorer to force it was rejected (it closes the user's windows).
 
 ## Built (2026-10-04, branches `session/brand-identity-v2` in youcoded, wecoded-themes, workspace)
-- youcoded: `scripts/build-icons.mjs` + `scripts/icons/brand-icons.html` generate every icon; Liquid Glass
-  `icon.icon`; theme icon bundle → window, Windows taskbar, Mac Dock (by icon look, `mac-icon-look.ts`),
-  tray; J1 menu-bar template; Android launcher. CI test builds pass on all three desktops.
+- youcoded: `scripts/build-icons.mjs` + `scripts/icons/brand-icons.html` generate every icon (the shipping
+  renderer — the `src*/` folders here are the design rounds); Liquid Glass `icon.icon`; theme icon bundle
+  → window, Windows taskbar, Mac Dock (by icon look, `mac-icon-look.ts`), tray, via `window:set-icon`
+  (`desktop/src/main/ipc/window.ts` → `theme-icon-swap.ts`); J1 menu-bar template; Android launcher.
+  Brought up to date with master's one-core refactor on 2026-10-04 (verify.sh --full green).
 - wecoded-themes: seven themes carry `assets/app-icon/` + `appIconVariants`; versions bumped.
 - Tested by Destin in VMs: Windows (taskbar, Alt+Tab, tray), macOS 26 (theme icons in the Dock, the four
   looks). Not tested: Ubuntu dock (roadmap themes.md), Android launcher on a device.
 - Not applied yet: the grey icon and the "yc" initials (no surface uses them yet).
+- Merge order and what is left: `docs/active/handoffs/2026-10-04-brand-merge-START-HERE.md`.
 
 ## Website (2026-10-04, branch `session/brand-website` in youcoded + workspace; decks `brand-website-v1/v2`)
 - Top bar: icon + name WITH the tagline (side-by-side lockup, 44px icon; 40px on a phone). (v1 HEADER note, v2 HEADER yes)
@@ -77,13 +81,11 @@ and themes on `session/brand-identity-v2`, and to the website on `session/brand-
 - About / Features / FAQ in Outfit. (v1 SHARE note, v2 LINKS yes)
 - Tab icon: the app icon per site theme; tab title "youcoded — agents for everyone". (v1 TAB note, v2 TITLE b)
 - Name colours per theme as THEMECOL cc; Halftone pair (#C95A86 to #7A7BC8) picked the same way; dark themes
-  use the theme own light text for "coded". Icons: `youcoded/scripts/build-icons.mjs --site docs/brand`.
+  use the theme's own light text for "coded". Icons: `youcoded/scripts/build-icons.mjs --site docs/brand`.
 
 ## Where the drawings live
-- Final icon renderer: `src17/icons.html` (`face2`, `frost`, `smoke`, `box3`), shot by `src17/shoot-icons.sh`.
-- The final icon with the chosen mouth is `?i=sm2` (add `&t=<theme>` for a theme, `&small=1` for the 16–48px drawing).
-- Installer: `src16/icons.html?i=fv2`. Grey version: `src16/icons.html?i=gy2` (add the soft smile when building).
-
-## Not yet done
-- Producing the shipping files (`.ico`, `.icns`, Android icons, favicons) and putting the icon, installer icon and
-  logo into the app and website — waiting on Destin's go-ahead.
+- What ships: `youcoded/scripts/icons/brand-icons.html` (run by `youcoded/scripts/build-icons.mjs`). Change
+  an icon there, never in the round folders below.
+- Design rounds (history only): final icon `src17/icons.html` (`?i=sm2`, `&t=<theme>`, `&small=1`), installer
+  `src16/icons.html?i=fv2`, grey `src16/icons.html?i=gy2`, logo boards `src22/boards.html`, theme/tray/menu-bar
+  boards `src27/`.
