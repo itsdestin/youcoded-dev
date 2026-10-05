@@ -234,15 +234,20 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // the Marketplace footer strip ("Couldn't install …", role=status) reports the same failure
       // the detail page shows, and closing the page puts that failure away (marketplace-context),
       // so the strip rightly goes with it — that is the page closing, not a second layer.
-      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip' && l.kind !== 'status').map((l) => `${l.kind} "${l.name}"`);
-      const before = await layersNow();
+      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip' && l.kind !== 'status');
+      const label = (ls) => ls.map((l) => `${l.kind} "${l.name}"`);
+      const beforeLs = await layersNow();
+      const before = label(beforeLs);
       if (before.length) {
         await tab.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
         await tab.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
         await tab.still(2000);
-        const after = await layersNow();
-        const want = before.slice(1).join(' › ');
-        if (after.join(' › ') !== want) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        const afterLs = await layersNow();
+        const after = label(afterLs);
+        // Same layers by IDENTITY (explore-page.mjs `uid`), not by name: a layer still loading
+        // may rename itself during the 2 s wait without being a different layer.
+        const same = afterLs.length === beforeLs.length - 1 && afterLs.every((l, i) => l.uid === beforeLs[i + 1].uid);
+        if (!same) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
       }
     }
     r.ok = true;

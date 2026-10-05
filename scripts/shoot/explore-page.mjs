@@ -224,10 +224,17 @@ export function listLayers() {
   const markOf = (s) => ownFirst(s, '[data-screen]')?.getAttribute('data-screen') || '';
   // Covered = a HIGHER layer sits over this one's middle. (Not "the hit is outside it": a
   // dialog's own full-window wrapper lets the pointer through to its scrim.)
+  // `uid`: the same ELEMENT keeps the same number across calls. WHY (2026-10-05): a layer's
+  // name can change while it is open — the Office document panel is named by its text until
+  // its screen mark draws, then by the mark — so shoot --check's Escape test, comparing names,
+  // read "the panel under the dialog changed" as "Escape closed two layers" (1 run in 6, under
+  // load). Comparing uids asks the real question: is it the same layer?
+  const uids = (window.__layerUids ||= new WeakMap());
+  const uidOf = (e) => { if (!uids.has(e)) uids.set(e, (window.__layerUidNext = (window.__layerUidNext || 0) + 1)); return uids.get(e); };
   const layers = els.map((e, i) => {
     const r = e.getBoundingClientRect();
     const hit = document.elementFromPoint(Math.min(Math.max(r.left + r.width / 2, 1), innerWidth - 2), Math.min(Math.max(r.top + r.height / 2, 1), innerHeight - 2));
-    return { kind: kindOf(e), name: nameOf(e), screen: markOf(e), covered: !!hit && els.slice(0, i).some((o) => o.contains(hit)) };
+    return { kind: kindOf(e), name: nameOf(e), screen: markOf(e), uid: uidOf(e), covered: !!hit && els.slice(0, i).some((o) => o.contains(hit)) };
   });
   const inLayer = (m) => els.some((e) => e.contains(m));
   const base = [...new Set([...document.querySelectorAll('[data-screen]')].filter((m) => !inLayer(m) && m.parentElement && shown(m.parentElement)).map((m) => m.getAttribute('data-screen')))];

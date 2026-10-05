@@ -1,0 +1,255 @@
+{
+  "title": "Games: friends panel, sign-in and a slimmer lobby — round 1",
+  "key": "games-social-1",
+  "out": "games-social-1.review.html",
+  "images": "images/games-social-1",
+  "runs": {
+    "before": "runs/gs-before",
+    "after": "runs/gs-after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Draft"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "GS-1",
+      "surface": "Games",
+      "path": "Gamepad button, signed out",
+      "crop": "chat/games@420x560+1010+40",
+      "headline": "Signed out, Games opens with one sign-in card at the top, and Connect 4 and Chess are greyed until you sign in.",
+      "changed": "The banner moved to the top as a card: your sentence and a centred, filled Sign in. \"Flappy and 2048 play without an account\" is gone. Connect 4 and Chess are greyed.",
+      "notice": "Flappy and 2048 still play signed out. A greyed game can't be clicked; it still says \"Sign in to play\"."
+    },
+    {
+      "id": "GS-2",
+      "surface": "Games",
+      "path": "Gamepad button, signed in with four friends",
+      "crop": "chat/games#friends@420x560+1010+40",
+      "headline": "Signed in, your friends sit at the top of Games in one card, each with a status pill; games are below.",
+      "changed": "A friends card on top: you and Go incognito, a box to add a friend, then each friend with an Online, In game or Offline pill.",
+      "notice": "Everything about friends lives here now, not inside a game. The games sit below the card."
+    },
+    {
+      "id": "GS-3",
+      "surface": "Games",
+      "path": "Gamepad button, a friend request each way",
+      "crop": "chat/games#requests@420x560+1010+40",
+      "headline": "Friend requests join the same list: someone asking shows Accept and Decline, a request you sent shows Request sent and Cancel.",
+      "changed": "A request to you is the first row, with Accept and Decline; one you sent is the last, with Request sent and Cancel.",
+      "notice": "They used to be separate cards inside each game."
+    },
+    {
+      "id": "GS-4",
+      "surface": "Games",
+      "path": "Gamepad button, signed in, no friends yet",
+      "crop": "chat/games#no-friends@420x400+1010+40",
+      "headline": "With no friends yet, the card is just you, the add box and one grey line.",
+      "changed": "The line reads \"No friends yet. Add someone by their handle and they show up here.\" Before, Games said nothing about friends until you opened a game.",
+      "notice": "Connect 4 and Chess say \"No friends online\" and still open."
+    },
+    {
+      "id": "GS-5",
+      "surface": "Games",
+      "path": "Games → Chess, signed in with four friends",
+      "crop": "chat/games/chess/lobby#friends@520x330+910+40",
+      "headline": "A game's page is now just your friends, their status, your record against each, and Challenge.",
+      "changed": "Gone from the game page: your profile card, Add a friend, friend requests and the ⋯ menu. Each friend is one row: status pill, Challenge when they're online, and your record at this game in a column on the right.",
+      "notice": "Records line up on the right under \"Your record\"; a dash means you've never played them. Incoming challenges still appear at the top of this page.",
+      "risk": "To unfriend, block or go incognito you now go back to the Games list."
+    },
+    {
+      "id": "GS-6",
+      "surface": "Games",
+      "path": "Games → Chess, signed in, no friends yet",
+      "crop": "chat/games/chess/lobby#no-friends@520x330+910+40",
+      "headline": "A game with no friends to play shows one card and a filled Add a friend that takes you back to the Games list.",
+      "changed": "Before, this page showed your profile and the add box. Now it explains, and the button goes to where adding lives.",
+      "notice": "The button takes you to the Games list; you then type the handle in the friends card there."
+    },
+    {
+      "id": "GS-7",
+      "surface": "Games",
+      "path": "Games → Connect 4, signed in with one friend",
+      "crop": "chat/games/connect-four/lobby@420x300+1010+40",
+      "headline": "Connect 4's page at its narrower default width: one friend, online, with Challenge and a 1W - 0L record.",
+      "changed": "Same page as Chess, at Connect 4's 420-wide default.",
+      "notice": "The row fits on one line at this width."
+    },
+    {
+      "id": "GS-8",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → menu → Games, signed in",
+      "crop": "chat/games#phone@390x700+0+0",
+      "headline": "On a phone the friends card and the games fit the width; nothing scrolls sideways.",
+      "changed": "The same card as on a computer, at phone width; nothing scrolls sideways.",
+      "notice": "You scroll past your friends to reach the games."
+    },
+    {
+      "id": "GS-9",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → menu → Games, signed out",
+      "crop": "chat/games#signed-out-phone@390x700+0+0",
+      "headline": "Signed out on a phone: the sign-in card on top, Connect 4 and Chess greyed underneath.",
+      "changed": "The signed-out card at phone width, games greyed underneath.",
+      "notice": "The sentence wraps to two lines; the button stays centred."
+    },
+    {
+      "id": "GS-10",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → Games → Chess",
+      "crop": "chat/games/chess/lobby#phone@390x500+0+0",
+      "headline": "A game's page on a phone: the record column still lines up; a long name is shortened with dots.",
+      "changed": "The same rows at phone width; the record column still lines up.",
+      "notice": "\"Mira @mira\" shortens to \"Mira @…\"."
+    },
+    {
+      "id": "GS-11",
+      "surface": "Games in a small window",
+      "path": "A 640 × 480 window → Games, signed in with four friends",
+      "crop": "chat/games#small",
+      "headline": "In a small window the friends card fills the first screen; the games are below it, out of sight until you scroll.",
+      "changed": "Before, the games were the first thing you saw. Now four friends and the add box take the visible space.",
+      "notice": "You have to scroll to reach Flappy or 2048 in a window this small.",
+      "risk": "This is the main cost of friends-first; the last question asks whether to shorten the list."
+    },
+    {
+      "id": "GS-12",
+      "surface": "Games",
+      "path": "Gamepad button, signed in, game server unreachable",
+      "crop": "chat/games#degraded@420x560+1010+40",
+      "headline": "When the game server can't be reached, your status says Offline and Connect 4 and Chess are greyed with the reason.",
+      "changed": "Your own status reads Offline, and friends show no status pill (nobody's status is known). Connect 4 and Chess were already disabled here and keep \"Can't reach the game server\".",
+      "notice": "Flappy and 2048 still play."
+    },
+    {
+      "id": "GC-1",
+      "surface": "Games",
+      "path": "Gamepad button, signed in, a request each way",
+      "headline": "How should adding a friend fit into the friends card?",
+      "notice": "Whichever you pick is the only place to add a friend; games no longer have their own add box.",
+      "variants": [
+        {
+          "id": "field",
+          "label": "Box at the top",
+          "crop": "chat/games#requests@420x560+1010+40",
+          "summary": "The handle box is always there, under your own line, like Session details' Add a tag. One step: type and press Add."
+        },
+        {
+          "id": "button",
+          "label": "Button under the list",
+          "crop": "chat/games#add-button@420x560+1010+40",
+          "summary": "A full-width outlined Add a friend under the list opens the box in its place. A calmer card; one extra click.",
+          "risk": "With a long list the button sits far down the card."
+        },
+        {
+          "id": "fold",
+          "label": "Fold-out row",
+          "crop": "chat/games#add-fold@420x560+1010+40",
+          "summary": "An Add a friend row with an arrow, like every fold-out in Settings; it opens the box underneath.",
+          "risk": "Reads like a setting rather than an action."
+        }
+      ]
+    },
+    {
+      "id": "GC-2",
+      "surface": "Games",
+      "path": "Gamepad button, signed out",
+      "headline": "Should the signed-out Sign in be a centred button, as you asked, or full width, as the design guide says?",
+      "notice": "The guide says a lone button is full width unless it sits beside its text; your direction said centred. Your pick settles which rule wins here.",
+      "variants": [
+        {
+          "id": "centred",
+          "label": "Centred",
+          "crop": "chat/games@420x260+1010+40",
+          "summary": "A filled Sign in under the centred sentence, as wide as its word."
+        },
+        {
+          "id": "full",
+          "label": "Full width",
+          "crop": "chat/games#sign-in-full@420x260+1010+40",
+          "summary": "The same filled button across the card, like the Account popup's sign-in card."
+        }
+      ]
+    },
+    {
+      "id": "GC-3",
+      "surface": "Games",
+      "path": "Games → Chess, signed in with four friends",
+      "headline": "How should a game's page show your record against each friend?",
+      "notice": "The same look will be used in Chess and Connect 4.",
+      "variants": [
+        {
+          "id": "column",
+          "label": "Score column",
+          "crop": "chat/games/chess/lobby#friends@520x300+910+40",
+          "summary": "\"4W - 2L - 1D\" at the right edge under a \"Your record\" label, like the scores on Flappy's and 2048's boards. A dash when you've never played."
+        },
+        {
+          "id": "chip",
+          "label": "Chip by the name",
+          "crop": "chat/games/chess/lobby#scores-chip@520x300+910+40",
+          "summary": "Today's look: a small record chip after the status pill. Nothing shows for someone you've never played.",
+          "risk": "Chips don't line up from row to row."
+        },
+        {
+          "id": "line",
+          "label": "Sentence under the name",
+          "crop": "chat/games/chess/lobby#scores-line@520x300+910+40",
+          "summary": "\"You lead 4–2 (1 draw)\", \"Mira leads 3–1\", \"All square at 2–2\", \"Not played yet\" in grey under each name, the wording the end-of-game card uses.",
+          "risk": "Rows are a little taller."
+        }
+      ]
+    },
+    {
+      "id": "GQ-1",
+      "words": true,
+      "surface": "Games",
+      "path": "Gamepad button, signed in with many friends",
+      "headline": "When you have many friends, should the friends card show only some of them so the games stay in view?",
+      "today": "The draft lists every friend, online first, then the games underneath. In a 640 × 480 window four friends already push the games out of sight.",
+      "problem": "Someone with twenty friends would scroll past all of them every time they just want to play Flappy.",
+      "proposal": "Keep the card short and put the rest one click away, or leave it as drafted.",
+      "options": [
+        {
+          "id": "all",
+          "label": "Show everyone",
+          "pros": [
+            "Everyone is visible at a glance",
+            "Nothing to open"
+          ],
+          "cons": [
+            "Games can end up far down the panel"
+          ]
+        },
+        {
+          "id": "online",
+          "label": "Online first, rest folded",
+          "pros": [
+            "The friends you can play now stay on top",
+            "The card stays short most of the time"
+          ],
+          "cons": [
+            "Offline friends, their ⋯ menu and Last seen need one click"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "five",
+          "label": "First five, then Show all",
+          "pros": [
+            "A fixed, predictable height"
+          ],
+          "cons": [
+            "Might hide someone online if more than five are"
+          ]
+        }
+      ]
+    }
+  ]
+}
