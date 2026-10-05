@@ -18,7 +18,7 @@
 // LIMITS (say them in any write-up): Xvfb software rendering; rAF/long tasks are
 // main-thread measures, not presented frames; input delay starts at the browser's
 // event timestamp for a CDP-injected event; one boot = a shakedown, not a baseline.
-import { mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { spawn, execFileSync } from 'node:child_process';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +34,7 @@ import { startHops, summariseHops, readEmissions, classify, attachMainCounters }
 import { connect } from './cdp.mjs';
 import { traceMain, summariseTrace } from './trace-main.mjs';
 import { installTerminalHelpers } from './scenario-terminal.mjs';
+import { legSwitchMarks } from './switchmarks-leg.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -41,7 +42,7 @@ const LEGS = ['wheel', 'fence', 'flood'];
 // WHY opt-in 'mixed' (2026-10-04, fix 5): a realistic reply (headings, lists, table, short fences, links) streamed
 // the same way as the prose control, with commit/layout counts per delta. Not in the default run.
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'notermcut', 'fence-noblank', 'fence-bare', 'reload'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'notermcut', 'fence-noblank', 'fence-bare', 'reload', 'switchmarks'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -749,7 +750,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'notermcut' ? await legNoTerm(ctx, opts.floodMb, true) : leg === 'reload' ? await legReload(ctx) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'notermcut' ? await legNoTerm(ctx, opts.floodMb, true) : leg === 'reload' ? await legReload(ctx) : leg === 'switchmarks' ? await legSwitchMarks(ctx, { sleep, toggleTerminal, startStream, copyTo: copyFileSync }) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));

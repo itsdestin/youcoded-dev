@@ -55,6 +55,69 @@ export function causeOfFrame(e) {
   return `${top.fn || top.iv || top.it || 'unnamed code'} (${top.src || 'unknown file'})`;
 }
 
+/** Nearest-rank percentile of a list of numbers (null for an empty list). */
+export function pct(list, p) {
+  if (!list.length) return null;
+  const a = list.slice().sort((x, y) => x - y);
+  return a[Math.min(a.length - 1, Math.max(0, Math.ceil((p / 100) * a.length) - 1))];
+}
+const stats = (list) => ({ n: list.length, p50: pct(list, 50), p95: pct(list, 95), max: list.length ? Math.max(...list) : null });
+const CAUSE_WORDS = { pill: 'tab click', menu: 'All Sessions menu', key: 'keyboard', drawer: 'drawer', auto: 'automatic (a session opened/closed)', other: 'other (e.g. from the buddy window)' };
+
+/** "Switching sessions": every `switch` line, in numbers a person can read. A switch has two clocks: how long until the NEW session
+ *  showed ("showed", ff) and how long until its content stopped changing ("settled", st; null when that is unknown). Switches that
+ *  ended because the page hid or the last session closed carry no usable timing and are left out of the timings. */
+export function analyseSwitches(rows, hitches) {
+  const all = rows.filter((r) => r.kind === 'switch');
+  if (!all.length) return null;
+  const usable = all.filter((r) => r.end !== 'hidden' && r.end !== 'closed');
+  const showed = (xs) => xs.filter((r) => r.ff != null).map((r) => r.ff);
+  const settled = (xs) => xs.filter((r) => r.st != null).map((r) => r.st);
+  const over = (xs, lim) => xs.filter((v) => v > lim).length;
+  const split = (name, pred) => { const xs = usable.filter(pred); return { name, switches: xs.length, showed: stats(showed(xs)), settled: stats(settled(xs)) }; };
+  const dur = (r) => Math.max(r.ff ?? 0, r.st ?? 0);
+  // Freezes / stalls / slow inputs as time intervals (a stall's line is written when it ENDS; a frame's when it starts).
+  const spans = hitches.map((h) => (h.kind === 'stall' ? { h, from: h.r.t - h.ms, to: h.r.t } : { h, from: h.r.t, to: h.r.t + h.ms }));
+  const during = (from, to) => spans.filter((x) => x.from <= to && x.to >= from).map((x) => ({ kind: x.h.kind, ms: x.h.ms, cause: x.h.cause }));
+  const worst = usable.slice().sort((a, b) => dur(b) - dur(a)).slice(0, 3).map((r) => ({
+    ts: r.ts, cause: r.cause, view: r.vm, kind: r.dk, streaming: !!r.str, firstVisit: !!r.cold, openSessions: r.open,
+    showedMs: r.ff, settledMs: r.st, endedBecause: r.end, entriesAtFirstFrame: r.e1, entriesAtSettle: r.e2, mutations: r.mut,
+    layoutShifts: r.ls, longFrames: r.loaf, longFramesMs: r.loafMs, worstSlowInputMs: r.ind, msSincePrevious: r.gap, drainedChars: r.drain,
+    overlapping: during(r.t, r.t + dur(r)),
+  }));
+  // After arrival: the 2 s after the new session first showed.
+  const arrived = usable.filter((r) => r.ff != null);
+  let freezesAfter = 0, freezeMsAfter = 0, withFreeze = 0;
+  for (const r of arrived) {
+    const hs = during(r.t + r.ff, r.t + r.ff + 2000).filter((x) => x.kind !== 'slow-input');
+    if (hs.length) withFreeze++;
+    freezesAfter += hs.length; freezeMsAfter += hs.reduce((a, x) => a + x.ms, 0);
+  }
+  const late = usable.filter((r) => r.st != null && r.ff != null && r.st - r.ff >= 50);
+  return {
+    total: all.length, counted: usable.length, interrupted: all.filter((r) => r.end === 'interrupted').length,
+    hiddenOrClosed: all.length - usable.length,
+    showed: stats(showed(usable)), settled: stats(settled(usable)),
+    settledUnknown: usable.filter((r) => r.st == null && r.end !== 'interrupted').length,
+    overShowed: { over100: over(showed(usable), 100), over200: over(showed(usable), 200), over400: over(showed(usable), 400) },
+    overSettled: { over100: over(settled(usable), 100), over200: over(settled(usable), 200), over400: over(settled(usable), 400) },
+    splits: {
+      byView: [split('chat view', (r) => r.vm === 'chat'), split('terminal view', (r) => r.vm === 'terminal')],
+      byVisit: [split('first visit', (r) => r.cold), split('revisit', (r) => !r.cold)],
+      byDestination: [split('idle destination', (r) => !r.str), split('streaming destination', (r) => r.str)],
+      byRhythm: [split('quick back-and-forth (< 0.5 s after the last switch)', (r) => r.gap != null && r.gap < 500), split('spaced', (r) => r.gap == null || r.gap >= 500)],
+      byCause: Object.keys(CAUSE_WORDS).map((c) => split(CAUSE_WORDS[c], (r) => r.cause === c)).filter((x) => x.switches),
+    },
+    worst,
+    afterArrival: {
+      switches: arrived.length, keptChanging: late.length,
+      medianExtraMs: late.length ? pct(late.map((r) => r.st - r.ff), 50) : null,
+      mutations: arrived.reduce((a, r) => a + (r.mut ?? 0), 0), layoutShifts: arrived.reduce((a, r) => a + (r.ls ?? 0), 0),
+      freezes: freezesAfter, freezeMs: freezeMsAfter, switchesWithAFreeze: withFreeze,
+    },
+  };
+}
+
 export function analyse(rows) {
   const hitches = [];
   for (const r of rows) {
@@ -93,7 +156,9 @@ export function analyse(rows) {
     bootMarks: r.main,
   }));
   const loop = rows.filter((r) => r.kind === 'minute');
+  const switching = analyseSwitches(rows, hitches);
   return {
+    switching,
     window: rows.length ? { from: rows[0].ts, to: rows.at(-1).ts } : null,
     totals: {
       hitches: hitches.length, freezes: hitches.filter((h) => h.kind === 'freeze').length, stalls: hitches.filter((h) => h.kind === 'stall').length,
@@ -111,6 +176,43 @@ export function analyse(rows) {
     memory: [...mem.values()].sort((a, b) => a.hour.localeCompare(b.hour)),
     startups,
   };
+}
+
+const msOrDash = (v) => (v == null ? '-' : sec(v));
+const trio = (s) => (s.n ? `typical ${sec(s.p50)}, slowest 1 in 20 ${sec(s.p95)}, worst ${sec(s.max)}` : 'none measured');
+export function renderSwitching(w) {
+  const o = [];
+  o.push('SWITCHING SESSIONS');
+  o.push(`  ${w.total} switch(es) between sessions recorded${w.interrupted ? `; ${w.interrupted} of them cut short because you switched again before the last one finished` : ''}${w.hiddenOrClosed ? `; ${w.hiddenOrClosed} left out of the times (the window was hidden or the last session closed)` : ''}.`);
+  o.push(`  Until the new session SHOWED:    ${trio(w.showed)}   (${w.showed.n} measured)`);
+  o.push(`  Until it stopped changing:       ${trio(w.settled)}   (${w.settled.n} measured${w.settledUnknown ? `; ${w.settledUnknown} never held still, e.g. a session that was busy answering` : ''})`);
+  o.push(`  Took over 0.1 s / 0.2 s / 0.4 s to show:    ${w.overShowed.over100} / ${w.overShowed.over200} / ${w.overShowed.over400}`);
+  o.push(`  Took over 0.1 s / 0.2 s / 0.4 s to settle:  ${w.overSettled.over100} / ${w.overSettled.over200} / ${w.overSettled.over400}`);
+  const table = (title, rows) => {
+    o.push(`  ${title}`);
+    for (const x of rows) o.push(`    ${x.name.padEnd(54)} ${String(x.switches).padStart(4)}x  showed: ${x.showed.n ? `${sec(x.showed.p50)} typical, ${sec(x.showed.p95)} slow, ${sec(x.showed.max)} worst` : '-'}   settled: ${x.settled.n ? `${sec(x.settled.p50)} / ${sec(x.settled.p95)} / ${sec(x.settled.max)}` : '-'}`);
+  };
+  o.push('');
+  table('Chat view or terminal view', w.splits.byView);
+  table('First visit to a session, or coming back', w.splits.byVisit);
+  table('Destination idle, or busy answering', w.splits.byDestination);
+  table('Quick back-and-forth, or spaced out', w.splits.byRhythm);
+  table('How the switch was asked for', w.splits.byCause);
+  if (w.worst.length) {
+    o.push('');
+    o.push('  THE THREE WORST (counts only; nothing about what the sessions contained)');
+    for (const x of w.worst) {
+      o.push(`    ${localTs(x.ts)}  showed ${msOrDash(x.showedMs)}, settled ${x.settledMs == null ? `never (${x.endedBecause})` : sec(x.settledMs)}  [${x.view} view, ${x.kind} session, ${x.streaming ? 'busy answering' : 'idle'}, ${x.firstVisit ? 'first visit' : 'revisit'}, ${x.openSessions} open, via ${CAUSE_WORDS[x.cause] ?? x.cause}]`);
+      o.push(`      ${x.entriesAtFirstFrame ?? '?'} messages at first sight, ${x.entriesAtSettle ?? '?'} at the end; ${x.mutations} page change${x.mutations === 1 ? '' : 's'}; ${x.layoutShifts} layout jump(s); ${x.longFrames} long frame(s)${x.longFrames ? ` (${sec(x.longFramesMs)})` : ''}${x.worstSlowInputMs != null ? `; a click waited ${sec(x.worstSlowInputMs)} to be noticed` : ''}${x.msSincePrevious != null ? `; ${sec(x.msSincePrevious)} after the previous switch` : ''}${x.drainedChars ? `; ${x.drainedChars} characters of waiting terminal output written on arrival` : ''}`);
+      o.push(x.overlapping.length ? `      Freezes at the same time: ${x.overlapping.map((h) => `${h.kind === 'stall' ? 'engine stall' : h.kind === 'slow-input' ? 'slow input' : 'freeze'} ${sec(h.ms)}`).join(', ')}` : '      No freeze or stall recorded at the same time.');
+    }
+  }
+  const aa = w.afterArrival;
+  o.push('');
+  o.push('  THE 2 SECONDS AFTER ARRIVAL');
+  o.push(`    ${aa.keptChanging} of ${aa.switches} switches were still changing 0.05 s or more after the new session first showed${aa.medianExtraMs != null ? ` (typically ${sec(aa.medianExtraMs)} more)` : ''}; ${aa.mutations} page change${aa.mutations === 1 ? '' : 's'} and ${aa.layoutShifts} layout jump(s) in all.`);
+  o.push(`    ${aa.freezes} freeze(s)/stall(s) of 0.1 s or longer began in that window (${sec(aa.freezeMs)}), touching ${aa.switchesWithAFreeze} of ${aa.switches} switches.`);
+  return o;
 }
 
 const mbs = (v) => (typeof v === 'number' ? `${Math.round(v)} MB` : '-');
@@ -145,6 +247,7 @@ export function render(a, bad) {
     for (const h of a.perHour) o.push(`  ${h.hour}  ${String(h.count).padStart(4)} hitch(es)  ${sec(h.ms).padStart(7)} frozen  ${'#'.repeat(Math.min(40, Math.ceil(h.ms / 500)))}`);
     o.push('');
   } else { o.push('No hitches recorded in this range.'); o.push(''); }
+  if (a.switching) o.push(...renderSwitching(a.switching), '');
   if (a.memory.length) {
     o.push('MEMORY, HOUR BY HOUR (start of hour -> end of hour; a steady climb across hours is a leak)');
     for (const g of a.memory) {
