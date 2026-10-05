@@ -86,6 +86,17 @@ References opened first (guide "How to use" step 2): **the sessions menu's statu
    three later full `--check` runs were clean. **Not reproduced on demand** (1 in 6 under load), so
    "seen red, then green" was not possible for this one.
 
+8. **`shoot --check`'s Escape test failed once in six full runs** (`office/versions`, never on a
+   games screen): it named layers by text, and the Office document panel under the Versions dialog
+   renamed itself (its text → its screen mark) as it finished loading during the 2 s wait, so "the
+   panel stayed open" read as "Escape closed two layers". Passed 4 of 4 run alone. **Fixed in this
+   round** (workspace `scripts/shoot/explore-page.mjs` gives each layer element a stable `uid`;
+   `shoot.mjs` compares uids, keeping names for the message). Two full `--check` runs and the final
+   `verify --full` were clean after it. Not reproducible on demand, so the fix is reasoned, not
+   seen red→green. A panel that genuinely re-mounts on Escape would now be flagged — none did.
+9. **A PC crash mid-round** damaged the app repo's object store (repaired by the coordinator). The
+   workspace drafts, runs and deck survived intact (every picture re-read, manifests parsed).
+
 ## Left undone / unsure
 
 - Avatars on friend rows (no shared avatar piece).
