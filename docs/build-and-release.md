@@ -271,7 +271,7 @@ before installing a beta that's far ahead of your release (there's precedent: th
 
 **Every app, installer, tray and Android launcher icon is generated — never hand-edit one.** The
 source is `youcoded/scripts/icons/brand-icons.html` (the glass icon from brand rounds 11–31,
-`docs/active/design/2026-10-01-brand-identity-v2/DECISIONS.md`); `node scripts/build-icons.mjs` from
+`docs/archive/design/2026-10-01-brand-identity-v2/DECISIONS.md`); `node scripts/build-icons.mjs` from
 `youcoded/` screenshots it in headless Chrome and writes the desktop PNG/ICO/ICNS files, the Mac
 Liquid Glass package `desktop/assets/icon.icon/`, the tray icons (one-colour `-macTemplate` pair on
 macOS) and the Android `mipmap-*` layers (needs Chrome, `rsvg-convert`, `magick`, Python with

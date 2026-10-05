@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # YouCoded brand identity — every pick (rounds 5–32, 2026-10-01 → 10-04) and where it is built
 
@@ -73,7 +73,7 @@ and themes on `session/brand-identity-v2`, and to the website on `session/brand-
 - Tested by Destin in VMs: Windows (taskbar, Alt+Tab, tray), macOS 26 (theme icons in the Dock, the four
   looks). Not tested: Ubuntu dock (roadmap themes.md), Android launcher on a device.
 - Not applied yet: the grey icon and the "yc" initials (no surface uses them yet).
-- Merge order and what is left: `docs/active/handoffs/2026-10-04-brand-merge-START-HERE.md`.
+- Merge order and what is left: `docs/archive/handoffs/2026-10-04-brand-merge-START-HERE.md` (all merged 2026-10-04).
 
 ## Website (2026-10-04, branch `session/brand-website` in youcoded + workspace; decks `brand-website-v1/v2`)
 - Top bar: icon + name WITH the tagline (side-by-side lockup, 44px icon; 40px on a phone). (v1 HEADER note, v2 HEADER yes)

@@ -1,10 +1,14 @@
 ---
-status: active
+status: shipped
 ---
 # Brand identity + website — what is built, merge order, what is left (2026-10-04)
 
-Every design pick and its deck answer: `docs/active/design/2026-10-01-brand-identity-v2/DECISIONS.md`.
-Nothing below is merged. Destin decides when; this file only records the facts a merge needs.
+Every design pick and its deck answer: `docs/archive/design/2026-10-01-brand-identity-v2/DECISIONS.md`.
+**Outcome (2026-10-04): all of it merged the same day on Destin's word** ("lets merge everything") —
+including wecoded-themes, without waiting for the app release (so until that release, 1.3.x users on
+macOS 26 who pick one of the seven themes see the flat theme icon in the Dock instead of the glass one).
+Rounds 1–4 were kept as specs + answers only: `docs/archive/design/2026-10-01-brand-identity/`.
+What follows is the record as written before the merge.
 
 ## The branches (all pushed, none merged)
 
@@ -14,7 +18,7 @@ Nothing below is merged. Destin decides when; this file only records the facts a
 | wecoded-themes | `session/brand-identity-v2` | seven themes gain `assets/app-icon/` + `appIcon`/`appIconVariants`, versions bumped |
 | youcoded-dev (workspace) | `session/brand-identity-v2` | design decks and DECISIONS, docs, `scripts/vm/vm.sh` (Tahoe is the only Mac VM), roadmap, this file |
 | youcoded | `session/brand-website` | `docs/index.html` logo/tab icon/title/nav font, `docs/brand/` icons, new `docs/og-image.png` (v=6), `docs/favicon.svg` removed |
-| youcoded-dev (workspace) | `session/brand-website` | website decks `docs/active/design/2026-10-04-brand-website/`, landing-page rule + ui-review README pointing at `docs/brand/` |
+| youcoded-dev (workspace) | `session/brand-website` | website decks `docs/archive/design/2026-10-04-brand-website/`, landing-page rule + ui-review README pointing at `docs/brand/` |
 
 State on 2026-10-04: youcoded `session/brand-identity-v2` has origin/master merged in (the one-core
 refactor moved `window:set-icon` into `desktop/src/main/ipc/window.ts`); `verify.sh --full` green;
@@ -44,7 +48,7 @@ It merges into master with no conflicts.
 ## After merging
 
 - Close the roadmap item `operations:The new site header does not match` with `node scripts/roadmap-check.mjs --close … --ref <commit>`.
-- Archive `docs/active/design/2026-10-01-brand-identity-v2/`, `docs/active/design/2026-10-04-brand-website/` and this file.
+- Archive `docs/archive/design/2026-10-01-brand-identity-v2/`, `docs/archive/design/2026-10-04-brand-website/` and this file.
 
 ## Left open on purpose
 
