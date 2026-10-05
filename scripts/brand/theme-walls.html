@@ -1,0 +1,114 @@
+<!doctype html>
+<!-- YouCoded theme wallpaper candidates, drawn (not photographed or illustrated by anyone
+     else), so the app owns them outright. walls.html?w=<style>&m=<light|night>, rendered at
+     2560x1600 by ui-probe. Brand colours: #9D5BD0 -> #D25AA0, ink #21152C, lavender #F4ECF8. -->
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<canvas id="c" width="2560" height="1600"></canvas>
+<script>
+const P = new URLSearchParams(location.search), W = P.get('w') || 'glow', M = P.get('m') || 'light';
+const c = document.getElementById('c'), x = c.getContext('2d'), w = c.width, h = c.height;
+let seed = {glow: 7, silk: 11, drift: 23, gs1: 31, gs2: 31, gs3: 31}[W] + (M === 'night' ? 100 : 0);
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const L = M === 'light';
+const pal = L
+  ? { base: ['#F7F0FB', '#EEDFF7', '#F6E4F0'], glow: ['#C9A3EC', '#E9A8D2', '#B98BE6', '#F3C6E2', '#D7C2F5'], ink: 'rgba(157,91,208,' }
+  : { base: ['#1B1026', '#140B1E', '#21122A'], glow: ['#6A2FA0', '#9D3F86', '#5226A0', '#B04E9A', '#3B1C6E'], ink: 'rgba(210,140,240,' };
+
+function base() {
+  const g = x.createLinearGradient(0, 0, w, h);
+  g.addColorStop(0, pal.base[0]); g.addColorStop(.55, pal.base[1]); g.addColorStop(1, pal.base[2]);
+  x.fillStyle = g; x.fillRect(0, 0, w, h);
+}
+function blob(cx, cy, r, col, a) {
+  const g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
+  g.addColorStop(0, col + Math.round(a * 255).toString(16).padStart(2, '0'));
+  g.addColorStop(1, col + '00');
+  x.fillStyle = g; x.fillRect(cx - r, cy - r, r * 2, r * 2);
+}
+function grain(n) {
+  const d = x.getImageData(0, 0, w, h), p = d.data;
+  for (let i = 0; i < p.length; i += 4) { const v = (rnd() - .5) * n; p[i] += v; p[i + 1] += v; p[i + 2] += v; }
+  x.putImageData(d, 0, 0);
+}
+
+base();
+if (W === 'glow') {
+  // Soft mesh of large overlapping glows, like the setup surface but richer.
+  const spots = [[.15, .2, .55], [.8, .15, .5], [.55, .7, .6], [.1, .85, .45], [.9, .8, .5], [.45, .3, .4]];
+  spots.forEach(([fx, fy, fr], i) => blob(fx * w, fy * h, fr * w, pal.glow[i % 5], L ? .75 : .7));
+} else if (W === 'silk') {
+  // Long flowing ribbons, blurred, crossing the picture from left to right.
+  const spots = [[.2, .25, .5], [.85, .75, .55]];
+  spots.forEach(([fx, fy, fr], i) => blob(fx * w, fy * h, fr * w, pal.glow[i + 2], L ? .5 : .55));
+  x.filter = `blur(${L ? 40 : 46}px)`;
+  for (let k = 0; k < 7; k++) {
+    const y0 = h * (.15 + k * .11), amp = h * (.08 + rnd() * .1), ph = rnd() * 6;
+    x.beginPath(); x.moveTo(-100, y0);
+    for (let t = 0; t <= 1.02; t += .01) x.lineTo(t * (w + 200) - 100, y0 + Math.sin(t * 5.5 + ph) * amp + Math.sin(t * 2.1 + ph * 2) * amp * .6);
+    x.lineWidth = h * (.05 + rnd() * .08);
+    x.strokeStyle = pal.glow[k % 5] + (L ? 'AA' : '99'); x.lineCap = 'round'; x.stroke();
+  }
+  x.filter = 'none';
+  // A sheen on top of the ribbons.
+  x.filter = 'blur(6px)';
+  for (let k = 0; k < 5; k++) {
+    const y0 = h * (.2 + k * .15), amp = h * .09, ph = rnd() * 6;
+    x.beginPath(); x.moveTo(-100, y0);
+    for (let t = 0; t <= 1.02; t += .01) x.lineTo(t * (w + 200) - 100, y0 + Math.sin(t * 5 + ph) * amp);
+    x.lineWidth = 3; x.strokeStyle = L ? 'rgba(255,255,255,.55)' : 'rgba(240,200,255,.22)'; x.stroke();
+  }
+  x.filter = 'none';
+} else if (W.startsWith('gs')) {
+  // Glow + Silk (deck yc-walls YW-1, Destin: "a+b, refined/polished/amplified a bit").
+  // gs1 calm, gs2 richer, gs3 strongest. Glow mesh underneath, layered ribbons with depth
+  // (wide soft ones far back, narrower brighter ones in front), a fine sheen on the front.
+  const k = {gs1: .8, gs2: 1, gs3: 1.25}[W];
+  [[.12, .18, .55], [.82, .12, .5], [.55, .72, .62], [.08, .9, .45], [.92, .85, .5]].forEach(([fx, fy, fr], i) =>
+    blob(fx * w, fy * h, fr * w, pal.glow[i % 5], Math.min(1, (L ? .7 : .75) * k)));
+  const layers = [
+    { n: 3, blur: 70, wid: [.12, .18], a: L ? .35 : .45 },
+    { n: 4, blur: 34, wid: [.05, .09], a: L ? .55 : .6 },
+    { n: 3, blur: 12, wid: [.015, .03], a: L ? .7 : .65 },
+  ];
+  const flow = (y0, amp, ph, t) => y0 + Math.sin(t * 4.2 + ph) * amp + Math.sin(t * 1.7 + ph * 1.9) * amp * .7;
+  layers.forEach((ly, li) => {
+    x.filter = `blur(${ly.blur}px)`;
+    for (let j = 0; j < ly.n; j++) {
+      const y0 = h * (.2 + rnd() * .6), amp = h * (.07 + rnd() * .09) * k, ph = rnd() * 6;
+      x.beginPath(); x.moveTo(-200, flow(y0, amp, ph, 0));
+      for (let t = 0; t <= 1.02; t += .005) x.lineTo(t * (w + 400) - 200, flow(y0, amp, ph, t));
+      x.lineWidth = h * (ly.wid[0] + rnd() * (ly.wid[1] - ly.wid[0]));
+      const col = pal.glow[(j + li) % 5];
+      const g = x.createLinearGradient(0, 0, w, 0);
+      g.addColorStop(0, col + '00'); g.addColorStop(.25, col + Math.round(ly.a * k * 255).toString(16).padStart(2, '0').slice(-2));
+      g.addColorStop(.75, col + Math.round(ly.a * k * 255).toString(16).padStart(2, '0').slice(-2)); g.addColorStop(1, col + '00');
+      x.strokeStyle = g; x.lineCap = 'round'; x.stroke();
+      if (li === 2) {
+        // The sheen: a thin bright line riding each front ribbon.
+        x.save(); x.filter = 'blur(3px)'; x.lineWidth = 2.5;
+        x.strokeStyle = L ? `rgba(255,255,255,${.55 * k})` : `rgba(255,215,255,${.28 * k})`; x.stroke(); x.restore();
+        x.filter = `blur(${ly.blur}px)`;
+      }
+    }
+  });
+  x.filter = 'none';
+  // A gentle vignette keeps the edges calm under the window frame.
+  const v = x.createRadialGradient(w / 2, h / 2, h * .4, w / 2, h / 2, w * .75);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, L ? 'rgba(120,60,160,.10)' : 'rgba(5,0,12,.45)');
+  x.fillStyle = v; x.fillRect(0, 0, w, h);
+} else {
+  // Drift: a soft sky with floating out-of-focus lights.
+  [[.3, .25, .6], [.8, .6, .6], [.2, .9, .5]].forEach(([fx, fy, fr], i) => blob(fx * w, fy * h, fr * w, pal.glow[i], L ? .6 : .6));
+  for (let k = 0; k < 70; k++) {
+    const r = 20 + rnd() * 150, cx = rnd() * w, cy = rnd() * h;
+    x.filter = `blur(${4 + rnd() * 18}px)`;
+    x.beginPath(); x.arc(cx, cy, r, 0, 7);
+    x.fillStyle = L ? `rgba(255,255,255,${.12 + rnd() * .3})` : `rgba(${200 + rnd() * 55 | 0},${120 + rnd() * 80 | 0},255,${.06 + rnd() * .16})`;
+    x.fill();
+  }
+  x.filter = 'none';
+}
+grain(L ? 5 : 7);
+document.title = 'ready';
+</script>
