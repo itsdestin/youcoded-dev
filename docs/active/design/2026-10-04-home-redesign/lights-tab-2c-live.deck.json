@@ -1,0 +1,60 @@
+{
+  "title": "Home page Lights tab: try each mix (round 2c)",
+  "key": "home-lights-tab-2c-live",
+  "out": "lights-tab-2c.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "LV2C-1",
+      "surface": "Home page",
+      "path": "Home > Lights tab",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Switch a light, dim it, change its colour. Which mix feels simplest to use?",
+      "notice": "In Destin's Room, tap a light to switch it, dim it with the bar (or by dragging the tile in Slide tiles), and press its colour dot. The TV backlight is unreachable; try it.",
+      "risk": "Everything here is practice data; nothing reaches a real light.",
+      "variants": [
+        {
+          "id": "r1",
+          "label": "Tall cards",
+          "summary": "Portrait cards, about three per line, in the same calm glass as the rows: bulb, name, percent and a colour dot on top, and the thick bar along the bottom. Tap the card to switch the light; use the bar to dim it. The dot opens a floating colour panel.",
+          "risk": "Tallest card of the three, and the unreachable light gets a full-size card of its own. Names that are long wrap onto two lines. On a phone two cards fit per line.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-r1-play"
+          }
+        },
+        {
+          "id": "r2",
+          "label": "Slide tiles",
+          "summary": "Wide tiles, two per line, with the rows' name and percent on a calm surface. The whole tile is the bar: a soft tint fills it to show how bright the light is, with a thin bright edge at the level. Tap to switch, drag sideways to dim.",
+          "risk": "Shortest card, but there is no bar to look at. Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. Long names wrap onto several lines.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-r2-play"
+          }
+        },
+        {
+          "id": "r3",
+          "label": "Half rows",
+          "summary": "Exactly the roomy rows, at half the width, two lights per line: bulb, name, percent, colour dot and the thick bar. Tap the bulb or name to switch; the bar dims. The dot opens a floating colour panel.",
+          "risk": "Most like the rows you liked, but names squeeze, so long ones wrap onto two lines. On a phone the lights go back to one per line.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-r3-play"
+          }
+        }
+      ]
+    }
+  ]
+}
