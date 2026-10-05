@@ -1,0 +1,22 @@
+{
+ "deck": "brand-identity-v22",
+ "started": "2026-10-04T03:51:06.061Z",
+ "submitted": "2026-10-04T03:51:53Z",
+ "cur": 1,
+ "answers": {
+  "INITIALS": {
+   "v": "yes",
+   "t": 1791085900929,
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "v": "yes",
+   "t": 1791085912222,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,107 @@
+{
+ "title": "YouCoded \u2014 round 12: the icon, eye contrast across themes, the box installer",
+ "key": "brand-identity-v12",
+ "out": "brand-identity-v12.html",
+ "images": "images/brand-identity-v12",
+ "runs": {
+  "today": "runs/v12"
+ },
+ "labels": {
+  "today": "Proposed"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "r1": [
+   "brand",
+   "r1",
+   "1200x700+0+0"
+  ],
+  "r2": [
+   "brand",
+   "r2",
+   "1200x700+0+0"
+  ],
+  "cc": [
+   "brand",
+   "cc",
+   "1200x700+0+0"
+  ],
+  "s1": [
+   "brand",
+   "s1",
+   "1200x700+0+0"
+  ],
+  "s2": [
+   "brand",
+   "s2",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, dock, browser tab, profile pictures",
+   "headline": "Which do you like? Pick one or both.",
+   "notice": "P3 with heavy blur and a darker shadow on every side; R2 adds the name below at the same face size.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "r1",
+     "label": "R1 The face",
+     "crop": "r1",
+     "summary": "P3, heavy blur, shadow all round, eyes lit from behind."
+    },
+    {
+     "id": "r2",
+     "label": "R2 The face + \"youcoded\"",
+     "crop": "r2",
+     "summary": "Same face, name squeezed in below; for big sizes only."
+    }
+   ]
+  },
+  {
+   "id": "CONTRAST",
+   "surface": "App icon",
+   "path": "Every theme, at taskbar and tab size",
+   "crop": "cc",
+   "headline": "Does this fix the eyes' contrast in every theme?",
+   "changed": "Same eye style. A soft light now sits behind the eyes inside the face, and the small icon files (16\u201348px) use eyes about 20% larger.",
+   "notice": "Golden and Meadow, whose pictures are darker, gain the most; the pastel themes barely change.",
+   "risk": "The face's colours are a little paler in the middle than at the edges.",
+   "highlight": {
+    "box": [
+     2,
+     12,
+     96,
+     85
+    ]
+   }
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which box installer do you like? Pick one or both.",
+   "notice": "Q2's tilt, lower; a wider opening; flaps hinged exactly on the box's corners; tiny speed traces at the face's sides.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "s1",
+     "label": "S1 Q2 refined",
+     "crop": "s1",
+     "summary": "Lower, wider box, tiny traces."
+    },
+    {
+     "id": "s2",
+     "label": "S2 Lower still",
+     "crop": "s2",
+     "summary": "Widest box, the face only just out."
+    }
+   ]
+  }
+ ]
+}

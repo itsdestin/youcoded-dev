@@ -1,0 +1,32 @@
+{
+ "deck": "brand-identity-v7",
+ "started": "2026-10-02T01:21:56.581Z",
+ "submitted": "2026-10-02T01:26:01Z",
+ "cur": 2,
+ "answers": {
+  "NAME": {
+   "note": "these suck. they feel unpolished and half considered.look at w1, the body just cuts off and strangly overlaps with the text. w2 just looks weird. still kinda cartoony, though i like the color scheme of the mascot better",
+   "t": 1790904185584,
+   "v": "other",
+   "seconds": 69,
+   "theme": "light",
+   "zoom": 1
+  },
+  "ICON": {
+   "note": "g2/g6/g5 are maybe onto something. the mascot needs to better separate from the background, though i like the glassiness. a few more variants, please",
+   "t": 1790904278213,
+   "v": "other",
+   "seconds": 93,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "h3 is onto something maybe, more creative options along similar design guidelines",
+   "t": 1790904304339,
+   "v": "other",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

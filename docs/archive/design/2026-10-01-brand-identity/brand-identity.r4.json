@@ -1,0 +1,304 @@
+{
+ "title": "YouCoded name and icon ideas, round 4",
+ "key": "brand-identity-r4",
+ "out": "brand-identity.r4.html",
+ "images": "images/brand-identity.r4",
+ "runs": {
+  "today": "runs/r4"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "n1": [
+   "brand",
+   "n1",
+   "1200x620+0+0"
+  ],
+  "n2": [
+   "brand",
+   "n2",
+   "1200x620+0+0"
+  ],
+  "n3": [
+   "brand",
+   "n3",
+   "1200x620+0+0"
+  ],
+  "n4": [
+   "brand",
+   "n4",
+   "1200x620+0+0"
+  ],
+  "n5": [
+   "brand",
+   "n5",
+   "1200x620+0+0"
+  ],
+  "n6": [
+   "brand",
+   "n6",
+   "1200x620+0+0"
+  ],
+  "n7": [
+   "brand",
+   "n7",
+   "1200x620+0+0"
+  ],
+  "n8": [
+   "brand",
+   "n8",
+   "1200x620+0+0"
+  ],
+  "n9": [
+   "brand",
+   "n9",
+   "1200x620+0+0"
+  ],
+  "n10": [
+   "brand",
+   "n10",
+   "1200x620+0+0"
+  ],
+  "n11": [
+   "brand",
+   "n11",
+   "1200x620+0+0"
+  ],
+  "n12": [
+   "brand",
+   "n12",
+   "1200x620+0+0"
+  ],
+  "i1": [
+   "brand",
+   "i1",
+   "1200x620+0+0"
+  ],
+  "i2": [
+   "brand",
+   "i2",
+   "1200x620+0+0"
+  ],
+  "i3": [
+   "brand",
+   "i3",
+   "1200x620+0+0"
+  ],
+  "i4": [
+   "brand",
+   "i4",
+   "1200x620+0+0"
+  ],
+  "i5": [
+   "brand",
+   "i5",
+   "1200x620+0+0"
+  ],
+  "i6": [
+   "brand",
+   "i6",
+   "1200x620+0+0"
+  ],
+  "j1": [
+   "brand",
+   "j1",
+   "1200x620+0+0"
+  ],
+  "j2": [
+   "brand",
+   "j2",
+   "1200x620+0+0"
+  ],
+  "j3": [
+   "brand",
+   "j3",
+   "1200x620+0+0"
+  ],
+  "j4": [
+   "brand",
+   "j4",
+   "1200x620+0+0"
+  ],
+  "j5": [
+   "brand",
+   "j5",
+   "1200x620+0+0"
+  ],
+  "j6": [
+   "brand",
+   "j6",
+   "1200x620+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R4-1",
+   "surface": "The name",
+   "path": "Website header, app, everywhere the name is written",
+   "pick": "several",
+   "headline": "More chunky and gradient name styles, several with the mascot as the 'o'. Which do you like?",
+   "notice": "Built from your round-3 picks: W6 (chunky), W11 (gradient) and L3 (mascot as the 'o'). Shown in today's header, then in three other themes along the bottom.",
+   "variants": [
+    {
+     "id": "n1",
+     "label": "N1 Chunky gradient",
+     "crop": "n1",
+     "summary": "W6 and W11 together: the chunky rounded lowercase from W6, filled with the theme-colour-to-pink fade from W11."
+    },
+    {
+     "id": "n2",
+     "label": "N2 Chunky + mascot \"o\"",
+     "crop": "n2",
+     "summary": "The W6 lowercase with the mascot standing in for the first \"o\", sized to the letters, feet hanging below the line."
+    },
+    {
+     "id": "n3",
+     "label": "N3 Gradient + mascot \"o\"",
+     "crop": "n3",
+     "summary": "The same mascot \"o\", with every letter in the colour fade, so the mascot pops out as the only solid shape."
+    },
+    {
+     "id": "n4",
+     "label": "N4 Glossy, like the mascot",
+     "crop": "n4",
+     "summary": "Rounded Fredoka letters with the mascot as the \"o\" and a shiny top highlight that matches the shine on the app icon's mascot."
+    },
+    {
+     "id": "n5",
+     "label": "N5 Toy-block 3D",
+     "crop": "n5",
+     "summary": "Fat Lilita One letters with a deep 3D edge underneath, like a plastic toy or a game logo."
+    },
+    {
+     "id": "n6",
+     "label": "N6 Sticker edge",
+     "crop": "n6",
+     "summary": "Chunky lowercase with a thick white sticker border and soft shadow, so it pops on any wallpaper."
+    },
+    {
+     "id": "n7",
+     "label": "N7 Wallpaper inside the letters",
+     "crop": "n7",
+     "summary": "The letters are cut out of your theme's own wallpaper, so the name literally wears your theme."
+    },
+    {
+     "id": "n8",
+     "label": "N8 Bouncy",
+     "crop": "n8",
+     "summary": "Grandstander letters that hop slightly up and down, playful like the mascot waving."
+    },
+    {
+     "id": "n9",
+     "label": "N9 Clean + mascot \"o\"",
+     "crop": "n9",
+     "summary": "The closest to today's site: Nunito capitals, colour fade on \"You\", mascot as the \"o\". The grown-up version."
+    },
+    {
+     "id": "n10",
+     "label": "N10 Soft two-tone",
+     "crop": "n10",
+     "summary": "Sniglet: the roundest, softest letters, \"you\" in the theme colour with a gentle shine, \"coded\" in the text colour."
+    },
+    {
+     "id": "n11",
+     "label": "N11 Cartoon",
+     "crop": "n11",
+     "summary": "Chewy, a hand-drawn cartoon font, in the colour fade: the most playful option."
+    },
+    {
+     "id": "n12",
+     "label": "N12 Two mascots",
+     "crop": "n12",
+     "summary": "Both \"o\"s are mascots, one in \"you\" and one in \"coded\". Fun, but busier and harder to read small."
+    }
+   ]
+  },
+  {
+   "id": "R4-2",
+   "surface": "App icon",
+   "path": "Taskbar, Mac Dock, browser tab, next to the clock",
+   "pick": "several",
+   "headline": "Which app icon ideas do you like?",
+   "notice": "Each card shows one idea everywhere it would appear: Windows taskbar, Mac Dock, its own browser-tab version, and a one-colour version for next to the clock. I1\u2013I6 are led by the mascot's character; J1\u2013J6 by the name and personality.",
+   "variants": [
+    {
+     "id": "i1",
+     "label": "I1 The head is the icon",
+     "crop": "i1",
+     "summary": "The whole icon is the mascot's face \u2014 its square head is already the shape of an app icon \u2014 with a little arm waving off the corner."
+    },
+    {
+     "id": "i2",
+     "label": "I2 Window to your world",
+     "crop": "i2",
+     "summary": "The icon is a window onto your theme's world; the mascot leans out over the sill to say hi, and the view changes with your theme."
+    },
+    {
+     "id": "i3",
+     "label": "I3 Peekaboo",
+     "crop": "i3",
+     "summary": "The mascot is hiding behind the icon, peeking over the top with both hands gripping the edge \u2014 playful and still clear when tiny."
+    },
+    {
+     "id": "i4",
+     "label": "I4 On a cloud",
+     "crop": "i4",
+     "summary": "The mascot stands waving on a soft cloud in the Cotton Candy dawn colours \u2014 the website's sky turned into a little scene."
+    },
+    {
+     "id": "i5",
+     "label": "I5 Night glow",
+     "crop": "i5",
+     "summary": "Late at night, the mascot is lit up by the little screen in its hands \u2014 warm, cosy, and it pops on a dark taskbar."
+    },
+    {
+     "id": "i6",
+     "label": "I6 Hooray",
+     "crop": "i6",
+     "summary": "The mascot jumps with both arms up \u2014 the \"done it!\" moment \u2014 and its arms-up shape doubles as a Y for YouCoded."
+    },
+    {
+     "id": "j1",
+     "label": "J1 The \"o\"",
+     "crop": "j1",
+     "summary": "The mascot drawn as a chunky white letter \"o\" with eyes, arms and feet, so the icon is both a letter of our name and our character."
+    },
+    {
+     "id": "j2",
+     "label": "J2 Chunky \"y\"",
+     "crop": "j2",
+     "summary": "A big glossy purple-to-pink \"y\" (the name's chunky lettering) with the mascot sitting in its fork, waving."
+    },
+    {
+     "id": "j3",
+     "label": "J3 Die-cut sticker",
+     "crop": "j3",
+     "summary": "The waving mascot as a thick white sticker stuck on at an angle, with one corner peeling up."
+    },
+    {
+     "id": "j4",
+     "label": "J4 Pressed to the glass",
+     "crop": "j4",
+     "summary": "The website's frosted glass with the mascot pressed right up against it: its body blurred, its face sharp."
+    },
+    {
+     "id": "j5",
+     "label": "J5 Speech bubble",
+     "crop": "j5",
+     "summary": "The mascot's head is a chat bubble and its arm swings down to become the bubble's tail, mouth open mid-hello."
+    },
+    {
+     "id": "j6",
+     "label": "J6 Clean silhouette",
+     "crop": "j6",
+     "summary": "A simple white cut-out of the waving mascot on the purple-to-pink gradient: the boldest at small sizes."
+    }
+   ]
+  }
+ ]
+}

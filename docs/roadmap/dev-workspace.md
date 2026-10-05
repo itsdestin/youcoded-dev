@@ -203,7 +203,7 @@ seen-on is always n/a here.
       highest-value set: stale-closure bugs) are unguarded
       `n/a` `needs-verify` `checked 2026-09-01`
 
-- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) and
+- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS 26 Tahoe on quickemu) and
       since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
       install of any build as a real download). The full first-run → setup → sign-in pass has now run
       by hand on the Windows and macOS guests (2026-10-02/03: Git, Apple's tools, sign-in, Office).
@@ -329,6 +329,13 @@ seen-on is always n/a here.
       like `YouCoded-Installer-*-x64.dmg`), and `mac load` fails on a file name with spaces
       (the download address is not escaped). Found 2026-10-02 loading build 36958200637
       `n/a` `needs-verify` `checked 2026-10-02`
+
+- [ ] The macOS 26 (Tahoe) test VM has no saved "ready" state, so every start is a cold boot
+      through the OpenCore picker (which defaults to Recovery) and ~5 minutes of slow desktop.
+      It was started by hand with quickemu (virtio-sound, non-migratable CPU), so `vm.sh tahoe
+      save-ready` needs a `vm.sh tahoe start` boot first; it is the only Mac VM since the Sonoma one was deleted
+      (2026-10-04) to free disk; `vm.sh mac` and `vm.sh tahoe` both start it
+      `n/a` `confirmed` `checked 2026-10-04`
 
 - [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
       ChatGPT sign-in that never renews, so the real app is never signed out). Destin

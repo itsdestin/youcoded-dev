@@ -2,6 +2,12 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
+- [ ] Unverified on Linux: whether a theme's app icon reaches the dock on Ubuntu's default desktop
+      (GNOME on Wayland reads an app's icon from its installed .desktop entry, and an AppImage
+      double-clicked from Downloads has none). The test build was loaded on the Ubuntu VM on
+      2026-10-04 but Destin stopped testing there ("i think this is fine"); window icon and tray
+      changes are expected to work
+      `desktop` `needs-verify` `checked 2026-10-04`
 
 - [ ] Themes you build yourself still get the old DRAWN preview picture (a mock chat page
       made from the theme's colours), while the built-in and community themes now show a
