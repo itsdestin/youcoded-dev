@@ -39,6 +39,10 @@ branch: session/ha-pages-connection (workspace + youcoded); nothing merged
   apps, open app highlighted "on now", no Prime swap); page Background setting (gear → Page settings: Plain /
   Frosted / House colours) so Destin can judge B/C on the real house (cf687761d). Hue room group lights hidden
   (4f3ff6eaf). Workbench: Home screens wait for the first answer; shoot skips the first-load stagger (66d97e9e8).
+- App-wide: pages + Office frost over the theme wallpaper (panel-glass on the frame pane; page body transparent)
+  in wallpaper themes with Floating/Minimalist layouts; one switch Settings → Appearance → Glass "Show theme
+  background behind pages" (appearance file `pagesSeeThrough`, default on). Home Background setting removed.
+  Thermostat card glass (69c1369d2, af1554b01; workspace fb27c0a6).
 
 ## Not done / open
 
@@ -51,7 +55,8 @@ branch: session/ha-pages-connection (workspace + youcoded); nothing merged
 - Single-light rooms have no scenes button (offered, not decided).
 - Unverified on the real house: HBO Max URL `https://play.hbomax.com`, ±10s keys on the Google TV, 429 text
   match, the new events list. Back-off is page memory (a reload forgets it).
-- Background choice pending: Destin is trying Frosted / House colours live; then keep one (or both) and drop the rest.
+- Unverified: Office editor turning solid with the switch off (add-on repo reacts to the wallpaper flag);
+  Android untouched/unbuilt (no JDK here). Framed-layout wallpaper themes (Golden Sunbreak) not see-through — offered, not decided.
 - New app ids (Hulu … Crunchyroll) and HBO Max URL untried on the real Google TV.
 - Old unused CSS (`.clim-top`, `.scale`), `nestSignedIn` variant flag unused.
 
