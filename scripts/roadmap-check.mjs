@@ -66,6 +66,9 @@ export const SUBLEVELS = {
   'dev-workspace': ['tests', 'rigs', 'knowledge', 'release'],
   'marketplace': ['catalog', 'backend', 'install'],
   'other-features': ['accounts', 'buddy', 'onboarding', 'misc'],
+  // WHY: remote-access work splits into items scheduled in the one-core phases (R0–R6/A0–A6,
+  // docs/active/handoffs/2026-09-24-one-core-START-HERE.md) and items that can land any time.
+  'remote-access': ['one-core', 'standalone'],
 };
 
 // ---------- entry grammar (spec §2) ----------

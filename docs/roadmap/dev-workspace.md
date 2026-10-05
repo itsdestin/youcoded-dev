@@ -250,16 +250,6 @@ seen-on is always n/a here.
       timing logic behind an injectable clock
       `n/a` `needs-verify` `checked 2026-07-22`
 
-- [ ] The renderer's own copy of the bridge type can drift from the real bridge with every check
-      green: `renderer/hooks/useIpc.ts` hand-writes `window.claude.session` and `.on`, while
-      preload.ts and remote-shim.ts are now checked against `SessionBridge`/`BridgeListeners` in
-      `shared/bridge-types.ts` (Plan B, which retired `shim-parity.test.ts`). A member added to both
-      bridges but not to useIpc.ts is invisible to typed callers, and a member useIpc.ts claims
-      but neither bridge has typechecks and crashes at run time. Fix: build useIpc.ts's
-      `session`/`on` from those shared types (export them again first — they are file-local
-      so knip's unused-export ratchet stays green)
-      `n/a` `confirmed` `checked 2026-09-17`
-
 - [ ] The voice install's "runs no other program" guard does not ban every way to start one. The
       ast-grep rule `voice-assets-runs-no-other-program` bans `execFile`, `execFileSync`, `spawn`,
       `spawnSync` and `exec` calls, and oxlint bans importing `child_process`; `execSync` and
@@ -300,7 +290,7 @@ seen-on is always n/a here.
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
       pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
       showed it fine. These are Ink TUI menus parsed by screen-scrape
-      (`renderer/parser/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
+      (`shared/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
       whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
       sessions by a path that skips the gate entirely, and the UI workbench has no session
       launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
@@ -308,6 +298,16 @@ seen-on is always n/a here.
       CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
       the 2026-07-16 "trust" substring collision in `docs/archive/roadmap/shipped-full-to-2026-09-23.md`
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
+
+- [ ] Tidy-up left over after the one-core work (simplification Phase 5): the main window and the
+      floating buddy now share the chat-line listeners, but each still wires its own near-identical
+      copies of the hook, helper-run and shell-run listeners (and, separately, the "permission
+      replay finished" signal); the session preview pane builds its own history-page loop, a third
+      reader of the page path; the "already drawn?" test for a divider still appears inline in
+      the page merge and the archive boundary; and several tests hand-build their own fake screen
+      where one shared helper would cut about 40 lines. Nothing changes on screen. Found 2026-10-04
+      while unifying "Conversation cleared" (one-core sync-fix6)
+      `n/a` `confirmed` `checked 2026-10-04`
 
 ## rigs
 

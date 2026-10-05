@@ -173,6 +173,38 @@ else
   fi
 fi
 
+# EDIT LOCK (refactor phase R0). WHY: the remote-access refactor moves four "door" files
+# onto a new layout, and git cannot carry an edit into a file that no longer exists there, so
+# a branch that edits them and merges mid-refactor costs a hand redo. The lock was a promise
+# in a handoff doc; this makes it a report line. Lock file: docs/active/locks/*.json (schema in
+# phase4.json). An empty `paths` list or no file = no lock. It is a fail (TODO), not a note:
+# it is the same kind of finding as the merge-conflict line above, "do not ask to merge yet".
+# The script still exits 0, like everything here. Branches of the refactor itself are exempt.
+# CLOSE_OUT_LOCKS lets the test point at a throwaway folder.
+LOCK_DIR="${CLOSE_OUT_LOCKS:-$WORKSPACE/docs/active/locks}"
+if [[ "$MERGED" != yes && -n "$SHA" && -d "$LOCK_DIR" ]] && command -v python3 >/dev/null 2>&1; then
+  for _lock in "$LOCK_DIR"/*.json; do
+    [[ -f "$_lock" ]] || continue
+    _touched=$(git -C "$REPO_DIR" diff --name-only "$BASE...$SHA" 2>/dev/null || true)
+    _hit=$(printf '%s\n' "$_touched" | python3 -c '
+import sys, json, fnmatch
+lock = json.load(open(sys.argv[1])); repo, branch = sys.argv[2], sys.argv[3]
+paths = lock.get("paths") or []
+if not paths or lock.get("repo", "youcoded") != repo: sys.exit(0)
+if any(fnmatch.fnmatch(branch, g) for g in lock.get("exemptBranches") or []): sys.exit(0)
+hits = [f for f in sys.stdin.read().split("\n") if f and any(f == p or (p.endswith("/") and f.startswith(p)) for p in paths)]
+if hits:
+    print(lock.get("phase", "?") + "|" + lock.get("since", "?") + "|" + lock.get("handoff", "") + "|" + " ".join(hits))
+' "$_lock" "$REPO" "$BRANCH" 2>/dev/null || true)
+    if [[ -n "$_hit" ]]; then
+      IFS='|' read -r _phase _since _handoff _files <<<"$_hit"
+      fail "EDIT LOCK: this branch changes files that are frozen during refactor phase $_phase (since $_since): $_files"
+      note "  DO NOT MERGE during the lock. This branch will be rewritten onto the new layout after R2 —"
+      note "  see ${_handoff:-docs/active/handoffs/2026-09-24-one-core-START-HERE.md}. Lock file: ${_lock#"$WORKSPACE"/}"
+    fi
+  done
+fi
+
 # "No remote ref" has TWO opposite causes — pushed-and-deleted (done) or
 # never-pushed (very much not done) — and this script cannot tell them apart on
 # its own. Printing a green "deleted" for both is exactly the misleading message

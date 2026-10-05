@@ -41,7 +41,13 @@ test('missing heavy theme or any referenced asset cannot pass as plain', () => {
     assert.match(inspectTheme('devils-garden', root).reason, /missing asset/);
     symlinkSync(join(root,'outside'),join(dir,'unreferenced-link'));
     assert.match(inspectTheme('devils-garden', root).reason, /symlink/);
-    assert.equal(inspectTheme('midnight', root).status, 'ready');
+    // WHY a fake checkout (one-core merge, 2026-10-04): the stock theme is read from the app checkout's
+    // builtin themes, so this assertion failed in any workspace worktree (no youcoded/ clone) while passing
+    // in the main checkout. A tiny stand-in makes it run the same everywhere.
+    const builtin = join(root, 'desktop/src/renderer/themes/builtin');
+    mkdirSync(builtin, { recursive: true });
+    writeFileSync(join(builtin, 'midnight.json'), JSON.stringify({ slug: 'midnight' }));
+    assert.equal(inspectTheme('midnight', root, root).status, 'ready');
   } finally { rmSync(root, {recursive:true, force:true, maxRetries:3}); }
 });
 

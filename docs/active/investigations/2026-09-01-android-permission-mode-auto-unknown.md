@@ -11,6 +11,8 @@ topic: Android permission-mode chip drops "auto" and guesses "normal"
 
 # Android permission-mode chip drops `auto` and guesses `normal`
 
+> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/active/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin. The shared-renderer half (the missing `'auto'` in the validation list) may be fixed any time.
+
 **Symptom.** On Android the status-bar permission-mode chip never shows `auto`, and shows
 `normal` on any screen it cannot read — where desktop (since `d7e27c72`) shows `unknown`.
 

@@ -65,14 +65,14 @@ verify:
 `SessionProvider` is `'claude' | 'native' | 'shell'`; shell is a terminal, not AI. Every provider branch handles it. **Depth: `youcoded/docs/native-runtime.md`, `provider-dependencies.md`; siblings: `harness-tools.md`, `native-permissions.md`.**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
-- **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`, hiding desktop-only sections off Electron.
+- **`'gemini'` is GONE**. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim's `native.supported` reads the host's `capabilities.nativeSessions` (false on an older computer and on Android's own runtime).
 - **`createSession` throws only for a fresh native session without a binding**; the native branch builds NO PTY worker — guard every `session.worker.X`.
 
 ## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home`
 - **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (a `secretRef` only, no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateJson` (→ `mutateFileUnderLock`, THROWS on lock exhaustion).
 - **`SessionStore` coalesces same-`partId` deltas; display-only (`session-error`, payload-less `assistant-thinking`) is NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
 - **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
-- **Queued messages belong to renderer state, not timeline**; `native:*` shapes match on all transports (interrupt/retry fire-and-forget).
+- **The native queue lives in the host, not any screen**: screens draw it from `session:live` and cancel via `native:queue-remove`; `native:*` shapes match on all transports (interrupt/retry fire-and-forget).
 - **Native sends bypass PTY** (`native-send.ts`); content equals `buildOutgoingMessage(...).content`.
 
 ## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine`

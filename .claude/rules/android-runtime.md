@@ -16,7 +16,7 @@ verify:
 
 # Android Runtime Rules
 
-Claude Code (a Node CLI) runs inside a Termux-derived environment. **Full context: `youcoded/docs/android-runtime.md` — read before non-trivial changes.**
+Claude Code (a Node CLI) runs inside a Termux-derived environment. **Full context: `youcoded/docs/android-runtime.md` — read before non-trivial changes.** **Rebuilding (`docs/active/plans/2026-09-24-android-rebuild-plan.md`): never port new desktop logic to Kotlin (A3 deletes the copies) or add first-run downloads (A1 bundles every program).**
 
 ## System fundamentals — DO NOT violate
 - **`LD_LIBRARY_PATH` is mandatory** in `Bootstrap.buildRuntimeEnv()` (Termux binaries are relocated; DT_RUNPATH is stale).
@@ -41,4 +41,4 @@ Claude Code (a Node CLI) runs inside a Termux-derived environment. **Full contex
 - **`TranscriptEvent.TurnComplete` carries `stopReason`, `model`, `usage` and `anthropicRequestId`, matching desktop's transcript-watcher output.** Preserve all four when touching `TranscriptWatcher.parseAssistantLine` or `TranscriptSerializer.turnComplete` — remote clients read them for the per-turn metadata strip, StopReasonFooter, the AttentionBanner request-id readout and sessionModels reconciliation.
 
 ## Native UI bridge pattern (deferred)
-When an IPC handler needs native Android UI: `SessionService` creates a `CompletableDeferred<T>`, calls an Activity callback, MainActivity shows the UI, the result calls `deferred.complete()`, SessionService awaits + responds. Used by `dialog:open-file`, `dialog:open-folder`, `android:scan-qr`.
+A handler needing native UI awaits a `CompletableDeferred<T>` that MainActivity completes after showing it (`dialog:open-file`, `dialog:open-folder`, `android:scan-qr`).

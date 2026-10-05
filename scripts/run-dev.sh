@@ -44,6 +44,10 @@ set -euo pipefail
 # Resolve the workspace root from THIS script's location, so it works from any cwd.
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MAIN_CHECKOUT="$ROOT/youcoded"
+# Throwaway-HOME account isolation (GitHub keyring etc.) and its cleanup: see scripts/dev-isolation.sh.
+source "$ROOT/scripts/dev-isolation.sh"
+# One state file per offset: the private bus pid and address, so --stop can end the bus and what it started (exact pids).
+bus_state_file() { echo "${TMPDIR:-/tmp}/youcoded-dev-bus-$(id -u)-$1.state"; }
 
 WORKTREE=""
 EXPLICIT_PATH=""
@@ -123,12 +127,16 @@ stop_instance() {
       kill "$pid" 2>/dev/null || true
     done
   done
-  if [[ "$any" == "0" ]]; then echo "run-dev: nothing is listening on offset $OFFSET's ports ($(ports_for_offset "$OFFSET"))"; return 0; fi
+  # WHY (2026-10-01 one-core R6-3): a throwaway-HOME launch runs on a private session bus whose activated services (ksecretd, the desktop
+  # portal) outlive the app; end them by the exact pids recorded for this offset (see dev-isolation.sh).
+  local bus_state; bus_state="$(bus_state_file "$OFFSET")"
+  if [[ "$any" == "0" ]]; then dev_isolation_cleanup "$bus_state"; echo "run-dev: nothing is listening on offset $OFFSET's ports ($(ports_for_offset "$OFFSET"))"; return 0; fi
   # A graceful TERM first; anything still holding a port two seconds later gets KILL.
   sleep 2
   for p in $(ports_for_offset "$OFFSET"); do
     for pid in $(pids_on_port "$p"); do echo "run-dev: pid $pid ignored SIGTERM — killing"; kill -9 "$pid" 2>/dev/null || true; done
   done
+  dev_isolation_cleanup "$bus_state"
   echo "run-dev: offset $OFFSET's ports are free"
 }
 
@@ -294,6 +302,17 @@ fi
 
 preflight_ports
 
+# WHY (2026-10-01 one-core R6-3): a throwaway HOME alone does NOT isolate GitHub — `gh` keeps its login in the OS keyring, and a
+# smoke's theme publish opened a real pull request. When HOME is not the real home, point every XDG dir and GH_CONFIG_DIR inside
+# it, drop the token variables, and run under an empty D-Bus session. Details: scripts/dev-isolation.sh.
+dev_isolate_accounts "$(bus_state_file "$OFFSET")"
+# WHY after the port preflight: a launch that dies on a busy offset must not overwrite the state file of the instance already running there.
+# WHY a trap right away: the private bus must end with this launch even when a later step (the port preflight, a failed build) dies, and
+# the dev-instance marker below is removed by the same trap.
+cleanup_all() { [[ -n "${MARKER:-}" ]] && rm -f "$MARKER"; dev_isolation_cleanup "$(bus_state_file "$OFFSET")"; return 0; }
+trap cleanup_all EXIT
+if [[ -n "${DEV_ISOLATION_MODE:-}" ]]; then echo "  Accounts:      isolated (throwaway HOME: GitHub login blocked, $DEV_ISOLATION_MODE)"; fi
+
 # The marker `explore --dev` attaches through (scripts/shoot/explore.mjs → devMarker).
 # WHY: a window title or a port number proves nothing about whose app answers there; this
 # file names this script's own pid, and only this script writes it — Destin's installed
@@ -304,7 +323,6 @@ if [[ "$DEVTOOLS" == "1" ]]; then
   mkdir -p "$DESKTOP/.dev-instances"
   printf '{"pid":%d,"devtoolsPort":%d,"vitePort":%d,"offset":%d,"profile":"%s"}\n' \
     "$$" "$((9222 + OFFSET))" "$((5173 + OFFSET))" "$OFFSET" "${PROFILE//[\"\\]/}" > "$MARKER"
-  trap 'rm -f "$MARKER"' EXIT
 fi
 
 cd "$DESKTOP"

@@ -104,6 +104,13 @@ decision either way.
 - [x] 2026-10-04 chat-data — Find reports no results for message text loaded but folded offscreen (youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8)
 - [x] 2026-10-04 perf — Switching tabs unnecessarily recalculates unchanged inherited chrome heights, causing a measured full-content switch to take 55–56 ms rather than 15–17 ms (youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8)
 - [x] 2026-10-04 perf — A chat still marked at bottom can leave its latest tool card hidden after content shrinks, even though it correctly repins on growth (youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8)
+- [x] 2026-10-04 dev-workspace — The renderer's own copy of the bridge type can drift from the real bridge with every check green: `renderer/hooks/useIpc.ts` hand-writes… (one-core R2: window.claude typed from shared/backend-contract.ts; useIpc.ts hand copy deleted (feat/one-core))
+- [x] 2026-10-05 remote-access — 182 features are hand-written twice, once for the desktop window and once for a phone or browser connecting remotely, because one 5,100-line function both… (itsdestin/youcoded#604 (f0b243fac))
+- [x] 2026-10-05 remote-access — Over remote access the assistant-settings model picker offers models the browser cannot actually run, so choosing one saves a default that quietly does nothing… (itsdestin/youcoded#604 (f0b243fac))
+- [x] 2026-10-05 remote-access — A phone connected to the computer can lose the messages it is showing: when the computer sends its copy of the conversations and its copy of one is empty (it… (itsdestin/youcoded#604 (f0b243fac))
+- [x] 2026-10-05 remote-access — Things only one window knows, so the phone and the computer disagree: YouCoded-runtime queued messages (renderer-local by design note), the YouCoded-runtime… (itsdestin/youcoded#604 (f0b243fac))
+- [x] 2026-10-05 remote-access — Some chat cards can sit in a different place on the phone than on the computer (itsdestin/youcoded#604 (f0b243fac))
+- [x] 2026-10-05 remote-access — An action whose answer never arrived is recorded but never shown (itsdestin/youcoded#604 (f0b243fac))
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

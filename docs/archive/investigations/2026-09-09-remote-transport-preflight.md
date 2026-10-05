@@ -1,5 +1,6 @@
 ---
-status: active
+status: shipped
+superseded_by: docs/active/plans/2026-09-24-remote-access-refactor-plan.md
 ---
 
 # Remote transport preflight

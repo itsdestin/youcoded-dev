@@ -10,7 +10,7 @@ note: |
   Guard: youcoded/desktop/tests/attention-classifier.test.ts (parity-fixtures section)
          + youcoded/shared-fixtures/attention-classifier/
 files:
-  - "**/renderer/state/attention-classifier.ts"
+  - "**/shared/attention-classifier.ts"
   - "**/fixtures/**/attention-classifier.ts"
 rule:
   pattern: const SPINNER_RE = $RE
