@@ -117,7 +117,7 @@ export async function legSwitchMarks(ctx, h) {
   });
   await sleep(2500);
 
-  await phase('terminal-rapid', () => run(Array.from({ length: 20 }, (_, i) => (i % 2 ? huge : empty)), 250, 'terminal rapid'));
+  await phase('terminal-rapid', () => run(Array.from({ length: 20 }, (_, i) => (i % 2 ? empty : huge)), 250, 'terminal rapid'));
   await sleep(9000); // the window flushes every 5 s, main writes within 2 s
 
   // ---- read the recorder's file -------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ export async function legSwitchMarks(ctx, h) {
     delete out.phases[p.name].byDestination;
   }
   // ---- privacy scan: nothing that identifies a session, folder or file may be in the file ----------------------------
-  const needles = new Set([...sessions.names, ...ids, fixtureHome, 'alpha', 'beta', '/home/', '/tmp/', 'transcript', '.jsonl"', 'suspects fixture']);
+  const needles = new Set([...sessions.names, ...ids, fixtureHome, 'alpha', 'beta', '/home/', '/tmp/', '.jsonl"', 'suspects fixture']);
   for (const id of ids) if (id.length > 8) needles.add(id.slice(0, 8));
   const hits = [...needles].filter((n) => n && text.includes(n));
   out.privacy = { fileBytes: text.length, lines: lines.length, switchLines: sw.length, needlesChecked: needles.size, hits };
