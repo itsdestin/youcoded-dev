@@ -1,0 +1,11 @@
+{
+  "repo": "youcoded",
+  "phase": "R1–R6 (ended)",
+  "since": "2026-09-29",
+  "ended": "2026-10-04",
+  "reason": "RETIRED: the one-core refactor (R0–R6) landed as feat/one-core in both repos, so the four door files no longer need freezing. `paths` is empty on purpose — an empty list means no lock. Kept as the schema example for the next refactor; the check in scripts/close-out.sh and its test stay (the test uses its own fixture).",
+  "paths": [],
+  "exemptBranches": ["session/simplify-r*"],
+  "handoff": "docs/active/handoffs/2026-09-24-one-core-START-HERE.md",
+  "howToEdit": "To lock again, list the files in `paths` (a path ending in / locks a whole folder). A `paths` array that is empty, or no file at all, means no lock."
+}

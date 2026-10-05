@@ -1,0 +1,49 @@
+{
+ "deck": "office-next-questions",
+ "started": "2026-09-29T08:40:22.570Z",
+ "submitted": "2026-09-29T08:47:17Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1790671635530,
+   "seconds": 83,
+   "theme": "meadow-mist"
+  },
+  "Q-1": {
+   "note": "is there any way we could make office safely accept assistant comments while viewing? think of a few creative alternatives. i'm fine to restyle office's panel, but want it to work like our comments with live updates when the assistant interacts if possible. if we could do it before, i sure we can do it again.",
+   "t": 1790671635530,
+   "v": "pick",
+   "pick": "restyle-office-panel",
+   "seconds": 83,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "picks",
+   "picks": [
+    "pictures",
+    "save-as",
+    "remember-settings",
+    "print"
+   ],
+   "t": 1790671635530,
+   "seconds": 83,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "review-then-trim",
+   "t": 1790671635530,
+   "note": "yeeah i'm kinda confused about what went on here. open to completely rebuilding if needed. also, are we duplicating work eurooffice/onlyoffice might have already done for us in some capacity? this seemed like a lot of effort...",
+   "seconds": 83,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "build-all",
+   "t": 1790671635530,
+   "seconds": 83,
+   "theme": "meadow-mist"
+  }
+ }
+}

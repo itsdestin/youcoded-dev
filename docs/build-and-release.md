@@ -17,6 +17,9 @@ CI extracts version from the `vX.Y.Z` tag and patches `package.json` before buil
 ### Android version is stamped in CI
 Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
+### Office add-on is fetched per platform at build time
+`npm run build` starts with `node scripts/fetch-office.mjs --release --required`, which downloads every bundle `desktop/office-pin.json` pins for the build machine's OS into `desktop/office-build/<platform>-<arch>/` (the Mac runner gets both `darwin-x64` and `darwin-arm64`); `electron-builder.yml` packs `office-build/${platform}-${arch}` as the installer's `resources/office`. A platform with no pin (ARM Linux: upstream ships no converter) builds without Office and the app opens Office files with the default app. Bumping the add-on means: bump `version` in the add-on's own `PIN.json`, push a `vX.Y.Z` tag to `itsdestin/youcoded-office` (its CI builds all four platforms and smoke-tests each converter on its own OS before publishing the release with a `SHA256SUMS`), then set `version` and every platform's `url` and `sha256` in `desktop/office-pin.json` (all four: `linux-x64`, `darwin-x64`, `darwin-arm64`, `win32-x64`) and run `node scripts/fetch-office.mjs`. As of 2026-10-02 the pin is **v0.1.41**. The Windows bundle ships the Visual C++ runtime DLLs beside `x2t.exe` (a clean Windows PC lacks them; add-on v0.1.40) and its CI fails if any DLL is unshipped. On Mac, `electron-builder.yml` re-signs only the converter (`x2t` and its dylibs) and `scripts/office-packaged-smoke.mjs` runs the packaged x2t in the Mac CI jobs. `desktop/office-addon/` is only the dev copy for this machine. Depth: `youcoded/docs/office.md`.
+
 ### One tag, all platforms
 A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `desktop-release.yml`. Both upload artifacts (APK/AAB + Win/Mac/Linux installers) to the same GitHub Release.
 
@@ -145,7 +148,7 @@ what an official release is for, and 1.3.0 (2026-09-20) is the one that moves v1
 and those testers forward.** Betas run on the `1.3.1-beta` line from here: the beta line is
 always one patch AHEAD of the last release, so a beta is never offered a downgrade and the
 next release ends the run.
-<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "releases/latest"} -->
+<!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
 returning `completed/success` for a run still `in_progress` (2026-09-03), and acting on it
@@ -212,7 +215,7 @@ computer's installer, because one tag starts the Android and desktop workflows s
 release can exist for a while with only some of its files. v1.2.4 IS offered 1.3.0, but its Update
 button predates the allow-listed download host, fails, and offers "Open in browser instead".
 <!-- verify: {"test": "youcoded/desktop/tests/update-release-status.test.ts"} -->
-<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "readReleaseStatus"} -->
+<!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "readReleaseStatus"} -->
 
 **Which releases the check can SEE is a separate question from how it orders them (2026-09-13).**
 GitHub's `/releases/latest` returns the newest *stable* release and omits pre-releases entirely, so

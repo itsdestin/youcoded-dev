@@ -1,0 +1,76 @@
+{
+ "deck": "office-review",
+ "started": "2026-09-28T09:32:33.900Z",
+ "submitted": "2026-09-28T09:46:07Z",
+ "cur": 8,
+ "answers": {
+  "B-home": {
+   "v": "yes",
+   "t": 1790588118165,
+   "seconds": 164,
+   "theme": "light",
+   "zoom": 1
+  },
+  "B-empty": {
+   "v": "yes",
+   "t": 1790588375285,
+   "seconds": 257,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "B-document": {
+   "v": "yes",
+   "t": 1790588403189,
+   "seconds": 28,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "B-spreadsheet": {
+   "v": "yes",
+   "t": 1790588478051,
+   "seconds": 75,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "B-versions": {
+   "note": "we should ensure we have some logic/mechanism to prune autosaves/backups or whatever we're calling them. also how does this interact with any onlyoffice auto history features?",
+   "t": 1790588559968,
+   "v": "yes",
+   "seconds": 82,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "B-inline": {
+   "note": "we should move the \"open in office\" button to be a new icon that replaces the \"open in external/default app\" icon button in the file panel headerfor office docs. we should also make these documents fit/fill the pane better. ",
+   "t": 1790588668496,
+   "v": "yes",
+   "seconds": 109,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "L-try": {
+   "v": "other",
+   "t": 1790588709059,
+   "note": "this review page didn't work. gave me error code 404 error response. ",
+   "seconds": 41,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-edit-button": {
+   "v": "pick",
+   "pick": "as-today",
+   "t": 1790588741585,
+   "seconds": 33,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-escape": {
+   "v": "pick",
+   "pick": "back-when-idle",
+   "t": 1790588766229,
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

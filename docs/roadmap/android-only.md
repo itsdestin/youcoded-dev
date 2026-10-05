@@ -15,25 +15,23 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       the full desktop-narrow UI still reachable rather than removed, design-first (its own
       workbench mockup round before any build). Destin decided
       the same day (report §8): built-in assistant first, Play prioritized, the full desktop
-      file view, remove the old restore wizard, harness before phone basics. Step 2 (honest
+      file view, remove the old restore wizard, harness before phone basics. Steps 2–3 (honest
       builds: versions, notification permission, clean refusals) and the restore-wizard deletion
-      merged 2026-09-10 (youcoded#468); next is step 4, the harness runtime on the phone —
-      start at docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md. The ~3,150 lines
-      of Kotlin that re-implement desktop logic (the 2026-09-16 simplification audit's D9:
-      transcript watcher, skill provider, plugin installer, config store, session browser) fold
-      into this rebuild, and simplification phase 4 (one channel table for the desktop window
-      and the phone) goes before it, not inside it — decided 2026-09-18. Google Play's
-      downloaded-code rule must shape the rebuild's design: the setup step that downloads
-      Termux programs would likely be refused, so plan to ship them inside the app (report
-      appendix, "Found after the consolidation", 2026-09-23)
-      `android` `in-flight` `checked 2026-09-23` → docs/active/investigations/2026-09-10-android-parity-audit.md
+      merged 2026-09-10 (youcoded#468). Since 2026-09-24 the rebuild runs as phases A0–A6: the
+      phone runs the computer's own assistant core instead of about 10,000 lines of Kotlin
+      copies, and every program ships inside the app because Google Play refuses apps that
+      download programs after install (today's setup does). A0 (phone experiments) and A1 (Play
+      packaging) can start now; the assistant on the phone (A2, the old "step 4") was waiting for the
+      remote-access refactor to move every feature into one list; that refactor (R0–R6) is
+      complete and ready to merge as feat/one-core (2026-10-04), so A2 is unblocked once it
+      lands. Start at the one-core START-HERE
+      `android` `in-flight` `checked 2026-10-04` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
 
-- [ ] The phone still reads long conversations over the desktop bridge rather than paging them
-      on the device, so opening a big conversation on Android pays for the whole thing instead
-      of the last few turns — the desktop stopped doing that in cycle 2 (2026-08-28) and the
-      phone never got the same treatment. Deferred at the time by Destin's own scope decision,
-      not by oversight. Needs the Kotlin half of the tail reader. Carried over from the cycle-3
-      handoff when that document was archived 2026-09-10; until now it existed only as a
-      sentence inside a shipped entry
-      `android` `confirmed` `checked 2026-09-10` `performance`
-
+- [ ] The Android half of the one-core work has never run on a real Android device. The desktop
+      checks (types, tests, screenshots, a throwaway dev instance) cover only the computer side;
+      Android got its own checks only where a build kit happened to be installed. Still to see
+      on a phone: the app starts and shows the same screens; the Android app's own assistant
+      (which keeps no session record, so draws its own dividers and queue) behaves as before;
+      features the phone cannot do answer with a plain "not on the phone" notice rather than
+      a blank; and pairing to a computer still works with the new connection handshake
+      `android` `needs-verify` `checked 2026-10-04`

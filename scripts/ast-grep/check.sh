@@ -101,6 +101,7 @@ fi
 # 2026-09-16 (t5c): +3 for type-scale-named-tokens-declared + no-arbitrary-text-size +
 #   its -ts twin.
 # 2026-09-16 (t5c): +2 for app-no-switch-view-broadcast + app-no-switch-view-receiver.
+# 2026-10-01: +1 for app-transcript-listeners-batched (one-core R4-3 review).
 # 2026-09-16 (t6a): +2 for private-continuation-dir-single-owner + its -devtools twin
 #   (accepted-history-privacy.test.ts).
 # 2026-09-16 (t6a): +2 for no-unstepped-infinite-animation (its fixture fires both
@@ -397,7 +398,24 @@ fi
 #   its "-missing" fixture; app-composer-disabled-through-helper's fixture fires once. 408 + 4 = 412.
 # 2026-09-24 (startup prompts, dev-instance finding): +2 — app-existing-sessions-started-through-helper's
 #   fixture fires twice (the map form and the loop form). 412 + 2 = 414.
-EXPECTED_VIOLATIONS=414
+# 2026-09-30 (one-core R3-1): -3 — tags-list-no-empty-fallback-remote retired (its `case` moved into the
+#   channel table; the main rule now guards the one shared entry). Its two fixtures fired 2 + 1 = 3. 414 - 3 = 411.
+# 2026-09-30 (one-core R3-4): -3 — get-meta-marks-failed-read-unreadable-remote retired (its `case` moved into
+#   the channel table; the main rule now guards the one shared session:get-meta entry). Its fixtures fired 2 + 1 = 3.
+#   The session:create shell-refusal rule keeps one fixture finding. 411 - 3 = 408.
+# 2026-09-30 (one-core R3-6): -1 — run-in-terminal-entry-points-validate-remote retired (its `case` moved into
+#   the channel table; the main rule now guards the one shared engine:run-in-terminal entry). Its fixture fired 1.
+#   408 - 1 = 407.
+# 2026-10-01 (one-core R3-8): +3 — remote-admin-case-refuses retargeted at the channel-table entries in
+#   main/ipc/remote-admin.ts (its fixtures now fire 9: one per missing entry, the performed rename and the
+#   desktop-only get-config share one fixture, plus the disconnect-client entry and the lost refusal constant); the
+#   retired address-check and disconnect-handler bans moved to the new remote-server-no-address-check-or-disconnect
+#   (4 findings: the comment, the call and the `case` in one fixture, the `new` backstop in another). The old rule's
+#   fixtures fired 10. The appearance-broadcast and buddy-show rules were retargeted at their table entries with
+#   fixtures of the same count. 407 - 10 + 9 + 4 = 410.
+# 2026-10-01 (one-core R5-1): +1 — no-paired-session-send-and-broadcast (its fixture fires once; its -ok twin is clean).
+#   411 + 1 = 412.
+EXPECTED_VIOLATIONS=412
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

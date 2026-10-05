@@ -1,8 +1,13 @@
 // Violation fixture for tags-list-no-empty-fallback (EMPTY FALLBACK) — the
-// handler delegates, but answers an absent registry with []. Fires once.
-declare const ipcMain: any, IPC: any, getTagRegistry: () => unknown, listTagsForHost: () => Promise<unknown>;
-ipcMain.handle(IPC.TAGS_LIST, async () => {
-  if (!getTagRegistry()) return [];
-  return listTagsForHost();
-});
-ipcMain.handle(IPC.TAGS_CREATE, () => ({ ok: true }));
+// table entry delegates, but answers an absent registry with []. Fires once.
+declare const defineChannel: any, IPC: any, getTagRegistry: () => unknown, listTagsForHost: () => Promise<unknown>;
+export const entries = [
+  defineChannel({
+    name: IPC.TAGS_LIST, kind: 'handle',
+    handler: async () => {
+      if (!getTagRegistry()) return [];
+      return listTagsForHost();
+    },
+  }),
+  defineChannel({ name: IPC.TAGS_CREATE, kind: 'handle', handler: () => ({ ok: true }) }),
+];

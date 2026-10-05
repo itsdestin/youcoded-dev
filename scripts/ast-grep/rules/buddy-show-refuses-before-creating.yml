@@ -3,7 +3,7 @@ language: typescript
 severity: error
 message: >-
   The BUDDY_SHOW handler returns the refusal (`return { ok: false, … }`)
-  BEFORE it creates the buddy (`buddyManager.show()`). Asking the gate and
+  BEFORE it creates the buddy (`manager().show(...)`). Asking the gate and
   then showing the buddy anyway is the same bug as never asking: the product
   promise is "say no to the KWin script and you get no buddy at all".
 note: |
@@ -13,17 +13,19 @@ note: |
   is vacuous)" — the handler still calls buddyManager.show()). The retired
   case sliced main.ts from `IPC.BUDDY_SHOW` to `IPC.BUDDY_HIDE` and required
   the first `return { ok: false` to come before `buddyManager.show()`.
-  Here: every buddyManager.show() inside the handler must sit after (a
+  2026-10-04 (one-core R3-8): the handler is now the `defineChannel` entry for
+  IPC.BUDDY_SHOW in main/ipc/buddy.ts, and it calls `manager().show(...)`.
+  Here: every `<anything>.show(...)` inside the entry must sit after (a
   statement containing) such a return, searched only within the handler; the
   handler must contain both. buddy-show-consults-refusal-gate covers asking
   the gate and the handler's existence.
 files:
-  - "**/src/main/main.ts"
+  - "**/src/main/ipc/buddy.ts"
   - "**/fixtures/buddy-show-refuses-before-creating.ts"
 utils:
   show-handler:
-    kind: call_expression
-    pattern: ipcMain.handle(IPC.BUDDY_SHOW, $H)
+    kind: object
+    has: { kind: pair, regex: "^name:\\s*IPC\\.BUDDY_SHOW$" }
   refusal-return:
     kind: return_statement
     regex: "^return \\{ ok: false"
@@ -33,7 +35,9 @@ utils:
       - has: { stopBy: end, matches: refusal-return }
 rule:
   any:
-    - pattern: buddyManager.show()
+    # $$$ARGS: show() takes the buddy style since 2026-10-02 — with or without
+    # it, the refusal must still come first. $M matches `manager()` and any other receiver.
+    - pattern: $M.show($$$ARGS)
       inside: { stopBy: end, matches: show-handler }
       not:
         inside:
@@ -42,4 +46,4 @@ rule:
     - matches: show-handler
       any:
         - not: { has: { stopBy: end, matches: refusal-return } }
-        - not: { has: { stopBy: end, pattern: buddyManager.show() } }
+        - not: { has: { stopBy: end, pattern: $M.show($$$ARGS) } }

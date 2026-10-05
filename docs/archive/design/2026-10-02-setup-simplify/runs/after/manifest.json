@@ -1,0 +1,62 @@
+[
+  {
+    "name": "first-run#setup-done",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remove-win-devmode/docs/active/design/2026-10-02-setup-simplify/runs/after/first-run#setup-done/golden-sunbreak.png",
+    "ms": 667,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 800,
+      "h": 680
+    }
+  },
+  {
+    "name": "first-run#setup-installing",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remove-win-devmode/docs/active/design/2026-10-02-setup-simplify/runs/after/first-run#setup-installing/golden-sunbreak.png",
+    "ms": 1141,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 800,
+      "h": 440
+    }
+  },
+  {
+    "name": "first-run#setup-done",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remove-win-devmode/docs/active/design/2026-10-02-setup-simplify/runs/after/first-run#setup-done/meadow-mist.png",
+    "ms": 1165,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 800,
+      "h": 680
+    }
+  },
+  {
+    "name": "first-run#setup-installing",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remove-win-devmode/docs/active/design/2026-10-02-setup-simplify/runs/after/first-run#setup-installing/meadow-mist.png",
+    "ms": 1687,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 800,
+      "h": 440
+    }
+  }
+]

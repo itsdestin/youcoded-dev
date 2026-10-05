@@ -1,0 +1,30 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Spike host</title>
+<style>html,body{margin:0;height:100%;background:#0D1117}.row{display:flex;height:100%}iframe{flex:1;border:0;height:100%}</style>
+</head><body><div class="row" id="row"></div>
+<script>
+  // Stand-in for YouCoded's renderer: frames each document from its OWN origin
+  // (office://<token>/) and relays its requests to main, checking origin + source.
+  window.__frames = {};
+  window.addEventListener('message', async (e) => {
+    const entry = Object.values(window.__frames).find((f) => f.win === e.source);
+    if (!entry || e.origin !== entry.origin) return;       // only our frames, from their own origins
+    const d = e.data || {};
+    if (d.yc !== 'rpc') return;
+    const t0 = performance.now();
+    let reply;
+    try { reply = { yc: 'rpc-result', id: d.id, result: await window.host.invoke(entry.token, d.cmd, d.args) }; }
+    catch (err) { reply = { yc: 'rpc-result', id: d.id, error: String(err && err.message || err) }; }
+    const ms = performance.now() - t0;
+    if (/open_file|write_editor_bin/.test(d.cmd)) window.host.log(`relay ${d.cmd} ${entry.token.slice(0, 6)} ${Math.round(ms)} ms`);
+    e.source.postMessage(reply, entry.origin);
+  });
+  window.openDoc = (token, file) => {
+    const f = document.createElement('iframe');
+    const origin = `office://${token}`;
+    f.src = `${origin}/index.html`;
+    document.getElementById('row').appendChild(f);
+    window.__frames[token] = { token, origin, win: f.contentWindow, frame: f };
+    f.addEventListener('load', () => setTimeout(() => f.contentWindow.postMessage({ yc: 'event', name: 'open-file', payload: file }, origin), 1500));
+  };
+</script></body></html>

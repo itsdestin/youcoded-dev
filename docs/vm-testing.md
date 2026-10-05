@@ -522,11 +522,10 @@ Checked via guest-exec, so this is measured, not assumed:
 | qemu-ga / spice-agent | ✅ Running (spice-webdavd installed but Stopped) |
 | Build / resolution | Windows 11 Pro 25H2 (26200) · 1024×768 |
 
-**The `winget absent` row is a feature, not a defect.** `prerequisite-installer.ts` branches on
-`detectWinget`, and a fresh offline Win11 genuinely has no winget until the Store provisions App
-Installer — so this baseline exercises the **native `claude.ai/install.ps1` fallback path** for real.
-A `clean-winget` second snapshot (boot, let the Store provision App Installer, re-snapshot) would
-cover the other branch. Two snapshots, two code paths — worth doing before trusting either.
+**The `winget absent` row is a feature, not a defect.** Setup no longer uses winget for Git or
+Node (2026-10-02: portable Git and the Node zip into the user folder), so this baseline is the
+case that used to dead-end and now must not. winget remains only for Tailscale, rclone and `gh`
+(`detectWinget` callers); a `clean-winget` snapshot would cover those.
 
 ## Verified Ubuntu baseline (`clean` snapshot, 2026-07-16)
 

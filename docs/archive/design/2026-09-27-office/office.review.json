@@ -1,0 +1,157 @@
+{
+  "title": "Office — the first design, drawn in the app",
+  "key": "office-review",
+  "out": "office.review.html",
+  "stage": "design",
+  "images": "images/office.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Proposed"
+  },
+  "steps": [
+    {
+      "id": "B-home",
+      "crop": "office/home",
+      "surface": "Office",
+      "path": "Pages button (top left) → Office, under Built in",
+      "headline": "Office lives with your pages, pinnable like them, and opens on a start screen with New, Recent and this project's files.",
+      "changed": "A built-in Office entry heads the Pages list, with its own pin. Its start screen offers a new document, spreadsheet or presentation, your recent files, and the project's other Office files.",
+      "notice": "Recent says when you opened each file; the project list says when each changed, and never repeats a file already under Recent.",
+      "risk": "Pinning Office uses one of your four pinned-page spots, as you chose."
+    },
+    {
+      "id": "B-empty",
+      "crop": "office/first-run",
+      "surface": "Office",
+      "path": "Office, on a new install",
+      "headline": "On a new install the start screen says where your files will appear, and the page list shows only Office.",
+      "changed": "With no recent files, Recent says so in one line; Open a file… stays on its right.",
+      "notice": "Your own pages' welcome card is not shown here, because Office does not count as one of your pages."
+    },
+    {
+      "id": "B-document",
+      "crop": "office/document",
+      "surface": "Office",
+      "path": "Office → a document open, with two more tabs",
+      "headline": "Open files become tabs; a tab left alone for a while sleeps to save memory, dimmed with a moon, and wakes where you left it.",
+      "changed": "YouCoded's own tab strip replaces the editor's title bar. The right end says Saved and opens Versions. Garden talk is asleep.",
+      "notice": "The editor below is the real one — every Word feature is there — wearing your theme's colours, font and corners.",
+      "risk": "The picture is the trial build of OnlyOffice 9.3 restyled; Euro-Office's editor is the same screens, and gets re-checked when we switch to it."
+    },
+    {
+      "id": "B-spreadsheet",
+      "crop": "office/spreadsheet",
+      "surface": "Office",
+      "path": "Office → the spreadsheet tab",
+      "headline": "Spreadsheets and presentations get the same treatment: your theme around the editor, the sheet itself kept white.",
+      "changed": "Switching tabs is instant for documents that are awake; each keeps its place.",
+      "notice": "The grid, cells and formulas are the editor's own. Only the frame around them follows the theme."
+    },
+    {
+      "id": "B-versions",
+      "crop": "office/versions",
+      "surface": "Office",
+      "path": "Office → a document → Versions",
+      "headline": "Office saves as you work, and keeps earlier versions you can restore from here.",
+      "changed": "A Versions window lists copies kept when you opened the file and every few minutes while you worked, each with Restore.",
+      "notice": "Restoring keeps your current version too, so a restore can itself be undone.",
+      "risk": "How long versions are kept, and how many, is decided at build time; the plan is 30 days."
+    },
+    {
+      "id": "B-inline",
+      "crop": "chat/files/edit/a-sent-plan",
+      "surface": "Session files",
+      "path": "A conversation → Session files → Garden plan.docx → Edit",
+      "headline": "Edit on a Word, Excel or PowerPoint file swaps the preview for the real editor, with a slim YouCoded toolbar and one Done.",
+      "changed": "One row of YouCoded buttons — undo, redo, bold, italic, underline, lists, alignment — and Open in Office. The editor's own bars are hidden.",
+      "notice": "There is no Save or Cancel: changes save as you make them, so Done just leaves editing. Open in Office moves the file to a full tab.",
+      "risk": "The quick preview you see before pressing Edit is unchanged, and PowerPoint files, which have no preview today, still show only their name until Edit."
+    },
+    {
+      "id": "L-try",
+      "surface": "Office",
+      "path": "The practice app — Pages button, then Office",
+      "headline": "Try it yourself: open Office, open files from Recent, switch tabs, open Versions, then edit Garden plan.docx from a conversation's files.",
+      "live": {
+        "app": "default"
+      },
+      "changed": "The practice app with Office in it. The files are three sample documents; the editor is real, so typing and formatting work.",
+      "notice": "Nothing you do is saved, and a new blank file opens a sample of its kind."
+    },
+    {
+      "id": "Q-edit-button",
+      "words": true,
+      "surface": "Session files",
+      "path": "A conversation → Session files, with the file list open",
+      "headline": "Should the Edit button show while the file list is open?",
+      "today": "In the session files panel, the Edit button appears only once the list of files is collapsed. This already applies to text files.",
+      "problem": "The tester could not find any way to edit Garden plan.docx from the panel, because the list was open and Edit was hidden.",
+      "proposal": "Two ways.",
+      "options": [
+        {
+          "id": "always",
+          "label": "Always show Edit",
+          "pros": [
+            "Editing is always one visible press away.",
+            "Works the same for text and Office files."
+          ],
+          "cons": [
+            "The button floats over the document while you browse the list."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "as-today",
+          "label": "Keep it as today",
+          "pros": [
+            "The document stays uncovered while you browse."
+          ],
+          "cons": [
+            "New users may not find Edit at all, as the tester did not."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-escape",
+      "words": true,
+      "surface": "Office",
+      "path": "Pressing Escape while a document is open",
+      "headline": "What should Escape do while you are working in a document?",
+      "today": "Everywhere else in the app, Escape closes what is in front — the Office band even says Back to chat · Esc. Inside the editor, Escape also closes its own menus.",
+      "problem": "Pressing Escape out of habit while typing could jump you back to chat, which may feel abrupt mid-document.",
+      "proposal": "Two behaviours.",
+      "options": [
+        {
+          "id": "back-when-idle",
+          "label": "Back to chat, if idle",
+          "summary": "Escape first closes any editor menu or dialog; with none open, it goes back to chat like everywhere else.",
+          "pros": [
+            "Consistent with the rest of the app and the band's own hint.",
+            "Nothing is lost: Office saved as you went, and the tab is still there."
+          ],
+          "cons": [
+            "An Escape pressed out of habit leaves the document."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "stay",
+          "label": "Never leave Office",
+          "summary": "Inside a document Escape only affects the editor; you leave with the band's button.",
+          "pros": [
+            "No accidental exits while writing."
+          ],
+          "cons": [
+            "The band's Esc hint would be wrong inside documents, so it would change to just Back to chat."
+          ]
+        }
+      ]
+    }
+  ],
+  "live": {
+    "worktree": "sessions/office-suite-investigation/youcoded"
+  }
+}

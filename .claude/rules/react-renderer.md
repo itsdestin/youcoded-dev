@@ -9,7 +9,7 @@ verify:
   - path: youcoded/desktop/src/renderer/components/overlays/Overlay.tsx
   - path: youcoded/desktop/src/renderer/styles/globals.css
     contains: "chrome-glass"
-  - path: youcoded/desktop/src/renderer/components/RemoteSnapshotExporter.tsx
+  - path: youcoded/desktop/src/renderer/state/session-fill.ts
   - path: scripts/shoot/shoot.mjs
     contains: "not showing"
   - path: scripts/ui-review/shot.mjs
@@ -20,6 +20,8 @@ verify:
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
   - path: scripts/ast-grep/rules/no-hardcoded-z-index-or-scrim.yml
   - test: youcoded/desktop/tests/drawer-card-glass.test.ts
+  - path: youcoded/desktop/src/renderer/platform.ts
+    contains: "getCapabilities"
   - path: scripts/ast-grep/rules/no-arbitrary-text-size.yml
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
@@ -31,7 +33,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## Node vs browser boundary
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
-- **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
+- **One platform module: `renderer/platform.ts`.** "Can this screen do X?" is `getCapabilities().x` (`shared/capabilities.ts`), never `isAndroid()`/`isRemoteMode()` (look-and-feel and connection state only). Never test `location.protocol` inline.
 - **Performance** (subscriptions, hidden tabs, per-event cost, layout/paint): `performance.md`; lists and timelines: `renderer-lists.md`.
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
@@ -49,7 +51,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## Header bar (`HeaderBar.tsx`)
 - **No `min-w-0` on the left cluster** (collapses below the gear's `shrink-0`); put it on an individual child. Layout is SPACE-aware (`packSessions()` + ResizeObserver) — no `@media`/`window.innerWidth`; viewport branches only via `useNarrowViewport()`.
-- **`showCaptionButtons` must include Linux** — frameless on BOTH; gate window-chrome on "not macOS", NEVER `navigator.platform === 'Win32'`. Announcement lives in StatusBar, not HeaderBar.
+- **`showCaptionButtons` must include Linux** — frameless on BOTH; gate window-chrome on "not macOS", NEVER `navigator.platform === 'Win32'`. Announcement lives in StatusBar.
 
 ## Control primitives (`components/ui/`)
 - **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
@@ -60,6 +62,9 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.
 - **`.layer-surface` on a REPEATED element (grid tile, list row) is a paint bug** — N tiles = N backdrop-filters, and Windows Electron drops their paint per card (shipped twice: `516411a5`, `1f68a7f0`) · guard: `drawer-card-glass.test.ts`.
 
-## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
-- **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
-- **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. App's `statusData` handler's `attentionMap` diff is load-bearing.
+## Remote access state sync (`state/session-fill.ts`)
+- **Every screen is filled by `session:open`** via the live-push handlers; a phone gets only watched conversations (rest: `session:summary`). New state is a numbered event or record fact.
+- **Live facts (queue, dividers, prompt cards, "may be stuck") are the host's `session:live` events**; no screen infers them where `capabilities.sessionRecord` · `session-live-two-screens.test.ts`.
+- **Sends carry a `sendId`** (`state/submit-outgoing.ts`, never auto-resend); phone instant buttons use `state/pending-action.ts` · `send-reconcile.test.tsx`, `instant-buttons.test.tsx`.
+
+Depth: `docs/remote-state-sync.md`.

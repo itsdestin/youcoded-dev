@@ -95,6 +95,11 @@ jobs:
       - name: Test the workspace drift guards
         run: node --test scripts/workspace-drift-guards.test.mjs scripts/workspace-mcp.test.mjs
 
+      # WHY: a large merge diff must not silently drop screen/journey gates.
+      - name: Test verification gate selection
+        if: ${{ !cancelled() }}
+        run: node --test scripts/verify.test.mjs
+
       # workspace-start.mjs is the tool EVERY session runs before touching a file
       # (CLAUDE.md: "Before any development edit"), and its 27 tests never ran anywhere
       # automatic before 2026-09-23 — only by hand, which meant a break here would surface
@@ -112,6 +117,12 @@ jobs:
       - name: Test prune-worktrees
         if: ${{ !cancelled() }}
         run: node --test scripts/prune-worktrees.test.mjs
+
+      # dev-isolation.sh keeps a throwaway-HOME dev launch off the real GitHub login; the test also pins that it cannot end a launch
+      # on a machine without getent (Windows Git Bash).
+      - name: Test dev-isolation
+        if: ${{ !cancelled() }}
+        run: node --test scripts/dev-isolation.test.mjs
 
       # workspace-sync.mjs backs the same startup tool and can fast-forward the shared
       # checkout. Its suite once took minutes (a per-file git lookup made one 14,000-path
@@ -234,6 +245,11 @@ jobs:
       - name: close-out.sh warns about untracked files in the shared checkout
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-untracked-warning.test.sh
+
+      # The refactor's edit lock (docs/active/locks/) is only a promise unless close-out says it aloud.
+      - name: close-out.sh flags a branch that edits locked files
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-edit-lock.test.sh
 
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite

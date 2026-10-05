@@ -47,16 +47,6 @@ them. Not here: the theme renders wrong (themes).
       likely fix is a "Copy analytics ID" control in the app's About screen, then adding both IDs
       `n/a` `confirmed` `checked 2026-09-13`
 
-- [ ] Every marketplace refresh re-downloads the whole catalog (~1 MB on the wire, ~5,000 rows)
-      even when one listing changed. Wanted: send only what changed since the client's last version,
-      on both platforms. Not urgent at today's size; the unlock at ~20,000 rows.
-      `all` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md
-
-- [ ] The catalog payload carries detail-page data (capabilities, scan findings, licence, member
-      list) for every row, though a grid card needs a fraction of it. Wanted: a slim list payload,
-      the rest fetched when a card is opened. Do this before any paging work.
-      `all` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md
-
 - [ ] You cannot delete your own marketplace comment, on any platform. Reviews had it; comments
       have only the admin takedown route.
       `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`

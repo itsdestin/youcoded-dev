@@ -1,0 +1,138 @@
+{
+ "deck": "office-questions",
+ "started": "2026-09-28T07:01:31.959Z",
+ "submitted": "2026-09-28T07:12:18Z",
+ "cur": 4,
+ "answers": {
+  "Q-base": {
+   "note": "are there any other significant differences between onlyoffice/eurooffice?",
+   "t": 1790579025262,
+   "v": "pick",
+   "pick": "test-euro-first",
+   "seconds": 44,
+   "theme": "meadow-mist"
+  },
+  "Q-download": {
+   "v": "pick",
+   "pick": "installer",
+   "t": 1790579025262,
+   "note": "is this feasible, given license restrictions and such?",
+   "seconds": 44,
+   "theme": "meadow-mist"
+  },
+  "Q-fonts": {
+   "v": "pick",
+   "pick": "core-plus-system",
+   "t": 1790579025262,
+   "seconds": 44,
+   "theme": "meadow-mist"
+  },
+  "Q-entry": {
+   "v": "pick",
+   "pick": "pinnable",
+   "t": 1790579126715,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-tabs": {
+   "v": "pick",
+   "pick": "tabs",
+   "t": 1790579126715,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-sleep": {
+   "v": "yes",
+   "t": 1790579126715,
+   "note": "will need to think through optimal ux design tho",
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-start": {
+   "v": "picks",
+   "picks": [
+    "new",
+    "recent",
+    "project-files"
+   ],
+   "t": 1790579126715,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-open-mode": {
+   "v": "pick",
+   "pick": "preview-first",
+   "t": 1790579240881,
+   "seconds": 38,
+   "theme": "meadow-mist"
+  },
+  "Q-slim": {
+   "v": "pick",
+   "pick": "native-bar",
+   "t": 1790579240881,
+   "seconds": 38,
+   "theme": "meadow-mist"
+  },
+  "Q-types": {
+   "v": "picks",
+   "picks": [
+    "ms-modern",
+    "opendoc",
+    "legacy",
+    "csv"
+   ],
+   "t": 1790579240881,
+   "note": "if a lot of work, i don't mind saving the libreoffice formats for later addition as a roadmap item. kinda depends on how much work the extra formats are. we should handle csv but warn if something would cause an issue",
+   "seconds": 38,
+   "theme": "meadow-mist"
+  },
+  "Q-save": {
+   "v": "pick",
+   "pick": "auto",
+   "t": 1790579431277,
+   "note": "should try to keep version history or restorability or something if possible. may want to think through this a bit more",
+   "seconds": 63,
+   "theme": "meadow-mist"
+  },
+  "Q-ai-edits": {
+   "v": "pick",
+   "t": 1790579431277,
+   "note": "i don't think we should be changing assistant behavior for this? this is just our manual tooling for editing files and such?",
+   "pick": "direct-undo",
+   "seconds": 63,
+   "theme": "meadow-mist"
+  },
+  "Q-ai-sees": {
+   "v": "other",
+   "t": 1790579431277,
+   "note": "don't change assistant behavior for now. again, this is mostly manual tooling for humans right now.",
+   "seconds": 63,
+   "theme": "meadow-mist"
+  },
+  "Q-theme": {
+   "v": "pick",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "t": 1790579537524,
+   "pick": "full",
+   "note": "would also like our roundness/token settings if possible? not sure how hard that would actually be to build."
+  },
+  "Q-phones": {
+   "v": "pick",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "t": 1790579537524,
+   "pick": "desktop-first"
+  },
+  "Q-first-demo": {
+   "v": "picks",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "t": 1790579537524,
+   "picks": [
+    "office-page",
+    "theming"
+   ]
+  }
+ }
+}
