@@ -38,8 +38,10 @@ measurements are on one Linux machine with software drawing (no graphics card); 
 feel check was by hand, not measured. Still open and known: Excel's own file reader freezes
 the app ~0.23-0.29 s on open (target 0.1 s); after a hidden window's backlog is cut, a program
 redrawing at ~3 MB/s can leave stale lines (2 of 3 runs; Claude Code's own ~20 KB/s does not
-reach it). `verify.sh` was recorded green (9 of 9) on app `e9ba76e38`; it was not re-recorded
-after the two later terminal commits, so run it again before any merge.
+reach it). `verify.sh` was green (9 of 9) on the final app commit `f21ae6084` (2026-10-04, after the last
+review fixes: single-cell copy, batched row measuring, time-label formatter). Android unit tests
+ran on `633d8ff00`: 594 tests in each of three variants, 0 failed, 0 skipped; desktop/Android
+channel parity 409 of 409. Every commit on the branch has now had an independent review.
 
 **Where to look next.** What to try by hand: end of 4f. Where each fix lives in the code:
 `docs/MAP.md` rows *Artifact viewer*, *PTY I/O & keyboard*, *Chat & transcript*, *Perf lab*.
@@ -808,7 +810,7 @@ deck approved. Combined build tried by hand on Linux at 180 Hz: felt fine.
   trackpad pinch must be checked to zoom the app and not the page (4d).
 - A phone and the Android build: nothing here was measured or built for Android; the shared page code changed (fixes 1, 2, 5), the phone paths did not.
 - Prose busy time did not reach the 25% goal; see 4g for why it cannot on this rig.
-- `verify.sh` was green (9 of 9) on `e9ba76e38`; re-run on the final tree before any merge.
+- `verify.sh` is green (9 of 9) on the final app commit `f21ae6084`; Android unit tests 594 × 3 variants passed on `633d8ff00` (the three later commits are renderer-only).
 
 
 ## 6. What happened, and what is next
