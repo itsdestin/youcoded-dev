@@ -90,3 +90,24 @@ test('cleanup ends the bus daemon and whatever runs on that bus, by exact pid, a
     assert.ok(!existsSync(state), 'the state file is removed');
   } finally { onBus.kill(); other.kill(); try { process.kill(daemonPid); } catch {} rmSync(home, { recursive: true, force: true }); }
 });
+
+// WHY (2026-10-04): a state file left by a crashed launch can name a pid the OS has since given to something unrelated; cleanup must
+// not kill it. Runs on Linux only because the proof of identity is read from /proc (elsewhere cleanup kills nothing, by design).
+test('a stale state file never makes cleanup kill an unrelated process, at cleanup or at the next launch', { skip: process.platform !== 'linux' }, async () => {
+  const s = shim('ok', tmp()); const home = tmp();
+  const bystander = spawn('sleep', ['60'], { env: { PATH: s.bin } });
+  const alive = (p) => { try { process.kill(p, 0); return true; } catch { return false; } };
+  try {
+    const state = join(tmp(), 'state');
+    writeFileSync(state, `${bystander.pid}\nunix:path=/nonexistent-stale-bus\n`);
+    spawnSync('/bin/bash', ['-c', `source '${SCRIPT}'; dev_isolation_cleanup '${state}'`], { env: { PATH: s.bin, HOME: home } });
+    await new Promise((res) => setTimeout(res, 200));
+    assert.ok(alive(bystander.pid), 'an unrelated process that reused the pid is not killed by cleanup');
+    assert.ok(!existsSync(state), 'the stale state file is removed');
+    // And a new launch over a stale file clears it first (the launch itself may or may not start a bus; either way the bystander lives).
+    writeFileSync(state, `${bystander.pid}\nunix:path=/nonexistent-stale-bus\n`);
+    const r = spawnSync('/bin/bash', ['-c', `source '${SCRIPT}'; dev_isolate_accounts '${state}'; echo "mode=\${DEV_ISOLATION_MODE:-none}"; dev_isolation_cleanup '${state}'`], { env: { PATH: s.bin, HOME: home }, encoding: 'utf8' });
+    assert.equal(r.status, 0);
+    assert.ok(alive(bystander.pid), 'an unrelated process is not killed by a fresh launch either');
+  } finally { bystander.kill(); rmSync(home, { recursive: true, force: true }); }
+});

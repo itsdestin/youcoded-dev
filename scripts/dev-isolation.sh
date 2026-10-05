@@ -34,6 +34,16 @@ _dev_resolve() {
   printf '%s' "$r"
 }
 
+# True only when /proc proves <pid> is a dbus-daemon started the way dev_isolate_accounts starts it. No /proc, no proof, no kill.
+_dev_is_our_bus_daemon() {
+  local pid="$1" comm="" cmd=""
+  [[ -r "/proc/$pid/comm" && -r "/proc/$pid/cmdline" ]] || return 1
+  comm="$(cat "/proc/$pid/comm" 2>/dev/null)" || return 1
+  [[ "$comm" == "dbus-daemon" ]] || return 1
+  cmd="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)" || return 1
+  [[ "$cmd" == *"--session"* && "$cmd" == *"--print-address"* ]]
+}
+
 # Kill what a private bus started, by exact pid: the daemon (pid from the state file) and every process of this user whose environment
 # carries THIS bus's address. Never a pattern match on command lines.
 dev_isolation_cleanup() {
@@ -48,13 +58,20 @@ dev_isolation_cleanup() {
       if tr '\0' '\n' < "/proc/$p/environ" 2>/dev/null | grep -qxF "DBUS_SESSION_BUS_ADDRESS=$addr"; then kill "$p" 2>/dev/null || true; fi
     done
   fi
-  if [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null; then kill "$pid" 2>/dev/null || true; fi
+  # WHY the identity check (2026-10-04): the state file can outlive its daemon (a crashed launch never ran cleanup), and the OS reuses
+  # pids, so `kill -0` alone could end an unrelated process of this user. Kill only a pid PROVEN to be the dbus-daemon this script
+  # starts (comm is dbus-daemon and its command line carries --session and --print-address). Where /proc does not exist (Git Bash on
+  # Windows, macOS) identity cannot be proved, so nothing is killed — the state file is simply removed.
+  if [[ "$pid" =~ ^[0-9]+$ ]] && _dev_is_our_bus_daemon "$pid"; then kill "$pid" 2>/dev/null || true; fi
   rm -f "$state"
   return 0
 }
 
 dev_isolate_accounts() {
   local state="${1:-}" real_home real_resolved home_resolved
+  # WHY: a state file left by a crashed earlier launch describes a bus that is gone (or a pid that now belongs to something else);
+  # clean it up with the identity-checked routine, then start from nothing, so cleanup can never act on a stale record.
+  if [[ -n "$state" && -f "$state" ]]; then dev_isolation_cleanup "$state"; fi
   real_home="$(_dev_real_home)"
   if [[ -z "$real_home" ]]; then
     echo "dev-isolation: cannot tell which home is the real one on this machine (no getent); NOT isolating. Set YOUCODED_REAL_HOME to turn it on." >&2
