@@ -60,22 +60,22 @@ If I disagree with the approved design: nothing to raise.
 
 ## Triage (implementing session, 2026-10-05)
 
-- F1 accepted — HA subscribe_entities sends lc alone on a state change (lu only when attributes alone change); clear lu when lc arrives / stamp by the newest of the two
-- F2 accepted — an accepted send keeps its hold until the device reports (or the hold expires), not until the next check
-- F3 accepted — stale Cast state: no Now playing / equaliser / Pause
-- F4 accepted — read target_temp_low/high for heat_cool
-- F5 accepted — camera tiles beyond the live cap say so; stream the tab's top tiles
-- F6 accepted — Edit mode not saved across reopen
-- F7 accepted — retry a failed thumbnail on a later refresh
-- F8 accepted — skip camera_proxy for events-only Nest cameras
-- F9 accepted — keep the last good list on a one-off failure
-- F10 accepted — pause live socket handling and card streams while hidden
-- F11 accepted — count Activity from a cached result, not per draw
-- F12 accepted — equaliser animates transform, not height
-- F13 accepted — undo a refused older press only if it still owns the guess
-- F14 accepted — latest check wins
-- F15 accepted — leave an open colour input alone during a draw
-- F16 accepted — Media tab honours the Edit order within tiers
-- F17 accepted — guard posAt / members types in the template
-- F18 accepted — dead expression and duplicate clock removed
-- F19 accepted — tests for F1, F2, F5
+- F1 accepted — HA subscribe_entities sends lc alone on a state change (lu only when attributes alone change); clear lu when lc arrives / stamp by the newest of the two — fixed in youcoded af0970f13
+- F2 accepted — an accepted send keeps its hold until the device reports (or the hold expires), not until the next check — fixed in youcoded af0970f13
+- F3 accepted — stale Cast state: no Now playing / equaliser / Pause — fixed in youcoded af0970f13
+- F4 accepted — read target_temp_low/high for heat_cool — fixed in youcoded af0970f13
+- F5 accepted — camera tiles beyond the live cap say so; stream the tab's top tiles — fixed in youcoded af0970f13
+- F6 accepted — Edit mode not saved across reopen — fixed in youcoded af0970f13
+- F7 accepted — retry a failed thumbnail on a later refresh — fixed in youcoded af0970f13
+- F8 accepted — skip camera_proxy for events-only Nest cameras — fixed in youcoded af0970f13
+- F9 accepted — keep the last good list on a one-off failure — fixed in youcoded af0970f13
+- F10 accepted — pause live socket handling and card streams while hidden — fixed in youcoded af0970f13
+- F11 accepted — count Activity from a cached result, not per draw — fixed in youcoded af0970f13
+- F12 accepted — equaliser animates transform, not height — fixed in youcoded af0970f13
+- F13 accepted — undo a refused older press only if it still owns the guess — fixed in youcoded af0970f13
+- F14 accepted — latest check wins — fixed in youcoded af0970f13
+- F15 accepted — leave an open colour input alone during a draw — fixed in youcoded af0970f13
+- F16 accepted — Media tab honours the Edit order within tiers — fixed in youcoded af0970f13
+- F17 accepted — guard posAt / members types in the template — fixed in youcoded af0970f13
+- F18 accepted — dead expression and duplicate clock removed — fixed in youcoded af0970f13
+- F19 accepted — tests for F1, F2, F5 — fixed in youcoded af0970f13
