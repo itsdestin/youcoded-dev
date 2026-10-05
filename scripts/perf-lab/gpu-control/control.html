@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>gpu-cost positive control</title>
+<style>
+/* WHY: a known-cost scene for gpu-cost.mjs. Query: ?n=<number of glass layers>&mode=full|bubbles&canvas=0|1&fps=30.
+   "full"   = N window-sized backdrop-filter layers (worst case, a pure sensitivity probe).
+   "bubbles" = N chat-bubble-sized glass boxes (what a chat screen really has).
+   The canvas is the stand-in for a particle effect: a full-window canvas redrawn every 33 ms. */
+html,body{margin:0;height:100%;overflow:hidden;background:#222}
+#wall{position:fixed;inset:0;background:
+  radial-gradient(circle at 20% 30%,#ff7ab8,transparent 40%),
+  radial-gradient(circle at 80% 70%,#6ad1ff,transparent 45%),
+  repeating-linear-gradient(45deg,#3a2a5a 0 24px,#2a3a6a 24px 48px)}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+.g{position:fixed;background:rgba(255,255,255,.08);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);border:1px solid rgba(255,255,255,.15);border-radius:14px}
+#spin{position:fixed;left:0;top:50%;width:60px;height:60px;background:#fff;border-radius:50%;will-change:transform;animation:mv 2s linear infinite}
+@keyframes mv{from{transform:translateX(0)}to{transform:translateX(90vw)}}
+</style></head><body><div id="wall"></div><canvas id="c"></canvas><script>
+/* spin=1 adds a compositor-only CSS animation: it forces a frame every vsync, so the frame rate it shows IS the output's refresh rate (used to calibrate the virtual compositor's cadence). */
+if(new URLSearchParams(location.search).get('spin')==='1'){const s=document.createElement('div');s.id='spin';document.body.appendChild(s)}
+const q=new URLSearchParams(location.search);
+const n=+(q.get('n')||0), mode=q.get('mode')||'bubbles', useCanvas=q.get('canvas')!=='0', fps=+(q.get('fps')||30);
+for(let i=0;i<n;i++){const d=document.createElement('div');d.className='g';
+  if(mode==='full'){d.style.inset=(i%4)+'px'}
+  else{d.style.left=(8+(i%2)*45)+'%';d.style.width='44%';d.style.top=(2+Math.floor(i/2)*9)%88+'%';d.style.height='8%'}
+  document.body.appendChild(d)}
+const c=document.getElementById('c'),x=c.getContext('2d');
+function size(){c.width=innerWidth;c.height=innerHeight}size();addEventListener('resize',size);
+const P=Array.from({length:80},()=>({x:Math.random(),y:Math.random(),r:2+Math.random()*4,v:.0002+Math.random()*.0006}));
+let last=0;
+function tick(t){requestAnimationFrame(tick);if(!useCanvas||t-last<1000/fps-1)return;last=t;
+  x.clearRect(0,0,c.width,c.height);x.fillStyle='rgba(255,255,255,.7)';
+  for(const p of P){p.y=(p.y+p.v*33)%1;x.beginPath();x.arc(p.x*c.width,p.y*c.height,p.r,0,6.3);x.fill()}}
+requestAnimationFrame(tick);
+</script></body></html>

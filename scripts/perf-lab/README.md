@@ -985,6 +985,20 @@ instrument can see the thing it was built for.
 
 ---
 
+### Real-GPU cost without a visible window — `gpu-cost.mjs` (added 2026-10-05)
+
+The rig's Xvfb lane is software-drawn, so it cannot rank blur, particles or wallpapers. `gpu-cost.mjs` runs the
+packaged app on the **real Radeon** inside a private, invisible `kwin_wayland --virtual` (own socket, own
+D-Bus, own runtime dir, 2560x1600 at ~180 Hz, scale 1.5; nothing reaches the real screen or the live session)
+and reads the app's own GPU time from amdgpu `fdinfo`, which other processes (the owner's desktop, VMs) cannot
+contaminate. It REFUSES to report if Chromium is not on the Radeon with GPU compositing and rasterization on.
+Suites: `--suite control` (known-cost positive control + noise floor) and `--suite themes --cells
+'midnight,cotton-candy-sky+noparticles,...' --scene welcome|chat|stream`. Toggles: `+reduced +noparticles
++smallwall +noblur`. Pure parsing is unit-tested in `tests/gpu-cost-parse.test.mjs`. Method, limits and first
+readings: `docs/active/investigations/2026-10-05-theme-gpu-measurement.md`. Run it with no other rig or dev app
+holding ports 10000/10020/9558 (it checks), and compare megacycles/second as well as percent because the GPU
+clock moves with load.
+
 ## Tests
 
 ```bash

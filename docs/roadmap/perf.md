@@ -58,8 +58,8 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Starring, tagging or renaming a chat triggers a later full search-index rebuild that may stall the app; the unrelated conversation-record read/heal path shipped async in youcoded#573, but did not remove this index rebuild
       `chat` `desktop` `confirmed` `checked 2026-09-26` `performance`
 
-- [ ] Theme mascot companions may animate at the full display refresh rate even after the mascot body was capped; this companion cost has not been measured with a companion theme. The observed welcome-screen GPU change applied to the body, not the companions
-      `all` `needs-verify` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
+- [ ] Theme mascot companions may animate at the full display refresh rate even after the mascot body was capped; this companion cost has not been measured with a companion theme. The observed welcome-screen GPU change applied to the body, not the companions. A way to measure it without a visible window now exists (scripts/perf-lab/gpu-cost.mjs); a companion theme scene has not been run yet
+      `all` `needs-verify` `checked 2026-10-05` `performance` → docs/active/investigations/2026-10-05-theme-gpu-measurement.md
 
 - [ ] Large synced projects still consume more file watches than necessary even after the 2026-09-29 correction; choose whether one watch per folder/project with platform-specific detection is worth the risk of missed edits, and test on Linux, Mac and Windows before changing it
       `settings/sync` `desktop` `decision` `checked 2026-09-29` `performance`
@@ -121,8 +121,8 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Every open Office document keeps its editor loaded, so memory grows with each tab left open. The designed 20-minute sleeping policy (R8) was deferred and never built; the asleep flag is currently only set by screenshots
       `files-panel` `desktop` `confirmed` `checked 2026-10-02` `performance`
 
-- [ ] Other card grids may repeat the per-tile blur cost previously found in the command drawer; the files grid's backdrop has not been checked, so this is a measurement question, not a confirmed GPU defect
-      `all` `needs-verify` `checked 2026-07-31` `performance`
+- [ ] Other card grids may repeat the per-tile blur cost previously found in the command drawer; the files grid's backdrop has not been checked, so this is a measurement question, not a confirmed GPU defect. A way to measure it without a visible window now exists (scripts/perf-lab/gpu-cost.mjs); no card-grid scene has been built yet
+      `all` `needs-verify` `checked 2026-10-05` `performance` → docs/active/investigations/2026-10-05-theme-gpu-measurement.md
 
 - [ ] Animation frame budgets have not been checked on actual phones or remote browsers, where refresh rate and Reduced Effects differ. Measure those devices before applying desktop cost assumptions
       `all` `needs-verify` `checked 2026-08-07` `performance`
@@ -157,8 +157,8 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Phones get full glass blur by default and nothing turns it down; blur is the costliest effect on phone graphics chips, so mid-range phones may scroll choppily and themes would look flatter if reduced. Found by reading code, not measured
       `themes-screen` `android` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
 
-- [ ] Themes may cost more graphics work than they should; all found by reading, none measured, and all need a real graphics card (not the software-drawn rig): particle themes make every glass chat bubble re-blur 30 times a second (6 of 8 registry themes have blurred bubbles); two registry wallpapers are 8K (about 132 MB each decoded) with no smaller copy made; theme fonts download from Google after the app is already showing, so text re-flows and offline gets the wrong font; and Reduce Visual Effects does not touch wallpaper size, blur written in a theme's own custom styling, or the buddy's breathing loop
-      `themes-screen` `all` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+- [ ] Themes may cost more graphics work than they should; all found by reading, none measured, and all need a real graphics card (not the software-drawn rig): particle themes make every glass chat bubble re-blur 30 times a second (6 of 8 registry themes have blurred bubbles); two registry wallpapers are 8K (about 132 MB each decoded) with no smaller copy made; theme fonts download from Google after the app is already showing, so text re-flows and offline gets the wrong font; and Reduce Visual Effects does not touch wallpaper size, blur written in a theme's own custom styling, or the buddy's breathing loop. First real-GPU readings 2026-10-05 (invisible, per-process GPU time): particle plus glass themes cost about 4% of the chip while idle, glass themes about 11-15% while a reply streams versus 2.4% for the plain theme, Reduce Visual Effects returns both to plain-theme cost, and 8K versus screen-size wallpapers showed no drawing-time difference but possibly 100-200 MB more graphics memory (not established)
+      `themes-screen` `all` `needs-verify` `checked 2026-10-05` `performance` → docs/active/investigations/2026-10-05-theme-gpu-measurement.md
 
 - [ ] The hitch recorder (the single most valuable missing instrument) is built on branch session/perf-hitch-recorder-20261005, not merged. One local file per profile, never message text, noting each long screen freeze, slow keypress or click, main-process stall, per-minute memory and launch timings, so real stutters become a ranked list without poking at the live app; `scripts/perf-lab/hitch-report.mjs` reads it. Still open: attaching a redacted summary to bug reports (owner's privacy decision), and the same recorder for Android and remote browsers
       `n/a` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
