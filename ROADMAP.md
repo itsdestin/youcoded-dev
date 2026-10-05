@@ -75,8 +75,8 @@ Target: `v1.3.1`
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 42 | 19 | 3 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 13 | 2 | 5 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 25 | 9 | 8 | 4 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 7 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 23 | 9 | 7 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 21 | 3 | 1 | 5 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 5 | 0 | 5 |
