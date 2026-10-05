@@ -29,11 +29,11 @@ Could I complete the task? Yes for Home, Lights, Media, Climate, Cameras, Activi
 
 ## Triage (implementing session, 2026-10-05)
 
-- U1 accepted — Escape handled inside a page must not also close the Pages view
-- U2 accepted — Appearance subtitle/placement mentions pages
-- U3 accepted — a switch that cannot apply reads OFF (disabled), not greyed ON; clearer note
-- U4 accepted — note says plainly what to change (layout) — Framed see-through itself stays a roadmap decision
-- U5 accepted — the page list pane gets the same glass as the page pane while see-through is on
+- U1 accepted — Escape handled inside a page must not also close the Pages view — fixed 666df8ee0 (app branch)
+- U2 accepted — Appearance subtitle/placement mentions pages — fixed 666df8ee0 (app branch)
+- U3 accepted — a switch that cannot apply reads OFF (disabled), not greyed ON; clearer note — fixed 666df8ee0 (app branch)
+- U4 accepted — note says plainly what to change (layout) — Framed see-through itself stays a roadmap decision — fixed 666df8ee0 (app branch)
+- U5 accepted — the page list pane gets the same glass as the page pane while see-through is on — fixed 666df8ee0 (app branch)
 - U6 already handled — roadmap other-features "Pages on a phone" (decision, its own round)
 - U7 accepted — header tabs at medium widths: Edit/gear stay top-right
 - U8 accepted — Home tab room status matches Lights tab; check Kitchen slider at 0 while on
@@ -47,5 +47,5 @@ Could I complete the task? Yes for Home, Lights, Media, Climate, Cameras, Activi
 - U16 accepted — "77° out · 74° in"
 - U17 accepted — remote keyboard order follows the layout; pad buttons labelled
 - U18 accepted — pop-up names the device once
-- U19 accepted — check Enter opens a page from the list; fix if real
+- U19 accepted — check Enter opens a page from the list; fix if real — fixed 666df8ee0 (app branch)
 - U20 rejected — pre-existing in Appearance (not this branch); filed on the roadmap (themes)
