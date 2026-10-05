@@ -181,3 +181,26 @@ a **detail page's one-line chip row**, the **⋯ row menu** popover, the **Setti
   pinned Add a friend, so it's only reachable by scrolling.
 - Two filled Challenge buttons when two friends are online (R3-5).
 - Danger notice titles are red text — the shared notice box's own style, not changed here.
+
+## Round 4 (2026-10-05) — after Destin's games-social-3 answers
+
+Deck `games-social-4.json` (before `runs/gs3-after`, after `runs/gs4-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R4-1 | Account concept shipped; roster / strip and `?statusLook=` removed. | G3C-1. |
+| R4-2 | Incognito line: "4 friends · who's online is hidden". **No online count**: incognito disconnects the presence connection (`usePresence`), so this computer receives nobody's online state — there is no number to show. | G3-9 asked for the count; the error-message standards forbid a guessed number. Reported, not built. |
+| R4-3 | Opened list: every person is a box (the game page's Settings-list look, `CARD_LEVEL_1`, re-levelled inside the card), 8px apart, scrolling under the fade, Add a friend pinned at the bottom. The list's own nested box is gone (boxes inside a box inside a card would be three levels). | G3-4. Guide "Card levels" (a first-level box inside a card takes the nested look). |
+| R4-4 | ⋯ menu removed. Three ways behind `?friendManage=`: **details** (shipped) — click a friend's box (setting-row arrow) for a "Friend details" popup like Session details / the detail pages' top card, Unfriend + Block… under it; **inline** — a Manage button opens the box in place, like the Tags card's edit-in-place; **edit** — "Edit friends" beside Add a friend puts the list in an edit mode with Done, like Settings → Account's Edit account. Block asks first in all three, with the warning visible (not a tooltip). | G3-3. The guide has no recipe for "manage one item in a list"; the three references are screens, not rules. |
+| R4-5 | The error boxes lost their titles: one plain sentence + Try again. | G3-7. **Count:** of the app's 16 red notice boxes, 13 have NO title; 3 carry the shared notice box's red title — `components/marketplace/MarketplaceDetailOverlay.tsx:229` ("Couldn't install"), `components/marketplace/IntegrationDetailOverlay.tsx:97` ("Something went wrong"), `components/LocalModelsSection.tsx:1122` ("This model failed to load last time") — plus the workbench mockup `SettingsPiecesDemo.tsx:114`. The red title is the shared `Callout` danger tone's own style (`ui/Callout.tsx`, `title: 'text-destructive-fg'`), while its warning and info titles are normal text colour and `ErrorState`'s title is normal text colour. Not changed elsewhere (ask first). |
+
+### Tooling friction this round
+1. **A Choice slide can overflow sideways** and cut its first and last pictures (three crops of
+   different widths: 340 / 420 / 420). Equal-sized crops fixed it. The builder gave no warning.
+2. The friend details popup needed a `Dialog` screen name and a `useScreenOpen` inside a part of
+   the card that only exists once the card is open — the screen entry had to set `friendsOpen=1` as
+   well. Easy to get wrong; the screens test catches a missing name but not this.
+3. Part of a file was cut by my own section-slicing edit and restored from the previous commit —
+   typecheck caught it at once.
+4. `verify --full` 9/9 PASS. New tests: the details popup shows the handle and gates Block; the
+   incognito line never shows a number (broke it, saw it fail, restored).

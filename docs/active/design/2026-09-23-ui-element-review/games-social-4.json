@@ -1,0 +1,95 @@
+{
+  "title": "Games: friend boxes, managing a friend, error boxes — round 4",
+  "key": "games-social-4",
+  "out": "games-social-4.review.html",
+  "images": "images/games-social-4",
+  "runs": {
+    "before": "runs/gs3-after",
+    "after": "runs/gs4-after"
+  },
+  "labels": {
+    "before": "Round 3",
+    "after": "Round 4"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "G4-1",
+      "surface": "Games",
+      "path": "Gamepad button, card opened, a request each way",
+      "crop": "chat/games#requests@420x560+1010+40",
+      "headline": "Each friend in the opened list is now its own box, like the game page's, inside the scrolling area.",
+      "changed": "Plain rows became boxes 8px apart (the Settings list look). The ⋯ is gone; each box has an arrow and opens that friend's details.",
+      "notice": "The list still scrolls under the fade, with Add a friend at the bottom."
+    },
+    {
+      "id": "G4-2",
+      "surface": "Games",
+      "path": "Gamepad button, twelve friends, card opened",
+      "crop": "chat/games#long@420x560+1010+40",
+      "headline": "With many friends the boxes scroll inside the card; the games stay right below it.",
+      "changed": "Same boxes on the long practice list.",
+      "notice": "About four boxes show before it scrolls."
+    },
+    {
+      "id": "G4-3",
+      "surface": "Games",
+      "path": "Gamepad button, incognito",
+      "crop": "chat/games#incognito@420x220+1010+40",
+      "headline": "Incognito: the line under your name says how many friends you have and that who's online is hidden.",
+      "changed": "You asked for the online count here. While you're incognito the app is disconnected from friends on purpose, so it cannot know who is online; the line says so instead of showing a guessed number.",
+      "notice": "\"4 friends · who's online is hidden\"."
+    },
+    {
+      "id": "G4-4",
+      "surface": "Games",
+      "path": "Gamepad button, game server unreachable",
+      "crop": "chat/games#degraded@420x300+1010+40",
+      "headline": "The red error box loses its red title: one plain sentence and Try again, like most of the app's error boxes.",
+      "changed": "13 of the app's 16 red notice boxes have no title; the 3 that use red title text are listed in the round report for a later decision.",
+      "notice": "Text reads \"Can't reach the game server. Your friends, Connect 4 and Chess are unavailable…\"."
+    },
+    {
+      "id": "G4-5",
+      "surface": "Games",
+      "path": "Gamepad button, no internet",
+      "crop": "chat/games#offline@420x300+1010+40",
+      "headline": "The amber no-internet box matches: one sentence starting \"No internet connection.\" and Try again.",
+      "changed": "Its separate title line is gone, so both error boxes have the same shape.",
+      "notice": "Shown only when the computer reports no network."
+    },
+    {
+      "id": "G4C-1",
+      "surface": "Games",
+      "path": "Games → open the friends card → a friend",
+      "headline": "How should you see a friend's @handle and unfriend or block them, now the ⋯ menu is gone?",
+      "notice": "Every version asks before blocking, with the same warning; unfriending is one press, as before.",
+      "variants": [
+        {
+          "id": "details",
+          "label": "Friend details popup",
+          "crop": "chat/games/friend@420x320+510+290",
+          "summary": "Click a friend's box: a small popup like Session details shows their name, status and @handle, with Unfriend and Block… under it."
+        },
+        {
+          "id": "inline",
+          "label": "Manage opens the box",
+          "crop": "chat/games#manage-inline@420x320+1010+90",
+          "summary": "A Manage button on each box opens it in place (like editing a tag in Session details) to show the @handle, Unfriend and Block…; Done closes it.",
+          "risk": "A Manage button on every row adds a lot of buttons."
+        },
+        {
+          "id": "edit",
+          "label": "Edit mode for the list",
+          "crop": "chat/games#manage-edit@420x320+1010+90",
+          "summary": "\"Edit friends\" beside Add a friend switches the whole list (like Account's Edit account): every box shows its @handle with Unfriend and Block…; Done ends it.",
+          "risk": "Two steps to reach one friend's actions."
+        }
+      ]
+    }
+  ]
+}
