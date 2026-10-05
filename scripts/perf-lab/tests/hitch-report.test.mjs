@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, copyFileSync, rmSync, readFileSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyse, causeOfFrame, parseSince, readLines } from '../hitch-report.mjs';
+import { analyse, causeOfFrame, parseSince, readLines, render } from '../hitch-report.mjs';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const sample = join(here, 'fixtures', 'hitches-sample.jsonl');
@@ -81,5 +81,16 @@ test('is read-only: the file is byte-identical afterwards', () => {
 test('a stall whose last request started long before it is not blamed on that request', () => {
   const a = analyse([{ t: 1, ts: '2026-10-05T09:00:00.000Z', launch: 'x', kind: 'main-stall', ms: 400, lastIpc: 'session:list', lastIpcAgoMs: 20000, sessions: 1 }]);
   assert.doesNotMatch(a.byCause[0].key, /session:list/);
-  assert.match(a.byCause[0].key, /no app request was being handled/);
+  assert.match(a.byCause[0].key, /no app request had started inside the stall/);
+});
+
+test('a request is named only if it started inside the stall, worded as a maybe', () => {
+  const mk = (ago) => analyse([{ t: 1, ts: '2026-10-05T09:00:00.000Z', launch: 'x', kind: 'main-stall', ms: 400, lastIpc: 'session:list', lastIpcAgoMs: ago, sessions: 1 }]).byCause[0].key;
+  assert.match(mk(350), /last request it started was session:list — may be unrelated/);
+  assert.doesNotMatch(mk(500), /session:list/); // started before the stall began: the old +300 slack named it
+});
+
+test('the text report says stall lengths are approximate', () => {
+  const { rows } = readLines([sample], 0);
+  assert.match(render(analyse(rows), 0), /accurate to about \+\/- 50 ms/);
 });

@@ -59,7 +59,7 @@ export function analyse(rows) {
   const hitches = [];
   for (const r of rows) {
     if (r.kind === 'frame' || r.kind === 'task') hitches.push({ r, kind: 'freeze', ms: r.d, cause: r.kind === 'frame' ? causeOfFrame(r) : 'a long task (browser could not say which code)' });
-    else if (r.kind === 'main-stall') hitches.push({ r, kind: 'stall', ms: r.ms, cause: `main process stall${r.lastIpc && r.lastIpcAgoMs <= r.ms + 300 ? ` (while handling or right after: ${r.lastIpc})` : ' (no app request was being handled: other work, or the whole computer was busy)'}` });
+    else if (r.kind === 'main-stall') hitches.push({ r, kind: 'stall', ms: r.ms, cause: `main process stall${r.lastIpc && r.lastIpcAgoMs <= r.ms ? ` (the last request it started was ${r.lastIpc} — may be unrelated)` : ' (no app request had started inside the stall: other work, or the whole computer was busy)'}` });
     else if (r.kind === 'event') hitches.push({ r, kind: 'slow-input', ms: r.d, cause: `slow ${r.type} on ${r.tgt}` });
   }
   const group = (keyFn) => {
@@ -122,6 +122,7 @@ export function render(a, bad) {
   o.push(`${t.launches} launch(es), ${t.minutes} minute(s) of records${bad ? `, ${bad} unreadable line(s) skipped` : ''}`);
   o.push('');
   o.push('THE SHORT VERSION');
+  o.push('  (engine-stall lengths are accurate to about +/- 50 ms)');
   o.push(`  ${t.freezes} screen freezes of 0.1 s or longer, and ${t.stalls} time(s) the app's engine stopped answering. Together: ${sec(t.frozenMs)} frozen.`);
   o.push(`  ${t.slowInputs} key presses/clicks took over 0.1 s to show a result.`);
   o.push(`  Smaller hiccups (0.05-0.1 s): ${t.mediumFrames} of them, ${sec(t.mediumFramesMs)} in all.`);
