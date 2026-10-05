@@ -5,6 +5,7 @@ revision: 4 (after design reviews 1–3 — docs/active/reviews/2026-10-04-page-
 source: home-page-next.questions (Q-speed "instant" + note "reusable tooling … part of the page platform, with appropriate guardrails"); camera decision in chat 2026-10-04 ("yes, a. event history recordings should also be able to play"); home-page-next-designs (C-camera "events")
 branch: youcoded session/ha-pages-connection
 builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)
+stage: built on session/ha-pages-connection, awaiting merge (see "As built" at the end)
 ---
 
 # A page's live connection to its home device, and camera video played by the app
@@ -172,7 +173,7 @@ network candidates.
 3. Main keeps that socket open for the video's life; `pages:video-stop`, the page's frame
    going away, the lease, or 5 minutes close it (the card offers Play again).
 4. Frames: `requestVideoFrameCallback` on a muted, inline `<video>` in `PageHost` →
-   `createImageBitmap` at the source's size (his Nest: 640×360) → transferred to the frame.
+   `createImageBitmap` at the source's size, scaled down only when wider than 1280 px (his Nest: 640×360) → transferred to the frame.
    **The next frame is sent only after the page acks**; bitmaps never sent are closed [18].
    Measured in the dev window minimised / scrolled; `MediaStreamTrackProcessor` where the
    callback stalls [19].
@@ -227,3 +228,27 @@ fallback when video cannot start.
 ## Not in this
 
 Audio; two-way talk; recording on demand; HLS; Android native Pages.
+
+## As built (2026-10-05) — where the code differs from, or adds to, the text above
+
+The code is the truth; read this section before trusting any line above it.
+
+- **Channels are table entries.** After the one-core merge each `pages:*` channel (17 in all: the ten
+  ordinary ones, `pages:fetch`, four `pages:socket-*`, three `pages:video-*`; `pages:socket-event` is the one push)
+  is a `defineChannel` entry in `desktop/src/main/ipc/pages.ts`, served to both doors. The owner (calling window
+  or phone, taken from the door, never the request), the push of events to that owner only and
+  close-on-navigate/crash/destroy/phone-drop live in `main/pages/page-owner.ts`. The preload list is generated from
+  `backend-contract.ts`; Android lists the same channels as not-implemented in `SessionService.kt`.
+- **Caps as built:** sockets 2 per page, 4 per owner, 8 per app; videos 4 per page, 6 per app (the first drafts of
+  this spec said 2/4). Frames to the page: at most ~15 a second, never wider than 1280 px.
+- **Extras the text does not mention:** a connection with no `socketReady` counts as sound after 10 s open
+  (`stableMs`); after `socketReady` it must stay open 30 s before the reconnect back-off resets (`readyStableMs`);
+  a remote client with more than 4 MB unread loses the socket; a hidden page re-asks to open a few times when the
+  opening-rate limit refuses; a video's device replies are capped at 256 KB / 200 messages.
+- **Approval card:** a device with a login greeting or a "logged in" reply shows "Keeps a live connection open for
+  instant updates."; one with a `videoProfile` shows "Can play camera video through the app." (both in
+  `renderer/components/pages/page-connections.tsx`).
+- **Recorded events, in practice:** Google gives no picture or clip for his Living Room and Back Door cameras
+  (event image fetch fails with "not supporting RTSP"); the doorbell does. Those cameras' events are listed
+  without a picture. Google rate limits (HTTP 429) back off 60/120/300 s in the page.
+- **Not tried on real hardware:** more than 4 cameras at once, a 5-minute restart over time, remote browser video.

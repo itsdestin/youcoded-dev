@@ -1,11 +1,19 @@
 ---
-status: draft
+status: active
 date: 2026-10-01
 source: home-page-v2.questions (Q-where: "mixed"; Q-kind earlier: any-device)
 branch: youcoded session/ha-pages-live
 ---
 
 # A page's socket exchange with its home device
+
+> **Built** on `session/ha-pages-connection` (awaiting merge): the one-shot exchange works as written below, with
+> two later changes. (1) `socketHello` now rides the approval fingerprint inside one `|profile:` segment (not
+> `|hello:`), together with the live-socket fields. (2) The approval card says "Keeps a live connection open for
+> instant updates." (not the draft sentence under "Not a privilege jump"). Every outgoing message, this exchange
+> included, is now checked against the built-in deny floor plus `socketDeny`. Extended by
+> `2026-10-04-page-live-socket-and-camera-video.md` (the live socket and camera video); that spec is the one to read
+> for the current rules. Archive both at merge.
 
 ## Why
 

@@ -1,71 +1,77 @@
 ---
 status: active
 date: 2026-10-05
-branch: session/ha-pages-connection (workspace + youcoded); nothing merged
+branch: session/ha-pages-connection (workspace + youcoded); pushed, nothing merged
 ---
 
-# Home page (Home Assistant) — where it stands
+# Home page (Home Assistant) and the Pages platform work — where it stands
 
-## Built on the branch (all pushed)
+Rewritten 2026-10-05 at merge prep. The code is the truth; this says where to look and what nobody has tested yet.
 
-- Platform: device connection; one-shot socket; **live socket** (`page-live-socket.ts`), **app-played
-  camera video** (`page-live-video.ts`, caps now 4/page 6/app), recorded clips (`as:'video'`), device
-  profile (`socketHello/Ready/AuthFailed/Deny`, `videoProfile`) + built-in deny floor. Spec:
-  `docs/active/specs/2026-10-04-page-live-socket-and-camera-video.md`; reviews in `docs/active/reviews/`.
-- Home page files: `youcoded/desktop/src/renderer/dev/workbench/fixtures/home-assistant-page*.ts`
-  (page, -style, -look, -motion, -feel, -redraw, -pending, -edit, -history, -live, -camera, -icons,
-  -templates). Fake HA: `fake-home-assistant.ts`. Redesign options shelf: `fixtures/home-variants/`.
-- Redesign round 1 (`docs/active/design/2026-10-04-home-redesign/`): flicker/race fixes (all 7 picks
-  + 12 review fixes), Edit = Organise board (+ review fixes), look = Glass and glow, motion =
-  Glide and grow (pill row still), press feel = Spread and spring (no spin), slider handle attached,
-  Home thermostat = Climate dial, room bar syncs light bars, slider target model (rubber-band fix from
-  a real trace), scenes = palette icon button, Lights cards/palettes/scenes start closed,
-  Sending/Done notes removed (Didn't work kept), broken devices sort last, TV neutral ⏯ when an app
-  gives no play state, themed scrollbars, Cameras tab (all live), camera card with play disc (option A).
+## Built on the branch
 
-- Camera preview stills (youcoded 3a916194e): newer of newest recording thumbnail / last live frame
-  (kept only when live stops, ≤640 px, ≤60 KB, ≤8 cameras in page data), labelled, behind the play disc.
-  Installed. Not checked with real Nest thumbnails or across a real app restart.
-- Round 2 (decks `home-redesign-r2`, `-r2b`, `-r2c` + answers): TV card rebuilt (remote = header icon, round
-  glass pad in the playing panel, closed row prev/−10s/play/+10s/next, open row Back/prev/play/next/Home + app
-  chips YouTube/Netflix/HBO Max/Disney+ with Prime swap-in; ±10s = media_seek if seekable else remote
-  MEDIA_REWIND/MEDIA_FAST_FORWARD); Media tab = playing wide cards (name as title, keys right of the song,
-  volume inside the same sub-card, soundbar Group button, "Playing together" box), "Not Playing" shelf,
-  unreachable last; Lights tab = one card per room with "Tall cards" per light + colour pop-up (youcoded
-  7c3c6f84f, 158c63854). Camera cards list picture-less Nest events (Living Room / Back Door cameras get no
-  media from Google: GenerateImage "not supporting RTSP"); Google 429 back-off 60/120/300 s + Cameras tab
-  stagger 1.5 s (e32dfb285, b502b25fa event-kind fix). Installed.
-- Round 3 (deck `home-redesign-r3` + answers): TV app drawer = launcher grid (wide: apps ~2/3 left, pad right; 15
-  apps, open app highlighted "on now", no Prime swap); page Background setting (gear → Page settings: Plain /
-  Frosted / House colours) so Destin can judge B/C on the real house (cf687761d). Hue room group lights hidden
-  (4f3ff6eaf). Workbench: Home screens wait for the first answer; shoot skips the first-load stagger (66d97e9e8).
-- App-wide: pages + Office frost over the theme wallpaper (panel-glass on the frame pane; page body transparent)
-  in wallpaper themes with Floating/Minimalist layouts; one switch Settings → Appearance → Glass "Show theme
-  background behind pages" (appearance file `pagesSeeThrough`, default on). Home Background setting removed.
-  Thermostat card glass (69c1369d2, af1554b01; workspace fb27c0a6).
+**Platform (every page can use it):**
+- A page's home-device connection: an approval showing address + key, the key held by the app, a one-shot socket
+  exchange (`main/pages/page-socket.ts`).
+- A live socket for pages (`main/pages/page-live-socket.ts`). The device's profile fields (`socketHello`,
+  `socketReady`, `socketAuthFailed`, `socketDeny`) ride the approval fingerprint; a built-in deny floor
+  (`auth/`, `config/auth`, `person/`) applies to every device socket.
+- Camera video played by the app, the page gets only the pictures (`main/pages/page-live-video.ts`,
+  `page-video-sdp.ts`, renderer `components/pages/page-video-host.ts`). Caps: 4 per page, 6 per app.
+- Recorded clips through `youcoded.fetch(url, { as: 'video' })`.
+- The 17 `pages:*` channels are table entries in `main/ipc/pages.ts`; `main/pages/page-owner.ts` holds owner,
+  push and close-on-gone.
+- Approval-card lines for "live connection" and "camera video".
+- Pages and Office frost over the theme wallpaper in Floating/Minimalist layouts. One switch, Settings →
+  Appearance → Glass → "Show theme background behind pages" (`pagesSeeThrough`, default on).
+- Workbench/shoot tooling fixes (Home screens wait for the first answer, shoot skips the first-load stagger,
+  Escape check, live pane params in decks).
 
-## Not done / open
+**The Home page** (not shipped in the app; installed by hand): source is
+`youcoded/desktop/src/renderer/dev/workbench/fixtures/home-assistant-page*.ts` (page, -style, -look, -motion, -feel,
+-redraw, -pending, -edit, -history, -live, -camera, -icons, -templates, -tv, -media, -lights, -climate, -drawer, -glass).
+Fake Home Assistant: `fixtures/fake-home-assistant.ts`. Unused options shelf: `fixtures/home-variants/`. What it does:
+Lights tab (a card per room, colour pop-up, scenes), Media tab, Climate, TV card with remote and app drawer,
+Cameras tab (all live) with events and play disc, Activity, Edit = Organise board, instant updates over the live
+socket. Decisions and answers: `docs/active/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
 
-- Fresh code reviews not yet run on: look, motion-nav, motion-state/feel, and the later follow-ups
-  (slider target, room sync, cameras tab, TV rule, sort, play disc, stills).
-- UX tester pass; page-builder skill doc for live socket/video; approval-card wording for profiles.
-- Search; multi-select is in Edit board? (Edit board has no multi-select — option b had it; c chosen).
-- Not verified on real hardware: touch drag on a phone, phone width, 3 Nest streams + 5-min restart
-  over time, TV neutral rule on real Netflix, Hue timing after the target fix, thermostat after Nest fix.
-- Single-light rooms have no scenes button (offered, not decided).
-- Unverified on the real house: HBO Max URL `https://play.hbomax.com`, ±10s keys on the Google TV, 429 text
-  match, the new events list. Back-off is page memory (a reload forgets it).
-- Unverified: Office editor turning solid with the switch off (add-on repo reacts to the wallpaper flag);
-  Android untouched/unbuilt (no JDK here). Framed-layout wallpaper themes (Golden Sunbreak) not see-through — offered, not decided.
-- New app ids (Hulu … Crunchyroll) and HBO Max URL untried on the real Google TV.
-- Old unused CSS (`.clim-top`, `.scale`), `nestSignedIn` variant flag unused.
+**Checks done:** three fresh code reviews (platform, Home page, tooling; fixes committed), earlier step reviews, a
+UX review (`docs/active/reviews/2026-10-05-ha-home-page-ux-review*.md`). Contract/grader/acceptance skipped on
+Destin's call (`2026-10-04-home-redesign/home-redesign.contract.skipped.json`).
+
+## Not verified on real hardware
+
+- ±10s keys on the Google TV (media_seek when seekable, else remote rewind/fast-forward keys).
+- New TV app ids (Hulu … Crunchyroll) and the HBO Max URL `https://play.hbomax.com`.
+- Office editor turning solid with the switch off (relies on the Office add-on repo reacting to the wallpaper flag).
+- The Auto thermostat mode is drawn only in tests; his house has not shown it.
+- More than 4 cameras (each page may play 4 at once; the Cameras tab staggers), and a 3-stream 5-minute restart
+  over time.
+- Touch drag in Edit and phone width; remote-browser video; Hue timing after the slider-target fix; the 429
+  text match for Google back-off (back-off is page memory, a reload forgets it); picture stills across a real
+  app restart.
+- Android: unbuilt and untested, no JDK here. Android lists the new channels as not-implemented
+  (`SessionService.kt`), so Pages there is unchanged.
+
+## Deferred (all in `docs/roadmap/other-features.md`)
+
+- "Home page (Home Assistant) follow-ups deferred at the 2026-10-05 merge prep": search, multi-select in Edit, a
+  scenes button on single-light rooms, see-through glass for Framed-layout themes (Golden Sunbreak).
+- "Teach the page-builder skill the live device connection…" (publish with the app release).
+- "Pages on a phone" (page-view layout at phone width, remote use of connected pages).
+- Closed at merge: "A page that manages a device on the home network".
 
 ## How to
 
-- Install page into the test window (Destin approved updating it after each step):
-  from `youcoded/desktop`: `npx tsx -e "import('./src/renderer/dev/workbench/fixtures/home-assistant-page.ts').then(m=>{const js=m.HOME_ASSISTANT_PAGE_HTML.split('<script>')[1].split('</script>')[0];new Function(js);require('fs').writeFileSync(process.env.HOME+'/YouCoded/Personal/Pages/home/page.html', m.HOME_ASSISTANT_PAGE_HTML);console.log('installed')})"`
-  The app watches the folder; main-process changes need a dev restart:
-  `bash scripts/run-dev.sh --path <worktree>/youcoded --label "Home Assistant Pages"`.
-- HA trace recorder (listen-only): scratchpad `trace.cjs` / `trace2.cjs`.
-- Nest Pub/Sub subscription `nest-events-sub` recreated 2026-10-05 (never expires); noted in
-  `~/system/home/home-assistant.md`.
+- **Install the Home page** into the user's pages folder (writes `~/YouCoded/Personal/Pages/home/page.html`; the app
+  watches the folder). From `youcoded/desktop`:
+  `npx tsx -e "import('./src/renderer/dev/workbench/fixtures/home-assistant-page.ts').then(m=>{const js=m.HOME_ASSISTANT_PAGE_HTML.split('<script>')[1].split('</script>')[0];new Function(js);require('fs').writeFileSync(process.env.HOME+'/YouCoded/Personal/Pages/home/page.html', m.HOME_ASSISTANT_PAGE_HTML);console.log('installed')})"`
+  The new `new Function(js)` is a syntax check before writing. Do NOT change files the live built app holds open
+  except this page file, which Destin approved updating (the app only re-reads it).
+- **Approvals and keys live per profile.** The dev app (`bash scripts/run-dev.sh --path <worktree>/youcoded --label
+  "Home Assistant Pages"`) has its own profile: the Home page's approval and Home Assistant key saved there are NOT in
+  his live app. After merge and a release, the live app asks for approval once and needs the key pasted once.
+  Main-process changes need a dev restart; renderer changes hot-reload.
+- Listen-only Home Assistant trace helpers were scratch files, not kept.
+- Nest Pub/Sub subscription `nest-events-sub` was recreated 2026-10-05 (never expires); noted in
+  `~/system/home/home-assistant.md`. Living Room / Back Door cameras get no event media from Google (the doorbell does).
