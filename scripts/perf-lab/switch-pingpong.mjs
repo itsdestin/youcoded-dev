@@ -210,7 +210,7 @@ export function ipcWindow(raw, from, to) {
  */
 async function runPlan(ctx, plan, opts = {}) {
   const { cdp, boxes, ids } = ctx;
-  const { tailMs = 2800, block = 0, streaming = false, expectNoop = false, ipc = true, until = null, label = '', capMs = 3000, beforeStep = null } = opts;
+  const { tailMs = 2800, block = 0, streaming = false, expectNoop = false, ipc = true, until = null, label = '', capMs = 3000, beforeStep = null, aim = false } = opts;
   const inst = await cdp.evaluate(`window.__sw.install(${JSON.stringify(cfgOf(ctx))})`);
   if (ipc) await installIpcStallProbe(cdp, { everyMs: 50 });
   const sync = await syncClock(cdp);
@@ -224,7 +224,10 @@ async function runPlan(ctx, plan, opts = {}) {
     const wait = t + plan[i].at - performance.now();
     if (wait > 0) await sleep(wait);
     if (beforeStep) await beforeStep(i);
-    const box = boxes[cur]?.[plan[i].idx];
+    // WHY aim (fast cadences only): the pill row is still animating (the active pill grows, the others shift) when the next click
+    // is due 150 ms later, so the settled-layout coordinates miss. A person aims at where the pill IS; so one element's rectangle is read
+    // immediately before the click (outside t0..settle). It forces a layout flush just before t0, which is why aim runs are labelled.
+    const box = aim ? await cdp.evaluate(`(() => { const s = document.querySelector('[data-session-strip]') || document.querySelector('.session-strip'); const el = s && s.querySelector('[data-session-id="${ids[plan[i].idx]}"]'); if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) }; })()`) : boxes[cur]?.[plan[i].idx];
     if (!box) { steps.push({ i, idx: plan[i].idx, from: cur, error: 'no pill box for this pair (the pill is not in the strip)' }); continue; }
     const c = await realClick(cdp, box);
     steps.push({ i, idx: plan[i].idx, from: cur, nodeAt: c.nodeAt, ackMs: c.ackMs, cold: !ctx.visited.has(plan[i].idx), plannedAt: plan[i].at });
@@ -337,7 +340,7 @@ async function seqPlain(ctx, kind, extra = {}) {
   const dur = plan.at(-1).at / 1000 + 4;
   const streaming = ctx.pair === 'idle-streaming';
   await goTo(ctx, ctx.roles.A, 1200);
-  return withStream(ctx, dur + 3, () => runPlan(ctx, plan, { label: kind, streaming, ...extra }));
+  return withStream(ctx, dur + 3, () => runPlan(ctx, plan, { label: kind, streaming, aim: kind === 'b150', ...extra }));
 }
 
 async function seqBurst(ctx, reps = 3) {
@@ -345,7 +348,7 @@ async function seqBurst(ctx, reps = 3) {
   for (let r = 0; r < reps; r++) {
     await goTo(ctx, ctx.roles.A, 1500);
     const plan = buildPlan('c', ctx.roles);
-    const res = await withStream(ctx, 6, () => runPlan(ctx, plan, { label: `c#${r}`, streaming: ctx.pair === 'idle-streaming', tailMs: 3500 }));
+    const res = await withStream(ctx, 6, () => runPlan(ctx, plan, { label: `c#${r}`, streaming: ctx.pair === 'idle-streaming', tailMs: 3500, aim: true }));
     const R = res; const steps = R.samples, last = steps.at(-1);
     const finalIdx = plan.at(-1).idx;
     const t0s = R.raw.t0s;
@@ -368,7 +371,7 @@ async function seqInterrupted(ctx, reps = 8) {
   const out = { reps: [] };
   for (let r = 0; r < reps; r++) {
     await goTo(ctx, ctx.roles.A, 1500);
-    const res = await withStream(ctx, 6, () => runPlan(ctx, buildPlan('d', ctx.roles), { label: `d#${r}`, streaming: ctx.pair === 'idle-streaming', tailMs: 3000 }));
+    const res = await withStream(ctx, 6, () => runPlan(ctx, buildPlan('d', ctx.roles), { label: `d#${r}`, streaming: ctx.pair === 'idle-streaming', tailMs: 3000, aim: true }));
     const [b, c] = res.samples;
     res.interrupted = {
       bShownAtAll: b ? (res.sequence.framesVisiblePerPane[ctx.names[ctx.roles.B]] ?? 0) > 1 : null,
@@ -519,17 +522,19 @@ async function seqProbe(ctx, kind, reps) {
         const ch = letters[li++ % 26];
         let base = null;
         if (kind === 'key' && ctx.view === 'terminal') base = await cdp.evaluate(`window.__sw.setEcho(${roles.B}, ${JSON.stringify(ids[roles.B])}, ${JSON.stringify(ch)})`);
-        await cdp.evaluate(`(() => { const el = ${ctx.view === 'chat' ? `document.querySelector('[data-chat-session-id]:not([aria-hidden]) textarea')` : `document.querySelector('.terminal-overlay-scroll:not(.terminal-hidden) textarea')`}; if (el) el.focus(); return !!el; })()`);
+        await cdp.evaluate(`(() => { const el = ${ctx.view === 'chat' ? `[...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]'))` : `document.querySelector('.terminal-overlay-scroll:not(.terminal-hidden) textarea')`}; if (el) el.focus(); return !!el; })()`);
         const tStart = performance.now(), nodeAt = Date.now();
         await realClick(cdp, box);
         const wait = tStart + off - performance.now();
         if (wait > 0) await sleep(wait);
         const sentAt = Date.now();
+        let naturalTag = null;
+        if (kind === 'key') { naturalTag = await cdp.evaluate(`(() => { const t = document.activeElement ? document.activeElement.tagName : ''; const el = ${ctx.view === 'chat' ? `[...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]'))` : `document.querySelector('.terminal-overlay-scroll:not(.terminal-hidden) textarea')`}; if (el) el.focus(); return t; })()`); }
         if (kind === 'key') { await key(cdp, 'keyDown', ch, `Key${ch.toUpperCase()}`, ch.toUpperCase().charCodeAt(0), { text: ch }); await key(cdp, 'keyUp', ch, `Key${ch.toUpperCase()}`, ch.toUpperCase().charCodeAt(0)); }
         else await cdp.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: mid.x, y: mid.y, deltaX: 0, deltaY: -120 });
         await sleep(1000);
         const echo = kind === 'key' && ctx.view === 'terminal' ? await cdp.evaluate('window.__sw.readEcho()') : null;
-        probes.push({ off, rep, ch, nodeAt, sentAt, base, echoAt: echo?.t ?? null });
+        probes.push({ off, rep, ch, nodeAt, sentAt, base, naturalTag, echoAt: echo?.t ?? null });
         ctx.visited.add(roles.B);
         // back to A, unmeasured (a real click so focus state matches a person's)
         const back = boxes[roles.B]?.[roles.A];
@@ -552,7 +557,7 @@ async function seqProbe(ctx, kind, reps) {
     const evType = kind === 'key' ? 'keydown' : 'wheel';
     const input = R.ev.find(e => e[0] === evType && e[2] >= t0 && (kind === 'wheel' || e[4] === p.ch));
     if (!input) return { off: p.off, rep: p.rep, ok: false, lost: true, reason: `the page never saw the ${evType}` };
-    const out = { off: p.off, rep: p.rep, ok: true, actualOffsetMs: r1(input[2] - t0), queueDelayMs: r1(input[1] - input[2]), focusedTag: input[5] };
+    const out = { off: p.off, rep: p.rep, ok: true, actualOffsetMs: r1(input[2] - t0), queueDelayMs: r1(input[1] - input[2]), focusedTag: input[5], focusBeforeForcedTag: p.naturalTag };
     if (kind === 'key') {
       if (ctx.view === 'chat') {
         const inp = R.ev.find(e => e[0] === 'input' && e[2] >= input[2] && e[2] <= input[2] + 1500);
@@ -567,7 +572,7 @@ async function seqProbe(ctx, kind, reps) {
     const rs = results.filter(r => r.off === off);
     byOff[off] = { n: rs.length, lost: rs.filter(r => r.lost || !r.ok).length, queueDelayMs: summarise(rs.filter(r => r.ok).map(r => r.queueDelayMs)), echoMs: summarise(rs.map(r => r.echoMs)), actualOffsetMs: summarise(rs.filter(r => r.ok).map(r => r.actualOffsetMs)) };
   }
-  return { kind, offsets: OFFSETS, reps, byOffset: byOff, results, flags: R.flags };
+  return { kind, offsets: OFFSETS, reps, note: kind === 'key' ? 'focus is forced onto the visible composer/terminal just before the key (after the pill click it naturally sits on the pill button: see focusBeforeForcedTag), so the numbers are main-thread availability, not focus behaviour' : undefined, naturalFocusAfterClick: (() => { const c = {}; for (const r of results) if (r.focusBeforeForcedTag !== undefined) c[r.focusBeforeForcedTag] = (c[r.focusBeforeForcedTag] ?? 0) + 1; return c; })(), byOffset: byOff, results, flags: R.flags };
 }
 
 async function seqProfile(ctx, worst) {
@@ -643,6 +648,7 @@ export async function runConfig(opts, stamp, pair, count, outFile) {
     if (pair === 'idle-caughtup') { const s = await streamInto(ctx, ctx.roles.B, 1500); await Promise.race([s.completion, sleep(40000)]); await sleep(2000); report.preState = 'a full streamed reply (1500 deltas) landed in the hidden destination before the first switch'; }
     if (FLOOD_MB[pair]) { const f = await floodInto(ctx, ctx.roles.B, FLOOD_MB[pair]); await sleep(3000); report.preState = `the hidden destination terminal produced ${FLOOD_MB[pair]} MB (producer took ${f.producerMs} ms) before the first switch`; }
     ctx.boxes = await bound(measureBoxes(ctx, [ctx.roles.A, ctx.roles.B, ctx.roles.C, ctx.roles.D]), 'pill boxes');
+    ctx.visited.clear(); // so the first TIMED visit to each session is flagged cold (it has been shown once during setup, so it is not a first-ever render)
     report.pillBoxes = Object.fromEntries(Object.entries(ctx.boxes).map(([k, v]) => [ctx.names[k], Object.fromEntries(Object.entries(v).map(([i, b]) => [ctx.names[i], `${b.x},${b.y} w${b.w}`]))]));
     for (const seq of ALL_SEQS) {
       if (!opts.only.includes(seq)) continue;
@@ -706,7 +712,7 @@ export function otherRigRuns(selfPids = selfChain()) {
     const pid = Number(d);
     if (selfPids.has(pid)) continue;
     const cmd = readCmdline(pid);
-    if (/(^|\s)(\S*\/)?node(\s|$)/.test(cmd) && /scripts\/perf-lab\/[\w-]+\.mjs/.test(cmd) && !/--test/.test(cmd) && !/switch-analysis\.test|\.test\.mjs/.test(cmd)) out.push({ pid, cmd: cmd.slice(0, 200) });
+    if (/^(timeout \d+ )?(\S*\/)?node\s/.test(cmd) && /scripts\/perf-lab\/[\w-]+\.mjs/.test(cmd) && !/--test/.test(cmd) && !/switch-analysis\.test|\.test\.mjs/.test(cmd)) out.push({ pid, cmd: cmd.slice(0, 200) });
   }
   return out;
 }

@@ -147,7 +147,9 @@ export function analyseSwitch(rec, sw) {
   else {
     const det = settleDetector(ev.filter(t => nextT0 === null || t < nextT0), { from: domAt, quietMs, capMs, observedUntil: winEnd });
     out.settleStatus = det.status;
-    out.settleMs = det.settledAt === null ? null : r1(det.settledAt - t0);
+    // WHY max with the first paint: a pane is not settled before it has been drawn. Without this, a main-thread block that
+    // starts after the DOM work (the positive control) moved "show" but not "settle".
+    out.settleMs = det.settledAt === null ? null : r1(Math.max(det.settledAt, paintedAt ?? det.settledAt) - t0);
   }
   // The window the cost is charged to: to settle + 2 s, but never past the next click.
   const base = out.settleMs !== null ? t0 + out.settleMs : domAt + capMs;
