@@ -43,10 +43,10 @@ Keeping an unencrypted ws:// connection that carries the key to a home device is
 
 ## Triage (implementing session, 2026-10-05)
 
-- F1 accepted — video start gets the 10 s open timer
-- F2 accepted — socket hub buffers early events and reads ping refusals, like the video hub
-- F3 accepted — as:picture checks image magic bytes too
-- F4 accepted — video access uses the named connection
-- F5 accepted — 100.100.100.200 refused as a device address
+- F1 accepted — video start gets the 10 s open timer — fixed in b68f78cf9
+- F2 accepted — socket hub buffers early events and reads ping refusals, like the video hub — fixed in b68f78cf9
+- F3 accepted — as:picture checks image magic bytes too — fixed in b68f78cf9
+- F4 accepted — video access uses the named connection — fixed in b68f78cf9
+- F5 accepted — 100.100.100.200 refused as a device address — fixed in b68f78cf9
 - F6 rejected — 4 per page / 6 per app was set deliberately in the spec (Cameras tab); a per-owner video cap adds nothing a single owner can abuse beyond the app cap
 - F7 rejected — Nest WebRTC media legitimately comes from Google's public relays; restricting candidates to home addresses would break the cameras. The never-dial list is the intended boundary
