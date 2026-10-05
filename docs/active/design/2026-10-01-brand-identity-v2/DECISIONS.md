@@ -4,9 +4,8 @@ status: active
 # YouCoded brand identity — picks so far (rounds 5–18, 2026-10-01 → 10-02)
 
 **Every piece approved, one deck at a time** (last answer: `brand-identity-v26`, 2026-10-04). Every line
-below is a submitted deck answer (`brand-identity-v<N>.answers.json` beside this file). Nothing here has
-been applied to the app or the website. Nothing here has been
-applied to the app or the website.
+below is a submitted deck answer (`brand-identity-v<N>.answers.json` beside this file). Applied to the app
+and themes on `session/brand-identity-v2`, and to the website on `session/brand-website` (see the end).
 
 ## Name
 - Lowercase **youcoded** in the logo; **YouCoded** in sentences. (v10 L3)
@@ -70,8 +69,15 @@ applied to the app or the website.
 - wecoded-themes: seven themes carry `assets/app-icon/` + `appIconVariants`; versions bumped.
 - Tested by Destin in VMs: Windows (taskbar, Alt+Tab, tray), macOS 26 (theme icons in the Dock, the four
   looks). Not tested: Ubuntu dock (roadmap themes.md), Android launcher on a device.
-- Not applied yet: the website (header/footer/favicon, roadmap operations.md), the grey icon and the
-  "yc" initials (no surface uses them yet).
+- Not applied yet: the grey icon and the "yc" initials (no surface uses them yet).
+
+## Website (2026-10-04, branch `session/brand-website` in youcoded + workspace; decks `brand-website-v1/v2`)
+- Top bar: icon + name WITH the tagline (side-by-side lockup, 44px icon; 40px on a phone). (v1 HEADER note, v2 HEADER yes)
+- Footer: icon + name, no tagline. (v1 FOOTER note, v2 FOOTER yes)
+- About / Features / FAQ in Outfit. (v1 SHARE note, v2 LINKS yes)
+- Tab icon: the app icon per site theme; tab title "youcoded — agents for everyone". (v1 TAB note, v2 TITLE b)
+- Name colours per theme as THEMECOL cc; Halftone pair (#C95A86 to #7A7BC8) picked the same way; dark themes
+  use the theme own light text for "coded". Icons: `youcoded/scripts/build-icons.mjs --site docs/brand`.
 
 ## Where the drawings live
 - Final icon renderer: `src17/icons.html` (`face2`, `frost`, `smoke`, `box3`), shot by `src17/shoot-icons.sh`.
