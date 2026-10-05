@@ -30,17 +30,24 @@ BODY = 'M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12
 EYE, SPARKLE = '#2A1046', '#FFFFFF'
 
 
-def texture(wall: str, tmp: str) -> str:
-    """The face panel's inside: the picture around (62%, 30%), blurred, saturated, lifted."""
+def texture(wall: str, tmp: str, tint: str) -> str:
+    """The face panel's inside: the icon's own colour run, top to bottom (pink, lavender,
+    periwinkle — sampled from the shipped icon.png's face), with the theme's picture laid
+    over it at a quarter strength, blurred, so it is still "the theme seen through glass".
+
+    WHY the icon's colours lead (deck glass-buddy-1 GB-1, Destin: "the icon definitely seems
+    more colorful/saturated than this buddy"): the YouCoded picture alone is paler than the
+    picture the icon's face shows, so the buddy read washed-out next to the icon."""
     out = os.path.join(tmp, 'tex.png')
-    # 14:12 window of the picture, as the icon's face() frames it, then the icon's treatment:
-    # heavy blur, saturate 1.35, a 20% white lift and a brighter centre so the eyes read.
+    top, mid, bot = tint.split(',')
     subprocess.run([
-        'magick', wall, '-gravity', 'northwest', '-resize', '1600x', '-crop', '700x600+640+160', '+repage',
-        '-resize', '210x180!', '-blur', '0x14', '-modulate', '100,135',
-        '(', '-size', '210x180', 'xc:white', '-alpha', 'set', '-channel', 'A', '-evaluate', 'set', '20%', ')',
-        '-composite',
-        '(', '-size', '210x180', 'radial-gradient:rgba(255,255,255,0.55)-rgba(255,255,255,0)', ')', '-composite',
+        'magick',
+        '(', '-size', '210x90', f'gradient:{top}-{mid}', '-size', '210x90', f'gradient:{mid}-{bot}', '-append', ')',
+        '(', wall, '-gravity', 'northwest', '-resize', '1600x', '-crop', '700x600+640+160', '+repage',
+        '-resize', '210x180!', '-blur', '0x14', '-modulate', '100,150',
+        '-alpha', 'set', '-channel', 'A', '-evaluate', 'set', '25%', '+channel', ')', '-composite',
+        # The lighter band across the eyes the icon has, so the dark eyes read.
+        '(', '-size', '210x180', 'radial-gradient:rgba(255,255,255,0.32)-rgba(255,255,255,0)', '-roll', '+0-25', ')', '-composite',
         '-strip', '-quality', '90', out,
     ], check=True)
     return base64.b64encode(open(out, 'rb').read()).decode()
@@ -92,7 +99,7 @@ def faces():
 def limb_rect(x, y, w, h, r, rim):
     return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="url(#g-limb)"/>'
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="url(#g-limb-hi)"/>'
-            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="none" stroke="{rim}" stroke-width=".28"/>')
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="none" stroke="{rim}" stroke-width=".16"/>')
 
 
 def build(tex_b64: str, rim: str, limb_top: str, limb_bottom: str, show: str | None) -> str:
@@ -101,7 +108,7 @@ def build(tex_b64: str, rim: str, limb_top: str, limb_bottom: str, show: str | N
         f'<g id="rig-face-{n}"{"" if (n == (show or "idle")) else " style=\"display:none\""}>{svg}</g>'
         for n, svg in f.items())
     hand = lambda x: (f'<rect x="{x}" y="8.3" width="2.6" height="3.4" rx="1.17" fill="url(#g-limb)" '
-                      f'stroke="{rim}" stroke-width=".28"/>')
+                      f'stroke="{rim}" stroke-width=".16"/>')
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -5 30 30" data-default-mascot="rig">
   <defs>
     <clipPath id="c-body"><path d="{BODY}"/></clipPath>
@@ -133,7 +140,7 @@ def build(tex_b64: str, rim: str, limb_top: str, limb_bottom: str, show: str | N
         <image href="data:image/png;base64,{tex_b64}" x="5" y="4" width="14" height="12" preserveAspectRatio="none"/>
         <rect x="5" y="4" width="14" height="12" fill="url(#g-shine)"/>
       </g>
-      <path d="{BODY}" fill="none" stroke="{rim}" stroke-width=".42"/>
+      <path d="{BODY}" fill="none" stroke="{rim}" stroke-width=".2"/>
       <path d="M5.45 10.3 L5.45 8 A3.55 3.55 0 0 1 9 4.45 L11.5 4.45" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width=".22" stroke-linecap="round"/>
       {face_groups}
       <g id="slot-eyewear"/>
@@ -153,11 +160,12 @@ def main():
     ap.add_argument('slug')
     ap.add_argument('--rim', default='#7A3FA8')
     ap.add_argument('--limb', default='#F3E6FA,#D9BDEB', help='limb gradient top,bottom')
+    ap.add_argument('--tint', default='#FBC8F8,#D6BAFF,#8E88F4', help="colour run top,middle,bottom (the icon face's)")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     top, bottom = a.limb.split(',')
     with tempfile.TemporaryDirectory() as tmp:
-        tex = texture(a.wall, tmp)
+        tex = texture(a.wall, tmp, a.tint)
     open(os.path.join(a.out, f'{a.slug}-mascot-rig.svg'), 'w').write(build(tex, a.rim, top, bottom, None))
     # Stills for the places that show a picture instead of the moving rig (Android, the
     # flat variants): the rig with one face showing.
