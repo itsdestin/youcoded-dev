@@ -579,6 +579,43 @@ null and the report is refused (exit 4).
 
 ---
 
+### `switch-pingpong.mjs` — session switching the way a person does it *(standalone, one boot per configuration; added 2026-10-05)*
+
+```
+node scripts/perf-lab/switch-pingpong.mjs --checkout <worktree>/youcoded   # or --app-dir <linux-unpacked>
+  [--pairs small-huge,huge-huge,idle-streaming,idle-caughtup,term-term,term-flood2,term-flood20]
+  [--sessions 6|16|6,16] [--only a,b400,b250,b150,c,d,e,f,ctrl,noop,late,probe,profile] [--probe-reps 4] [--out dir] [--tag x]
+node scripts/perf-lab/switch-table.mjs scratch/perf-lab/switch/*.json      # the headline table
+```
+
+It never builds (it reads the package stamp, like `gpu-theme.mjs`) and waits for a quiet machine and for other perf-lab runs to end.
+Use `bg-run.sh`-style detachment (`setsid nohup`) for a full matrix: one configuration is ~7 minutes.
+
+**What it measures that the old switch clock did not.** REAL input through the browser's input path (mouse press/release on the
+pill; the app's own hold-Shift switcher), not `el.click()`; the page's event timestamp as t0; *first frame at which the destination is the
+visible pane* and the frame after it; *settled* (no change in that pane for 150 ms: DOM changes and layout shifts in chat, buffer / output
+changes in terminal); every frame gap over 1.5x the frame period (not only over 40 ms); long animation frames with script attribution;
+main-process IPC pings across the sequence; and the work that lands AFTER arrival (CDP metric deltas, `late`). Sequences: `a` spaced 1 s,
+`b400/b250/b150` human ping-pong, `c` burst (10 clicks 40 ms apart across 4 sessions), `d` interrupted (second click 60 ms later), `e` the keyboard
+switcher, `f` hidden-work arrival (a streamed reply / a terminal flood landed while hidden), `probe` typing and a wheel tick at +50/150/300/600 ms.
+
+**Controls — read these before any number.** `ctrl`: the same switch with a known 200 ms main-thread block injected right after each click
+must move first paint by ~200 ms (it did: +185 to +197 ms). `noop`: clicking the already-active session must report "no switch", never 0 ms.
+Every switch is checked against the intended session (chat: `data-chat-session-id`; terminal: terminal order); a click that landed on another pill,
+or never reached the page, is DROPPED and counted (`dropped` in each summary), never averaged in.
+
+**Traps this leg already hit.**
+- *The pill row moves.* The active pill grows and the others shrink, so coordinates read once go stale (at 150 ms spacing 31 of 40 clicks missed).
+  Each click now reads ONE pill's rectangle just before the click (a layout flush just before t0, outside the timed window); runs are labelled.
+- *After a pill click, keyboard focus is on the pill button*, not the composer: typed keys go nowhere unless the app moves focus. The key probe
+  forces focus (so it measures main-thread availability) and reports the natural focus (`naturalFocusAfterClick`).
+- *Machine load.* Every sequence records `/proc/loadavg` at start and end; `loadHigh` / the table's `[LOAD n]` marks a sequence run above load 8. Repeat those.
+- *Cold visit.* The pill-position pass shows each of the four sessions once before timing; "cold" means the first TIMED visit, not a first-ever render.
+- *Settle is never before first paint*, and is not reported (null, `n/a-streaming`) for a destination that is streaming (it never goes quiet).
+
+**Limits.** Software GL on Xvfb; frames are not the physical panel; fake Claude Code producer; fixture sizes (50 / 2,500 / 3,500 turns) not the owner's histories;
+the leg runs the PACKAGED build (React production mode) while owner hand tests ran a Vite dev build. Results: `docs/active/investigations/2026-10-05-session-switch-measurement.md`.
+
 ## Reference numbers — what we already measured
 
 Compare a new run against these at a glance. **All figures below are from
