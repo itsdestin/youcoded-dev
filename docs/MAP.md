@@ -187,6 +187,7 @@ so `/audit` catches a move.
 | `<userData>/private-diagnostics/chatgpt-cache/` | content-free per-request cache observations, two rotating 5 MiB files | `youcoded/desktop/src/main/providers/chatgpt-request-diagnostics.ts` |
 | `<userData>/provider-health.json` | what OpenRouter last said about THIS profile's key (verdict, expiry, fingerprint) — per profile on purpose, never in shared `~/.youcoded` | `youcoded/desktop/src/main/providers/openrouter-health.ts` |
 | `~/.youcoded/permissions.json` | remembered "Always allow" grants | `youcoded/desktop/src/main/harness/permission-store.ts` |
+| `<space root>/.youcoded/sync.git` (Personal: `~/YouCoded/Personal/.youcoded/sync.git`) | each sync space's hidden git repo (`GIT_DIR`, worktree = the space root); `sync.git.broken-<time>` beside it is the one repair backup kept; repair outcomes are logged to `~/.claude/desktop.log` as `repair(<space>) tier=…` | `youcoded/desktop/src/main/sync-spaces/git-transport.ts` |
 | `~/.youcoded/permission-modes.json` | each native conversation's chosen permission mode (per machine, never synced; shared with dev instances) | `youcoded/desktop/src/main/harness/permission-mode-store.ts` |
 | `~/.youcoded/sessions/<project-slug>/` | native session transcripts (`.jsonl`) | `youcoded/desktop/src/main/session-browser.ts` |
 | `~/.youcoded/cache/` | device-local memory of Resume and launch-repair scans (`native-session-list.json`, `transcript-meta.json`, `slug-r1.json`, `first-cwd-<platform>.json`); safe to delete — rebuilt on the next open | `youcoded/desktop/src/main/scan-cache.ts` |
