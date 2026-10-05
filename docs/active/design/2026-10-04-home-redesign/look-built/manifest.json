@@ -1,0 +1,302 @@
+[
+  {
+    "name": "pages/page/page-home#problems",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#problems/creme.png",
+    "ms": 1583,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#edit",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#edit/creme.png",
+    "ms": 1646,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#activity",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#activity/creme.png",
+    "ms": 1681,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#remote",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#remote/creme.png",
+    "ms": 1726,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#connected",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#connected/creme.png",
+    "ms": 1799,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#climate",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#climate/creme.png",
+    "ms": 1802,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#device",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#device/creme.png",
+    "ms": 1861,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#camera",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#camera/creme.png",
+    "ms": 2182,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#problems",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#problems/golden-sunbreak.png",
+    "ms": 2245,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#climate",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#climate/golden-sunbreak.png",
+    "ms": 2278,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#edit",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#edit/golden-sunbreak.png",
+    "ms": 2302,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#connected",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#connected/golden-sunbreak.png",
+    "ms": 2329,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#remote",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#remote/golden-sunbreak.png",
+    "ms": 2331,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#activity",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#activity/golden-sunbreak.png",
+    "ms": 2371,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#device",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#device/golden-sunbreak.png",
+    "ms": 2705,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#camera",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#camera/golden-sunbreak.png",
+    "ms": 2716,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#group",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#group/creme.png",
+    "ms": 1175,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#settings",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#settings/creme.png",
+    "ms": 1188,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#group",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#group/golden-sunbreak.png",
+    "ms": 1553,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#settings",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/active/design/2026-10-04-home-redesign/look-built/pages/page/page-home#settings/golden-sunbreak.png",
+    "ms": 1516,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  }
+]
