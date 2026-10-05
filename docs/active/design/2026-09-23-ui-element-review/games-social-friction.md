@@ -109,3 +109,44 @@ References opened first (guide "How to use" step 2): **the sessions menu's statu
   requests per day) and the old lobby wasn't either; a 1,000-friend stress pin was not added.
 - Android: shared renderer, no native UI for games/friends (Kotlin only proxies the social and
   arcade calls, unchanged). Not built here.
+
+## Round 2 (2026-10-05) — after Destin's games-social-1 answers
+
+Deck `games-social-2.json` (before `runs/gs-after` = round 1, after `runs/gs2-after`). References
+opened: **Settings → Account's signed-out card** (`SignedOutBody`), **Appearance's themes box**
+(`ThemeScreen.tsx`: capped `.scroll-mask` list with its buttons inside at the bottom), the app's one
+dropdown **`ui/Select`** (as in Settings → Providers), the **sessions menu rows** and the **Settings list**.
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | Signed-out card = Account's: level-1 card, left-aligned 12px line, full-width filled Sign in. | GS-1 note ("doesn't match app styling"), GC-2 (full). The guide's "Empty states" recipe gave round 1 nothing about text size or alignment; copying a named screen did. |
+| R2-2 | Your status is one `Select` (Online / Incognito) at the right of the card; the pill and Go incognito are gone. | GS-2 note. **Guide silent** on a dropdown inside a card's header row; Select is a full-width field, so it needed a fixed-width box (first draft stretched over the summary — caught in the pictures, not by any check). |
+| R2-3 | The card starts folded to ONE line, no "Friends" title inside it (the label above says it); arrow on the right; folds again each time Games opens. Two drafts behind `?friendsSummary=`: `count` ("2 of 4 online · 1 request", shipped) and `names` (green "2 online" pill + "Jake, Mira"). | GS-2 note. First draft repeated "Friends" under the "Friends" label — the guide's "a label never repeats the popup's title" doesn't cover a label repeating inside its own card; read off the pictures. |
+| R2-4 | Opened list: Appearance's themes-box pattern — capped (`max-h-64`), scrolls under the masked fade, filled full-width "Add a friend" INSIDE the box at the bottom, rows passing under it; online first; no folding. | GC-1 note ("dark … inside the container, like the appearance panel"), GQ-1 note ("scrollable, like resume browser"). The guide has no recipe for "a list with its action pinned inside" — Appearance is the only example; worth a guide line. "Dark" read as filled (the theme's filled button). |
+| R2-5 | Accept is the rightmost button; Decline left of it. | GS-3. **Round 1 broke the guide**, not the other way round: "two buttons side by side: the filled one on the right". I had kept the old lobby's order. No conflict to report. |
+| R2-6 | Lobby: record as a sentence only (GC-3 line); column/chip and `?lobbyScores=` removed. Two arrangements behind `?lobbyRows=`: `switcher` (sessions-menu plain rows, pill after the name, shipped) and `settings` (Settings-list boxed rows). | GS-5 note ("rearrange these tiles to match other app ui"), GS-7 ("rearrange"). **Ambiguous:** "tiles" on the lobby step most likely means the friend rows (the only tiles on that picture); the games grid was left as it is. |
+| R2-7 | Three distinct not-connected states (`friends-data.ts` `socialState`, one source for the card and the tiles): **incognito** — line "Hidden from friends", dropdown says Incognito, no notice, Connect 4/Chess still open and say "You're incognito"; **no internet** — line "No internet connection", amber notice "This computer is offline…" + Try again, Connect 4/Chess greyed; **server unreachable** — line "Game server unreachable", red notice + Try again, Connect 4/Chess greyed. Friends' pills hidden in all three. | GS-12 note; `docs/error-message-standards.md`: "no internet" only when `navigator.onLine` is false (the browser reports no network — a fact); online-but-failing says WHERE ("game server"), not why; every error state has an action (Try again). New `hooks/useNetworkOnline.ts`. |
+| R2-8 | Practice states: `?incognito=1`, `?network=offline`, `?friendsOpen=1`, `?friends=lots` (12 friends). | Needed to photograph each state. |
+
+### Tooling friction this round
+1. **An approve slide can't compare two different screen states**, so a brand-new state (incognito,
+   offline, the long list) can only go on as a one-picture slide whose buttons read "Yes build it /
+   No leave it" — wrong words for something already built. I renamed round 2's `#requests` screen to
+   the opened card so at least that one compares.
+2. **"Show three states side by side" has no tool.** I cut three panes per theme by hand into
+   `runs/gs2-after/shots-states/<theme>/three.png` and named it with a deck `crops` entry. A
+   `"crop": ["a", "b", "c"]` that lays several screens side by side would do it.
+3. **A dropdown that silently fills its row** (`Select` is `w-full`; its `className` doesn't win
+   over that) overlapped the summary text. No check caught it — "parts agree" only reads marked rows.
+4. **Choice slides compare whatever data their screens carry** — round 2's first build compared a
+   summary WITH a request against one without; only reading the slide caught it.
+5. The crash wiped the session scratchpad (the crop helper); rebuilt in a minute. `preview` per deck
+   and `--themes` worked as intended. `verify --full`: 9/9 PASS (twice this round).
+
+### Not done / unsure
+- Games grid left as it is (see R2-6).
+- "No internet" can only be shown when the computer has NO network; a network with no internet reads
+  as "Game server unreachable" — correct by the standards, but Destin may expect "no internet" there.
+- Status dropdown says "Online" while offline (it is your choice, not your connection) — not said on
+  the deck; could confuse.
+- The add box, once open, sits over the last row of the list (it grows upward inside the box).

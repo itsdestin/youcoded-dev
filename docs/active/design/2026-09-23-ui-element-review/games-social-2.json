@@ -1,0 +1,201 @@
+{
+  "title": "Games: friends panel, sign-in and lobby — round 2",
+  "key": "games-social-2",
+  "out": "games-social-2.review.html",
+  "images": "images/games-social-2",
+  "runs": {
+    "before": "runs/gs-after",
+    "after": "runs/gs2-after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "crops": {
+    "three-states": [
+      "states",
+      "three",
+      "1962x660+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "G2-1",
+      "surface": "Games",
+      "path": "Gamepad button, signed out",
+      "crop": "chat/games@420x300+1010+40",
+      "headline": "The sign-in card now matches the Account popup's: a left-aligned line and a full-width filled Sign in.",
+      "changed": "Copied from Settings → Account's signed-out card (you picked full width in GC-2).",
+      "notice": "Same sentence, smaller and left-aligned like other cards; the button runs across the card."
+    },
+    {
+      "id": "G2-2",
+      "surface": "Games",
+      "path": "Gamepad button, signed in with four friends",
+      "crop": "chat/games#friends@420x400+1010+40",
+      "headline": "Signed in, the friends card starts folded to one line, with your status as a dropdown on the right.",
+      "changed": "One line: \"2 of 4 online\" and an arrow; the Online / Incognito dropdown replaces the status pill and Go incognito button.",
+      "notice": "Click the line to open the list. The card folds again every time Games opens, so the games stay in view."
+    },
+    {
+      "id": "G2-3",
+      "surface": "Games",
+      "path": "Gamepad button, signed in, a request each way, card opened",
+      "crop": "chat/games#requests@420x560+1010+40",
+      "headline": "Opened, the list scrolls inside a capped box with a filled Add a friend inside it, like Appearance's themes box; Accept is on the right.",
+      "changed": "The list stops at about five rows and scrolls under a fade. Add a friend is filled and sits inside the box. Accept is now right of Decline.",
+      "notice": "Add a friend opens the handle box in the button's place, with Cancel beside it."
+    },
+    {
+      "id": "G2-4",
+      "surface": "Games",
+      "path": "Gamepad button, twelve friends, card opened",
+      "crop": "chat/games#long@420x560+1010+40",
+      "runs": [
+        "after"
+      ],
+      "headline": "With many friends, the list stays the same height and scrolls; online friends come first.",
+      "changed": "A new practice state with twelve friends, to show the capped, scrolling list.",
+      "notice": "The games stay right under the card instead of being pushed down.",
+      "highlight": {
+        "box": [
+          2,
+          10,
+          96,
+          60
+        ]
+      }
+    },
+    {
+      "id": "G2-5",
+      "surface": "Games",
+      "path": "Gamepad button: incognito · no internet · game server down",
+      "crop": "three-states",
+      "runs": [
+        "after"
+      ],
+      "headline": "Incognito, no internet and a broken game server now look different: different line, notice and greyed games.",
+      "changed": "Incognito: no notice, games still open. No internet: amber notice, Connect 4 and Chess greyed. Server down: red notice with Try again, same two greyed.",
+      "notice": "\"No internet\" appears only when the computer reports no network at all, never as a guess.",
+      "highlight": {
+        "box": [
+          1,
+          14,
+          98,
+          23
+        ]
+      }
+    },
+    {
+      "id": "G2-6",
+      "surface": "Games",
+      "path": "Gamepad button, game server unreachable",
+      "crop": "chat/games#degraded@420x560+1010+40",
+      "headline": "The server-down state against round 1: a red notice with Try again inside the card, and a shorter line.",
+      "changed": "Round 1 only changed your status pill to Offline. Now the line says \"Game server unreachable\" and a notice explains, with Try again.",
+      "notice": "Try again reconnects; Flappy and 2048 keep playing either way."
+    },
+    {
+      "id": "G2-7",
+      "surface": "Games",
+      "path": "Games → Chess, four friends",
+      "crop": "chat/games/chess/lobby#friends@520x380+910+40",
+      "headline": "A game's page: each friend's record is a sentence under the name, the status pill beside the name, Challenge on the right.",
+      "changed": "The score column and \"Your record\" label are gone (you picked the sentence). Rows follow the sessions menu: pill after the name.",
+      "notice": "\"You lead 4–2 (1 draw)\", \"Mira leads 3–1\", \"Not played yet\"."
+    },
+    {
+      "id": "G2-8",
+      "surface": "Games",
+      "path": "Games → Connect 4, one friend",
+      "crop": "chat/games/connect-four/lobby@420x300+1010+40",
+      "headline": "Connect 4's page with the same row arrangement at its narrower width.",
+      "changed": "Same rows as Chess.",
+      "notice": "The sentence reads \"You lead 1–0\"."
+    },
+    {
+      "id": "G2-9",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → Games, signed in",
+      "crop": "chat/games#phone@390x600+0+0",
+      "headline": "On a phone the folded friends line and the dropdown fit the width, and the games are right below.",
+      "changed": "The card is folded here too.",
+      "notice": "Nothing scrolls sideways."
+    },
+    {
+      "id": "G2-10",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → Games → Chess",
+      "crop": "chat/games/chess/lobby#phone@390x500+0+0",
+      "headline": "A game's page on a phone with the new rows.",
+      "changed": "Same rows at phone width.",
+      "notice": "Long names shorten with dots; the pill stays beside the name."
+    },
+    {
+      "id": "G2-11",
+      "surface": "Games in a small window",
+      "path": "A 640 × 480 window → Games, signed in",
+      "crop": "chat/games#small",
+      "headline": "In a small window the games are back in view, because the friends card starts folded.",
+      "changed": "Round 1 filled the first screen with friends.",
+      "notice": "Flappy and 2048 show without scrolling."
+    },
+    {
+      "id": "G2-12",
+      "surface": "Games",
+      "path": "Gamepad button, signed in, no friends yet",
+      "crop": "chat/games#no-friends@420x300+1010+40",
+      "headline": "With no friends yet the folded line says so; opening it shows the line and the filled Add a friend.",
+      "changed": "Was the always-open card with the handle box.",
+      "notice": "Connect 4 and Chess still say \"No friends online\" and open."
+    },
+    {
+      "id": "G2C-1",
+      "surface": "Games",
+      "path": "Gamepad button, signed in with four friends",
+      "headline": "Which one-line summary should the folded friends card show?",
+      "notice": "Both keep the status dropdown on the right and open on click; problem states replace the line in both.",
+      "variants": [
+        {
+          "id": "count",
+          "label": "Count",
+          "crop": "chat/games#friends@420x170+1010+40",
+          "summary": "\"2 of 4 online\", plus \"· 1 request\" when one is waiting. Short; always fits."
+        },
+        {
+          "id": "names",
+          "label": "Names with a pill",
+          "crop": "chat/games#summary-names@420x170+1010+40",
+          "summary": "A green \"2 online\" pill, then who: \"Jake, Mira\". Tells you who without opening.",
+          "risk": "Long names cut off with dots in a narrow pane."
+        }
+      ]
+    },
+    {
+      "id": "G2C-2",
+      "surface": "Games",
+      "path": "Games → Chess, four friends",
+      "headline": "How should a game's page lay out each friend?",
+      "notice": "Both show the record as a sentence under the name.",
+      "variants": [
+        {
+          "id": "switcher",
+          "label": "Like the sessions menu",
+          "crop": "chat/games/chess/lobby#friends@520x330+910+40",
+          "summary": "Plain rows in one card, the status pill right after the name, Challenge at the right edge."
+        },
+        {
+          "id": "settings",
+          "label": "Like the Settings list",
+          "crop": "chat/games/chess/lobby#rows-settings@520x330+910+40",
+          "summary": "Each friend in its own box, 8px apart; the pill sits beside Challenge at the right."
+        }
+      ]
+    }
+  ]
+}

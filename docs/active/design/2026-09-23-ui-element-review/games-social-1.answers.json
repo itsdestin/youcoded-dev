@@ -1,0 +1,133 @@
+{
+ "deck": "games-social-1",
+ "started": "2026-10-05T21:23:57.632Z",
+ "submitted": "2026-10-05T21:30:36Z",
+ "cur": 15,
+ "answers": {
+  "GS-1": {
+   "v": "yes",
+   "t": 1791235462094,
+   "note": "weee can improve the sign in card. doesn't match app styling rn",
+   "seconds": 24,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-2": {
+   "note": "i thinkg \"online\" should be a dropdown on the right, instead of having separate online/go incognito things. i think the signed-in state should start collapsed in some way. like a one line summary card with number of friends online and such maybe",
+   "t": 1791235540333,
+   "v": "other",
+   "seconds": 78,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-3": {
+   "note": "accept should be on the right",
+   "t": 1791235552745,
+   "v": "other",
+   "seconds": 12,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-4": {
+   "v": "yes",
+   "t": 1791235561993,
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-5": {
+   "v": "other",
+   "t": 1791235605548,
+   "note": "we should rearrange these tiles to match other app ui",
+   "seconds": 39,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-6": {
+   "v": "yes",
+   "t": 1791235615264,
+   "seconds": 10,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-7": {
+   "v": "yes",
+   "t": 1791235634571,
+   "note": "rearrange",
+   "seconds": 19,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-8": {
+   "v": "yes",
+   "t": 1791235643610,
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-9": {
+   "v": "yes",
+   "t": 1791235648044,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-10": {
+   "v": "yes",
+   "t": 1791235652950,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-11": {
+   "v": "yes",
+   "t": 1791235656742,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GS-12": {
+   "v": "other",
+   "t": 1791235711195,
+   "note": "need to have a clear difference between the incognito state, pc internet off state, and game server broken/unreachable state.",
+   "seconds": 54,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GC-1": {
+   "v": "pick",
+   "pick": "button",
+   "t": 1791235759184,
+   "note": "we can make this dark and it can sit inside the container, kinda like what we do for the appearance panel",
+   "seconds": 48,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GC-2": {
+   "v": "pick",
+   "pick": "full",
+   "t": 1791235770299,
+   "note": "",
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GC-3": {
+   "v": "pick",
+   "pick": "line",
+   "t": 1791235806919,
+   "seconds": 37,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "GQ-1": {
+   "v": "pick",
+   "pick": "online",
+   "t": 1791235835619,
+   "note": "just make it scrollable, like resume browser or other long lists",
+   "seconds": 29,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
