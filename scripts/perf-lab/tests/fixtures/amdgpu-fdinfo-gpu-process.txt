@@ -1,0 +1,17 @@
+pos:	0
+flags:	0100002
+mnt_id:	38
+ino:	1111
+drm-driver:	amdgpu
+drm-client-id:	9648
+drm-pdev:	0000:c4:00.0
+pasid:	9641
+drm-total-cpu:	0
+drm-total-gtt:	12 MiB
+drm-total-vram:	112 MiB
+drm-memory-vram:	115360 KiB
+drm-memory-gtt: 	12300 KiB
+drm-memory-cpu: 	0 KiB
+amd-evicted-vram:	0 KiB
+drm-engine-gfx:	2847531 ns
+drm-engine-compute:	788168 ns
