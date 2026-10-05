@@ -1,0 +1,26 @@
+{
+ "deck": "brand-identity-v21",
+ "started": "2026-10-04T03:42:11.706Z",
+ "submitted": "2026-10-04T03:43:53Z",
+ "cur": 1,
+ "answers": {
+  "INITIALS": {
+   "v": "pick",
+   "pick": "w5",
+   "t": 1791085386264,
+   "note": "move text up slightly so its centered higher. use the gradient from w1",
+   "seconds": 55,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "v": "pick",
+   "pick": "if2",
+   "t": 1791085417927,
+   "note": "can we just clean up/pllish this a bit now? make the flaps, outline, etc all blend together better>",
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

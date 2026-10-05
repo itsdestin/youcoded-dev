@@ -1,0 +1,152 @@
+{
+  "metricSnapshots": {
+    "before": {
+      "TaskDuration": 3.18932,
+      "ScriptDuration": 2.025366,
+      "LayoutDuration": 0.195007,
+      "Nodes": 133427
+    },
+    "afterOpen": {
+      "TaskDuration": 4.905399,
+      "ScriptDuration": 3.395049,
+      "LayoutDuration": 0.302241,
+      "Nodes": 264530
+    },
+    "afterTyping": {
+      "TaskDuration": 5.0355,
+      "ScriptDuration": 3.454307,
+      "LayoutDuration": 0.307084,
+      "Nodes": 134190
+    }
+  },
+  "navigation": {
+    "visibleStable": false,
+    "selectedText": "Turn 3250:",
+    "uncovered": false,
+    "hitTag": null,
+    "scrollTop": 306410,
+    "rect": {
+      "top": -152308.375,
+      "bottom": -152289.703125,
+      "left": 375.46875,
+      "right": 459.46875
+    }
+  },
+  "status": "find-result-unconfirmed",
+  "scope": "Packaged desktop, single huge Claude Code fixture session, paged history via sentinel; CDP DOM-ready + two rAF callbacks are NOT presented-frame time. Performance metrics are renderer-wide cumulative proxies; longtasks/rAF gaps are bounded samples, not GPU presentation or displayed FPS.",
+  "checkout": "/home/destin/youcoded-dev/worktrees/sessions/performance-history-audit/youcoded",
+  "display": ":0",
+  "entriesRequested": 1000,
+  "fixtureTurns": 3500,
+  "pages": 16,
+  "beforeState": {
+    "sessionId": "d158605c-045f-4a82-85dd-bac5011da351",
+    "loaded": 1020,
+    "folded": 1015,
+    "hasMore": true,
+    "scrollTop": 349190
+  },
+  "afterState": {
+    "sessionId": "d158605c-045f-4a82-85dd-bac5011da351",
+    "loaded": 1020,
+    "folded": 0,
+    "hasMore": true,
+    "scrollTop": 306410
+  },
+  "gpu": {
+    "source": "SystemInfo",
+    "glRenderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+    "glVendor": "Google Inc. (AMD)",
+    "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+    "softwareRendering": false,
+    "accelerated": true,
+    "featureStatus": {
+      "gpu_compositing": "enabled",
+      "rasterization": "enabled",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "enabled_on",
+      "vulkan": "disabled_off",
+      "webgl": "enabled",
+      "video_decode": "enabled"
+    },
+    "devices": [
+      {
+        "vendorId": 4098,
+        "deviceId": 5510,
+        "deviceString": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "active": null
+      }
+    ],
+    "error": null,
+    "attempts": []
+  },
+  "viewport": {
+    "width": 1707,
+    "height": 1016,
+    "scale": 1.5,
+    "screenWidth": 1707,
+    "screenHeight": 1067,
+    "visibility": "visible"
+  },
+  "open": {
+    "domReadyAfterTwoRafMs": 1660,
+    "inputExists": true,
+    "focused": true,
+    "metricsDelta": {
+      "TaskDuration": 1716.1,
+      "ScriptDuration": 1369.7,
+      "LayoutDuration": 107.2,
+      "Nodes": 131103
+    }
+  },
+  "typing": {
+    "query": "Turn 3250:",
+    "domResultReadyAfterTwoRafMs": 122,
+    "ready": false,
+    "counter": "1/1",
+    "selectedText": "Turn 3250:",
+    "metricsDelta": {
+      "TaskDuration": 130.1,
+      "ScriptDuration": 59.3,
+      "LayoutDuration": 4.8,
+      "Nodes": -130340
+    }
+  },
+  "samples": {
+    "longtasks": [
+      {
+        "start": 4176,
+        "duration": 1366
+      },
+      {
+        "start": 5543,
+        "duration": 349
+      },
+      {
+        "start": 5892,
+        "duration": 62
+      }
+    ],
+    "gaps": [
+      1702,
+      74
+    ]
+  },
+  "screenshot": "/home/destin/youcoded-dev/worktrees/sessions/performance-history-audit/scratch/perf-lab/find-accepted-before-3.png",
+  "build": {
+    "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+    "dirty": "6ba3d8bf4a1a",
+    "builtAt": "2026-09-28T00:11:06.984Z"
+  },
+  "measuredAt": "2026-09-28T05:43:18.530Z",
+  "sessionId": "d158605c-045f-4a82-85dd-bac5011da351",
+  "history": {
+    "sessionId": "d158605c-045f-4a82-85dd-bac5011da351",
+    "loaded": 1020,
+    "folded": 0,
+    "hasMore": true,
+    "scrollTop": 37094,
+    "pages": 16
+  },
+  "error": "Diagnostic incomplete: find-result-unconfirmed"
+}

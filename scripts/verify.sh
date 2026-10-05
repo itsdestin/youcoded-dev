@@ -255,6 +255,9 @@ else
 fi
 echo ""
 
+# WHY the changed-file grep calls below consume the whole pipe instead of -q:
+# an early match on a large diff gives printf SIGPIPE under pipefail, silently
+# skipping screen/journey gates. scripts/verify.test.mjs pins the large-diff case.
 # --dry-run prints the resolved plan and stops. Mirrors run-dev.sh's flag, and it
 # is how the changed-file detection above gets exercised without paying for a run.
 if [[ $DRY -eq 1 ]]; then
@@ -270,8 +273,8 @@ if [[ $DRY -eq 1 ]]; then
     printf '  npx vitest related --run%s\n' "$(printf ' %s' "${REL[@]}")"
   fi
   echo "  bash $ROOT/scripts/ast-grep/check.sh $DESKTOP/src"
-  printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' && echo "  node $ROOT/scripts/shoot/shoot.mjs --check (renderer changed)"
-  printf '%s\n' "${CHANGED[@]:-}" | grep -qE '^desktop/(src/renderer/|tests/journeys/)' && echo "  node $ROOT/scripts/shoot/journeys.mjs (renderer or journeys changed)"
+  printf '%s\n' "${CHANGED[@]:-}" | grep '^desktop/src/renderer/' >/dev/null && echo "  node $ROOT/scripts/shoot/shoot.mjs --check (renderer changed)"
+  printf '%s\n' "${CHANGED[@]:-}" | grep -E '^desktop/(src/renderer/|tests/journeys/)' >/dev/null && echo "  node $ROOT/scripts/shoot/journeys.mjs (renderer or journeys changed)"
   exit 0
 fi
 
@@ -339,7 +342,7 @@ start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" 
 # It compares no pictures, so run-to-run image differences cannot fail it.
 # Skipped, not failed, without Chrome or on a checkout older than the screen list.
 if [[ -f "$DESKTOP/src/renderer/dev/workbench/screens/index.ts" ]] \
-  && printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' \
+  && printf '%s\n' "${CHANGED[@]:-}" | grep '^desktop/src/renderer/' >/dev/null \
   && command -v google-chrome-stable >/dev/null 2>&1; then
   start screens "screens open (shoot --check)" node "$ROOT/scripts/shoot/shoot.mjs" --check --worktree "$CHECKOUT" --out "$LOGDIR/shoot"
 fi
@@ -350,7 +353,7 @@ fi
 # (Destin, 2026-09-26, choosing this over a manual list). ~8 s. A renamed button fails one with
 # the step and label named; fix that line in the journey in the same change.
 if [[ -d "$DESKTOP/tests/journeys" ]] \
-  && printf '%s\n' "${CHANGED[@]:-}" | grep -qE '^desktop/(src/renderer/|tests/journeys/)' \
+  && printf '%s\n' "${CHANGED[@]:-}" | grep -E '^desktop/(src/renderer/|tests/journeys/)' >/dev/null \
   && command -v google-chrome-stable >/dev/null 2>&1; then
   start journeys "journeys (click paths)" node "$ROOT/scripts/shoot/journeys.mjs" --worktree "$CHECKOUT"
 fi

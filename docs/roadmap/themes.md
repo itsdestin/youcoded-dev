@@ -2,13 +2,13 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
+- [ ] Unverified on Linux: whether a theme's app icon reaches the dock on Ubuntu's default desktop
+      (GNOME on Wayland reads an app's icon from its installed .desktop entry, and an AppImage
+      double-clicked from Downloads has none). The test build was loaded on the Ubuntu VM on
+      2026-10-04 but Destin stopped testing there ("i think this is fine"); window icon and tray
+      changes are expected to work
+      `desktop` `needs-verify` `checked 2026-10-04`
 
-- [ ] A theme whose mascot has companions (sun, motes, sparkles around it on the welcome
-      screen) still animates them smoothly at the screen's full refresh rate. The mascot
-      itself moved to 30 redraws a second on 2026-09-26 (youcoded#573: idle welcome screen
-      36% -> ~12-17% of the graphics chip on Destin's 180 Hz screen); the companions are the same
-      kind of cost, unmeasured because his theme has none. Measure a companion theme first
-      `all` `needs-verify` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
 - [ ] Themes you build yourself still get the old DRAWN preview picture (a mock chat page
       made from the theme's colours), while the built-in and community themes now show a
       real screenshot of the app (2026-09-24, `scripts/ui-review/theme-previews.py`). So on
@@ -29,19 +29,6 @@ here: installing or browsing themes (marketplace).
       Claude orange on the model chip and friends — are still hard to read; 27 colour/theme
       pairs fail contrast (25 on 2026-08-31, Morning Rounds added two), seen 2026-08-31
       `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
-
-- [ ] A community theme's custom CSS can run a never-ending animation on the always-visible
-      chrome, costing a chunk of a CPU core for anyone who has NOT turned on Reduced Effects
-      (Reduced Effects now stops it — see shipped.md 2026-09-10). Open decision: whether to
-      cap always-on theme animation for users who never touch the setting, which would change
-      what theme authors shipped; options in the investigation's "Fix shape". Known gaps in
-      the Reduced Effects half (review, 2026-09-10): an animation written as nested CSS
-      (`.x { &:hover { animation: … } }`) or inside `@layer` with `!important` is not
-      cancelled; cancelling a one-shot fade-in that ends visible (`animation-fill-mode:
-      forwards` from `opacity: 0`) would leave that element invisible; and a theme that
-      animates a broad selector (`svg`, `*`) would also freeze the app's own spinners. No
-      shipped theme does any of this yet, noted 2026-08-07
-      `all` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
 
 - [ ] Destin's ask (2026-09-10): the app's taskbar and Dock icon should change to match the
       theme, drawn from the new robot icon. Until then, every theme shows the same lavender robot

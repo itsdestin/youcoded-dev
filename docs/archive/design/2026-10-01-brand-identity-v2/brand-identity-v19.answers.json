@@ -1,0 +1,69 @@
+{
+ "deck": "brand-identity-v19",
+ "started": "2026-10-04T03:12:13.464Z",
+ "submitted": "2026-10-04T03:27:45Z",
+ "cur": 7,
+ "answers": {
+  "ALL": {
+   "note": "much better, with a few notes. i really don't like the styling/spacing of the agents for everyone tagline, and feel we can work generally on how the brand/icon/tagline are spaced next to eachother",
+   "t": 1791084172686,
+   "v": "yes",
+   "seconds": 88,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SM2": {
+   "v": "yes",
+   "t": 1791084193703,
+   "seconds": 21,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GYF": {
+   "v": "yes",
+   "t": 1791084201068,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "FVF": {
+   "note": "i want to see a few more options/variants before we finalize this. i think it may be just a bit too colorful compared to the other items we built so far maybe different background/box styles",
+   "t": 1791084246806,
+   "v": "other",
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L1": {
+   "v": "other",
+   "t": 1791084323637,
+   "note": "don't really like the styling of the initials brand items at the bottom right. should maybe reuse the outer box from our mascot icon? tagline is much better in stacked than horizontal + tagline",
+   "seconds": 77,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L2": {
+   "note": "don't like initials styling. our other theme colors for the you in youcoded look off compared to the mascots alongside them. the mascots should determine/influence the color",
+   "t": 1791084379150,
+   "v": "other",
+   "seconds": 56,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L3": {
+   "v": "yes",
+   "t": 1791084409698,
+   "seconds": 31,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L4": {
+   "note": "i feel like the bare text next to the icon looks like it sits just a bit too low maybe? but i can't tell for sure. also maybe a slightlyy narrower gap between icon and text when side by side? but maybe keep same. want to see.",
+   "t": 1791084464169,
+   "v": "other",
+   "seconds": 54,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

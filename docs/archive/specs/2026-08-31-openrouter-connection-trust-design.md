@@ -28,7 +28,7 @@ live the same day (§2). §9 lists what changed from the first draft and why.
 **Scope: desktop.** Android refuses every `provider:*` and `chatgpt:*` channel as
 `not-implemented-on-mobile` (`app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt:4194-4199`,
 `:4207-4210`). That holds today, but the Android rebuild
-(`docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md`, step 4) plans to
+(`docs/archive/handoffs/2026-09-10-android-rebuild-START-HERE.md`, step 4 — now A2 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`) plans to
 run this same `ProviderRegistry` in a Node child on the phone. So: no Kotlin work
 here beyond refusal entries for new channels, **and** the verdict/refresh logic
 (§3.1, §3.4) stays free of Electron imports — plain modules with injected `fetch`,

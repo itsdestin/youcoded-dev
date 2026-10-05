@@ -2,23 +2,40 @@ id: remote-session-create-refuses-shell-provider
 language: typescript
 severity: error
 message: >-
-  remote-server.ts must keep its `if (payload?.provider === 'shell')` check
-  in the session:create case — a remote client may not open a plain shell
-  session directly; shells come only from the validated Run in terminal path.
+  The session:create table entry must keep a `remoteGuard` that refuses
+  `provider === 'shell'` — a remote client may not open a plain shell session
+  directly; shells come only from the validated Run in terminal path.
 note: |
   Invariant source: tests/session-manager.test.ts, shell sessions section (Plan B, 2026-09-16; "the
   remote session:create case refuses a client-supplied shell provider" —
-  behaviour pinned in tests/remote-server.test.ts). The retired test
-  asserted the file's text contains `if (payload?.provider === 'shell')`;
-  this matches an if statement (an `else if` included) with exactly that
-  condition, whatever the whitespace. A mention only in a comment or string
-  no longer counts.
+  behaviour pinned in tests/remote-server.test.ts and tests/session-channels.test.ts).
+  RETARGETED 2026-09-30 (one-core R3-4): the check used to be an
+  `if (payload?.provider === 'shell')` inside remote-server.ts's `case 'session:create':`.
+  session:create is a channel-table entry now (main/ipc/session.ts) and the
+  phone-only check is declared as the entry's `remoteGuard` policy, so a merge of
+  the two doors' handlers cannot drop it or apply it to the computer's own windows.
+  THE REGION is the object literal that names `IPC.SESSION_CREATE`. It must hold a
+  `remoteGuard` pair whose value contains a comparison against 'shell'. A mention
+  only in a comment or string no longer counts. Also fires when session.ts has no
+  such entry at all.
 files:
-  - "**/src/main/remote-server.ts"
+  - "**/src/main/ipc/session.ts"
   - "**/fixtures/remote-session-create-refuses-shell-provider.ts"
+utils:
+  create-entry:
+    kind: object
+    has: { kind: pair, regex: "^name:\\s*IPC\\.SESSION_CREATE$" }
+  shell-comparison:
+    kind: binary_expression
+    regex: "provider\\s*===\\s*'shell'"
 rule:
   kind: program
   not:
     has:
       stopBy: end
-      pattern: "if (payload?.provider === 'shell') $BODY"
+      all:
+        - kind: pair
+          all:
+            - has: { field: key, regex: "^remoteGuard$" }
+            - has: { stopBy: end, matches: shell-comparison }
+        - inside: { stopBy: end, matches: create-entry }

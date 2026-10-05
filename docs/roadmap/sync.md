@@ -1,18 +1,6 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
-- [ ] Sync notices changes by watching every single file, when one watch per folder would do (on
-      Mac and Windows, one per project). Even with the 2026-09-29 fix a big synced project costs
-      several times the watches it needs. A leaner change-detector (the one VS Code uses) fixes
-      that at the root, but it has to be built per platform and must be tested on Mac, Windows
-      and Linux so it never misses an edit.
-      `settings/sync` `desktop` `decision` `checked 2026-09-29` `performance`
-
-- [ ] A synced code project that already keeps its own version history (and its own GitHub copy)
-      gets a second, hidden history from sync over the same files, which doubles some of the work.
-      Whether such projects should sync differently is an open product question.
-      `settings/sync` `desktop` `decision` `checked 2026-09-29`
-
 - [ ] A project where a password file (like `.env`) was uploaded by an older app version keeps that copy
       online and in its history. New edits now stay on the device, but nothing removes what already went up;
       removing it means rewriting the project's history on every device. Decided out of scope, 2026-09-23.
@@ -35,15 +23,6 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
       conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
       `settings/sync` `all` `decision` `checked 2026-09-16`
-
-- [ ] The Personal sync history only grows: 1.7 GB on GitHub and 2.5 GB on the Z13 on 2026-09-16, with a
-      save every few seconds while a conversation is running. GitHub asks repositories to stay under about 1 GB
-      and warns hard near 5 GB, and nothing trims the history yet.
-      `settings/sync` `all` `decision` `checked 2026-09-16`
-
-- [ ] A device that falls far behind may never catch up on a slow connection: each upload step is cut off
-      after 5 minutes and retried from the start. Not seen yet — the 2026-09-16 repair sent 280 MB in 44 s.
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
 
 - [ ] If a conversation is over the sync size limit on this device AND another device changes its older
       copy, sync here may fail every cycle with "Sync merge could not complete". Reasoned in the 2026-09-16
@@ -143,12 +122,6 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       known writers; a blanket rule would also stop syncing and backing up any file a user genuinely named `.tmp`.
       Destin's call, deliberately not slipped into #296 (2026-08-12).
       `desktop` `confirmed` `checked 2026-09-02`
-
-- [ ] Sync will hit GitHub's size ceiling for any daily user — the Z13's Personal space was 841 MB local / 652 MB on
-      GitHub against a 1 GB soft limit, nothing ever prunes, and a handful of huge transcripts are the whole cost.
-      Needs a design pass on where transcript bytes should live so every transcript is on every device, always.
-      Measured 2026-07-30.
-      `all` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-transcript-storage-long-term.md
 
 - [ ] When two devices edit the same file, the only sign is one amber line in Backup & Sync that vanishes on restart
       and names no file — there is no way in the app to find the "(from …)" copy or pick which version to keep.

@@ -1,0 +1,129 @@
+{
+ "title": "YouCoded \u2014 round 17: the mouth",
+ "key": "brand-identity-v17",
+ "out": "brand-identity-v17.html",
+ "images": "images/brand-identity-v17",
+ "runs": {
+  "today": "runs/v17"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "mc2": [
+   "brand",
+   "mouths3",
+   "120x630+24+62"
+  ],
+  "mj": [
+   "brand",
+   "mouths3",
+   "120x630+152+62"
+  ],
+  "mh": [
+   "brand",
+   "mouths3",
+   "120x630+280+62"
+  ],
+  "o1": [
+   "brand",
+   "mouths3",
+   "120x630+408+62"
+  ],
+  "o2": [
+   "brand",
+   "mouths3",
+   "120x630+536+62"
+  ],
+  "o3": [
+   "brand",
+   "mouths3",
+   "120x630+664+62"
+  ],
+  "o4": [
+   "brand",
+   "mouths3",
+   "120x630+792+62"
+  ],
+  "o5": [
+   "brand",
+   "mouths3",
+   "120x630+920+62"
+  ],
+  "o6": [
+   "brand",
+   "mouths3",
+   "120x630+1048+62"
+  ]
+ },
+ "steps": [
+  {
+   "id": "MOUTH",
+   "surface": "App icon",
+   "path": "The final icon's face",
+   "headline": "Which mouth should the icon have? Pick your favourite \u2014 or a few, and say which wins.",
+   "notice": "Your three picks plus six softer, rounder, happier ones (three with rosy cheeks). Everything else about the icon is locked.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "mc2",
+     "label": "Little \"o\" (your pick)",
+     "crop": "mc2",
+     "summary": "Curious."
+    },
+    {
+     "id": "mj",
+     "label": "Open oval (your pick)",
+     "crop": "mj",
+     "summary": "Small open oval."
+    },
+    {
+     "id": "mh",
+     "label": "Open smile (your pick)",
+     "crop": "mh",
+     "summary": "A small open \"D\"."
+    },
+    {
+     "id": "o1",
+     "label": "Half-moon",
+     "crop": "o1",
+     "summary": "A round open smile."
+    },
+    {
+     "id": "o2",
+     "label": "Round \"o\"",
+     "crop": "o2",
+     "summary": "A bigger round \"o\"."
+    },
+    {
+     "id": "o3",
+     "label": "Round open",
+     "crop": "o3",
+     "summary": "Soft-cornered open smile."
+    },
+    {
+     "id": "o4",
+     "label": "Half-moon + cheeks",
+     "crop": "o4",
+     "summary": "Half-moon with rosy cheeks \u2014 the happiest."
+    },
+    {
+     "id": "o5",
+     "label": "Oval + cheeks",
+     "crop": "o5",
+     "summary": "Open oval with rosy cheeks."
+    },
+    {
+     "id": "o6",
+     "label": "Open smile + cheeks",
+     "crop": "o6",
+     "summary": "Open smile with rosy cheeks."
+    }
+   ]
+  }
+ ]
+}

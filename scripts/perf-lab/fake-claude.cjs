@@ -135,7 +135,19 @@ process.stdin.on('data', (buf) => {
   for (const line of parts) {
     const m = GLYPH_CMD.exec(line.trim());
     if (m) {
-      try { process.stdout.write(glyphFill(Math.min(Number(m[1]), 20000))); } catch { /* pipe closed */ }
+      const n = Math.min(Number(m[1]), 20000);
+      try {
+        // WHY: the burst rig needs a producer-side clock; a CDP send acknowledgment
+        // is not an output-emission timestamp. This file exists only in fixture HOME.
+        const marker = path.join(home, '.claude', 'perf-terminal-emissions.jsonl');
+        const payload = glyphFill(n);
+        // Timestamp AFTER generating the bytes. Fixture marker's synchronous
+        // append still sits between timestamp and stdout.write; report that cost.
+        fs.appendFileSync(marker, JSON.stringify({ n, startedAt: Date.now() }) + '\n');
+        process.stdout.write(payload, () => {
+          try { fs.appendFileSync(marker, JSON.stringify({ n, finishedAt: Date.now() }) + '\n'); } catch { /* fixture may be gone */ }
+        });
+      } catch { /* pipe closed */ }
     }
   }
   // A line that never ends must not grow without bound.
