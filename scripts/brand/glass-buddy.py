@@ -102,7 +102,8 @@ def limb_rect(x, y, w, h, r, rim):
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="none" stroke="{rim}" stroke-width=".16"/>')
 
 
-def build(tex_b64: str, rim: str, limb_top: str, limb_bottom: str, show: str | None) -> str:
+def build(tex_b64: str, rim: str, tint: str, show: str | None) -> str:
+    top, mid, bot = tint.split(',')
     f = faces()
     face_groups = ''.join(
         f'<g id="rig-face-{n}"{"" if (n == (show or "idle")) else " style=\"display:none\""}>{svg}</g>'
@@ -113,16 +114,22 @@ def build(tex_b64: str, rim: str, limb_top: str, limb_bottom: str, show: str | N
   <defs>
     <clipPath id="c-body"><path d="{BODY}"/></clipPath>
     <radialGradient id="g-halo" cx="50%" cy="55%" r="50%">
-      <stop offset="55%" stop-color="#28055A" stop-opacity=".30"/>
+      <stop offset="55%" stop-color="#28055A" stop-opacity=".2"/>
       <stop offset="100%" stop-color="#28055A" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="g-shine" cx="28%" cy="6%" r="70%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity=".5"/>
       <stop offset="60%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="g-limb" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="{limb_top}"/>
-      <stop offset="100%" stop-color="{limb_bottom}"/>
+    <!-- WHY one colour run in rig space for every limb (deck glass-buddy-2 GB2-2, Destin:
+         "the hands/feet need to look like a continuation of the same background used for
+         the body"): the body's run goes top 4 -> bottom 16; the limbs carry it on to 21,
+         so arms beside the middle are lavender and feet below are periwinkle. -->
+    <linearGradient id="g-limb" gradientUnits="userSpaceOnUse" x1="0" y1="4" x2="0" y2="21">
+      <stop offset="0" stop-color="{top}"/>
+      <stop offset=".353" stop-color="{mid}"/>
+      <stop offset=".706" stop-color="{bot}"/>
+      <stop offset="1" stop-color="{bot}"/>
     </linearGradient>
     <linearGradient id="g-limb-hi" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#ffffff" stop-opacity=".45"/>
@@ -130,12 +137,14 @@ def build(tex_b64: str, rim: str, limb_top: str, limb_bottom: str, show: str | N
     </linearGradient>
   </defs>
   <g id="rig-root">
+    <!-- The soft glow sits behind everything: inside rig-body it was painted over the hands
+         and feet (deck glass-buddy-2 GB2-1). -->
+    <ellipse cx="12" cy="11.5" rx="11" ry="10.5" fill="url(#g-halo)"/>
     <g id="rig-arm-left" data-pivot="2.5 9">{limb_rect(1, 9, 3, 4, .8, rim)}</g>
     <g id="rig-arm-right" data-pivot="21.5 9">{limb_rect(20, 9, 3, 4, .8, rim)}<g id="slot-item"/></g>
     <g id="rig-leg-left" data-pivot="8.95 17">{limb_rect(7.2, 17, 3.5, 4, 1.2, rim)}</g>
     <g id="rig-leg-right" data-pivot="15.05 17">{limb_rect(13.3, 17, 3.5, 4, 1.2, rim)}</g>
     <g id="rig-body">
-      <ellipse cx="12" cy="10.4" rx="10.5" ry="9.2" fill="url(#g-halo)"/>
       <g clip-path="url(#c-body)">
         <image href="data:image/png;base64,{tex_b64}" x="5" y="4" width="14" height="12" preserveAspectRatio="none"/>
         <rect x="5" y="4" width="14" height="12" fill="url(#g-shine)"/>
@@ -159,18 +168,16 @@ def main():
     ap.add_argument('out')
     ap.add_argument('slug')
     ap.add_argument('--rim', default='#7A3FA8')
-    ap.add_argument('--limb', default='#F3E6FA,#D9BDEB', help='limb gradient top,bottom')
     ap.add_argument('--tint', default='#FBC8F8,#D6BAFF,#8E88F4', help="colour run top,middle,bottom (the icon face's)")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
-    top, bottom = a.limb.split(',')
     with tempfile.TemporaryDirectory() as tmp:
         tex = texture(a.wall, tmp, a.tint)
-    open(os.path.join(a.out, f'{a.slug}-mascot-rig.svg'), 'w').write(build(tex, a.rim, top, bottom, None))
+    open(os.path.join(a.out, f'{a.slug}-mascot-rig.svg'), 'w').write(build(tex, a.rim, a.tint, None))
     # Stills for the places that show a picture instead of the moving rig (Android, the
     # flat variants): the rig with one face showing.
     for still, face in [('idle', 'idle'), ('welcome', 'welcome'), ('inquisitive', 'curious'), ('shocked', 'shocked')]:
-        open(os.path.join(a.out, f'{a.slug}-mascot-{still}.svg'), 'w').write(build(tex, a.rim, top, bottom, face))
+        open(os.path.join(a.out, f'{a.slug}-mascot-{still}.svg'), 'w').write(build(tex, a.rim, a.tint, face))
     print('wrote', a.out)
 
 
