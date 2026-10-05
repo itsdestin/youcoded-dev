@@ -3,6 +3,12 @@ Filing test: does the fix change more than one screen? Yes — shared primitives
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
 
+- [ ] The app has no shared set of icons: about a hundred are drawn one by one in their own
+      files, so the same idea looks different across screens and a badly drawn one (the theme
+      page's heart, found 2026-10-05) is caught only by eye. Make one shared icon set and move
+      the drawings onto it; the `dev/icons` screenshot sheet shows them all at 48px meanwhile.
+      `all` `confirmed` `checked 2026-10-05`
+
 - [ ] A red outlined button that is busy ("Stopping…" on a running command's Stop) is hard to
       read: its dimmed label measured 3.98:1 on Midnight, under the 4.5:1 minimum for small
       text. Found by the admin-password UX review 2 (U3), 2026-09-26; the dimming is the shared

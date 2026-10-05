@@ -305,7 +305,8 @@ def deck_data(spec, boxes):
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
                         'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
     return {**live, **paged, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
-            'runLabels': {'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
+            # Any other run name (`round3`) shows as written unless `labels` names it.
+            'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
 

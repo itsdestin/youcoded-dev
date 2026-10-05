@@ -28,8 +28,11 @@ class SpecTests(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')), root)
     def _without(self, key):
         p = write_spec(self.d); s = json.load(open(p)); del s[key]; json.dump(s, open(p, 'w')); return p
-    def test_three_runs_rejected(self):
-        with self.assertRaises(SpecError): load_spec(write_spec(self.d, runs={"a": "/a", "b": "/b", "c": "/c"}))
+    def test_any_short_lowercase_run_names_are_accepted(self):
+        # Proposal 9b (2026-10-05): a slide may compare against an older round by its own name.
+        load_spec(write_spec(self.d, runs={"a": "/a", "b": "/b", "round3": "/c"}))
+    def test_a_run_name_with_capitals_or_spaces_is_refused(self):
+        with self.assertRaises(SpecError): load_spec(write_spec(self.d, runs={"Round 3": "/a"}))
     def test_valid_spec_has_no_errors(self):
         self.assertEqual(validate(load_spec(write_spec(self.d))), ([], []))
     def test_images_folder_must_name_the_deck(self):
@@ -416,9 +419,10 @@ class SlideRunsTests(unittest.TestCase):
         s = load_spec(write_spec(self.d, runs={'today': '/t', 'before': '/a', 'after': '/b'}))
         self.assertEqual(len(s['runs']), 3)
 
-    def test_a_capture_name_outside_the_three_is_refused(self):
-        with self.assertRaises(SpecError):
-            load_spec(write_spec(self.d, runs={'yesterday': '/a'}))
+    def test_before_always_reads_left_of_after_whatever_else_is_named(self):
+        from deck.spec import run_names
+        s = load_spec(write_spec(self.d, runs={'after': '/b', 'round3': '/c', 'before': '/a'}))
+        self.assertEqual(run_names(s), ['before', 'after', 'round3'])
 
 
 if __name__ == '__main__': unittest.main()

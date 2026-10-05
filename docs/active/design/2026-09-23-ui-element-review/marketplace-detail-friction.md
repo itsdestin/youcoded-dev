@@ -306,3 +306,22 @@ it too — it only shows at Destin's 1.5× scale.
    `workbench-mode.ts` switch + screen `params` pattern, and that LOOK-ALIKE can fire on genuinely
    different small variants (R3 needed a `sameAs` that misdescribes two screens); a finer
    look-alike comparison of the marked panel would avoid that.
+
+## Proposals implemented (2026-10-05, approved by Destin)
+
+All 11 done (app `49554ec96`, workspace commit beside this note); 7(a) in Destin's words — "any lone
+button is full width, unless it fits on one line beside its text".
+
+- **Correction (proposal 3):** verify.sh already kept FAILED checks' logs in `scratch/verify-*` and
+  printed the folder once after the summary; I missed it in rounds 4–5 because I filtered its output to
+  the PASS/FAIL lines. It now keeps every check's log and names the file on the FAIL line itself.
+- **First run of "parts agree" across every screen** found: (1) the Marketplace detail pages' filled and
+  outlined buttons differ by 2px (fixed on the detail pages; the same difference exists wherever the app
+  pairs the two — a Button-primitive change left for Destin); (2) on every phone-width Marketplace card
+  the safety chip is 18px beside a 22.5px author/source chip (not fixed; card rows left unmarked until it
+  is). It also catches the M5-3 clipping at 1× (seen red with the fix removed).
+- **First icon sheet:** no malformed drawing found among the ~150 exported icons; inline icons are not
+  on it.
+- **Practice states, first look:** the install-failed notice (and its reason) disappears by itself
+  after about 6 seconds — the app clears install errors on a timer — leaving a plain Install button
+  with no explanation.

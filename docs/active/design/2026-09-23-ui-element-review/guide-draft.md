@@ -105,7 +105,10 @@ underline under its words. Labels over short settings groups stay plain.
 - **A label comes first.** A popup never opens straight into a card: a small label sits above the first
   card, and once one card has a label, every card on that page does (otherwise the next card reads as
   filed under the one above). A label never repeats the popup's title. Exceptions: a small popup holding
-  a single card (Buddy), short yes/no confirmations, and popups that open on a warning.
+  a single card (Buddy), short yes/no confirmations, popups that open on a warning, **the card about the
+  popup's own subject** at its top (Session details' name card, a detail page's top card), and **a
+  picture of the item** (a theme's preview) — no label could say more than the title or the picture
+  (decisions "Theme detail page").
 
 ### Buttons
 - **Text and buttons in one box:** text on the left and buttons on the right **on one line** when they
@@ -114,10 +117,13 @@ underline under its words. Labels over short settings groups stay plain.
 - Shape follows the theme's control roundness (built-in themes: Round, 14px).
 - **Main action:** filled. **Everything less important beside it** (Cancel, Preview, Not
   now, Dismiss): **outlined**, never bare text.
-- **One button:** full width.
+- **One button:** any lone button is full width, unless it fits on one line beside its text — then it
+  sits at the right of that line (decisions "Marketplace detail — lone Uninstall", NB-2).
 - **Two buttons, side by side** (wide popups, chat messages): the **filled one on the right**,
   the outlined one directly left of it, both hugging their labels at the right edge.
-- **Two buttons, stacked** (narrow popups and phone width): full width, **filled on top**.
+- **Two buttons, stacked** (narrow popups and phone width): full width, **filled on top**. "Narrow" is
+  the space the buttons sit in, not only the popup: a ~250px column inside a wide popup stacks too
+  (decisions "Theme detail page").
 - **Destructive confirm:** the red button takes the main action's place — on the right when
   side by side, on top when stacked.
 - Close is always the ✕ button, never a letter or the word.
@@ -183,9 +189,31 @@ Settings → Backup & Sync, Assistant → General, Account.
 - **Text order:** name with its status on the top line → **one row of chips right under the
   name** for the short facts about it (who made it, what kind, numbers) → the description
   (two lines at most).
-- The chip row **never wraps**: one line that fades out at its end.
+- The chip row **never wraps**: one line that **scrolls sideways** when it does not fit, fading only at
+  the edge that has more, with no scrollbar. Leave room inside its scroll edge so a chip's border is never
+  cut (it showed only at 1.5×). Every chip in a row is **the one fact chip** (`Chip` in
+  `components/ui/`) — one size; never mix it with `Badge` or a hand-made chip. (Refines G-9; decisions
+  "Detail chips: one size, one row that scrolls".)
 - **Quick actions on a card** (tag, note, favourite) sit at its **top right**; a **date** goes
   at the **bottom right**, at the end of the details line. Example: conversation cards.
+
+### Detail pages (something you open from a card: a plugin, a theme, an integration)
+Reference: the Marketplace detail pages; Session details for the top card. (Decisions "Marketplace
+detail pages — shell" and the rows after it.)
+- The shared popup, **titled by kind**: "Plugin details", "Theme details" — the item's name is in the
+  top card, not the title.
+- **The top card** is the subject (no label above it): name with its status pill, quick actions at its
+  top right, the one chip row, the description, then any notice about the item and its buttons — all
+  inside the card.
+- **Two columns** in the wide popup: the reading (About, What's inside, Feedback, Comments) on the left,
+  short facts (What this can do, Source) on the right; one column at phone width. Each group is a small
+  label and one card.
+- **An icon with a title, description and buttons lines up in one row** on one centre line — icon |
+  title + description | buttons — like the shared setting row and the Account profile card.
+- A **picture of the item** (a theme's preview) is a card with no label; beside it the top card and the
+  facts stack on the right.
+- Show a state only once: no "Installed" pill where the buttons already say so (themes); a number that
+  changes when you click (likes) is a chip that moves at once.
 
 ### Lists and menus
 - **Settings-style lists** (each row opens or changes a setting): **boxed rows** — each row a

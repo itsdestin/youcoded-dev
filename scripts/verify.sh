@@ -358,17 +358,26 @@ if [[ -d "$DESKTOP/tests/journeys" ]] \
   start journeys "journeys (click paths)" node "$ROOT/scripts/shoot/journeys.mjs" --worktree "$CHECKOUT"
 fi
 
+# Every check's full log is kept, passing or failing, in one folder named on the FAIL line itself.
+# WHY (marketplace-detail friction, proposal 3): only failed checks' logs were kept, and their folder
+# was printed once, after the summary — a session that read just the PASS/FAIL lines never saw it,
+# and a one-off full-suite failure could not be named afterwards. A passing run's log matters too:
+# it is what you compare a later failure against.
+KEEP="$ROOT/scratch/verify-$(date +%Y%m%d-%H%M%S)-$$"
+mkdir -p "$KEEP" 2>/dev/null || KEEP=""
+
 FAILED=0
 FAILED_KEYS=()
 if [[ $BUDGETS_FAILED -eq 1 ]]; then FAILED=1; FAILED_KEYS+=("budgets"); fi
 for key in types testtypes tests knip lint design invariants screens journeys; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
+  [[ -n "$KEEP" ]] && cp "$LOGDIR/$key.log" "$KEEP/$key.log" 2>/dev/null
   if [[ $rc -eq 0 ]]; then
     printf 'PASS  %s\n' "${LABEL[$key]}"
   else
     FAILED=$((FAILED + 1))
-    printf 'FAIL  %s\n' "${LABEL[$key]}"
+    printf 'FAIL  %s%s\n' "${LABEL[$key]}" "${KEEP:+  — full log: $KEEP/$key.log}"
     # Last 25 lines: enough for a tsc error list or a vitest failure summary
     # without dumping a full suite run into the transcript.
     sed 's/^/      /' "$LOGDIR/$key.log" | tail -25
@@ -376,16 +385,11 @@ for key in types testtypes tests knip lint design invariants screens journeys; d
   fi
 done
 
-# Preserve the logs for every check that failed. The old line said "(full log
-# was $LOGDIR/…)" and pointed at a path the EXIT trap was about to delete — a
-# message naming a file the reader cannot open is worse than no message.
-if [[ $FAILED -gt 0 ]]; then
-  KEEP="$ROOT/scratch/verify-$(date +%Y%m%d-%H%M%S)-$$"
-  if mkdir -p "$KEEP" 2>/dev/null; then
-    for key in "${FAILED_KEYS[@]}"; do cp "$LOGDIR/$key.log" "$KEEP/$key.log" 2>/dev/null; done
-    echo ""
-    echo "full logs: $KEEP"
-  fi
+# The logs live on after the EXIT trap deletes $LOGDIR (a path to a deleted file is worse than none).
+if [[ -n "$KEEP" ]]; then
+  [[ $BUDGETS_FAILED -eq 1 ]] && cp "$LOGDIR/budgets.log" "$KEEP/budgets.log" 2>/dev/null
+  echo ""
+  echo "full logs (every check): $KEEP"
 fi
 
 echo ""

@@ -21,10 +21,11 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve } from './engine.mjs';
+import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve, setShotScale, shotScale } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
 import { ensureOfficeEditor } from './office-editor.mjs';
+import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -63,9 +64,18 @@ for (let i = 0; i < args.length; i++) {
 function die(msg) { console.error(`shoot: ${msg}`); process.exit(2); }
 function readHelp() { return spawnSync('sed', ['-n', '2,17p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, ''); }
 
+// WHY 1.5× by default for review pictures (marketplace-detail friction, proposal 1): Destin
+// works at 1.5×, and a clipped chip border (M5-3) was invisible in every 1× picture read for
+// five rounds. Kept at 1× where boxes are read by a machine rather than a person: --check
+// (speed; nothing looks at the pixels), --collect (the design check crops by CSS-pixel boxes)
+// and --contrast (its report measures element boxes). SHOOT_SCALE in the environment wins.
+setShotScale(process.env.SHOOT_SCALE ? Number(process.env.SHOOT_SCALE) : (opt.check || opt.collect || opt.contrast) ? 1 : 1.5);
+
 const themes = opt.check ? [CHECK_THEME] : opt.themes === 'all' ? ALL_THEMES : opt.themes ? opt.themes.split(',') : DEFAULT_THEMES;
 const width = opt.width; const height = opt.height ?? (width < 640 ? 844 : 900);
 const log = (m) => console.error(`[shoot] ${m}`);
+// Where this run's Office editor listens (office-editor.mjs) — told to the app as ?officePort=.
+let officePort = null;
 
 // This checkout by default: inside a session worktree that is <worktree>/youcoded.
 function defaultCheckout() {
@@ -96,7 +106,7 @@ async function side(checkout, outDir, pick) {
     const jobs = chosen.flatMap((s) => themes.map((theme) => ({ screen: s, theme })));
     // The Office editor, for the screens that show one (office-editor.mjs says why shoot owns it).
     if (chosen.some((s) => s.tags.includes('office'))) {
-      try { editor = await ensureOfficeEditor(checkout, log); } catch (e) { die(`the Office screens need the editor: ${e.message}`); }
+      try { editor = await ensureOfficeEditor(checkout, log); officePort = editor.port; } catch (e) { die(`the Office screens need the editor: ${e.message}`); }
     }
     const size = poolSize(jobs.length);
     log(`${chosen.length} screen(s) × ${themes.length} theme(s) = ${jobs.length} picture(s), ${size.browsers} browser(s) × ${Math.ceil(size.tabs / size.browsers)} tab(s)`);
@@ -163,12 +173,12 @@ const THUMB = (b64) => `(async () => { const img = new Image(); img.src = 'data:
 
 async function shootOne(tab, base, { screen, theme }, outDir) {
   const t0 = Date.now();
-  const r = { name: screen.name, theme, ok: false, reason: '', file: null, ms: 0, errors: [] };
+  const r = { name: screen.name, theme, ok: false, reason: '', file: null, ms: 0, errors: [], scale: shotScale() };
   try {
     // An entry may carry its own window (a phone screen); --width/--height apply otherwise.
     const w = screen.viewport?.width ?? width, h = screen.viewport?.height ?? height;
     await tab.prepare({ theme, width: w, height: h });
-    const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(screen.params ?? {}) });
+    const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(officePort ? { officePort: String(officePort) } : {}), ...(screen.params ?? {}) });
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
@@ -207,6 +217,8 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
+    // Parts agree (parts-agree.mjs): marked chip and button rows — one height, room inside a clip.
+    r.parts = partsFindings((await tab.evaluate(MEASURE_PARTS, 10_000).catch(() => null)) ?? []);
     // --collect <classes.json>: every visible element carrying one of those classes, with its
     // full class list and box — the design check (scripts/ui-review/design-check/) matches a
     // lint warning to its element by the whole class combination on the warned source line.
@@ -249,6 +261,22 @@ function picker(screens) {
 }
 
 // ─── Reports ─────────────────────────────────────────────────────────────────
+// WHY a second, full-size look before calling two screens alike (marketplace-detail friction,
+// proposal 11): the 480px thumbnails cannot see a 40px button change — four real like-button
+// designs came back "LOOK-ALIKE" and needed a `sameAs` that described two different screens as
+// the same. Only a pair the thumbnails already call alike is compared again, pixel for pixel at
+// full size (2% grey tolerance for anti-aliasing): more than LOOKALIKE_PIXELS different pixels
+// means they differ. Without ImageMagick the thumbnail verdict stands.
+const LOOKALIKE_PIXELS = 50;
+function fullSizeAlike(a, b) {
+  // Pixels whose grey difference is over 2% (`compare -metric AE` reports in colour units on
+  // ImageMagick 7, not pixels, so the count is taken directly).
+  const r = spawnSync('magick', [a, b, '-compose', 'difference', '-composite', '-colorspace', 'gray', '-threshold', '2%', '-format', '%[fx:round(mean*w*h)]', 'info:'], { encoding: 'utf8' });
+  if (r.error || r.status !== 0) return true;
+  const n = Number(String(r.stdout).trim());
+  return !(n > LOOKALIKE_PIXELS);
+}
+
 function lookalikes(results, screens) {
   const same = new Map(screens.filter((s) => s.sameAs).map((s) => [s.name, s.sameAs.name]));
   const expected = (a, b) => same.get(a) === b || same.get(b) === a;
@@ -258,7 +286,7 @@ function lookalikes(results, screens) {
     for (let i = 0; i < got.length; i++) for (let j = i + 1; j < got.length; j++) {
       const a = got[i].thumb, b = got[j].thumb; if (a.length !== b.length) continue;
       let d = 0; for (let k = 0; k < a.length; k++) d += Math.abs(a[k] - b[k]);
-      if (d / a.length / 255 < LOOKALIKE && !expected(got[i].name, got[j].name)) out.push(`${got[i].name} = ${got[j].name} (${theme})`);
+      if (d / a.length / 255 < LOOKALIKE && !expected(got[i].name, got[j].name) && fullSizeAlike(got[i].file, got[j].file)) out.push(`${got[i].name} = ${got[j].name} (${theme})`);
     }
   }
   return out;
@@ -284,6 +312,10 @@ function summarize(label, { results, screens }, outDir) {
   for (const r of bad) console.log(`  NOT TAKEN  ${r.name} · ${r.theme} — ${r.reason}`);
   const same = lookalikes(results, screens);
   for (const s of same) console.log(`  LOOK-ALIKE ${s} — different screens, same picture. If that is expected, add sameAs to the screen list.`);
+  // A part that disagrees fails --check like a screen that did not open: it is a defect a
+  // person would see, found before anyone looks (parts-agree.mjs says which rows are read).
+  const parts = ok.flatMap((r) => (r.parts ?? []).map((p) => `${r.name} · ${r.theme} — ${p}`));
+  for (const p of parts) console.log(`  PARTS      ${p}`);
   const errs = ok.filter((r) => r.errors.length);
   for (const r of errs) console.log(`  PAGE ERROR ${r.name} · ${r.theme} — ${r.errors[0].split('\n')[0].slice(0, 160)}`);
   writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(results.map(({ thumb, ...r }) => r), null, 2));
@@ -294,7 +326,7 @@ function summarize(label, { results, screens }, outDir) {
     writeFileSync(join(outDir, 'contrast.md'), rep.stdout || rep.stderr);
     log(`contrast report: ${join(outDir, 'contrast.md')}`);
   }
-  return { bad: bad.length, same: same.length };
+  return { bad: bad.length, same: same.length, parts: parts.length };
 }
 
 // ─── Before / after ─────────────────────────────────────────────────────────
@@ -303,7 +335,7 @@ function compare(before, after, outDir) {
   const dir = join(outDir, 'compare'); mkdirSync(dir, { recursive: true });
   const key = (r) => `${r.name}|${r.theme}`;
   const B = new Map(before.results.map((r) => [key(r), r])); const A = new Map(after.results.map((r) => [key(r), r]));
-  const placeholder = (text) => ['-size', `${width}x${height}`, 'xc:#333', '-gravity', 'center', '-fill', '#ddd', '-pointsize', '36', '-annotate', '0', text];
+  const placeholder = (text) => ['-size', `${Math.round(width * shotScale())}x${Math.round(height * shotScale())}`, 'xc:#333', '-gravity', 'center', '-fill', '#ddd', '-pointsize', '36', '-annotate', '0', text];
   for (const k of new Set([...B.keys(), ...A.keys()])) {
     const [name, theme] = k.split('|'); const b = B.get(k); const a = A.get(k);
     const leftSrc = b?.ok ? [b.file] : placeholder(b ? `Before: not taken\n${b.reason.slice(0, 60)}` : 'Not on the before side');
@@ -346,7 +378,7 @@ if (opt.list) {
   process.exit(0);
 }
 if (r.empty) die('nothing matched');
-const { bad, same } = summarize('', r, outDir);
+const { bad, same, parts } = summarize('', r, outDir);
 if (!opt.check) for (const f of sheet(r.results, outDir)) console.log(`  contact sheet: ${f}`);
 console.log(`done in ${((Date.now() - t0) / 1000).toFixed(1)}s → ${outDir}`);
-process.exit(opt.check && (bad > 0 || same > 0) ? 1 : 0);
+process.exit(opt.check && (bad > 0 || same > 0 || parts > 0) ? 1 : 0);

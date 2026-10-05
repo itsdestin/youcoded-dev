@@ -74,6 +74,50 @@ def shoot_manifest(run_dir):
         return json.load(f)
 
 
+def split_region(crop):
+    """`"<shoot screen>@WxH+X+Y"` → (screen, geometry), else (crop, None).
+    WHY (marketplace-detail friction, proposal 9a): a choice between four like buttons showed
+    four whole 1440×900 windows with a 40px difference in each; the author had to cut close-ups
+    by hand into a `shots-<plan>` folder. A region after the screen name crops the shoot picture
+    itself. The geometry is in the screen's CSS pixels (the 1440×900 shot's own coordinates),
+    whatever density the picture was taken at."""
+    if '@' in crop:
+        name, geo = crop.rsplit('@', 1)
+        if geo and geo[0].isdigit():
+            return name, geo
+    return crop, None
+
+
+def _scaled_geo(geo, scale):
+    """WxH+X+Y in CSS pixels → the same region in picture pixels at `scale`."""
+    import re
+    m = re.fullmatch(r'(\d+)x(\d+)\+(\d+)\+(\d+)', geo)
+    if not m:
+        raise ValueError(f'region "{geo}" is not WxH+X+Y')
+    w, h, x, y = (round(int(v) * scale) for v in m.groups())
+    return f'{w}x{h}+{x}+{y}'
+
+
+def scaled_panel(entry):
+    """A shoot entry's panel box in PICTURE pixels. shoot measures it in CSS pixels; a picture
+    taken at 1.5× (shoot's default for review pictures since 2026-10-05) is 1.5× larger, so an
+    unscaled box would be drawn in the wrong place. Old manifests carry no `scale` and were 1×."""
+    panel = entry.get('panel')
+    if not panel:
+        return None
+    k = entry.get('scale') or 1
+    return {key: panel[key] * k for key in ('x', 'y', 'w', 'h')}
+
+
+def copy_shoot_picture(entry, dst, region):
+    """Copy a shoot picture into the deck's images, or cut the named region out of it."""
+    if not region:
+        shutil.copy2(entry['file'], dst)
+        return
+    geo = _scaled_geo(region, entry.get('scale') or 1)
+    subprocess.run(['magick', entry['file'], '+repage', '-crop', geo, '+repage', dst], check=True)
+
+
 def shoot_entry(run_dir, name, theme):
     """The shoot manifest's entry for a screen name in one theme, or None. Only ever called
     after `is_shoot_run(run_dir)` — a missing manifest.json is the caller's job to check first."""
@@ -133,7 +177,8 @@ def crop_images(spec, log=print):
                         cut.add(dst)
                 else:
                     run_dir = spec['runs'][run]
-                    entry = shoot_entry(run_dir, st['crop'], theme) if is_shoot_run(run_dir) else None
+                    screen, region = split_region(st['crop'])
+                    entry = shoot_entry(run_dir, screen, theme) if is_shoot_run(run_dir) else None
                     if not entry or not entry.get('ok'):
                         if entry:
                             reason = entry.get('reason') or 'shoot did not take this picture'
@@ -144,9 +189,10 @@ def crop_images(spec, log=print):
                         missing.append(f'{st["id"]}: {theme}/{run} — {reason}')
                         continue
                     if dst not in cut:   # steps sharing a crop share the file — copy it once
-                        shutil.copy2(entry['file'], dst)
+                        copy_shoot_picture(entry, dst, region)
                         cut.add(dst)
-                    panel = entry.get('panel')
+                    # A region is already the focus: no default panel box drawn over it.
+                    panel = None if region else scaled_panel(entry)
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
                 elif isinstance(hl, dict):
@@ -172,6 +218,12 @@ def crop_images(spec, log=print):
                                        f'picture names a screen, not an element; drop "highlight" (the screen\'s own '
                                        f'panel is boxed automatically) or give a hand-placed "box"')
                         continue
+                elif hl == 'panel':
+                    # The screen's own panel in every run — a whole-page change, said plainly.
+                    if panel and os.path.exists(dst):
+                        per_run[run] = px_to_pct(panel, image_size(dst))
+                    else:
+                        missing.append(f'{st["id"]}: {theme}/{run} has no panel box to draw (a region crop, or an old picture)')
                 elif hl is None and panel and os.path.exists(dst):
                     # The step gave no highlight at all: default to the screen's own panel,
                     # converted from the pixels shoot measured to percent of the picture it
@@ -216,7 +268,8 @@ def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
                     cut.add(dst)
             else:
                 run_dir = spec['runs'][run]
-                entry = shoot_entry(run_dir, v['crop'], theme) if is_shoot_run(run_dir) else None
+                screen, region = split_region(v['crop'])
+                entry = shoot_entry(run_dir, screen, theme) if is_shoot_run(run_dir) else None
                 if not entry or not entry.get('ok'):
                     if entry:
                         reason = entry.get('reason') or 'shoot did not take this picture'
@@ -227,9 +280,9 @@ def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
                     missing.append(f'{st["id"]}/{v["id"]}: {theme}/{run} — {reason}')
                     continue
                 if dst not in cut:
-                    shutil.copy2(entry['file'], dst)
+                    copy_shoot_picture(entry, dst, region)
                     cut.add(dst)
-                panel = entry.get('panel')
+                panel = None if region else scaled_panel(entry)
             hl = v.get('highlight')
             if not hl:
                 if panel and os.path.exists(dst):

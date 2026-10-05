@@ -20,6 +20,11 @@ Options: `--worktree <name|branch|path>` (default: the checkout next to this scr
 `--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24) ·
 `--width N [--height N]` · `--contrast` · `--out <dir>` (default `scratch/shoot/<time>`).
 
+**Pictures are 1.5× by default** (Destin's screen density; a clipped chip border showed only there,
+2026-10-05): a 1440×900 screen is a 2160×1350 picture. `--check`, `--collect` and `--contrast` stay at
+1× (their boxes are read by a script); `SHOOT_SCALE=<n>` overrides both. The manifest records each
+picture's `scale`, and the review deck turns `panel` boxes (CSS pixels) into picture pixels with it.
+
 Output: `<out>/<screen name>/<theme>.png`, `manifest.json` (per picture: ok, reason, the
 screen's panel box, page errors), and a contact sheet per theme.
 
@@ -41,6 +46,39 @@ screen's panel box, page errors), and a contact sheet per theme.
   count. It waits for the screen to be still — no fetch in flight, animations done, images
   loaded — never a fixed time; every browser call has a time limit; a crashed run's browsers are
   cleaned up by the next.
+
+## Checks every picture makes
+
+- **The screen is showing** — its mark is on screen and not covered (above).
+- **Look-alikes** — two screens whose 480px thumbnails match are compared again at full size
+  (more than 50 pixels differ → different). Declare `sameAs` only for screens that truly look the same.
+- **Parts agree** (`parts-agree.mjs`) — on marked rows (`data-parts-agree`, and the Marketplace detail
+  pages' `[data-detail-chips]` / `[data-detail-actions]`): every child is one height (within 1px), and in
+  a row that clips (a sideways scroller), every child keeps room inside the clip edge. A finding prints
+  `PARTS` and fails `--check`. Mark a chip or button row with `data-parts-agree="<name>"` to opt in.
+- **The Office editor** — Office screens need its server. Port 4717 is used when free or already this
+  checkout's; when another worktree holds it, shoot starts this checkout's own on a free port and tells
+  the app with `?officePort=` (it never stops someone else's).
+
+## The icon sheet
+
+`shoot dev/icons` photographs every shared hand-drawn icon at 48px in one picture
+(`dev/workbench/IconSheet.tsx`, photo-only build). Look at it after drawing or changing an icon — a
+malformed drawing that reads fine at 12px is obvious there. Icons drawn inline inside a component are
+not on it; export them to put them on it.
+
+## Several designs of one real screen
+
+To show Destin two or three versions of a real screen (a Choice slide), not a mockup:
+1. Add a workbench-only switch in `desktop/src/renderer/workbench-mode.ts` — it returns the shipped
+   value outside the workbench and the photo-only build, so a typo shows the real screen
+   (`workbenchScreenFrame` is the model).
+2. Read it where the screen draws; build each version from the shared pieces.
+3. List one screen state per version in `screens/<area>.ts` with `params: { <switch>: '<value>' }`
+   (`settings/x#version-b`); the plain name shows the shipped one.
+4. Shoot them; a Choice slide names each as a variant `crop`. Cut a close-up with
+   `"crop": "<screen>@WxH+X+Y"` (deck AUTHORING.md) when the difference is small.
+5. When Destin picks, delete the switch, the losing branches and their screen states.
 
 ## Adding a screen
 

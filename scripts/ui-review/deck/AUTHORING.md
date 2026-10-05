@@ -29,7 +29,7 @@ worktree** (the path `workspace-start` returned — never the shared `youcoded-d
 files a session cannot commit; one session built four decks there before noticing, 2026-09-10), named
 `<feature>.<round>.json` — `.questions.json`, `.review.json`, `.review-2.json`,
 `.contract.json`. The built page, the answers and any rotated older answers land beside the
-spec. Answers files are committed (they are the record of Destin's decisions); `preview/`,
+spec. Answers files are committed (they are the record of Destin's decisions); `preview/` (one folder per deck),
 `*.serve.json` and `*.workbench.log` are scratch and are ignored.
 
 ## Deck-level fields
@@ -43,6 +43,7 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
 | `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `shoot` output folder (`node scripts/shoot/shoot.mjs <screens> --before <branch> --after <worktree> --out runs` writes `runs/before` and `runs/after`), or an old sweep's folder. **Paths resolve from the spec's own folder** — write `runs/after` beside the spec; a workspace-root path such as `docs/active/design/<feature>/runs/after` is looked up UNDER the spec's folder and fails (measured 2026-09-10; a 2026-09-09 note said the opposite and cost one build). A slide shows all of them unless it names its own (below) |
 | `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
+| (run names) | — | `today`, `before`, `after`, or any short lowercase name (`round3`) — a slide comparing with an older round names that run in its own `runs`. `before` always shows left of `after` |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
 | `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen |
@@ -91,12 +92,12 @@ Two runs; the rig boxes the pixels that differ.
 
 | Field | Required | What it is |
 |---|---|---|
-| `crop` | yes | which region of the screenshots to show — a `crops` name, or a `shoot` screen name |
+| `crop` | yes | which region of the screenshots to show — a `crops` name, a `shoot` screen name, or a close-up of one: `"<screen>@WxH+X+Y"` in the screen's own CSS pixels (the 1440×900 coordinates, whatever density it was shot at) |
 | `changed` | yes | the *What changed* card — the real difference, one or two sentences |
 | `notice` | yes | the *You'll notice* card — what is different for him while using it |
 | `risk` | no | the *Risk* card. Keep it to one sentence |
 | `measured` | no | a number that proves it (must contain a digit) |
-| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
+| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `"panel"` (the screen's own panel in every run — for a whole-page change, where `"auto"` would warn "whole-surface"), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
 
 He answers **Yes keep it / No revert it / Other**.
 
@@ -368,7 +369,7 @@ on a yes/no question.
 | Command | What it is for |
 |---|---|
 | `build <spec> [--theme SLUG]` | cut the crops, resolve every highlight, write the page. Refuses (no page) on any rule above |
-| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme plus `contact.png`, in `<spec dir>/preview/`. **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
+| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme (every theme the deck carries, unless `--themes`) plus `contact.png`, in `<spec dir>/preview/<spec name>/` (emptied first, so no other deck's pages sit beside them). **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
 | `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit when he submits. Prints `[deck] http://…` and **opens nothing** — put that line in chat as the last line of your turn. Run it in the background |
 | `wait <spec> [--timeout MIN]` | block on the answers file alone, for a session that no longer holds the `serve` process |
 | `record <spec> '<pasted summary>'` | write the submitted answers file from the page's copy box, for a deck he answered as a plain file |
@@ -390,7 +391,8 @@ deck whose point IS one theme.
 
 1. Copy the template for the kind you need; write the steps.
 2. `build` — fix every refusal it names.
-3. `preview` — read `preview/contact.png`. A defect you can see there is one he would see.
+3. `preview` — read `preview/<spec name>/contact.png` (and single pages when the sheet is too tall to
+   read). A defect you can see there is one he would see.
 4. `serve` in the background; put the printed `[deck] http://…` line in chat as the last line
    of your turn, and stop.
 5. Its exit is the notification; read the summary it prints.

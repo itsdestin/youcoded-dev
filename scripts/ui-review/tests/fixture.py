@@ -83,13 +83,18 @@ def shoot_run(root, entries):
             d = os.path.join(root, *name.split('/')); os.makedirs(d, exist_ok=True)
             file = os.path.join(d, f'{theme}.png')
             color = e.get('color') or ('#202020' if theme == 'midnight' else '#EEEEEE')
-            cmd = ['magick', '-size', '1440x900', f'xc:{color}']
+            # `scale`: a picture taken at a screen density (shoot's 1.5× review default) is that
+            # many times larger; its `panel` stays in CSS pixels, as shoot records it.
+            k = e.get('scale', 1)
+            cmd = ['magick', '-size', f'{round(1440 * k)}x{round(900 * k)}', f'xc:{color}']
             if e.get('rect'):
-                x, y, w, h = e['rect']
+                x, y, w, h = (round(v * k) for v in e['rect'])
                 cmd += ['-fill', 'red', '-draw', f'rectangle {x},{y} {x + w - 1},{y + h - 1}']
             subprocess.run(cmd + [file], check=True)
             rec['file'] = file
             rec['panel'] = e.get('panel') or {'x': 0, 'y': 0, 'w': 1440, 'h': 900}
+            if 'scale' in e:
+                rec['scale'] = e['scale']
         manifest.append(rec)
     with open(os.path.join(root, 'manifest.json'), 'w') as f:
         json.dump(manifest, f)

@@ -185,6 +185,46 @@ class ShootCropTests(unittest.TestCase):
 
 
 
+class ShootDensityAndRegionTests(unittest.TestCase):
+    """shoot takes review pictures at 1.5× (2026-10-05); its panel boxes stay in CSS pixels.
+    A region after the screen name ("screen@WxH+X+Y") cuts a close-up out of the picture."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        for run, rect in (('before', None), ('after', (560, 260, 120, 40))):
+            shoot_run(os.path.join(self.tmp, 'runs', run),
+                     [{'name': 'settings/sound', 'theme': t, 'panel': PANEL, 'rect': rect, 'scale': 1.5} for t in ('midnight', 'light')])
+
+    def test_a_15x_pictures_panel_is_scaled_to_the_picture(self):
+        spec = load_spec(_shoot_spec(self.tmp, runs={'today': os.path.join(self.tmp, 'runs', 'before')}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        # Same PERCENT as the 1× panel: the box lands on the same place in a 1.5× picture.
+        self.assertEqual(r['boxes']['S-1']['midnight']['today'], PANEL_PCT)
+
+    def test_a_region_crops_the_shoot_picture_in_css_pixels(self):
+        from deck.boxes import image_size
+        crop = 'settings/sound@200x100+500+250'
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'crop': crop}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        dst = os.path.join(spec['_base'], 'images', 'shoot', image_name(crop, 'midnight', 'after'))
+        self.assertEqual(image_size(dst), (300, 150))   # 200×100 CSS px at 1.5×
+
+    def test_panel_highlight_boxes_each_runs_panel_without_a_warning(self):
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'highlight': 'panel'}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], []); self.assertEqual(r['warnings'], [])
+        self.assertEqual(r['boxes']['S-1']['midnight']['before'], PANEL_PCT)
+        self.assertEqual(r['boxes']['S-1']['midnight']['after'], PANEL_PCT)
+
+    def test_any_short_run_name_may_be_used(self):
+        spec = load_spec(_shoot_spec(self.tmp, runs={'round3': os.path.join(self.tmp, 'runs', 'before'),
+                                                     'after': os.path.join(self.tmp, 'runs', 'after')}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        self.assertTrue(os.path.exists(os.path.join(spec['_base'], 'images', 'shoot', image_name('settings/sound', 'light', 'round3'))))
+
+
 class ImageNameTests(unittest.TestCase):
     def test_a_screen_state_makes_a_url_safe_file_name(self):
         # A "#" in an <img src> starts a URL fragment: the deck asked for a file that is not

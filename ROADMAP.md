@@ -75,7 +75,7 @@ Target: `v1.3.1`
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 42 | 19 | 3 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 36 | 13 | 3 | 5 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 37 | 13 | 3 | 5 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 27 | 5 | 2 | 4 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 25 | 5 | 6 | 7 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 23 | 9 | 7 | 4 |

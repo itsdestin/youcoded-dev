@@ -53,8 +53,11 @@ INLINE_TARGET = {'today:': "the step's today field", 'problem:': "the step's pro
 RECOMMENDED_RE = re.compile(r'\(?recommended\)?', re.I)
 COUNT_WORD = {2: 'two', 3: 'three', 4: 'four'}
 HEADLINE_MAX = 25
-# The only capture names a deck or a slide may use. `today` is one picture; `before`+`after` is a pair.
+# The usual capture names: `today` is one picture; `before`+`after` is a pair. Any other short
+# name is allowed too (`round3`): WHY (marketplace-detail friction, proposal 9b) — a slide
+# comparing the latest round with an OLDER one had to borrow `today` and relabel it.
 RUN_NAMES = ('today', 'before', 'after')
+RUN_NAME_RE = re.compile(r'^[a-z][a-z0-9-]*$')
 RISK_WARN = 40
 # A contract row's `checkedBy` — who resolves it: a guard script, this deck's own answers,
 # a running app probe, or a person. Task 4 reads this to pick its resolver.
@@ -167,9 +170,9 @@ def load_spec(path):
         for k in ('images', 'runs'):
             if k not in spec or spec[k] is None:
                 raise SpecError(f'spec is missing "{k}"')
-    bad = [r for r in spec['runs'] if r not in RUN_NAMES]
+    bad = [r for r in spec['runs'] if not RUN_NAME_RE.match(r)]
     if bad:
-        raise SpecError('runs may only be named ' + ', '.join(RUN_NAMES) + ' — not ' + ', '.join(bad))
+        raise SpecError('a run is named with lowercase letters, digits and dashes (today, before, after, round3…) — not ' + ', '.join(bad))
     if not spec['runs']:
         raise SpecError('runs must name at least one capture (today, or before and after)')
     spec['_base'] = os.path.dirname(os.path.abspath(path))
@@ -444,9 +447,14 @@ def clip_files(spec, step):
 
 
 def run_names(spec):
-    """Display order of the deck's runs: before then after when both exist, else as written."""
+    """Display order of the deck's runs: as written, except that `before` always comes just
+    before `after` when both exist (a slide reads older on the left, newer on the right)."""
     r = list(spec['runs'].keys())
-    return ['before', 'after'] if set(r) == {'before', 'after'} else r
+    if 'before' in r and 'after' in r:
+        at = min(r.index('before'), r.index('after'))
+        rest = [x for x in r if x not in ('before', 'after')]
+        return rest[:at] + ['before', 'after'] + rest[at:]
+    return r
 
 
 def step_runs(spec, st):
@@ -585,15 +593,21 @@ def validate(spec):
         elif hl == 'auto':
             if not two_runs:
                 errors.append(f'{sid}: "auto" highlight needs a before and an after run')
+        elif hl == 'panel':
+            # WHY (marketplace-detail friction, proposal 9d): a whole-page redesign changes 80–99%
+            # of every crop, so "auto" warned "name an element instead" on every slide, with no
+            # element to name. "panel" boxes the shoot screen's own panel in every run, quietly.
+            if not is_shoot_crop_name((st.get('crop') or '').split('@')[0]):
+                errors.append(f'{sid}: "panel" highlight needs a shoot screen crop (it boxes that screen\'s own panel)')
         elif isinstance(hl, dict):
             if not any(k in hl for k in ('selector', 'text', 'box')):
-                errors.append(f'{sid}: highlight must be "auto" or have selector, text or box')
+                errors.append(f'{sid}: highlight must be "auto", "panel" or have selector, text or box')
             elif 'box' in hl:
                 warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
                 _warn_whole_crop_box(hl, sid, warnings)
                 errors.extend(box_errors(hl['box'], sid))
         else:
-            errors.append(f'{sid}: highlight must be "auto" or an object')
+            errors.append(f'{sid}: highlight must be "auto", "panel" or an object')
         th = st.get('themes')
         if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
             errors.append(f'{sid}: themes must be a non-empty list of theme names')

@@ -15,8 +15,15 @@ import { CHROME_FLAGS } from '../ui-review/cdp-helpers.mjs';
 
 // SHOOT_SCALE=1.5 photographs at a screen's pixel density instead of 1×. WHY: Destin's
 // laptop runs at 1.5×, where half-pixel offsets show that a 1× picture rounds away — a tag
-// icon measured centred at 1× still looked off to him (2026-10-04). Default stays 1.
-const SHOT_SCALE = Number(process.env.SHOOT_SCALE) > 0 ? Number(process.env.SHOOT_SCALE) : 1;
+// icon measured centred at 1× still looked off to him (2026-10-04), and a chip's bottom
+// border clipped only at 1.5× (marketplace-detail-5#M5-3). The engine's own default stays 1
+// (explore, journeys, recordings); `shoot` raises it for review pictures with setShotScale().
+let SHOT_SCALE = Number(process.env.SHOOT_SCALE) > 0 ? Number(process.env.SHOOT_SCALE) : 1;
+/** The pixel density of every tab opened after this call. */
+export function setShotScale(n) { if (Number(n) > 0) SHOT_SCALE = Number(n); }
+/** The density pictures are being taken at — written into shoot's manifest so a reader can turn
+ *  its CSS-pixel boxes (a screen's panel) into picture pixels. */
+export function shotScale() { return SHOT_SCALE; }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');

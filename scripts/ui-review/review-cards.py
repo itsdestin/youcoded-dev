@@ -7,7 +7,8 @@
   python3 scripts/ui-review/review-cards.py preview <spec.json> [--sizes 1440x900,1024x768] [--themes midnight,light] [--out DIR] [--theme SLUG]
         build it, then look at it: one picture per page x window size x theme, plus contact.png laid out beside each other.
         READ THE CONTACT SHEET BEFORE `serve` — four sessions in one day handed Destin a deck whose header was
-        visibly broken. The pictures land in <spec dir>/preview/ by default; that folder is scratch and is not committed.
+        visibly broken. The pictures land in <spec dir>/preview/<spec name>/ by default (emptied first), in every
+        theme the deck carries; that folder is scratch and is not committed.
   python3 scripts/ui-review/review-cards.py selfie [--before origin/master] [--out DIR] [--dry-run]
         the DECK reviewed on a deck: renders a fixture carrying every kind of step with the deck code at
         <--before> and with this worktree's, then serves a review of the two, boxed by pixel difference.
@@ -143,7 +144,7 @@ def main(argv):
     pv = sub.choices['preview']
     pv.add_argument('--sizes', help='window sizes to shoot, comma separated (default 1440x900,1280x800,1024x768)')
     pv.add_argument('--themes', help="themes to shoot, comma separated (default: the deck's first two)")
-    pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/)')
+    pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/<spec name>/)')
     a = ap.parse_args(argv)
     if a.cmd == 'selfie':
         # WHY before the try below: selfie has no `spec` argument to load — the review deck is

@@ -61,7 +61,7 @@ should stay in the same place for each set of questions" (2026-09-04). **Guard:*
 **Why:** 28 of 28 options drifted in two days. **Guard:** `test_words.py`.
 
 ## Look at it before he does
-**Invariant:** `preview <spec>`, READ `preview/contact.png`, then `serve`; re-serve an answered
+**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve`; re-serve an answered
 deck with `--no-build`. **Why:** four defective decks in a day; rebuilding "fixes" a past
 decision. **Guard:** candidate.
 

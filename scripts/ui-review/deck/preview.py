@@ -55,17 +55,26 @@ def preview(spec, sizes=None, themes=None, out=None, log=print):
     if not can_render(log):
         return 2
     sizes = list(sizes) if sizes else list(DEFAULT_SIZES)
-    # The deck opens on spec['themes'][0] and its `?theme=` switch only knows spec['themes'],
-    # so the default is simply the first two it lists — after apply_live_theme has moved the
-    # theme Destin's app is on to the front.
-    themes = list(themes) if themes else list(spec['themes'][:2])
+    # The deck opens on spec['themes'][0] and its `?theme=` switch only knows spec['themes'].
+    # WHY every theme it carries by default (marketplace-detail friction, proposal 9c): the old
+    # default was the first two, so a three-theme deck's third theme was never looked at unless
+    # the author knew to pass --themes (round 4 of the detail pages missed Midnight that way).
+    themes = list(themes) if themes else list(spec['themes'])
     unknown = [t for t in themes if t not in spec['themes']]
     if unknown:
         # Fix: the page ignores a `?theme=` it does not carry, so without this check the shot
         # would be named for a theme it is not in — a picture that lies about itself.
         log('this deck has no ' + ', '.join(unknown) + ' — it carries ' + ', '.join(spec['themes']))
         return 2
-    out = out or os.path.join(spec['_base'], 'preview')
+    # WHY a folder per deck, emptied first: every deck in a design folder used to share one
+    # `preview/`, and pages a run did not rewrite (another deck's, an older size) stayed beside the
+    # fresh ones under the same names — a session read another deck's stale page as its own.
+    if not out:
+        out = os.path.join(spec['_base'], 'preview', spec['_stem'])
+        if os.path.isdir(out):
+            for f in os.listdir(out):
+                if f.endswith('.png'):
+                    os.remove(os.path.join(out, f))
     os.makedirs(out, exist_ok=True)
 
     srv, url = make_server(spec, 0, lambda state: None)
