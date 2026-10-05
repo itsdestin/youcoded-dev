@@ -72,6 +72,16 @@ export function eventRecorder() {
   S.clock = () => ({ pageNow: performance.now(), pageEpoch: performance.timeOrigin + performance.now() });
   // Positive control: a known main-thread block of `ms` (the same idea as switch-pingpong's ctrl).
   S.block = (ms) => { const e = performance.now() + ms; while (performance.now() < e); return true; };
+  // Positive control, deterministic: a capture-phase pointerdown listener that spins `ms` when a session pill is pressed — the same as
+  // a handler that takes that long. (A block sent over the debugger after the press raced the compositor: at 180 Hz the frame was
+  // already presented before the block arrived, so the control read 24 ms instead of ~200.)
+  S.armBlock = (ms) => {
+    S.disarmBlock && S.disarmBlock();
+    const h = (e) => { const t = e.target; if (t && t.closest && t.closest('[data-session-id]')) S.block(ms); };
+    window.addEventListener('pointerdown', h, { capture: true, passive: true });
+    S.disarmBlock = () => { window.removeEventListener('pointerdown', h, true); S.disarmBlock = null; };
+    return true;
+  };
   // The pill's centre right now (one element). Read just before a press; a person aims at where the pill IS.
   S.aim = (id) => {
     const s = document.querySelector('[data-session-strip]') || document.querySelector('.session-strip');

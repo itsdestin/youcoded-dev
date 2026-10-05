@@ -43,5 +43,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const args = process.argv.slice(2); let run = null; const paths = [];
   for (let i = 0; i < args.length; i++) { if (args[i] === '--run') run = args[++i]; else paths.push(args[i]); }
   const reps = loadReports(paths);
-  for (const label of run ? [run] : ['fresh', 'warm', 'busy']) { const t = table(reps, label); if (t.split('\n').length > 2) console.log(`\n${t}`); }
+  for (const label of run ? [run] : ['fresh', 'warm', 'soaked', 'busy']) { const t = table(reps, label); if (t.split('\n').length > 2) console.log(`\n${t}`); }
 }

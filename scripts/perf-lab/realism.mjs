@@ -53,7 +53,7 @@ const HIS_FILE = '/home/destin/.config/youcoded-perfzero/perf';
 // ── options ──────────────────────────────────────────────────────────────────
 
 export function parseOptions(argv) {
-  const o = { preset: 'real-use', checkout: null, appDir: null, devSource: null, out: join(WORK, 'out'), seqs: 'fresh,warm,busy,ctrl,noop', seconds: 75, tag: '', boots: 1, maxMinutes: 30, seed: 'real-use', waitMinutes: 40, aim: 'fresh' };
+  const o = { preset: 'real-use', checkout: null, appDir: null, devSource: null, out: join(WORK, 'out'), seqs: 'fresh,warm,busy,ctrl,noop', seconds: 75, tag: '', boots: 1, soakMinutes: 10, maxMinutes: 30, seed: 'real-use', waitMinutes: 40, aim: 'fresh' };
   const over = {};
   for (let i = 0; i < argv.length; i += 2) {
     const k = argv[i], v = argv[i + 1];
@@ -62,9 +62,9 @@ export function parseOptions(argv) {
     if (['build', 'history', 'theme', 'display', 'sessions', 'busy'].includes(key)) over[key] = v; else if (key in o) o[key] = v; else throw Error(`Unknown option ${k}`);
   }
   o.factors = resolveFactors(o.preset, over);
-  for (const k of ['seconds', 'boots', 'maxMinutes', 'waitMinutes']) o[k] = Number(o[k]);
+  for (const k of ['seconds', 'boots', 'maxMinutes', 'waitMinutes', 'soakMinutes']) o[k] = Number(o[k]);
   o.seqs = String(o.seqs).split(',').filter(Boolean);
-  for (const s of o.seqs) if (!['fresh', 'warm', 'busy', 'ctrl', 'noop'].includes(s)) throw Error(`--seqs takes fresh,warm,busy,ctrl,noop (got ${s})`);
+  for (const s of o.seqs) if (!['fresh', 'warm', 'soak', 'busy', 'ctrl', 'noop'].includes(s)) throw Error(`--seqs takes fresh,warm,soak,busy,ctrl,noop (got ${s})`);
   if (o.factors.busy === 'off') o.seqs = o.seqs.filter(s => s !== 'busy');
   if (!['fresh', 'cached'].includes(o.aim)) throw Error('--aim takes fresh|cached');
   for (const k of ['checkout', 'appDir', 'devSource', 'out']) if (o[k] && !isAbsolute(o[k])) throw Error(`--${k} must be absolute`);
@@ -101,6 +101,9 @@ export function prepareDev(checkout) {
     rmSync(join(desk, 'node_modules', '.vite'), { recursive: true, force: true });
     execFileSync('cp', ['-a', '--reflink=always', join(checkout, 'desktop', 'dist'), join(desk, 'dist')]);
   }
+  // WHY pre-warm (as scripts/run-dev.js does): a cold Vite cache optimises dependencies on the first page load and RELOADS the page mid-boot,
+  // which destroyed the measuring connection ("Execution context was destroyed") in the first dev trial.
+  if (!existsSync(join(desk, 'node_modules', '.vite'))) execFileSync(join(desk, 'node_modules', '.bin', 'vite'), ['optimize'], { cwd: desk, stdio: 'ignore', timeout: 300000 });
   return { kind: 'dev', sha, appDir: dest, desktop: desk };
 }
 
@@ -122,8 +125,15 @@ async function launchDev({ dev, fixture, display, waylandSocket, cdpPort }) {
   void logDir;
   const killAll = async () => { for (const p of [proc, vite]) { try { process.kill(-p.pid, 'SIGTERM'); } catch { /* gone */ } } await sleep(2500); for (const p of [proc, vite]) { try { process.kill(-p.pid, 'SIGKILL'); } catch { /* gone */ } } };
   if (!target) { await killAll(); throw Error('dev app: no window within 120 s'); }
-  const cdp = await connect(target.webSocketDebuggerUrl);
+  let cdp = await connect(target.webSocketDebuggerUrl);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable');
+  // Wait until the page is loaded and the preload bridge exists, and has stayed so for 4 s (a dev server may still reload once).
+  let okSince = 0;
+  for (let i = 0; i < 120 && Date.now() - okSince < 4000; i++) {
+    try { const ready = await cdp.evaluate('document.readyState === "complete" && !!window.claude && !!document.querySelector("#root, body")'); if (ready) { okSince = okSince || Date.now(); } else okSince = 0; }
+    catch { okSince = 0; try { cdp.close(); } catch { /* gone */ } await sleep(1000); const l = await (await fetch(`http://127.0.0.1:${cdpPort}/json/list`)).json(); const t = l.find(x => x.type === 'page' && x.url.startsWith(`http://localhost:${vitePort}`)); if (t) { cdp = await connect(t.webSocketDebuggerUrl); await cdp.send('Runtime.enable'); await cdp.send('Page.enable'); } }
+    await sleep(500);
+  }
   return { cdp, cdpPort, pid: proc.pid, family: () => findFamily([dev.appDir]), kill: async () => { try { cdp.close(); } catch { /* gone */ } await killAll(); } };
 }
 
@@ -206,7 +216,6 @@ async function execPlan(ctx, plan, { block = 0, aimMode = 'fresh', r }) {
       await mouse(cdp, 'mousePressed', box.x, box.y);
       const ack = performance.now() - p0;
       steps.push({ kind: 'click', idx: a.idx, at: at0, ackMs: r1(ack), nodeEpoch: Date.now() });
-      if (block) await cdp.send('Runtime.evaluate', { expression: `window.__rl.block(${block})`, returnByValue: true });
       await sleep(humanHoldMs(r));                              // ... a person holds the button ~100 ms
       await mouse(cdp, 'mouseReleased', box.x, box.y);
     } else if (a.kind === 'wheel') {
@@ -286,15 +295,17 @@ async function flipRun(ctx, label, { seconds, seed, block = 0, planOverride = nu
   const { plan } = planOverride ? { plan: planOverride } : humanPlan({ seed: `${seed}:${label}`, seconds, count: ids.length, start: Math.max(0, cur) });
   await cdp.evaluate(`window.__rl.install(${JSON.stringify({ ids })})`);
   await sleep(500);
+  if (block) await cdp.evaluate(`window.__rl.armBlock(${block})`);
   const stop = startSampler(ctx);
   const r = rng(`${seed}:${label}:input`);
   const steps = await execPlan(ctx, plan, { block, r, aimMode: ctx.opts.aim });
   await sleep(1200);                                   // let the last frame present and the 450 ms pane check run
   const res = stop();
   const R = await cdp.evaluate('window.__rl.read()');
-  await cdp.evaluate('window.__rl.stop && window.__rl.stop()').catch(() => {});
+  await cdp.evaluate('window.__rl.stop && window.__rl.stop(); window.__rl.disarmBlock && window.__rl.disarmBlock(); true').catch(() => {});
   const secs = Math.max(1, (plan.at(-1)?.at ?? 0) / 1000 + 1.2);
   const out = analyseRun(R, steps, ids, secs);
+  out.docElements = await cdp.evaluate('document.getElementsByTagName("*").length').catch(() => null);
   out.label = label; out.resources = res; out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
   return out;
 }
@@ -355,7 +366,7 @@ export async function runBoot(opts, bootNo, outFile) {
     // display
     let launchOpts = {}, busyDisplay;
     if (f.display === 'gpu') {
-      sanitizeProcessEnv(); await assertPortsFree([10000, 10020, 9558]);
+      sanitizeProcessEnv(); await assertPortsFree([10000, 10020]);
       comp = await bound(startVirtualCompositor({ scale: 1.5, hz: 180 }), 'virtual compositor', 40000);
       report.compositor = { pid: comp.pid, ...comp.info, modeError: comp.modeError ?? null };
       launchOpts = { waylandSocket: comp.socketPath };
@@ -366,11 +377,17 @@ export async function runBoot(opts, bootNo, outFile) {
       app = await bound(launchApp({ binary: built.binary, appDir: built.appDir, fixture, cdpPort: CDP_PORT, refuseExisting: true, protocolLog: comp ? join(root, 'wayland.log') : undefined, protocolDebug: false, ...launchOpts }), 'launch', 90000);
     } else app = await bound(launchDev({ dev: built, fixture, cdpPort: CDP_PORT, display: launchOpts.display, waylandSocket: launchOpts.waylandSocket }), 'dev launch', 150000);
     const cdp = app.cdp;
-    // maximise so the window is the whole output, as a person uses it
-    if (comp) { try { const { windowId } = await cdp.send('Browser.getWindowForTarget'); await cdp.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'maximized' } }); } catch (e) { report.notes.push('maximise failed: ' + e.message); } }
-    // WHY explicit bounds on Xvfb: there is no window manager to maximise, and the app opens 1200x800 (his window is the whole panel).
-    else { try { const { windowId } = await cdp.send('Browser.getWindowForTarget'); await cdp.send('Browser.setWindowBounds', { windowId, bounds: { left: 0, top: 0, width: 1600, height: 1000 } }); } catch (e) { report.notes.push('resize failed: ' + e.message); } }
-    await sleep(1500);
+    // The window is the whole output, as a person uses it. WHY the browser-level endpoint: Browser.* is not available on a page connection
+    // (it worked on the packaged app's page target by luck of version; the dev tree's did not).
+    try {
+      const v = await (await fetch(`http://127.0.0.1:${app.cdpPort}/json/version`)).json();
+      const br = await connect(v.webSocketDebuggerUrl);
+      const tg = (await (await fetch(`http://127.0.0.1:${app.cdpPort}/json/list`)).json()).find(t => t.type === 'page' && !t.url.includes('mode='));
+      const { windowId } = await br.send('Browser.getWindowForTarget', { targetId: tg.id });
+      await br.send('Browser.setWindowBounds', { windowId, bounds: comp ? { windowState: 'maximized' } : { left: 0, top: 0, width: 1600, height: 1000 } });
+      br.close();
+    } catch (e) { report.notes.push('window size failed: ' + e.message); }
+    await sleep(f.build === 'dev' ? 8000 : 1500);
     report.renderer = await bound(readRendererInfo(app.cdpPort, cdp), 'GPU info');
     if (f.display === 'gpu') { const v = rendererVerdict(report.renderer); report.rendererVerdict = v; if (!v.ok) throw Object.assign(Error(`REFUSED: ${v.reason}`), { refused: true }); }
     report.viewport = await cdp.evaluate('({ w: innerWidth, h: innerHeight, dpr: devicePixelRatio })');
@@ -398,6 +415,13 @@ export async function runBoot(opts, bootNo, outFile) {
       try {
         if (s === 'fresh') { await doRun('fresh'); }
         else if (s === 'warm') { await bound(warmUp(ctx), 'warm-up', 300000); report.census = await bound(censusAll(ctx), 'census', 200000); report.census.forEach((c, i) => { if (c) report.sessions[i].census = c; }); await goTo(ctx, 0, 1500); await doRun('warm'); }
+        else if (s === 'soak') {
+          // WHY: his app had been up 2.5 h with memory climbing; a soak of continuous human flipping approximates accumulation (listeners, caches, heap).
+          await goTo(ctx, 0, 1000);
+          report.runs.soakload = await bound(flipRun(ctx, 'soakload', { seconds: opts.soakMinutes * 60, seed }), 'soak', (opts.soakMinutes * 60 + 120) * 1000);
+          report.soakHeapMB = await cdp.evaluate('performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null');
+          await doRun('soaked');
+        }
         else if (s === 'busy') {
           busy = await startBusyDesktop({ display: busyDisplay, workDir: join(root, 'busy'), controlHtml: join(ROOT, 'scripts/perf-lab/gpu-control/control.html'), log: m => report.notes.push(m) });
           report.busy = busy.info; await sleep(6000);
@@ -414,7 +438,7 @@ export async function runBoot(opts, bootNo, outFile) {
       writeFileSync(outFile, JSON.stringify(report, null, 2) + '\n');
     }
     report.status = Object.keys(report.errors).length ? 'incomplete' : 'measured';
-  } catch (e) { report.error = String(e?.message ?? e); if (e.refused) report.status = 'refused'; }
+  } catch (e) { report.error = String(e?.message ?? e); report.errorStack = String(e?.stack ?? '').split('\n').slice(0, 6).join(' | '); if (e.refused) report.status = 'refused'; }
   finally {
     report.loadAvgEnd = readFileSync('/proc/loadavg', 'utf8').trim();
     if (busy) await busy.stop().catch(() => {});
@@ -453,7 +477,7 @@ export async function main(argv = process.argv.slice(2)) {
     console.log(`[run] ${stem} boot ${b} (waited ${Math.round(w.waitedMs / 1000)} s${w.gaveUp ? ', GAVE UP waiting: load/another run persists' : ''}) -> ${file}`);
     const rep = await runBoot(opts, b, file);
     rep.waited = w; rep.target = target;
-    for (const k of ['fresh', 'warm', 'busy']) if (rep.runs[k]) rep.runs[k].calibration = calibrate(rep.runs[k].all, target);
+    for (const k of ['fresh', 'warm', 'soaked', 'busy']) if (rep.runs[k]) rep.runs[k].calibration = calibrate(rep.runs[k].all, target);
     writeFileSync(file, JSON.stringify(rep, null, 2) + '\n');
     console.log(`[done] ${stem} boot ${b}: ${rep.status}${rep.error ? ' ' + rep.error : ''}${Object.keys(rep.errors).length ? ' errors: ' + JSON.stringify(rep.errors) : ''}`);
     reports.push(rep);
