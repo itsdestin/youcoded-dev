@@ -205,3 +205,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       changes, and certificates expire in ~90 days so renewal has to be handled. Design
       approved in the round-4 deck; start at the technical design, not at questions
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json
+
+- [ ] The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that joins late may replay a garbled start. This predates the 2026-10-04 terminal work; fixing it changes the offsets phones replay against, so it needs a phone check. Filed here because the fix is the phone protocol; the memory cost of that buffer is in perf
+      `remote` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
