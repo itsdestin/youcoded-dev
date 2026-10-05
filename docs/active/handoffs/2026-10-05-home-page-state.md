@@ -23,10 +23,9 @@ branch: session/ha-pages-connection (workspace + youcoded); nothing merged
   Sending/Done notes removed (Didn't work kept), broken devices sort last, TV neutral ⏯ when an app
   gives no play state, themed scrollbars, Cameras tab (all live), camera card with play disc (option A).
 
-## In flight at compaction
-
-- Camera preview stills (newer of last event thumbnail / last live frame saved in page data, labelled).
-  Helper was building it; when it lands: verify, install, tell Destin.
+- Camera preview stills (youcoded 3a916194e): newer of newest recording thumbnail / last live frame
+  (kept only when live stops, ≤640 px, ≤60 KB, ≤8 cameras in page data), labelled, behind the play disc.
+  Installed. Not checked with real Nest thumbnails or across a real app restart.
 
 ## Not done / open
 
