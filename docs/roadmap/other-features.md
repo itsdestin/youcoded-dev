@@ -119,7 +119,12 @@ has passed ~8 items — graduate it to its own file.
       2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552, cbc793a6f); Destin tested a live
       dashboard and a keyed weather page end to end. Next: a home-network connection for a Home
       Assistant page, then Phases 3–4 in the plan.
-      `window-chrome` `all` `in-flight` `checked 2026-09-23` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+      2026-10-05: the home-device connection, a live socket for pages and camera video played by the app are
+      built, with the Home Assistant Home page, on session/ha-pages-connection — awaiting merge (state:
+      docs/active/handoffs/2026-10-05-home-page-state.md). At merge, close "A page that manages a device on the
+      home network" below; the page-builder skill update stays open until an app release carries it. Phases 3–4
+      are still open.
+      `window-chrome` `all` `in-flight` `checked 2026-10-05` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
 - [ ] Publish the page-builder skill's connections update once an app release carries Pages
       Phase 2. It is finished and held on wecoded-marketplace `session/youcoded-pages-phase2`
