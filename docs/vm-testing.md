@@ -319,6 +319,14 @@ done
 # confirm "macOS Installer" is highlighted, then: sendkey ret
 ```
 
+**Tahoe boots to the OpenCore picker EVERY time, defaulting to `macOS Base System`** (Recovery),
+not only during the install — so a restart lands on the four-option Recovery menu and looks like a
+failed install. With five entries the picker fingerprints at `mean ≈ 935`, the figure above; a
+three-entry picker (fresh disk) reads `≈ 550`, and a watcher tuned on that missed every restart
+(2026-10-04, two "failed" installs that had in fact finished stage one). `bless --setBoot` is refused
+(SIP). Until a `ready` state exists, catch the picker and pick the second entry. Setup Assistant can
+also hang on "Update Mac Automatically" (spinner, grey Continue): a `system_reset` and resume skips it.
+
 **In Disk Utility, erase the ~137 GB disk only** (View → Show All Devices). The ~25 MB one is
 OpenCore, the boot loader: erasing it (2026-10-04, Tahoe) leaves every boot in the UEFI shell.
 Recovery: stop the VM, put a fresh `OpenCore.qcow2` back from `https://github.com/kholia/OSX-KVM/raw/<OSX_KVM_COMMIT>/OpenCore/OpenCore.qcow2`
@@ -395,6 +403,7 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
 | ubuntu-24.04 | `youcoded-testin` | `youcodedtesting` |
 | macos-sonoma | `destinmoss` ("Destin Moss", admin, auto-login) | Destin's — not recorded; ask him |
+| macos-tahoe | `yctesting` (admin; vm-key installed; passwordless sudo) | `youcodedtesting` — use `VM_MAC_USER=yctesting` |
 
 The Ubuntu username really is `youcoded-testin` — read from `getent passwd 1000`, not from memory
 (Ubuntu's installer truncated what was typed). Password is the full `youcodedtesting`.

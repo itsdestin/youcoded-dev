@@ -341,6 +341,13 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] The macOS 26 (Tahoe) test VM has no saved "ready" state, so every start is a cold boot
+      through the OpenCore picker (which defaults to Recovery) and ~5 minutes of slow desktop.
+      It was started by hand with quickemu (virtio-sound, non-migratable CPU), so `vm.sh tahoe
+      save-ready` needs a `vm.sh tahoe start` boot first; the VM also costs ~22 GB on a disk that
+      had 34 GB free (2026-10-04)
+      `n/a` `confirmed` `checked 2026-10-04`
+
 - [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
       ChatGPT sign-in that never renews, so the real app is never signed out). Destin
       2026-09-24: "it's sometimes annoying to add separate api keys and such for a quick test".

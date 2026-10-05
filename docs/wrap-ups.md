@@ -819,3 +819,13 @@ recurred — the repetition is the data.
 - Signing exposed master's desktop tests red on Windows/macOS; fixing them found real user bugs (Windows subfolder comment refresh, macOS watch-start gap, O(n·doc) highlight cost) → applied in #595 (3 consecutive green runs); no rule change — test-suite-hygiene already demands it
 - Destin: "we may be overcomplicating" — cut scenarios/launcher from the VM plan; "google play isnt priority" → roadmap Play item parked; cloud whole-path test lab → roadmap (parked); AppImage catalog follow-up and Linux libfuse2/taskbar → roadmap
 - deleted/merged: vm-testing's "Claude-driven testing (phase 2, unverified)" section (its "never send quit" trap contradicted `vm.sh stop`) replaced by a short pointer; the stale Linux agent claim corrected
+
+## 2026-10-04 — brand icons built: glass app icon, theme icons on taskbar/Dock/tray, Mac Liquid Glass, a macOS 26 VM (session/brand-identity-v2, youcoded + wecoded-themes + workspace)
+- main.ts's AUMID comment claimed matching the shortcut's AppUserModelID makes `setIcon` reach the Windows taskbar; tested false (it reaches only Alt+Tab) and it cost four VM experiments → applied: comment corrected, the working route lives in `windows-taskbar-icon.ts` with its WHY
+- A "failed" macOS 26 install had finished stage one twice; the OpenCore picker defaults to Recovery on EVERY boot, and my watcher used a 3-entry fingerprint (≈550) though vm-testing.md already said ≈930 for the real picker → applied: vm-testing.md now says every boot + both fingerprints + the Setup Assistant hang; the doc was right, I measured instead of reading it
+- Destin erased the 25 MB OpenCore disk in Disk Utility (it lists three disks) → applied earlier: the wrong-disk trap + recovery in vm-testing.md
+- The Mac icon-look setting is undocumented: `AppleIconAppearanceTheme`, absent for Default — my first parser read "absent" as unknown, which would have kept theme icons out of the Dock in the default look → applied: fixed + pinned by `app-icon-runtime.test.ts`
+- `vm.sh` gave Ubuntu `-display none` with no SPICE server (unviewable) → applied: GTK window when no spice port
+- CI test builds failed once on two tests in other areas (`handoff-freshness-integration` on Linux, `sync-spaces-engine` on macOS) and passed on re-run; and master's ast-grep invariants fail (`buddy-show-refuses-before-creating`, `iframe-sandbox-no-allow-same-origin`) → not fixed here: outside this task and possibly in-flight elsewhere; told Destin, his call
+- Tahoe VM has no ready state; Ubuntu dock icon unverified → roadmap (dev-workspace rigs, themes)
+- deleted/merged: the old tray-mac*.png (four files, replaced by the -macTemplate pair) and ipc-handlers' icon block (moved whole into theme-icon-swap.ts)

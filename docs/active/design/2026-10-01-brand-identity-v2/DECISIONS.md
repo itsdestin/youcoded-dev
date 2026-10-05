@@ -57,6 +57,22 @@ applied to the app or the website.
   smile raised 0.35 of the 12-unit face (`tmplJ(h, color, 'tr')` in `src27/boards.html`). (v28–v30 notes, v31 EYES j1) (v27 MENUBAR ka + note)
 - Drawings: `src27/icons.html` (themes `cotton`, `halftone`, `morning`; `lgPanel`/`lgFeat` layers; `mid1`/`mid2`), boards `src27/boards.html`.
 
+## Windows taskbar (round 32, tested in the Windows 11 VM)
+- Windows draws the taskbar button from YouCoded's shortcut, not the window, so the app points its own
+  shortcuts at the theme's icon and — when not pinned — rebuilds the button: live. A pinned button
+  changes at the next Windows sign-in (or re-pin); no flicker. Destin: "windows seems fine." Restarting
+  Explorer to force it was rejected (it closes the user's windows).
+
+## Built (2026-10-04, branches `session/brand-identity-v2` in youcoded, wecoded-themes, workspace)
+- youcoded: `scripts/build-icons.mjs` + `scripts/icons/brand-icons.html` generate every icon; Liquid Glass
+  `icon.icon`; theme icon bundle → window, Windows taskbar, Mac Dock (by icon look, `mac-icon-look.ts`),
+  tray; J1 menu-bar template; Android launcher. CI test builds pass on all three desktops.
+- wecoded-themes: seven themes carry `assets/app-icon/` + `appIconVariants`; versions bumped.
+- Tested by Destin in VMs: Windows (taskbar, Alt+Tab, tray), macOS 26 (theme icons in the Dock, the four
+  looks). Not tested: Ubuntu dock (roadmap themes.md), Android launcher on a device.
+- Not applied yet: the website (header/footer/favicon, roadmap operations.md), the grey icon and the
+  "yc" initials (no surface uses them yet).
+
 ## Where the drawings live
 - Final icon renderer: `src17/icons.html` (`face2`, `frost`, `smoke`, `box3`), shot by `src17/shoot-icons.sh`.
 - The final icon with the chosen mouth is `?i=sm2` (add `&t=<theme>` for a theme, `&small=1` for the 16–48px drawing).

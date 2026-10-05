@@ -9,8 +9,11 @@ seen-on is always n/a here.
       wears the old solid tile and mixed-case name, and the four theme mascots directly beneath
       the header are master's newer full-bodied art while the header's robot is still the app's
       flat icon. Destin saw both and said leave them for now, so this is a decision waiting to
-      be made, not a defect
-      `n/a` `decision` `checked 2026-09-04`
+      be made, not a defect. Since 2026-10-04 the decision exists: the brand rounds approved the
+      header/footer lockups, tagline spacing, favicon initials and the glass icon
+      (`docs/active/design/2026-10-01-brand-identity-v2/DECISIONS.md`) — applying them to
+      youcoded.ai is the remaining work
+      `n/a` `decision` `checked 2026-10-04`
 
 - [ ] Landing copy note, recorded so it is not re-derived: conversation tags, private notes and
       one-tap prompt chips are unique (0 of 8 competitors on 2026-08-31) but must not lead the

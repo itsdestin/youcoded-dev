@@ -3,6 +3,13 @@ Filing test: how the app looks under a theme — engine, editor, a theme renderi
 here: installing or browsing themes (marketplace).
 
 
+- [ ] Unverified on Linux: whether a theme's app icon reaches the dock on Ubuntu's default desktop
+      (GNOME on Wayland reads an app's icon from its installed .desktop entry, and an AppImage
+      double-clicked from Downloads has none). The test build was loaded on the Ubuntu VM on
+      2026-10-04 but Destin stopped testing there ("i think this is fine"); window icon and tray
+      changes are expected to work
+      `desktop` `needs-verify` `checked 2026-10-04`
+
 - [ ] A theme whose mascot has companions (sun, motes, sparkles around it on the welcome
       screen) still animates them smoothly at the screen's full refresh rate. The mascot
       itself moved to 30 redraws a second on 2026-09-26 (youcoded#573: idle welcome screen
