@@ -2,6 +2,12 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+
+- [ ] After the window reloads it returns to the first session instead of the one you were on.
+      Seen 2026-10-05 in the performance rig's reload test (a chat message typed after the
+      reload went to the wrong session); not caused by the performance work
+      `all` `needs-verify` `checked 2026-10-05` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
 - [ ] A red outlined button that is busy ("Stopping…" on a running command's Stop) is hard to
       read: its dimmed label measured 3.98:1 on Midnight, under the 4.5:1 minimum for small
       text. Found by the admin-password UX review 2 (U3), 2026-09-26; the dimming is the shared
