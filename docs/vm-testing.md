@@ -22,8 +22,7 @@ scripts/vm/vm.sh win stop             # throw the session away; next start is pr
 |---|---|---|---|---|
 | Windows 11 | `win` | ~5 s | SPICE viewer (`spicy`), close/reopen freely with `view` | QEMU agent (runs as SYSTEM) |
 | Ubuntu 24.04 | `ubuntu` | ~3 s | SPICE viewer | SSH `youcoded-testin@127.0.0.1:22221`, passwordless sudo |
-| macOS Sonoma | `mac` | ~6 s | QEMU's own GTK window (GL on); closing it stops the guest | SSH `destinmoss@127.0.0.1:22222`, **no sudo** |
-| macOS 26 Tahoe | `tahoe` | — | same as Sonoma | SSH port 22223. Added 2026-10-04 for Liquid Glass and the icon looks (Default/Dark/Clear/Tinted), which Sonoma lacks. Leave **Reduce transparency off** here, unlike Sonoma — the glass is what it tests |
+| macOS 26 Tahoe | `mac` (or `tahoe`) | — (no ready state yet) | QEMU's own GTK window (GL on); closing it stops the guest | SSH `yctesting@127.0.0.1:22223`, passwordless sudo. The only Mac since 2026-10-04 (the Sonoma VM was deleted to free disk): it has Liquid Glass and the icon looks (Default/Dark/Clear/Tinted). Leave **Reduce transparency off** — the glass is what it tests |
 
 All SSH uses `~/vms/vm-key` (host-only keypair). `load` takes `release`, `beta`, a tag (`v1.3.0`),
 `run:<CI run id>` (test-build artifacts) or a local file; Linux defaults to the AppImage
@@ -46,7 +45,7 @@ needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `sav
 - **Files arrive over HTTP from `~/vms/serve`** (host `127.0.0.1:8010`, guest `10.0.2.2:8010`) and
   get the browser's mark: Windows `Zone.Identifier` (ZoneId=3), Mac `com.apple.quarantine`. Without
   it SmartScreen and Gatekeeper never assess the file, which is the whole point.
-- **Each guest has a fixed SSH forward** (22220 Windows, 22221 Ubuntu, 22222 Mac); quickemu gave
+- **Each guest has a fixed SSH forward** (22220 Windows, 22221 Ubuntu, 22223 Mac); quickemu gave
   Windows and Mac the same port, so the second to start died.
 - **Without a ready state, `start` boots the disk as it is** (setup mode) — it never reverts to
   `clean`, because that erased a half-finished Mac setup once.
@@ -220,7 +219,7 @@ proven the hard way: halving macOS's pixels (1920×1080 → 1280×800) changed t
 all**, because the bottleneck was the CPU blit path, not fill rate.
 
 ```bash
-printf 'gl="on"\n'  >> ~/vms/macos-sonoma.conf     # gtk + GL: accelerated
+printf 'gl="on"\n'  >> ~/vms/macos-tahoe.conf      # gtk + GL: accelerated
 # For Windows/Ubuntu, gtk+gl=on is UNTESTED here — only spice+gl=on (black) and
 # gtk/spice+gl=off (fine) were tried. Test before trusting it.
 ```
@@ -402,8 +401,7 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 |---|---|---|
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
 | ubuntu-24.04 | `youcoded-testin` | `youcodedtesting` |
-| macos-sonoma | `destinmoss` ("Destin Moss", admin, auto-login) | Destin's — not recorded; ask him |
-| macos-tahoe | `yctesting` (admin; vm-key installed; passwordless sudo) | `youcodedtesting` — use `VM_MAC_USER=yctesting` |
+| macos-tahoe | `yctesting` (admin; vm-key installed; passwordless sudo) | `youcodedtesting` (vm.sh's default Mac user) |
 
 The Ubuntu username really is `youcoded-testin` — read from `getent passwd 1000`, not from memory
 (Ubuntu's installer truncated what was typed). Password is the full `youcodedtesting`.

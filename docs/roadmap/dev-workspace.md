@@ -235,7 +235,7 @@ seen-on is always n/a here.
       highest-value set: stale-closure bugs) are unguarded
       `n/a` `needs-verify` `checked 2026-09-01`
 
-- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) and
+- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS 26 Tahoe on quickemu) and
       since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
       install of any build as a real download), but the open half is untested: a clean-winget Windows
       snapshot, the deb/rpm/pacman installers in the guests, and the full first-run → setup → sign-in

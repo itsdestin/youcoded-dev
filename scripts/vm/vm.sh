@@ -31,10 +31,9 @@ mkdir -p "$SHOTS" "$SERVE"
 case "${1:-}" in
   win|windows) NAME=windows-11; OS=win ;;
   ubuntu|linux) NAME=ubuntu-24.04; OS=linux ;;
-  mac|macos) NAME=macos-sonoma; OS=mac ;;
-  # WHY a second Mac: Sonoma (14) predates Liquid Glass and the icon looks (Default/Dark/Clear/
-  # Tinted); only macOS 26 shows the real app icon and the Dock rules (brand rounds 27–31).
-  tahoe|mac26) NAME=macos-tahoe; OS=mac ;;
+  # WHY Tahoe is the only Mac: macOS 26 has Liquid Glass and the icon looks (Default/Dark/Clear/
+  # Tinted) the app ships for; the Sonoma (14) VM was deleted 2026-10-04 to free 46 GB.
+  mac|macos|tahoe|mac26) NAME=macos-tahoe; OS=mac ;;
   *) sed -n '2,15p' "$0"; exit 2 ;;
 esac
 shift
@@ -54,11 +53,10 @@ has_snapshot() { qemu-img snapshot -l "$DIR/disk.qcow2" | awk '{print $2}' | gre
 # The guest SSH port quickemu forwards (22220 on Windows/mac, 22221 Ubuntu).
 # WHY fixed ports: quickemu hands Windows and macOS the same 22220, so the second guest to start
 # dies with "Could not set up host forwarding rule". make_launch rewrites the forward to match.
-case $OS in win) SSH_PORT=22220 ;; linux) SSH_PORT=22221 ;; mac) SSH_PORT=22222 ;; esac
-[ "$NAME" = macos-tahoe ] && SSH_PORT=22223   # its own port, so both Macs can run at once
+case $OS in win) SSH_PORT=22220 ;; linux) SSH_PORT=22221 ;; mac) SSH_PORT=22223 ;; esac
 gssh() { ssh -q -p "$SSH_PORT" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 \
            -i "$VMS/vm-key" "$GUEST_USER@127.0.0.1" "$@"; }
-case $OS in win) GUEST_USER=Quickemu ;; linux) GUEST_USER=youcoded-testin ;; mac) GUEST_USER=${VM_MAC_USER:-destinmoss} ;; esac
+case $OS in win) GUEST_USER=Quickemu ;; linux) GUEST_USER=youcoded-testin ;; mac) GUEST_USER=${VM_MAC_USER:-yctesting} ;; esac
 
 # Build our own launch script from the one quickemu last generated.
 # WHY: a RAM snapshot needs a migratable CPU model and a stable command line. quickemu's
