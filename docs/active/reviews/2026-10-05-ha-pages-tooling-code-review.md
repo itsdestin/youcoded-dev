@@ -37,17 +37,17 @@ Note: verify also reported master has new commits touching files this branch cha
 
 ## Triage (implementing session, 2026-10-05)
 
-- F1 accepted — shoot waits on in-flight work up to the hold cap
-- F2 accepted — no first-answer hold for screens with no device connection
-- F3 accepted — reset AREAS
-- F4 accepted — delete the decided mockups and their screens/hold
-- F5 accepted — delete empty task files and unused fields
-- F6 accepted — fake turn_on matches HA for 0 % and restore
-- F7 accepted — fake area_registry/delete
-- F8 accepted — validate + document live.py params
-- F9 accepted — retire the decided motion options
-- F10 accepted — comment order
-- F11 accepted — clear __shootBefore after the check
-- F12 accepted — drop live sessions on page close
-- F13 accepted — history returns [] when nothing changed
-- F14 accepted — unknown template refused
+- F1 accepted — shoot waits on in-flight work up to the hold cap — fixed in 934b66cf + 5735f77b0
+- F2 accepted — no first-answer hold for screens with no device connection — fixed in 5735f77b0
+- F3 accepted — reset AREAS — fixed in 5735f77b0
+- F4 accepted — delete the decided mockups and their screens/hold — fixed in 5735f77b0
+- F5 accepted — delete empty task files and unused fields — fixed in 5735f77b0
+- F6 accepted — fake turn_on matches HA for 0 % and restore — fixed in 5735f77b0
+- F7 accepted — fake area_registry/delete — fixed in 5735f77b0
+- F8 accepted — validate + document live.py params — fixed in 934b66cf
+- F9 accepted — retire the decided motion options — fixed in 5735f77b0
+- F10 accepted — comment order — fixed in 5735f77b0
+- F11 accepted — clear __shootBefore after the check — fixed in 934b66cf
+- F12 accepted — drop live sessions on page close — fixed in 5735f77b0
+- F13 accepted — history returns [] when nothing changed — fixed in 5735f77b0
+- F14 accepted — unknown template refused — fixed in 5735f77b0
