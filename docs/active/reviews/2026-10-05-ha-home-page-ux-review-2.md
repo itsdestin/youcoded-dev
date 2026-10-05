@@ -35,17 +35,17 @@ Could I complete the task? Yes for Home, Lights, Media, Climate, Cameras, Activi
 - U4 accepted — note says plainly what to change (layout) — Framed see-through itself stays a roadmap decision — fixed 666df8ee0 (app branch)
 - U5 accepted — the page list pane gets the same glass as the page pane while see-through is on — fixed 666df8ee0 (app branch)
 - U6 already handled — roadmap other-features "Pages on a phone" (decision, its own round)
-- U7 accepted — header tabs at medium widths: Edit/gear stay top-right
-- U8 accepted — Home tab room status matches Lights tab; check Kitchen slider at 0 while on
-- U9 accepted — Activity order and your own changes
-- U10 accepted — Lights cards keep their order while you act
-- U11 accepted — thermostat words follow hvac_action (idle → holding)
+- U7 accepted — header tabs at medium widths: Edit/gear stay top-right — fixed 07e61fd7b
+- U8 accepted — Home tab room status matches Lights tab; check Kitchen slider at 0 while on — fixed 07e61fd7b
+- U9 accepted — Activity order and your own changes — fixed 07e61fd7b
+- U10 accepted — Lights cards keep their order while you act — fixed 07e61fd7b
+- U11 accepted — thermostat words follow hvac_action (idle → holding) — fixed 07e61fd7b
 - U12 rejected — the Climate dial and its colours are the design Destin picked (home-check-r2 C-thermo yes)
-- U13 accepted — one sign-in banner on the Cameras tab, short tile text
-- U14 accepted — Edit icons get labels and a one-line hint
-- U15 accepted — plain words: tab not chip, Light scenes, Favorites
-- U16 accepted — "77° out · 74° in"
-- U17 accepted — remote keyboard order follows the layout; pad buttons labelled
-- U18 accepted — pop-up names the device once
+- U13 accepted — one sign-in banner on the Cameras tab, short tile text — fixed 07e61fd7b
+- U14 accepted — Edit icons get labels and a one-line hint — fixed 07e61fd7b
+- U15 accepted — plain words: tab not chip, Light scenes, Favorites — fixed 07e61fd7b
+- U16 accepted — "77° out · 74° in" — fixed 07e61fd7b
+- U17 accepted — remote keyboard order follows the layout; pad buttons labelled — fixed 07e61fd7b
+- U18 accepted — pop-up names the device once — fixed 07e61fd7b
 - U19 accepted — check Enter opens a page from the list; fix if real — fixed 666df8ee0 (app branch)
 - U20 rejected — pre-existing in Appearance (not this branch); filed on the roadmap (themes)
