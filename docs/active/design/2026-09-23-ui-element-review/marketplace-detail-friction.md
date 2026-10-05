@@ -99,3 +99,62 @@ notice inside a card), **About** (fold-out rows inside a card), the **skills dra
 - Install-failed, installing and update-available states were not photographed (need a failing
   or slow install in the fake backend).
 - Android: shared renderer, no native change; not built here.
+
+## Round 2 (2026-10-05) — after Destin's marketplace-detail-1 answers
+
+App commit `a3a29bd1d`; deck `marketplace-detail-2.json` (before = round 1's drafts,
+`runs/mkd-after`; after = `runs/mkd2-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | Two columns is the only layout; the one-column / folded drafts and `?detailLayout=` are gone. Phone and windows under 640px fold to one column. | MD-1 (picked columns). |
+| R2-2 | Buttons in the right-hand column stack full width. | Guide "Buttons" (stacked when narrow). **Guide gap:** the rule is written by popup width (≤420) and phone width; a narrow COLUMN inside a wide popup is neither. I treated "the space the buttons sit in" as what counts. |
+| R2-3 | Every chip in a detail page (top row and topic chips) is `MetaChip`, the trust badges' own box. | MD-1 note "install is tiny". |
+| R2-4 | Heart redrawn (standard symmetric 24-unit heart, Feather/Lucide shape); like button is the shared ghost button, liked = accent fill, not red. | MD-7. **Guide silent** on whether a "like" may be red: principle 2 keeps status hues out of WORDS, and a heart is an icon, not a status. Asked in the deck (M2-5 risk line). **Tooling gap:** the app has no icon set to "use a proper heart from" — every icon is a hand-drawn SVG in its own file. |
+| R2-5 | Feedback: comments as plain rows in ONE shared box; the vote reason under the vote words (not under the buttons); the comment box is the shared field with Post inside (Enter posts). Three drafts: together / split / question. | MD-6; guide "Buttons" (action inside the text box), "Lists" (one shared box). **Behaviour change to flag:** the comment box is one line now (was two); Shift-Enter does not add a line. |
+| R2-6 | Theme page: three drafts — card first (round 1), picture first, picture beside. | MD-7/MD-8. Picture-first gives the picture card **no label** — same exception as the top card (the guide has none for it). |
+| R2-7 | A long source address breaks onto a second line instead of running under the Open button; the pinned-version line is shorter. | Found reading the round-2 pictures (side column is ~250px). |
+
+### Tooling lessons
+
+**(a) The chip sizes were different and nothing caught it.** Root cause: three chip
+recipes in one row — the trust badges (11px, normal line height), the shared `Badge`
+(11px but `leading-none`, so a ~4px shorter box), and the card's `ThumbsSummary` (its own
+12px text) placed inside a Badge. Every check passed because none compares siblings:
+design-lint only flags raw colours / arbitrary values / restyled primitives, and both
+recipes are "legal"; `shoot` proves a screen opened, not that its parts agree; my own
+picture review missed a 4px height difference at contact-sheet scale. **Could a check
+catch it? Yes, two ways:** (1) a unit pin on the cause — done: `trust-badges-scan.test.tsx`
+asserts every fact chip renders the badges' exact box (seen red when the box was changed);
+(2) a general browser check — `shoot` already runs a page script per screen; a "siblings
+agree" pass could measure every child of a marked row (`[data-detail-chips]`, any
+`data-chip-row`) and flag height differences over 1px. That would also catch the same bug
+on the Marketplace cards, which still mix the two recipes. Not built — candidate.
+
+**(b) A broken icon (the heart) passed every check and my screenshot review.** The path was
+valid SVG that drew the wrong shape: types, lint, design-lint and tests cannot know what a
+heart looks like; `shoot` saw a non-empty picture; at 12px in a 1440px screenshot it read as
+"a small heart-ish mark" to me. **Could a check catch it? Partly.** A cheap symmetry test
+would have: render each icon to a bitmap (the shoot browser can rasterise an inline SVG)
+and flag shapes whose left/right halves differ when the icon is meant to be symmetric (heart,
+star, shield, chevrons) — this one's right lobe was visibly lower. More generally, an
+**icon sheet** — every hand-drawn icon in the app rendered at 48px in one picture, added to
+`shoot --list` — would let a human (or the review deck) see broken drawings that are
+invisible at real size. Neither exists; the root problem is that the app has ~100 one-off
+SVGs and no shared icon set. Candidate.
+
+### Other tooling friction this round
+
+- **`highlight: {"text": …}` is refused on shoot pictures** ("a shoot picture names a screen,
+  not an element"), so pointing at the chips or the heart needed hand-placed percentage boxes,
+  which then warn "prefer a selector". There was no working way to box a small element on a
+  shoot screen without hand-measuring both runs' pixels; when before and after have different
+  popup widths one box has to cover both positions.
+- The deck's Before had to be round 1's picture folder (`runs/mkd-after`), so every approve
+  step's "Round 1" shows the ONE-column layout he didn't pick — the diff mixes the layout
+  change with the step's own change. A `shoot --before <commit>` that also takes the
+  workbench switches (e.g. `?detailLayout=columns`) for the before side would have given a
+  cleaner Before.
+- verify's first run failed one behaviour test because the comment button's visible word
+  changed ("Post comment" → "Post"); fixed with an accessible name rather than editing the
+  test. Fine — it caught a real screen-reader regression.

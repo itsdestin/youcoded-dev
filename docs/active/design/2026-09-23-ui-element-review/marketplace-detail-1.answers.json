@@ -1,0 +1,106 @@
+{
+ "deck": "marketplace-detail-1",
+ "started": "2026-10-05T05:58:11.893Z",
+ "submitted": "2026-10-05T06:04:58Z",
+ "cur": 12,
+ "answers": {
+  "MD-1": {
+   "v": "pick",
+   "pick": "columns",
+   "t": 1791179947929,
+   "note": "the chips are differnt sizes for some reason (install is tiny). ",
+   "seconds": 56,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-2": {
+   "v": "yes",
+   "t": 1791179969368,
+   "seconds": 21,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-3": {
+   "v": "yes",
+   "t": 1791179988786,
+   "seconds": 19,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-4": {
+   "v": "yes",
+   "t": 1791180043195,
+   "seconds": 32,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-5": {
+   "v": "yes",
+   "t": 1791180066052,
+   "seconds": 23,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-6": {
+   "v": "yes",
+   "t": 1791180107454,
+   "note": "the feedback card/area looks a bit janky still. text kinda all running together, cluttered buttons/boxes",
+   "seconds": 41,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-7": {
+   "note": "the like button is brokken. the heart svg just isnt't really a heard. i'd like 1-2 more attempts/alternatives for this page",
+   "t": 1791180165358,
+   "v": "other",
+   "seconds": 58,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-8": {
+   "v": "other",
+   "t": 1791180174362,
+   "note": "see prev",
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-9": {
+   "v": "yes",
+   "t": 1791180187991,
+   "seconds": 14,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-10": {
+   "v": "yes",
+   "t": 1791180207451,
+   "seconds": 19,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-11": {
+   "v": "yes",
+   "t": 1791180290522,
+   "seconds": 32,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-12": {
+   "v": "pick",
+   "pick": "full",
+   "t": 1791180292846,
+   "seconds": 31,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "MD-13": {
+   "v": "pick",
+   "seconds": 27,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791180297527,
+   "pick": "kind"
+  }
+ }
+}

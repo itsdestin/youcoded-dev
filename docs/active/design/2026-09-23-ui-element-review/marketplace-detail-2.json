@@ -1,0 +1,214 @@
+{
+  "title": "Marketplace detail pages — round 2",
+  "key": "marketplace-detail-2",
+  "out": "marketplace-detail-2.review.html",
+  "images": "images/marketplace-detail-2",
+  "runs": {
+    "before": "runs/mkd-after",
+    "after": "runs/mkd2-after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "M2-1",
+      "surface": "Marketplace",
+      "path": "Marketplace → Civic Report, the chips under the name",
+      "crop": "marketplace/detail",
+      "headline": "Every chip under the name is now the same size — the installs chip is no longer tiny.",
+      "changed": "Three different chip styles shared that row (the installs chip had a tighter line, the thumbs chip larger text). All of them, and the topic chips in About, now use one chip.",
+      "notice": "Likely safe, YouCoded, @destin, 412 installs and 93% line up at one height on every detail page.",
+      "highlight": {
+        "box": [
+          23,
+          18,
+          35,
+          10
+        ]
+      }
+    },
+    {
+      "id": "M2-2",
+      "surface": "Marketplace",
+      "path": "Any plugin or skill page → Feedback (here: Brainstorming)",
+      "headline": "Three tidier Feedback cards. Which should every detail page use?",
+      "notice": "All three: the votes line has its words on the left and the two buttons on the right; comments sit as plain rows in one box; the box to write in has Post inside it (Enter also posts).",
+      "risk": "The comment box is one line now; a long comment scrolls sideways while typing.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "together",
+          "label": "One card",
+          "crop": "marketplace/detail/member",
+          "summary": "Votes, comments and the box to write in, all in one Feedback card."
+        },
+        {
+          "id": "split",
+          "label": "Two cards",
+          "crop": "marketplace/detail/member#feedback-split",
+          "summary": "A small Feedback card with just the votes, and a separate Comments card under it.",
+          "risk": "One more label and card on the page."
+        },
+        {
+          "id": "question",
+          "label": "A question",
+          "crop": "marketplace/detail/member#feedback-question",
+          "summary": "One card that opens with 'Did it help you?', the percentage under it, then the comments."
+        }
+      ]
+    },
+    {
+      "id": "M2-3",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Meadow Mist (installed)",
+      "headline": "Three ways to lay out a theme page. Which do you prefer?",
+      "notice": "Same pieces in all three — the top card (name, heart, star, share, buttons), the preview picture and the colours. Only where they sit changes.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "card",
+          "label": "Card first",
+          "crop": "marketplace/theme-detail",
+          "summary": "Round 1's order: the top card across the top, then a big Preview card with the colours under the picture."
+        },
+        {
+          "id": "hero",
+          "label": "Picture first",
+          "crop": "marketplace/theme-detail#hero",
+          "summary": "The preview picture leads, full width; the top card and the colours come under it.",
+          "risk": "On a laptop screen the Apply theme button starts below the fold — you scroll to it."
+        },
+        {
+          "id": "side",
+          "label": "Picture beside",
+          "crop": "marketplace/theme-detail#side",
+          "summary": "The picture large on the left; the top card and the colours stacked on the right, buttons full width.",
+          "risk": "The theme's name wraps onto two lines in the narrow right column."
+        }
+      ]
+    },
+    {
+      "id": "M2-4",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Cotton Candy Sky (not installed)",
+      "headline": "The same three layouts for a theme you don't have yet. Which do you prefer?",
+      "notice": "Pick the same as above unless one reads better with a single Install button.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "card",
+          "label": "Card first",
+          "crop": "marketplace/theme-detail/not-installed",
+          "summary": "Top card with a full-width Install, then the preview."
+        },
+        {
+          "id": "hero",
+          "label": "Picture first",
+          "crop": "marketplace/theme-detail/not-installed#hero",
+          "summary": "The picture leads; Install sits under it in the top card.",
+          "risk": "Install starts below the fold on a laptop screen."
+        },
+        {
+          "id": "side",
+          "label": "Picture beside",
+          "crop": "marketplace/theme-detail/not-installed#side",
+          "summary": "The picture on the left; Install at the top of the right column."
+        }
+      ]
+    },
+    {
+      "id": "M2-5",
+      "surface": "Marketplace",
+      "path": "Any theme page → the heart at the top right of the top card",
+      "crop": "marketplace/theme-detail",
+      "headline": "The like heart is a proper heart now, the same size as the star and share icons beside it.",
+      "changed": "The old heart drawing was broken on its right side. It is redrawn as a normal symmetric heart, and the button is the same kind as the star and share.",
+      "notice": "A liked theme fills the heart in the theme's accent colour, like a favourited star, instead of red.",
+      "risk": "The heart is no longer red when liked; say if you want red back.",
+      "highlight": {
+        "box": [
+          60,
+          19,
+          14,
+          8
+        ]
+      }
+    },
+    {
+      "id": "M2-6",
+      "surface": "Marketplace",
+      "path": "Marketplace → Civic Report",
+      "crop": "marketplace/detail",
+      "headline": "Plugin pages now use the two-column layout you picked: reading on the left, short facts on the right.",
+      "changed": "About, What's inside and Feedback are on the left; What this can do and Source on the right. The popup is wider.",
+      "notice": "On a phone it falls back to one column (next steps)."
+    },
+    {
+      "id": "M2-7",
+      "surface": "Marketplace",
+      "path": "Marketplace → Superpowers (a bundle)",
+      "crop": "marketplace/detail/bundle",
+      "headline": "A bundle in two columns: its list of skills on the left, what it can do and its source on the right.",
+      "changed": "Same pieces as round 1, rearranged. A long source address now breaks onto a second line instead of running under the Open button.",
+      "notice": "The 14 skill rows are on the left, so the facts stay visible beside them."
+    },
+    {
+      "id": "M2-8",
+      "surface": "Marketplace",
+      "path": "Marketplace → Browser Use (flagged by the check)",
+      "crop": "marketplace/detail/caution",
+      "headline": "The flagged-item page in two columns; the amber warning stays inside 'What this can do' on the right.",
+      "changed": "Layout only. The warning box and the full-width Install are unchanged.",
+      "notice": "The warning is in the narrower right column, so its lines wrap more."
+    },
+    {
+      "id": "M2-9",
+      "surface": "Marketplace",
+      "path": "Marketplace → Filesystem (can't be installed here)",
+      "crop": "marketplace/detail/connection",
+      "headline": "The connection page in two columns, with the tidier Feedback card on the left.",
+      "changed": "Layout and the new Feedback card. The 'not installable from here' notice and Open source stay in the top card.",
+      "notice": "The Source card's pinned-version line is shorter: 'The files we checked are pinned to this version.'"
+    },
+    {
+      "id": "M2-10",
+      "surface": "Marketplace",
+      "path": "Marketplace → Connect your stuff → Google Workspace",
+      "crop": "marketplace/integration-detail",
+      "headline": "Integration pages in two columns: About on the left, Setup on the right.",
+      "changed": "Layout only. Topic chips use the same one chip size.",
+      "notice": "Uninstall and Connect stay at the right of the top card."
+    },
+    {
+      "id": "M2-11",
+      "surface": "Marketplace",
+      "path": "Marketplace on a phone (390 wide) → Civic Report",
+      "crop": "marketplace/detail#phone",
+      "headline": "On a phone the page stays one column, in the same order as before.",
+      "changed": "The wider popup shrinks to the phone; the columns fold into one: top card, reading, then the facts.",
+      "notice": "Same as round 1, plus the same-size chips."
+    },
+    {
+      "id": "M2-12",
+      "surface": "Marketplace",
+      "path": "Marketplace in a small window (640 by 480) → Civic Report",
+      "crop": "marketplace/detail#small",
+      "headline": "In a small window the two columns fold into one, and the body scrolls under the fade.",
+      "changed": "The layout switches to one column below phone-tablet width, as on a phone.",
+      "notice": "At 640 wide it is already one column; the two columns start at wider windows."
+    }
+  ]
+}
