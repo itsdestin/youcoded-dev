@@ -827,7 +827,7 @@ machine load to drop to 12 or under). Load average at each run's start is below;
 | 500-line code block, blank line before: thread busy (last third) / long freezes / pieces on screen | 61-62%, 1 freeze, 23 pieces | 63%, 63%; 1-2 long tasks (max 157-182 ms); 23 pieces both runs | 2; 11.3, 6.9 | same |
 | Fence directly after a paragraph line | 63-64%, 23 pieces | 65%, 63%; 23 pieces | 2; same boots | same |
 | Prose control, busy (last third) | 44-45% | 44, 49 (control in the fence leg); 44, 45 (own leg) | 4 | same |
-| Mixed reply, busy (last third) | 47% | 55%, 58% in the sweep; 28% and 95% in two later re-checks | 2 + 2 re-checks; 11.3, 6.9; 9.5, 6.7 | inconclusive (see below) |
+| Mixed reply, busy (last third) | 47% | 55%, 58% in the sweep; 28% and 95% in two later re-checks; then four quiet runs with the prose control in the same boot: 30/30, 34/26, 65/46, 58/56 (mixed/prose) | 2 + 2 re-checks + 4 quiet; 11.3, 6.9; 9.5, 6.7; 3.2, 3.3, 3.1, 1.6 | same as prose (see below) |
 | Wheel wait, visible stream (idle) | 49.9 ms (31 ms) | 49.6, 49.7 ms (31.5, 31.4 ms) | 2 | same |
 | Typing while a reply streams: key to text in the box, p95 | 3.7, 4.0 ms | 3.3, 3.2 ms | 2; 6.1, 5.6 | same |
 | Sheets 2000x100, CSV: open / longest freeze | 0.23-0.25 s / 0.11-0.15 s | 0.29, 0.34 s / 0.16, 0.21 s | 2; 4.5, 3.8 | slightly worse (+0.05-0.1 s; still ~50x better than before the fix) |
@@ -843,47 +843,43 @@ machine load to drop to 12 or under). Load average at each run's start is below;
 | Hidden window, 100 MB (`minimized`) | producer 1.4-1.6 s; tail 0.2-0.5 s after show | 1.50, 1.32, 1.40 s; tail 0.10 s | 3; 3.0, 1.6, 2.4 | same / better |
 | Hidden window cut (`cut`): final frame once, modes right | once, 3 of 3; modes right; stale partial frames in 2 of 3 | once, 3 of 3; paste on and cursor hidden 3 of 3; no stray fragments; stale partial frames in 3 of 3 (4, 2, 2 lines) | 3; 3.0, 1.6, 2.4 | same (the known open item in 4f; 3 of 3 vs 2 of 3 is inside run-to-run spread) |
 | Scroll during a 400 ms freeze (8 trials) | 8 of 8 scrolled at 216-218 ms; blocking-listener control 0 of 8 at 401-411 ms | app 8 of 8 at 218 ms; passive control 8 of 8; blocking control 0 of 8 at 412 ms; zoom 100 to 110 to 100%, plain wheel 120 px | 1 (8 trials); 2.4 | same |
-| Reload with a Claude Code screen up (new leg) | none (never measured) | repaint works; chat send after a reload is refused (see below) | 7 runs on `b050cd00d`, 1 on master | leg FAILS: refusal, see next subsection |
+| Reload with a Claude Code screen up (new leg) | none (never measured) | passes: screen back 1.4-1.8 s after one reload, one repaint nudge, sends reach the program (corrected 2026-10-05, see next subsection) | 4 clean runs on `b050cd00d` (load 2-5) | pass; the earlier refusal was a rig bug |
 
 **What moved.** Nothing regressed in a way the repeated runs support. Two small things: the 2000x100 CSV opens ~0.05-0.1 s slower than the
 reference (0.29-0.34 s against 0.23-0.25 s; the first "after" runs in 4d were 0.17-0.20 s, so the spread across days is about the same size) and
 the reload-mid-flood producer took ~0.6 s longer. The mixed-reply busy figure is the one that looked worse (55%, 58% against 47%) and then
 could not be pinned down: two re-checks on a quieter machine gave 28% (load 6.7 at start) and 95% (load 9.5 at start, but another session's
 work arrived mid-run: 79 long tasks, that run is unusable); with a spread of 28-58% and no consistent shift, I would not call a regression.
+**Mixed-reply re-measure on a quiet machine (2026-10-05).** Four runs at load 3.2, 3.3, 3.1 and 1.6, each with the prose control in the same boot
+(last third busy, mixed / prose): 30 / 30, 34 / 26, 65 / 46, 58 / 56. Mixed minus prose: 0, +8, +19, +2 points; first third: 23 / 23, 25 / 24,
+43 / 48, 35 / 44. The absolute level moves a lot between boots (prose alone read 26-56%; the last two boots came after a machine restart with cold
+caches), so only the same-boot gap means anything. One run (+19) is out of line, three are within 8 points and the first-third gaps are
+zero or negative. **Verdict: same as prose; no regression from integration.** The old 47% reference is not comparable to these absolute levels.
 `f40-1` ended with load at 26 (another session), after the flood had finished in 1.6 s; the figures are kept. The terminal-flood and
 scroll rows reproduce the 4f and 4d numbers closely, so the zero-hitch work survives the merge.
 
-### Reload with a Claude Code screen on (new rig leg `--only reload`)
+### Reload with a Claude Code screen on (new rig leg `--only reload`) — corrected 2026-10-05
 
 Tool changes: `scripts/perf-lab/fake-claude.cjs` gained a `perf-lab-screen` mode (a full Claude-Code-like screen with a message box, redrawn on
 every size signal; each size signal and typed line is logged), and `suspects.mjs` gained the `reload` leg. It reloads the page with the
 protocol's `Page.reload`, then measures the screen coming back, the number of repaint nudges, a chat send as soon as the composer exists, two
-reloads 300 ms apart, and a real PTY resize followed by a send at once and 500 ms later. It throws on a blank terminal or a refused or lost send.
+reloads 300 ms apart, and a real PTY resize followed by a send at once and 500 ms later.
 
-**Measured on `b050cd00d` (repeatable, identical across 7 runs):**
-- Before any reload, a chat send (real keystrokes in the composer, then Enter) reaches the program. The leg's baseline passes.
-- After one reload the program's full screen is back in the terminal buffer **0.36-0.40 s** later (1.1 s in the first run, under heavy load).
-  Exactly **one** repaint nudge arrives (two size signals: one column narrower, then back; the size ends restored).
-- After two reloads 300 ms apart: two nudges (each a pair), the terminal ends painted (screen back in 1.15-1.31 s).
-- **A chat send typed as soon as the composer exists is refused** ("Claude Code is waiting on something - answer it first."; buttons "Send anyway" and
-  "Open terminal"), and it is also refused 500 ms and several seconds later, after a reload and after a real PTY resize. The text never reaches the program.
+**Correction: the earlier "chat send is refused after a reload" result was a bug in the test, not in the app.** After a reload the window opens
+the FIRST session, not the one you were on, and the leg kept typing into whichever session was showing, which correctly refused (that session
+was not waiting on a Claude Code box). The leg now waits for the new page (the old page is marked before each reload so it cannot be mistaken
+for the new one; the session-list mark appears; one tab and one chat pane per session), re-selects its own session, and checks before every send that the
+visible session is the leg's, failing with the visible session's name if not. The earlier mechanism hunt (computer verdicts, waiting cards) is
+void; the master-branch comparison from that period is also unreliable for the send half.
 
-**Same leg on plain master `f0b243fac` (one run):** the terminal stays blank after a reload (never painted; no repaint nudge arrives), the
-send right after a reload is lost without a refusal message, and a send after the real resize is refused with the same sentence and the same
-buttons. So the refusal also exists on master; the integration branch fixes the blank-terminal half.
+**Measured on `b050cd00d` (two clean passes on the first corrected build, two more after a machine restart and fresh build; load 2-5):**
+- A send before any reload reaches the program; after one reload the screen is back in the terminal 1.4-1.8 s after the reload command (this includes waiting for
+  the window to be usable), with exactly one repaint nudge and the size restored.
+- After two reloads 300 ms apart: two nudges, terminal painted (1.7-2.3 s), send reached the program.
+- A send right after a real resize, and another 500 ms later, both reached the program; no refusal message in any run.
 
-**What the in-page probe established (integration build, after the refusal):**
-- The page's terminal holds the whole screen including the message box (rule, "❯", rule, footer). The chat shows no waiting card.
-- The computer's own answer to "what do I need to draw this session?" (`session:open`, the `after` list) carries `input-block: null`, meaning
-  "message box live", an empty list of pending permission asks, and `working: false`. Playing that answer into the page and sending again
-  is still refused.
-- The computer pushed no `session:live` message at all to the window between the reload and the refused send.
-
-So the screen verdict the computer holds says the box is live, and the page is still refusing. **Mechanism not established.** What is ruled
-out: a blank terminal, a missing or stale screen verdict from the computer, a waiting card, a pending permission ask. What is not tested: the
-other half of the send gate (the chat's own list of open questions, `pendingInteractionKind`) and whether the refusal is specific to the fake
-program (its screen is not real Claude Code output; the gate does read it as a box in the pre-reload baseline, so it is not that simple).
-The leg stays in the rig so the question can be pinned by whoever picks it up; it fails loudly until the refusal is understood.
+**Real app finding (not caused by the perf work, observed 2026-10-05):** after the window reloads, it returns to the first session instead of the
+one you were on. Filed in `docs/roadmap/user-interface.md`.
 
 
 ## 6. What happened, and what is next

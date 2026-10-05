@@ -249,3 +249,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       review deck (both platforms, every theme) before it is kept. On hold since 2026-09-18
       (Destin); resumes with the rest of phase 5
       `settings` `all` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+
+- [ ] After the window reloads it returns to the first session instead of the one you were on.
+      Seen 2026-10-05 in the performance rig's reload test (not caused by the performance work)
+      `desktop` `confirmed` `checked 2026-10-05` → docs/active/investigations/2026-10-04-performance-gap-review.md
