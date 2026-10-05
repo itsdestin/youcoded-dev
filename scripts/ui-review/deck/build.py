@@ -13,7 +13,7 @@ from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice
                     workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
+NICE = {'youcoded': 'YouCoded', 'youcoded-night': 'YouCoded Night', 'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
 TOKEN_KEYS = ['canvas', 'panel', 'inset', 'well', 'accent', 'on-accent', 'fg', 'fg-2', 'fg-dim', 'fg-muted', 'fg-faint', 'edge', 'link']
 RADIUS_KEYS = ['radius-sm', 'radius-md', 'radius-lg']
 
@@ -24,13 +24,22 @@ def theme_tokens(themes):
         builtin = json.load(f)
     # Community themes live in the wecoded-themes checkout at the WORKSPACE root — a worktree has none.
     theme_dirs = [os.path.join(workspace_root(), 'wecoded-themes', 'themes')]
+    # WHY the app's own built-in theme files too (2026-10-04): YouCoded and YouCoded Night are
+    # built-ins that live as JSON in the app (themes/builtin/<slug>.json, the same tokens/dark
+    # shape as a community manifest), not in globals.css or wecoded-themes — so a deck shot in
+    # the app's DEFAULT themes refused to build. The session's own app checkout comes first
+    # (a new built-in may exist only on its branch), then the shared one.
+    builtin_rel = ('youcoded', 'desktop', 'src', 'renderer', 'themes', 'builtin')
+    session_root = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
+    builtin_dirs = [os.path.join(session_root, *builtin_rel), os.path.join(workspace_root(), *builtin_rel)]
     out = {}
     for t in themes:
         if t in builtin:
             out[t] = builtin[t]
             continue
-        for d in theme_dirs:
-            mf = os.path.join(d, t, 'manifest.json')
+        app_json = next((os.path.join(d, t + '.json') for d in builtin_dirs if os.path.exists(os.path.join(d, t + '.json'))), None)
+        for d in ([os.path.dirname(app_json)] if app_json else []) + theme_dirs:
+            mf = app_json if app_json and d == os.path.dirname(app_json) else os.path.join(d, t, 'manifest.json')
             if os.path.exists(mf):
                 with open(mf) as f:
                     m = json.load(f)
@@ -43,7 +52,7 @@ def theme_tokens(themes):
                 out[t] = tok
                 break
         else:
-            raise SpecError(f'no tokens for theme "{t}" (not built in, no manifest under {theme_dirs})')
+            raise SpecError(f'no tokens for theme "{t}" (not built in, no app theme file under {builtin_dirs}, no manifest under {theme_dirs})')
     return out
 
 

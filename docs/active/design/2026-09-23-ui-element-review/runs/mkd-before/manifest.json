@@ -1,0 +1,497 @@
+[
+  {
+    "name": "marketplace/detail",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/midnight.png",
+    "ms": 2638,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/youcoded.png",
+    "ms": 2717,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/member",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/member/midnight.png",
+    "ms": 2722,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/bundle",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/bundle/youcoded.png",
+    "ms": 2837,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/caution",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/caution/midnight.png",
+    "ms": 2842,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/bundle",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/bundle/midnight.png",
+    "ms": 3104,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/connection",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/connection/midnight.png",
+    "ms": 3108,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/caution",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/caution/youcoded-night.png",
+    "ms": 3173,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/member",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/member/youcoded.png",
+    "ms": 3271,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/connection",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/connection/youcoded-night.png",
+    "ms": 3281,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/member",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/member/youcoded-night.png",
+    "ms": 3393,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail#phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail#phone/youcoded.png",
+    "ms": 3489,
+    "errors": [],
+    "panel": {
+      "x": 8,
+      "y": 8,
+      "w": 374,
+      "h": 828
+    }
+  },
+  {
+    "name": "marketplace/detail",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/youcoded-night.png",
+    "ms": 3809,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/connection",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/connection/youcoded.png",
+    "ms": 3972,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail/bundle",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/bundle/youcoded-night.png",
+    "ms": 3980,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail#phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail#phone/midnight.png",
+    "ms": 1420,
+    "errors": [],
+    "panel": {
+      "x": 8,
+      "y": 8,
+      "w": 374,
+      "h": 828
+    }
+  },
+  {
+    "name": "marketplace/detail#small",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail#small/youcoded.png",
+    "ms": 1428,
+    "errors": [],
+    "panel": {
+      "x": 32,
+      "y": 32,
+      "w": 576,
+      "h": 416
+    }
+  },
+  {
+    "name": "marketplace/detail#small",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail#small/youcoded-night.png",
+    "ms": 1360,
+    "errors": [],
+    "panel": {
+      "x": 32,
+      "y": 32,
+      "w": 576,
+      "h": 416
+    }
+  },
+  {
+    "name": "marketplace/detail#small",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail#small/midnight.png",
+    "ms": 1361,
+    "errors": [],
+    "panel": {
+      "x": 32,
+      "y": 32,
+      "w": 576,
+      "h": 416
+    }
+  },
+  {
+    "name": "marketplace/detail/caution",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail/caution/youcoded.png",
+    "ms": 4363,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/detail#phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/detail#phone/youcoded-night.png",
+    "ms": 1829,
+    "errors": [],
+    "panel": {
+      "x": 8,
+      "y": 8,
+      "w": 374,
+      "h": 828
+    }
+  },
+  {
+    "name": "marketplace/theme-detail",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail/midnight.png",
+    "ms": 1444,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/theme-detail/not-installed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail/not-installed/midnight.png",
+    "ms": 1391,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/theme-detail#phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail#phone/youcoded.png",
+    "ms": 1525,
+    "errors": [],
+    "panel": {
+      "x": 8,
+      "y": 8,
+      "w": 374,
+      "h": 828
+    }
+  },
+  {
+    "name": "marketplace/theme-detail#phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail#phone/youcoded-night.png",
+    "ms": 1361,
+    "errors": [],
+    "panel": {
+      "x": 8,
+      "y": 8,
+      "w": 374,
+      "h": 828
+    }
+  },
+  {
+    "name": "marketplace/integration-detail",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/integration-detail/youcoded.png",
+    "ms": 1386,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/theme-detail",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail/youcoded.png",
+    "ms": 2376,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/integration-detail",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/integration-detail/midnight.png",
+    "ms": 1358,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/integration-detail",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/integration-detail/youcoded-night.png",
+    "ms": 1416,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/theme-detail#phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail#phone/midnight.png",
+    "ms": 1595,
+    "errors": [],
+    "panel": {
+      "x": 8,
+      "y": 8,
+      "w": 374,
+      "h": 828
+    }
+  },
+  {
+    "name": "marketplace/theme-detail",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail/youcoded-night.png",
+    "ms": 2611,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/theme-detail/not-installed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail/not-installed/youcoded-night.png",
+    "ms": 2505,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "marketplace/theme-detail/not-installed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mkd-before/marketplace/theme-detail/not-installed/youcoded.png",
+    "ms": 2716,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  }
+]

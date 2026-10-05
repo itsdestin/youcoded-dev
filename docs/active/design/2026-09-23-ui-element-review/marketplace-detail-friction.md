@@ -1,0 +1,101 @@
+---
+status: active
+date: 2026-10-04
+related: redesign-backlog.md row 9, marketplace-detail-1.json
+---
+
+# Marketplace detail pages — where the guide helped, and where it didn't
+
+First drafts of every Marketplace detail page (plugin, bundle, member skill, flagged
+item, uninstallable connection, theme installed / not installed, integration, phone,
+small window), built only from `guide-draft.md`, `decisions.md` and the workspace
+tooling. App commits `59987dc7d` (screens + fixtures, no visual change) and
+`678005121` (the redesign). Deck: `marketplace-detail-1.json`.
+
+References opened first (guide "How to use" step 2): **Session details** (a popup about
+one thing), **Account** (text + button in one card), **Backup & sync** (labelled cards,
+notice inside a card), **About** (fold-out rows inside a card), the **skills drawer**
+(cards). Decisions below name the rule that drove them.
+
+## Decisions, one by one
+
+| # | What I did | Driven by |
+|---|---|---|
+| 1 | Every detail page is the shared `Dialog`: one-line title, ✕, tapered line, Esc. "Esc · Close" gone (also from the file viewer). | Guide "Popups and side panels"; decisions B-1, H-2. Clear. |
+| 2 | Popup width `document` (600px); `wide` (820) for the two-column variant. | **Guide silent** on which width a content page gets; it only defines "narrow ≤420". I took Dialog.tsx's own derivation (600 = long-reading measure). |
+| 3 | Title is "<Kind> details" (Plugin / Skill / Connection / Theme / Integration details); the name sits large in the top card. | **Guide silent** on what a popup about one item is titled. Copied Session details. Asked as MD-13. |
+| 4 | Top card has **no label above it**. | **Guide contradicts the approved screen.** Guide "A label comes first: a popup never opens straight into a card" — but Session details (approved 2026-10-04, decisions row 121) opens straight into its name card. A label there could only repeat the title. Followed Session details; the guide needs an exception: "the popup's subject card". |
+| 5 | Top card text order: name + status pill on one line, one chip row under it, then the description. | Guide "Cards" → text order; decisions U-1, CA-1. The recipe is written for **grid cards**; I applied it to the detail page's top card by analogy — **guide ambiguous** whether "Cards" covers a detail page. |
+| 6 | Chip row never wraps and fades at its end (24px mask). | Decisions G-9. **Tooling gap:** no shared piece or class exists for the fade — MarketplaceCard itself does NOT fade, it just clips. I wrote `[data-detail-chips]` in DetailPage.css; a shared `ChipRow` is the real fix. |
+| 7 | Chips: Likely safe · source · author · "412 installs" · 👍 93%. Numbers use `Badge` (bold number, grey word). | Guide "Text and numbers" (bold number + grey word); decisions CA-1 ("footer details chips too"). Trust badges and `Badge` are two different hand-made chip looks (`TrustBadges.BADGE` vs `ui/Badge`); they nearly match by luck. **Guide silent** on one chip piece. |
+| 8 | Status pill: shared `Pill` (Installed / In use / Needs auth…). Replaced the integration's `STATUS_TONE_CLASS` (coloured text) and the theme's disabled "Active" button. | Guide "Status and notices"; decisions S-1; "nothing that isn't a button looks like one". Clear. |
+| 9 | Favourite + share as icon buttons at the top card's top right. | Guide "Cards" → quick actions top right. Clear. LikeButton (theme heart) left as it was — it is hand-rolled; **not** converted. |
+| 10 | Buttons: one button full width; two side by side at the right, filled on the right; stacked full width with filled on top at phone width. | Guide "Buttons"; decisions BP-1, BP-3, BW-1/2. **Ambiguous:** the guide's width rule is about popups (≤420 = narrow); 600px popups are "wide", but the button sits inside a card — I treated the card as the space. |
+| 11 | Lone **Uninstall** is a full-width outlined button. | Guide "One button: full width". **Guide probably wrong here:** written for a lone MAIN action (BP-3: "a lone main action"), the guide text drops "main". A full-width Uninstall is the biggest thing on the page. Asked as MD-12. |
+| 12 | Update is the filled button when installed (Uninstall outlined beside it). | Guide "one filled button per view; main action filled". My judgement that Update is the main action there. |
+| 13 | Theme with update: three buttons (Uninstall, Update, Apply theme). | **Guide silent** on three buttons. |
+| 14 | Install failure: danger notice inside the top card with "Retry install" inside it. | Guide "Status and notices" (notice inside the thing, its buttons inside the notice); decisions P-2/P-4. Was only a hover tooltip — invisible on touch. |
+| 15 | "Can't install from here" info notice moved into the top card. | Same rule. |
+| 16 | Every other group = small label + level-1 card: What this can do, About, What's inside, Feedback, Source. | Guide "Spacing" → nothing bare, a label first; decisions NB-1…3. Clear. |
+| 17 | Flagged findings: warning `Callout` inside "What this can do", replacing a ruled-off list with amber dots. | Guide "Status and notices"; "No line crosses the full width". Clear. |
+| 18 | About text set to 14px (`text-sm`); markdown used to inherit the chat's larger size. | Guide "Text and numbers" (body 14px). |
+| 19 | About is **not** given the reading underline. | **Guide contradicts the reference.** Guide/decision F-1 say a label over reading text gets the soft underline; About's own "Disclaimer" label (the guide's example) no longer has it after the nothing-bare rebuild. Followed the screen. |
+| 20 | Topic tags / life area / audience: neutral `Badge`s at the foot of the About card. | Guide "Card levels" (text describing a card lives in it). **Guide silent** on topic tags vs the chip row; I kept them out of the never-wrap row so the safety facts stay visible. |
+| 21 | What's inside: one boxed `SettingRow` per member (name, its description, arrow), grouped "Skills 14". | **Guide ambiguous between two recipes:** "Lists of short names are plain rows in one shared box" vs "Settings-style lists (each row opens something) are boxed rows". Rows open pages, so boxed. Long for a 14-skill bundle — that is why the folded and two-column variants exist. |
+| 22 | "Agents" relabelled "Specialists" in What's inside. | The app's own word (CATALOG_TYPE_LABEL). Copy change — flag if unwanted. |
+| 23 | Comments: each in a level-2 box, 8px apart (no full-width lines). | Guide "Card levels" (no full-width lines; nested = one look); decisions SP-5 (8px). |
+| 24 | Comment box: Textarea with "Post comment" outlined under it at the right. | **Guide asks for something no piece supports:** "a text box with its own action keeps it inside the box … small filled button". `InputGroup` is single-line only; a multi-line box with an inside button does not exist. Left as before. Also: the inside button would be filled → two filled buttons on the page (Install + Post); the guide doesn't say which rule wins. |
+| 25 | Feedback summary + Helpful / Not for me on one line; reason line under. | Guide "Buttons" → text and buttons in one box; NB-2. |
+| 26 | Source card: "Source code" row with an outlined Open button (was a raw underlined URL), Licence, Checked version with the explanation written out (was a hover tooltip). | Guide "Buttons" (underline only inside a sentence); narrow-viewport rule (tooltips never fire on touch). |
+| 27 | Integration page moved into its own file on the same shell; removed the disabled "Settings (Coming soon…)" button and the disabled status-buttons ("macOS only", "Coming soon", "Deprecated" — the pill says it). Lost: the integration's coloured outline round the whole popup. | Guide "nothing that isn't a button looks like one"; Dialog has no per-popup border colour. **Behaviour-adjacent:** a dead button removed — called out on MD-9. |
+| 28 | Setup facts as `SettingRow`s in a "Setup" card; the post-connect command as an info notice with Dismiss / Copy / Open new setup session inside. | Guide "Settings"; "Status and notices". Dismiss was bare text → outlined (decisions F-2). |
+| 29 | Theme preview + colour swatches in one "Preview" card. | Nothing bare. |
+| 30 | Not-found: a single card, no "Close" link (the ✕ is the way out). | Guide "Buttons" (close is the ✕); single-card popup needs no label. |
+| 31 | **Three arrangements** (one column / two columns / folded), behind a workbench-only switch `?detailLayout=` (workbench-mode.ts, the existing `?screenFrame=` precedent). App ships "one column". | **Guide silent** on how to arrange a page with this much information — the one real open choice. Two columns is **invented arrangement** (no popup has a content side-column; only Assistant settings' nav pane). Folded copies About → Privacy. |
+| 32 | Folded variant's group label "More about this plugin". | **Invented copy.** Needed a label that doesn't repeat the title. |
+
+## Tooling friction
+
+1. **Deck builder refused the app's default themes.** `review-cards.py build` failed with
+   `no tokens for theme "youcoded"`: `deck/tokens.json` knows only light/dark/midnight/creme,
+   and the new built-ins YouCoded / YouCoded Night live as JSON in the app, not in
+   `globals.css` or `wecoded-themes`. Earlier decks (yc-theme-1) dodged it by labelling
+   YouCoded pictures "light"/"dark". **Fixed in this session:** `deck/build.py` now also reads
+   `youcoded/desktop/src/renderer/themes/builtin/<slug>.json` (this worktree first, then the
+   shared checkout) and names them "YouCoded" / "YouCoded Night". No test added — the
+   existing `test_tokens.py` pins only tokens.json; a test would need an app checkout in CI.
+2. **Auto-highlight is meaningless for a whole-page redesign.** Every approve step warns "the
+   change covers 80–99% of the crop — name an element instead". There is nothing smaller to
+   name. A step-level "whole page changed, box the panel" option would silence honest warnings.
+3. **The contact sheet is unreadable for a 13-step, 3-theme deck**: `preview` packs every page ×
+   size × theme into one 2904×32552 image, displayed ~16× too small to judge. I read individual
+   `preview/p*.png` pages instead. `preview/` is also shared by every deck in the folder, so
+   older decks' pages sit beside this one's (p10-light… from another deck).
+4. **No shoot screen per variant without code:** layout variants needed a production-code switch
+   (`workbenchDetailLayout`) plus `params` in the screen list. That works, but there is no
+   written recipe for "show N designs of one real screen on a Choice slide"; I found the
+   `screenFrame` precedent by grepping.
+5. **Sub-screens and marks:** a `marketplace/detail/<kind>` sub-screen must be marked with its
+   full name, but the popup only knew its kind. Needed a `screen` prop threaded from the opener.
+   The README covers `useScreenOpen(…, subpages)` but not how the opened surface learns which
+   sub-name to mark.
+6. **The workbench could not open the integration page at all**: `integrations.list` fell to the
+   catch-all `[]`, so the page had never been photographed. Added fixtures + a hand-written mock
+   (commit 1). Worth a sweep: which real popups are unreachable in the workbench because their
+   list call returns `[]`?
+7. `verify.sh` passed first time (types, full suite, knip, lint, design-lint ratchet, ast-grep,
+   shoot --check, journeys). Two tests pinned the OLD look by source text
+   (`marketplace-detail-shell.test.ts` pinned exact class strings and a CSS file) — rewritten to
+   pin "built on Dialog, never 'Esc · Close'" instead. One test read the popup from the render
+   container; Dialog portals to `document.body`.
+8. `shoot` itself was excellent: 48 pictures in ~25s, every one proven open.
+
+## Left undone / unsure
+
+- LikeButton (theme heart) and TrustBadges keep their hand-made chip/button styles.
+- The file viewer keeps its own shell (only its close control changed) and its footer line.
+- The old workbench review mockup `MarketplaceDetailHeaderDemo` still compiles but its "Today"
+  CSS no longer matches the new markup; it is a past round's record.
+- Install-failed, installing and update-available states were not photographed (need a failing
+  or slow install in the fake backend).
+- Android: shared renderer, no native change; not built here.

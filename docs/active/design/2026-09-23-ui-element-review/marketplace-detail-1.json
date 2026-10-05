@@ -1,0 +1,196 @@
+{
+  "title": "Marketplace detail pages — first drafts in the modern style",
+  "key": "marketplace-detail-1",
+  "out": "marketplace-detail-1.review.html",
+  "images": "images/marketplace-detail-1",
+  "runs": {
+    "before": "runs/mkd-before",
+    "after": "runs/mkd-after"
+  },
+  "labels": { "before": "Today", "after": "Draft" },
+  "themes": ["youcoded", "youcoded-night", "midnight"],
+  "steps": [
+    {
+      "id": "MD-1",
+      "surface": "Marketplace",
+      "path": "Marketplace → click any plugin card (here: Civic Report)",
+      "headline": "Three ways to arrange the same detail page. Which should every Marketplace page use?",
+      "notice": "All three use the same pieces as Settings and Session details: a popup with the ✕, a top card about the item, then labelled cards. Only the arrangement differs.",
+      "risk": "Whichever you pick applies to plugins, skills, connections, themes and integrations alike.",
+      "runs": ["after"],
+      "variants": [
+        {
+          "id": "stack",
+          "label": "One column",
+          "crop": "marketplace/detail",
+          "summary": "Every section is its own labelled card, all open, one under another — like Account or Backup & sync.",
+          "risk": "Long pages (a bundle with 14 skills) need a lot of scrolling."
+        },
+        {
+          "id": "columns",
+          "label": "Two columns",
+          "crop": "marketplace/detail#columns",
+          "summary": "A wider popup: the reading (About, What's inside, Feedback) on the left, the short facts (What this can do, Source) on the right.",
+          "risk": "A new arrangement no other popup uses yet; on a phone it falls back to one column."
+        },
+        {
+          "id": "folded",
+          "label": "Folded",
+          "crop": "marketplace/detail#folded",
+          "summary": "What this can do stays open; About, What's inside, Feedback and Source become fold-out rows in one card — like About's Privacy card.",
+          "risk": "One more click to read the description or the comments."
+        }
+      ]
+    },
+    {
+      "id": "MD-2",
+      "surface": "Marketplace",
+      "path": "Marketplace → Civic Report (installed plugin)",
+      "crop": "marketplace/detail",
+      "headline": "A plugin page is now a normal popup: a top card about the plugin, then labelled cards.",
+      "changed": "The near-full-screen panel with 'Details' and 'Esc · Close' became the shared popup titled 'Plugin details' with the ✕. Name, Installed pill, star and share sit in one card with the chips and the button.",
+      "notice": "Chips (safety, source, author, installs, % helpful) are one row that fades at the end instead of wrapping. Everything else sits in a labelled card, nothing loose on the background.",
+      "risk": "The popup is narrower than before (600px wide), so long descriptions are taller."
+    },
+    {
+      "id": "MD-3",
+      "surface": "Marketplace",
+      "path": "Marketplace → Superpowers (a bundle of 14 skills)",
+      "crop": "marketplace/detail/bundle",
+      "headline": "What's inside a bundle is now a list of rows you can open, each with its one-line description.",
+      "changed": "The comma list of dotted-underlined names became one row per skill (name, description, arrow), grouped as 'Skills 14', 'Commands 1'.",
+      "notice": "Click a row to open that skill's own page, as before. Hooks and connections show as plain rows.",
+      "risk": "A bundle with many skills makes this card long."
+    },
+    {
+      "id": "MD-4",
+      "surface": "Marketplace",
+      "path": "Marketplace → Superpowers → Brainstorming",
+      "crop": "marketplace/detail/member",
+      "headline": "A skill from a bundle shows 'Part of Superpowers' as a row that opens the bundle's page.",
+      "changed": "The dotted-underlined 'Part of Superpowers' link in the chip line became a row inside the top card. The popup is titled 'Skill details'.",
+      "notice": "Comments are each in their own box now, with no lines running across the card.",
+      "risk": "None that I found."
+    },
+    {
+      "id": "MD-5",
+      "surface": "Marketplace",
+      "path": "Marketplace → Browser Use (the automatic check flagged it)",
+      "crop": "marketplace/detail/caution",
+      "headline": "What the safety check flagged is now the amber warning box, inside 'What this can do'.",
+      "changed": "The flagged list was separated by a line and amber dots; it is now the same warning box Backup & sync uses. Install is one full-width filled button.",
+      "notice": "If an install fails, the reason now shows in a red notice inside the top card with its own Retry button, instead of only in a hover tooltip.",
+      "risk": "The install-failed notice is not shown here; it needs a failing install to appear."
+    },
+    {
+      "id": "MD-6",
+      "surface": "Marketplace",
+      "path": "Marketplace → Filesystem (a connection that can't be installed from the app)",
+      "crop": "marketplace/detail/connection",
+      "headline": "A listing you can't install here says so inside its card, above an 'Open source' button.",
+      "changed": "The blue notice moved from between sections into the top card; 'Open source' is a full-width outlined button. The popup is titled 'Connection details'.",
+      "notice": "The Source card lists where it comes from (with an Open button), its licence and the checked version, with the explanation written out instead of a hover tooltip.",
+      "risk": "The author chip is cut off by the fade when the name is long."
+    },
+    {
+      "id": "MD-7",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Meadow Mist (installed)",
+      "crop": "marketplace/theme-detail",
+      "headline": "A theme page: top card with like, star and share, then a Preview card holding the picture and colours.",
+      "changed": "Uninstall was bare text; it is now an outlined button left of the filled 'Apply theme'. The theme in use shows an 'In use' pill instead of a greyed 'Active' button.",
+      "notice": "The colour swatches sit inside the Preview card, under the picture, instead of loose under it.",
+      "risk": "Three buttons when an update is available (Uninstall, Update, Apply theme)."
+    },
+    {
+      "id": "MD-8",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Cotton Candy Sky (not installed)",
+      "crop": "marketplace/theme-detail/not-installed",
+      "headline": "A theme you don't have yet: one full-width Install button in the top card.",
+      "changed": "Install moved from the top right of the page into the top card, full width, the way every lone main button looks in popups.",
+      "notice": "Star is greyed until it is installed, as before; like and share work right away.",
+      "risk": "None that I found."
+    },
+    {
+      "id": "MD-9",
+      "surface": "Marketplace",
+      "path": "Marketplace → Connect your stuff → Google Workspace",
+      "crop": "marketplace/integration-detail",
+      "headline": "Integration pages now match plugin pages: same popup, same top card, same labelled cards.",
+      "changed": "This page was a separate older copy (bigger 'Integration' header, a full line under it, an amber-text pill, a dead 'Settings (Coming soon…)' button). The dead button is gone; Uninstall and Connect sit right.",
+      "notice": "Setup facts are rows in a Setup card instead of bullets. After connecting, the 'run this command' message is a blue notice with Dismiss, Copy and Open new setup session inside it.",
+      "risk": "The integration's coloured outline around the whole popup is gone; its colour now shows only on its icon."
+    },
+    {
+      "id": "MD-10",
+      "surface": "Marketplace",
+      "path": "Marketplace on a phone (390 wide) → Civic Report",
+      "crop": "marketplace/detail#phone",
+      "headline": "On a phone the page is the same popup, a little narrower, with buttons full width.",
+      "changed": "Before, the panel filled the whole phone screen with its own header. Now it is the shared popup at phone size.",
+      "notice": "The chip row shows what fits and fades; when there are two buttons they stack, filled one on top.",
+      "risk": "Fewer chips are visible on a phone because the row never wraps."
+    },
+    {
+      "id": "MD-11",
+      "surface": "Marketplace",
+      "path": "Marketplace in a small window (640 by 480) → Civic Report",
+      "crop": "marketplace/detail#small",
+      "headline": "In a small window the popup shrinks with it and the body scrolls under a soft fade.",
+      "changed": "Same popup as the full-size window; its height follows the window.",
+      "notice": "The header and the ✕ stay put while the cards scroll.",
+      "risk": "Only the top card and part of the first card fit before scrolling."
+    },
+    {
+      "id": "MD-12",
+      "surface": "Marketplace",
+      "path": "Any installed plugin's page, top card",
+      "words": true,
+      "headline": "When Uninstall is the only button, should it stay full width?",
+      "today": "In the drafts an installed plugin's only button, Uninstall, is an outlined button across the whole top card.",
+      "problem": "The guide says a lone button is full width, but that makes Uninstall the biggest thing on the page even though it is the action people want least.",
+      "proposal": "Pick how a lone, less important button should look on these pages.",
+      "options": [
+        {
+          "id": "full",
+          "label": "Full width",
+          "pros": ["Follows the guide's lone-button rule exactly", "Same as every other single-button card"],
+          "cons": ["Uninstall looks like the main thing to do"]
+        },
+        {
+          "id": "right",
+          "label": "Small, at the right",
+          "pros": ["Uninstall stays quiet", "Matches Account's 'Download my data' line"],
+          "cons": ["A second look for lone buttons; the guide would need a line for it"],
+          "recommended": true
+        }
+      ]
+    },
+    {
+      "id": "MD-13",
+      "surface": "Marketplace",
+      "path": "Any detail page, the popup's title line",
+      "words": true,
+      "headline": "Should the popup's title say the kind ('Plugin details') or the item's name ('Civic Report')?",
+      "today": "The drafts title the popup by kind — 'Plugin details', 'Theme details' — and show the name large in the top card, like Session details.",
+      "problem": "The name then appears once, but the title line only says what kind of thing it is.",
+      "proposal": "Choose what the title line says on every Marketplace detail page.",
+      "options": [
+        {
+          "id": "kind",
+          "label": "The kind",
+          "pros": ["Same as Session details", "Tells you what you opened (plugin, skill, connection)"],
+          "cons": ["The item's name is only in the card below"],
+          "recommended": true
+        },
+        {
+          "id": "name",
+          "label": "The item's name",
+          "pros": ["The name stays visible while you scroll"],
+          "cons": ["The name would show twice unless the top card drops it"]
+        }
+      ]
+    }
+  ]
+}
