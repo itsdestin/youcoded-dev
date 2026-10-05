@@ -196,10 +196,14 @@ async function connect(port) {
 // "Still": no fetch in flight, no finite animation running, every image on the page finished
 // loading, two frames painted — capped. WHY images: theme cards drew blank when a picture was
 // taken before their previews arrived — the run-to-run differences the investigation measured.
-const STILL = (cap) => `new Promise((res) => { const t0 = performance.now(); const tick = () => {
+// WHY __shootHoldUntil (2026-10-05 review F1): a page can declare "my first answer is still coming,
+// wait for it" (the workbench's Home page holds its first picture up to 8 s). The cap used to end the
+// wait at 3 s regardless, so a slow machine still shot "Loading your rooms…". While the page's
+// deadline (a performance.now() time) is ahead, the cap does not end the wait; the deadline is the cap.
+export const STILL = (cap) => `new Promise((res) => { const t0 = performance.now(); const tick = () => {
   const busy = document.getAnimations().some((a) => a.playState === 'running' && isFinite(a.effect?.getComputedTiming?.().endTime ?? Infinity))
     || [...document.images].some((i) => !i.complete);
-  if ((!busy && (window.__shootInflight | 0) === 0) || performance.now() - t0 > ${cap}) requestAnimationFrame(() => requestAnimationFrame(() => res(Math.round(performance.now() - t0))));
+  if ((!busy && (window.__shootInflight | 0) === 0) || (performance.now() - t0 > ${cap} && !(window.__shootHoldUntil > performance.now()))) requestAnimationFrame(() => requestAnimationFrame(() => res(Math.round(performance.now() - t0))));
   else setTimeout(tick, 16); }; tick(); })`;
 const INFLIGHT = `(() => { if (window.__shootInflight !== undefined) return; window.__shootInflight = 0;
   const f = window.fetch; window.fetch = function (...a) { window.__shootInflight++; return f.apply(this, a).finally(() => window.__shootInflight--); }; })();`;

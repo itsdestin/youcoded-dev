@@ -96,6 +96,10 @@ def is_app_pane(d):
     return bool(d.get('app') or d.get('view'))
 
 
+# Switches a pane's own fields set; `params` may not override them (spec.py refuses them at build time).
+RESERVED_PARAMS = ('mode', 'child', 'theme', 'latency', 'scenario', 'view', 'stalled')
+
+
 def pane_url(spec, live, pane, theme):
     """The one place a pane address is spelled.
 
@@ -133,7 +137,9 @@ def pane_url(spec, live, pane, theme):
         # `params`: extra workbench switches for this pane, e.g. {"openPage": "page-home",
         # "pagesHome": "v-edit-a"} — WHY: a Pages design option is a screen of the app under
         # its own switches, and the pane must open straight on it rather than on the chat.
-        for k, v in (d.get('params') or {}).items():
+        # WHY merged (review F8): `{**live, **pane}` above replaces a step-level `params` wholesale with the pane's;
+        # the two should add up, the pane winning on a clashing key. Reserved keys are refused at build time (spec.py).
+        for k, v in {**(live.get('params') or {}), **(pane.get('params') or {})}.items():
             q[str(k)] = str(v)
     else:
         q.update({'view': 'live', 'surface': d['surface'], 'round': d['round'], 'candidate': d['candidate']})

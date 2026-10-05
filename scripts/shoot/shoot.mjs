@@ -233,6 +233,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
         const after = await read();
         const kept = JSON.parse(await tab.evaluate(`JSON.stringify(window.__shootBefore.map((e) => window.__exploreLayers.includes(e)))`, 10_000));
         // Exactly the top one gone, every one under it still there, and nothing new opened.
+        await tab.evaluate('delete window.__shootBefore; 0', 10_000); // WHY (review F11): leave nothing of the check on the page
         const ok = kept[0] === false && kept.slice(1).every(Boolean) && after.length === first.length - 1;
         if (!ok) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${label(after).join(' › ') || 'nothing'}`);
       }

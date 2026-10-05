@@ -99,3 +99,5 @@ practice app, or by reasoning from the CSS — do not build a recording rig.
 - Narrow windows (phone, 390 px wide) must still work.
 - Write for a non-developer: option names and summaries in plain words.
 - Do not commit, push, run `run-dev.sh`, or touch the user's running YouCoded app.
+
+Note (2026-10-05): the option files (`fixtures/home-variants/*.ts`) and the device-page mockups were removed at merge prep, because the chosen designs are built into the page. They are in git history; the answered decks' live panes no longer resolve and are kept only as records.
