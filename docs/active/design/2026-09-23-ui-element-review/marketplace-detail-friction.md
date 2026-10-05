@@ -245,3 +245,64 @@ because round 4 already showed the picked row layout).
   reported, not fixed. The real gap is that verify discards the failing run's log.
 - verify this round: 8 of 9 PASS; `shoot --check` again blocked by the other session's port 4717.
   Substitute: plain `shoot` of every marketplace and library screen, all opened (no look-alikes).
+
+## Closing fix (2026-10-05) — chip clipping (marketplace-detail-5#M5-3)
+
+App commit `36cad47b1`. Cause: a sideways-scrolling box (`overflow-x: auto`) also clips
+vertically at its content edge, and at a 1.5× screen scale the chips' 1px bottom border
+rounded just outside it. Fix: `py-1 -my-1` on the chip row (room inside the clip, spacing
+unchanged). Checked on every detail page kind in YouCoded, YouCoded Night and Midnight and at
+phone width, at 1× and `SHOOT_SCALE=1.5`. Guard: a source pin in
+`marketplace-detail-shell.test.ts` (seen red without the classes) — jsdom has no layout, so a
+geometric guard ("every child's box lies inside its scrolling parent") needs a browser; it
+would belong in `shoot` (see proposal 2). **This was the third visual defect that every check
+passed** (chip sizes R2, broken heart R2, clipped border R5); my own 1× screenshot review missed
+it too — it only shows at Destin's 1.5× scale.
+
+## Proposed guide and tooling changes (most valuable first — not implemented)
+
+1. **Shoot at Destin's scale by default** — `scripts/shoot/engine.mjs`: make `SHOOT_SCALE=1.5`
+   the default for review shots (keep 1× for `--check`). Why: the chip clipping (R5) is invisible
+   at 1× and was found only by Destin; every review picture I read was 1×.
+2. **A "parts agree" pass in shoot** — `scripts/shoot/shoot.mjs` page script: for every marked
+   chip row / button row (`[data-detail-chips]`, `[data-detail-actions]`, future `data-row`), flag
+   siblings whose heights differ by >1px and children whose box leaves a clipping parent. Why:
+   catches the R2 chip-size mismatch and the R5 clipping in one check; nothing in verify compares
+   siblings or clip bounds today.
+3. **verify keeps every check's full log** — `scripts/verify.sh`: write each check's output to a
+   file and print its path on FAIL. Why: R4's one-off full-suite failure could not be named; 6
+   later runs were green, so the flake (if any) is unidentifiable.
+4. **`shoot --check` must not depend on another session's port** — `scripts/shoot/office-editor.mjs`:
+   per-worktree port, or skip only the Office screens with a warning. Why: the check was blocked
+   for three rounds (R4–R5, closing) by `ha-pages-connection`'s editor on fixed port 4717, so
+   verify could never be fully green.
+5. **Guide: a "detail page" recipe** — `guide-draft.md` (Recipes): popup titled by kind, the
+   subject's top card (exempt from "a label first"), two columns (reading left / facts right),
+   one-row icon alignment (tile | title + hint | buttons, as the setting row), picture-of-the-item
+   cards unlabelled. Why: R1 had to infer all of this from Session details / Account; four of
+   Destin's five rounds corrected arrangement, not pieces.
+6. **Guide: G-9 rewritten** — `guide-draft.md` "Cards": "the chip row never wraps; it scrolls
+   sideways, fading at the edge with more; vertical room inside the clip". And name the ONE chip
+   piece (`MetaChip`, or move it to `components/ui/`) — the app has two chip recipes (`Badge`,
+   `TrustBadges.BADGE`) that differ by line height. Why: R2 (sizes), R4–R5 (wrap → scroll).
+7. **Guide: resolve the button-rule conflicts** — `guide-draft.md` "Buttons": (a) "one button full
+   width" applies to a lone MAIN action (BP-3's own words); (b) "text and buttons on one line" wins
+   over full width when they fit; (c) "narrow" means the space the buttons sit in (a 250px column
+   counts), not only popup width. Why: R1 #11, R3 R3-5, R2 R2-2.
+8. **An icon sheet and a shared icon set** — new `shoot` screen rendering every hand-drawn SVG at
+   48px; longer term a shared icon module. Why: the malformed heart (R2) passed every check and my
+   review at 12px; "use the app's heart" was impossible because there is no icon set.
+9. **Deck builder improvements** — `scripts/ui-review/deck/`: (a) a `region` crop on a shoot screen
+   name (R3/R4 needed hand-cut close-ups); (b) any number of named runs, not just
+   today/before/after (R5); (c) `preview` defaults to all the deck's themes and writes into a
+   per-deck folder, not the shared `preview/` (R3 stale pages, R4 missing theme); (d) a
+   "whole page changed — box the panel" highlight that doesn't warn (R1). (The app-theme token
+   fix was made in R1.)
+10. **Workbench fixtures for the hidden states** — `dev/workbench/mock-shim.ts`: switches for an
+   install that fails, one that is slow, an update available and a theme already liked. Why: those
+   states were never photographed in five rounds; the install-failed notice (R1) and
+   filled-when-liked (R3) were shipped/asked unseen.
+11. **A written recipe for "N designs of one real screen"** — `scripts/shoot/README.md`: the
+   `workbench-mode.ts` switch + screen `params` pattern, and that LOOK-ALIKE can fire on genuinely
+   different small variants (R3 needed a `sameAs` that misdescribes two screens); a finer
+   look-alike comparison of the marked panel would avoid that.
