@@ -61,7 +61,7 @@ const transcript = path.join(dir, `${sessionId}.jsonl`);
 if (!fs.existsSync(transcript)) fs.writeFileSync(transcript, '');
 
 // The payload shape the app's HookRelay parses (hook-relay.ts:29-37) and its
-// SessionStart consumer reads (ipc-handlers.ts:2821-2905): session_id, the
+// SessionStart consumer reads (ipc-handlers.ts, the hookRelay SessionStart handler): session_id, the
 // hook_event_name that gates a remap, `source` (startup|resume|clear|compact —
 // resolveMappingAction in session-id-mapping.ts refuses a `startup` that would
 // repoint an already-mapped session), plus transcript_path and cwd, which are
