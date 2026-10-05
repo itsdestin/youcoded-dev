@@ -1,0 +1,1232 @@
+{
+  "title": "The 27 biggest open items — do next, postpone, or remove?",
+  "key": "roadmap-triage-2026-10-05",
+  "out": "roadmap-triage.questions.html",
+  "stage": "ask",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Getting the app to people",
+      "intro": "Installers, phones, and the hands-on tests only you can run. On every slide: Do next means worked on in the coming weeks; Postpone means it stays on the roadmap but not before 1.3.1 ships; Remove means it is deleted from the roadmap."
+    },
+    {
+      "id": "1",
+      "words": true,
+      "surface": "Mac download",
+      "path": "youcoded.ai → Download → opening the app on a Mac",
+      "headline": "1. Mac installers: get them signed with Apple so macOS stops blocking the app?",
+      "today": "Windows installers are now signed in your name, so the Windows warning fades as downloads grow. Mac installers are not signed with Apple at all. A repair for a worse fault (macOS calling the app broken, July to September) merged on September 4, but nobody has opened a build made since then on a real Mac.",
+      "problem": "A Mac visitor downloads the app and macOS refuses to open it. At best they must find Open Anyway in System Settings; if the September repair did not take, only a typed command works. Every in-app update walks them into the same wall again.",
+      "proposal": "Two steps, both waiting on you rather than on building. First, the Apple Developer account in the company's name: Apple refused the sign-up on October 1, so retry from an Apple device or call Apple Support. Second, someone with a Mac opens a current build. Once the account exists, connecting it is about one session and the wall disappears for every later build. Size, my estimate: about 1 session of building after the account exists.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Removes the single biggest reason a Mac visitor gives up.",
+            "Small build once the account exists."
+          ],
+          "cons": [
+            "Costs your time with Apple, and Apple charges a yearly developer fee."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "No effort from you now."
+          ],
+          "cons": [
+            "Mac users keep hitting the wall on install and on every update.",
+            "A public 1.3.1 would not really be public on Mac."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Only makes sense if Mac stops being a supported platform."
+          ],
+          "cons": [
+            "Mac downloads stay blocked for good."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "words": true,
+      "surface": "Android install",
+      "path": "Getting the Android app onto a phone",
+      "headline": "2. Google Play listing: keep it tied to 1.3.1, or move it behind other work?",
+      "today": "The Android app installs only by downloading a file from GitHub and allowing unknown apps. The company's business number arrived on September 10, so a Play developer account can now be opened. On October 1 you said Google Play is not the priority, yet the item is still on the 1.3.1 list.",
+      "problem": "Installing from a file scares ordinary phone users, and from 2027 Google requires a verified developer even for apps installed that way. Play also refuses apps that download programs after install, which ours does today, so the app must be repackaged first.",
+      "proposal": "Do next means opening the Play account, repackaging the app so everything ships inside it, then the store forms. Postpone means taking it off the 1.3.1 list and doing it after Mac signing and after the assistant works on the phone (item 3). Size, my estimate: 3 to 5 sessions plus store forms.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Phone users get a normal, trusted install.",
+            "Gets ahead of Google's 2027 rule."
+          ],
+          "cons": [
+            "Several sessions of repackaging before anything is listed.",
+            "Lists a phone app that still lacks the app's own assistant."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Matches what you said on October 1.",
+            "The listing arrives with a stronger phone app."
+          ],
+          "cons": [
+            "Android stays a download-a-file install for now."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Nothing to maintain on a store."
+          ],
+          "cons": [
+            "From 2027 the current install method stops working without a verified developer anyway."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "words": true,
+      "surface": "Android app",
+      "path": "Starting a conversation on the phone",
+      "headline": "3. Build the app's own assistant into the Android app?",
+      "today": "On a phone the Android app can only run Claude Code. The app's own assistant (ChatGPT sign-in, OpenRouter, the permission modes, helpers) exists on desktop only. The phone app also lacks tags and notes. The large rebuild that was blocking this merged on October 4.",
+      "problem": "Someone without a Claude subscription cannot use the phone app by itself at all. The phone is also a separate copy of every feature, so each desktop improvement has to be rebuilt for it or never arrives.",
+      "proposal": "Run the same assistant core on the phone that the computer uses, then delete the roughly 10,000 lines of duplicated phone code family by family. This is the largest single build on the roadmap and needs testing on a real phone throughout. Size, my estimate: 10 or more sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Makes the phone app a full product instead of a companion.",
+            "The work that unblocked it is fresh."
+          ],
+          "cons": [
+            "Many sessions; it would push the 1.3.1 items back.",
+            "Builds on a rebuild nobody has yet tried on a real phone (item 5)."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "1.3.1 ships first.",
+            "Starts after the real-phone test has shaken out the rebuild."
+          ],
+          "cons": [
+            "The phone app stays Claude-Code-only for another release."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Frees the most build time of anything here."
+          ],
+          "cons": [
+            "The phone app stays second-class permanently.",
+            "The duplicated phone code keeps costing double work."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "words": true,
+      "surface": "iPhone",
+      "path": "Using YouCoded from an iPhone",
+      "headline": "4. iPhone app: write up the options now, or wait?",
+      "today": "An iPhone reaches YouCoded only through Safari pointed at a computer that is running the app. The website says an iPhone app is being explored.",
+      "problem": "iPhone owners have no app. Apple forbids an app from running other programs or downloading new abilities, so the Android approach cannot be copied: no Claude Code and no command line on the phone itself.",
+      "proposal": "The next step is not a build. It is a written comparison of three shapes: the app's own assistant running inside an iPhone app, an app that only pairs to your computer, or a better web version. Any of them would reuse the Android assistant work in item 3. Size, my estimate: about 1 session for the write-up.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "You would know the real cost and Apple's limits before promising anything."
+          ],
+          "cons": [
+            "A write-up about something that cannot start until item 3 exists."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "The comparison is more accurate once the phone assistant exists."
+          ],
+          "cons": [
+            "The website keeps saying exploring with nothing behind it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "One less promise on the website."
+          ],
+          "cons": [
+            "The website's iPhone note would have to change to say there are no plans."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "words": true,
+      "surface": "Hands-on testing",
+      "path": "Your phone, your Arch computer, a Windows computer, a second screen",
+      "headline": "5. Run the five owed hands-on tests in one sitting?",
+      "today": "Five things are built and in the main line but have never been tried on real hardware: the rebuilt phone and remote connection (merged October 4), the same rebuild on a real Android phone, the Update button on your Arch install, the Minimalist layout on Windows, and the buddy on two screens.",
+      "problem": "Automated checks covered the computer side only. If any of these is broken, the first person to find out is a user. The phone one matters most: every phone and remote feature now runs through new plumbing.",
+      "proposal": "I prepare one checklist deck with a step for each test. You run it across your devices and mark what works; I fix what fails. The Windows test needs a Windows computer or a friend with one. Size, my estimate: about 1 hour of your time, 1 session to prepare.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Catches breakage before a release carries it to everyone.",
+            "Closes five roadmap items in one go."
+          ],
+          "cons": [
+            "About an hour of your time across several devices."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "No time from you now."
+          ],
+          "cons": [
+            "Later work piles on top of untested plumbing, so a fault gets harder to trace."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "None beyond a shorter list."
+          ],
+          "cons": [
+            "Ships five untested things on trust."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "The app's own assistant",
+      "intro": "Eight items about YouCoded's built-in assistant, the one that runs without Claude Code."
+    },
+    {
+      "id": "6",
+      "words": true,
+      "surface": "Projects",
+      "path": "Projects list and the first-run tour",
+      "headline": "6. Add a built-in Your Assistant project to every install?",
+      "today": "A new conversation needs a project folder or the No folder choice. The assistant's standing preferences, what it remembers about you and its instruction files live in hidden folders that nobody finds. On September 23 you marked this a must for 1.3.1.",
+      "problem": "A newcomer has no natural home for a one-off request and no visible place to shape how the assistant behaves or what it knows about them.",
+      "proposal": "A project called Your Assistant (name not final) appears in the Projects list, managed by the app. It is the home for miscellaneous requests and the place where preferences, memory and instructions are seen and edited. The first-run tour points to it. It works untouched if you never change anything. It starts with a questions deck and mockups. Size, my estimate: 5 to 8 sessions including design.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Gives every new user a starting place and a visible way to personalise.",
+            "Later it becomes the assistant that takes requests from your phone."
+          ],
+          "cons": [
+            "A design round with you first, then a large build.",
+            "Changes the first-run tour people see."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "1.3.1 ships sooner."
+          ],
+          "cons": [
+            "New users still land with nowhere obvious to begin."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Keeps the Projects list purely the user's own."
+          ],
+          "cons": [
+            "Preferences and memory stay hidden in folders."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "words": true,
+      "surface": "New conversation form",
+      "path": "New session → folder choice → No folder",
+      "headline": "7. Test the No folder choice, then turn it into an incognito mode?",
+      "today": "The new-conversation form has offered No folder since September 11. You said on September 19 that it was never tested and not thought through.",
+      "problem": "Nobody knows whether it works, and it is unclear to a user what it means: where files go, whether the conversation is saved, synced or searchable.",
+      "proposal": "First a test in a practice copy of the app, which is cheap. Then a decision deck on what incognito keeps and leaves out, and the build. It belongs with item 6, since the two together answer where a conversation with no project lives. Size, my estimate: 1 session to test, 2 to 3 for incognito.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "An untested choice is in the shipped form today; the test is quick.",
+            "Incognito is a feature people already understand."
+          ],
+          "cons": [
+            "The incognito design needs your decisions before it can be built."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Can be designed together with item 6 at leisure."
+          ],
+          "cons": [
+            "The untested choice stays in front of users."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Removing the No folder choice itself would end the uncertainty."
+          ],
+          "cons": [
+            "Loses the quick, project-free conversation."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "words": true,
+      "surface": "Skills",
+      "path": "Where your own skills are kept",
+      "headline": "8. Give skills a YouCoded home, so they work without Claude Code?",
+      "today": "The app's own assistant finds a skill only if it sits in Claude Code's folders, and skills kept inside a project folder are not found by it at all.",
+      "problem": "Someone who uses only YouCoded has no obvious place to put a personal or project workflow, and a project's skills are silently ignored.",
+      "proposal": "YouCoded's own folders become the home for personal and project skills; Claude Code's folders become an optional import. This overlaps item 15, which already built a Skills and tools tab per project, so the two should be designed as one. Size, my estimate: 3 to 4 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Skills work for people who never installed Claude Code.",
+            "Cheaper if done alongside item 15."
+          ],
+          "cons": [
+            "Existing skills need a careful, lossless move or import."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Item 15 lands first and this builds on a settled screen."
+          ],
+          "cons": [
+            "Until then, skills quietly depend on Claude Code's folders."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "One skills location stays simpler to explain."
+          ],
+          "cons": [
+            "YouCoded-only users never get a proper skills home."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "words": true,
+      "surface": "Assistant abilities",
+      "path": "Asking the assistant for something it cannot yet do",
+      "headline": "9. Let the assistant search the marketplace before it builds its own workaround?",
+      "today": "The assistant cannot look in the WeCoded marketplace. You marked this a must for 1.3.1 on September 23.",
+      "problem": "When it lacks an ability, it writes a script or reaches for an outside service, even when a plugin that does the job is one click away.",
+      "proposal": "The assistant gets a way to search plugins and connections and suggests the match. Installing still asks you. Because it changes how the assistant behaves, a paid quality check on several models is available afterwards if you want one. Size, my estimate: 1 to 2 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "The marketplace starts working for people who never browse it.",
+            "Small build."
+          ],
+          "cons": [
+            "The assistant may suggest plugins more often than you like; wording needs tuning."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "No change to assistant behaviour before release."
+          ],
+          "cons": [
+            "The assistant keeps reinventing what the marketplace already has."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "The assistant never nudges anyone toward installs."
+          ],
+          "cons": [
+            "The marketplace stays invisible to the assistant for good."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "words": true,
+      "surface": "Assistant settings",
+      "path": "Connecting an outside tool service to the assistant",
+      "headline": "10. Build a settings screen for connected tool services?",
+      "today": "Connecting an outside tool service to the app's own assistant means hand-editing a file on disk. Services already connected in Claude Code are invisible to it.",
+      "problem": "A non-developer cannot do this at all, so the app's own assistant has fewer abilities than Claude Code on the same computer.",
+      "proposal": "A screen to add, edit and remove a service, plus a one-press Use the ones Claude Code already has. Item 15 already adds per-project on and off switches for these, so this would follow it. Size, my estimate: 3 to 5 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Closes one of the last visible gaps between the two assistants."
+          ],
+          "cons": [
+            "Design round plus a medium build, competing with release items."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Builds on item 15's switches once those are settled."
+          ],
+          "cons": [
+            "Connecting a service stays a developer-only task."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Marketplace plugins could remain the only supported route."
+          ],
+          "cons": [
+            "Anything not in the marketplace can never be connected without editing a file."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "words": true,
+      "surface": "Model menu",
+      "path": "Choosing a model",
+      "headline": "11. Fetch each model's price and abilities automatically, and show cost, intelligence and speed tags?",
+      "today": "What each model costs, how much it can hold and what it can do is a list kept by hand. The model menu shows names only. Tag mockups were drawn on September 11 and have not moved since.",
+      "problem": "Choosing means already knowing the names. The hand-kept list goes stale as models change, so the cost shown and the models the app recommends can be wrong.",
+      "proposal": "Read the facts from the providers themselves, then put three small tags on each row. Open design points: no one publishes an intelligence score, so that tag is our own judgement, and what a free local model shows for cost. Size, my estimate: 3 to 4 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Picking a model stops needing expert knowledge.",
+            "Fixes cost figures at the source."
+          ],
+          "cons": [
+            "An intelligence tag is an opinion people may dispute.",
+            "A busier model row."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Release items first; the mockups keep."
+          ],
+          "cons": [
+            "Recommendations keep drifting out of date between releases."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "The model menu stays clean."
+          ],
+          "cons": [
+            "The stale hand-kept list remains the only source."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "words": true,
+      "surface": "Agents and Automations",
+      "path": "A proposed third main view beside Chat and Projects",
+      "headline": "12. Agents and Automations: work that runs on a schedule without you?",
+      "today": "Nothing runs unless you are in a conversation. There is no scheduling of any kind in either app.",
+      "problem": "You cannot say do this every morning or run this when a file changes. It is blocked on your ruling about the Assistants made of Duties idea, on hard spending limits, and on item 13.",
+      "proposal": "A third main view where work runs on a schedule or a trigger, with budgets that stop it cold and an inbox of finished runs. The largest new feature on the roadmap after the phone assistant. The first step is only your ruling on the design idea. Size, my estimate: 10 or more sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "A headline feature for the Comprehensive Workspace pillar."
+          ],
+          "cons": [
+            "Very large, and unattended work that spends money needs airtight limits first."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Item 13 and the cost limits it depends on get built first.",
+            "You can still give the design ruling whenever you like."
+          ],
+          "cons": [
+            "No scheduled work in the app for at least another release."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "The app stays a place you work in, not a thing that runs without you."
+          ],
+          "cons": [
+            "Also removes the base for the device-choosing and message-delivery ideas parked behind it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "words": true,
+      "surface": "Helpers",
+      "path": "The assistant handing work to several helpers",
+      "headline": "13. Finish helper plans: the assistant proposes a multi-step plan you approve as one card?",
+      "today": "The assistant can hire helpers one at a time. A large branch (139 changes) adds plans: it proposes several steps for several helpers, you approve one card with a worst-case cost, and it can resume after a restart. Nothing has been added since September 26.",
+      "problem": "Without plans, a big job means approving helpers piecemeal with no cost ceiling in view. Meanwhile the branch falls further behind the main line every day, and the October 4 rebuild moved code it touches.",
+      "proposal": "Pick it back up: bring it up to date with the main line, finish the review rounds with you, and merge. Or decide it is not wanted and close it rather than let it rot. Size, my estimate: 3 to 5 sessions to land.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Most of the work is done; finishing costs less now than later.",
+            "Gives big jobs a visible cost ceiling."
+          ],
+          "cons": [
+            "Catching up with the main line is real work before anything new."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Release items first."
+          ],
+          "cons": [
+            "Every week adds catching-up cost; a long wait may mean redoing it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Stops carrying a large unfinished branch."
+          ],
+          "cons": [
+            "Throws away 139 changes of work and blocks item 12."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Files, projects and pages",
+      "intro": "Four items about what you keep in the app."
+    },
+    {
+      "id": "14",
+      "words": true,
+      "surface": "Project files",
+      "path": "Projects → a large project → searching files",
+      "headline": "14. Make file search cover a whole big project, not just the first 2,000 files?",
+      "today": "In a big project, searching by name stops at the first 2,000 files and says the folder is large. Searching inside files stops at 200 matches with no way to see more. Browsing folders was already fixed.",
+      "problem": "In a large project the file you want may simply not be found, and the counts read 2,000+ or 200+. You said on September 18: I just want everything to work.",
+      "proposal": "A background list of every file per project, kept fresh as files change, so search and counts cover everything and fill in as they go. Then text search that streams results and loads more as you scroll. Four questions for you come first, for example whether your home folder is listed in the background by default. Size, my estimate: 5 to 7 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Search becomes trustworthy in big projects.",
+            "Design is already written; only four questions remain."
+          ],
+          "cons": [
+            "Background listing uses some disk and processor on very large folders.",
+            "A large build."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Small and medium projects are unaffected today."
+          ],
+          "cons": [
+            "Big projects keep the silent cut-off."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "No background work on anyone's disk."
+          ],
+          "cons": [
+            "Search in big projects stays incomplete for good."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "words": true,
+      "surface": "Projects",
+      "path": "Projects → Skills and tools tab",
+      "headline": "15. Finish per-project skills and tools: review its screens and merge it?",
+      "today": "This is built and passes its checks. Each project gets a Skills and tools tab to choose what the assistant uses there, with a risk warning before anything that connects to an outside service. It has waited since September 24 for you to review its screens.",
+      "problem": "Today every installed skill and tool is on everywhere. And like item 13, the unmerged work drifts: the October 4 rebuild moved code it touches.",
+      "proposal": "I bring it up to date and give you a before-and-after deck of every new screen. Two behaviour changes to know: new marketplace downloads start switched off until you choose projects, and conversations outside any project get no automatic skills or tools. Size, my estimate: 2 to 3 sessions plus your review.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Already built; mostly your review time.",
+            "Items 8 and 10 build on it."
+          ],
+          "cons": [
+            "New downloads starting switched off may surprise people; release notes must say so."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "No new screens to review now."
+          ],
+          "cons": [
+            "Catching-up cost grows; items 8 and 10 wait with it."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Skills stay simply on everywhere."
+          ],
+          "cons": [
+            "Throws away finished work with a signed definition of done."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages pinned beside Projects",
+      "headline": "16. Pages: build the next phases after the Home Assistant page?",
+      "today": "You can create your own pages (dashboards, small apps) that look like part of the app and fetch live data. A Home Assistant page is being finished in another session right now.",
+      "problem": "A page cannot yet ask a model to do something, work with your files, or be shared through the marketplace. On a phone the page view has no design and is cramped.",
+      "proposal": "The next two planned phases: pages that can use a model and files, then pages in the marketplace. Each phase starts with its own questions for you. The Home Assistant page finishes either way. Size, my estimate: 6 to 10 sessions for both phases.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Pages become far more capable and shareable."
+          ],
+          "cons": [
+            "A large new-feature build competing with release work.",
+            "Pages reaching models and files need careful safety design."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Pages as they are already work; you learn from real use first."
+          ],
+          "cons": [
+            "Pages stay personal and cannot be shared."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Pages stay a small, simple feature."
+          ],
+          "cons": [
+            "The approved scope (marketplace pages, model tasks) is abandoned."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "words": true,
+      "surface": "Conversations",
+      "path": "The conversation list",
+      "headline": "17. Add a way to delete a conversation?",
+      "today": "There is no way to delete a conversation anywhere in the app. Helper conversations also pile up on disk forever. You marked the helper clean-up a must for 1.3.1 on September 23; it cannot happen until deleting exists.",
+      "problem": "Clutter grows without limit, and something you regret typing cannot be removed. Synced conversations make it harder: a delete has to reach your other devices without ever removing the wrong thing.",
+      "proposal": "Design deleting properly: a recoverable bin rather than instant removal, deletes that travel safely between devices, and helpers removed with their parent. Starts with a questions deck. Size, my estimate: 4 to 6 sessions including design.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "A basic expectation of any chat app.",
+            "Unblocks the helper clean-up."
+          ],
+          "cons": [
+            "Deleting across synced devices is the riskiest kind of change; it needs slow, careful testing."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Nothing can be deleted by mistake in the meantime."
+          ],
+          "cons": [
+            "The helper clean-up you marked for 1.3.1 slips with it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Conversations can never be lost to a delete."
+          ],
+          "cons": [
+            "No way to remove anything, ever; disk use only grows."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Trust and polish",
+      "intro": "Seven items about the app being honest and finished."
+    },
+    {
+      "id": "18",
+      "words": true,
+      "surface": "Error messages",
+      "path": "Anywhere something fails",
+      "headline": "18. Finish the error-message clean-up (six of seven batches left)?",
+      "today": "Every error in the app was audited. The first batch, seventeen messages that stated something false, shipped September 11. You marked the rest a must for 1.3.1.",
+      "problem": "Many remaining errors still guess at a cause, show could not load as none, fail silently, or offer no next step. Your rule is that every error offers an action.",
+      "proposal": "Work through the remaining six batches: Android and crash reports, one shared Report and Diagnose block, honest empty states, silent failures, wording, and checks that stop new guesses creeping in. Size, my estimate: 4 to 6 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "When something breaks, people learn what happened and what to do.",
+            "The audit is done; this is steady, low-risk work."
+          ],
+          "cons": [
+            "Many small wording changes across the app for you to skim in review decks."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "The outright false messages are already gone."
+          ],
+          "cons": [
+            "A public release still carries guesses and dead ends."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "None beyond time saved."
+          ],
+          "cons": [
+            "Abandons your every-error-offers-an-action rule partway."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "words": true,
+      "surface": "Hover hints",
+      "path": "Settings, marketplace and project view",
+      "headline": "19. Convert the remaining 148 hover hints to the app's own style?",
+      "today": "The main chat screen's 82 hints use the app's own themed hint, reachable by press-and-hold on touch. Settings, the marketplace and project view still show the browser's plain grey box. You made the remainder a 1.3.1 must on September 23.",
+      "problem": "The old hints look foreign to the theme and never appear on a touchscreen.",
+      "proposal": "Convert the remaining 148. Mechanical work, no decisions needed from you. Size, my estimate: 148 hints, 2 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "One consistent look; hints reachable on touch everywhere."
+          ],
+          "cons": [
+            "Cosmetic work taking sessions from items people feel more."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Each screen gets converted when it is next worked on, at almost no cost."
+          ],
+          "cons": [
+            "Mixed hint styles ship in 1.3.1, against your September 23 call."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "None; the half-converted state is the worst of both."
+          ],
+          "cons": [
+            "Two hint styles for good."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "A plugin's Likely safe badge",
+      "headline": "20. Make the Likely safe badge earn its name with an AI review of each plugin?",
+      "today": "The badge appears after a scan that only looks for leaked passwords and odd file shapes. On September 23 you chose to keep the wording and strengthen the scan.",
+      "problem": "The badge promises more than was checked. A plugin that does something harmful in plain sight would still get it.",
+      "proposal": "An AI model reads each plugin against a written list of what makes one unsafe, and its verdict feeds the badge. It runs on our server each time an author updates, which costs a little per plugin. You would approve the written list. Size, my estimate: 3 to 4 sessions, about 5,000 listings to review.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "The badge becomes a claim we can stand behind publicly.",
+            "Matters more once the company's name is on the app."
+          ],
+          "cons": [
+            "A small running cost per plugin update.",
+            "An AI review can be wrong in both directions; the wording must stay Likely."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "No new running cost yet."
+          ],
+          "cons": [
+            "The public badge keeps overstating what was checked."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Dropping the badge entirely would end the overclaim at zero cost."
+          ],
+          "cons": [
+            "Reverses your September 23 choice; users lose any safety signal."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "words": true,
+      "surface": "Local models",
+      "path": "Downloading a Gemma model",
+      "headline": "21. Show Google's licence notice before a Gemma model downloads?",
+      "today": "Gemma models download with no notice. Google's terms for Gemma require passing their use restrictions on to whoever receives the model. The other models offered are under licences that need nothing.",
+      "problem": "The company now behind the app is handing out Gemma without the notice its licence asks for.",
+      "proposal": "A short notice with a link to Google's terms, shown once before the first Gemma download, with wording for you to approve. Size, my estimate: under 1 session.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Closes a licence gap before a public release.",
+            "Tiny."
+          ],
+          "cons": [
+            "One extra press the first time someone downloads a Gemma model."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Nothing changes for users."
+          ],
+          "cons": [
+            "The gap stays open through a public release."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Removing Gemma from the model list instead would also close the gap."
+          ],
+          "cons": [
+            "Either the gap stays or a popular model family goes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "words": true,
+      "surface": "Backup and Sync",
+      "path": "Two devices changing the same file or conversation",
+      "headline": "22. Build a proper screen for resolving two-device conflicts?",
+      "today": "When two devices change the same file, the only sign is one amber line in Backup and Sync. It names no file, vanishes on restart, and can sit beside a green All synced. You asked again for this on September 23.",
+      "problem": "There is no way in the app to find the second copy or choose which version to keep, so one version is effectively lost to anyone who does not dig through folders.",
+      "proposal": "A list of what conflicted, both versions side by side, and a keep-this-one choice, including for conversations that split into two copies. The design is open and starts with a questions deck. Size, my estimate: 4 to 6 sessions including design.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Nobody silently loses the other version again."
+          ],
+          "cons": [
+            "Medium-to-large design and build touching sync, which needs slow testing."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Nothing is deleted today; both copies do exist on disk.",
+            "Conflicts are uncommon for a single person."
+          ],
+          "cons": [
+            "The amber line stays the only clue."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "None."
+          ],
+          "cons": [
+            "Conflicts stay unresolvable inside the app."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "words": true,
+      "surface": "Backup and Sync",
+      "path": "A very long conversation on a second device",
+      "headline": "23. Sync very long conversations (over 50 MB) in pieces?",
+      "today": "A conversation over 50 MB stops updating on your other devices. The device that has it keeps it and the Sync panel says so. Six of your own conversations (54 to 107 MB) hit this in September.",
+      "problem": "Your longest, most valuable conversations are exactly the ones that stop following you to another device.",
+      "proposal": "Sync long conversations in pieces so size stops mattering. This changes how conversations are stored for sync, so it needs a careful design and a safe changeover for existing ones. Size, my estimate: 5 to 8 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Heavy users, you included, get every conversation everywhere."
+          ],
+          "cons": [
+            "Changing how conversations are stored is risky and large."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Affects only very long conversations, and the panel is honest about it.",
+            "Nothing is lost on the device that has them."
+          ],
+          "cons": [
+            "Those conversations stay stuck on one device."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "The 50 MB limit becomes a stated rule rather than a gap."
+          ],
+          "cons": [
+            "Long conversations never sync."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Opening the app from your phone's browser",
+      "headline": "24. Show our own help page when the phone cannot reach the computer?",
+      "today": "If the phone cannot reach your computer, most often because Tailscale is switched off on the phone, you get the browser's own cannot-reach page. You raised this on September 9.",
+      "problem": "Remote access just does not work sometimes, with nothing telling the user what to do.",
+      "proposal": "After one successful visit, the phone keeps a small copy of our own page. On a later failure it shows that instead, tells no internet apart from cannot reach the computer, and leads with the likely fix. It cannot see whether Tailscale is on, so it will say likely, never state it. Adding the app to the phone's home screen makes it stick. Size, my estimate: 1 to 2 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Turns the most common remote failure into a clear next step.",
+            "Small, and it also gives the phone a home-screen icon."
+          ],
+          "cons": [
+            "Needs one successful visit first; iPhones forget it after about a week unused."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Do it after the real-phone test in item 5 settles the rebuilt connection."
+          ],
+          "cons": [
+            "The dead-end browser page stays."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Nothing stored on the phone."
+          ],
+          "cons": [
+            "Remote failures stay unexplained."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Behind the scenes",
+      "intro": "Three items you would feel as speed and reliability rather than see."
+    },
+    {
+      "id": "25",
+      "words": true,
+      "surface": "Internal clean-up",
+      "path": "Five paused rewrites, on hold since September 18",
+      "headline": "25. Resume the five paused clean-ups that are official 1.3.1 blockers?",
+      "today": "Five rewrites are on hold: the settings screen that exists twice (desktop and phone), the file downloader that exists three times, one oversized piece that runs every conversation, some wasteful file reads, and an ambiguous record type. On September 23 you kept all five as 1.3.1 blockers. The rebuild they were waiting on merged October 4.",
+      "problem": "Each duplicate means a fix made in one place is missed in the other, which is how the two settings screens come to disagree. They also hold the 1.3.1 release open.",
+      "proposal": "Resume them one at a time. Nothing changes on screen except possibly the order of a few settings rows, which you would see in a before-and-after deck first. Size, my estimate: 5 blockers, 5 to 8 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Clears five release blockers.",
+            "Fewer one-place-fixed, other-place-broken bugs afterwards."
+          ],
+          "cons": [
+            "Several sessions with almost nothing new to see."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "Visible features get the time instead."
+          ],
+          "cons": [
+            "Means lifting their blocker status, reversing September 23, or 1.3.1 waits."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "Shortest route to a release."
+          ],
+          "cons": [
+            "The duplicates stay and keep producing mismatched behaviour."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "words": true,
+      "surface": "Development speed",
+      "path": "Waiting for automatic checks after each change",
+      "headline": "26. Cut the time sessions spend waiting on automatic checks?",
+      "today": "Every proof of a one-line fix runs the full check on three operating systems, about 15 minutes each time. The installer-launch check runs only at release time, so it was broken for four days in September before anyone knew. You raised this on September 20.",
+      "problem": "Waiting ate over an hour of one session. A broken release check found on release day delays the release.",
+      "proposal": "Two small tools you already liked: a nightly rehearsal build that publishes nothing and reports failures, and a way to run one check on one operating system. Size, my estimate: 1 to 2 sessions.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "Every later session gets faster.",
+            "Release-day surprises surface the night they appear."
+          ],
+          "cons": [
+            "A nightly build uses some of GitHub's free build minutes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "No session spent on tooling."
+          ],
+          "cons": [
+            "Every fix keeps paying the 15-minute wait."
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "None."
+          ],
+          "cons": [
+            "Slow iteration stays the norm."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "words": true,
+      "surface": "App speed",
+      "path": "Switching chats, typing, reloading",
+      "headline": "27. Performance push: land the six branches in progress, then keep going or stop?",
+      "today": "A batch of verified speed fixes merged October 4. Six more branches from October 4 and 5 are in progress in other sessions: cheaper chat switching, a recorder that catches stutters as they happen, and reload fixes. The roadmap still says the app feels sluggish over time.",
+      "problem": "Switching chats sometimes pauses for a fifth of a second or more, and a long conversation opening in the background can interrupt typing. Speed work has no natural end.",
+      "proposal": "Do next means landing the six branches, then using the new stutter recorder on your real use to choose the next targets. Postpone means landing the six and then pausing speed work until after 1.3.1. Size, my estimate: 6 branches in progress, then ongoing.",
+      "options": [
+        {
+          "id": "next",
+          "label": "Do next",
+          "pros": [
+            "The app keeps getting smoother, guided by what you actually hit."
+          ],
+          "cons": [
+            "Open-ended; it can absorb any number of sessions."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Postpone",
+          "pros": [
+            "The in-progress work still lands.",
+            "The recorder gathers real evidence while release items get the time."
+          ],
+          "cons": [
+            "Known pauses stay until after 1.3.1."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove",
+          "pros": [
+            "None; speed is never finished but never irrelevant."
+          ],
+          "cons": [
+            "Known stutters stay unaddressed."
+          ]
+        }
+      ]
+    }
+  ]
+}
