@@ -74,6 +74,9 @@ make_launch() {
   # without a window and get a SPICE viewer, which can be closed and reopened freely.
   local display_sed='s/^\(\s*-display \)[^ ]*/\1none/'
   [ "$OS" = mac ] && [ -z "${HEADLESS:-}" ] && display_sed='s/^\(\s*-display \)[^ ]*/\1gtk,grab-on-hover=on,zoom-to-fit=on,gl=on/'
+  # WHY: a guest quickemu generated with a GTK window (Ubuntu's .conf has no SPICE server, so its
+  # .ports file names no spice port) keeps that window — with display none it was unviewable.
+  [ "$OS" != mac ] && [ -z "$SPICE_PORT" ] && [ -z "${HEADLESS:-}" ] && display_sed='s/^\(\s*-display \)[^ ]*/\1gtk,grab-on-hover=on,zoom-to-fit=on,gl=off/'
 
   [ -f "$src" ] || { echo "no $src — run quickemu once for $NAME first" >&2; exit 1; }
   sed -e 's/,+invtsc//; s/,migratable=no//' \
@@ -91,7 +94,7 @@ make_launch() {
 open_view() {
   [ -n "${HEADLESS:-}" ] && return 0
   [ "$OS" = mac ] && return 0   # its GTK window opened with the guest
-  [ -n "$SPICE_PORT" ] || { echo "no spice port for $NAME"; return 0; }
+  [ -n "$SPICE_PORT" ] || return 0   # its GTK window opened with the guest (make_launch)
   # WHY setsid/nohup: the window must outlive this command, and closing it must not stop the guest.
   setsid nohup spicy -h 127.0.0.1 -p "$SPICE_PORT" --title "Test machine: $NAME" >/dev/null 2>&1 < /dev/null &
 }
