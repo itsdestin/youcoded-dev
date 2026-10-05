@@ -12,7 +12,7 @@ export function rows(report) {
   const add = (seq, sub, samples) => {
     const ok = samples.filter(s => s.ok && s.status === 'ok');
     out.push({
-      cfg: `${report.pair} x${report.sessions}`, seq: sub ? `${seq}${sub}` : seq, n: ok.length, dropped: samples.length - ok.length,
+      cfg: `${report.pair} x${report.sessions}`, load: Object.fromEntries(Object.entries(report.sequences ?? {}).map(([k, v]) => [k, v?.loadAvg?.split(' ')[0]])), seq: sub ? `${seq}${sub}` : seq, n: ok.length, dropped: samples.length - ok.length,
       show: summarise(ok.map(s => s.showMs)), settle: summarise(ok.map(s => s.settleMs)),
       cold: ok.filter(s => s.cold).length, gaps: ok.filter(s => s.gaps?.length).length, gapMax: Math.max(0, ...ok.map(s => s.gapMaxMs ?? 0)),
       loaf: ok.reduce((a, s) => a + (s.longAnimationFrames?.length ?? 0), 0),
@@ -29,7 +29,7 @@ export function print(files) {
   console.log('config | seq | n (dropped) | show p50/p95/max | settle p50/p95/max | cold | switches with gaps | worst gap | LoAF');
   for (const file of files) {
     const rep = JSON.parse(readFileSync(file, 'utf8'));
-    for (const r of rows(rep)) console.log(`${r.cfg}${rep.unusable ? ' (UNUSABLE load)' : ''} | ${r.seq} | ${r.n} (${r.dropped}) | ${trip(r.show)} | ${trip(r.settle)} | ${r.cold} | ${r.gaps} | ${r.gapMax} | ${r.loaf}`);
+    for (const r of rows(rep)) console.log(`${r.cfg}${rep.unusable ? ' (UNUSABLE load)' : ''}${Number(r.load[r.seq.replace(/#.*/, '')]) > 8 ? ' [LOAD ' + r.load[r.seq.replace(/#.*/, '')] + ']' : ''} | ${r.seq} | ${r.n} (${r.dropped}) | ${trip(r.show)} | ${trip(r.settle)} | ${r.cold} | ${r.gaps} | ${r.gapMax} | ${r.loaf}`);
   }
 }
 if (process.argv[1]?.endsWith('switch-table.mjs')) print(process.argv.slice(2));

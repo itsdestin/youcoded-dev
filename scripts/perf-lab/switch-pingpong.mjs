@@ -116,6 +116,9 @@ async function syncClock(cdp) {
 const mouse = (cdp, type, x, y) => cdp.send('Input.dispatchMouseEvent', { type, x, y, button: 'left', buttons: type === 'mousePressed' ? 1 : 0, clickCount: 1 });
 const key = (cdp, type, k, code, vk, extra = {}) => cdp.send('Input.dispatchKeyEvent', { type, key: k, code, windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk, ...extra });
 
+/** The centre of a session's pill right now (one element, read just before a click — see the aim note in runPlan). */
+const aimBox = (cdp, id) => cdp.evaluate(`(() => { const s = document.querySelector('[data-session-strip]') || document.querySelector('.session-strip'); const el = s && s.querySelector('[data-session-id="${id}"]'); if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) }; })()`);
+
 /** A real click: press + release through the browser's input path. Returns the Node epoch time just before the press and how long the press took to be acknowledged. */
 async function realClick(cdp, box) {
   const nodeAt = Date.now(), p0 = performance.now();
@@ -210,7 +213,7 @@ export function ipcWindow(raw, from, to) {
  */
 async function runPlan(ctx, plan, opts = {}) {
   const { cdp, boxes, ids } = ctx;
-  const { tailMs = 2800, block = 0, streaming = false, expectNoop = false, ipc = true, until = null, label = '', capMs = 3000, beforeStep = null, aim = false } = opts;
+  const { tailMs = 2800, block = 0, streaming = false, expectNoop = false, ipc = true, until = null, label = '', capMs = 3000, beforeStep = null, aim = true } = opts;
   const inst = await cdp.evaluate(`window.__sw.install(${JSON.stringify(cfgOf(ctx))})`);
   if (ipc) await installIpcStallProbe(cdp, { everyMs: 50 });
   const sync = await syncClock(cdp);
@@ -340,7 +343,7 @@ async function seqPlain(ctx, kind, extra = {}) {
   const dur = plan.at(-1).at / 1000 + 4;
   const streaming = ctx.pair === 'idle-streaming';
   await goTo(ctx, ctx.roles.A, 1200);
-  return withStream(ctx, dur + 3, () => runPlan(ctx, plan, { label: kind, streaming, aim: kind === 'b150', ...extra }));
+  return withStream(ctx, dur + 3, () => runPlan(ctx, plan, { label: kind, streaming, ...extra }));
 }
 
 async function seqBurst(ctx, reps = 3) {
@@ -478,7 +481,7 @@ async function seqLate(ctx, n = 10, spacingMs = 3600) {
   const runOne = async () => {
     for (let i = 0; i < n; i++) {
       const target = cur === roles.A ? roles.B : roles.A;
-      const box = boxes[cur]?.[target];
+      const box = await aimBox(cdp, ctx.ids[target]);
       if (!box) { rows.push({ i, error: 'no pill box' }); continue; }
       const tStart = performance.now();
       const m0 = await metrics(cdp);
@@ -517,7 +520,7 @@ async function seqProbe(ctx, kind, reps) {
   const body = async () => {
     for (const off of OFFSETS) {
       for (let rep = 0; rep < reps; rep++) {
-        const box = boxes[cur]?.[roles.B];
+        const box = await aimBox(cdp, ids[roles.B]);
         if (!box) { probes.push({ off, rep, error: 'no pill box' }); continue; }
         const ch = letters[li++ % 26];
         let base = null;
@@ -537,7 +540,7 @@ async function seqProbe(ctx, kind, reps) {
         probes.push({ off, rep, ch, nodeAt, sentAt, base, naturalTag, echoAt: echo?.t ?? null });
         ctx.visited.add(roles.B);
         // back to A, unmeasured (a real click so focus state matches a person's)
-        const back = boxes[roles.B]?.[roles.A];
+        const back = await aimBox(cdp, ids[roles.A]);
         if (back) await realClick(cdp, back);
         cur = roles.A;
         await sleep(1100);
@@ -583,7 +586,7 @@ async function seqProfile(ctx, worst) {
   for (let r = 0; r < 3; r++) {
     await goTo(ctx, fromIdx, 1500);
     await cdp.evaluate(`window.__sw.install(${JSON.stringify(cfgOf(ctx))})`);
-    const box = boxes[fromIdx]?.[toIdx];
+    const box = await aimBox(cdp, ctx.ids[toIdx]);
     if (!box) { out.runs.push({ error: 'no pill box' }); break; }
     await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start');
     await realClick(cdp, box);
@@ -652,7 +655,7 @@ export async function runConfig(opts, stamp, pair, count, outFile) {
     report.pillBoxes = Object.fromEntries(Object.entries(ctx.boxes).map(([k, v]) => [ctx.names[k], Object.fromEntries(Object.entries(v).map(([i, b]) => [ctx.names[i], `${b.x},${b.y} w${b.w}`]))]));
     for (const seq of ALL_SEQS) {
       if (!opts.only.includes(seq)) continue;
-      const t = Date.now();
+      const t = Date.now(), loadStart = readFileSync('/proc/loadavg', 'utf8').trim();
       try {
         let res;
         if (['a', 'b400', 'b250', 'b150'].includes(seq)) res = await bound(seqPlain(ctx, seq), seq, 180000);
@@ -665,7 +668,7 @@ export async function runConfig(opts, stamp, pair, count, outFile) {
         else if (seq === 'late') res = await bound(seqLate(ctx), seq, 180000);
         else if (seq === 'probe') res = { key: await bound(seqProbe(ctx, 'key', opts.probeReps), 'probe-key', 240000), wheel: view === 'chat' ? await bound(seqProbe(ctx, 'wheel', opts.probeReps), 'probe-wheel', 240000) : { status: 'n/a', reason: 'terminal wheel scrolls the xterm scrollback, not measured here' } };
         else if (seq === 'profile') res = await bound(seqProfile(ctx, worstSample(report.sequences)), seq, 120000);
-        res.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim(); res.wallMs = Date.now() - t;
+        res.loadAvgStart = loadStart; res.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim(); res.loadHigh = Math.max(Number(loadStart.split(' ')[0]), Number(res.loadAvg.split(' ')[0])) > 8; res.wallMs = Date.now() - t;
         report.sequences[seq] = res;
       } catch (e) { report.errors[seq] = String(e?.message ?? e); }
       writeFileSync(outFile, JSON.stringify(report, null, 2) + '\n');
