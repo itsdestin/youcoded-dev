@@ -42,6 +42,7 @@ export function readLines(files, sinceMs, now = Date.now()) {
   return { rows, bad };
 }
 
+const localTs = (iso) => { const d = new Date(iso); const z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}`; };
 const sec = (ms) => (ms >= 10_000 ? `${(ms / 1000).toFixed(0)} s` : ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${Math.round(ms)} ms`);
 const bucket = (n) => (n <= 0 ? 'no sessions' : n === 1 ? '1 session' : n <= 3 ? '2-3 sessions' : n <= 7 ? '4-7 sessions' : '8 or more sessions');
 
@@ -58,7 +59,7 @@ export function analyse(rows) {
   const hitches = [];
   for (const r of rows) {
     if (r.kind === 'frame' || r.kind === 'task') hitches.push({ r, kind: 'freeze', ms: r.d, cause: r.kind === 'frame' ? causeOfFrame(r) : 'a long task (browser could not say which code)' });
-    else if (r.kind === 'main-stall') hitches.push({ r, kind: 'stall', ms: r.ms, cause: `main process stall${r.lastIpc ? ` (last request it started: ${r.lastIpc}, ${sec(r.lastIpcAgoMs)} before it ended)` : ''}` });
+    else if (r.kind === 'main-stall') hitches.push({ r, kind: 'stall', ms: r.ms, cause: `main process stall${r.lastIpc && r.lastIpcAgoMs <= r.ms + 300 ? ` (while handling or right after: ${r.lastIpc})` : ' (no app request was being handled: other work, or the whole computer was busy)'}` });
     else if (r.kind === 'event') hitches.push({ r, kind: 'slow-input', ms: r.d, cause: `slow ${r.type} on ${r.tgt}` });
   }
   const group = (keyFn) => {
@@ -99,6 +100,7 @@ export function analyse(rows) {
       slowInputs: hitches.filter((h) => h.kind === 'slow-input').length, frozenMs: freezeMs,
       mediumFrames: loop.reduce((a, r) => a + (r.rend?.frames ?? 0), 0), mediumFramesMs: loop.reduce((a, r) => a + (r.rend?.framesMs ?? 0), 0),
       droppedDetail: loop.reduce((a, r) => a + (r.rend?.over ?? 0) + (r.rend?.dropped ?? 0) + (r.lost ?? 0), 0),
+      overflowMs: loop.reduce((a, r) => a + (r.rend?.overMs ?? 0), 0),
       minutes: loop.length, launches: new Set(rows.map((r) => r.launch)).size,
     },
     worst: hitches.slice().sort((a, b) => b.ms - a.ms).slice(0, 10).map((h) => ({ ts: h.r.ts, kind: h.kind, ms: h.ms, cause: h.cause, view: screenOf(h), sessions: h.r.sessions })),
@@ -116,18 +118,18 @@ export function render(a, bad) {
   const o = [];
   if (!a.window) return 'No recorded data in that range.\n';
   const t = a.totals;
-  o.push(`HITCH REPORT   ${a.window.from}  to  ${a.window.to}`);
+  o.push(`HITCH REPORT   ${localTs(a.window.from)}  to  ${localTs(a.window.to)}   (this computer's local time)`);
   o.push(`${t.launches} launch(es), ${t.minutes} minute(s) of records${bad ? `, ${bad} unreadable line(s) skipped` : ''}`);
   o.push('');
   o.push('THE SHORT VERSION');
   o.push(`  ${t.freezes} screen freezes of 0.1 s or longer, and ${t.stalls} time(s) the app's engine stopped answering. Together: ${sec(t.frozenMs)} frozen.`);
   o.push(`  ${t.slowInputs} key presses/clicks took over 0.1 s to show a result.`);
   o.push(`  Smaller hiccups (0.05-0.1 s): ${t.mediumFrames} of them, ${sec(t.mediumFramesMs)} in all.`);
-  if (t.droppedDetail) o.push(`  (${t.droppedDetail} further hitches were counted but not written out in detail, by design.)`);
+  if (t.droppedDetail) o.push(`  (${t.droppedDetail} further hitches${t.overflowMs ? `, ${sec(t.overflowMs)} frozen,` : ''} were counted but not written out in detail, by design: the file keeps at most 30 detailed entries a minute.)`);
   o.push('');
   if (a.worst.length) {
     o.push('THE WORST ONES');
-    for (const w of a.worst) o.push(`  ${w.ts.replace('T', ' ').slice(0, 19)}  ${sec(w.ms).padStart(7)}  ${w.kind === 'stall' ? 'engine stall' : w.kind === 'slow-input' ? 'slow input ' : 'freeze      '}  ${w.cause}  [${w.view}; ${w.sessions ?? '?'} session(s)]`);
+    for (const w of a.worst) o.push(`  ${localTs(w.ts)}  ${sec(w.ms).padStart(7)}  ${w.kind === 'stall' ? 'engine stall' : w.kind === 'slow-input' ? 'slow input ' : 'freeze      '}  ${w.cause}  [${w.view}; ${w.sessions ?? '?'} session(s)]`);
     o.push('');
     o.push('WHAT CAUSED THEM (most frozen time first)');
     for (const g of a.byCause) o.push(`  ${sec(g.ms).padStart(7)} over ${String(g.count).padStart(3)}x (worst ${sec(g.worst)})  ${g.key}`);
@@ -152,7 +154,7 @@ export function render(a, bad) {
   }
   if (a.startups.length) {
     o.push('STARTUP, PER LAUNCH');
-    for (const s of a.startups) o.push(`  ${s.ts.replace('T', ' ').slice(0, 19)}  window loaded ${s.windowLoadedMs == null ? '?' : sec(s.windowLoadedMs)} after launch; app ready ${s.appMountedMs == null ? '?' : sec(s.appMountedMs)} after the page began; first paint ${s.firstPaintMs == null ? '?' : sec(s.firstPaintMs)}`);
+    for (const s of a.startups) o.push(`  ${localTs(s.ts)}  window loaded ${s.windowLoadedMs == null ? '?' : sec(s.windowLoadedMs)} after launch; app ready ${s.appMountedMs == null ? '?' : sec(s.appMountedMs)} after the page began; first paint ${s.firstPaintMs == null ? '?' : sec(s.firstPaintMs)}`);
     o.push('');
   }
   return o.join('\n');
