@@ -73,7 +73,7 @@ Target: `v1.3.1`
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 32 | 4 | 11 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
-| [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 54 | 25 | 5 | 1 |
+| [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 54 | 25 | 3 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 13 | 2 | 5 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 27 | 6 | 1 | 4 |

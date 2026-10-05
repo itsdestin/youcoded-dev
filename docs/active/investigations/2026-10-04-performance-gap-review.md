@@ -2,18 +2,56 @@
 title: Performance review — what we fixed, what we missed, and the plan to zero hitches
 status: active
 date: 2026-10-04
+last_updated: 2026-10-04
 ---
 
 # Performance review, 2026-10-04
 
-Written for Destin. Plain language throughout. Current restart point for the *older* work
-stays `2026-09-29-performance-status.md`; this page adds the wider review he asked for.
+Written for Destin. Plain language throughout. The restart point for the *older* work stays
+`2026-09-29-performance-status.md`; this page is the wider review he asked for, and what was
+built and measured from it.
 
-**How this was produced.** Five independent read-only reviews on 2026-10-04: one of the
-commit history, three of the app's code (the screen-drawing side, the background side, and
-phone/remote/themes), one of our measuring tools. **Nothing was run.** Every "new suspect"
-below was found by reading code and is **not yet measured** — each is a lead, not a
-confirmed bug. Six of the top leads were spot-checked against the code afterwards and hold.
+## Current state (read this first)
+
+**What exists.** Five performance fixes, each measured before and after. They are built, not
+shipped: they live on branch `session/perf-zero-hitch-20261004` in **both** repos (the app, at
+`633d8ff00`, and this workspace, for the notes and measuring tools). **Nothing is merged.** Your
+running app has none of it.
+
+| # | Fix (where measured) | Before | After |
+|---|---|---|---|
+| 1 | A long code block being written (4e, 4g) | App 97% busy for the whole reply, ~550 late frames | 61% busy, 1 late frame |
+| 2 | Big spreadsheets, CSV and Excel (4d) | 10-15 s to open, 6-11 s frozen, a click took 0.5 s | CSV opens in ~0.2-0.3 s, Excel ~0.7-1.0 s; clicks 0.02-0.03 s |
+| 3 | Scrolling during a busy moment (4d) | Scroll waited until the busy spell ended (0 of 8 tries scrolled in time) | Scrolls at once (8 of 8) |
+| 4 | Terminal floods (4f) | 200 MB: output lost after ~50 MB, app froze 0.15-0.9 s, Ctrl+C took 5 s or never | Everything shown (~6-7 s), no freezes, Ctrl+C ~0.1 s |
+| 5 | Ordinary reply streaming (4g) | Fast screens redrew the chat ~150 times a second | At most ~60 a second; prose 47-48% busy -> 44-45% (the 25% goal was not reached) |
+
+**Your decisions, 2026-10-04 evening.**
+- Spreadsheet before/after deck: all six slides approved
+  (`docs/active/design/2026-10-04-sheet-viewer-windowing/sheet-viewer.review.answers.json`).
+- Streamed text redraws at most 60 times a second (`STREAM_REDRAW_TARGET_HZ` = 60): "yes, this is ideal".
+- A terminal you are not looking at stays limited to ~0.5 MB/s after a 1 MB burst: you accepted the recommendation.
+- You tried the combined build by hand in a dev window (Linux, 180 Hz screen): "everything felt fine in the test window".
+
+**Not verified.** Windows, macOS, a real phone and the Android build were never run. All
+measurements are on one Linux machine with software drawing (no graphics card); the 180 Hz
+feel check was by hand, not measured. Still open and known: Excel's own file reader freezes
+the app ~0.23-0.29 s on open (target 0.1 s); after a hidden window's backlog is cut, a program
+redrawing at ~3 MB/s can leave stale lines (2 of 3 runs; Claude Code's own ~20 KB/s does not
+reach it). `verify.sh` was recorded green (9 of 9) on app `e9ba76e38`; it was not re-recorded
+after the two later terminal commits, so run it again before any merge.
+
+**Where to look next.** What to try by hand: end of 4f. Where each fix lives in the code:
+`docs/MAP.md` rows *Artifact viewer*, *PTY I/O & keyboard*, *Chat & transcript*, *Perf lab*.
+Rules: `.claude/rules/{pty-io,performance,renderer-lists}.md`. Open items: `docs/roadmap/perf.md`.
+Table of results: 5a. What happened and what is next: 6. Section order below: 1-4 review and
+suspects, 4b-4c measurements, 4d-4g one section per fix (4d holds fixes 2 and 3, 4e fix 1, 4f
+fix 4, 4g fix 5), 5 instruments, 5a where things stand, 6 plan.
+
+**How sections 1-4 were produced.** Five independent read-only reviews on 2026-10-04 (history,
+three areas of code, our measuring tools). Section 4's suspects were found by reading code and
+are **not measured there**; 4b and 4c measured them, and 4d-4g fixed five. Six of the top leads
+were spot-checked against the code and hold.
 
 ---
 
@@ -80,6 +118,8 @@ Full list: `docs/roadmap/perf.md` (40 open items). The ones that matter most:
 
 ## 4. New suspects — things nobody had looked for
 
+*Found by reading code, before any measuring. Sections 4b and 4c measured them; the "Fixed on branch?" column in 4b says which got a fix.*
+
 Ordered by how likely you are to feel them. "Sure it exists" = confirmed in code.
 "Sure it hurts" = needs a measurement.
 
@@ -141,15 +181,17 @@ between legs of the same run as the solid part. The invisible screen has no grap
 One or two runs each — a first reading, not a baseline. Raw files:
 `scratch/perf-lab/suspects/` (local only).
 
-| Rank | Suspect | Measured | Verdict |
-|---|---|---|---|
-| 1 | **D7 — a long code block being written** (500 lines, 150 words/s) | The app's drawing thread was **100% busy** for the whole 33 s; **198–214 frames arrived more than 40 ms late**; 18–55 freezes over 50 ms (worst 92 ms). The same amount of ordinary prose: 50–55% busy, 1–10 late frames. Repeated twice, same result | **Confirmed, worst found.** Continuous stutter whenever a model writes a long file |
-| 2 | **D1 — sustained terminal flood** (200 MB) | The whole app stopped answering for **0.9 s and 1.6 s** (seven stalls over 0.1 s; 5 s total in one leg). Scroll delay rose to 180 ms. A short 40 MB burst passed in half a second with only a 73 ms hiccup | **Confirmed for long floods**, fine for short bursts. Open question: output stopped arriving at ~48 MB of 200 — not yet known whether the app or the test tool stopped; needs a producer-side log before fixing |
-| 3 | **D2 — scroll waits for the app** | Wait before a scroll can begin: idle 14 ms → reply streaming in a hidden chat 32 ms → reply streaming in the chat being scrolled **47 ms typical, 91 ms worst** → hidden terminal flooding up to 180 ms | **Confirmed.** Every busy moment becomes scroll lag: 3–5 frames typical on a 60 Hz screen, more on 180 Hz |
-| 4 | **Ordinary streaming is itself expensive** (new) | Plain prose at 150 words/s keeps the drawing thread 50–55% busy | **New finding.** Explains why everything else feels heavier during a reply; the fix for rank 1 likely helps here too |
-| 5 | **D13 — comparing two large files** | Two unrelated files of 2,000 lines: **0.65 s** freeze; 5,000 lines: **4.3 s**; 10,000: **19 s**. Similar files (10% changed): 0.09 s | **Real but rare** — both app engines normally supply a ready-made comparison, so this path is mostly reached by a pending or refused edit |
-| — | **D6 — message box re-measuring per key** | Key to visible text: 2–3 ms, with or without a reply streaming. No freezes | **Not felt.** Demoted |
-| — | **Typing stalls from background long chats** (the known backlog item) | Zero freezes over 50 ms in this run; September's runs showed 122–145 ms | **Did not reproduce on current master** in one run. Needs repeats before closing |
+| Rank | Suspect | Measured | Verdict |  Fixed on branch? |
+|---|---|---|---|---|
+| 1 | **D7 — a long code block being written** (500 lines, 150 words/s) | The app's drawing thread was **100% busy** for the whole 33 s; **198–214 frames arrived more than 40 ms late**; 18–55 freezes over 50 ms (worst 92 ms). The same amount of ordinary prose: 50–55% busy, 1–10 late frames. Repeated twice, same result | **Confirmed, worst found.** Continuous stutter whenever a model writes a long file |  **Fixed on branch** (fixes 1 and 5, 4e/4g): 97% -> 61% busy |
+| 2 | **D1 — sustained terminal flood** (200 MB) | The whole app stopped answering for **0.9 s and 1.6 s** (seven stalls over 0.1 s; 5 s total in one leg). Scroll delay rose to 180 ms. A short 40 MB burst passed in half a second with only a 73 ms hiccup | **Confirmed for long floods**, fine for short bursts. Open question: output stopped arriving at ~48 MB of 200 — not yet known whether the app or the test tool stopped; needs a producer-side log before fixing |  **Fixed on branch** (fix 4, 4f): nothing lost, no freezes |
+| 3 | **D2 — scroll waits for the app** | Wait before a scroll can begin: idle 14 ms → reply streaming in a hidden chat 32 ms → reply streaming in the chat being scrolled **47 ms typical, 91 ms worst** → hidden terminal flooding up to 180 ms | **Confirmed.** Every busy moment becomes scroll lag: 3–5 frames typical on a 60 Hz screen, more on 180 Hz |  **Fixed on branch** (fix 3, 4d): scroll no longer waits |
+| 4 | **Ordinary streaming is itself expensive** (new) | Plain prose at 150 words/s keeps the drawing thread 50–55% busy | **New finding.** Explains why everything else feels heavier during a reply; the fix for rank 1 likely helps here too |  **Partly** (fix 5, 4g): 3 points less; the 25% goal was not reached |
+| 5 | **D13 — comparing two large files** | Two unrelated files of 2,000 lines: **0.65 s** freeze; 5,000 lines: **4.3 s**; 10,000: **19 s**. Similar files (10% changed): 0.09 s | **Real but rare** — both app engines normally supply a ready-made comparison, so this path is mostly reached by a pending or refused edit |  Not fixed; filed in `docs/roadmap/perf.md` |
+| — | **D6 — message box re-measuring per key** | Key to visible text: 2–3 ms, with or without a reply streaming. No freezes | **Not felt.** Demoted |  No fix needed |
+| — | **Typing stalls from background long chats** (the known backlog item) | Zero freezes over 50 ms in this run; September's runs showed 122–145 ms | **Did not reproduce on current master** in one run. Needs repeats before closing |  Not worked on; stays open in `docs/roadmap/perf.md` |
+
+The spreadsheet freeze (D14, measured in 4c) is also **fixed on branch** (fix 2, 4d).
 
 **Not yet measured (updated after 4c):** terminal switching on a real graphics card (D10) and
 memory over hours with a phone-sync turned on (D8 — see 4c: it only exists then, and the test
@@ -302,54 +344,6 @@ contributor for phone-sync users with long sessions, not a cause for everyone's 
 - The xterm discard happens inside the app's own listener, so any *other* listener registered
   after it on the same terminal channel is skipped for those messages (my byte counter counted
   what the terminal accepted, not what arrived; the main-process counter is the arrival count).
-
-## 5. What we cannot see today — and what to build
-
-Ordered by value. This is the "catch it in future" half.
-
-| # | Instrument | What it gives you | Size |
-|---|---|---|---|
-| M1 | **A hitch recorder inside the real app.** Every time the screen freezes for more than a blink, or a click/keypress takes too long to show, write one line to a local file: how long, which code caused it, which screen, how many sessions, how long the chat. Stays on your computer; attached to bug reports only when you send one | Your real-world stutters become a list we can rank and fix — no laboratory needed, and no poking at your live app | Small–medium |
-| M2 | **The same for the background half**: record whenever it stops answering for more than a moment | Direct proof of which of the 644 excused spots actually bite | Small |
-| M3 | **Memory, launch time and message-traffic counters** in the same file (per minute) | Proves or kills "worse over hours"; finds floods | Small |
-| M4 | **A size limit on the app bundle, checked automatically** | The bundle cannot quietly grow | Small |
-| M5 | **New automatic code checks** for the classes found here: scroll listeners that block, timers that never pause, "animate everything", blur on repeated items, caches with no limit | A class fixed once stays fixed everywhere | Small each |
-| M6 | **A nightly run on this machine with a trend chart** | A regression is caught the next morning, not weeks later | Medium |
-| M7 | **A long-running (hours) test** for memory growth | Covers "worse over time" | Medium |
-| M8 | **Real-graphics-card frame counting** | The only honest answer to "did a frame drop" on your 180 Hz screen. Needs a real window on your screen while it runs | Large |
-| M9 | **Phone measurements** | Nothing on Android or remote is measured at all today | Large |
-
-## 6. Proposed order of work
-
-Rule for every fix from now on: **number before → change → number after**, on the same quiet
-machine, three runs each, and the result recorded. No number, no merge.
-
-- **Stage 0 — instruments (M1–M4).** Build the recorder first. Without it we are still
-  guessing. You then use the app normally for a day or two and we read what it caught.
-- **Stage 1 — high-confidence desktop fixes**, each with its own before/after:
-  D2 scroll wheel, D1 terminal flood brake, D3 paged history for non-Claude chats,
-  D6 message box, D7 long code blocks, D8 phone memory only when a phone is connected.
-- **Stage 2 — the known three** (typing stalls from background chats, switch/resize pauses,
-  first Find) — re-measured with the new recorder, which should finally name the cause.
-- **Stage 3 — launch and size** (D4 split the bundle, D5 launch order).
-- **Stage 4 — themes** (T1–T4). Involves look-and-feel choices → needs your decisions.
-- **Stage 5 — phone** (P1–P5, plus the four phone items already on the backlog).
-- **Stage 6 — guards and trend** (M5–M7), then M8/M9.
-
-### Side effects you should expect
-
-- **M1–M3** add a small always-on cost (designed to be far below anything you could feel)
-  and a new local file that grows and rotates. It records timings and screen names, never
-  message text.
-- **D1** (terminal brake): during a flood the terminal will visibly draw in larger steps
-  rather than a continuous blur of text. Nothing is lost.
-- **D4** (split the bundle): the *first* time you open Settings, Marketplace or a game in a
-  session, there may be a very brief pause that does not exist today.
-- **D9** (build terminals only when shown): the first switch to terminal view for a session
-  would do the work that today happens at session start.
-- **T2** (smaller wallpapers): on a very large or zoomed screen an 8K wallpaper would look
-  marginally softer.
-- **P2** (less glass on phones): themes look flatter on phones.
 
 ## 4d. Fixes 2 and 3 — before/after (2026-10-04)
 
@@ -645,6 +639,52 @@ the scroll bar on the terminal updates once per frame (visually identical).
 **Left:** hidden-window throttling not measurable on this rig (Windows/macOS minimise); ConPTY/macOS brake by reading only;
 Android findings unchanged; the hidden-terminal rate (512 K/s) is still a judgement call.
 
+### 4f, round 4 (2026-10-04, after the third re-review) — app commit `d350ba371`
+
+**The blocking defect, and how it hid.** The pre-mount repaint nudge added in round 3 was never delivered: the router called
+`sessionManager.bounceSize?.()`, the real `SessionManager` had no such method (my edit to add it matched nothing and was not
+checked), the optional call did nothing silently, and the test double supplied the method. Fixed: the method exists, the router's
+dependency is required (a missing method now fails type-check), `terminal-flow-wiring.test.ts` pins the real class's surface, and
+`session-manager.test.ts` goes through the real class to the worker. **Audit of the series for the same pattern:** every other edit
+of mine was re-checked by text (23 anchors, all present); the only other optional calls on dependencies are `window.claude.session.ackOutput?.`
+and `requestRepaint?.` (the preload and the shim both define them, pinned by `ipc-channels.test.ts`) and the feeder's
+`onRepaintNeeded`/`isAlive` options (the real `TerminalView` supplies both, pinned by a source test). One dead method found and removed
+(`resetOutputCredit`: main now keeps per-window books, so nothing called it, yet a test asserted it was "not called").
+
+| # | Finding | Fix (red seen on the old code) |
+|---|---|---|
+| 2 | Overlapping nudges could leave the PTY one column narrow | The worker owns the nudge: a request during the 120 ms window is ignored; the restore returns to the ORIGINAL size unless a real resize arrived (flagged, not guessed from the size). |
+| 3 | The renderer's own two resizes could override a phone's size | The renderer no longer resizes: it asks main (`session:terminal-repaint`, desktop window only; shim no-op, host ignores it, Android has no branch — pinned) and the worker arbitrates. Test: a resize from another device between the halves keeps its size. |
+| 4 | Plain shells and line floods would be nudged needlessly | A nudge is requested only when the cut text repainted with relative cursor moves / line erases (`CSI nA`, `CSI nF`, `CSI 2K`) or the alternate screen was on. Plain line-oriented floods never get one (tested at the trim, feeder and router levels). |
+| 5 | Scroll-region replay homes the cursor | Replayed only when the alternate screen is on. |
+
+Rig, final build (producer frames shortened to 51 characters: the first version's 81-character lines wrapped in an 80-column
+terminal and produced stale copies that were the rig's, not the app's). **Pre-mount cut (page blanked, 200 MB ending in ~7 MB of
+Ink-style frames, page returns; `--only notermcut`): final frame exactly once, no stale fragments, no stray escape fragments, bracketed paste ON and
+cursor hidden in 3 of 3 runs** (the frame sits at the top: the cut kept only frames, as a terminal that only ever saw them would show).
+**Hidden-window cut (`--only cut`), 3 runs: final frame exactly once in 3 of 3, modes right, no stray fragments; stale partial frames
+(2 lines, 4 lines) above it in 2 of 3** — fragments from cuts made WHILE the window was still hidden and the animation running at ~3 MB/s,
+which the repaint nudge cannot clean (it repaints the frame, not the rows above). Claude Code's own animation is ~20 KB/s, far below the
+0.5 MB/s allowance, so this does not queue or cut in normal use.
+
+
+### 4f, closing touches and what to try by hand (2026-10-04)
+
+Worker hardening (red seen): the repaint nudge and the plain resize no longer throw out of the worker when the PTY is closing (child
+exit, kill, hand-off): both resizes are caught, the in-progress flag is set only after the first half works, the timer is cancelled on
+exit/hand-off/disconnect. Dead `ack reset` branch removed. The repaint request is rate-limited to once a second per session in main and
+accepted from the windows the session is routed to.
+
+**What to try by hand** (none of these should show anything odd):
+- A long Claude Code session: minimise the window, or leave it on another workspace, for a few minutes, then bring it back — no leftover pieces of old frames, no lag when you type.
+- In a shell session, `cat` a huge file: the final lines and the prompt appear, and you can press Ctrl+C at any point.
+- Toggle chat to terminal while a reply is streaming: the terminal is up to date immediately.
+- Detach a session into a second window: it draws in both.
+- Reload the window while a session is printing: the terminal recovers and keeps going.
+- Quit a session while it is printing: the last lines are there.
+- On Windows: nothing resizes visibly at any point.
+
+
 ## 4g. Fix 5 — ordinary streaming cost, before/after (2026-10-04)
 
 **What you would feel.** Three things, in order of size.
@@ -719,68 +759,111 @@ same text, follows a time-zone change). Rig: `suspects.mjs --only prose|mixed|fe
 frames and code-block pieces per window; fence legs fail loudly if no pieces appear), `SUSPECTS_TRACE=1` + `trace-main.mjs`,
 `SUSPECTS_APP_ARGS`.
 
-## 5a. Where things stand (morning of 2026-10-04)
 
-All five fixes are on branch `session/perf-zero-hitch-20261004` (app HEAD `e9ba76e38`), nothing merged. `verify.sh` on the
-combined tree: all 9 checks passed. Everything below was measured on one private build on an invisible, software-drawn
-screen (no graphics card), machine load 5-7 unless noted. "Before" figures are from earlier builds (4d-4g).
+## 5. What we cannot see today — and what to build
+
+Ordered by value. This is the "catch it in future" half.
+
+| # | Instrument | What it gives you | Size |
+|---|---|---|---|
+| M1 | **A hitch recorder inside the real app.** Every time the screen freezes for more than a blink, or a click/keypress takes too long to show, write one line to a local file: how long, which code caused it, which screen, how many sessions, how long the chat. Stays on your computer; attached to bug reports only when you send one | Your real-world stutters become a list we can rank and fix — no laboratory needed, and no poking at your live app | Small–medium |
+| M2 | **The same for the background half**: record whenever it stops answering for more than a moment | Direct proof of which of the 644 excused spots actually bite | Small |
+| M3 | **Memory, launch time and message-traffic counters** in the same file (per minute) | Proves or kills "worse over hours"; finds floods | Small |
+| M4 | **A size limit on the app bundle, checked automatically** | The bundle cannot quietly grow | Small |
+| M5 | **New automatic code checks** for the classes found here: scroll listeners that block, timers that never pause, "animate everything", blur on repeated items, caches with no limit | A class fixed once stays fixed everywhere | Small each |
+| M6 | **A nightly run on this machine with a trend chart** | A regression is caught the next morning, not weeks later | Medium |
+| M7 | **A long-running (hours) test** for memory growth | Covers "worse over time" | Medium |
+| M8 | **Real-graphics-card frame counting** | The only honest answer to "did a frame drop" on your 180 Hz screen. Needs a real window on your screen while it runs | Large |
+| M9 | **Phone measurements** | Nothing on Android or remote is measured at all today | Large |
+
+## 5a. Where things stand (end of 2026-10-04)
+
+All five fixes are on branch `session/perf-zero-hitch-20261004` (app HEAD `633d8ff00`), nothing merged. Headline figures
+below come from the one final regression sweep of the combined tree (app `e9ba76e38`, one run each, load 6-8, raw files
+`scratch/perf-lab/suspects/f5-sw-*`, local only); the section named in each row has the repeated runs and the final
+builds. Everything was measured on one private build on an invisible, software-drawn screen (no graphics card).
+The terminal work after `e9ba76e38` (later review rounds, the repaint-nudge fix, closing touches) was re-measured in 4f,
+not in the sweep.
 
 | Fix | Before -> after (headline) | How sure | What you might notice |
 |---|---|---|---|
-| 1. Long code blocks | 97% busy, ~550 late frames -> 61%, 1; pieces confirmed on screen in 6 of 6 runs | Very (counted; 6 runs on the final build) | Colour of a comment crossing a 20-line edge may be off until the block closes |
-| 2. Big spreadsheets | opened in 10-15 s, 6-11 s freeze -> 0.27 s (CSV), 1.0 s (Excel); clicks 0.5 s -> 20-30 ms; scroll steps <= 124 ms | Very (1 run on the final build, 50-100x effect) | Only visible rows/columns exist in the page: Find across the sheet and copy behave as designed in 4d |
-| 3. Scrolling during busy moments | scroll waited for the whole busy spell -> compositor scrolled in 8 of 8 trials (a deliberately blocking control: 0 of 8) | Very (8 trials, instrument tells the two apart) | Pinch-zoom still works (110 -> 100 round trip) |
-| 4. Terminal floods | 200 MB: output dropped after ~50 MB, Ctrl+C 5 s -> all 201.8 MB shown, 0 stalls, 7.3 s, Ctrl+C 0.09 s, echo 7.6 ms | Very (1 run on the final build; earlier builds 2 runs) | A flooding command takes as long as the screen needs; a hidden terminal is fed more slowly |
-| 5. Ordinary streaming | prose ~44-48% -> ~39-45% busy; fence rows above; 60 Hz redraws unchanged | Prose gain small (~3 points, 2 runs); fence gain sure | Faster screens redraw text up to every ~17 ms (never coarser than 60 Hz) |
+| 1. Long code blocks (4e, 4g) | 97% busy, ~550 late frames -> 61%, 1; pieces confirmed on screen in 6 of 6 runs | Very (counted; 6 runs on the final build) | Colour of a comment crossing a 20-line edge may be off until the block closes |
+| 2. Big spreadsheets (4d) | open 10-15 s, 6-11 s freeze, click 0.5-0.8 s -> CSV 0.27 s, Excel 1.0 s in the sweep (4d's two final runs: 0.23-0.25 s and 0.73-0.84 s); click 0.02-0.03 s; slowest scroll jump 0.12 s (0.10-0.15 s in 4d) | Very (50-100x effect, repeated) | Only visible rows/columns exist in the page: Find and copy work from the sheet's data as designed in 4d; Excel's own reader still freezes 0.23-0.4 s |
+| 3. Scrolling during busy moments (4d) | scroll waited for the whole busy spell -> scrolled in 8 of 8 trials (a deliberately blocking control: 0 of 8) | Very (8 trials, the instrument tells the cases apart) | Pinch-zoom still works (100% -> 110% -> 100%) |
+| 4. Terminal floods (4f) | 200 MB: output dropped after ~50 MB, Ctrl+C 5 s or never -> all 201.8 MB shown in 7.3 s (sweep; 6.4-7.2 s in 4f), no stalls over 150 ms, Ctrl+C 0.09 s (sweep; 0.12 s in 4f) | Very (2 runs per row in 4f; 1 in the sweep) | A flooding command takes as long as the screen needs; a hidden terminal is fed at ~0.5 MB/s (your decision: stays) |
+| 5. Ordinary streaming (4g) | prose busy 47-48% -> 44-45% (last third of a reply); fence rows above; redraws at 60 Hz unchanged (59.9/s) | Prose gain small (~3 points, 2 runs); fence gain sure | Faster screens redraw text up to every ~17 ms (never coarser than a 60 Hz screen) |
+
+**Differences between the sweep and the section numbers (not errors, different runs).** Excel open: 1.0 s in the sweep,
+0.73-0.84 s in 4d (different load; both far under the old 11-12 s). Typing echo: the sweep's echo leg reports key to
+terminal buffer 7.6 ms (window not focused); 4f's final figure is 13.9 ms (focused) and "unchanged from before the fix".
+Treat both as "no measurable change", not as a comparison with each other.
+
+**Decided by you (2026-10-04).** Redraw target stays 60 per second. Hidden-terminal speed limit stays as built. Spreadsheet
+deck approved. Combined build tried by hand on Linux at 180 Hz: felt fine.
 
 **Still needs your eye or other hardware.**
 - A real graphics card: the remaining prose cost (~40% here) is mostly the browser's own drawing; a real card may differ either way.
-- A 120/144/180 Hz screen: the redraw cadence is proven by tests, not by this rig; check text still looks smooth. The one
-  setting to tune is `STREAM_REDRAW_TARGET_HZ` (60) in `transcript-batch.ts`.
-- Windows and macOS: terminal brake and the hidden-window behaviour were reasoned/read there, not run (4f).
-- A phone: nothing here was measured on Android; the shared page code changed (fixes 1, 2, 5), the phone paths did not.
+- A 120/144/180 Hz screen by measurement: the redraw cadence is proven by tests, not by this rig (your hand trial says it felt fine).
+- Windows and macOS: the terminal brake, the repaint nudge and the hidden-window behaviour were read there, not run (4f); a
+  trackpad pinch must be checked to zoom the app and not the page (4d).
+- A phone and the Android build: nothing here was measured or built for Android; the shared page code changed (fixes 1, 2, 5), the phone paths did not.
 - Prose busy time did not reach the 25% goal; see 4g for why it cannot on this rig.
+- `verify.sh` was green (9 of 9) on `e9ba76e38`; re-run on the final tree before any merge.
 
-### 4f, round 4 (2026-10-04, after the third re-review) — app commit `d350ba371`
 
-**The blocking defect, and how it hid.** The pre-mount repaint nudge added in round 3 was never delivered: the router called
-`sessionManager.bounceSize?.()`, the real `SessionManager` had no such method (my edit to add it matched nothing and was not
-checked), the optional call did nothing silently, and the test double supplied the method. Fixed: the method exists, the router's
-dependency is required (a missing method now fails type-check), `terminal-flow-wiring.test.ts` pins the real class's surface, and
-`session-manager.test.ts` goes through the real class to the worker. **Audit of the series for the same pattern:** every other edit
-of mine was re-checked by text (23 anchors, all present); the only other optional calls on dependencies are `window.claude.session.ackOutput?.`
-and `requestRepaint?.` (the preload and the shim both define them, pinned by `ipc-channels.test.ts`) and the feeder's
-`onRepaintNeeded`/`isAlive` options (the real `TerminalView` supplies both, pinned by a source test). One dead method found and removed
-(`resetOutputCredit`: main now keeps per-window books, so nothing called it, yet a test asserted it was "not called").
+## 6. What happened, and what is next
 
-| # | Finding | Fix (red seen on the old code) |
-|---|---|---|
-| 2 | Overlapping nudges could leave the PTY one column narrow | The worker owns the nudge: a request during the 120 ms window is ignored; the restore returns to the ORIGINAL size unless a real resize arrived (flagged, not guessed from the size). |
-| 3 | The renderer's own two resizes could override a phone's size | The renderer no longer resizes: it asks main (`session:terminal-repaint`, desktop window only; shim no-op, host ignores it, Android has no branch — pinned) and the worker arbitrates. Test: a resize from another device between the halves keeps its size. |
-| 4 | Plain shells and line floods would be nudged needlessly | A nudge is requested only when the cut text repainted with relative cursor moves / line erases (`CSI nA`, `CSI nF`, `CSI 2K`) or the alternate screen was on. Plain line-oriented floods never get one (tested at the trim, feeder and router levels). |
-| 5 | Scroll-region replay homes the cursor | Replayed only when the alternate screen is on. |
+**What the plan said, and what happened instead.** The first plan (below, kept for the record of what each stage was) put
+the hitch recorder first (stage 0). You chose to measure the suspects first and fix in order of what is actually felt, so the
+recorder was **deferred, not built**. The order actually followed:
 
-Rig, final build (producer frames shortened to 51 characters: the first version's 81-character lines wrapped in an 80-column
-terminal and produced stale copies that were the rig's, not the app's). **Pre-mount cut (page blanked, 200 MB ending in ~7 MB of
-Ink-style frames, page returns; `--only notermcut`): final frame exactly once, no stale fragments, no stray escape fragments, bracketed paste ON and
-cursor hidden in 3 of 3 runs** (the frame sits at the top: the cut kept only frames, as a terminal that only ever saw them would show).
-**Hidden-window cut (`--only cut`), 3 runs: final frame exactly once in 3 of 3, modes right, no stray fragments; stale partial frames
-(2 lines, 4 lines) above it in 2 of 3** — fragments from cuts made WHILE the window was still hidden and the animation running at ~3 MB/s,
-which the repaint nudge cannot clean (it repaints the frame, not the rows above). Claude Code's own animation is ~20 KB/s, far below the
-0.5 MB/s allowance, so this does not queue or cut in normal use.
+1. **Measured** the top suspects (4b, 4c). Two were demoted: D6 (message box, not felt) and D3 (the replay path has no caller).
+2. **Fixed in order of cost felt:** fix 1 long code blocks (D7), fix 2 big spreadsheets (D14), fix 3 scroll wait (D2),
+   fix 4 terminal flood brake (D1), fix 5 ordinary streaming. Each has its own before/after (4d-4g) and a test that fails without it.
+3. **Reviewed independently and fixed again:** spreadsheets (4d), the terminal brake over several rounds (4f), streaming (4g).
+4. **Decided by you** on 2026-10-04 evening (Current state, top).
 
-### 4f, closing touches and what to try by hand (2026-10-04)
+**Not built, and why.** M1-M4 (recorder, background recorder, counters, bundle limit): deferred by your choice, still the
+largest missing instrument. D4/D5 (launch) measured as modest (4c). D8, D9, D13, themes T1-T4 and phone P1-P5: filed in
+`docs/roadmap/perf.md`; none fixed. P-items and T-items were found by reading only and need a real graphics card or a phone.
+Phone memory (D8) and the 16-session limit (D9) are measured or read, not fixed.
 
-Worker hardening (red seen): the repaint nudge and the plain resize no longer throw out of the worker when the PTY is closing (child
-exit, kill, hand-off): both resizes are caught, the in-progress flag is set only after the first half works, the timer is cancelled on
-exit/hand-off/disconnect. Dead `ack reset` branch removed. The repaint request is rate-limited to once a second per session in main and
-accepted from the windows the session is routed to.
+**What is next, in order.**
+1. **Your call:** whether the branch is ready to merge. Before that, Windows, macOS and a real phone are unverified, and
+   `verify.sh` needs one more run on the final tree.
+2. **Stage 0 (still open): the hitch recorder (M1-M3).** After a few days of normal use it would name which of the remaining
+   items you actually feel.
+3. Stage 2, the known three (typing stalls from background chats, switch/resize pauses, first Find). One run on current
+   master did not reproduce the typing stall; repeat before closing it.
+4. Stage 3 launch and size (D4/D5), stage 4 themes (needs your decisions), stage 5 phone, stage 6 guards and trend.
 
-**What to try by hand** (none of these should show anything odd):
-- A long Claude Code session: minimise the window, or leave it on another workspace, for a few minutes, then bring it back — no leftover pieces of old frames, no lag when you type.
-- In a shell session, `cat` a huge file: the final lines and the prompt appear, and you can press Ctrl+C at any point.
-- Toggle chat to terminal while a reply is streaming: the terminal is up to date immediately.
-- Detach a session into a second window: it draws in both.
-- Reload the window while a session is printing: the terminal recovers and keeps going.
-- Quit a session while it is printing: the last lines are there.
-- On Windows: nothing resizes visibly at any point.
+Rule for every fix from now on: **number before -> change -> number after**, on the same quiet machine, three runs each,
+and the result recorded. No number, no merge.
+
+### The original plan (2026-10-04 morning, kept for history)
+
+- **Stage 0 — instruments (M1–M4).** Build the recorder first. Without it we are still
+  guessing. You then use the app normally for a day or two and we read what it caught.
+- **Stage 1 — high-confidence desktop fixes**, each with its own before/after:
+  D2 scroll wheel, D1 terminal flood brake, D3 paged history for non-Claude chats,
+  D6 message box, D7 long code blocks, D8 phone memory only when a phone is connected.
+- **Stage 2 — the known three** (typing stalls from background chats, switch/resize pauses,
+  first Find) — re-measured with the new recorder, which should finally name the cause.
+- **Stage 3 — launch and size** (D4 split the bundle, D5 launch order).
+- **Stage 4 — themes** (T1–T4). Involves look-and-feel choices → needs your decisions.
+- **Stage 5 — phone** (P1–P5, plus the four phone items already on the backlog).
+- **Stage 6 — guards and trend** (M5–M7), then M8/M9.
+
+### Side effects of what is not built yet
+
+- **M1–M3** add a small always-on cost (designed to be far below anything you could feel)
+  and a new local file that grows and rotates. It records timings and screen names, never
+  message text.
+- **D1** (terminal brake): now built; what you will actually see is in 4f.
+- **D4** (split the bundle): the *first* time you open Settings, Marketplace or a game in a
+  session, there may be a very brief pause that does not exist today.
+- **D9** (build terminals only when shown): the first switch to terminal view for a session
+  would do the work that today happens at session start.
+- **T2** (smaller wallpapers): on a very large or zoomed screen an 8K wallpaper would look
+  marginally softer.
+- **P2** (less glass on phones): themes look flatter on phones.
