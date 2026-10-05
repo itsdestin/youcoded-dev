@@ -1,0 +1,60 @@
+{
+  "title": "Home page motion, built \u2014 try it at full size",
+  "key": "home-motion-nav-built",
+  "out": "motion-nav-built.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "MB-1",
+      "surface": "Home page",
+      "path": "Home > tabs, cards, the device pop-up, Edit",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Does the built motion feel polished without getting in your way? Use the switch to compare.",
+      "notice": "Press: 1) Lights, Media, Home, the gear. 2) In Destin's Room, the Lights arrow, Scenes, the TV's Remote, a speaker's Group. 3) Press and hold a card (or right-click), then close with X, Escape, or outside. 4) Edit, then a device's name. 'Built, slow' shows each step at quarter speed; 'Before' has no new motion.",
+      "risk": "Everything that was instant now takes about a quarter of a second to settle. Nothing moves when the page refreshes by itself, and it all stays still if the computer is set to reduce motion.",
+      "variants": [
+        {
+          "id": "built",
+          "label": "Built",
+          "summary": "The motion you chose, at normal speed: pages slide in, the pop-up grows from its card, contents drop in and cards below glide.",
+          "risk": "The pop-up's text appears a moment after its frame, so for a split second you see an empty glass panel.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "connected"
+          }
+        },
+        {
+          "id": "slow",
+          "label": "Built, slow",
+          "summary": "The same motion at a quarter of the speed, to see exactly what each part is doing. Not how fast it will really be.",
+          "risk": "Looks sluggish on purpose; judge the shape of the movement, not the speed.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-nav-slow"
+          }
+        },
+        {
+          "id": "before",
+          "label": "Before",
+          "summary": "The page with the new motion switched off, as it was: everything changes instantly.",
+          "risk": "Shows only the old instant behaviour, so you can feel what the motion adds or costs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-nav-before"
+          }
+        }
+      ]
+    }
+  ]
+}
