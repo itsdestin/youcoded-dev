@@ -1,0 +1,119 @@
+{
+  "title": "Native harness — implementation scope",
+  "key": "native-harness-audit-contract",
+  "out": "native-harness.contract.html",
+  "stage": "contract",
+  "themes": ["midnight"],
+  "branch": "session/native-harness-audit-20260926",
+  "sources": {
+    "native-harness-audit-questions": "native-harness.questions.json",
+    "native-harness-audit-follow-up": "native-harness.follow-up.questions.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Native assistant",
+      "path": "Conversations, project guidance, actions, and connections",
+      "headline": "Approve this scope before the native harness changes are built.",
+      "yes": "Approve scope",
+      "no": "Needs changes",
+      "notice": "One normal send flow: queued messages deliver automatically at a safe pause. No extra sending controls. These rows define what will be built, not work already completed.",
+      "risk": "Item 10 stays excluded. Unapproved audit findings are not bundled in. No release, live-app changes or paid evaluation is authorized by this sign-off.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "A failed permission check reports the error without running the action or breaking the next message.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-1", "guard": "youcoded/desktop/tests/harness-session-loop.test.ts"
+        },
+        {
+          "id": "R2",
+          "statement": "Messages accepted during a background report continue in order without needing another nudge.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-2", "guard": "youcoded/desktop/tests/native-session-host.test.ts",
+          "note": "i also want to look more into when/if/how queued messages force send between messages. ik claude code will sometimes inject a message in the middle of an assistant response (i may be mistaken). sometimes annoying to wait like 20 minutes before my message sends. how does this work, and how should it?"
+        },
+        {
+          "id": "R3",
+          "statement": "Stop ends the current turn but preserves messages already queued for delivery.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-2", "guard": "youcoded/desktop/tests/native-session-host.test.ts"
+        },
+        {
+          "id": "R4",
+          "statement": "Project rules missing after a conversation is cleared or summarized return when needed, without repeating rules still present.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-3", "guard": "youcoded/desktop/tests/rule-injection.test.ts"
+        },
+        {
+          "id": "R5",
+          "statement": "Project rule patterns respect supported comments and folder boundaries, matching intended files but not similarly named folders.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-4", "guard": "youcoded/desktop/tests/path-triggers.test.ts"
+        },
+        {
+          "id": "R6",
+          "statement": "Before a dedicated file action first changes a governed file, the assistant receives its rules and can reconsider the change without bypassing permission checks.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-5", "guard": "youcoded/desktop/tests/rule-injection.test.ts"
+        },
+        {
+          "id": "R7",
+          "statement": "A specialist with shell access can read and stop its own background commands, without gaining access to another conversation's commands.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-7", "guard": "youcoded/desktop/tests/native-session-host.test.ts"
+        },
+        {
+          "id": "R8",
+          "statement": "A failed background handoff settles with an accurate error and safely stops work that cannot remain tracked.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-9", "guard": "youcoded/desktop/tests/bash-background.test.ts"
+        },
+        {
+          "id": "R9",
+          "statement": "New conversations use updated connection settings or credentials while existing conversations keep their current connection until they finish.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-11", "guard": "youcoded/desktop/tests/mcp-manager.test.ts"
+        },
+        {
+          "id": "R10",
+          "statement": "After a successful automatic retry, the displayed and saved reply contain only the replacement attempt, without rerunning completed actions.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-12", "guard": "youcoded/desktop/tests/harness-session-loop.test.ts"
+        },
+        {
+          "id": "R11",
+          "statement": "A repeated file read returns current contents when an earlier copy cannot be verified, even if its modification time stayed unchanged.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-14", "guard": "youcoded/desktop/tests/native-tools-polish.test.ts"
+        },
+        {
+          "id": "R12",
+          "statement": "Two questions with identical wording retain separate choices and return separate answers without changing what you see.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-questions#Q-15", "guard": "youcoded/desktop/tests/ask-user-question-card-other.test.tsx", "amendment": "Q-22: native conversations only; Claude Code duplicate-wording legacy limitation remains."
+        },
+        {
+          "id": "R13",
+          "statement": "A message appears queued while the assistant works, then automatically reaches it at the next safe pause rather than the turn's end.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-follow-up#Q-16", "guard": "youcoded/desktop/tests/native-session-host.test.ts",
+          "note": "Subsequent explicit chat supersedes the optional steering choice: one queued-send flow, with no separate After this finishes action, steering picker, or new status mode."
+        },
+        {
+          "id": "R14",
+          "statement": "There is no new urgent-send control; Stop remains available when an ongoing action cannot yet reach a safe pause.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-follow-up#Q-17", "guard": "youcoded/desktop/src/renderer/components/InputBar.test.tsx"
+        },
+        {
+          "id": "R15",
+          "statement": "Conversations load one instruction file per parent folder from the filesystem root to the working folder, with nearer guidance last.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-follow-up#Q-18", "guard": "youcoded/desktop/tests/prompt-assembly.test.ts",
+          "note": "Resolved by subsequent explicit chat approval; original deck answer was Other. Full ancestor chain above Git, one file per folder: AGENTS.md preferred, otherwise CLAUDE.md; no new dedicated global files or imports."
+        },
+        {
+          "id": "R16",
+          "statement": "Conversations and specialists starting in subfolders still receive applicable project folder rules from the Git root down, without adding personal or cross-project rules.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-follow-up#Q-19", "guard": "youcoded/desktop/tests/path-triggers.test.ts"
+        },
+        {
+          "id": "R17",
+          "statement": "Stopping a command allows a graceful exit, then stops remaining work in its verified group even if the original shell exited.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-follow-up#Q-20", "guard": "youcoded/desktop/tests/shell-registry.test.ts", "amendment": "Deferred by user (C2). Additional uncommitted evidence test youcoded/desktop/tests/shell-audit-disposable.test.ts demonstrates known surviving descendant; a green test is NOT success for this row. Grade fail."
+        },
+        {
+          "id": "R18",
+          "statement": "Stop and the existing time limit end a stalled website-address lookup promptly, ignoring late results and canceling underlying work where supported.",
+          "checkedBy": "mechanical", "threshold": "exit 0 and guard asserts the statement", "source": "native-harness-audit-follow-up#Q-21", "guard": "youcoded/desktop/tests/net-guard.test.ts"
+        }
+      ]
+    }
+  ]
+}

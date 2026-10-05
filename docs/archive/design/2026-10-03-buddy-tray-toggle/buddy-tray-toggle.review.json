@@ -1,0 +1,21 @@
+{
+  "title": "Buddy — 'Minimize to tray' switch",
+  "key": "buddy-tray-toggle-review",
+  "out": "buddy-tray-toggle.review.html",
+  "images": "images/buddy-tray-toggle.review",
+  "stage": "review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings → Buddy Floater",
+      "crop": "settings/buddy",
+      "headline": "The Floating / Taskbar buttons are now one 'Minimize to tray' switch.",
+      "changed": "Switch on: the buddy is an icon in your taskbar (menu bar on a Mac). Switch off: he floats on your desktop. It works exactly as before, just one switch instead of two buttons.",
+      "notice": "If the buddy is on, flipping the switch swaps the floater for the icon (or back) straight away.",
+      "risk": "With the buddy switched off, flipping it only remembers your choice; nothing appears until you turn the buddy on."
+    }
+  ]
+}

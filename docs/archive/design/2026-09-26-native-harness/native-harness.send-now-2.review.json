@@ -1,0 +1,100 @@
+{
+  "title": "Send now, round 2 — the arrow button",
+  "key": "native-harness-send-now-review-2",
+  "out": "native-harness.send-now-2.review.html",
+  "images": "images/native-harness.send-now-2.review",
+  "runs": {
+    "before": "runs-send-now-2/before",
+    "after": "runs-send-now-2/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "The strip of waiting messages above the message box, while the assistant is busy",
+      "crop": "chat/queued",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "Send now is a dark round button with an up arrow, rightmost; the ✕ is now a trash icon beside it.",
+      "changed": "The words \"Send now\" became a dark round arrow button at the far right. The ✕ became the same trash icon the doc-comments work uses to delete a comment, just to its left.",
+      "notice": "The row is quieter at rest: three icons instead of words plus two symbols.",
+      "risk": "At rest the arrow alone doesn't say it interrupts; the words only appear on hover.",
+      "highlight": {
+        "box": [
+          78,
+          36,
+          21,
+          28
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Hovering the arrow button on a waiting message",
+      "crop": "chat/queued-hover",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "Hovering the arrow rolls out \"Interrupt and Send Now\" inside the button; the trash slides left with it.",
+      "changed": "On hover or keyboard focus the words grow out to the left of the arrow inside the same dark button, using the same smooth reveal as the session names at the top of the app. The trash and pencil keep a fixed gap and slide left as it grows.",
+      "notice": "You see exactly what it will do before you click.",
+      "risk": "Phones have no hover, so there it stays the arrow alone; tapping it sends right away.",
+      "highlight": {
+        "box": [
+          60,
+          36,
+          39,
+          28
+        ]
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "The Send now arrow button in dark themes (Midnight and others)",
+      "headline": "In dark themes, should the Send now button stay dark or turn light?",
+      "today": "As built, the button uses the theme's text colour as its fill: dark in light themes, light (near white) in dark themes like Midnight.",
+      "problem": "You asked for a dark button. In dark themes a dark button would sit on a dark row and be hard to see, while a light one stands out but isn't \"dark\".",
+      "proposal": "Pick how it should look in dark themes.",
+      "options": [
+        {
+          "id": "flip",
+          "label": "Flip with the theme",
+          "summary": "Keep what is built: dark in light themes, light in dark themes.",
+          "pros": [
+            "Always the most visible thing in the row, in every theme."
+          ],
+          "cons": [
+            "Not dark in dark themes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-dark",
+          "label": "Always dark",
+          "summary": "Near-black in every theme.",
+          "pros": [
+            "Looks the same everywhere."
+          ],
+          "cons": [
+            "In dark themes it nearly disappears against the row."
+          ]
+        },
+        {
+          "id": "accent",
+          "label": "Use the theme's accent colour",
+          "summary": "The same colour as the main send button in the message box.",
+          "pros": [
+            "Matches the send button, so it reads as \"send\"."
+          ],
+          "cons": [
+            "Two same-coloured send buttons near each other could be confused."
+          ]
+        }
+      ]
+    }
+  ]
+}

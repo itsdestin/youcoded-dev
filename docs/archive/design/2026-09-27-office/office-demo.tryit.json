@@ -1,0 +1,62 @@
+{
+  "title": "Office — does it actually work?",
+  "key": "office-demo",
+  "out": "office-demo.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "T-edit",
+      "surface": "Office",
+      "path": "The briefcase icon under \"Built in\" in the pages rail on the left",
+      "headline": "Open or make a document, type something, close its tab — does your change stay in the file?",
+      "dev": {
+        "worktree": "session/office-suite-investigation",
+        "label": "Office",
+        "offset": 7,
+        "profile": "office"
+      },
+      "changed": "A separate test copy of YouCoded with the real Office editor. Office saves as you type, so use New document, or pick a COPY of one of your files, never an original.",
+      "notice": "Close the tab, then open the same file in Word or LibreOffice: your change is there. Reopen it in Office: it's there too, and the strip above the page said Saved.",
+      "risk": "It's a second window on your desktop; close it when you're done. Your own YouCoded isn't touched.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-versions",
+      "surface": "Office",
+      "path": "An open document → Versions (top right of the Office page)",
+      "headline": "In the same test window, open Versions and restore the earliest one — does the document go back to how it was?",
+      "dev": {
+        "worktree": "session/office-suite-investigation",
+        "label": "Office",
+        "offset": 7,
+        "profile": "office"
+      },
+      "changed": "The same test window. Office keeps a copy when you open a file and every 10 minutes while you edit, and one more just before any restore.",
+      "notice": "After Restore the document reloads showing the older text, and Versions now also lists the copy it kept just before restoring.",
+      "risk": "Restore replaces the file with the older copy. Use the same copy or new file as before.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-theme",
+      "surface": "Office",
+      "path": "Any open document; the test window already uses your current theme",
+      "headline": "Does the editor look like part of YouCoded in your theme — colours, corner roundness and menu font?",
+      "dev": {
+        "worktree": "session/office-suite-investigation",
+        "label": "Office",
+        "offset": 7,
+        "profile": "office"
+      },
+      "changed": "The same test window. Its menus, panels, buttons and rounding follow your theme, and it uses your theme's font.",
+      "notice": "Known and planned for later: document text shows in a plain serif font, and bullet points show as small dots, until the extra fonts are added.",
+      "risk": "Don't change the theme in the test window: it shares that setting with your own YouCoded, so your own app would change too.",
+      "yes": "Yes, it looks right",
+      "no": "No, something looks off"
+    }
+  ]
+}

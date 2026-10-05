@@ -8,12 +8,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       to desktop
       `desktop` `needs-verify` `checked 2026-09-27`
 
-- [ ] With a phone connected, the computer sends it the terminal output and chat events of every
-      open session, not only the one the phone is showing — more sessions running means a busier
-      computer and phone. Found by the 2026-09-23 performance review; not built because remote
-      code is being restructured
-      `remote` `needs-verify` `checked 2026-09-23` `performance`
-
 - [ ] Some chat cards can sit in a different place on the phone than on the computer. A "Usage
       limit reached" style prompt card is drawn by each device when it notices the prompt on its
       own copy of the terminal, so each places it where it happened to notice; and the "Switched
@@ -79,28 +73,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Project View shipped in batch 3 (2026-09-11); games and the rest wait for their own
       batches — nothing is bridged automatically
       `remote` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
-
-- [ ] First connect from a phone sits on a white screen for seconds, then the chat takes a
-      further beat to fill in; the July byte-shaving merge changed nothing Destin could feel
-      on LAN. ~2.5 s of it is scripted waiting; the white part is unmeasured on a real phone
-      Destin 2026-09-02: probably much improved; keep for a future remote-access verification pass
-      Destin 2026-09-10, after batch 1: still "takes quite a while before showing any real app ui
-      or the password screen". Measured that day: the sign-in box ships INSIDE the whole app's
-      script, so a phone downloads and runs 2,444 KB (607 KB compressed) before it can draw a
-      text box, then fetches the 34 KB connection code as a second download, and only then
-      shows sign-in. His test ran against the dev window, which serves the 523 source files one
-      by one instead of one bundle, so the wait he felt is inflated by dev mode; the built app
-      has not been timed on his phone. Fix shape: a small first download holding only sign-in
-      and the connection code, with the app loading after the password is accepted.
-      **The 2.5 s of scripted waiting after sign-in (the proven half, below) shipped fixed
-      2026-09-10 (youcoded#4f9320217): the hardcoded 500 ms `setTimeout` and the sequential
-      snapshot→PTY wait are gone, replaced by a `client:ready` ack the phone sends once React
-      has mounted, pinned by `remote-readiness.test.ts`'s "no 500 ms timer" source guard.
-      What's left open here is only the UNPROVEN bundle-size white screen** — a different
-      bottleneck (first paint, not first chat) that fix does not touch
-      Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
-      after the milestone's batches 2 and 3
-      `remote` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] Formalize the remote protocol: version the WebSocket API, add a lifecycle event bus,
       and reconcile Android's separate Kotlin runtime with it — the server can already drive
@@ -198,17 +170,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       approved in the round-4 deck; start at the technical design, not at questions
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json
 
-- [ ] A reconnect costs far more than what was missed. The computer replays a full copy of every
-      conversation (the phone's reducer replaces its whole state, so every visible message is
-      redrawn) plus every buffered tool event per session — up to 10,000, all types, not only the
-      questions still waiting — and the screens then make about fifteen requests, with skills and
-      the / commands asked twice (the shim's re-ask list AND each screen's own reconnect listener).
-      Cheapest first step: replay only open asks and drop the duplicate pair. Found 2026-09-11 in
-      the speed/sync review (`docs/archive/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
-      Destin: "it currently feels unresponsive and lags behind desktop sometimes." The duplicate
-      skills/commands pair was removed 2026-09-23 (youcoded#562); the full replay remains
-      `remote` `confirmed` `checked 2026-09-23` `performance`
-
 - [ ] Buttons on the phone wait for the computer before anything on screen changes: Stop (it only
       sends Escape and waits for Claude Code to record the interruption), a permission answer (the
       card clears on the reply), closing a session, sending in a YouCoded-runtime chat, and the
@@ -224,13 +185,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       announce each to every screen; moving the queue to the computer would also let it survive a
       page reload. Destin, 2026-09-11: "the interface should almost always match the desktop ui."
       `remote` `confirmed` `checked 2026-09-11`
-
-- [ ] A dropped connection should resume rather than re-sync: number what the computer sends per
-      session, let a returning phone ask for "everything after N", and keep the full copy as the
-      fallback for a gap too old or a computer that restarted. The terminal already does exactly
-      this per session; nothing else does. Would also let a request cut off mid-flight be answered
-      from the computer's record instead of asked about. Big — file behind the cheaper items above.
-      `remote` `confirmed` `checked 2026-09-11` `performance`
 
 - [ ] Batches 2 (conversation restoration) and 3 (file reading) merged 2026-09-11 without any phone
       ever using the fixed build — the dev window served a day-old copy all day, so every phone

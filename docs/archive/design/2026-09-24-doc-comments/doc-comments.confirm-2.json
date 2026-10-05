@@ -1,0 +1,134 @@
+{
+  "title": "Document comments: three more things to confirm",
+  "key": "doc-comments-confirm-2",
+  "out": "doc-comments.confirm-2.html",
+  "images": "images/doc-comments.confirm-2",
+  "runs": {
+    "today": "runs/today"
+  },
+  "crops": {
+    "v1-save-failed": ["doc-comments", "v1-save-failed", "680x520+740+150"],
+    "v2-detached-comment": ["doc-comments", "v2-detached-comment", "680x570+740+150"],
+    "v3-file-open-elsewhere": ["doc-comments", "v3-file-open-elsewhere", "680x520+740+150"]
+  },
+  "themes": ["midnight", "creme"],
+  "steps": [
+    {
+      "id": "C-1",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Any Word or Excel file's comments panel",
+      "headline": "Excel comments are Excel's modern threaded comments, with replies and resolve; old-style Excel \"notes\" are left untouched and never shown here.",
+      "changed": "From your note in chat: only threaded comments (Excel 365's default) are read and written; the older \"note\" feature is a different, untouched thing.",
+      "notice": "A note someone left the old way in Excel will not appear in YouCoded's comments panel at all.",
+      "risk": "Someone relying on an old-style note in Excel won't see it in YouCoded.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "C-2",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Adding a comment to a cell that already has an old-style Excel note",
+      "headline": "Adding a comment where a cell already has an old-style Excel note is refused, telling you to pick another cell or remove the note first.",
+      "changed": "The refusal reads: \"This cell already has a note. Add your comment to a different cell, or remove the note in Excel first.\"",
+      "notice": "You can't stack a new-style comment on top of an old-style note on the same cell — you'd get this message instead.",
+      "risk": "This matches what Excel itself appears to do, but that hasn't been confirmed against real Excel.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "C-3",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "A cell with several separate comment threads left in Excel",
+      "headline": "Several comment threads Excel left on one cell each show as their own card; commenting on an already-commented cell replies to the existing thread instead.",
+      "changed": "Reading shows every thread Excel already has on that cell, each as its own card. Writing a new one from YouCoded always replies rather than starting a second thread on the same cell.",
+      "notice": "You'll see every thread someone left on a cell in Excel, but adding your own from YouCoded joins the conversation rather than opening a new one beside it.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "C-4",
+      "words": true,
+      "surface": "Assistant",
+      "path": "Any Word or Excel file with comments",
+      "headline": "The assistant asks permission before changing Word or Excel comments, only outside accept-edits mode; reading comments, and comments on other files, never ask.",
+      "changed": "From your choice in chat: reading comments, and any comment on a code file, a note, or another non-Word/Excel file, never asks. In accept-edits mode Word/Excel comments don't ask either. In plan mode they always ask.",
+      "notice": "You'll only see a permission prompt for a comment change in a Word or Excel file, and only when you're not already in accept-edits mode.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "C-5",
+      "words": true,
+      "surface": "Assistant",
+      "path": "Saving a comment into a Word or Excel file",
+      "headline": "Before saving a comment into Word or Excel, YouCoded checks whether the file looks open elsewhere, and refuses with a Retry if so.",
+      "changed": "Word, Excel and LibreOffice each leave a hidden marker file while a file is open. YouCoded checks for that marker before saving a comment; if it's there, nothing is saved.",
+      "notice": "The message reads \"This file looks open in another app. Close it there, then try again.\" with a Retry button, right on the comment.",
+      "risk": "After a crash, a leftover marker can show this message even though the file is actually closed. Very long file names and other programs that leave no marker of their own aren't caught by this check.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "C-6",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Pasting text with invisible control characters into a Word or Excel comment",
+      "headline": "Invisible control characters sometimes pasted with text are removed before saving to Word or Excel, because Excel treats such a file as damaged.",
+      "changed": "Tabs and line breaks are kept; other invisible control characters are stripped before the comment is written into the file.",
+      "notice": "A comment you pasted from somewhere else saves cleanly even if the original had hidden characters in it.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "C-7",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "The phone version, with a comments panel open",
+      "headline": "On the phone, an open comments panel won't refresh itself when the file changes elsewhere; reopening it shows the change. Desktop and web refresh live.",
+      "changed": "This limit already existed before this piece of work and isn't being fixed as part of it.",
+      "notice": "On your phone, if someone else changes a file while you have its comments open, you won't see the change until you close and reopen the file. Leave this as-is, or ask for it to be fixed before this ships.",
+      "yes": "Fine for now", "no": "Needs fixing first"
+    },
+    {
+      "id": "C-8",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Excel files YouCoded has saved a comment into",
+      "headline": "Nobody has opened a saved Excel file in real Excel yet — only checked against Microsoft's written rules and LibreOffice. Will you check one?",
+      "changed": "Every check so far has been against the Excel file format's own written specification and against LibreOffice opening the file, never against real Microsoft Excel.",
+      "notice": "There's a small chance a file that looks right everywhere we checked still shows a problem the moment it's opened in the real Excel application. If you have Excel, opening one saved file there would confirm this for real.",
+      "yes": "I'll check it", "no": "Skip"
+    },
+    {
+      "id": "V-1",
+      "surface": "File viewer comments",
+      "path": "Any Word document → select text → Add comment",
+      "crop": "v1-save-failed",
+      "runs": ["today"],
+      "headline": "A comment whose save failed shows the error right inside its own card, with a Retry button.",
+      "changed": "The comment stays as a draft with its typed text, and the specific reason it couldn't save appears under it.",
+      "notice": "If saving a comment fails, you see why and can press Retry without retyping anything.",
+      "risk": "The exact wording depends on what actually went wrong; this shows one common cause (a save that failed partway).",
+      "highlight": { "box": [57, 57, 39, 33] }
+    },
+    {
+      "id": "V-2",
+      "surface": "File viewer comments",
+      "path": "Any file → a comment whose quoted text was later deleted",
+      "crop": "v2-detached-comment",
+      "runs": ["today"],
+      "headline": "A comment whose quoted text was deleted says so, quotes what it was about, and shows muted instead of pointing at a highlight that's gone.",
+      "changed": "The card reads \"Text no longer found in this file.\" followed by the words it used to point to, so the comment's own words aren't lost along with the highlight.",
+      "notice": "Nothing gets silently deleted when text under a comment disappears — the comment stays, muted, with a plain explanation.",
+      "highlight": { "box": [57, 65, 39, 30] }
+    },
+    {
+      "id": "V-3",
+      "surface": "File viewer comments",
+      "path": "Any Word or Excel file that looks open elsewhere → Add comment",
+      "crop": "v3-file-open-elsewhere",
+      "runs": ["today"],
+      "headline": "Trying to save a comment while the file looks open in another app shows that reason right on the comment card, with Retry.",
+      "changed": "Same inline error-and-Retry treatment as any other save failure, with the specific \"looks open in another app\" wording.",
+      "notice": "Closing the file in the other app and pressing Retry saves the comment without retyping it.",
+      "highlight": { "box": [57, 57, 39, 41] }
+    }
+  ]
+}

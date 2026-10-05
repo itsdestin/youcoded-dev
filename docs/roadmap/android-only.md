@@ -27,13 +27,3 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       Termux programs would likely be refused, so plan to ship them inside the app (report
       appendix, "Found after the consolidation", 2026-09-23)
       `android` `in-flight` `checked 2026-09-23` → docs/active/investigations/2026-09-10-android-parity-audit.md
-
-- [ ] The phone still reads long conversations over the desktop bridge rather than paging them
-      on the device, so opening a big conversation on Android pays for the whole thing instead
-      of the last few turns — the desktop stopped doing that in cycle 2 (2026-08-28) and the
-      phone never got the same treatment. Deferred at the time by Destin's own scope decision,
-      not by oversight. Needs the Kotlin half of the tail reader. Carried over from the cycle-3
-      handoff when that document was archived 2026-09-10; until now it existed only as a
-      sentence inside a shipped entry
-      `android` `confirmed` `checked 2026-09-10` `performance`
-

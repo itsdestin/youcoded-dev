@@ -1,0 +1,22 @@
+{
+ "deck": "setup-simplify-review",
+ "started": "2026-10-02T11:01:21.107Z",
+ "submitted": "2026-10-02T11:01:47Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1790938897369,
+   "seconds": 16,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1790938905322,
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

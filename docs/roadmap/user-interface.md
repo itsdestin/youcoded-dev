@@ -128,54 +128,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       next step is a tripwire that logs what emptied an open chat, or the friend's desktop.log
       `chat` `desktop` `needs-verify` `checked 2026-09-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
-- [ ] Switching sessions in terminal view redraws the letters of EVERY open terminal each time
-      (the black-glyph safety net in `TerminalView.tsx`). Measured 2026-09-10 with the new perf-lab
-      terminal scenario: no change warranted on software rendering — a terminal-view switch settles
-      in ~137 ms against ~124 ms in chat view, inside the run-to-run spread (103–158 ms), with one
-      redraw per switch (perf-reports/2026-09-11-0358-a6544d7-atlas-baseline.md). NOT measured: the
-      graphics-card cost on real hardware, which the rig cannot see. Open check: in a dev instance
-      with six busy terminals, switch rapidly in terminal view and say whether it feels slower than
-      chat view; if it does, the throttle is written up as Task 5B of the 2026-09-10 main-thread
-      freeze-fixes plan
-      `chat` `desktop` `needs-verify` `checked 2026-09-10` `performance`
-
 - [ ] File and model sizes disagree with websites — the Local Models row says 74.2 GB for a
       download Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based, the site
       1000-based). Decided 2026-09-02: count 1000-based everywhere, the way websites, phones
       and drive labels do
       `all` `needs-verify` `checked 2026-09-02`
-
-- [ ] Sustained sluggishness in real use — hiccups, lagging animations, freezes, on every
-      surface, from launch and worse over hours and with more open sessions, on plain and
-      glass themes alike (Destin, 2026-08-27). Cycles 1-3 have all shipped or are in review —
-      cycle 3 (youcoded#398, folding far-off-screen messages to a spacer) directly addresses the
-      render-cost half this item's investigation names: memory after reading six conversations
-      back 4,346 → 1,784 MB, session switch 243 → 112 ms, main-thread blocking 4,882 → 1,703 ms.
-      KEEP OPEN until Destin says real use feels better over hours — the investigation's second
-      half (every open session stays mounted) is only partly addressed, since views still mount
-      and it is their CONTENT that folds. 2026-09-16 smoothness sweep
-      (docs/active/investigations/2026-09-16-smoothness-sweep.md): Batch A (MERGED
-      2026-09-16, youcoded#501) stops the whole shell re-rendering per streamed word and the
-      per-word reducer work that grew with the chat — measured on the rig's new native-stream
-      phase, a reply streaming on screen costs the window's main thread 25 % less; Batch C
-      (same merge) removes the main-process whole-file reads on click and per-turn paths.
-      Batch B — the per-open-tab cost (hidden terminals never pause, every chat tree rebuilt
-      per shell render, per-session timers in hidden chats) — is the sweep's next build and
-      the rest of this item's second half; Batches D (theme blur/particles) and E (file opens)
-      follow. A5 (throttling the streaming bubble's markdown re-parse) is a visible change
-      that needs a before/after clip and Destin's call. 2026-09-18 render-cost consolidation
-      (docs/archive/plans/2026-09-18-render-cost-consolidation.md, youcoded#535): every long list now draws 50 at a time and each card once —
-      Projects → Conversations 174.8 → 58.4 ms and its tab thrash 181.6 → 65.3 ms with long
-      tasks 1,217 → 0 ms; Marketplace 58,706 → 3,281 page elements, model search 24,679 →
-      1,255; the preview and buddy chat fold like the chat, and entries present when a chat
-      opens can now fold too (they never could). Left for later, each measured first: the
-      Resume browser's kept-built previews for Projects; a selector-scoped marketplace store
-      (an install click still redraws the ≤100 visible cards). 2026-09-23 "many tabs" batch
-      (docs/active/investigations/2026-09-16-smoothness-sweep.md → Status 2026-09-23): tabs
-      you are not looking at now do no drawing, ticking or listening — Batch B built, a file
-      change in one tab no longer redraws the others, typing a / command no longer redraws the
-      whole app — with a whole-app test that fails if hidden tabs start working again
-      `all` `confirmed` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not
@@ -202,10 +159,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       links and file pills only)
       `desktop` `needs-verify` `checked 2026-09-01`
 
-- [ ] "Ask about this" native treatment (lift the message to screen centre, dim the window,
-      trace the selection) — built on draft PR youcoded#263, still open; Destin 2026-07-28:
-      decent for messages, "janky af" for the file viewer, needs more work before integrating
-      `desktop` `parked` `checked 2026-09-01`
 
 - [ ] The project-folder picker should be a dropdown with recently used folders like every
       other dropdown — but the app keeps no recents list at all yet (2026-07-24)
@@ -234,21 +187,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       2026-09-03 (youcoded#404, see shipped.md)
       `desktop` `parked` `checked 2026-09-03`
 
-- [ ] Same per-tile blur cost the command drawer had (fixed in #277) may hit every other card grid —
-      the files tab's document cards and any future grid. Never checked what backdrop they sit over,
-      so the blur might be pure wasted GPU
-      `all` `needs-verify` `checked 2026-07-31` `performance`
-
 - [ ] An empty assistant bubble — just a timestamp, no content — appears above a permission card when
       the only tool in that bubble popped out to the card. Spec and plan are ready
       (`docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md`); re-verified
       unbuilt 2026-08-26
       `chat` `all` `needs-verify` `checked 2026-09-01`
-
-- [ ] The animation frame-budget cost ships to phones and remote browsers too, where nothing caps the
-      frame rate and Reduced Effects defaults off — and it has never been measured there. Measure on a
-      real phone before scoping
-      `all` `needs-verify` `checked 2026-08-07` `performance`
 
 - [ ] On the touchscreen Z13, the app's touch accommodations — bigger tap targets, buttons that
       otherwise only appear on hover — probably never switch on, because the app judges the machine

@@ -1,0 +1,259 @@
+{
+  "before": {
+    "runs": [
+      {
+        "status": "find-result-unconfirmed",
+        "open": 1760,
+        "query": 121,
+        "total": 1881,
+        "longtaskMax": 1403,
+        "gapMax": 1745,
+        "nav": {
+          "visibleStable": false,
+          "selectedText": "Turn 3250:",
+          "uncovered": false,
+          "hitTag": null,
+          "scrollTop": 306410,
+          "rect": {
+            "top": -152308.375,
+            "bottom": -152289.703125,
+            "left": 375.46875,
+            "right": 459.46875
+          }
+        },
+        "folded": 0,
+        "loaded": 1020,
+        "beforeFolded": 1015,
+        "renderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "viewport": {
+          "width": 1707,
+          "height": 1016,
+          "scale": 1.5,
+          "screenWidth": 1707,
+          "screenHeight": 1067,
+          "visibility": "visible"
+        },
+        "build": {
+          "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+          "dirty": "6ba3d8bf4a1a",
+          "builtAt": "2026-09-28T00:11:06.984Z"
+        }
+      },
+      {
+        "status": "find-result-unconfirmed",
+        "open": 1784,
+        "query": 66,
+        "total": 1850,
+        "longtaskMax": 1408,
+        "gapMax": 1744,
+        "nav": {
+          "visibleStable": false,
+          "selectedText": "Turn 3250:",
+          "uncovered": false,
+          "hitTag": null,
+          "scrollTop": 306410,
+          "rect": {
+            "top": -152308.375,
+            "bottom": -152289.703125,
+            "left": 375.46875,
+            "right": 459.46875
+          }
+        },
+        "folded": 0,
+        "loaded": 1020,
+        "beforeFolded": 1015,
+        "renderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "viewport": {
+          "width": 1707,
+          "height": 1016,
+          "scale": 1.5,
+          "screenWidth": 1707,
+          "screenHeight": 1067,
+          "visibility": "visible"
+        },
+        "build": {
+          "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+          "dirty": "6ba3d8bf4a1a",
+          "builtAt": "2026-09-28T00:11:06.984Z"
+        }
+      },
+      {
+        "status": "find-result-unconfirmed",
+        "open": 1660,
+        "query": 122,
+        "total": 1782,
+        "longtaskMax": 1366,
+        "gapMax": 1702,
+        "nav": {
+          "visibleStable": false,
+          "selectedText": "Turn 3250:",
+          "uncovered": false,
+          "hitTag": null,
+          "scrollTop": 306410,
+          "rect": {
+            "top": -152308.375,
+            "bottom": -152289.703125,
+            "left": 375.46875,
+            "right": 459.46875
+          }
+        },
+        "folded": 0,
+        "loaded": 1020,
+        "beforeFolded": 1015,
+        "renderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "viewport": {
+          "width": 1707,
+          "height": 1016,
+          "scale": 1.5,
+          "screenWidth": 1707,
+          "screenHeight": 1067,
+          "visibility": "visible"
+        },
+        "build": {
+          "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+          "dirty": "6ba3d8bf4a1a",
+          "builtAt": "2026-09-28T00:11:06.984Z"
+        }
+      }
+    ],
+    "medians": {
+      "open": 1760,
+      "query": 121,
+      "total": 1850,
+      "longtaskMax": 1403,
+      "gapMax": 1744
+    }
+  },
+  "after": {
+    "runs": [
+      {
+        "status": "measured",
+        "open": 27,
+        "query": 647,
+        "total": 674,
+        "longtaskMax": 0,
+        "gapMax": 39,
+        "nav": {
+          "visibleStable": true,
+          "selectedText": "Turn 3250:",
+          "uncovered": true,
+          "hitTag": "SPAN",
+          "scrollTop": 177320,
+          "rect": {
+            "top": 531.375,
+            "bottom": 550.0416870117188,
+            "left": 375.46875,
+            "right": 459.46875
+          }
+        },
+        "folded": 1000,
+        "loaded": 1020,
+        "beforeFolded": 1015,
+        "renderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "viewport": {
+          "width": 1707,
+          "height": 1016,
+          "scale": 1.5,
+          "screenWidth": 1707,
+          "screenHeight": 1067,
+          "visibility": "visible"
+        },
+        "build": {
+          "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+          "dirty": "834247109fe7",
+          "builtAt": "2026-09-28T05:42:33.532Z"
+        }
+      },
+      {
+        "status": "measured",
+        "open": 26,
+        "query": 648,
+        "total": 674,
+        "longtaskMax": 0,
+        "gapMax": 39,
+        "nav": {
+          "visibleStable": true,
+          "selectedText": "Turn 3250:",
+          "uncovered": true,
+          "hitTag": "SPAN",
+          "scrollTop": 175610,
+          "rect": {
+            "top": 531.375,
+            "bottom": 550.0416870117188,
+            "left": 375.46875,
+            "right": 459.46875
+          }
+        },
+        "folded": 1000,
+        "loaded": 1020,
+        "beforeFolded": 1015,
+        "renderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "viewport": {
+          "width": 1707,
+          "height": 1016,
+          "scale": 1.5,
+          "screenWidth": 1707,
+          "screenHeight": 1067,
+          "visibility": "visible"
+        },
+        "build": {
+          "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+          "dirty": "834247109fe7",
+          "builtAt": "2026-09-28T05:42:33.532Z"
+        }
+      },
+      {
+        "status": "measured",
+        "open": 25,
+        "query": 655,
+        "total": 680,
+        "longtaskMax": 0,
+        "gapMax": 44,
+        "nav": {
+          "visibleStable": true,
+          "selectedText": "Turn 3250:",
+          "uncovered": true,
+          "hitTag": "SPAN",
+          "scrollTop": 176024.671875,
+          "rect": {
+            "top": 531.7083740234375,
+            "bottom": 550.375,
+            "left": 375.46875,
+            "right": 459.46875
+          }
+        },
+        "folded": 1000,
+        "loaded": 1020,
+        "beforeFolded": 1015,
+        "renderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "viewport": {
+          "width": 1707,
+          "height": 1016,
+          "scale": 1.5,
+          "screenWidth": 1707,
+          "screenHeight": 1067,
+          "visibility": "visible"
+        },
+        "build": {
+          "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+          "dirty": "834247109fe7",
+          "builtAt": "2026-09-28T05:42:33.532Z"
+        }
+      }
+    ],
+    "medians": {
+      "open": 26,
+      "query": 648,
+      "total": 674,
+      "longtaskMax": 0,
+      "gapMax": 39
+    }
+  },
+  "changes": {
+    "open": -98.5,
+    "query": 435.5,
+    "total": -63.6,
+    "longtaskMax": -100,
+    "gapMax": -97.8
+  }
+}

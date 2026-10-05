@@ -1,0 +1,206 @@
+{
+  "title": "Document comments: the decisions before the real build",
+  "key": "doc-comments-questions",
+  "out": "doc-comments.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Any file open in the file viewer, in Comments mode",
+      "headline": "Where should your comments be saved?",
+      "today": "The comments in the preview live only in memory. Close the preview and they are gone.",
+      "problem": "Real comments have to be saved somewhere, and where decides what happens when you move, copy or back up a file.",
+      "proposal": "Three places they could be saved. None of them changes how comments look or work in the app.",
+      "options": [
+        {
+          "id": "hidden-project-folder",
+          "label": "Hidden folder in the project",
+          "summary": "One hidden comments folder inside each project folder, next to the app's other hidden project data.",
+          "pros": [
+            "Nothing new appears among your files.",
+            "Copy or back up the project folder and its comments come along.",
+            "The easiest one to upload to your account later, when sharing comes."
+          ],
+          "cons": [
+            "Moving one file to a different project leaves its comments behind (they show as \"file not found\" rather than vanishing silently).",
+            "Files opened from outside any project need a fallback place, which would be the app's own folder."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "beside-file",
+          "label": "A file beside each document",
+          "summary": "Commenting on notes.md creates notes.md.comments next to it.",
+          "pros": [
+            "Comments travel with the file wherever you copy it.",
+            "Anyone opening the folder can see a file has comments."
+          ],
+          "cons": [
+            "A second file appears next to every document you comment on, cluttering your folders.",
+            "Rename or move the document in another program and the pair splits."
+          ]
+        },
+        {
+          "id": "app-folder",
+          "label": "The app's own folder",
+          "summary": "All comments in one place inside YouCoded's settings folder, never in your projects.",
+          "pros": [
+            "Your project folders never change at all."
+          ],
+          "cons": [
+            "Copying or backing up a project does not carry its comments.",
+            "Another computer never sees them until sync exists."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "pick": "several",
+      "surface": "File viewer comments",
+      "path": "Comments sent with Ask Your Assistant, or the assistant reading a file",
+      "headline": "What may the assistant do with comments? Pick all that apply.",
+      "today": "The assistant cannot see comments at all yet. Ask Your Assistant only sends them as pills in a message.",
+      "problem": "You wanted the assistant to act on your markup and to resolve comments, but each thing it may do is something that happens without you pressing a button.",
+      "proposal": "Every action the assistant takes shows its name on the comment and appears under Show Resolved, so nothing it does is hidden. Pick what it is allowed to do.",
+      "options": [
+        {
+          "id": "reply",
+          "label": "Reply to comments",
+          "pros": ["Answers a question right under it, where you asked it."],
+          "cons": ["More replies to read in busy documents."],
+          "recommended": true
+        },
+        {
+          "id": "resolve",
+          "label": "Resolve comments",
+          "pros": ["After fixing what you asked, it closes the comment for you."],
+          "cons": ["It could close one you think is not done; you reopen it with one click."]
+        },
+        {
+          "id": "add",
+          "label": "Leave its own comments",
+          "pros": ["It can review a document the way a colleague would, with notes pinned to the exact lines."],
+          "cons": ["A long document could collect many notes you did not ask for."]
+        },
+        {
+          "id": "edit",
+          "label": "Edit the file to fix what a comment asks",
+          "summary": "Follows the same approval rules the assistant already has for editing files.",
+          "pros": ["\"Reword this\" gets reworded, not just discussed."],
+          "cons": ["Edits can move text a comment points at; a comment whose words disappear shows as \"text no longer found\"."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "The file viewer on the phone app",
+      "headline": "Should comments work on the phone in this first version?",
+      "today": "The phone app shows files with the same screens as desktop, but phones have no hover, so hovering a highlight to read it does not exist there.",
+      "problem": "Building phone support now makes the first version bigger. Leaving it out means comments you make on desktop look different or missing on the phone.",
+      "proposal": "Two ways to do it now, or leave it for later.",
+      "options": [
+        {
+          "id": "now-tap-opens-list",
+          "label": "Now: tap opens the list",
+          "summary": "Tapping a highlight opens the comment list on that comment, the same as clicking on desktop. Selecting text shows Add comment.",
+          "pros": [
+            "Same behaviour as desktop, so one thing to learn.",
+            "Most of the screens are already shared, so the extra work is mainly saving on the phone and testing by touch."
+          ],
+          "cons": [
+            "Just reading one comment takes the full list, since there is no quick peek.",
+            "The first version takes longer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "now-tap-peeks",
+          "label": "Now: tap shows a bubble",
+          "summary": "The first tap shows the comment in a small bubble (the phone's version of hover); a second tap opens the list.",
+          "pros": ["A quick read without leaving the document."],
+          "cons": [
+            "Two taps to reply, and people often miss that a second tap does something.",
+            "The first version takes longer."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Later",
+          "summary": "The phone shows highlights and nothing else until a follow-up.",
+          "pros": ["The desktop version arrives sooner."],
+          "cons": ["On the phone you see highlighted text you cannot open, which looks broken."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Word documents (.docx) opened in the file viewer",
+      "headline": "What should happen with comments on Word documents in this first version?",
+      "today": "The file viewer shows Word documents read-only, and it drops any comments already in them. Nothing in the app writes Word files.",
+      "problem": "Real Word comments, the kind Word and Google Docs both see, need the app to write Word files, which it has never done. A mistake there could damage a document.",
+      "proposal": "Three levels of Word support.",
+      "options": [
+        {
+          "id": "app-only",
+          "label": "Comment in the app only",
+          "summary": "You can comment on a Word document like any other file, but the comments stay in YouCoded. Writing them into the Word file comes later.",
+          "pros": [
+            "Word documents work like every other file from day one.",
+            "Your Word files are never changed, so nothing can be damaged."
+          ],
+          "cons": ["Open the file in Word and your YouCoded comments are not there (yet)."],
+          "recommended": true
+        },
+        {
+          "id": "show-existing",
+          "label": "Also show Word's own comments",
+          "summary": "As above, plus comments someone already left in Word appear, read-only.",
+          "pros": ["You see what a colleague wrote in Word."],
+          "cons": [
+            "Two kinds of comments on one file, and only one kind can be replied to.",
+            "More work in the first version."
+          ]
+        },
+        {
+          "id": "later",
+          "label": "No comments on Word files yet",
+          "pros": ["Smallest first version."],
+          "cons": ["Right-click on a Word document offers Ask about this but not Add comment, which is inconsistent."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "GitHub",
+      "path": "Draft pull request #263 on the app's GitHub page",
+      "headline": "Close the July \"Ask Claude about this\" draft (#263) without merging it?",
+      "today": "The July attempt is still an open draft on GitHub. You decided to drop it, and its plan is already archived.",
+      "problem": "An open draft looks like live work to anyone, including future assistant sessions, and closing it shows on GitHub.",
+      "proposal": "Yes closes it with a note pointing to this work; the code stays on GitHub and can be reopened. No leaves it open.",
+      "options": [
+        {
+          "id": "close",
+          "label": "Close it",
+          "pros": ["Nobody mistakes it for current work."],
+          "cons": ["None; it can be reopened."],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Leave it open",
+          "pros": ["Nothing changes on GitHub."],
+          "cons": ["Two competing versions of the same feature appear open."]
+        }
+      ]
+    }
+  ]
+}

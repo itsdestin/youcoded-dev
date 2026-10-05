@@ -1,0 +1,75 @@
+{
+ "deck": "doc-comments-confirm-2",
+ "started": "2026-09-28T07:59:02.510Z",
+ "submitted": "2026-09-28T08:02:09Z",
+ "cur": 10,
+ "answers": {
+  "C-1": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-3": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-4": {
+   "v": "yes",
+   "note": "",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-5": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-6": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-7": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-8": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-1": {
+   "v": "yes",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-2": {
+   "v": "yes",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-3": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -33,7 +33,9 @@ utils:
       - has: { stopBy: end, matches: refusal-return }
 rule:
   any:
-    - pattern: buddyManager.show()
+    # $$$ARGS: show() takes the buddy style since 2026-10-02 — with or without
+    # it, the refusal must still come first.
+    - pattern: buddyManager.show($$$ARGS)
       inside: { stopBy: end, matches: show-handler }
       not:
         inside:
@@ -42,4 +44,4 @@ rule:
     - matches: show-handler
       any:
         - not: { has: { stopBy: end, matches: refusal-return } }
-        - not: { has: { stopBy: end, pattern: buddyManager.show() } }
+        - not: { has: { stopBy: end, pattern: buddyManager.show($$$ARGS) } }

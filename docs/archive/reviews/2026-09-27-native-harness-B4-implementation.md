@@ -1,0 +1,26 @@
+---
+status: shipped
+---
+
+# B4 — first file-changing call waits for guidance and a new model request
+
+Scope: B4 only. Existing uncommitted A1–A4 and B1–B3 remain in place. No commit, push, live-app access or paid evaluation.
+
+## Red / green
+
+- **Red before implementation:** `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/rule-injection.test.ts tests/harness-session-loop.test.ts tests/harness-history-rebuild.test.ts tests/harness-accepted-history.test.ts` → exit 1, **3 failed / 233 passed** (`/tmp/b4-red.log`): already-generated first Write, first Edit, and a grouped Read→Write+unstarted sibling did not defer. Tests asserted zero pre-guidance writes and a next request containing the rule.
+- **After implementation:** `node node_modules/vitest/vitest.mjs run tests/rule-injection.test.ts tests/harness-session-loop.test.ts tests/harness-history-rebuild.test.ts tests/harness-accepted-history.test.ts tests/line-budgets.test.ts` (from `youcoded/desktop`) → exit 0, **247 passed** (`/tmp/b4-owning-final.log`); after adding retained bounded-body resume coverage, same command → exit 0, **248 passed** (`/tmp/b4-owning-resume.log`). `npm run typecheck` → exit 0 (`/tmp/b4-types-resume.log`). The extended aggregate-budget regression first failed at **839 > 800** chars (`/tmp/b4-extended.log`); fixed in `fit-rule-group.ts`, then 29 rule-injection tests passed (`/tmp/b4-cancel.log`).
+- First `bash scripts/verify.sh /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded` → related tests, types, dead code, design lint, invariants, screens and journeys passed, **lint failed** on an assignment expression in the new test (`/tmp/b4-verify.log`). Replaced it with explicit statements. Rerun before the resume-dedupe case → exit 0, all checks passed (`/tmp/b4-verify-final.log`). Final rerun including the resume case → exit 0: `PASS types`, `PASS types in tests/`, `PASS tests (related)`, `PASS dead code`, `PASS lint`, `PASS design lint`, `PASS invariants`, `PASS screens open`, `PASS journeys`, `OK — all checks passed` (`/tmp/b4-verify-ultimate.log`).
+
+## Integration and boundaries
+
+- `youcoded/desktop/src/main/harness/harness-session.ts`: before each announced Write/Edit, after ready user-input precedence and before `runOneTool`, find newly applicable validated file-path rules. When there are any, `supersedeToolGroup` pairs this and every unstarted sibling as **not run**, retains completed real results in the *same* tool message and event origins, appends completed-read rules followed by fitted new guidance as app-generated history, accepts a ready correction, and loops to a fresh model request. An interrupt during finalization pairs results and ends the turn without pretending guidance was delivered. Neither the fixed system prompt nor a permission grant changes; a later *new* call still passes guards and `decide`/ask normally.
+- `busy-message-boundary.ts`: the existing paired-results seam accepts a specific not-run reason and an after-completed callback; the original user-message behavior keeps its old defaults.
+- `tool-args.ts`: one Zod parsing/one-level JSON recovery path for both rule-selection and execution, so malformed args never trigger guidance or consent and still produce their original argument error.
+- `injection/rule-delivery.ts`: shared validated path collection, B3 exact retained-body dedupe and post-step/pre-write publication. Non-file subjects remain excluded. `injection/fit-rule-group.ts` fits the entire new rule group to *one* injection allotment including source wrappers; every fitted or omitted source is labelled when that is physically possible. A shortened rule is marked delivered for the current retained context, avoiding a replan loop.
+- `tests/rule-injection.test.ts`: first Write/Edit no execution until a new request; grouped completed Read and multiple not-run siblings; no-write decision; ordinary refused reissued call; malformed args; no-rule fast path; bounded multiple rules; concurrent ready human correction; interruption during deferral; accepted capture and persisted event rebuild pairing. A seeded exact bounded rule body is also pinned against redundant replanning on resume. Existing suites continue pinning post-read injection and excluded non-path subjects. No other tool or IPC surfaces changed.
+- Reference timing claim updated in `youcoded/docs/native-runtime.md`. Line budget maintained by extracting shared logic rather than raising the 4165-line driver ceiling.
+
+## Limits
+
+The synthetic multi-rule case measures prompt rule-message characters against the profile's token approximation, not a provider's actual tokenizer; extremely tiny budgets cannot carry individual source labels and fall back to a generic omission notice. No paid model run was authorized or performed. B2 owner-relative matching and B3 retained-history reconciliation are reused, not reimplemented or modified.

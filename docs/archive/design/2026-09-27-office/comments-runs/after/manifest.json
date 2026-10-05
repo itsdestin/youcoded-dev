@@ -1,0 +1,38 @@
+[
+ {
+  "name": "comments/word",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/comments-runs/after/comments/word/midnight.png",
+  "ms": 0,
+  "errors": []
+ },
+ {
+  "name": "comments/word",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/comments-runs/after/comments/word/meadow-mist.png",
+  "ms": 0,
+  "errors": []
+ },
+ {
+  "name": "comments/excel",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/comments-runs/after/comments/excel/midnight.png",
+  "ms": 0,
+  "errors": []
+ },
+ {
+  "name": "comments/excel",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/comments-runs/after/comments/excel/meadow-mist.png",
+  "ms": 0,
+  "errors": []
+ }
+]

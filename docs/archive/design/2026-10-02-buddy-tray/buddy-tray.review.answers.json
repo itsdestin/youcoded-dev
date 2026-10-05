@@ -1,0 +1,23 @@
+{
+ "deck": "buddy-tray-review",
+ "started": "2026-10-02T10:47:01.861Z",
+ "submitted": null,
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 308,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1790938336106,
+   "note": "just make it a \"minimize to tray\" toggle."
+  },
+  "T-1": {
+   "v": "skip",
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1790938181132
+  }
+ }
+}

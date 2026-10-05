@@ -1,0 +1,60 @@
+{
+ "deck": "native-harness-pr-review-questions",
+ "started": "2026-09-28T19:38:30.854Z",
+ "submitted": "2026-09-28T19:42:07Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "after-batch",
+   "t": 1790624371799,
+   "note": "how is this determined, exactly? separately, we should still have a \"send now\" button or something on queued messages, as this change might mean there's a bit of a wait otherwise.",
+   "seconds": 20,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "reset",
+   "t": 1790624371799,
+   "seconds": 20,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "picks",
+   "picks": [
+    "buttons-only"
+   ],
+   "t": 1790624371799,
+   "seconds": 20,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "nearest-only",
+   "t": 1790624525915,
+   "seconds": 27,
+   "theme": "meadow-mist"
+  },
+  "Q-5": {
+   "note": "we're overcomplicating this i think. what is the simplest/most robust proposal that addresses the concern here? think through unintened consequences",
+   "t": 1790624525915,
+   "v": "other",
+   "seconds": 27,
+   "theme": "meadow-mist"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "panel-only",
+   "t": 1790624525915,
+   "seconds": 27,
+   "theme": "meadow-mist"
+  },
+  "Q-7": {
+   "v": "other",
+   "t": 1790624518513,
+   "note": "want to think through this a bit more.... this still seems like janky ux and kinda a weird/flaky way to do this.",
+   "seconds": 72,
+   "theme": "meadow-mist"
+  }
+ }
+}

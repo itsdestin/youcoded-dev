@@ -308,9 +308,14 @@ body[data-layout="live"] .stage .inner{align-items:flex-start;flex-wrap:wrap}
    claims the free row and the pane is measured into it (Destin, 2026-09-06 — "so I can use
    the whole thing without scrolling"). A ROW of designs keeps `live-fit`'s content sizing. */
 .content.row-below.live-fill{grid-template-rows:minmax(200px,1fr) auto;align-content:stretch}
-/* WHY: the live operating hint now sits above the pane. A filling app screen
-   must take the REMAINING height, or the hint pushes its bottom under the clip. */
-.live-fill .stage{overflow:hidden;display:flex;flex-direction:column}
+/* NOT clipped (2026-09-26): .stage is rounded, and a rounded CLIPPING wrapper round the
+   app pane is exactly the Chrome glass-cutout bug the note above describes — Destin's
+   one-pane (fill) steps showed Meadow Mist as a blurred wallpaper with no messages, while
+   the same app in its own tab was fine. The pane is sized to the stage, so nothing needs
+   clipping; `visible` beats the base rule's `overflow:auto` for fill steps only.
+   The live operating hint sits above the pane, so the app screen takes the REMAINING
+   height (flex column), or the hint pushes its bottom out of the stage. */
+.live-fill .stage{overflow:visible;display:flex;flex-direction:column}
 .live-fill .stage .inner{padding:12px 14px;align-items:stretch;flex:1 1 auto;min-height:0}
 .live-fill .frame{display:flex;flex-direction:column;width:100%;height:100%;min-height:0}
 .live-fill .frame figcaption{flex:none}

@@ -4,6 +4,56 @@ How to spin up clean Windows and Linux virtual machines on the current dev machi
 
 > **History:** the archived `docs/archive/local-dev-vm.md` covered the same goal for a **Windows host** (VirtualBox + `docs/archive/setup-test-vm.ps1`, moved out of `scripts/` 2026-09-23 since this path was never used). That path was blocked by the Hyper-V conflict (`docs/archive/investigations/2026-04-29-vbox-hyperv-conflict.md`) and never used. None of that applies here — this host runs native KVM with no competing hypervisor, so installs run at full speed (~20–30 min for Windows, once, then snapshot-revert in seconds). The snapshot-revert methodology and "when to use this" list carry over.
 
+## Quick loop — `scripts/vm/vm.sh` (start here)
+
+Since 2026-10-01 this is how a session puts a build in front of Destin, or checks one itself, on
+any of the three guests. Use it whenever a change touches what a new user sees **before the app's
+own UI**: installer, signing (SmartScreen / Gatekeeper), first launch, prerequisite install,
+sign-in, first chat. **After any signing change, run the first-run wall on Windows and Mac with a
+build that carries it** — that is the only place the user-facing result is visible.
+
+```bash
+scripts/vm/vm.sh win start            # restore the saved "ready" desktop (~5 s) + open a window on Destin's screen
+scripts/vm/vm.sh win load beta        # newest pre-release installer -> guest Downloads, marked as an internet download
+scripts/vm/vm.sh win stop             # throw the session away; next start is pristine again
+```
+
+| Guest | Name | Restore | Window | Remote access |
+|---|---|---|---|---|
+| Windows 11 | `win` | ~5 s | SPICE viewer (`spicy`), close/reopen freely with `view` | QEMU agent (runs as SYSTEM) |
+| Ubuntu 24.04 | `ubuntu` | ~3 s | SPICE viewer | SSH `youcoded-testin@127.0.0.1:22221`, passwordless sudo |
+| macOS Sonoma | `mac` | ~6 s | QEMU's own GTK window (GL on); closing it stops the guest | SSH `destinmoss@127.0.0.1:22222`, **no sudo** |
+
+All SSH uses `~/vms/vm-key` (host-only keypair). `load` takes `release`, `beta`, a tag (`v1.3.0`),
+`run:<CI run id>` (test-build artifacts) or a local file; Linux defaults to the AppImage
+(`VM_LINUX_FMT='*.deb'` for the deb). `--headless` on `start` skips the window when a session only
+needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `save-ready`.
+
+**How it works, and the traps it encodes** (each has a WHY comment in the script):
+- **"ready" = a RAM snapshot** (`<vm>/ready.state`, 3–7 GB) paired with the disk snapshot `ready`.
+  It only works with a migratable machine, so `vm.sh` launches its own copy of quickemu's
+  generated `<vm>.sh` with: no `+invtsc` / `migratable=no` / `hv_passthrough` (explicit Hyper-V
+  enlightenments instead), 8 GB RAM instead of 32, and the Mac's `virtio-sound` swapped for Intel
+  HDA (macOS has no driver for it, so the Mac guest is silent). **The same edits must apply at save
+  and restore** — if quickemu regenerates `<vm>.sh` with a different device list, re-run
+  `save-ready` from a fresh boot.
+- **The clock is reset after every restore** (the guest wakes believing it is still the save
+  moment): Windows via `guest-set-time` *with an explicit time* (no-argument form re-reads the
+  stale RTC), Ubuntu via `sudo date`. The Mac has no passwordless sudo, so its clock runs behind
+  until macOS re-syncs on its own — harmless for install testing; give Destin's Mac password to a
+  session and it can add a sudoers entry like Ubuntu's.
+- **Files arrive over HTTP from `~/vms/serve`** (host `127.0.0.1:8010`, guest `10.0.2.2:8010`) and
+  get the browser's mark: Windows `Zone.Identifier` (ZoneId=3), Mac `com.apple.quarantine`. Without
+  it SmartScreen and Gatekeeper never assess the file, which is the whole point.
+- **Each guest has a fixed SSH forward** (22220 Windows, 22221 Ubuntu, 22222 Mac); quickemu gave
+  Windows and Mac the same port, so the second to start died.
+- **Without a ready state, `start` boots the disk as it is** (setup mode) — it never reverts to
+  `clean`, because that erased a half-finished Mac setup once.
+
+Re-creating a ready state: `start` (boots the current disk), get the desktop how you want it,
+then `save-ready` (stops the guest, ~1 min). Older disk snapshots (`clean`, Mac's
+`beta8-signed-in-2026-07-20`) are untouched and still usable with `qemu-img snapshot -a`.
+
 ## Why VMs
 
 - **Clean-machine fidelity.** The failure modes that matter — `spawn EINVAL`, missing winget, no Node/Git, fresh-PATH propagation, AppImage-without-libfuse2 — only exist on a machine that has never seen a dev tool. The host masks all of them.
@@ -338,11 +388,15 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 |---|---|---|
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
 | ubuntu-24.04 | `youcoded-testin` | `youcodedtesting` |
+| macos-sonoma | `destinmoss` ("Destin Moss", admin, auto-login) | Destin's — not recorded; ask him |
 
 The Ubuntu username really is `youcoded-testin` — read from `getent passwd 1000`, not from memory
 (Ubuntu's installer truncated what was typed). Password is the full `youcodedtesting`.
 
 ## Testing a beta / dev build — the loop
+
+> **Superseded for everyday use by the Quick loop above** (`vm.sh start` + `vm.sh load`), which
+> avoids the stale-share and SYSTEM-copy traps below. Kept for the manual commands and history.
 
 Verified end-to-end 2026-07-16 with the real `YouCoded.Setup.1.2.4.exe` (111 MB).
 
@@ -409,7 +463,9 @@ installer test ran entirely this way, with nothing painted on Destin's screen.
 spice-webdavd and the virtio GPU driver) from the virtio ISO, and exposes it at
 `<vm>/<vm>-agent.sock`. That makes the guest scriptable — no SSH, no `sendkey` roulette.
 
-**Linux guests need the agent installed once, by hand.** quickemu wires the host-side channel for
+**Linux guests: use SSH, not the agent.** Measured 2026-10-01: quickemu's generated
+`ubuntu-24.04.sh` has no agent channel at all (no `<vm>-agent.sock` appears), so `vm.sh` reaches
+Ubuntu over SSH instead. Earlier text, kept for history: quickemu wires the host-side channel for
 every guest, but only Windows gets the software auto-installed — on Ubuntu nothing answers the socket
 until you install it, and you can't do that *through* the agent. Run this once in the guest's own
 terminal, then re-take the `clean` snapshot so every revert keeps it:
@@ -453,11 +509,10 @@ Checked via guest-exec, so this is measured, not assumed:
 | qemu-ga / spice-agent | ✅ Running (spice-webdavd installed but Stopped) |
 | Build / resolution | Windows 11 Pro 25H2 (26200) · 1024×768 |
 
-**The `winget absent` row is a feature, not a defect.** `prerequisite-installer.ts` branches on
-`detectWinget`, and a fresh offline Win11 genuinely has no winget until the Store provisions App
-Installer — so this baseline exercises the **native `claude.ai/install.ps1` fallback path** for real.
-A `clean-winget` second snapshot (boot, let the Store provision App Installer, re-snapshot) would
-cover the other branch. Two snapshots, two code paths — worth doing before trusting either.
+**The `winget absent` row is a feature, not a defect.** Setup no longer uses winget for Git or
+Node (2026-10-02: portable Git and the Node zip into the user folder), so this baseline is the
+case that used to dead-end and now must not. winget remains only for Tailscale, rclone and `gh`
+(`detectWinget` callers); a `clean-winget` snapshot would cover those.
 
 ## Verified Ubuntu baseline (`clean` snapshot, 2026-07-16)
 
@@ -554,19 +609,14 @@ Do these interactively in the VM window with real credentials (Destin drives; th
 - Reverting to `clean` discards guest-side tokens, but the server side may accumulate authorized devices/sessions. Occasionally prune at claude.ai settings and GitHub → Settings → Applications.
 - Never copy `~/.claude/.credentials.json` from the host into a guest to "skip" sign-in — the whole point is exercising the real flow.
 
-## Claude-driven testing (phase 2, unverified)
+## Claude-driven testing
 
-For automated smoke tests, two hooks exist without extra tooling:
-
-- **QEMU monitor socket** (quickemu creates `<vm>/<vm>-monitor.socket`): `screendump` writes a screenshot Claude can read; `sendkey` types keys. Enough for "boot → revert → launch installer → screenshot-verify" loops driven from a session. Verified working — `sendkey ret` drove Windows Setup's screens, and `screendump` + ImageMagick (`magick x.ppm -format "%[mean]" info:`) is a cheap "has the screen changed?" probe. Three traps, all hit for real:
-  - **Never send `quit`** — it terminates the VM. (Killed a booted VM mid-session.)
-  - **`echo cmd | socat -` loses the command**: socat closes on EOF before QEMU processes it. Keep the connection open: `( echo "cmd"; sleep 2 ) | socat - unix-connect:<sock>`.
-  - **`pkill -f qemu-system-x86_64` kills the shell running it** — the pattern matches its own command line, so the rest of your script silently never runs (exit 144). Use the bracket trick: `pkill -f "[q]emu-system-x86_64"`. Same for `pgrep` — it self-matches and reports a dead VM as alive.
-- **Guest SSH:** quickemu forwards guest port 22 to a host port (printed at boot). Enable OpenSSH Server in the Windows baseline before snapshotting `clean`, and command-level assertions (`Get-Command claude`, registry PATH checks) become scriptable.
-
-Alternative zero-setup path: [dockur/windows](https://github.com/dockur/windows) runs Windows-in-KVM inside the already-installed Docker with a browser-based viewer (`-p 8006:8006`) — handy if quickemu ever misbehaves, but snapshots are manual file copies, so quickemu remains the primary recommendation.
-
-Wrap this into `scripts/vm/` helpers only after the first real pass validates the commands above — the 2026-04-29 investigation's lesson is that untested provisioning scripts fail silently.
+Use `scripts/vm/vm.sh` (Quick loop above): `--headless` start, `shot`, `exec`, and for Ubuntu/Mac
+SSH with `~/vms/vm-key`. Keys and typing without remote access: `scripts/vm/vmctl.sh keys|type`
+(set `VMCTL_VM`). Two monitor-socket traps still apply when driving by hand: keep the socket open
+for the reply (`( echo cmd; sleep 1 ) | socat - unix-connect:<sock>`), and `quit` ends the guest —
+which is exactly what `vm.sh stop` uses it for. The whole-path automated test is a parked roadmap
+idea (`docs/roadmap/dev-workspace.md`, "Nothing tests a new user's whole path").
 
 ## Costs
 

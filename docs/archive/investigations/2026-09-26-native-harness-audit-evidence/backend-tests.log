@@ -1,0 +1,1202 @@
+Selecting tests related to 135 harness/provider source files
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop
+
+stderr | tests/harness-stall-watchdog.test.ts > HarnessSession — streaming inactivity watchdog > Retry erases the abandoned sentence from the MODEL's memory, not just the screen
+[harness] stream error: upstream 502 from the provider
+
+ ✓ tests/native-session-host.test.ts (207 tests) 6237ms
+     ✓ a message typed while the session is still starting is HELD, not refused  313ms
+     ✓ a run finishing after its session was destroyed is dropped with the shell log line, not the permission one  357ms
+     ✓ shell-event fires with the ShellRunView and shellRunsFor replays it  307ms
+ ✓ tests/harness-stall-watchdog.test.ts (13 tests) 7146ms
+     ✓ silent stall with nothing streamed: warns (willRetry) then AUTO-RETRIES and completes  526ms
+     ✓ stall on BOTH the first attempt and the retry: second warning is non-retry, ends in session-error  1016ms
+     ✓ a stall with NOTHING ever streamed still ENDS the turn — Clock 1 is out of scope  1008ms
+     ✓ stall AFTER content already streamed: PARKS the turn instead of erroring  505ms
+     ✓ a SPECIALIST CHILD never parks — the identical stall ends its turn instead  1007ms
+     ✓ a chunk arriving AFTER the card clears it and the turn completes normally  508ms
+     ✓ Retry erases the abandoned text, re-runs the step, and completes  510ms
+     ✓ Retry erases the abandoned sentence from the MODEL's memory, not just the screen  507ms
+     ✓ a retried step that stalls again PARKS again — it never dies on its own  1010ms
+     ✓ Retry is a no-op once a real chunk has un-parked the stream — it must not tear down a live stream  507ms
+ ✓ tests/secrets-store.test.ts (13 tests) 3018ms
+     ✓ set throws when the lock cannot be acquired, without touching the file  3002ms
+ ✓ tests/buddy-consent-gate.test.ts (18 tests) 638ms
+stderr | tests/native-session-host-continuation.test.ts > NativeSessionHost durable continuation > a failed manual summary preserves the accepted tool result across reopen
+Error: scriptedFetch ran out of replies at request 4
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/native-session-host-continuation.test.ts:43:22
+    at postToApi (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@ai-sdk/provider-utils/dist/index.js:3316:28)
+    at postJsonToApi (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@ai-sdk/provider-utils/dist/index.js:3271:13)
+    at _OpenAIResponsesBatchLanguageModel.doStream (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@ai-sdk/openai/dist/index.js:7427:56)
+    at doStream (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:15867:36)
+    at Object.doStream (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:15868:27)
+    at execute (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8658:26)
+    at runWithTracingChannelSpan (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4212:12)
+    at executeLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4420:14)
+    at streamLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8656:7)
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > recovers one structured overflow on a rejected request after completed tools without redoing them
+[harness] stream error: rejected
+
+ ✓ tests/native-session-host-continuation.test.ts (32 tests) 4604ms
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not retry an overflow after output has begun
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay second overflow indefinitely
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay second overflow indefinitely
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay auth indefinitely
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay network indefinitely
+[harness] stream error: connection lost (provider error 400)
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay unrecognized indefinitely
+[harness] stream error: context length exceeded (provider error 400)
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > clears progress on error and destroy
+[harness] stream error: provider unavailable
+
+harness-eval-worker: could not load the harness under test from "/a/dist": Cannot find module '/a/dist/main/harness/eval/run-case.js' imported from /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/test-engine/harness-eval-worker.mjs
+harness-eval-worker: could not load the harness under test from "/nonexistent/sk-or-v1-CANARY-IN-A-PATH/dist": Cannot find module '/nonexistent/sk-or-v1-CANARY-IN-A-PATH/dist/main/harness/eval/run-case.js' imported from /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/test-engine/harness-eval-worker.mjs
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > retry: attempt 1 errors immediately, attempt 2 streams clean → completes, no dup events
+[harness] stream error: temporary upstream
+
+ ✓ tests/harness-session-loop.test.ts (131 tests) 2472ms
+     ✓ specialist children bypass the 'frontier (former 50-step)' fallback without a max_steps ask  336ms
+     ✓ root sessions without an explicit maxSteps run beyond the former 50-step boundary without asking  336ms
+ ✓ tests/remote-download.test.ts (39 tests) 2324ms
+     ✓ a stream the phone stops reading is ended after the idle timeout, freeing its slot  354ms
+     ✓ a completed download leaves the connection to the server's own keep-alive timeout  1310ms
+ ✓ tests/mcp-startup-wiring.test.ts (13 tests) 406ms
+     ✓ threads a REAL, config-driven McpManager into NativeSessionHost  388ms
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > runs every cell and never asks about usage when no cap was given
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > runs every cell and never asks about usage when no cap was given
+
+[2/4] b
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > runs every cell and never asks about usage when no cap was given
+
+[3/4] c
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > runs every cell and never asks about usage when no cap was given
+
+[4/4] d
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > stops when real spend passes the cap and names exactly which cells never ran
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > stops when real spend passes the cap and names exactly which cells never ran
+  spent so far: $2.0000 of $5.00
+
+[2/4] b
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > stops when real spend passes the cap and names exactly which cells never ran
+  spent so far: $4.0000 of $5.00
+
+[3/4] c
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > stops when real spend passes the cap and names exactly which cells never ran
+  spent so far: $6.0000 of $5.00
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > lets the cell that trips the cap FINISH — a half-run costs the same and yields nothing
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > lets the cell that trips the cap FINISH — a half-run costs the same and yields nothing
+  spent so far: $1000.0000 of $1.00
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > does not check usage after the last cell
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > does not check usage after the last cell
+  spent so far: $0.0000 of $1000.00
+
+[2/4] b
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > does not check usage after the last cell
+  spent so far: $0.0000 of $1000.00
+
+[3/4] c
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > does not check usage after the last cell
+  spent so far: $0.0000 of $1000.00
+
+[4/4] d
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > stops rather than continuing uncapped when a MID-RUN usage read fails
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > turns a runOne THROW into a stopReason instead of losing the whole matrix
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > turns a runOne THROW into a stopReason instead of losing the whole matrix
+
+[2/4] b
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > turns a runOne THROW into a stopReason instead of losing the whole matrix
+
+[3/4] c
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > turns an onResult write failure into a stopReason, keeping the cell that already ran
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > turns an onResult write failure into a stopReason, keeping the cell that already ran
+
+[2/4] b
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > hands every completed result to onResult BEFORE a later stop
+
+[1/4] a
+
+stdout | tests/harness-eval-orchestrator.test.ts > the spend cap > hands every completed result to onResult BEFORE a later stop
+  spent so far: $99.0000 of $1.00
+
+ ✓ tests/harness-tools-core.test.ts (155 tests) 2384ms
+     ✓ Bash still reports the cwd when the command timed out  503ms
+       ✓ reports a sentinel exit code (124), a typed timedOut flag, and SIGKILL-aware prose  503ms
+ ✓ tests/bash-background.test.ts (14 tests) 2227ms
+     ✓ a foreground command at its limit is adopted — no SIGKILL, no exit 124, text names the id  404ms
+     ✓ a leading `sleep` is never handed off — it times out and reports as today  302ms
+     ✓ a handed-off run applies neither cwd nor persistent_env; the env temp file is removed; the sentinel is filtered on read  1007ms
+ ✓ tests/prefill-progress.test.ts (43 tests) 2196ms
+     ✓ a stream that reports progress does NOT trip a short stall budget  1814ms
+     ✓ a LOCAL session forwards the live reading to the UI  304ms
+ ✓ tests/prefill-watchdog.test.ts (11 tests) 2199ms
+     ✓ a slow first token inside the prefill budget completes normally  723ms
+     ✓ announces prompt processing BEFORE the first token, so the UI can say so  706ms
+     ✓ stays silent on a CLOUD profile however large the prompt  707ms
+stderr | tests/specialist-run.test.ts > specialist foreground run > a mid-run provider failure rejects with the real reason and still tears the child down
+[harness] stream error: llama-server dropped the connection
+
+ ✓ tests/harness-eval-orchestrator.test.ts (86 tests) 19331ms
+     ✓ does not advertise models a --only run will not touch  843ms
+     ✓ accepts a positive integer and expands that many repeats  411ms
+     ✓ is the path the CLI actually prints, not just an unused helper  385ms
+     ✓ --dry-run works with no key anywhere and prints a dollar figure  740ms
+     ✓ a PAID run refuses an inherited key, before spawning anything  442ms
+     ✓ a PAID run with a clean environment still demands --key-file  506ms
+     ✓ a MID-MATRIX stop still writes the summary, names the cells that never ran, and never claims nothing was spent  685ms
+     ✓ --max-spend actually reaches runMatrix — the flag stops a real run, not just an injected one  336ms
+     ✓ both arms reach the worker with their OWN instructions text  350ms
+     ✓ writes a report.md that shows all three check states, next to the transcripts  335ms
+     ✓ writes the transcript BEFORE grading, and a grading failure neither stops the run nor loses the conversation  359ms
+     ✓ restores a pre-existing file the run OVERWRITES, not just entries it created  347ms
+     ✓ kills a worker that outlives the timeout and returns a labelled result  2012ms
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > hands back a credential once, and accepts it next time without the password
+[remote-server] 2026-09-26T19:53:12.391Z device 65a21814: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > hands back a credential once, and accepts it next time without the password
+[remote-server] 2026-09-26T19:53:12.392Z device 65a21814: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > the same browser signing in with the password again keeps its one row
+[remote-server] 2026-09-26T19:53:12.404Z device e3fcd49c: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > the same browser signing in with the password again keeps its one row
+[remote-server] 2026-09-26T19:53:12.404Z device e3fcd49c: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > a device that was unpaired gets a new row when it pairs again
+[remote-server] 2026-09-26T19:53:12.416Z device 900fab8c: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > a device that was unpaired gets a new row when it pairs again
+[remote-server] 2026-09-26T19:53:12.416Z device 73d68307: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — pairing > pairing over the wire > an unpaired device is told so, with a terminal close code
+[remote-server] 2026-09-26T19:53:12.440Z device e7720608: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a client whose listener registers 300 ms after auth:ok gets the hydrate then, not after the 5 s fallback
+[remote-server] 2026-09-26T19:53:12.457Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.757Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a client whose listener registers 300 ms after auth:ok gets the hydrate then, not after the 5 s fallback
+[remote-server] 2026-09-26T19:53:12.757Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a client that never sends client:ready receives nothing until the fallback, then the whole sequence
+[remote-server] 2026-09-26T19:53:12.461Z device dev-1: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a client that never sends client:ready receives nothing until the fallback, then the whole sequence
+[remote-server] 2026-09-26T19:53:17.461Z device dev-1: catch-up started by the fallback timer (no client:ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a client that never sends client:ready receives nothing until the fallback, then the whole sequence
+[remote-server] 2026-09-26T19:53:17.461Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > client:ready at 4.9 s yields exactly one hydrate and one replay
+[remote-server] 2026-09-26T19:53:12.470Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:17.370Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > client:ready at 4.9 s yields exactly one hydrate and one replay
+[remote-server] 2026-09-26T19:53:17.370Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > client:ready at 6 s, after the fallback ran, is ignored
+[remote-server] 2026-09-26T19:53:12.479Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:17.479Z device dev-1: catch-up started by the fallback timer (no client:ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > client:ready at 6 s, after the fallback ran, is ignored
+[remote-server] 2026-09-26T19:53:17.479Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > client:ready at 6 s, after the fallback ran, is ignored
+[remote-server] client:ready ignored in phase live
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > two client:ready within 100 ms yield one hydrate and one replay
+[remote-server] 2026-09-26T19:53:12.489Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.489Z device dev-1: catch-up started (page ready)
+[remote-server] client:ready ignored in phase readying
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > two client:ready within 100 ms yield one hydrate and one replay
+[remote-server] 2026-09-26T19:53:12.539Z device dev-1: caught up in 50 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a session:created broadcast between client:ready and the hydrate reaches the client after it
+[remote-server] 2026-09-26T19:53:12.496Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.496Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the phone says when it is ready > a session:created broadcast between client:ready and the hydrate reaches the client after it
+[remote-server] 2026-09-26T19:53:12.496Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > a per-delta event broadcast before the snapshot request is not re-sent; one broadcast after it is sent once; an omitted session gets both
+[remote-server] 2026-09-26T19:53:12.503Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.503Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > a per-delta event broadcast before the snapshot request is not re-sent; one broadcast after it is sent once; an omitted session gets both
+[remote-server] 2026-09-26T19:53:12.503Z device dev-1: caught up in 0 ms
+
+stderr | tests/specialist-run.test.ts > background execution + idle-boundary delivery > a background child that dies mid-run delivers a typed failure notice, not silence
+[harness] stream error: llama-server dropped the connection
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > lifecycle broadcasts below the cut line are still flushed
+[remote-server] 2026-09-26T19:53:12.511Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.511Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > lifecycle broadcasts below the cut line are still flushed
+[remote-server] 2026-09-26T19:53:12.511Z device dev-1: caught up in 0 ms
+
+stderr | tests/specialist-run.test.ts > background execution + idle-boundary delivery > a background child that dies mid-run delivers a typed failure notice, not silence
+[harness] stream error: llama-server dropped the connection
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > the queue is bounded at 2,000; overflow drops the oldest and marks the hydrate degraded
+[remote-server] 2026-09-26T19:53:12.518Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.518Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > the queue is bounded at 2,000; overflow drops the oldest and marks the hydrate degraded
+[remote-server] 2026-09-26T19:53:12.518Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > native per-delta events below the cut line are skipped; native:shell-event and transcript:shrink follow the rule too
+[remote-server] 2026-09-26T19:53:12.527Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.527Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > native per-delta events below the cut line are skipped; native:shell-event and transcript:shrink follow the rule too
+[remote-server] 2026-09-26T19:53:12.527Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > the cut line survives an overflow that shifts the queue
+[remote-server] 2026-09-26T19:53:12.536Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.536Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > the cut line survives an overflow that shifts the queue
+[remote-server] 2026-09-26T19:53:12.536Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > a hook event arriving on a FIRST connect before the hook pass is not replayed on top of the pass
+[remote-server] 2026-09-26T19:53:12.544Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.544Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > a hook event arriving on a FIRST connect before the hook pass is not replayed on top of the pass
+[remote-server] 2026-09-26T19:53:12.544Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > a hook event arriving on a RECONNECT during the restore is queued and flushed
+[remote-server] 2026-09-26T19:53:12.552Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.552Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — readiness > the cut line > a hook event arriving on a RECONNECT during the restore is queued and flushed
+[remote-server] 2026-09-26T19:53:12.552Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > every live pty:output carries the buffer epoch and the chunk offset
+[remote-server] 2026-09-26T19:53:12.559Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.559Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > every live pty:output carries the buffer epoch and the chunk offset
+[remote-server] 2026-09-26T19:53:12.559Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > a phone offset mid-chunk receives exactly the units past it, no reset
+[remote-server] 2026-09-26T19:53:12.566Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.566Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > a phone offset mid-chunk receives exactly the units past it, no reset
+[remote-server] 2026-09-26T19:53:12.566Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > a phone that is fully up to date receives nothing for the terminal
+[remote-server] 2026-09-26T19:53:12.573Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.573Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > a phone that is fully up to date receives nothing for the terminal
+[remote-server] 2026-09-26T19:53:12.573Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > an epoch mismatch resets, then sends the whole buffer
+[remote-server] 2026-09-26T19:53:12.580Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.580Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > an epoch mismatch resets, then sends the whole buffer
+[remote-server] 2026-09-26T19:53:12.580Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > an offset beyond what the host holds resets
+[remote-server] 2026-09-26T19:53:12.586Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.586Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > an offset beyond what the host holds resets
+[remote-server] 2026-09-26T19:53:12.586Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > an offset below a trimmed head resets — base advances on every head trim, the single-chunk slice included
+[remote-server] 2026-09-26T19:53:12.594Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.594Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > an offset below a trimmed head resets — base advances on every head trim, the single-chunk slice included
+[remote-server] 2026-09-26T19:53:12.594Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > sends only the units past the cursor on a second pass, so output during a paused send is not lost or doubled
+[remote-server] 2026-09-26T19:53:12.607Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.607Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the terminal replay is exact > sends only the units past the cursor on a second pass, so output during a paused send is not lost or doubled
+[remote-server] 2026-09-26T19:53:12.607Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > consent does not lie > replays only unresolved permission requests and ends every session with hook:replay-complete
+[remote-server] 2026-09-26T19:53:12.615Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.615Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > consent does not lie > replays only unresolved permission requests and ends every session with hook:replay-complete
+[remote-server] 2026-09-26T19:53:12.615Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > consent does not lie > a request that arrives and is answered during the snapshot wait shows no card after the flush
+[remote-server] 2026-09-26T19:53:12.630Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.630Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > consent does not lie > a request that arrives and is answered during the snapshot wait shows no card after the flush
+[remote-server] 2026-09-26T19:53:12.630Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > backpressure > pauses the replay above 8 MB buffered, resumes as it drains, and loses nothing arriving meanwhile
+[remote-server] 2026-09-26T19:53:12.646Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.646Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > backpressure > pauses the replay above 8 MB buffered, resumes as it drains, and loses nothing arriving meanwhile
+[remote-server] 2026-09-26T19:53:13.046Z device dev-1: caught up in 400 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > backpressure > closes a client above 32 MB with the reconnect code
+[remote-server] 2026-09-26T19:53:12.653Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.653Z device dev-1: catch-up started (page ready)
+[remote-server] 2026-09-26T19:53:12.653Z device dev-1: disconnected: code undefined after 0 s, phase readying, silent for 0 s
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > backpressure > closes a client above 32 MB with the reconnect code
+[remote-server] 2026-09-26T19:53:12.653Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > output that arrives while a terminal send is paused is sent next pass — not skipped, not doubled
+[remote-server] 2026-09-26T19:53:12.661Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.661Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > output that arrives while a terminal send is paused is sent next pass — not skipped, not doubled
+[remote-server] 2026-09-26T19:53:12.811Z device dev-1: caught up in 150 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > a message broadcast during the final terminal pass is still delivered
+[remote-server] 2026-09-26T19:53:12.668Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.668Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > a message broadcast during the final terminal pass is still delivered
+[remote-server] 2026-09-26T19:53:12.818Z device dev-1: caught up in 150 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > when the head trim overtakes the cursor during a pause, the terminal is reset, never silently skipped
+[remote-server] 2026-09-26T19:53:12.675Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.675Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > when the head trim overtakes the cursor during a pause, the terminal is reset, never silently skipped
+[remote-server] 2026-09-26T19:53:12.825Z device dev-1: caught up in 150 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > hook events added while the hook pass is paused are sent once
+[remote-server] 2026-09-26T19:53:12.684Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.684Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > hook events added while the hook pass is paused are sent once
+[remote-server] 2026-09-26T19:53:12.834Z device dev-1: caught up in 150 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > a live client that stops reading is closed above 32 MB instead of buffered without bound
+[remote-server] 2026-09-26T19:53:12.692Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.692Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > a live client that stops reading is closed above 32 MB instead of buffered without bound
+[remote-server] 2026-09-26T19:53:12.692Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > the replay under a paused send > a live client that stops reading is closed above 32 MB instead of buffered without bound
+[remote-server] 2026-09-26T19:53:12.692Z device dev-1: not reading fast enough; closing
+[remote-server] 2026-09-26T19:53:12.692Z device dev-1: disconnected: code undefined after 0 s, phase live, silent for 0 s
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > exact slicing at the edges > an offset exactly at a trimmed window's start gets the whole window with no reset
+[remote-server] 2026-09-26T19:53:12.699Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.699Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > exact slicing at the edges > an offset exactly at a trimmed window's start gets the whole window with no reset
+[remote-server] 2026-09-26T19:53:12.699Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > exact slicing at the edges > an offset inside the second of several chunks slices across the chunk boundary
+[remote-server] 2026-09-26T19:53:12.708Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.708Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > exact slicing at the edges > an offset inside the second of several chunks slices across the chunk boundary
+[remote-server] 2026-09-26T19:53:12.708Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > an ask the snapshot shows awaiting is listed pending even when the host buffer never saw it
+[remote-server] 2026-09-26T19:53:12.716Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.716Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > an ask the snapshot shows awaiting is listed pending even when the host buffer never saw it
+[remote-server] 2026-09-26T19:53:12.716Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > a Claude Code ask whose socket closed is purged, the phone is told it expired, and a phone that was away is replayed that
+[remote-server] 2026-09-26T19:53:12.723Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.723Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > a Claude Code ask whose socket closed is purged, the phone is told it expired, and a phone that was away is replayed that
+[remote-server] 2026-09-26T19:53:12.723Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > a Claude Code ask whose socket closed is purged, the phone is told it expired, and a phone that was away is replayed that
+[remote-server] 2026-09-26T19:53:12.723Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.723Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > a Claude Code ask whose socket closed is purged, the phone is told it expired, and a phone that was away is replayed that
+[remote-server] 2026-09-26T19:53:12.723Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > first connect: an ask the snapshot shows awaiting but answered during the snapshot wait is not listed open, and its resolution still reaches the phone
+[remote-server] 2026-09-26T19:53:12.730Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.730Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reconnect replay > which asks are still open > first connect: an ask the snapshot shows awaiting but answered during the snapshot wait is not listed open, and its resolution still reaches the phone
+[remote-server] 2026-09-26T19:53:12.730Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > answers ok, sends chat:hydrate with the client's seq, replays no terminal or permissions, and goes live
+[remote-server] 2026-09-26T19:53:12.744Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.744Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > answers ok, sends chat:hydrate with the client's seq, replays no terminal or permissions, and goes live
+[remote-server] 2026-09-26T19:53:12.744Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > answers ok, sends chat:hydrate with the client's seq, replays no terminal or permissions, and goes live
+[remote-server] 2026-09-26T19:53:12.744Z device dev-1: catch-up started (Refresh)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > answers ok, sends chat:hydrate with the client's seq, replays no terminal or permissions, and goes live
+[remote-server] 2026-09-26T19:53:12.744Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a transcript event broadcast during the refresh reaches the phone once, after the hydrate
+[remote-server] 2026-09-26T19:53:12.751Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.751Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a transcript event broadcast during the refresh reaches the phone once, after the hydrate
+[remote-server] 2026-09-26T19:53:12.751Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a transcript event broadcast during the refresh reaches the phone once, after the hydrate
+[remote-server] 2026-09-26T19:53:12.751Z device dev-1: catch-up started (Refresh)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a transcript event broadcast during the refresh reaches the phone once, after the hydrate
+[remote-server] 2026-09-26T19:53:12.751Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a refresh asked for while a restore is still running runs after it, with its own seq
+[remote-server] 2026-09-26T19:53:12.759Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.759Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a refresh asked for while a restore is still running runs after it, with its own seq
+[remote-server] 2026-09-26T19:53:12.759Z device dev-1: caught up in 0 ms
+[remote-server] 2026-09-26T19:53:12.759Z device dev-1: catch-up started (Refresh)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a refresh asked for while a restore is still running runs after it, with its own seq
+[remote-server] 2026-09-26T19:53:12.759Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > terminal output produced during a Refresh reaches the phone once, with no reset
+[remote-server] 2026-09-26T19:53:12.766Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.766Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > terminal output produced during a Refresh reaches the phone once, with no reset
+[remote-server] 2026-09-26T19:53:12.766Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > terminal output produced during a Refresh reaches the phone once, with no reset
+[remote-server] 2026-09-26T19:53:12.766Z device dev-1: catch-up started (Refresh)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > terminal output produced during a Refresh reaches the phone once, with no reset
+[remote-server] 2026-09-26T19:53:12.766Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a restore that throws still delivers what was queued and goes live
+[remote-server] 2026-09-26T19:53:12.772Z device dev-1: connected (older page)
+[remote-server] 2026-09-26T19:53:12.772Z device dev-1: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a restore that throws still delivers what was queued and goes live
+[remote-server] 2026-09-26T19:53:12.772Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a restore that throws still delivers what was queued and goes live
+[remote-server] 2026-09-26T19:53:12.772Z device dev-1: catch-up started (Refresh)
+
+stderr | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a restore that throws still delivers what was queued and goes live
+[remote-server] restore failed: Error: boom
+    at EventEmitter.server.sessionManager.listSessions (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/remote-server-connections.test.ts:1060:58)
+    at RemoteServer.runRestore (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/remote-server.ts:1537:42)
+    at RemoteServer.restoreClient (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/remote-server.ts:1490:18)
+    at RemoteServer.rehydrateClient (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/remote-server.ts:1524:16)
+    at RemoteServer.handleMessage (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/remote-server.ts:1772:20)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/remote-server-connections.test.ts:1061:33
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — refresh > remote:rehydrate on the host > a restore that throws still delivers what was queued and goes live
+[remote-server] 2026-09-26T19:53:12.772Z device dev-1: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > is not sent into the page at 5 s, and goes out when the page says ready
+[remote-server] 2026-09-26T19:53:12.784Z device 91509848: connected (page announces readiness)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > is not sent into the page at 5 s, and goes out when the page says ready
+[remote-server] 2026-09-26T19:53:22.784Z device 91509848: catch-up started (page ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > is not sent into the page at 5 s, and goes out when the page says ready
+[remote-server] 2026-09-26T19:53:22.784Z device 91509848: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > a page that announced it but never says ready still gets the catch-up, later
+[remote-server] 2026-09-26T19:53:12.793Z device 52cbddb0: connected (page announces readiness)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > a page that announced it but never says ready still gets the catch-up, later
+[remote-server] 2026-09-26T19:53:42.793Z device 52cbddb0: catch-up started by the fallback timer (no client:ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > a page that announced it but never says ready still gets the catch-up, later
+[remote-server] 2026-09-26T19:53:42.793Z device 52cbddb0: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > an older page that announces nothing keeps the 5 s fallback
+[remote-server] 2026-09-26T19:53:12.802Z device 4581d21c: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > an older page that announces nothing keeps the 5 s fallback
+[remote-server] 2026-09-26T19:53:17.802Z device 4581d21c: catch-up started by the fallback timer (no client:ready)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > the catch-up waits for a page that says it will announce readiness > an older page that announces nothing keeps the 5 s fallback
+[remote-server] 2026-09-26T19:53:17.802Z device 4581d21c: caught up in 0 ms
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > what a phone asks on waking and at start is answered > remote:ping is answered at once, even while the phone is still catching up
+[remote-server] 2026-09-26T19:53:12.810Z device d4d8ca44: connected (page announces readiness)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > what a phone asks on waking and at start is answered > theme list, commands, favourite themes and the platform come from the same code as the desktop
+[remote-server] 2026-09-26T19:53:12.818Z device bfe13c45: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — reliability > what a phone asks on waking and at start is answered > a list that fails is answered as a failure, never as an empty list
+[remote-server] 2026-09-26T19:53:12.825Z device 67ac733b: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — appearance relay > remote-server: appearance:broadcast from a phone > reaches the computer's windows and every other phone, not the phone that sent it
+[remote-server] 2026-09-26T19:53:12.878Z device phone-a: connected (older page)
+[remote-server] 2026-09-26T19:53:12.878Z device phone-b: connected (older page)
+
+stdout | tests/remote-server-connections.test.ts > RemoteServer — appearance relay > remote-server: appearance:broadcast from a phone > ignores a payload that is not an object
+[remote-server] 2026-09-26T19:53:12.884Z device phone-a: connected (older page)
+[remote-server] 2026-09-26T19:53:12.884Z device phone-b: connected (older page)
+
+ ✓ tests/remote-server-connections.test.ts (67 tests) 497ms
+ ✓ tests/shell-registry.test.ts (26 tests) 1667ms
+     ✓ read: returns only what arrived since the last read  503ms
+     ✓ ring keeps 200 lines, the wire view carries 40, change events are debounced  303ms
+ ✓ tests/specialist-run.test.ts (40 tests) 1349ms
+stderr | tests/harness-review-runner.test.ts > runCase salvage > returns the run with the real error instead of throwing, when the model errors mid-run
+[harness] stream error: provider exploded
+
+ ✓ tests/harness-review-runner.test.ts (53 tests) 20506ms
+     ✓ survives the max_steps gate up to STEP_GATE_ALLOWANCE and still produces a review  1006ms
+     ✓ asks for the review when the step budget is exhausted, instead of ending the turn empty  2964ms
+     ✓ denies tool calls during the wrap-up turn so the model cannot resume testing  2968ms
+     ✓ denies a genuine AskUserQuestion during wrap-up, so WRAP_UP_PROMPT's "every tool call will be denied" claim is true  2952ms
+     ✓ takes only the wrap-up turn text as the review, not narration from the interrupted turn  2946ms
+     ✓ keeps the wrap-up review even if the model answers and then tries one more tool call  3009ms
+     ✓ strips wrap-up narration that precedes a denied tool attempt, instead of concatenating it onto the review  2980ms
+     ✓ never cuts a run short for repeating a call, however many times  930ms
+ ✓ tests/web-fetch-tool.test.ts (70 tests) 762ms
+stderr | tests/remote-files.test.ts > the file lists answer the same on both transports > the four project:* reads answer over remote
+[session-browser] Failed to read projects directory: Error: ENOENT: no such file or directory, scandir '/tmp/youcoded-vitest-home-3920760/.claude/projects'
+    at Object.readdir (node:internal/fs/promises:1707:18)
+    at withRetry (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/session-browser.ts:106:14)
+    at listPastSessions (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/session-browser.ts:512:21)
+    at listProjectConversations (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/project-conversations.ts:20:15)
+    at listConversations (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/project-read-service.ts:12:37)
+    at RemoteServer.handleMessage (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/remote-server.ts:3792:45)
+    at overRemote (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/remote-files.test.ts:102:3)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/remote-files.test.ts:252:19
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: '/tmp/youcoded-vitest-home-3920760/.claude/projects'
+}
+
+ ✓ tests/chatgpt-auth.test.ts (72 tests | 1 skipped) 633ms
+stderr | tests/ipc-handlers.test.ts > native session meta through the real store > native session meta — round trip > tag → persist → get-meta and browse both return it for a native session
+[session-browser] Failed to read projects directory: Error: ENOENT: no such file or directory, scandir '/tmp/youcoded-vitest-home-3920760/.claude/projects'
+    at Object.readdir (node:internal/fs/promises:1707:18)
+    at withRetry (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/session-browser.ts:106:14)
+    at listPastSessions (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/session-browser.ts:512:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: '/tmp/youcoded-vitest-home-3920760/.claude/projects'
+}
+
+stderr | tests/ipc-handlers.test.ts > native session meta through the real store > native session meta — round trip > a reserved flag round-trips for a native session (previously refused outright)
+[session-browser] Failed to read projects directory: Error: ENOENT: no such file or directory, scandir '/tmp/youcoded-vitest-home-3920760/.claude/projects'
+    at Object.readdir (node:internal/fs/promises:1707:18)
+    at withRetry (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/session-browser.ts:106:14)
+    at listPastSessions (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/session-browser.ts:512:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: '/tmp/youcoded-vitest-home-3920760/.claude/projects'
+}
+
+ ✓ tests/ipc-handlers.test.ts (51 tests) 1033ms
+       ✓ tag → persist → get-meta and browse both return it for a native session  310ms
+       ✓ a reserved flag round-trips for a native session (previously refused outright)  305ms
+stderr | tests/harness-accepted-history.test.ts > HarnessSession accepted history > a step that throws mid-text accepts its partial exactly once
+[harness] stream error: provider exploded
+
+ ✓ tests/remote-files.test.ts (23 tests) 1019ms
+     ✓ the four project:* reads answer over remote  309ms
+     ✓ a watcher event reaches the WS client that subscribed, and a socket that closed is dropped  628ms
+ ✓ tests/harness-accepted-history.test.ts (25 tests) 776ms
+     ✓ a manual Retry drops the abandoned attempt's uuids and accepts the re-run's  513ms
+ ✓ tests/provider-cost-check.test.ts (34 tests) 495ms
+stderr | tests/subagent-usage-event.test.ts > subagent-usage — the reducer half > an ORPHAN report — for a session this window does not hold — changes nothing and mints nothing
+[chat] subagent-usage arrived for session a-session-this-window-never-had, which this window does not hold — that specialist's tokens and cost are counted nowhere
+
+ ✓ tests/chatgpt-request-diagnostics.test.ts (11 tests | 1 skipped) 184ms
+stdout | tests/remote-server-bind.test.ts > the listener is private by construction > binds the address Tailscale reports, not every interface
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+
+stdout | tests/remote-server-bind.test.ts > the listener is private by construction > binds the address Tailscale reports, not every interface
+[RemoteServer] Listening on port 0
+
+ ✓ tests/remote-server-bind.test.ts (3 tests) 116ms
+stdout | tests/remote-server.test.ts > RemoteServer > starts and stops without error
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+[RemoteServer] Listening on port 9900
+
+stdout | tests/remote-server.test.ts > RemoteServer > does not start when config.enabled is false
+[RemoteServer] Disabled in config, not starting
+
+stdout | tests/remote-server.test.ts > RemoteServer auth flow > can be created with null password (rejects connections at auth time)
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+[RemoteServer] Listening on port 9900
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > reports isRunning across the start/stop cycle
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+[RemoteServer] Listening on port 9900
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > is idempotent — a second start() does not listen or re-subscribe
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+[RemoteServer] Listening on port 9900
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > can be restarted after stop()
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+[RemoteServer] Listening on port 9900
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > can be restarted after stop()
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+[RemoteServer] Listening on port 9900
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > rejects with the real OS error when the port is taken
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > stops meaning stopped, even after a start that failed
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > leaves no subscriptions behind after a failed start
+[RemoteServer] phone page: built copy from 2026-09-26T19:51:29.868Z (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/renderer)
+
+stdout | tests/remote-server.test.ts > RemoteServer runtime start/stop > does not start when config.enabled is false
+[RemoteServer] Disabled in config, not starting
+
+stderr | tests/remote-server.test.ts > RemoteServer unhandled channels > answers an unknown channel instead of dropping it
+[RemoteServer] unhandled channel: definitely:not-a-real-channel
+
+stderr | tests/remote-server.test.ts > RemoteServer unhandled channels > names the channel in the error so the gap is diagnosable
+[RemoteServer] unhandled channel: social:list-friends
+
+stdout | tests/remote-server.test.ts > RemoteServer account bridge > status:data replay on connect > replays the whole last status payload to a connecting client
+[remote-server] 2026-09-26T19:53:15.187Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer account bridge > status:data replay on connect > sends no status frame when no poll has happened yet
+[remote-server] 2026-09-26T19:53:15.187Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > a new client receives the latest specialists:event {kind:"run"} per child, not an append-only log
+[remote-server] 2026-09-26T19:53:15.188Z device d: caught up in 1 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > G-1: a new client receives the latest native:shell-event per shell id, and a destroyed session drops its buffer
+[remote-server] 2026-09-26T19:53:15.188Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > G-1: a new client receives the latest native:shell-event per shell id, and a destroyed session drops its buffer
+[remote-server] 2026-09-26T19:53:15.188Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > a reconnecting client receives an open native ask's PermissionRequest
+[remote-server] 2026-09-26T19:53:15.189Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > a reconnecting client is NOT replayed an ask that was already answered
+[remote-server] 2026-09-26T19:53:15.189Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > purges only the matching request id, leaving a different open ask in the same session alone
+[remote-server] 2026-09-26T19:53:15.190Z device d: caught up in 1 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer specialist run + native hook replay > PermissionResolved itself is never replayed — it is a purge signal, not a card
+[remote-server] 2026-09-26T19:53:15.190Z device d: caught up in 0 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer replay buffers stay bounded and replay the same tail > replays the tail of the output, not the head
+[remote-server] 2026-09-26T19:53:15.199Z device d: caught up in 3 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer replay buffers stay bounded and replay the same tail > trims on a chunk boundary when the chunks do not divide the cap evenly
+[remote-server] 2026-09-26T19:53:15.204Z device d: caught up in 4 ms
+
+stdout | tests/remote-server.test.ts > RemoteServer status carries the connected-client count > emits the status with clientCount on every connect and disconnect
+[remote-server] 2026-09-26T19:53:15.211Z device dev-a: connected (page announces readiness)
+[remote-server] 2026-09-26T19:53:15.211Z device dev-b: connected (page announces readiness)
+[remote-server] 2026-09-26T19:53:15.211Z device dev-a: disconnected: code 1000 after 0 s, phase restoring, silent for 0 s
+[remote-server] 2026-09-26T19:53:15.211Z device dev-b: disconnected: code 1000 after 0 s, phase restoring, silent for 0 s
+[remote-server] 2026-09-26T19:53:15.211Z device dev-b: disconnected: code 1000 after 0 s, phase restoring, silent for 0 s
+
+ ✓ tests/remote-server.test.ts (93 tests) 154ms
+ ✓ tests/subagent-usage-event.test.ts (21 tests) 336ms
+ ✓ tests/bash-output-kill-shell.test.ts (8 tests) 549ms
+     ✓ id mode: header + new output since the last look; then the "nothing new" sentence  505ms
+stderr | tests/harness-eval-assertions.test.ts > against a real runCase transcript > PINS the impossible shape: the provider dies on step 1 and the run STILL has events
+[harness] stream error: You requested up to 65536 tokens, but can only afford 63293
+
+ ✓ tests/pages-connections-service.test.ts (13 tests) 72ms
+ ✓ tests/harness-eval-assertions.test.ts (45 tests) 337ms
+ ✓ tests/dev-tools.test.ts (21 tests) 282ms
+ ✓ tests/prompt-assembly.test.ts (30 tests) 114ms
+ ✓ tests/cloud-context-lifecycle.test.ts (2 tests) 385ms
+ ✓ tests/harness-tool-conformance.test.ts (7 tests) 126ms
+ ✓ tests/read-pdf.test.ts (16 tests) 171ms
+ ✓ tests/specialist-delegation-ledger.test.ts (42 tests) 49ms
+stderr | tests/native-compact.test.ts > HarnessSession.compactNow — user-initiated /compact > FAIL-SAFE: a throwing model reports summary-failed instead of propagating
+Error: model exploded
+    at doStream (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/native-compact.test.ts:170:78)
+    at MockLanguageModelV4.doStream (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/test/index.js:196:22)
+    at execute (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8658:46)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runWithTracingChannelSpan (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4212:12)
+    at executeLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4420:14)
+    at streamLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8656:7)
+    at retryWithExponentialBackoffInternal (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@ai-sdk/provider-utils/dist/index.js:3549:12)
+    at streamStep (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:10088:15)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:10475:7
+
+stderr | tests/native-compact.test.ts > HarnessSession.compactNow — user-initiated /compact > releases the abort controller even when the summary fails
+Error: boom
+    at doStream (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/native-compact.test.ts:185:78)
+    at MockLanguageModelV4.doStream (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/test/index.js:196:22)
+    at execute (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8658:46)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runWithTracingChannelSpan (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4212:12)
+    at executeLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4420:14)
+    at streamLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8656:7)
+    at retryWithExponentialBackoffInternal (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@ai-sdk/provider-utils/dist/index.js:3549:12)
+    at streamStep (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:10088:15)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:10475:7
+
+stderr | tests/native-compact.test.ts > HarnessSession.compactNow — user-initiated /compact > does not commit partial text when the summary stream errors
+Error: summary provider failed
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/native-compact.test.ts:281:31
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64
+
+stderr | tests/native-compact.test.ts > HarnessSession.compactNow — user-initiated /compact > cleans up the summary watchdog after a stream error
+Error: provider failed
+    at Object.start (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/native-compact.test.ts:296:43)
+    at setupReadableStreamDefaultController (node:internal/webstreams/readablestream:2653:23)
+    at setupReadableStreamDefaultControllerFromSource (node:internal/webstreams/readablestream:2700:3)
+    at new ReadableStream (node:internal/webstreams/readablestream:279:7)
+    at doStream (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/native-compact.test.ts:294:80)
+    at MockLanguageModelV4.doStream (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/test/index.js:196:22)
+    at execute (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:8658:46)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runWithTracingChannelSpan (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4212:12)
+    at executeLanguageModelCall (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/ai/dist/index.js:4420:14)
+
+ ✓ tests/native-compact.test.ts (27 tests) 237ms
+ ✓ tests/injection-budget.test.ts (28 tests) 114ms
+ ✓ tests/rule-injection.test.ts (10 tests) 208ms
+ ✓ tests/accepted-history-store.test.ts (35 tests) 77ms
+ ✓ tests/harness-history-rebuild.test.ts (31 tests) 177ms
+ ✓ tests/tool-registry-manifest.test.ts (21 tests) 89ms
+ ✓ tests/provider-registry.test.ts (43 tests) 88ms
+ ✓ tests/harness-tool-bounds.test.ts (20 tests) 195ms
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > runs interrupt -> flush -> release -> pushMoved -> destroy for a live held session
+[takeover] holder claude-a: quiescing 1 live holder(s)
+[takeover] holder claude-a: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > runs interrupt -> flush -> release -> pushMoved -> destroy for a live held session
+[takeover] holder claude-a: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > does not touch Welcome back when there is no live holder to take over
+[takeover] holder claude-a: no live session — releasing lease only
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > quiesces a NATIVE holder (no ESC byte) before the flush, then moves + tears it down
+[takeover] holder claude-n: quiescing 1 live holder(s)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > quiesces a NATIVE holder (no ESC byte) before the flush, then moves + tears it down
+[takeover] holder claude-n: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > quiesces a NATIVE holder (no ESC byte) before the flush, then moves + tears it down
+[takeover] holder claude-n: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > branches per holder: quiesces the native one, ESCs the CC one, ALL before the single flush
+[takeover] holder c1: quiescing 2 live holder(s)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > branches per holder: quiesces the native one, ESCs the CC one, ALL before the single flush
+[takeover] holder c1: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > branches per holder: quiesces the native one, ESCs the CC one, ALL before the single flush
+[takeover] holder c1: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > still flushes + tears down even when the native quiesce rejects
+[takeover] holder claude-n: quiescing 1 live holder(s)
+
+stderr | tests/holder-takeover.test.ts > createHolderTakeover > still flushes + tears down even when the native quiesce rejects
+[takeover] holder claude-n: quiesce/interrupt failed: Error: quiesce blew up
+    at Object.<anonymous> (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:256:61)
+    at Object.Mock [as quiesceNative] (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/spy/dist/index.js:332:34)
+    at run (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:221:24)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:286:7
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:258:18
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > mirror-before-release AND release-before-destroy hold
+[takeover] holder c1: quiescing 1 live holder(s)
+[takeover] holder c1: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > mirror-before-release AND release-before-destroy hold
+[takeover] holder c1: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > with NO mapping for the claude id, only releases the lease (no interrupt/flush/push/destroy)
+[takeover] holder claude-g: no live session — releasing lease only
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > does not mint a receipt from peer bytes on a repeated request without a live writer
+[takeover] holder c1: no live session — releasing lease only
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > with a mapping but the session no longer live (getSession undefined), only releases
+[takeover] holder claude-d: no live session — releasing lease only
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > never throws and runs release/push/destroy even when flush rejects
+[takeover] holder c1: quiescing 1 live holder(s)
+[takeover] holder c1: flushing to space
+
+stderr | tests/holder-takeover.test.ts > createHolderTakeover > never throws and runs release/push/destroy even when flush rejects
+[takeover] holder c1: flush failed: Error: flush blew up
+    at Object.<anonymous> (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:76:37)
+    at Object.Mock [as flushSessionToSpace] (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/spy/dist/index.js:332:34)
+    at run (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:239:24)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:286:7
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:313:18
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > never throws when pushMoved throws AND still runs destroy (step 8)
+[takeover] holder c1: quiescing 1 live holder(s)
+[takeover] holder c1: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > never throws when pushMoved throws AND still runs destroy (step 8)
+[takeover] holder c1: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > awaits the native teardown before destroySession, for every live holder
+[takeover] holder c1: quiescing 2 live holder(s)
+[takeover] holder c1: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > awaits the native teardown before destroySession, for every live holder
+[takeover] holder c1: handoff complete
+
+ ✓ tests/native-image-attachments.test.ts (15 tests) 122ms
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > still destroys the session when the native teardown rejects
+[takeover] holder c1: quiescing 1 live holder(s)
+[takeover] holder c1: flushing to space
+
+stderr | tests/holder-takeover.test.ts > createHolderTakeover > still destroys the session when the native teardown rejects
+[takeover] teardown failed; retaining lease Error: harness teardown blew up
+    at Object.<anonymous> (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:365:61)
+    at Object.Mock [as destroyNative] (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/spy/dist/index.js:332:34)
+    at run (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:255:22)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > never throws even when the lease release rejects
+[takeover] holder c1: quiescing 1 live holder(s)
+[takeover] holder c1: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > never throws even when the lease release rejects
+[takeover] holder c1: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > interrupts + destroys EVERY live holder when two desktop ids map to one claude id
+[takeover] holder c1: quiescing 2 live holder(s)
+[takeover] holder c1: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > interrupts + destroys EVERY live holder when two desktop ids map to one claude id
+[takeover] holder c1: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > real native holder: appends stop before flush, the queued turn never runs, nothing appends after
+[takeover] holder nat-real: quiescing 1 live holder(s)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > real native holder: appends stop before flush, the queued turn never runs, nothing appends after
+[takeover] holder nat-real: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > real native holder: appends stop before flush, the queued turn never runs, nothing appends after
+[takeover] holder nat-real: handoff complete
+
+ ✓ tests/session-namer.test.ts (46 tests) 190ms
+ ✓ tests/openai-continuation.test.ts (8 tests) 111ms
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > real native holder: a send during the flush is refused and runs no turn
+[takeover] holder nat-flus: quiescing 1 live holder(s)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > real native holder: a send during the flush is refused and runs no turn
+[takeover] holder nat-flus: flushing to space
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > real native holder: a send during the flush is refused and runs no turn
+[takeover] holder nat-flus: handoff complete
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > a quiesced holder that fails to destroy keeps the lease and gets its sends back
+[takeover] holder claude-s: quiescing 1 live holder(s)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > a quiesced holder that fails to destroy keeps the lease and gets its sends back
+[takeover] holder claude-s: flushing to space
+
+stderr | tests/holder-takeover.test.ts > createHolderTakeover > a quiesced holder that fails to destroy keeps the lease and gets its sends back
+[takeover] teardown failed; retaining lease Error: destroy failed
+    at Object.<anonymous> (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:510:61)
+    at Object.Mock [as destroyNative] (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/spy/dist/index.js:332:34)
+    at run (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:255:22)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:512:5
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > a Claude Code holder that fails to destroy first does not cost the native holder its sends
+[takeover] holder claude-m: quiescing 2 live holder(s)
+
+stdout | tests/holder-takeover.test.ts > createHolderTakeover > a Claude Code holder that fails to destroy first does not cost the native holder its sends
+[takeover] holder claude-m: flushing to space
+
+stderr | tests/holder-takeover.test.ts > createHolderTakeover > a handoff that stops before releasing the lease gives the quiesced holder its sends back
+[takeover] holder claude-e: unexpected escape: Error: boom
+    at Console.<anonymous> (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:538:60)
+    at Console.log (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/spy/dist/index.js:332:34)
+    at run (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/src/main/conversations/takeover.ts:238:15)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/holder-takeover.test.ts:541:7
+
+ ✓ tests/holder-takeover.test.ts (29 tests) 229ms
+ ✓ tests/openrouter-oauth.test.ts (9 tests) 213ms
+stderr | tests/harness-compaction.test.ts > driver compaction > does not run a second automatic summary for the exact failed history
+Error: summary unavailable
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:99:75
+    at Array.map (<anonymous>)
+    at scriptModel (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:94:25)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/harness-compaction.test.ts:38:19
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+
+stderr | tests/harness-compaction.test.ts > driver compaction > a failed summary fences the same history; new input releases the fence without inventing a summary
+Error: summary failed
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:99:75
+    at Array.map (<anonymous>)
+    at scriptModel (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:94:25)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/harness-compaction.test.ts:53:19
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+
+stderr | tests/harness-compaction.test.ts > driver compaction > FAIL-SAFE: a summary call that throws does not error the turn (falls through to truncation)
+Error: summary model exploded
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:99:75
+    at Array.map (<anonymous>)
+    at scriptModel (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:94:25)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/harness-compaction.test.ts:235:14
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+
+stderr | tests/harness-session.test.ts > HarnessSession > an error PART mid-stream emits session-error and ends the turn (distinct from a factory throw)
+[harness] stream error: upstream 502 from the provider
+
+stderr | tests/harness-session.test.ts > HarnessSession > a whitespace-only partial before a mid-stream error adds no assistant message
+[harness] stream error: upstream 502 from the provider
+
+stderr | tests/harness-session.test.ts > HarnessSession > an error PART carrying a plain (non-Error) object surfaces its real detail, not [object Object]
+[harness] stream error: This request requires more credits, or fewer max_tokens. You requested up to 65536 tokens, but can only afford 29029. (provider error 402)
+
+ ✓ tests/harness-session.test.ts (16 tests) 135ms
+ ✓ tests/harness-compaction.test.ts (27 tests) 211ms
+ ✓ tests/harness-eval-runner.test.ts (9 tests) 112ms
+ ✓ tests/cache-rebuild-flag.test.ts (5 tests) 113ms
+stderr | tests/prune-gate.test.ts > prune is not a routine compaction operation > leaves accepted tool output whole when a manual summary fails
+Error: summary model failed
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:99:75
+    at Array.map (<anonymous>)
+    at scriptModel (/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/helpers/harness-fakes.ts:94:25)
+    at /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/tests/prune-gate.test.ts:24:14
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+
+ ✓ tests/prune-gate.test.ts (3 tests) 37ms
+ ✓ tests/prompt-cache.test.ts (8 tests) 51ms
+ ✓ tests/native-context-occupancy.test.ts (10 tests) 91ms
+ ✓ tests/accepted-history-privacy.test.ts (1 test) 120ms
+ ✓ tests/managed-workspace-setup.test.ts (6 tests) 95ms
+ ✓ tests/summary-warm-prefix.test.ts (4 tests) 102ms
+ ✓ tests/chatgpt-cache-summary.test.ts (2 tests) 78ms
+ ✓ tests/native-tools-polish.test.ts (38 tests) 52ms
+ ✓ tests/harness-session-profile.test.ts (2 tests) 46ms
+ ✓ tests/session-store.test.ts (39 tests) 27ms
+ ✓ tests/artifacts/content-search.test.ts (8 tests) 53ms
+ ✓ tests/harness-sdk-toolcall-contract.test.ts (5 tests) 92ms
+ ✓ tests/secret-storage-wiring.test.ts (1 test) 35ms
+ ✓ tests/skill-invocation-display.test.ts (14 tests) 86ms
+ ✓ tests/permission-store.test.ts (35 tests) 46ms
+stderr | tests/abandoned-turn-usage.test.ts > an abandoned turn reports what it already spent > a provider error carries it too — a failed turn is billed like an interrupted one
+[harness] stream error: provider exploded
+
+ ✓ tests/abandoned-turn-usage.test.ts (4 tests) 63ms
+ ✓ tests/native-switch-model.test.ts (16 tests) 44ms
+ ✓ tests/task-tool.test.ts (58 tests) 41ms
+ ✓ tests/openrouter-health.test.ts (18 tests) 33ms
+ ✓ tests/harness-hardening.test.ts (4 tests) 54ms
+ ✓ tests/artifacts/resolve-artifact-path.test.ts (19 tests) 14ms
+ ✓ tests/compaction-budget.test.ts (18 tests) 69ms
+ ✓ tests/artifacts-get-over-cap.test.ts (5 tests) 47ms
+ ✓ tests/page-connections-store.test.ts (14 tests) 17ms
+ ✓ tests/harness-eval-judge.test.ts (49 tests) 37ms
+ ✓ tests/session-context.test.ts (9 tests) 52ms
+ ✓ tests/shell-registry-win-kill.test.ts (2 tests) 9ms
+ ✓ tests/ipc-handlers-create-ownership.test.ts (9 tests) 59ms
+ ✓ tests/page-fetch.test.ts (16 tests) 23ms
+ ✓ tests/net-guard.test.ts (38 tests) 23ms
+ ✓ tests/context-settings-store.test.ts (5 tests) 20ms
+ ✓ tests/keychain-launch.test.ts (5 tests) 23ms
+ ✓ tests/skill-provider-catalog.test.ts (11 tests) 23ms
+ ✓ tests/chatsearch-outbox.test.ts (44 tests) 18ms
+ ✓ tests/bash-secret-paths.test.ts (141 tests) 15ms
+ ✓ tests/transcript-page-locator.test.ts (13 tests) 42ms
+ ✓ tests/artifacts/read-service.test.ts (8 tests) 13ms
+ ✓ tests/harness-eval-matrix.test.ts (44 tests) 13ms
+ ✓ tests/search-backends.test.ts (17 tests) 20ms
+ ✓ tests/search-chain.test.ts (10 tests) 25ms
+ ✓ tests/specialist-delegated-models.test.ts (24 tests) 13ms
+ ✓ tests/tools-path-lock.test.ts (4 tests) 25ms
+ ✓ tests/native-clear-barrier.test.ts (8 tests) 18ms
+ ✓ tests/harness-credential-paths.test.ts (32 tests) 19ms
+ ✓ tests/specialist-catalog.test.ts (17 tests) 16ms
+ ✓ tests/skill-provider-bundled.test.ts (27 tests) 15ms
+ ✓ tests/model-catalog.test.ts (43 tests) 12ms
+ ✓ tests/scan-cache.test.ts (5 tests) 9ms
+ ✓ tests/harness-review-fixture.test.ts (18 tests) 9ms
+ ✓ tests/native-permission-broker.test.ts (30 tests) 9ms
+ ✓ tests/shell-words.test.ts (80 tests) 15ms
+ ✓ tests/tearoff-handoff.test.ts (15 tests) 27ms
+ ✓ tests/rm-target.test.ts (96 tests) 9ms
+ ✓ tests/fit-to-context-empty.test.ts (13 tests) 13ms
+ ✓ tests/harness-truncate.test.ts (24 tests) 9ms
+ ✓ tests/mcp-gating.test.ts (7 tests) 9ms
+ ✓ tests/specialist-child-ask-router.test.ts (11 tests) 11ms
+ ✓ tests/chatgpt-model.test.ts (9 tests) 9ms
+ ✓ tests/capability-profile.test.ts (52 tests) 9ms
+ ✓ tests/specialist-definition-files.test.ts (44 tests) 8ms
+ ✓ tests/harness-eval-report.test.ts (40 tests) 11ms
+ ✓ tests/step-guard-settings.test.ts (4 tests) 9ms
+ ✓ tests/chatgpt-oauth.test.ts (31 tests) 11ms
+ ✓ tests/native-session-host-mcp-leak.test.ts (1 test) 11ms
+ ✓ tests/dev-tools-handlers.test.ts (19 tests) 8ms
+ ✓ tests/keychain-client.test.ts (9 tests) 8ms
+ ✓ tests/mcp-client.test.ts (12 tests) 8ms
+ ✓ tests/task-tool-prefix-stability.test.ts (2 tests) 8ms
+ ✓ tests/native-session-record-completeness.test.ts (3 tests) 5ms
+ ✓ tests/mcp-reconciler.test.ts (22 tests) 8ms
+ ✓ tests/ask-user-question-tool.test.ts (11 tests) 5ms
+ ✓ tests/path-triggers.test.ts (19 tests) 10ms
+ ✓ tests/permission-engine.test.ts (24 tests) 6ms
+ ✓ tests/send-user-file-tool.test.ts (9 tests) 5ms
+ ✓ tests/mcp-manager.test.ts (11 tests) 7ms
+ ✓ tests/mcp-tools.test.ts (10 tests) 6ms
+ ✓ tests/tool-arg-errors.test.ts (8 tests) 6ms
+ ✓ tests/search-service.test.ts (15 tests) 6ms
+ ✓ tests/harness-eval-estimate.test.ts (26 tests) 6ms
+ ✓ tests/skill-catalog.test.ts (12 tests) 5ms
+ ✓ tests/skill-tool-gating.test.ts (15 tests) 7ms
+ ✓ tests/image-support.test.ts (3 tests) 6ms
+ ✓ tests/harness-eval-cases.test.ts (13 tests) 5ms
+ ✓ tests/harness-tool-guards.test.ts (31 tests | 3 skipped) 5ms
+ ✓ tests/mcp-registry.test.ts (14 tests) 5ms
+ ✓ tests/claude-account.test.ts (16 tests) 7ms
+ ✓ tests/model-search-tool.test.ts (11 tests) 4ms
+ ✓ tests/harness-pricing.test.ts (16 tests) 4ms
+ ✓ tests/harness-raw-schema.test.ts (2 tests) 5ms
+ ✓ tests/web-search-tool.test.ts (11 tests) 5ms
+ ✓ tests/bash-secret-paths-windows.test.ts (6 tests) 4ms
+ ✓ tests/native-resume-title.test.ts (17 tests) 5ms
+ ✓ tests/shared-doctrine.test.ts (13 tests) 3ms
+ ✓ tests/specialist-registry.test.ts (5 tests) 3ms
+ ✓ tests/harness-bash-shell-detect.test.ts (8 tests) 4ms
+ ✓ tests/native-tools-polish-session.test.ts (5 tests) 37ms
+ ✓ tests/wire-adapter.test.ts (13 tests) 4ms
+ ✓ tests/prompt-install-update.test.ts (4 tests) 3ms
+ ✓ tests/mcp-keychain-recovery.test.ts (3 tests) 4ms
+ ✓ tests/compaction.test.ts (31 tests) 10ms
+ ✓ tests/send-user-link-tool.test.ts (10 tests) 3ms
+ ✓ tests/recoverable-safe-storage.test.ts (5 tests) 4ms
+ ✓ tests/search-key-store.test.ts (8 tests) 4ms
+ ✓ tests/harness-tool-presentation.test.ts (2 tests) 4ms
+ ✓ tests/specialist-child-permissions.test.ts (11 tests) 3ms
+ ✓ tests/cloud-context.test.ts (23 tests) 3ms
+ ✓ tests/claude-code-context.test.ts (6 tests) 3ms
+ ✓ tests/keychain-operation.test.ts (4 tests) 3ms
+ ✓ tests/luna-browser-open.test.ts (2 tests) 3ms
+ ✓ tests/specialist-frontmatter.test.ts (9 tests) 3ms
+ ✓ tests/skill-tool.test.ts (7 tests) 3ms
+ ✓ tests/cache-usage-metadata.test.ts (9 tests) 3ms
+ ✓ tests/native-tools-polish-skill.test.ts (12 tests) 5ms
+ ✓ tests/specialist-report-budget.test.ts (6 tests) 2ms
+ ✓ tests/known-models.test.ts (3 tests) 3ms
+ ✓ tests/accepted-history-capture.test.ts (9 tests) 3ms
+ ✓ tests/specialist-names.test.ts (3 tests) 2ms
+ ✓ tests/message-size.test.ts (9 tests) 4ms
+ ✓ tests/untrusted-content-wrap.test.ts (4 tests) 2ms
+ ✓ tests/harness-eval-openrouter-factory.test.ts (2 tests) 2ms
+ ✓ tests/preset-registry.test.ts (4 tests) 2ms
+
+ Test Files  174 passed (174)
+      Tests  3907 passed | 5 skipped (3912)
+   Start at  12:52:52
+   Duration  29.02s (transform 573ms, setup 1.71s, import 10.45s, tests 91.83s, environment 9ms)
+

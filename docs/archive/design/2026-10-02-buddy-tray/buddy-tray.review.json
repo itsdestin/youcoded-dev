@@ -1,0 +1,55 @@
+{
+  "title": "Buddy — taskbar icon option and a tighter click area",
+  "key": "buddy-tray-review",
+  "out": "buddy-tray.review.html",
+  "images": "images/buddy-tray.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings → Buddy Floater",
+      "crop": "settings/buddy",
+      "headline": "A new 'Show as' row lets you pick the floating buddy or a taskbar icon.",
+      "changed": "One row added under the on/off switch: Floating or Taskbar (it says Menu bar on a Mac). The line under the row explains the choice you picked.",
+      "notice": "If you change it while the buddy is on, it switches right away. The floating mascot goes and the icon appears, or the other way round. The row's summary reads 'On — in your taskbar' when the icon is picked.",
+      "risk": "The popup is one row taller. When the switch is off, picking a style only saves your choice for next time; nothing appears."
+    },
+    {
+      "words": true,
+      "id": "T-1",
+      "surface": "Buddy",
+      "path": "Settings → Buddy Floater → Show as: Taskbar, then the icon next to your clock",
+      "headline": "Pick Taskbar, then click the buddy icon by your clock. Does the chat open there, with the buttons under it?",
+      "dev": {
+        "worktree": "/home/destin/youcoded-dev/worktrees/sessions/buddy-tray",
+        "label": "Buddy taskbar"
+      },
+      "changed": "A separate test copy of the app with this change in it. Your own YouCoded is not touched.",
+      "notice": "Left-click opens and closes the chat. Right-click gives Open chat, Switch to floating buddy and Hide buddy. A red dot shows on the icon while a session needs you. On Linux the app can't ask where the icon is, so the chat always opens in the bottom-right corner.",
+      "risk": "The icon is the purple app buddy, not your theme's mascot, and it shows a red dot rather than his shocked face. It's a second window on your desktop; close it when you're done."
+    },
+    {
+      "words": true,
+      "id": "T-2",
+      "surface": "Buddy",
+      "path": "Settings → Buddy Floater → Show as: Floating, then the mascot on your desktop",
+      "headline": "Click just above and beside the floating buddy. Does he now ignore those clicks, but still respond when you click his body?",
+      "dev": {
+        "worktree": "/home/destin/youcoded-dev/worktrees/sessions/buddy-tray",
+        "label": "Buddy taskbar"
+      },
+      "changed": "Only his drawn body counts as him now, plus a few pixels of slack so his thin arms are still easy to grab. Before, the whole invisible square around him did.",
+      "notice": "Clicking the empty space above or beside him no longer opens the chat, starts a drag or pops him out of the screen edge. On Windows and Mac those clicks also reach whatever is behind him.",
+      "risk": "On your Linux laptop those clicks still won't reach the window underneath (Linux can't let clicks through part of a window), so they just do nothing now."
+    }
+  ],
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ]
+}

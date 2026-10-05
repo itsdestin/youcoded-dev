@@ -1,0 +1,33 @@
+{
+  "title": "Native harness — one Claude Code compatibility choice",
+  "key": "native-harness-cc-duplicate-question",
+  "out": "native-harness.cc-duplicate.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-22",
+      "words": true,
+      "surface": "Claude Code question cards",
+      "path": "Only when Claude Code asks two questions with exactly the same wording",
+      "headline": "22. Leave this Claude Code edge case unchanged, or block a submission that cannot preserve both answers?",
+      "today": "The approved native fix now keeps each question's answer separate. Claude Code uses a different answer format: it identifies questions by their wording, so two identical questions share one answer slot. Normal Claude Code cards with distinct wording are unaffected.",
+      "problem": "We cannot send two different answers for identical wording through that documented format. A worker added a warning and disabled Submit for this rare Claude Code case before asking you; that extra behavior is not yet approved or released.",
+      "proposal": "Keep the native fix either way. For Claude Code only, choose whether to preserve existing behavior or show an explicit limitation. Neither option adds a made-up answer format, secretly changes the questions, or claims the Claude Code duplicate case is fixed.",
+      "options": [
+        {
+          "id": "native-only",
+          "label": "Native fix only",
+          "recommended": true,
+          "pros": ["Keeps this audit focused on the native harness and avoids an unapproved change to Claude Code cards.", "Remove the new Claude Code warning and submission block; ordinary Claude Code behavior stays as before."],
+          "cons": ["The existing duplicate-wording limitation remains in Claude Code: independent answers cannot be faithfully returned."]
+        },
+        {
+          "id": "explicit-cc-refusal",
+          "label": "Explain and block",
+          "pros": ["For duplicate wording only, the card explains why both answers cannot be submitted correctly.", "Prevents a submission that silently collapses different answers into one."],
+          "cons": ["Submit is disabled for that Claude Code card. You must dismiss it and ask for differently worded questions.", "This is an additional Claude Code interface change, not a complete fix for its answer format."]
+        }
+      ]
+    }
+  ]
+}

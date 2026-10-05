@@ -1,0 +1,32 @@
+[
+  {
+    "name": "settings/buddy",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-tray/docs/active/design/2026-10-02-buddy-tray/runs/before/settings/buddy/halftone-dimension.png",
+    "ms": 2000,
+    "errors": [],
+    "panel": {
+      "x": 550,
+      "y": 360,
+      "w": 340,
+      "h": 180
+    }
+  },
+  {
+    "name": "settings/buddy",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-tray/docs/active/design/2026-10-02-buddy-tray/runs/before/settings/buddy/meadow-mist.png",
+    "ms": 3108,
+    "errors": [],
+    "panel": {
+      "x": 550,
+      "y": 360,
+      "w": 340,
+      "h": 180
+    }
+  }
+]
