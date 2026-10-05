@@ -3,21 +3,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 ## one-core
 
-- [ ] Batches 2 (conversation restoration) and 3 (file reading) merged 2026-09-11 without any phone
-      ever using the fixed build — the dev window served a day-old copy all day, so every phone
-      check that day is void. Do a real phone pass (practice now: phone pass before reviewers)
-      Planned: R0 — the owed phone passes run before R3 so its behaviour changes can be
-      told apart from existing bugs.
-      `remote` `needs-verify` `checked 2026-09-11`
-
-- [ ] A real-phone pass is owed for the 2026-09-23 remote fixes: the phone-browser touch
-      terminal (smaller text; a finger drag now scrolls instead of selecting; typing goes through
-      the input bar, so a tablet with a keyboard also loses direct typing into the terminal), the
-      paired Android app's terminal, removing a paired computer on Android and its error message,
-      screens refilling after a reconnect, and files attached from the phone
-      Planned: R0 — before R3, for the same reason.
-      `remote` `needs-verify` `checked 2026-09-23`
-
 - [ ] **v1.3.1 release blocker.** 182 features are hand-written twice, once for the desktop
       window and once for a phone or browser connecting remotely, because one 5,100-line function
       both registers every feature and constructs the assistant runtime; the copies drift (the
@@ -28,13 +13,14 @@ Filing test: reaching the app from another device — the protocol, the browser 
       drifted it will match the desktop afterwards, listed per group. Held 2026-09-18; Destin
       lifted the hold 2026-09-29 ("i want to do the remote stuff"). Branches that edit the same
       two files do not block it: they are rewritten onto the new layout after R2 (Destin,
-      2026-09-29). Nothing else may edit the two door files from R1 to the end of R2. Goes before
-      the Android rebuild, not inside it
+      2026-09-29). The edit lock on the two door files is retired (2026-10-04; R0–R6 land
+      together). Delivered by one-core (youcoded#604) — close at merge. Goes before the Android
+      rebuild, not inside it
       `remote` `in-flight` `checked 2026-09-29` `v1.3.1` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
 
 - [ ] Over remote access the assistant-settings model picker offers models the browser cannot
       actually run, so choosing one saves a default that quietly does nothing there
-      Planned: R4 — the capabilities object tells the picker what this device can run.
+      Delivered by one-core (youcoded#604); close at merge: the capabilities object tells the picker what this device can run.
       `settings/defaults` `remote` `confirmed` `checked 2026-09-07`
 
 - [ ] A phone connected to the computer can lose the messages it is showing: when the computer
@@ -42,7 +28,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       conversation yet, or its own chat went blank), that empty copy replaces the phone's. Read
       from the code during the 2026-09-27 blank-chat fix; left out when Destin scoped that work
       to desktop
-      Planned: R5 — the computer's record replaces the snapshot that can overwrite the phone's copy.
+      Delivered by one-core (youcoded#604); close at merge: the computer's record replaces the snapshot that could overwrite the phone's copy.
       `desktop` `needs-verify` `checked 2026-09-27`
 
 - [ ] Things only one window knows, so the phone and the computer disagree: YouCoded-runtime queued
@@ -51,7 +37,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       device that did not type, and the status bar (pushed on a 10 s timer). The computer should
       announce each to every screen; moving the queue to the computer would also let it survive a
       page reload. Destin, 2026-09-11: "the interface should almost always match the desktop ui."
-      Planned: R5 — the computer keeps each session's live state and every screen reads it.
+      Delivered by one-core (youcoded#604); close at merge: the computer keeps each session's live state and every screen reads it.
       `remote` `confirmed` `checked 2026-09-11`
 
 - [ ] Some chat cards can sit in a different place on the phone than on the computer. A "Usage
@@ -60,7 +46,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       to Opus" and clear dividers exist only on the device where the command was typed. Found by
       the 2026-09-11 message-order investigation (proved with the real chat logic); the bigger
       causes it found were fixed that day
-      Planned: R5 — prompt cards drawn from the computer's record land in the same place
+      Delivered by one-core (youcoded#604); close at merge: prompt cards drawn from the computer's record land in the same place
       everywhere.
       `chat` `remote` `confirmed` `checked 2026-09-11`
 
@@ -71,15 +57,16 @@ Filing test: reaching the app from another device — the protocol, the browser 
       either way. Sending is safe (it never re-runs); it is the "we don't know whether that
       happened" state that has no screen. The event and its reconciliation shipped with the
       2026-09-09 secure-connection batch; the indicator on the affected card did not
-      Planned: R5 — with numbered events the phone can usually learn what happened.
+      Delivered by one-core (youcoded#604); close at merge: with numbered events the phone can usually learn what happened (the lost-reply
+      outcome is announced and reconciled).
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-code-review.md
 
 - [ ] Formalize the remote protocol: version the WebSocket API, add a lifecycle event bus,
       and reconcile Android's separate Kotlin runtime with it — the server can already drive
       the app's own agent externally but the API is undocumented and unversioned (super-agent
       roadmap step 9; sequence with the Android runtime work)
-      Planned: protocol version in R4, the event record in R5, and Android joins the same
-      protocol in A2–A4.
+      Delivered by one-core (youcoded#604): protocol version (R4) and the event record (R5).
+      Remains: Android joins the same protocol in A2–A4, so keep open after the merge.
       `all` `blocked` `checked 2026-09-24`
 
 - [ ] Destin 2026-09-11, on his phone during the batch 2/3 test: "i cant use native sessions";
@@ -102,7 +89,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
       should be identical to the desktop?" — then "we will do it after": its own batch, right
       after batches 2/3, starting at technical design. Still open for him: whether a phone may
       add or change provider keys (identical to desktop) or keys stay computer-only
-      Planned: R6 — needs only R3's native family group, so it can move earlier if Destin wants.
+      Delivered by one-core (youcoded#604): native sessions now work from a phone. Remains:
+      Destin's decision on whether a phone may add or change provider keys.
       `model-picker` `remote` `decision` `checked 2026-09-11`
 
 - [ ] Buttons on the phone wait for the computer before anything on screen changes: Stop (it only
@@ -111,7 +99,9 @@ Filing test: reaching the app from another device — the protocol, the browser 
       YouCoded-runtime permission mode. Each should change at once and undo itself with a plain
       message if the computer refuses. Destin, 2026-09-11: "i [want] all buttons to feel as close
       to instantaneous as possible."
-      Planned: R6 — needs R5's record to undo a refused change.
+      Delivered by one-core (youcoded#604) for Stop, permission answer, Close, send into an idle
+      native chat and the mode chip. Remains: a native send into a busy chat, AskUserQuestion
+      answers and the keyboard Esc stop still wait for the computer.
       `remote` `confirmed` `checked 2026-09-11`
 
 - [ ] Over remote access some features are still missing: the game lobby signs in but stays
@@ -121,8 +111,9 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Tailscale address (batch 1), which the milestone counts as secure. Reading files and
       Project View shipped in batch 3 (2026-09-11); games and the rest wait for their own
       batches — nothing is bridged automatically
-      Planned: R6 — after R3 each feature is a one-line switch; which ones to open stays
-      Destin's call.
+      Partly delivered by one-core (youcoded#604): 267 channels now open to phones (theme and
+      marketplace, skill update, session flags, clear). Remains: the game lobby, file upload and
+      editing, and the other unopened namespaces — each is a one-line switch, Destin's call.
       `remote` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
 
 - [ ] Verify the merged remote-access security fixes on a real phone, and finish the Android
@@ -149,7 +140,13 @@ Filing test: reaching the app from another device — the protocol, the browser 
       the buddy and the computer's window agreeing on dividers, queued messages, the model name
       and the "working" dots; a chat running on the computer driven from the phone; and the
       abilities opened to phones (theme and marketplace browse, install, publish, rate; session
-      flags; clear; skill commands). Replaces the two older phone passes above once it is done.
+      flags; clear; skill commands). Also covers the owed checks from the 2026-09-11 batch 2/3
+      build and the 2026-09-23 remote fixes: conversation restoration and file reading from the
+      phone; the phone-browser touch terminal (smaller text; a finger drag scrolls instead of
+      selecting; typing goes through the input bar, so a tablet keyboard also loses direct typing
+      into the terminal); the paired Android app's terminal; removing a paired computer on
+      Android and its error message; screens refilling after a reconnect; files attached from the
+      phone. The 2026-09-11 dev window served a day-old copy, so every phone check that day is void.
       Tests and a throwaway dev instance have covered everything else, never a real phone
       `remote` `needs-verify` `checked 2026-10-04`
 
