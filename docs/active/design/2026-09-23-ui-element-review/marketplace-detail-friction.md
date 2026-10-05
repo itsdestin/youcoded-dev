@@ -187,3 +187,30 @@ App commit `3884e2fad`; deck `marketplace-detail-3.json` (before `runs/mkd2-afte
 - **The `preview/` folder is shared by every deck in this folder**: `p2-midnight` for this deck
   was another deck's stale picture (a provider-cards deck), because preview only rendered the
   sizes/themes asked and left older files in place. Easy to read the wrong picture.
+
+## Round 4 (2026-10-05) — after Destin's marketplace-detail-3 answers
+
+App commit `7567c48bf`; deck `marketplace-detail-4.json` (before `runs/mkd3-after`, after
+`runs/mkd4-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R4-1 | Like is a heart-only icon button; its count is the "N likes" chip. The button reports every count change (optimistic step and rollback included) to the page through `onCountChange`, so the chip moves the instant you click. Other styles and `?likeStyle=` removed. | M3-1 "chip". Clean enough: one callback, no new store. |
+| R4-2 | Big tile kept; three alignments behind `?integrationAlign=`: **row** (tile, words, buttons on one centre line — default and my pick), block, top. | M3-2. **Guide gap:** the guide never says how an icon lines up with a title + hint + control. The closest recipes are the setting row (icon, title, hint, control right, vertically centred) and the Account profile card — both are "row", which is why I recommend it. In "row" a lone button hugs the right (text-and-buttons-on-one-line beats one-button-full-width, NB-2) — again the guide doesn't say which wins. |
+| R4-3 | Theme chips in the narrow column: three drafts behind `?themeChips=` — wrap, a plain facts line under the buttons, fewer chips. In all three the heart/star/share go back on the name's line with **word-only wrapping** (`break-normal`). | M3-3. "Wrap" breaks decision G-9 ("the chip row never wraps") — a Destin-requested exploration; whichever he picks, the guide's G-9 needs a narrow-column exception or the page needs fewer chips. |
+
+### Tooling friction this round
+- **verify's `shoot --check` is blocked by another session.** The Office screens need the
+  office editor on fixed port 4717, which another worktree's editor (`ha-pages-connection`)
+  held for the whole round. The check refuses to run any screen, not just the Office ones,
+  and names no way round it but stopping another session's process (not mine to stop).
+  I proved the marketplace and library screens open with a plain `shoot` (27/27, no
+  look-alikes) instead. A per-worktree port, or `--check` skipping only the Office screens
+  with a warning, would fix it.
+- **One full-suite run failed and the next two passed** with no change in between; the
+  first run's log was not kept (verify prints only the summary unless you capture it), so I
+  could not name the test. verify should save each check's full log to a file and print its
+  path on FAIL.
+- **`preview` renders only the first two themes** of a three-theme deck at the requested
+  size, and leaves stale pages from other decks in the shared `preview/` folder (cleared it
+  this round before reading).
