@@ -19,6 +19,15 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       backup repository, with only junk files excluded. The desktop app no longer has this backup.
       `android` `needs-verify` `checked 2026-09-23` `security`
 
+- [ ] Your Personal sync history keeps every old version of every conversation forever: 2.6 GB online and
+      8 GB on the Z13, more than the 5.6 GB of actual files. A new device (or a repair that has to start over)
+      must download all of it first, and it only grows. Needs a choice of how much old history to keep.
+      `settings/sync` `all` `decision` `checked 2026-10-05` `performance`
+
+- [ ] While sync downloads a large history for the first time (a new device, or after a repair started over),
+      the Sync panel shows nothing about it — it can take an hour with no sign anything is happening.
+      `settings/sync` `desktop` `confirmed` `checked 2026-10-05`
+
 - [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
       them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
       conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
