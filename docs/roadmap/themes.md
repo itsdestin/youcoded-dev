@@ -57,3 +57,7 @@ here: installing or browsing themes (marketplace).
       font, so this affects the wider theme library too. Seen while publishing Morning Rounds,
       2026-09-22
       `settings/themes` `android` `confirmed` `checked 2026-09-22`
+
+- [ ] Settings → Appearance: the first theme pictures (Crème, Halftone Dimension) open cut off at
+      the top of the theme list (found by a UX tester, 2026-10-05)
+      `settings/themes` `desktop` `needs-verify` `checked 2026-10-05`
