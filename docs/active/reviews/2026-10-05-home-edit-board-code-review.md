@@ -86,18 +86,18 @@ Gaps and weak proofs:
 
 Each finding needs a decision. Triage lines:
 
-1. Triage:
-2. Triage:
-3. Triage:
-4. Triage:
-5. Triage:
-6. Triage:
-7. Triage:
-8. Triage:
-9. Triage:
-10. Triage:
-11. Triage:
-12. Triage:
-13. Triage:
-14. Triage:
-T1-T7. Triage:
+1. Triage: accepted — fix as suggested, with a test that fails without it.
+2. Triage: accepted — fix as suggested, with a test that fails without it.
+3. Triage: accepted — fix as suggested, with a test that fails without it.
+4. Triage: accepted — fix as suggested, with a test that fails without it.
+5. Triage: accepted — fix as suggested, with a test that fails without it.
+6. Triage: accepted — fix as suggested, with a test that fails without it.
+7. Triage: accepted — fix as suggested, with a test that fails without it.
+8. Triage: accepted — fix as suggested, with a test that fails without it.
+9. Triage: accepted — fix as suggested, with a test that fails without it.
+10. Triage: accepted — fix as suggested, with a test that fails without it.
+11. Triage: accepted — fix as suggested, with a test that fails without it.
+12. Triage: accepted — fix as suggested, with a test that fails without it.
+13. Triage: accepted — fix as suggested, with a test that fails without it.
+14. Triage: accepted — fix as suggested, with a test that fails without it.
+T1-T7. Triage: accepted — fix as suggested, with a test that fails without it.
