@@ -238,6 +238,28 @@ see who else is online."
   you appear the instant you leave incognito; (4) worker deploys are CI-driven on master, so this is a
   marketplace-repo change with its own review.
 
+## Round 6 (2026-10-05) — incognito hidden mode built; plain error titles app-wide
+
+Destin approved hidden mode **per device** and plain error titles app-wide. Deck `games-social-5.json`.
+
+| # | What I did | Driven by |
+|---|---|---|
+| R6-1 | **Server** (wecoded-marketplace, branch `session/ui-consistency-audit`, NOT deployed): `?hidden=1` on the presence socket, passed by the route as a header it always sets or clears; `liveSocketsFor()` — the one "is online" definition — leaves hidden sockets out (no snapshot listing, no challenge delivery, no "was online"); no join/leave broadcast and no `last_seen_at` from a hidden socket (close and alarm both); status / challenge / challenge-response from it answered `{type:"refused", reason:"hidden"}`; `{type:"hello", hidden:true}` sent before the snapshot; `GET /social/presence/capabilities` → `{hidden:true}`. 7 new worker tests (6 seen failing first), 388/388 worker tests, typecheck clean. | G4-3; the round-5 write-up above. |
+| R6-2 | **Desktop:** incognito connects hidden. Guard 1 — `social-handlers` probes capabilities first and never connects hidden without a yes (an older server = presence stays off, "who's online is hidden"). Guard 2 — `presence-socket` treats the socket as connected only after the hello; any other first frame → disconnect, relay nothing, `hidden-unsupported`. Status/challenge frames are dropped while hidden (renderer and main). | Same; privacy first. |
+| R6-3 | **Android:** same two guards and send filter in `PresenceClient.kt` (`HiddenPresence` object, 6 new unit tests; 600/600 Android unit tests green). `SessionService` passes `payload.hidden`. | Parity. **Conflict noted:** the shared checkout's newer `android-runtime.md` says "never port new desktop logic to Kotlin (A3 deletes the copies)". Not porting would have been a privacy leak — the renderer asks for hidden mode and an Android client ignoring it would connect VISIBLY — so the guard was ported, kept small and pure. |
+| R6-4 | **UI:** incognito line shows the real count once hidden mode is confirmed ("2 of 4 friends online · they can't see you"), pills show, Challenge hidden while incognito (it would reveal you). A server failure now outranks incognito in `socialState` (incognito keeps a connection, so its failure is real news). | G3-9 / G4-3. |
+| R6-5 | **Red titles:** the shared notice box's danger title is normal text colour at its root (`ui/Callout.tsx`), pinned by a test seen red first; the three red-title screens rewritten as one sentence (install failure keeps the real reason and avoids "Couldn't install: Couldn't…"). Side effect, approved as "app-wide": the local-model "Damaged download" box and Sync's danger-level warnings keep their titles, now in normal colour. Integration error has no workbench screen — not photographed. | G3-7 + Destin's app-wide approval. |
+
+### Tooling friction this round
+1. **The shared marketplace checkout's `node_modules` was older than its branch** (`cloudflareTest` export
+   missing), so the hardlink farm couldn't run the worker tests; a fresh `npm ci` in the worktree then
+   needed `workerd`'s blocked install script run by hand (npm 12 blocks it; `allowScripts` in the worker's
+   package.json doesn't list it). `workspace-start` doesn't provision `wecoded-marketplace/worker` deps.
+2. **A temporary "before" checkout can't live in `/tmp`** — hardlinking `node_modules` fails across
+   filesystems. Put it in the workspace's ignored `scratch/`.
+3. Workbench presence is mocked at the renderer, so hidden mode's guards (which live in main / Kotlin)
+   cannot be seen in pictures — only in unit tests.
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Guide: a "panel at the top of a pane" recipe** — `guide-draft.md` Recipes. Folded by default to one

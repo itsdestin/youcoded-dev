@@ -1,0 +1,155 @@
+[
+  {
+    "name": "settings/assistant/local/model-settings",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/settings/assistant/local/model-settings/midnight.png",
+    "ms": 1517,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 215,
+      "w": 420,
+      "h": 470
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace/detail/install#failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/marketplace/detail/install#failed/midnight.png",
+    "ms": 1567,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#auth-error",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/settings/sync#auth-error/midnight.png",
+    "ms": 2413,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace/detail/install#failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/marketplace/detail/install#failed/youcoded.png",
+    "ms": 2659,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace/detail/install#failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/marketplace/detail/install#failed/youcoded-night.png",
+    "ms": 2831,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#auth-error",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/settings/sync#auth-error/youcoded-night.png",
+    "ms": 3566,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#auth-error",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/settings/sync#auth-error/youcoded.png",
+    "ms": 3583,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local/model-settings",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/settings/assistant/local/model-settings/youcoded.png",
+    "ms": 3908,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 230,
+      "w": 420,
+      "h": 439
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local/model-settings",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs5-errors/before/settings/assistant/local/model-settings/youcoded-night.png",
+    "ms": 4088,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 230,
+      "w": 420,
+      "h": 439
+    },
+    "parts": []
+  }
+]
