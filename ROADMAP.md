@@ -40,61 +40,86 @@ harness and the local engine.
 
 ## Next release
 Target: `v1.3.1`
-- chat-data: The replayed-turn record's type is ambiguous (D11 in the simplification plan), a v1.3.1 release blocker
+- chat-data: the replayed-turn record's type is ambiguous (D11 in the simplification plan)
+- dev-workspace: Mac installers: nothing is signed or notarized, and a Mac download may open as "broken"
 - dev-workspace: Waiting on CI runs eats whole sessions
-- dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
-- dev-workspace: Every macOS download since 2026-07-23 is unopenable, and the download page sends people to a button that no…
-- dev-workspace: macOS installers still hit the security wall
-- dev-workspace: No Google Play listing
-- files: Searching a big project's files still stops at the first 2,000 files and says "This folder is large
-- files: Searching inside files' text in a project stops at 200 matches (20 per file, 5 seconds) and shows "200+",…
+- files: searching a big project stops early, for file names and for text inside files
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
-- local-models: The file downloader exists three times (model files, the engine, voice assets) and the checksum helper four…
-- marketplace: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
-- native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested and not thought through…
+- local-models: The file downloader exists three times (model files, engine, voice assets) and the checksum helper four…
+- native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested or thought through…
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
 - native-harness: Native Runtime Parity Program
-- native-harness: The one object that runs a native conversation is 4,756 lines because it also orchestrates the helper agents…
-- native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does not have it…
+- native-harness: The one object that runs a native conversation is 4,756 lines because it also runs the helper agents…
+- native-harness: The assistant cannot search the WeCoded marketplace, so when it lacks a capability it reaches for a script or…
 - native-harness: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
-- native-harness: Helper (specialist) transcripts pile up in the sessions folder forever
 - native-harness: native-only users need a YouCoded-owned skills home
 - operations: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
-- other-features: The Linux buddy has never been tried on two screens
-- perf: v1.3.1 blocker, blocked on simplification phase 5: two small reads still take whole files, catalog fetches…
-- themes: Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it gives every small…
-- user-interface: Browser-default hover tooltips look foreign to the app
+- perf: v1.3.1 blocker, blocked on simplification phase 5: leftover whole-file reads and memory waste
+- user-interface: The settings screen exists twice, once for desktop and once for phone
 - user-interface: Error messages still guess at causes in many places
-- user-interface: The settings screen exists twice
+
+## Top priority (P1)
+- chat-data: the replayed-turn record's type is ambiguous (D11 in the simplification plan)
+- dev-workspace: Session work lost or stranded: 6 ways a session's work or worktree goes missing
+- dev-workspace: Mac installers: nothing is signed or notarized, and a Mac download may open as "broken"
+- dev-workspace: Waiting on CI runs eats whole sessions
+- files: searching a big project stops early, for file names and for text inside files
+- files: Files: five ways work can be silently lost
+- local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
+- local-models: The file downloader exists three times (model files, engine, voice assets) and the checksum helper four…
+- native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested or thought through…
+- native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
+- native-harness: Native Runtime Parity Program
+- native-harness: The one object that runs a native conversation is 4,756 lines because it also runs the helper agents…
+- native-harness: The assistant cannot search the WeCoded marketplace, so when it lacks a capability it reaches for a script or…
+- native-harness: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
+- native-harness: Per-project skills and tools: each project chooses which skills, plugins and tool connections the assistant…
+- native-harness: native-only users need a YouCoded-owned skills home
+- operations: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
+- perf: v1.3.1 blocker, blocked on simplification phase 5: leftover whole-file reads and memory waste
+- perf: The app still feels sluggish: chat-switch pauses and typing interruptions (4 things, work in progress)
+- user-interface: The settings screen exists twice, once for desktop and once for phone
+- user-interface: Error messages still guess at causes in many places
 
 ## Backlogs
-| Area | Open | Needs verify | Decisions | Parked |
-|---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 32 | 4 | 11 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
-| [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 42 | 19 | 3 | 1 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 13 | 2 | 5 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 25 | 9 | 8 | 4 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 7 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 21 | 3 | 1 | 5 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 5 | 0 | 5 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 5 | 1 | 5 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
-| [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 9 | 2 | 2 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 9 | 4 | 0 | 3 |
-| [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 1 | 0 | 0 |
-| [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
+<!-- P1 urgent: app-breaking, a release blocker, or a top-priority feature to build next.
+     P2 major: big ideas and things hit repeatedly, but not the immediate next step.
+     P3 leisure: smaller bugs and miscellany, done whenever. (Destin, 2026-10-05) -->
+| Area | Open | P1 | P2 | P3 | Needs verify | Decisions | Parked |
+|---|---|---|---|---|---|---|---|
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 21 | 8 | 5 | 8 | 2 | 2 | 3 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 20 | 3 | 5 | 12 | 2 | 0 | 2 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 13 | 2 | 3 | 8 | 4 | 0 | 1 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 9 | 2 | 1 | 6 | 1 | 0 | 1 |
+| [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 9 | 2 | 0 | 7 | 2 | 0 | 0 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 9 | 0 | 4 | 5 | 2 | 2 | 1 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 8 | 0 | 3 | 5 | 2 | 1 | 1 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 8 | 0 | 3 | 5 | 0 | 0 | 2 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 7 | 1 | 0 | 6 | 2 | 1 | 1 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 6 | 2 | 1 | 3 | 0 | 1 | 1 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 6 | 0 | 2 | 4 | 0 | 0 | 2 |
+| [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 5 | 1 | 0 | 4 | 1 | 1 | 1 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 4 | 0 | 0 | 4 | 1 | 0 | 1 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 3 | 0 | 0 | 3 | 1 | 0 | 1 |
+| [games](docs/roadmap/games.md) — the arcade | 2 | 0 | 0 | 2 | 1 | 0 | 1 |
+| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
 
 ## Filing an item
-Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,
+Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. **First look for an
+entry the new item belongs in** — a small fault or idea joins its theme's bundled entry as one
+more lettered clause, and only something big gets an entry of its own: the whole roadmap is
+budgeted at 150 entries and `roadmap-check` says when it is over. Write what you saw,
 in one or two lines, no file paths and no mechanism. If you investigated, put that in a
 report under `docs/active/investigations/` with a `<!-- claim: … -->` anchor and link it with
 `→ <path>`. New items start `needs-verify` unless you reproduced it or your report anchors
-the cause. To close an item: `node scripts/roadmap-check.mjs --close <area>:<text from the
+the cause. **Priority: a new item is `P3` unless you can say why not** — `P1` only for
+something app-breaking, a blocker of the `Target:` release, or a feature Destin named as next;
+`P2` for a major idea or something he has hit more than once. Only Destin moves an item up a
+tier; say so in the entry when he does. To close an item: `node scripts/roadmap-check.mjs --close <area>:<text from the
 entry> --ref "<commit or PR>"` deletes it, adds its one line to `docs/roadmap/shipped.md` and
-rewrites this index; then archive its report. After any other edit run
+rewrites this index; then archive its report. To close ONE point of a bundled entry, delete
+its lettered clause (re-letter the rest, fix the count in the headline) and add its line to
+`shipped.md` by hand — `--close` removes a whole entry. After any other edit run
 `node scripts/roadmap-check.mjs --fix` before committing.
 
 The last line of an entry is its tokens, in this order. **Every one is a closed list — a
@@ -105,8 +130,9 @@ word that is not below is an error, not a new category. Do not invent one.**
 | surface | optional | one of 29 — `node scripts/roadmap-check.mjs --vocab` prints them |
 | seen-on | yes | `desktop` `android` `remote` `all` `n/a` |
 | status | yes | `confirmed` `needs-verify` `in-flight` `blocked` `decision` `parked` |
+| priority | yes | `P1` `P2` `P3` — urgent · major but not next · at leisure (defined above the Backlogs table) |
 | checked | yes | `checked YYYY-MM-DD` |
-| flags | optional, repeatable | `urgent` `needs-repro` `performance` `security` `regression`, or one release like `v1.3.1` |
+| flags | optional, repeatable | `needs-repro` `performance` `security` `regression`, or one release like `v1.3.1` |
 
 `--vocab` also prints the `##` sublevel headings each area file may use. Full grammar:
 `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2–3.

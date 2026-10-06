@@ -4,4 +4,4 @@ figure, a specialist.
 
 ## tools
 - [ ] Should Bash keep its working directory across turns, or reset every call?
-      `all` `decision` `checked 2026-08-25`
+      `all` `decision` `P1` `checked 2026-08-25`

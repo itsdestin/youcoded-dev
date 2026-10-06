@@ -381,7 +381,7 @@ fi
 
 # WHY single quotes around the inner placeholder: nested double quotes ended the string early,
 # so bash read `<commit or PR>` as a redirect from a file named "commit" and never printed the note.
-note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index)"
+note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index); if the work was ONE lettered point of a bundled entry, delete that clause and add the shipped.md line by hand instead"
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
 # WHY (2026-10-03, Office close-out): the build plan's "Not in this plan" list (four designed
