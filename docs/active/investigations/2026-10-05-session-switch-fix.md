@@ -55,12 +55,17 @@ left it. No contained, non-visual fix surfaced. Raw files: `scratch/perf-lab/swi
   read), `memo-while-closed`, `SessionStrip-layout-effects` (source pin), `focus-composer-after-switch`.
 
 ### Composer focus after a switch
-Only the strip's own selections (pill, All Sessions row, Shift-hold switcher, drop) count; automatic switches
-never do. Skipped on touch/pen, narrow or coarse-pointer screens, with a dialog open, a disabled box, or focus in
-another field/editor. No scroll, no layout read, strip markup untouched. The box lets go after the usual 3/4 s idle
-pause (same rule as after typing) because the Shift-hold switcher will not start while a text box has focus; typing
-still works after that, the first key re-focuses it. What you will notice: typing right after a switch lands in the box;
-the blinking cursor disappears after 3/4 s of not typing.
+Only switches made with a POINTER count: a pill press, a real click on a pill or an All Sessions row, a drop, and
+the release of the Shift-hold switcher. Enter/Space on a focused pill or row does NOT move focus (those users
+navigate by keyboard; the strip passes the event, and a click with `detail` 0 or a keydown is keyboard). Automatic
+switches never reach the strip's callback. A pill press selects on pointerdown, so if the press turns into a
+reorder drag the focus is skipped; otherwise it lands after release. Skipped on touch/pen, narrow or coarse-pointer
+screens, Android, a dialog, a disabled box, or focus in another field, editor or iframe. No scroll, no layout read,
+strip markup untouched.
+The box we focus carries a mark (`data-focused-by-switch`) cleared by the first real key, input or blur; the
+Shift-hold switcher ignores a marked box, so a second Shift-hold right after a switch still opens it, and Shift
+(including auto-repeat) neither clears the mark nor re-arms the idle blur. The usual 3/4 s idle blur is kept (other
+shortcuts such as Shift+Space still need the box unfocused). You will notice: typing right after a switch lands in the box.
 
 ### What could be noticed
 Nothing visual from the speed work. Settings opened while the app is idle shows identical content. Only the focus
