@@ -119,7 +119,12 @@ has passed ~8 items — graduate it to its own file.
       2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552, cbc793a6f); Destin tested a live
       dashboard and a keyed weather page end to end. Next: a home-network connection for a Home
       Assistant page, then Phases 3–4 in the plan.
-      `window-chrome` `all` `in-flight` `checked 2026-09-23` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+      2026-10-05: a Money page (bank balances through Plaid, typed-in accounts, bills) is in design on
+      `session/finance-dashboard`. Icons: "page builder skill needs better instructions to build a
+      unique icon for each page that matches its purpose at-a-glance. users utilize these to tell pages
+      apart." The set is nine glyphs (a money one added on that branch); it needs many more, and the
+      skill a rule to pick one no other page uses.
+      `window-chrome` `all` `in-flight` `checked 2026-10-05` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
 - [ ] Publish the page-builder skill's connections update once an app release carries Pages
       Phase 2. It is finished and held on wecoded-marketplace `session/youcoded-pages-phase2`
