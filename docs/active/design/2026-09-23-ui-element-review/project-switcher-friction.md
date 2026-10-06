@@ -189,10 +189,22 @@ App commit `62c4e5df0`; deck `project-switcher-3.json` (before `runs/ps2-after`,
 | R3-6 | Rows got a short accessible name ("wecoded-themes, Sync problem"). | Found driving the open-first steps: the old name was every line of the row cut at 70 characters, which a screen reader reads too. |
 
 ### Tooling friction this round
-1. **A pointer trip in an open-first `hover` left the wrong row lit.** Hovering the 4th row lit it,
-   but the row the pointer crossed just before kept its `:hover` look (bin and tint) — twice, on
-   different rows. I could not tell whether it is headless Chrome or the app, so the picture uses
-   the arrow keys; **pointing at rows should be checked by hand in a dev window.**
+1. **Two rows lit — settled (app commit `e6ab9b4d7`): a real bug AND a tool artifact.**
+   - *Real bug:* the row tint (`hover:bg-inset`) and the bin (`group-hover:inline-flex`) were CSS
+     :hover, beside the highlightIndex state that draws the outline. Reproduced with `explore`
+     (1×, real pointer steps): pointer resting on "recipes", then ArrowUp → "wecoded-marketplace"
+     outlined with its bin AND "recipes" tinted with its bin. Fixed at the root: tint and bin come
+     only from highlightIndex (mouseEnter/mouseMove set it; leaving the list resets it); an RTL
+     test asserts one lit row / one bin after hovering B after A and none after leaving (seen
+     failing first). Re-run in explore: hover → one row; ArrowUp → one row; pointer off the list
+     → only the current project, no bin. Touch is unchanged: the built CSS has
+     `@media (pointer:coarse){.pointer-coarse\:inline-flex{display:inline-flex}}` after `.hidden`.
+   - *Tool artifact:* `shoot` at its default 1.5× still photographed the bin one row above the
+     outlined row after an open-first `hover`, even with the fix; the same screen at
+     `SHOOT_SCALE=1` and in `explore` is correct. The bin (no transition) sits on the row ABOVE
+     while the outline (`transition-colors`) is still on the hovered row — consistent with a late
+     synthetic pointer event at the capture landing at the hover's coordinates divided by 1.5.
+     P3-3 is therefore shot at 1× (`runs/ps3-pointer`). Proposal 8 below is updated.
 2. **Open-first targets need the exact accessible name** (`{ role, label }`); a plain string only
    works for short names. The error message listing what is on screen made this quick to fix.
 3. **An approve slide whose change only shows on light themes** is refused for the dark ones
@@ -219,8 +231,11 @@ App commit `62c4e5df0`; deck `project-switcher-3.json` (before `runs/ps2-after`,
    `--out` (round 2 lost every other picture silently).
 6. **shoot: a listbox inside a dialog is not a layer** (`explore-page.mjs`; round 1).
 7. **deck: accept a one-word screen name** in crops (`spec.py` looks for `/` or `#`; round 1).
-8. **Investigate the stale `:hover` after an open-first `hover` step** (`driver.mjs` `moveTo`) — if
-   it is headless Chrome, send a final no-op move; if it is real, it is an app bug (round 3 #1).
+8. **shoot: pointer steps at 1.5× land a late event one row off** (`engine.mjs` capture /
+   `driver.mjs` mouse) — after an open-first `hover` at deviceScaleFactor 1.5 the picture shows
+   state from a point at the hover's coordinates ÷ 1.5; at 1× it is right. Find which call
+   re-dispatches the pointer (likely the capture) and pass device-independent coordinates, or
+   move the pointer off the page before capture for screens with no pointer steps (round 3 #1).
 9. **`useScrollFade` / `.scroll-fade` docs point new lists at `.scroll-mask`**; the painted band broke
    a flex column in round 1 and Destin asked for the masked fade twice (sessions menu, here).
 10. **main-blocking-calls message**: offer "store it in a file this path already reads" beside

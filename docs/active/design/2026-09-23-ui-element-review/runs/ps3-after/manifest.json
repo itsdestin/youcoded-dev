@@ -5,7 +5,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#many/youcoded-night.png",
-    "ms": 3855,
+    "ms": 3075,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -22,41 +22,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#pointed/midnight.png",
-    "ms": 3916,
-    "errors": [],
-    "scale": 1.5,
-    "panel": {
-      "x": 400,
-      "y": 135,
-      "w": 640,
-      "h": 407
-    },
-    "parts": []
-  },
-  {
-    "name": "projects/switcher#many",
-    "theme": "midnight",
-    "ok": true,
-    "reason": "",
-    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#many/midnight.png",
-    "ms": 4074,
-    "errors": [],
-    "scale": 1.5,
-    "panel": {
-      "x": 400,
-      "y": 135,
-      "w": 640,
-      "h": 568
-    },
-    "parts": []
-  },
-  {
-    "name": "projects/switcher",
-    "theme": "youcoded",
-    "ok": true,
-    "reason": "",
-    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher/youcoded.png",
-    "ms": 4079,
+    "ms": 3320,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -73,7 +39,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#many/youcoded.png",
-    "ms": 4558,
+    "ms": 3339,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -85,12 +51,46 @@
     "parts": []
   },
   {
+    "name": "projects/switcher#many",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#many/midnight.png",
+    "ms": 3476,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 568
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher/youcoded.png",
+    "ms": 3752,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
     "name": "projects/switcher#pointed",
     "theme": "youcoded",
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#pointed/youcoded.png",
-    "ms": 5263,
+    "ms": 4594,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -107,7 +107,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher/midnight.png",
-    "ms": 5531,
+    "ms": 4721,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -124,7 +124,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/files#not-synced/youcoded-night.png",
-    "ms": 5914,
+    "ms": 5236,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -141,7 +141,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/settings/sync#removed/midnight.png",
-    "ms": 6495,
+    "ms": 5594,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -158,7 +158,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher#pointed/youcoded-night.png",
-    "ms": 6597,
+    "ms": 6005,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -175,7 +175,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/switcher/youcoded-night.png",
-    "ms": 6758,
+    "ms": 6197,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -192,7 +192,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/files#not-synced/midnight.png",
-    "ms": 7829,
+    "ms": 6849,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -209,7 +209,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/projects/files#not-synced/youcoded.png",
-    "ms": 9443,
+    "ms": 8355,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -226,7 +226,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/settings/sync#removed/youcoded-night.png",
-    "ms": 12539,
+    "ms": 12738,
     "errors": [],
     "scale": 1.5,
     "panel": {
@@ -243,7 +243,7 @@
     "ok": true,
     "reason": "",
     "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-after/settings/sync#removed/youcoded.png",
-    "ms": 16071,
+    "ms": 16167,
     "errors": [],
     "scale": 1.5,
     "panel": {

@@ -6,12 +6,14 @@
   "runs": {
     "before": "runs/ps2-after",
     "after": "runs/ps3-after",
-    "phone": "runs/ps3-after-phone"
+    "phone": "runs/ps3-after-phone",
+    "pointer": "runs/ps3-pointer"
   },
   "labels": {
     "before": "Round 2",
     "after": "Round 3",
-    "phone": "Phone"
+    "phone": "Phone",
+    "pointer": "Round 3"
   },
   "themes": [
     "youcoded",
@@ -51,12 +53,12 @@
       "surface": "Projects",
       "path": "Project switcher, moved to another row",
       "runs": [
-        "after"
+        "pointer"
       ],
       "crop": "projects/switcher#pointed@680x470+380+120",
       "headline": "Point at (or arrow to) another project and the highlight moves there, with its bin; leave the list and it returns.",
       "changed": "The highlight follows the pointer and the arrow keys; moving the pointer off the list puts it back on the project you're in.",
-      "notice": "This picture moved it with the arrow keys; pointing does the same."
+      "notice": "Only one row is ever lit: the highlight and the bin now follow one thing, so the keys and the pointer can't light two rows."
     },
     {
       "id": "P3-4",
