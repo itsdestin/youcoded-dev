@@ -38,6 +38,7 @@ import {
 import { engineDelta, rendererVerdict } from './gpu-cost-parse.mjs';
 import { eventRecorder } from './realism-page.mjs';
 import { startBusyDesktop } from './realism-load.mjs';
+import { cpus } from 'node:os';
 import {
   calibrate, dist, humanAimMs, humanHoldMs, humanPlan, mb, pickBySize, resolveFactors, rng, shuffled, splitEvent, summariseEvents, targetFromHitches, SLOW_MS,
 } from './realism-stats.mjs';
@@ -53,7 +54,7 @@ const HIS_FILE = '/home/destin/.config/youcoded-perfzero/perf';
 // ── options ──────────────────────────────────────────────────────────────────
 
 export function parseOptions(argv) {
-  const o = { preset: 'real-use', checkout: null, appDir: null, devSource: null, out: join(WORK, 'out'), seqs: 'fresh,warm,busy,ctrl,noop', seconds: 75, tag: '', boots: 1, soakMinutes: 10, maxMinutes: 30, seed: 'real-use', waitMinutes: 40, aim: 'fresh' };
+  const o = { preset: 'real-use', checkout: null, appDir: null, devSource: null, out: join(WORK, 'out'), seqs: 'fresh,warm,busy,ctrl,noop', seconds: 75, tag: '', boots: 1, soakMinutes: 10, maxMinutes: 30, seed: 'real-use', waitMinutes: 40, aim: 'fresh', sha: null, devRef: null };
   const over = {};
   for (let i = 0; i < argv.length; i += 2) {
     const k = argv[i], v = argv[i + 1];
@@ -65,7 +66,7 @@ export function parseOptions(argv) {
   for (const k of ['seconds', 'boots', 'maxMinutes', 'waitMinutes', 'soakMinutes']) o[k] = Number(o[k]);
   o.seqs = String(o.seqs).split(',').filter(Boolean);
   for (const s of o.seqs) if (!['fresh', 'warm', 'soak', 'busy', 'ctrl', 'noop'].includes(s)) throw Error(`--seqs takes fresh,warm,soak,busy,ctrl,noop (got ${s})`);
-  if (o.factors.busy === 'off') o.seqs = o.seqs.filter(s => s !== 'busy');
+  if (o.factors.busy === 'off' && !o.seqs.includes('keepbusy')) o.seqs = o.seqs.filter(s => s !== 'busy');
   if (!['fresh', 'cached'].includes(o.aim)) throw Error('--aim takes fresh|cached');
   for (const k of ['checkout', 'appDir', 'devSource', 'out']) if (o[k] && !isAbsolute(o[k])) throw Error(`--${k} must be absolute`);
   if (!o.checkout && !o.appDir) o.checkout = join(ROOT, 'youcoded');
@@ -75,10 +76,10 @@ export function parseOptions(argv) {
 // ── the app: packaged copy or private dev build ──────────────────────────────
 
 /** A reflink COPY of the packaged build under scratch (never launched in place: the frozen checkout stays untouched) + a stamp. */
-export function preparePackaged(checkout, appDirOpt) {
+export function preparePackaged(checkout, appDirOpt, shaOpt = null) {
   const src = appDirOpt ?? join(checkout, 'desktop', 'release', 'linux-unpacked');
   if (!existsSync(join(src, 'youcoded'))) throw Error(`no packaged app at ${src}`);
-  const sha = execFileSync('git', ['-C', checkout ?? dirname(dirname(dirname(src))), 'rev-parse', '--short=9', 'HEAD'], { encoding: 'utf8' }).trim();
+  const sha = shaOpt ?? execFileSync('git', ['-C', checkout ?? dirname(dirname(dirname(src))), 'rev-parse', '--short=9', 'HEAD'], { encoding: 'utf8' }).trim();
   const dest = join(WORK, 'apps', `packaged-${sha}`);
   if (!existsSync(join(dest, 'youcoded'))) {
     mkdirSync(dirname(dest), { recursive: true });
@@ -89,17 +90,23 @@ export function preparePackaged(checkout, appDirOpt) {
 }
 
 /** A private Vite DEV tree of the same commit: `git archive` of desktop/ + reflink copies of node_modules and the built main-process JS. */
-export function prepareDev(checkout) {
-  const sha = execFileSync('git', ['-C', checkout, 'rev-parse', '--short=9', 'HEAD'], { encoding: 'utf8' }).trim();
+export function prepareDev(checkout, ref = null) {
+  const sha = execFileSync('git', ['-C', checkout, 'rev-parse', '--short=9', ref ?? 'HEAD'], { encoding: 'utf8' }).trim();
   const dest = join(WORK, 'apps', `dev-${sha}`);
   const desk = join(dest, 'desktop');
   if (!existsSync(join(desk, 'package.json'))) {
     mkdirSync(dest, { recursive: true });
-    execFileSync('bash', ['-c', `git -C ${JSON.stringify(checkout)} archive HEAD desktop | tar -x -C ${JSON.stringify(dest)}`]);
-    // COW copies: later writes (Vite's cache) never reach the frozen checkout's files.
+    execFileSync('bash', ['-c', `git -C ${JSON.stringify(checkout)} archive ${ref ?? 'HEAD'} desktop | tar -x -C ${JSON.stringify(dest)}`]);
+    // COW copies: later writes (Vite's cache) never reach the source checkout's files.
     execFileSync('cp', ['-a', '--reflink=always', join(checkout, 'desktop', 'node_modules'), join(desk, 'node_modules')]);
     rmSync(join(desk, 'node_modules', '.vite'), { recursive: true, force: true });
-    execFileSync('cp', ['-a', '--reflink=always', join(checkout, 'desktop', 'dist'), join(desk, 'dist')]);
+    if (ref) {
+      // A specific commit has no matching built main-process JS in the checkout: compile it here (what `npm run dev:main` does, minus the network fetch).
+      const run = (cmd, args) => execFileSync(cmd, args, { cwd: desk, stdio: 'ignore', timeout: 600000 });
+      run(process.execPath, ['scripts/generate-preload-channels.mjs']);
+      run(join(desk, 'node_modules', '.bin', 'tsc'), ['-p', 'tsconfig.json']);
+      cpSync(join(desk, 'src/main/pty-worker.js'), join(desk, 'dist/main/pty-worker.js'));
+    } else execFileSync('cp', ['-a', '--reflink=always', join(checkout, 'desktop', 'dist'), join(desk, 'dist')]);
   }
   // WHY pre-warm (as scripts/run-dev.js does): a cold Vite cache optimises dependencies on the first page load and RELOADS the page mid-boot,
   // which destroyed the measuring connection ("Execution context was destroyed") in the first dev trial.
@@ -348,7 +355,7 @@ export async function runBoot(opts, bootNo, outFile) {
   report.unusable = Number(report.loadAvgStart.split(' ')[0]) > 8;
   let root, fake, xvfb, comp, app, busy, ctx;
   try {
-    const built = f.build === 'dev' ? prepareDev(opts.checkout) : preparePackaged(opts.checkout, opts.appDir);
+    const built = f.build === 'dev' ? prepareDev(opts.checkout, opts.devRef) : preparePackaged(opts.checkout, opts.appDir, opts.sha);
     report.build = { kind: built.kind, sha: built.sha, builtAt: built.builtAt ?? null };
     if (f.build === 'packaged') refusePackageProcesses(built.appDir);
     root = mkdtempSync(join(WORK, 'realism-fixture-')); // under scratch/ (gitignored); deleted in finally
@@ -423,7 +430,7 @@ export async function runBoot(opts, bootNo, outFile) {
           await doRun('soaked');
         }
         else if (s === 'busy') {
-          busy = await startBusyDesktop({ display: busyDisplay, workDir: join(root, 'busy'), controlHtml: join(ROOT, 'scripts/perf-lab/gpu-control/control.html'), log: m => report.notes.push(m) });
+          busy = await startBusyDesktop({ ...(f.busy === 'heavy' ? { hogs: Math.ceil(cpus().length * 1.25), duty: 1 } : {}), display: busyDisplay, workDir: join(root, 'busy'), controlHtml: join(ROOT, 'scripts/perf-lab/gpu-control/control.html'), log: m => report.notes.push(m) });
           report.busy = busy.info; await sleep(6000);
           try { await doRun('busy'); } finally { await busy.stop(); busy = null; }
         } else if (s === 'ctrl') {

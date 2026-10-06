@@ -175,7 +175,7 @@ export const FACTORS = Object.freeze({
   history: ['fixture', 'real'],
   theme: ['stock', 'heavy'],
   display: ['xvfb', 'gpu'],
-  busy: ['off', 'on'],
+  busy: ['off', 'on', 'heavy'],   // on = 4 hogs at 35% + a browser-like page; heavy = every core saturated (a build/VM storm, load ~40)
 });
 
 export const SESSION_COUNTS = [2, 3, 4, 5, 6, 8, 10, 12, 16, 20];
@@ -183,6 +183,7 @@ export const SESSION_COUNTS = [2, 3, 4, 5, 6, 8, 10, 12, 16, 20];
 /** The "real-use" preset: what ships (packaged), his real conversations, his glass+particle theme, the real GPU at 2560x1600 / 1.5, 4 sessions (his recorded sequence), a busy desktop. */
 export const PRESETS = Object.freeze({
   'real-use': { build: 'packaged', history: 'real', theme: 'heavy', display: 'gpu', sessions: 4, busy: 'on' },
+  'real-use-storm': { build: 'packaged', history: 'real', theme: 'heavy', display: 'gpu', sessions: 4, busy: 'heavy' },
   'cheap': { build: 'packaged', history: 'fixture', theme: 'stock', display: 'xvfb', sessions: 6, busy: 'off' },
 });
 

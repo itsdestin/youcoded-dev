@@ -14,11 +14,12 @@ import { join } from 'node:path';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // The hog: burn `burnMs` of every `periodMs` on one core. Atomics.wait is a true sleep, so the cost is the burn, not the sleep.
-export const HOG_SOURCE = `
+export const hogSource = (burn = 35, period = 100) => `
 const sab = new Int32Array(new SharedArrayBuffer(4));
-const burn = ${35}, period = ${100};
-for (;;) { const e = Date.now() + burn; while (Date.now() < e); Atomics.wait(sab, 0, 0, period - burn); }
+const burn = ${burn}, period = ${period};
+for (;;) { const e = Date.now() + burn; while (Date.now() < e); if (period > burn) Atomics.wait(sab, 0, 0, period - burn); }
 `;
+export const HOG_SOURCE = hogSource();
 
 export const CHROME_BIN = '/usr/bin/google-chrome-stable';
 
@@ -26,11 +27,11 @@ export const CHROME_BIN = '/usr/bin/google-chrome-stable';
  * Start the load. `display`: { kind:'x11', display:':99' } or { kind:'wayland', socketName, runtimeDir }.
  * Returns { pids, stop(), describe }. `hogs` and `canvasPage` can be turned off for tests.
  */
-export async function startBusyDesktop({ display, workDir, controlHtml, hogs = 4, browser = true, log = () => {} }) {
+export async function startBusyDesktop({ display, workDir, controlHtml, hogs = 4, duty = 0.35, browser = true, log = () => {} }) {
   const procs = [];
   const info = { hogs: 0, browser: false, browserPid: null };
   for (let i = 0; i < hogs; i++) {
-    const p = spawn(process.execPath, ['-e', HOG_SOURCE], { stdio: 'ignore', detached: false });
+    const p = spawn(process.execPath, ['-e', hogSource(Math.round(duty * 100), 100)], { stdio: 'ignore', detached: false });
     procs.push(p); info.hogs++;
   }
   if (browser) {
