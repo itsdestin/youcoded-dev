@@ -55,17 +55,13 @@ left it. No contained, non-visual fix surfaced. Raw files: `scratch/perf-lab/swi
   read), `memo-while-closed`, `SessionStrip-layout-effects` (source pin), `focus-composer-after-switch`.
 
 ### Composer focus after a switch
-Only switches made with a POINTER count: a pill press, a real click on a pill or an All Sessions row, a drop, and
-the release of the Shift-hold switcher. Enter/Space on a focused pill or row does NOT move focus (those users
-navigate by keyboard; the strip passes the event, and a click with `detail` 0 or a keydown is keyboard). Automatic
-switches never reach the strip's callback. A pill press selects on pointerdown, so if the press turns into a
-reorder drag the focus is skipped; otherwise it lands after release. Skipped on touch/pen, narrow or coarse-pointer
-screens, Android, a dialog, a disabled box, or focus in another field, editor or iframe. No scroll, no layout read,
-strip markup untouched.
-The box we focus carries a mark (`data-focused-by-switch`) cleared by the first real key, input or blur; the
-Shift-hold switcher ignores a marked box, so a second Shift-hold right after a switch still opens it, and Shift
-(including auto-repeat) neither clears the mark nor re-arms the idle blur. The usual 3/4 s idle blur is kept (other
-shortcuts such as Shift+Space still need the box unfocused). You will notice: typing right after a switch lands in the box.
+After a pointer switch in chat view (pill press/click, All Sessions row click, pill drop) the message box takes
+focus. Not for Enter/Space on a pill or row, the Shift-hold switcher, or automatic switches. Skipped in terminal
+view, on touch/pen, narrow or coarse screens, Android, with a dialog open, a disabled box, or focus in another
+field/editor/iframe. No scroll, no layout read, strip markup untouched. A press that becomes a reorder drag focuses
+the box a frame early: harmless, accepted. Known edge: after a mouse switch the box holds focus, so the Shift-hold
+switcher will not start until the composer's usual idle blur (about 3/4 s). You will notice: typing right after a
+mouse switch lands in the box.
 
 ### What could be noticed
 Nothing visual from the speed work. Settings opened while the app is idle shows identical content. Only the focus
