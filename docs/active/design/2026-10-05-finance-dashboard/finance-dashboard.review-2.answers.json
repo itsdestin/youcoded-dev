@@ -1,0 +1,21 @@
+{
+ "deck": "finance-dashboard-review-2",
+ "started": "2026-10-06T00:25:46.044Z",
+ "submitted": null,
+ "cur": 1,
+ "answers": {
+  "A-look": {
+   "v": "yes",
+   "t": 1791246378368,
+   "note": "what you owe should be formatted as a negative with parenthesis",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "L-try": {
+   "v": "yes",
+   "t": 1791246400956,
+   "note": "money looks like a camera.... maybe a dollar sign or something would be better."
+  }
+ }
+}
