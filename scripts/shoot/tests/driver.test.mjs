@@ -26,3 +26,23 @@ test('click re-aims after pointer travel moves its target', async () => {
   await makeDriver(tab).perform({ do: 'click', target: { role: 'button', label: 'Resume', nth: 1 } }, 1);
   assert.equal(pressedX, 200);
 });
+
+// "Open this first" on a screen entry (games-social friction, proposal 9).
+import { openSteps } from '../driver.mjs';
+
+test('an open step written as a label is a click on that button', () => {
+  assert.deepEqual(openSteps(['Your status: Online']), [{ do: 'click', target: { role: 'button', label: 'Your status: Online', nth: 1 } }]);
+});
+
+test('an open step may be any journey step, and none is no steps', () => {
+  const key = { do: 'key', key: 'ArrowDown' };
+  assert.deepEqual(openSteps([key]), [key]);
+  assert.deepEqual(openSteps(undefined), []);
+});
+
+test('an open step that checks, or says nothing, is refused', () => {
+  assert.throws(() => openSteps([{ do: 'expect', text: 'x' }]), /belongs in a journey/);
+  assert.throws(() => openSteps([{}]), /needs "do"/);
+  assert.throws(() => openSteps(['  ']), /empty label/);
+  assert.throws(() => openSteps('Your status'), /is a list/);
+});

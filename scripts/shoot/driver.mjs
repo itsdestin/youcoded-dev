@@ -34,6 +34,28 @@ export async function openScreen(tab, name) {
   await tab.still(3000);
 }
 
+/** A screen entry's `open` steps (the screen list's "open this first"), as driver steps.
+ *  A plain string is a click on the button a person sees with that label — `'Your status:
+ *  Online'` — because that is nearly every case; anything else is written as a journey step
+ *  (`{ do: 'click', target: { role, label } }`, `{ do: 'key', key: 'ArrowDown' }`).
+ *  WHY (games-social friction, proposal 9): every OPENED state (a menu, a popup, a folded card
+ *  opened) needed its own workbench switch in the app's production code (`?statusMenu=1`) —
+ *  code that exists only so a picture can be taken. A click replayed before the picture needs
+ *  none, and it opens the state the way a person does. */
+export function openSteps(open) {
+  if (open == null) return [];
+  if (!Array.isArray(open)) throw new Error('"open" is a list of steps (a button label, or a journey step)');
+  return open.map((s, i) => {
+    if (typeof s === 'string') {
+      if (!s.trim()) throw new Error(`open step ${i + 1} is an empty label`);
+      return { do: 'click', target: { role: 'button', label: s, nth: 1 } };
+    }
+    if (!s || typeof s !== 'object' || typeof s.do !== 'string') throw new Error(`open step ${i + 1} needs "do" (or is a button label)`);
+    if (s.do === 'expect') throw new Error(`open step ${i + 1}: "expect" belongs in a journey — an open step only gets the screen ready`);
+    return s;
+  });
+}
+
 export const describe = (t) => `${t.role} "${t.label}"${t.nth > 1 ? ` (#${t.nth})` : ''}`;
 
 /** One step, in words — for step lines and failure reports. */

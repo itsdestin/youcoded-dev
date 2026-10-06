@@ -22,6 +22,22 @@
 
 export const PARTS_SELECTOR = '[data-parts-agree], [data-detail-chips], [data-detail-actions], [data-trust]';
 
+// "Centres agree" — the same idea for a row whose parts are DIFFERENT heights on purpose: a name
+// beside its status pill, a button beside two lines of text. They cannot be one height, but they
+// must sit on one centre line.
+//
+// WHY (games-social friction, proposal 7): Destin's "vertical alignment is a bit off" (G2-7) —
+// a pill riding the name's text baseline a pixel or two low at 1.5× — could only be checked by
+// eye, because "parts agree" wants every child the SAME height and a name and a pill never are.
+// A row opts in with `data-centres-agree="<name>"`. What is measured is what a person sees:
+//   - each visible child element, or a run of text directly in the row (a word beside a pill);
+//   - a wrapper with exactly one element inside it and no words of its own is looked through to
+//     that element (the pill, not the 20px box around it);
+//   - only parts on the same line as the first are compared, so a pill that WRAPPED under a long
+//     name is not a finding.
+// Flags centres more than 1px apart.
+export const CENTRES_SELECTOR = '[data-centres-agree]';
+
 /** Runs in the page: measures every marked row. Pure data out, so the rules below can be tested
  *  without a browser. Hidden rows and rows with fewer than one visible child are skipped. */
 export const MEASURE_PARTS = `(() => {
@@ -38,13 +54,42 @@ export const MEASURE_PARTS = `(() => {
     const children = [...row.children].filter(seen).map((c) => { const b = c.getBoundingClientRect(); return { label: label(c), top: b.top, bottom: b.bottom, height: b.height }; });
     if (children.length) rows.push({ row: name(row), clips, clip: { top, bottom }, children });
   }
+  // Centres: rows marked data-centres-agree (see CENTRES_SELECTOR).
+  const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+  const inner = (el) => { let e = el; while (e.children.length === 1 && !ownText(e) && seen(e.children[0])) e = e.children[0]; return e; };
+  for (const row of document.querySelectorAll(${JSON.stringify(CENTRES_SELECTOR)})) {
+    if (!seen(row) || rows.length >= 400) continue;
+    const parts = [];
+    for (const n of row.childNodes) {
+      if (n.nodeType === 3) {
+        if (!n.textContent.trim()) continue;
+        const rg = document.createRange(); rg.selectNodeContents(n); const b = rg.getBoundingClientRect();
+        if (b.height >= 1) parts.push({ label: n.textContent.trim().replace(/\s+/g, ' ').slice(0, 30), top: b.top, bottom: b.bottom, height: b.height });
+      } else if (n.nodeType === 1 && seen(n)) {
+        const b = inner(n).getBoundingClientRect();
+        parts.push({ label: label(n), top: b.top, bottom: b.bottom, height: b.height });
+      }
+    }
+    if (parts.length > 1) rows.push({ row: row.getAttribute('data-centres-agree') || 'row', centres: true, children: parts });
+  }
   return rows;
 })()`;
 
 /** The rules, on measured rows. Returns one plain sentence per problem. */
-export function partsFindings(rows, { heightSlack = 1, clipRoom = 0.5 } = {}) {
+export function partsFindings(rows, { heightSlack = 1, clipRoom = 0.5, centreSlack = 1 } = {}) {
   const out = [];
-  for (const { row, clips, clip, children } of rows) {
+  for (const { row, clips, clip, children, centres } of rows) {
+    if (centres) {
+      const first = children[0];
+      const line = children.filter((c) => c.top < first.bottom && c.bottom > first.top);   // same line as the first
+      const mids = line.map((c) => c.top + c.height / 2);
+      const lo = Math.min(...mids), hi = Math.max(...mids);
+      if (line.length > 1 && hi - lo > centreSlack) {
+        const a = line[mids.indexOf(lo)], b = line[mids.indexOf(hi)];
+        out.push(`${row}: parts are not on one centre line — "${a.label}" is centred ${round(hi - lo)}px higher than "${b.label}"`);
+      }
+      continue;
+    }
     if (children.length > 1) {
       const hs = children.map((c) => c.height);
       const min = Math.min(...hs), max = Math.max(...hs);

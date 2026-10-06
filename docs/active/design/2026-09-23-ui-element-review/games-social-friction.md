@@ -292,3 +292,40 @@ Destin approved hidden mode **per device** and plain error titles app-wide. Deck
    Accept). Why: G2-8 asked for filled Challenge against the principle.
 11. **`Select` width** — `ui/Select.tsx` trigger is `w-full` and a caller's width class doesn't win; document
    it or let `className` size the trigger. Why: R2's dropdown silently covered the summary line.
+
+## Proposals implemented (2026-10-05, approved by Destin)
+
+All 11 done. Deck `tooling-2.json` (before `runs/tooling2-before`, after `runs/tooling2-after`)
+shows the one visible change.
+
+1. **Guide recipe** — `guide-draft.md` "A panel at the top of a side pane (Games → Friends)".
+2. **"A problem replaces the card it is about"** — `guide-draft.md` "Status and notices".
+3. **No coloured notice titles** — already fixed at the root last round (`ui/Callout.tsx`, pinned by
+   `callout-authority.test.tsx`); the guide now says it (principle 2 and "Status and notices"), and
+   Callout's own header comment, which still said "only the title keeps the tone's colour", was corrected.
+4. **Composite pictures** — a deck `crop` may be a list (`deck/crops.py` `compose_pieces`): pieces side by
+   side, 16 CSS px apart, optional labels; works on approve / brief / decide steps and choice variants.
+5. **New-state slides** — `"new": true` on a one-picture slide reads *Yes, keep it / No, remove it*.
+6. **Choice overflow warning** — `build` warns when a later choice picture is wider than the first.
+   Found while doing it: a one-picture close-up (`screen@WxH+X+Y`) was let through by `validate` and
+   then refused by `build` ("no highlight box"); a close-up or composite on one picture now needs no box.
+7. **"Centres agree"** — `scripts/shoot/parts-agree.mjs`, `data-centres-agree`. Marked: Games name + pill,
+   friend rows, your name + status, a detail page's name + status pill, Specialists' label + warnings.
+   Every screen at 1× (light) and 1.5× (YouCoded Night): **one hit outside the reviewed screens** —
+   Settings → Assistant → Local models, "Local engine" + its Stopped pill, 1.4px off at 1.5× (the pill
+   sits inline on the words' baseline). Not fixed; the row is left unmarked with a comment.
+   Seen red end to end: the Games pill pushed 3px down gave five findings.
+8. **Shared small menu** — `components/ui/Menu.tsx` (`Menu`, `MenuItem`, `MenuRadioItem`, `MenuNote`):
+   outside press, Escape (the app's Escape stack, focus back to the trigger), ↑/↓/Home/End, Tab closes,
+   opening from the keyboard focuses the chosen item. Replaces the friends status menu and the
+   Marketplace account chip's popover. **Visible change:** the account menu's words are 12px (were 14px)
+   with the status menu's padding; it now closes on Escape. The status menu is unchanged to look at.
+   The project / chat ⋯ menus keep `hooks/useAnchoredMenu` (they position on the page, at screen edges).
+9. **"Open this first"** — a screen entry's `open: ['<button label>']` (or journey steps) is replayed by
+   `shoot` before the picture. `?statusMenu=1` and `workbenchStatusMenuOpen` are gone
+   (`chat/games#status-menu` clicks the pill); new `marketplace/skills#account-menu` uses it too.
+10. **Which rule wins** — `guide-draft.md` "Buttons": one filled button per view, or one per row in a list of
+    actions (filled at the row's right); principle 6 and the checklist say so.
+11. **`Select` width** — the trigger merges a caller's classes over its own (`mergeClasses`), so `w-32`
+    replaces `w-full`; pinned in `Select.test.tsx` (seen red first). No product screen passed a width, so
+    nothing in the app moves; the workbench mockup `SettingsAnatomyDemo`'s `w-32` dropdown now really is 128px.

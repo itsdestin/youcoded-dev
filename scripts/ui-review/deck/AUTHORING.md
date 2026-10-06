@@ -80,6 +80,13 @@ No revert it*, `highlight` defaults to `"auto"`. So one deck now holds a "should
 this?" slide, a "keep it or revert it?" slide, a written question and the contract — the ask
 decides where a deck ends, not the screenshot rule.
 
+**A NEW state that is already built** (offline, incognito, a menu opened — something with no
+"before") is still one picture, but it is not a brief: add `"new": true` and the buttons read
+*Yes, keep it / No, remove it*. Refused on a two-picture slide (that already reads keep / revert)
+and on choice and decide slides. A `"review"` deck counts it as its review slide. WHY (games-social
+friction, proposal 5): every new practice state of the Games round reached Destin as "Yes build it"
+over something already in the app.
+
 WHY it moved (Destin, 2026-09-06): the capture set is a property of the picture, not of the
 deck. While it sat on the deck, a brief slide and an approve slide could never share a page and
 he was handed two links for one ask.
@@ -92,7 +99,7 @@ Two runs; the rig boxes the pixels that differ.
 
 | Field | Required | What it is |
 |---|---|---|
-| `crop` | yes | which region of the screenshots to show — a `crops` name, a `shoot` screen name, or a close-up of one: `"<screen>@WxH+X+Y"` in the screen's own CSS pixels (the 1440×900 coordinates, whatever density it was shot at) |
+| `crop` | yes | which region of the screenshots to show — a `crops` name, a `shoot` screen name, or a close-up of one: `"<screen>@WxH+X+Y"` in the screen's own CSS pixels (the 1440×900 coordinates, whatever density it was shot at) — or a LIST of these laid side by side as one picture (below, "Several screens in one picture") |
 | `changed` | yes | the *What changed* card — the real difference, one or two sentences |
 | `notice` | yes | the *You'll notice* card — what is different for him while using it |
 | `risk` | no | the *Risk* card. Keep it to one sentence |
@@ -104,8 +111,26 @@ He answers **Yes keep it / No revert it / Other**.
 ### Brief — something not built yet (`brief.json`)
 
 The same fields over ONE picture — the deck captures one run, or the slide names one of the
-deck's with `runs` — so the buttons read **Yes build it / No leave it / Other**. `highlight` is
-required: with one picture there is nothing to diff.
+deck's with `runs` — so the buttons read **Yes build it / No leave it / Other** (or, with
+`"new": true`, **Yes keep it / No remove it**). With one picture there is nothing to diff, so a
+legacy crop needs a `highlight`; a `shoot` screen boxes its own panel, and a close-up
+(`screen@WxH+X+Y`) or a list of screens is already the focus and gets no box.
+
+### Several screens in one picture
+
+`"crop"` may be a list: each entry is a crop name (a screen, a close-up, a legacy name) or
+`{"crop": "<name>", "label": "<four words at most>"}`. The pieces are cut from the same run and
+laid side by side, top-aligned, 16 CSS px apart; with any label, a strip over every piece carries
+it in the theme's text colour (gaps and strips are see-through, so the deck page shows between).
+
+    "crop": [{"crop": "chat/games#offline@420x200+1010+70", "label": "No internet"},
+             {"crop": "chat/games#incognito@420x200+1010+70", "label": "Incognito"}]
+
+Works on approve / brief / decide steps and on a choice variant (each concept a folded + opened
+pair). `"auto"` still boxes the change across two runs; `"panel"` and `{"text"}` / `{"selector"}`
+are refused (there is no one panel, nothing measured); a hand `box` is percent of the whole
+composite. A missing piece is reported by number and the picture is not made. WHY (games-social
+friction, proposal 4): three rounds running hand-cut composites into fake `shots-<plan>` folders.
 
 ### Choice — several pictures of one thing (`choice.json`)
 
@@ -316,9 +341,23 @@ Pictures: a missing crop file, an unknown crop name, an unresolved highlight box
 and nothing to compare it with — this slide needs a highlight`, `"auto" highlight needs a before
 and an after run`, `runs names <x>, which the deck does not capture`.
 
+A list crop: `a list crop lays several pictures side by side — give at least two`, `piece N of the
+crop list needs a crop name (a list inside a list is not allowed)`, `piece N of the crop list
+carries only "crop" and "label"`, `unknown crop "<x>" in the crop list`, a label over four words or
+with a banned word, `"panel" highlight needs ONE shoot screen crop`, and (at crop time) `a picture
+made of several screens has no element to measure`.
+
+`"new"`: `"new" is true or absent`, `"new" is for ONE picture with no before — a before/after slide
+already reads keep / revert`, `"new" is for a one-picture keep-or-remove slide, not a choice` (or a
+decide step).
+
 Warnings (printed, but the page is still written): more than three options; a hand-placed
 `box`; a `measured` with no digit; a `risk` over 40 words; an `images` folder that does not
-contain the spec's name.
+contain the spec's name; **a choice whose pictures are different widths, with a later one wider
+than the first** — the page sizes the whole row by the first picture, so the row overflows and the
+outer pictures are cut off (`… the row is about N% too wide …`). Crop every design to one size, or
+put the widest first. WHY (games-social friction, proposal 6): 340 / 420 / 420 crops cut two
+drafts in round 4 and nothing said so.
 
 ## The answers file
 

@@ -24,6 +24,14 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(d['runs'], ['before', 'after']); self.assertEqual(d['themeNames']['midnight'], 'Midnight')
         s = d['steps'][1]; self.assertEqual(s['images']['light']['after'], 'images/deck/c--light--after.png'); self.assertEqual(s['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
         self.assertEqual(s['measured'], ''); self.assertEqual(s['risk'], '')
+    def test_a_new_state_slide_reads_keep_or_remove(self):
+        # games-social friction, proposal 5: one picture of a BUILT state is not a brief.
+        st = dict(self.spec['steps'][1]); st['id'] = 'S-9'; st['new'] = True; st['runs'] = ['after']
+        self.spec['steps'].append(st)
+        d = deck_data(self.spec, self.boxes)
+        out = [x for x in d['steps'] if x['id'] == 'S-9'][0]
+        self.assertEqual((out['yes'], out['no']), ('Yes, keep it', 'No, remove it'))
+        self.assertNotIn('yes', d['steps'][1])   # an ordinary slide keeps the page's own wording
     def test_refuses_when_a_picture_is_missing(self):
         os.remove(os.path.join(self.spec['_base'], 'images', 'deck', 'c--light--after.png'))
         with self.assertRaises(SpecError) as cm: build_page(self.spec, self.boxes)

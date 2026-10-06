@@ -225,6 +225,90 @@ class ShootDensityAndRegionTests(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(spec['_base'], 'images', 'shoot', image_name('settings/sound', 'light', 'round3'))))
 
 
+class ComposeTests(unittest.TestCase):
+    """A crop that is a LIST of pictures is laid side by side into ONE (games-social friction,
+    proposal 4: three states side by side, folded + opened pairs — cut by hand three rounds
+    running). And a choice whose pictures differ in width warns (proposal 6)."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        for run, rect in (('before', None), ('after', (20, 20, 40, 40))):
+            shoot_run(os.path.join(self.tmp, 'runs', run),
+                     [{'name': n, 'theme': t, 'panel': PANEL, 'rect': rect, 'scale': 1.5}
+                      for n in ('games/a', 'games/b', 'games/c') for t in ('midnight', 'light')])
+
+    def _r(self, step_over, **over):
+        spec = load_spec(_shoot_spec(self.tmp, step_over=step_over, **over))
+        return spec, crop_images(spec, log=lambda *a: None)
+
+    def test_three_screens_side_by_side_make_one_picture_with_gaps(self):
+        from deck.boxes import image_size
+        crop = ['games/a@100x200+0+0', 'games/b@100x200+0+0', 'games/c@100x200+0+0']
+        spec, r = self._r({'crop': crop})
+        self.assertEqual(r['missing'], [])
+        dst = os.path.join(spec['_base'], 'images', 'shoot', image_name(crop, 'midnight', 'after'))
+        # three 150px-wide pieces (100 CSS px at 1.5x) and two 24px gaps (16 CSS px at 1.5x)
+        self.assertEqual(image_size(dst), (3 * 150 + 2 * 24, 300))
+        self.assertEqual(r['count'], 4)   # one composite per theme x run, never one file per piece
+
+    def test_a_folded_and_opened_pair_may_carry_labels_over_each_piece(self):
+        from deck.boxes import image_size
+        crop = [{'crop': 'games/a@100x100+0+0', 'label': 'Folded'}, {'crop': 'games/b@100x200+0+0', 'label': 'Opened'}]
+        spec, r = self._r({'crop': crop})
+        self.assertEqual(r['missing'], [])
+        dst = os.path.join(spec['_base'], 'images', 'shoot', image_name(crop, 'light', 'before'))
+        # the label strip (30 CSS px at 1.5x = 45) goes over EVERY piece; the shorter piece is
+        # padded at the bottom, top-aligned, so the two pictures start level
+        self.assertEqual(image_size(dst), (150 + 24 + 150, 300 + 45))
+        # labels change the picture, so they change its file name too
+        self.assertNotEqual(image_name(crop, 'light', 'before'), image_name([piece['crop'] for piece in crop], 'light', 'before'))
+
+    def test_auto_still_boxes_the_change_across_two_composites(self):
+        _, r = self._r({'crop': ['games/a@100x100+0+0', 'games/b@100x100+0+0']})
+        self.assertEqual(r['missing'], [])
+        b = r['boxes']['S-1']['midnight']['after']
+        self.assertEqual(r['boxes']['S-1']['midnight']['before'], b)
+        self.assertLess(b[0], 50)   # the red block sits in the FIRST piece's corner
+
+    def test_a_missing_piece_names_the_piece_never_a_half_picture(self):
+        crop = ['games/a', 'games/nope']
+        spec, r = self._r({'crop': crop})
+        self.assertTrue(any('piece 2 ("games/nope")' in m for m in r['missing']), r['missing'])
+        self.assertFalse(os.path.exists(os.path.join(spec['_base'], 'images', 'shoot', image_name(crop, 'light', 'after'))))
+
+    def test_a_one_picture_composite_builds_with_no_box(self):
+        from deck.build import build_page
+        spec, r = self._r({'crop': ['games/a@100x100+0+0', 'games/b@100x100+0+0']},
+                          runs={'after': os.path.join(self.tmp, 'runs', 'after')})
+        self.assertEqual(r['missing'], [])
+        build_page(spec, r['boxes'])   # no "no highlight box": the composite IS the focus
+
+    def test_a_one_picture_region_close_up_builds_with_no_box(self):
+        from deck.build import build_page
+        spec, r = self._r({'crop': 'games/a@100x100+0+0'}, runs={'after': os.path.join(self.tmp, 'runs', 'after')})
+        build_page(spec, r['boxes'])
+
+    def _choice(self, crops):
+        return {'crop': None, 'variants': [{'id': chr(97 + i), 'label': f'D{i}', 'crop': c, 'summary': 'x'} for i, c in enumerate(crops)],
+                'changed': None, 'notice': None}
+
+    def test_a_choice_whose_later_picture_is_wider_warns_it_will_be_cut(self):
+        step = self._choice(['games/a@340x500+0+0', 'games/b@420x500+0+0', 'games/c@420x500+0+0'])
+        _, r = self._r({k: v for k, v in step.items() if v is not None} | {'crop': None})
+        self.assertTrue(any('different widths' in w and 'cut off' in w for w in r['warnings']), r['warnings'])
+
+    def test_a_choice_of_equal_pictures_or_widest_first_is_quiet(self):
+        for crops in (['games/a@420x500+0+0', 'games/b@420x500+0+0'], ['games/a@420x500+0+0', 'games/b@340x500+0+0']):
+            step = self._choice(crops)
+            _, r = self._r({k: v for k, v in step.items() if v is not None} | {'crop': None})
+            self.assertFalse(any('different widths' in w for w in r['warnings']), (crops, r['warnings']))
+
+    def test_a_choice_variant_may_be_a_composite(self):
+        step = self._choice([['games/a@100x100+0+0', 'games/b@100x100+0+0'], ['games/c@100x100+0+0', 'games/a@100x100+0+0']])
+        spec, r = self._r({k: v for k, v in step.items() if v is not None} | {'crop': None})
+        self.assertEqual(r['missing'], [])
+        self.assertEqual(r['warnings'], [])
+
+
 class ImageNameTests(unittest.TestCase):
     def test_a_screen_state_makes_a_url_safe_file_name(self):
         # A "#" in an <img src> starts a URL fragment: the deck asked for a file that is not

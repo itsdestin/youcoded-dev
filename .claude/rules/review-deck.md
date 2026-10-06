@@ -26,7 +26,7 @@ sign-off is a slide.
 | You want Destin to… | Kind | He answers |
 |---|---|---|
 | approve a change he can see | **Approve** | Yes keep it / No revert it |
-| approve something not built yet | **Brief** | Yes build it / No leave it |
+| approve something unbuilt (`"new": true`: built, no before) | **Brief** | Yes build it / No leave it (`new`: keep/remove) |
 | pick between pictures of ONE thing | **Choice** | pick one / None of these |
 | pick between written options over a picture | **Decide** | pick one |
 | judge motion or a transition | **Clip** | Yes / No |

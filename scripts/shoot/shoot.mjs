@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve, setShotScale, shotScale } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
+import { makeDriver, openSteps, stepText } from './driver.mjs';
 import { ensureOfficeEditor } from './office-editor.mjs';
 import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 
@@ -196,6 +197,18 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       }
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
+    // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
+    // shows — a menu opened, a card unfolded — then the mark is checked again, so a step that
+    // closed or covered the screen fails here rather than photographing the wrong thing.
+    const steps = openSteps(screen.open);
+    if (steps.length) {
+      const driver = makeDriver(tab, { width: w, height: h });
+      for (const s of steps) {
+        try { await driver.perform(s); } catch (e) { throw new Error(`open step ${stepText(s)} failed: ${e.message}`); }
+      }
+      why = await tab.evaluate(MARK_CHECK(screen.name.split('#')[0]), 5000);
+      if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
+    }
     r.panel = why.panel;
     // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
     // e.g. proving a failed-install notice is still there after its old 6-second timer.

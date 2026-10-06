@@ -41,6 +41,13 @@ screen's panel box, page errors), and a contact sheet per theme.
 - **A `#state` name** (`settings/sync#oversize`) is the same screen under other practice data:
   the entry's `scenario`, `params` (mock-shim switches) or `session` (a practice session to
   select first).
+- **Open this first** — an entry's `open: ['Your status: Online']` clicks that button (by the label a
+  person sees, like a journey) once the screen shows, then checks the screen is still showing and takes
+  the picture. Use it for an OPENED state (a menu, an unfolded card) instead of a workbench switch in the
+  app's code; a step may also be any journey step (`{ do: 'key', key: 'ArrowDown' }`). `expect` is
+  refused there — that belongs in a journey. Examples: `chat/games#status-menu`,
+  `marketplace/skills#account-menu`. It cannot reach what only exists once another part is open (the
+  friend details popup's opener lives inside the opened card, so that screen still uses `friendsOpen`).
 - **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes), serves
   it on a free port, and runs a few headless Chromes with private tabs sized from the core
   count. It waits for the screen to be still — no fetch in flight, animations done, images
@@ -57,6 +64,12 @@ screen's panel box, page errors), and a contact sheet per theme.
   Marketplace card's `[data-trust]` chip row): every child is one height (within 1px), and in
   a row that clips (a sideways scroller), every child keeps room inside the clip edge. A finding prints
   `PARTS` and fails `--check`. Mark a chip or button row with `data-parts-agree="<name>"` to opt in.
+- **Centres agree** (same file) — for a row whose parts are DIFFERENT heights on purpose (a name beside
+  its status pill, a button beside two lines of text): every part on the first part's line shares one
+  centre line (within 1px). Words directly in the row count as a part; a wrapper holding one element is
+  looked through to it. Mark the row `data-centres-agree="<name>"` (the Games name + pill, friend rows,
+  your name + status, a detail page's name + status, Specialists' label + warnings). Prints `PARTS`.
+  Settings → Local models' "Local engine" + pill is left unmarked: it is 1.4px off at 1.5× (2026-10-05).
 - **The Office editor** — Office screens need its server. Port 4717 is used when free or already this
   checkout's; when another worktree holds it, shoot starts this checkout's own on a free port and tells
   the app with `?officePort=` (it never stops someone else's).

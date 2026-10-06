@@ -1,0 +1,42 @@
+{
+  "title": "One shared small menu — the account menu and the status menu",
+  "key": "tooling-2",
+  "out": "tooling-2.review.html",
+  "images": "images/tooling-2",
+  "runs": {
+    "before": "runs/tooling2-before",
+    "after": "runs/tooling2-after"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "T2-1",
+      "surface": "Marketplace",
+      "path": "Marketplace, signed in, click your picture at the top left",
+      "crop": "marketplace/skills#account-menu@340x200+0+0",
+      "headline": "The account menu in the Marketplace now looks and works like your status menu in Games.",
+      "changed": "Its words are the small size the Games status menu uses (they were one size bigger), with the same padding. Escape now closes it, and the arrow keys move between its lines.",
+      "notice": "\"Signed in as @you\" and \"Sign out\" are slightly smaller and closer together. Pressing Escape with the menu open closes it instead of doing nothing.",
+      "risk": "On a high-resolution screen the smaller words may read as a little faint."
+    },
+    {
+      "id": "T2-2",
+      "surface": "Games and Marketplace",
+      "path": "Games: click your status pill · Marketplace: click your picture",
+      "crop": [
+        {"crop": "chat/games#status-menu@420x240+1010+70", "label": "Games: your status"},
+        {"crop": "marketplace/skills#account-menu@340x240+0+0", "label": "Marketplace: your account"}
+      ],
+      "runs": ["after"],
+      "labels": {"after": "Now"},
+      "new": true,
+      "headline": "Both small menus are now one shared piece, so they always match.",
+      "changed": "The Games status menu is unchanged to look at. Both menus now come from one shared piece, which closes on a click outside or Escape and works with the arrow keys.",
+      "notice": "Nothing looks different in Games. With the keyboard, the arrow keys now move between Online and Incognito."
+    }
+  ]
+}

@@ -63,12 +63,14 @@ then a **review page** — never a gallery, never a chat summary:
    (writes `runs/before` and `runs/after`; each side builds its own checkout on a free port).
    A second variant is a second worktree and its own `--after` run.
 2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-c-review-v2.json`): one
-   step per point with `surface`, `path`, `crop` (a `shoot` screen name), `highlight` (`"auto"`
+   step per point with `surface`, `path`, `crop` (a `shoot` screen name; a `screen@WxH+X+Y`
+   close-up; or a LIST of them laid side by side as one picture — several states, a folded +
+   opened pair), `highlight` (`"auto"`
    for before/after; one run defaults to the screen's own panel), and the four texts — **headline** (≤ 25 words, what a
    user sees), **changed** (what was edited, plain words, with `measured` when there is a number),
    **notice** (what changes for users — intended and side effects), **risk** (what could look
    wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
-   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`). **Anything that has to MOVE — an animation, a drag, a hover — is a LIVE step, not a clip** (`live: {surface, round}` + `variants` with a `candidate` each): panes of the running app Destin can operate himself. Four clip steps were rejected on 2026-08-31 as "just rough to compare"; a 200 ms animation is judged by doing it. `serve` serves the worktree's practice app for the panes itself, under the deck's own `/app/`.
+   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`). A NEW state with no before (offline, a menu opened) is one picture with `"new": true`, so it reads keep / remove, not build / leave. **Anything that has to MOVE — an animation, a drag, a hover — is a LIVE step, not a clip** (`live: {surface, round}` + `variants` with a `candidate` each): panes of the running app Destin can operate himself. Four clip steps were rejected on 2026-08-31 as "just rough to compare"; a 200 ms animation is judged by doing it. `serve` serves the worktree's practice app for the panes itself, under the deck's own `/app/`.
 3. `python3 scripts/ui-review/review-cards.py preview <spec>` and READ `preview/<spec name>/contact.png`, then
    `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
    first; fix every `missing:` line it prints — a missing picture is a screen that did not show). It never opens a browser. **The address to give Destin is the `[deck] http://127.0.0.1:<port>/<out>.html` line `serve` prints** (also in `<spec>.serve.json` next to the spec) — quote it whole, in chat, as the last line of your turn; the bare port now redirects to the deck, but never guess a URL you have not read. Destin answers

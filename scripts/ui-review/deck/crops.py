@@ -22,6 +22,7 @@ from .spec import AUTO_WARN_FRACTION, is_choice, is_page, is_words, no_pictures,
 
 
 def image_name(crop, theme, run):
+    crop = crop_key(crop)
     # A shoot screen name carries "/" ("settings/sound") — flattened here (shoot.mjs's own
     # `compare/` composite names do the same) so every cut/copied file stays directly under the
     # deck's flat `images/<deck>` folder; no crop name has ever needed a nested one.
@@ -29,6 +30,138 @@ def image_name(crop, theme, run):
     # name, and in the page's <img src> a "#" starts a URL fragment, so the browser asked for a
     # file that does not exist and the deck never finished laying out.
     return f'{crop.replace("/", "__").replace("#", "~")}--{theme}--{run}.png'
+
+
+def is_composite(crop):
+    """A crop that is a LIST of pictures laid side by side into one (see compose_pieces)."""
+    return isinstance(crop, list)
+
+
+def piece_crop(piece):
+    """One piece of a composite: a crop name, or {"crop": name, "label": words}."""
+    return piece['crop'] if isinstance(piece, dict) else piece
+
+
+def piece_label(piece):
+    return (piece.get('label') or '') if isinstance(piece, dict) else ''
+
+
+def crop_key(crop):
+    """The one string a crop is filed under. A composite joins its pieces with "+"; labels are
+    part of the picture, so they change the key too (a short hash, never the words themselves).
+    WHY a hash past 120 characters: three region crops spelled out can pass a file system's
+    255-byte name limit once the theme and run are added."""
+    if not is_composite(crop):
+        return crop
+    import hashlib
+    names = '+'.join(piece_crop(p) for p in crop)
+    labels = [piece_label(p) for p in crop]
+    tag = hashlib.sha1(json.dumps([names, labels]).encode()).hexdigest()[:8]
+    if len(names) > 120:
+        return f'compose-{tag}'
+    return names + (f'~{tag}' if any(labels) else '')
+
+
+def is_focus_crop(crop):
+    """A region close-up or a composite: the picture itself is already the focus, so a
+    one-picture slide needs no box drawn over it (and none is drawn by default)."""
+    return is_composite(crop) or split_region(crop)[1] is not None
+
+
+# Gap between composed pieces and the height of a label strip, in CSS pixels (scaled with the
+# picture). 16 is the guide's "between groups" step; 14px label text is the app's body size.
+COMPOSE_GAP, LABEL_STRIP, LABEL_PT = 16, 30, 14
+
+
+def _label_colour(theme):
+    """The theme's own text colour for a composite's labels. The gaps and label strips are
+    see-through, so the deck page (drawn in the same theme) shows between the pieces — a
+    solid strip in the theme's canvas read as a white band over a wallpaper theme (2026-10-05)."""
+    try:
+        from .build import theme_tokens   # build.py imports this module; import at call time
+        return theme_tokens([theme])[theme].get('fg') or '#808080'
+    except Exception:
+        return '#808080'
+
+
+_FONT = []
+
+
+def _label_font():
+    """A plain sans-serif for labels: ImageMagick's own default is a serif italic that looks
+    like nothing in the app. fc-match names the system's sans; without it, magick's default."""
+    if not _FONT:
+        try:
+            out = subprocess.run(['fc-match', '-f', '%{file}', 'sans-serif:medium'], capture_output=True, text=True, timeout=10).stdout.strip()
+        except Exception:
+            out = ''
+        _FONT.append(out if out and os.path.exists(out) else None)
+    return _FONT[0]
+
+
+def _cut_one(spec, name, theme, run, dst):
+    """Cut ONE named picture (legacy crop, shoot screen, or shoot screen@region) to `dst`.
+    Returns (scale, None) or (None, reason) — the same lookups the single-crop path makes."""
+    if name in spec['_crops']:
+        plan, shot, geo = spec['_crops'][name]
+        src = os.path.join(spec['runs'][run], f'shots-{plan}', theme, f'{shot}.png')
+        if not os.path.exists(src):
+            return None, f'{src} not captured'
+        subprocess.run(['magick', src, '+repage', '-crop', geo, '+repage', dst], check=True)
+        return 1, None
+    run_dir = spec['runs'][run]
+    screen, region = split_region(name)
+    entry = shoot_entry(run_dir, screen, theme) if is_shoot_run(run_dir) else None
+    if not entry or not entry.get('ok'):
+        if entry:
+            return None, entry.get('reason') or 'shoot did not take this picture'
+        if is_shoot_run(run_dir):
+            return None, f'no picture for "{name}" in {theme} — see {os.path.join(run_dir, "manifest.json")}'
+        return None, f'{run_dir} has no manifest.json (not a shoot run), and "{name}" is not a name in crops.json either'
+    copy_shoot_picture(entry, dst, region)
+    return entry.get('scale') or 1, None
+
+
+def compose_pieces(spec, crop, theme, run, dst):
+    """Lay several pictures side by side into ONE picture at `dst`, top-aligned, a see-through
+    gap between them, and an optional label over each (in the theme's text colour). Returns a list of reasons
+    for pieces that could not be cut (empty when the picture was written).
+
+    WHY (games-social friction, proposal 4): three rounds running needed hand-cut composites —
+    three connection states side by side, and each concept as a folded + opened pair — cut by
+    a throwaway script into a fake `shots-<plan>` folder and named through `crops`. A list crop
+    does it from the screens themselves, so the pieces are re-cut whenever the run is re-shot."""
+    import tempfile
+    bg, fg, font = 'none', _label_colour(theme), _label_font()
+    reasons, parts, scale = [], [], 1
+    with tempfile.TemporaryDirectory() as tmp:
+        for i, piece in enumerate(crop):
+            part = os.path.join(tmp, f'{i}.png')
+            k, why = _cut_one(spec, piece_crop(piece), theme, run, part)
+            if why:
+                reasons.append(f'piece {i + 1} ("{piece_crop(piece)}"): {why}')
+                continue
+            scale = max(scale, k)
+            parts.append((part, piece_label(piece)))
+        if reasons:
+            return reasons
+        if any(label for _, label in parts):
+            # Every piece gets the strip (empty or not), so the pictures under it stay level.
+            strip, pt = round(LABEL_STRIP * scale), round(LABEL_PT * scale)
+            for part, label in parts:
+                cmd = ['magick', part, '-background', bg, '-gravity', 'North', '-splice', f'0x{strip}']
+                if label:
+                    cmd += (['-font', font] if font else []) + ['-fill', fg, '-pointsize', str(pt),
+                                                                '-annotate', f'+0+{round((strip - pt) / 2)}', label]
+                subprocess.run(cmd + [part], check=True)
+        gap = round(COMPOSE_GAP * scale)
+        cmd = ['magick']
+        for i, (part, _) in enumerate(parts):
+            if i:
+                cmd += ['-size', f'{gap}x1', f'xc:{bg}']
+            cmd.append(part)
+        subprocess.run(cmd + ['-background', bg, '-gravity', 'North', '+append', '+repage', dst], check=True)
+    return []
 
 
 def measure_key(hl):
@@ -149,14 +282,15 @@ def crop_images(spec, log=print):
         if is_words(st):
             continue   # words only (a question, a statement, a contract) — nothing to cut, no `crop` to look up
         if is_choice(st):
-            _crop_choice(spec, st, runs[-1], out_dir, boxes, missing, cut)
+            _crop_choice(spec, st, runs[-1], out_dir, boxes, missing, cut, warnings)
             continue
         if is_clip(st):
             continue   # a recording, not a still — checked for existence in build_page
         # A LEGACY name resolves in the deck's own crops.json/`crops` block, exactly as before —
         # anything else is presumed to be a shoot screen name (`"settings/sound"`), checked for
         # real against each run's own manifest below. Nothing about a step's shape changes.
-        legacy = st['crop'] in spec['_crops']
+        composite = is_composite(st['crop'])
+        legacy = not composite and st['crop'] in spec['_crops']
         if legacy:
             plan, shot, geo = spec['_crops'][st['crop']]
         hl = st.get('highlight', 'auto' if two else None)
@@ -166,7 +300,15 @@ def crop_images(spec, log=print):
             for run in runs:
                 dst = os.path.join(out_dir, image_name(st['crop'], theme, run))
                 panel = None   # a shoot screen's own panel box, in PIXELS of the whole picture
-                if legacy:
+                if composite:
+                    # Several pictures side by side: no single panel to box; the picture is the focus.
+                    if dst not in cut:
+                        why = compose_pieces(spec, st['crop'], theme, run, dst)
+                        if why:
+                            missing.extend(f'{st["id"]}: {theme}/{run} — {w}' for w in why)
+                            continue
+                        cut.add(dst)
+                elif legacy:
                     src = os.path.join(spec['runs'][run], f'shots-{plan}', theme, f'{shot}.png')
                     if not os.path.exists(src):
                         # A missing picture is a capture bug (see coverage.md), never a blank in the deck.
@@ -196,6 +338,10 @@ def crop_images(spec, log=print):
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
                 elif isinstance(hl, dict):
+                    if composite:
+                        missing.append(f'{st["id"]}: a picture made of several screens has no element to '
+                                       f'measure — drop "highlight", use "auto" on two runs, or a hand-placed "box"')
+                        continue
                     if legacy:
                         entry = newest_manifest_entry(spec['runs'][run], plan, shot, theme)
                         rect = ((entry or {}).get('measures') or {}).get(measure_key(hl))
@@ -247,17 +393,25 @@ def crop_images(spec, log=print):
     return {'boxes': boxes, 'missing': missing, 'warnings': warnings, 'count': len(cut)}
 
 
-def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
+def _crop_choice(spec, st, run, out_dir, boxes, missing, cut, warnings):
     """boxes[step][theme][variant id] — a variant without a highlight simply has no box, UNLESS
     its picture is a shoot screen, which defaults to its own panel (same rule as a still step)."""
     boxes[st['id']] = {}
     for theme in step_themes(spec, st):
         per = {}
         for v in st['variants']:
-            legacy = v['crop'] in spec['_crops']
+            composite = is_composite(v['crop'])
+            legacy = not composite and v['crop'] in spec['_crops']
             dst = os.path.join(out_dir, image_name(v['crop'], theme, run))
             panel = None
-            if legacy:
+            if composite:
+                if dst not in cut:
+                    why = compose_pieces(spec, v['crop'], theme, run, dst)
+                    if why:
+                        missing.extend(f'{st["id"]}/{v["id"]}: {theme}/{run} — {w}' for w in why)
+                        continue
+                    cut.add(dst)
+            elif legacy:
                 plan, shot, geo = spec['_crops'][v['crop']]
                 src = os.path.join(spec['runs'][run], f'shots-{plan}', theme, f'{shot}.png')
                 if not os.path.exists(src):
@@ -291,7 +445,7 @@ def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
             if 'box' in hl:
                 per[v['id']] = hl['box']
                 continue
-            if not legacy:
+            if not legacy:   # a shoot screen or a composite: nothing was measured
                 missing.append(f'{st["id"]}/{v["id"]}: no measurement for {measure_key(hl)!r} in {theme}/{run} — a shoot '
                                f'picture names a screen, not an element; drop "highlight" (the panel is boxed '
                                f'automatically) or give a hand-placed "box"')
@@ -307,3 +461,23 @@ def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
                 continue
             per[v['id']] = pct
         boxes[st['id']][theme] = per
+        _warn_choice_overflow(st, theme, [os.path.join(out_dir, image_name(v['crop'], theme, run)) for v in st['variants']], warnings)
+
+
+def _warn_choice_overflow(st, theme, paths, warnings):
+    """A choice slide's pictures sit in ONE row, every one drawn at the same scale — and the page
+    picks that scale from the FIRST picture's width. So a later picture wider than the first
+    makes the row wider than the screen: the first and last pictures are cut off at the edges,
+    silently. WHY (games-social friction, proposal 6): round 4's three drafts were 340 / 420 /
+    420 wide and the deck cut two of them; nothing said so until the preview was read."""
+    sizes = [image_size(p) for p in paths if os.path.exists(p)]
+    if len(sizes) < 2:
+        return
+    first = sizes[0][0]
+    total = sum(w for w, _ in sizes)
+    if total > first * len(sizes) * 1.02:
+        over = round((total / (first * len(sizes)) - 1) * 100)
+        shown = ', '.join(f'{w}x{h}' for w, h in sizes)
+        warnings.append(f'{st["id"]}: its pictures are different widths in {theme} ({shown}) — the page sizes the row '
+                        f'by the first one, so the row is about {over}% too wide and the outer pictures get cut off. '
+                        f'Crop every design to one size, or put the widest first')

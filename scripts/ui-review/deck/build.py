@@ -6,7 +6,7 @@ import html
 import json
 import os
 
-from .crops import image_name
+from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
@@ -254,6 +254,10 @@ def _still_step(spec, st, boxes):
         # about a pair.
         **({'runs': runs} if st.get('runs') else {}),
         **({'labels': st['labels']} if st.get('labels') else {}),
+        # A NEW state of something built: one picture, but keep-or-remove, not build-or-leave.
+        # page.js already prefers a step's own yes/no over its one-picture brief wording, so the
+        # words are decided here and the page needed no change (games-social friction, 5).
+        **({'yes': 'Yes, keep it', 'no': 'No, remove it'} if st.get('new') is True else {}),
     }
 
 
@@ -339,7 +343,12 @@ def build_page(spec, boxes):
                 if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(st['crop'], t, r))):
                     errors.append(f'{st["id"]}: no picture for {t}/{r} — run `crop`, and see why in that run\'s shoot summary / manifest.json (an old sweep\'s run: coverage.md)')
             have = boxes.get(st['id'], {}).get(t) or {}
-            if not all(r in have for r in runs):
+            # A close-up region or a composite of several screens on a ONE-picture slide is
+            # already the focus: no box is drawn and none is owed (crops.py draws none either).
+            # WHY: such a slide was refused here although validate() let it through, so a
+            # "new state" slide of a cropped pane needed a meaningless hand-placed box.
+            focus = len(runs) == 1 and 'highlight' not in st and is_focus_crop(st['crop'])
+            if not focus and not all(r in have for r in runs):
                 errors.append(f'{st["id"]}: no highlight box for {t} — `crop` could not resolve it (see its output)')
     if errors:
         raise SpecError('\n'.join(errors))

@@ -37,7 +37,7 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
    if none fits, ask Destin for one instead of inventing a look.
 2. **The theme paints and shapes everything.** Colours come from theme tokens; the fixed
    status hues (green, red, amber, blue) are the only exceptions and go in tints, never in
-   text. Corner roundness comes from the theme's shape setting — never write a fixed pill
+   text — not a word, not a label, not a notice's title. Corner roundness comes from the theme's shape setting — never write a fixed pill
    or pixel radius on a control.
 3. **Quiet by default.** Small grey labels in normal case. Show what the user needs to act
    on; drop details nobody asked for and options or information that would confuse someone
@@ -48,8 +48,9 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
    plugin, a Page, a file) is a raised card. A list you read or pick from (settings, a menu)
    is rows. Inside a popup, every card at the same depth looks the same (see Card levels) —
    a card that holds one idea keeps it together; never split one idea into separate boxes.
-6. **Actions live on the right.** One filled button per view. A filled button, switch or
-   selection never sits alone at the bottom-left — only when balanced by something on the
+6. **Actions live on the right.** One filled button per view — except a list whose rows each
+   carry their own main action, where each row's is filled (see Buttons). A filled button, switch
+   or selection never sits alone at the bottom-left — only when balanced by something on the
    right of the same line.
 7. **Tight, even spacing** from one scale (below).
 8. **Every theme, every width.** Check light, a dark theme, a wallpaper theme and 390px
@@ -126,6 +127,12 @@ underline under its words. Labels over short settings groups stay plain.
   (decisions "Theme detail page").
 - **Destructive confirm:** the red button takes the main action's place — on the right when
   side by side, on top when stacked.
+- **One filled button per view, or one per row in a list of actions.** When every row of a list has
+  its own main action (Challenge a friend, Accept a request), that action is **filled, at the right of
+  its row**, and anything beside it is outlined (Decline, left of Accept). The row rule wins over "one
+  filled button per view" there; everything else on the page follows the normal rule. (Destin:
+  games-social-2#G2-8 "challenge button should be dark", games-social-1#GS-3 "accept should be on the
+  right"; decisions "Games: game pages", "Games: friend rows and list".)
 - Close is always the ✕ button, never a letter or the word.
 - **A text box with its own action** (a password's Set, a search's filter, send) keeps that
   action **inside the box, at the right, as a small filled button** — like the message box.
@@ -215,19 +222,50 @@ detail pages — shell" and the rows after it.)
 - Show a state only once: no "Installed" pill where the buttons already say so (themes); a number that
   changes when you click (likes) is a chip that moves at once.
 
+### A panel at the top of a side pane (Games → Friends)
+Reference: the Games friends card; Settings → Account's profile row for its header; Appearance's
+themes box for its opened list. (Decisions "Games: signed-out card", "Games: friends card", "Games:
+friend rows and list", "Games: managing a friend".)
+- A small label above it, then **one first-level card**, at the top of the pane with the pane's own
+  content (the games) below.
+- **Folded by default**, every time the pane opens, to **one header row like Account's profile row**:
+  the name with its clickable status pill, one grey summary line under it ("2 of 4 friends online · 1
+  request"), the fold arrow at the right. No title inside the card — the label above already says it.
+- **Opened**, it shows a **height-capped list that scrolls** under the see-through fade: one boxed row
+  per item (the Settings list's look, which takes the nested look inside the card), and the list's
+  **main action pinned inside it at the bottom, full width and filled**, the rows passing under it.
+- Managing one item is **a click on its row**, opening a small "… details" popup (Session details'
+  shape) — no ⋯ menus or edit modes inside the list.
+- Its other states sit in the same spot under the same label: signed out → Account's sign-in card;
+  when it cannot work → the notice box replaces the card (Status and notices).
+
 ### Lists and menus
 - **Settings-style lists** (each row opens or changes a setting): **boxed rows** — each row a
   soft tinted box with a small gap. Reference: the Settings list.
 - **Pick-one menus and switchers** (right-click menu, session list): **plain rows** — no box,
   no line; hover highlights; the selected row always looks different from a hovered one.
+- **A few choices dropping from a pill or an icon** (your status in Games, your account in the
+  Marketplace) use the **shared small menu** (`Menu` in `components/ui/`): it hangs under its
+  trigger, closes on a click outside or Escape, and works with the arrow keys. Never a hand-made
+  popover.
 
 ### Status and notices
 - A status label is a **small tinted pill in its status colour, normal case** ("Installed").
-  A live status (a session Working / Inactive) carries its **coloured dot inside the pill**.
+  A live status (a session Working / Inactive) carries its **coloured dot inside the pill**,
+  centred on the line of the name beside it.
 - **Every warning, error or info notice is the one tinted box with a matching border**
-  (Reference: Backup & Sync → "conversations too big to sync"). Its text is the normal grey
-  and black; only the box and its title carry the colour — **never red or coloured body
-  text, never a coloured strip**.
+  (Reference: Backup & Sync → "conversations too big to sync"). **Only the box — its tint and
+  border — carries the colour.** Its title and text are the normal text colours: **never a red
+  or coloured title, never red or coloured body text, never a coloured strip.** Most notices need
+  no title at all: one plain sentence says it. (Decisions "Error notices: no red titles,
+  app-wide", games-social-3#G3-7; the shared notice box enforces it, pinned by
+  `callout-authority.test.tsx`.)
+- **A problem replaces the card it is about.** When a whole card cannot work (no internet, the
+  server unreachable), **the card becomes the notice box** — same spot, same label above it — with
+  one plain sentence and its Try again inside, and no title. Never a changed line or a notice tucked
+  inside a card that cannot work. Reference: Games → Friends while offline. (Decisions "Games:
+  connection states"; games-social-2#G2-5 "just replace the whole card with the error state",
+  games-social-3#G3-7.)
 - A notice **about one thing sits inside that thing** — inside the setting's or the list
   item's own box — and **its buttons (Try again, Resume, Show details) go inside the notice,
   at the right**.
@@ -265,7 +303,8 @@ view**, which stays exactly as it is.
 - [ ] Checked in its hard states too: error, empty, loading, very long text.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only.
 - [ ] No spaced-out capitals; headings from the three levels.
-- [ ] Actions on the right; one filled button; nothing filled alone at the bottom-left.
+- [ ] Actions on the right; one filled button (one per row in a list of actions); nothing filled
+      alone at the bottom-left.
 - [ ] Spacing from the scale; cards styled by level; no loose text; no full-width lines.
 - [ ] Popups have the ✕ and close on Esc.
 - [ ] Checked in light, a dark theme, a wallpaper theme and at 390px wide.

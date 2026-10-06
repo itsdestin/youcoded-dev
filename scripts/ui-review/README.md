@@ -343,6 +343,10 @@ and the waving arm detaches and flies off the body.
 The practice app's `?switch=` URL options — a `shoot` screen-list entry names them in `params`,
 a journey or `explore start --params` passes them, a scene puts them in its `base`.
 
+**An OPENED state needs no switch.** A menu opened, a card unfolded: give the screen entry
+`open: ['<button label>']` and `shoot` clicks it before the picture (`scripts/shoot/README.md` →
+"Open this first"). A switch is for practice DATA (signed in, offline, ten friends), not clicks.
+
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
 turn → red stalled card), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),

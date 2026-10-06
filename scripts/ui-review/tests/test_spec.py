@@ -166,6 +166,40 @@ class SpecTests(unittest.TestCase):
 if __name__ == '__main__': unittest.main()
 
 
+class ComposeAndNewStateTests(unittest.TestCase):
+    """A crop may be a LIST of pictures laid side by side; a one-picture slide of something
+    already built may say `"new": true` (keep / remove). games-social friction, proposals 4, 5."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+    def _errors(self, step_over, **over):
+        step = {"id": "S-1", "surface": "Games", "path": "Games", "crop": "c",
+                "headline": "Short headline.", "changed": "What changed.", "notice": "You will notice."}
+        step.update(step_over)
+        return validate(load_spec(write_spec(self.d, steps=[step], **over)))[0]
+    def test_a_list_of_known_crops_is_valid(self):
+        self.assertEqual(self._errors({"crop": ["c", "games/a@10x10+0+0", {"crop": "games/b", "label": "Opened"}]}), [])
+    def test_a_list_crop_needs_two_pieces_and_known_names(self):
+        self.assertTrue(any('at least two' in e for e in self._errors({"crop": ["c"]})))
+        self.assertTrue(any('unknown crop "nope"' in e for e in self._errors({"crop": ["c", "nope"]})))
+        self.assertTrue(any('list inside a list' in e for e in self._errors({"crop": ["c", ["c", "c"]]})))
+        self.assertTrue(any('only "crop" and "label"' in e for e in self._errors({"crop": ["c", {"crop": "c", "box": 1}]})))
+    def test_a_piece_label_is_a_short_caption_in_plain_words(self):
+        self.assertTrue(any('keep it to four' in e for e in self._errors({"crop": ["c", {"crop": "c", "label": "one two three four five"}]})))
+        self.assertTrue(any('banned word "component"' in e for e in self._errors({"crop": ["c", {"crop": "c", "label": "The component"}]})))
+    def test_panel_highlight_is_refused_on_a_composite(self):
+        self.assertTrue(any('ONE shoot screen' in e for e in self._errors({"crop": ["games/a", "games/b"], "highlight": "panel"})))
+    def test_a_one_picture_composite_needs_no_highlight(self):
+        self.assertEqual(self._errors({"crop": ["games/a", "games/b"]}, runs={"after": "/b"}), [])
+    def test_new_marks_a_one_picture_slide_of_something_built(self):
+        self.assertEqual(self._errors({"crop": "games/a", "new": True}, runs={"after": "/b"}), [])
+    def test_new_on_a_before_and_after_slide_is_refused(self):
+        self.assertTrue(any('already reads keep / revert' in e for e in self._errors({"crop": "games/a", "new": True})))
+    def test_new_must_be_true(self):
+        self.assertTrue(any('true or absent' in e for e in self._errors({"crop": "games/a", "new": "yes"}, runs={"after": "/b"})))
+    def test_a_new_state_slide_counts_as_a_review(self):
+        self.assertEqual(self._errors({"crop": "games/a", "new": True}, runs={"after": "/b"}, stage="review"), [])
+        self.assertTrue(any('"review" deck needs' in e for e in self._errors({"crop": "games/a", "highlight": {"box": [1, 1, 5, 5]}}, runs={"after": "/b"}, stage="review")))
+
+
 class ClipStepTests(unittest.TestCase):
     def setUp(self): self.d = tempfile.mkdtemp()
     def _spec(self, clip):

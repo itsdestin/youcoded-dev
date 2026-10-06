@@ -32,3 +32,31 @@ test('a row that does not clip may touch its edges', () => {
   const rows = [{ row: 'detail buttons', clips: false, clip: { top: 10, bottom: 32 }, children: [chip('Install', 10, 22)] }];
   assert.deepEqual(partsFindings(rows), []);
 });
+
+// "Centres agree" (games-social friction, proposal 7): a name and a pill are different heights
+// on purpose, but must share one centre line.
+const centres = (children) => [{ row: 'name and pill', centres: true, children }];
+
+test('a pill riding low beside its name is reported (G2-7: "vertical alignment is a bit off")', () => {
+  const out = partsFindings(centres([chip('Jake', 0, 20), chip('Online', 4, 16)]));   // centres 10 vs 12
+  assert.equal(out.length, 1);
+  assert.match(out[0], /not on one centre line/);
+  assert.match(out[0], /2px/);
+});
+
+test('parts of different heights on one centre line pass', () => {
+  assert.deepEqual(partsFindings(centres([chip('Jake', 0, 20), chip('Online', 2, 16), chip('Challenge', -4, 28)])), []);
+});
+
+test('a centre 1px off is not a finding', () => {
+  assert.deepEqual(partsFindings(centres([chip('Jake', 0, 20), chip('Online', 3, 16)])), []);   // 10 vs 11
+});
+
+test('a part that wrapped onto the next line is not compared', () => {
+  assert.deepEqual(partsFindings(centres([chip('A very long name', 0, 20), chip('Online', 24, 16)])), []);
+});
+
+test('different heights in a centres row are not a height finding', () => {
+  const out = partsFindings(centres([chip('Two lines of text', 0, 36), chip('Accept', 4, 28)]));
+  assert.deepEqual(out, []);
+});
