@@ -1,0 +1,49 @@
+{
+ "deck": "chatgpt-official-siwc-questions",
+ "started": "2026-10-06T00:28:15.352Z",
+ "submitted": "2026-10-06T00:30:44Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "wrote",
+   "text": "i'm on the paid version rn.",
+   "t": 1791246643943,
+   "seconds": 25,
+   "theme": "devils-garden"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "switch-now",
+   "t": 1791246643943,
+   "seconds": 25,
+   "theme": "devils-garden"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1791246643943,
+   "note": "what are the real benefits of switching rn? i'm almost tempted to build this, but hold off on actually merging/deploying until our existing system stops working? i like that free plans still work atm",
+   "seconds": 25,
+   "theme": "devils-garden"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1791246643943,
+   "note": "there's gotta be a way to find/pull this information in still",
+   "seconds": 25,
+   "theme": "devils-garden"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "keep-ours",
+   "t": 1791246643943,
+   "seconds": 25,
+   "theme": "devils-garden"
+  },
+  "Q-6": {
+   "v": "yes",
+   "t": 1791246643943,
+   "seconds": 25,
+   "theme": "devils-garden"
+  }
+ }
+}

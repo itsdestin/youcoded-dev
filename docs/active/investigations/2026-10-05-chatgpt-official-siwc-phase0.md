@@ -56,6 +56,21 @@ returned 403 to our fetcher and needs to be read by a person.
   current plan is not recorded here.
 - **Revocation** kills the refresh token. The 1 h access token keeps working until it expires.
 
+## Usage hunt (run 4, `--usage-hunt`; Destin asked for another way to read usage)
+
+The answer is no: the official route exposes no source of plan usage.
+- **GET with the SIWC token:**
+  - `v1/me`, `chatgpt.com/backend-api/wham/usage` → 401 `rejected_by_access_enforcement`.
+  - `v1/usage` → 401 "Incorrect API key".
+  - `v1/rate_limits`, `v1/chatgpt/usage`, `v1/subscription_sharing/usage`, `v1/organization/usage` → 404.
+  - `backend-api/codex/usage`, `backend-api/me` → 403 Cloudflare page.
+  - `auth.openai.com/userinfo` → an HTML page.
+- **Codex dress:** `originator: codex_cli_rs` + `version` → **400**, refused outright. `OpenAI-Beta: responses=experimental` changes nothing.
+- **Responses WebSocket** (`wss://api.openai.com/v1/responses`, `{type:'response.create', …}`) works, with or without `OpenAI-Beta: responses_websockets=…`.
+  - Events: `codex.response.metadata` (the same headers as HTTP: turn-state, safety buffering, models etag), `responsesapi.websocket_timing` (latency plus `engine_cached_prompt_tokens_total`), and the normal stream.
+  - **No `codex.rate_limits` event.**
+  - `response.completed` shows `prompt_cache_retention: "24h"` applied by default.
+
 ## What changes for the app
 
 1. `chatgpt-oauth.ts` / `chatgpt-auth.ts`: discovery endpoints, dynamic client id persisted in
