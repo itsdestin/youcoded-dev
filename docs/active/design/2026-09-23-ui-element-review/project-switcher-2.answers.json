@@ -1,0 +1,76 @@
+{
+ "deck": "project-switcher-2",
+ "started": "2026-10-06T06:52:37.541Z",
+ "submitted": "2026-10-06T06:55:58Z",
+ "cur": 8,
+ "answers": {
+  "P2-1": {
+   "v": "yes",
+   "t": 1791269587533,
+   "note": "center the add a project button. ",
+   "seconds": 30,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2-2": {
+   "note": "need scroll fade",
+   "t": 1791269602474,
+   "v": "other",
+   "seconds": 15,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2-3": {
+   "v": "yes",
+   "t": 1791269612533,
+   "seconds": 10,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2-4": {
+   "v": "yes",
+   "t": 1791269643952,
+   "seconds": 31,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2-5": {
+   "v": "yes",
+   "t": 1791269695482,
+   "note": "the fade looks really strange in this container",
+   "seconds": 52,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2-6": {
+   "v": "yes",
+   "t": 1791269699143,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2-7": {
+   "v": "yes",
+   "t": 1791269705196,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2C-1": {
+   "note": "none. just drop that indicator. the currently selected one should be the highlighted/hovered one when nothing else is hovered, but focus should switch when hovering on a different project",
+   "t": 1791269751685,
+   "v": "other",
+   "seconds": 46,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "P2Q-1": {
+   "v": "pick",
+   "pick": "match",
+   "t": 1791269757574,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
