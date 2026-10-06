@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-10-05
 probe: youcoded/desktop/test-engine/chatgpt-siwc-phase0.mjs (three runs 2026-10-05, Node, Destin's own account)
 replaces: the Codex-client-id route measured in docs/archive/investigations/2026-09-05-chatgpt-phase0-findings.md
