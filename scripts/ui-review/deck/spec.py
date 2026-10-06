@@ -15,7 +15,7 @@ UI_REVIEW = os.path.dirname(HERE)
 DEFAULT_THEMES = ['midnight', 'light', 'creme', 'dark', 'halftone-dimension', 'meadow-mist']
 
 
-def is_shoot_crop_name(name):
+def is_shoot_crop_name(name, spec=None):
     """A shoot screen name (`"settings/sound"`) is the one crop-name shape no crops.json entry
     or spec `crops` override has ever used (checked repo-wide 2026-09-26, all "/"-free) — so an
     unrecognized name containing "/" is presumed to be one. Real existence is checked later,
@@ -23,15 +23,37 @@ def is_shoot_crop_name(name):
     FROM this module); this is only the fast, structural check that still catches a plain typo
     of a legacy crop name at validate() time, same as before shoot existed.
     A "#" marks one too (2026-10-02): a STATE of a screen (`first-run#authenticate`) needs no
-    "/", and every first-run screen was refused as an unknown crop before this."""
-    return '/' in (name or '') or '#' in (name or '')
+    "/", and every first-run screen was refused as an unknown crop before this.
+    A name a run's own manifest.json lists counts too, whatever its shape (2026-10-06,
+    project-switcher friction proposal 7): `projects` — the Project View — has neither mark,
+    and `projects@…` was refused. `spec` carries those names (load_spec, `_shoot_names`)."""
+    name = name or ''
+    if '/' in name or '#' in name:
+        return True
+    return bool(spec) and name.split('@')[0] in spec.get('_shoot_names', ())
+
+
+def run_screen_names(runs):
+    """Every screen name the shoot runs' own manifest.json files list (a run without one — an
+    old shots-<plan> run, or a folder not shot yet — adds nothing). Read here, not through
+    deck/crops.py, because crops.py imports from this module."""
+    names = set()
+    for folder in (runs or {}).values():
+        try:
+            with open(os.path.join(folder or '', 'manifest.json')) as f:
+                names.update(e.get('name') for e in json.load(f) if isinstance(e, dict) and e.get('name'))
+        except (OSError, ValueError, TypeError):
+            continue
+    return names
+
+
 def crop_errors(spec, crop, where):
     """Errors for one step's (or variant's) `crop`: a known name, or a LIST of them composed
     side by side (deck/crops.py compose_pieces). Each piece is a name or {"crop", "label"}.
     WHY here as one function: three step kinds check a crop, and a list must never reach the
     plain `crop in spec['_crops']` test (a list is unhashable — the build would crash, not refuse)."""
     def unknown(name):
-        return name not in spec['_crops'] and not is_shoot_crop_name(name)
+        return name not in spec['_crops'] and not is_shoot_crop_name(name, spec)
     if isinstance(crop, list):
         if len(crop) < 2:
             return [f'{where}: a list crop lays several pictures side by side — give at least two']
@@ -57,10 +79,10 @@ def crop_errors(spec, crop, where):
     return []
 
 
-def needs_no_highlight(crop):
+def needs_no_highlight(crop, spec=None):
     """A shoot screen boxes its own panel by default; a composite IS the focus. Only a legacy
     (or unresolvable) single crop name still needs a highlight written out on one picture."""
-    return isinstance(crop, list) or is_shoot_crop_name(crop or '')
+    return isinstance(crop, list) or is_shoot_crop_name(crop or '', spec)
 
 
 # Whole-word, case-insensitive. "px" and numbers are fine — measurements are wanted.
@@ -228,6 +250,7 @@ def load_spec(path):
         shared = json.load(f)
     shared.pop('_comment', None)
     spec['_crops'] = {**shared, **spec.get('crops', {})}
+    spec['_shoot_names'] = run_screen_names(spec['runs'])
     spec.setdefault('themes', list(DEFAULT_THEMES))
     # "fixed" is the only value this key takes; anything else is a typo that would otherwise be
     # ignored in silence, and the deck would open on a theme the author thought they had pinned.
@@ -625,7 +648,7 @@ def validate(spec):
         if hl is None:
             # A shoot screen needs no highlight at all: its own panel is the default box
             # (deck/crops.py). Only a legacy (or unresolvable) crop name still requires one.
-            if not needs_no_highlight(st.get('crop')):
+            if not needs_no_highlight(st.get('crop'), spec):
                 errors.append(f'{sid}: one picture and nothing to compare it with — this slide needs a highlight (selector or text)')
         elif hl == 'auto':
             if not two_runs:
@@ -634,7 +657,7 @@ def validate(spec):
             # WHY (marketplace-detail friction, proposal 9d): a whole-page redesign changes 80–99%
             # of every crop, so "auto" warned "name an element instead" on every slide, with no
             # element to name. "panel" boxes the shoot screen's own panel in every run, quietly.
-            if isinstance(st.get('crop'), list) or not is_shoot_crop_name((st.get('crop') or '').split('@')[0]):
+            if isinstance(st.get('crop'), list) or not is_shoot_crop_name((st.get('crop') or '').split('@')[0], spec):
                 errors.append(f'{sid}: "panel" highlight needs ONE shoot screen crop (it boxes that screen\'s own panel)')
         elif isinstance(hl, dict):
             if not any(k in hl for k in ('selector', 'text', 'box')):
@@ -714,7 +737,7 @@ def _validate_decide(spec, st, sid, errors, warnings):
     if hl is None:
         # A shoot screen defaults to its own panel as the highlight (deck/crops.py) — only a
         # legacy (or unresolvable) crop name still needs one written out.
-        if not needs_no_highlight(st.get('crop')):
+        if not needs_no_highlight(st.get('crop'), spec):
             errors.append(f'{sid}: a decide step needs a highlight (it shows one picture, so there is nothing to diff)')
     elif not (isinstance(hl, dict) and any(k in hl for k in ('selector', 'text', 'box'))):
         errors.append(f'{sid}: highlight must have selector, text or box')

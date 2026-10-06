@@ -103,6 +103,29 @@ test('controls: labels, roles, what is covered, and the top layer first', { skip
   } finally { b.close(); }
 });
 
+// WHY (project-switcher friction, proposal 6): the redesigned switcher's project list carried
+// role=listbox inside its dialog, and `shoot --check` read it as a second layer — seven screens
+// failed "Escape should close listbox Projects only". A list that sits in the dialog's own flow
+// is part of the dialog; a listbox that floats (a dropdown's popup) is still its own layer.
+test('a listbox in a dialog\'s flow is part of the dialog; a floating one is a layer', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    const page = `<!doctype html><body style="margin:0">
+      <div role=dialog aria-label="Switch project" style="position:fixed;inset:60px;z-index:60;background:#fff">
+        <input placeholder="Jump to project">
+        <div role=listbox aria-label="Projects"><div role=option>youcoded</div><div role=option>recipes</div></div>
+        <div style="position:relative"><div role=listbox aria-label="Sort by" style="position:absolute;top:0;left:200px;width:120px;background:#eee">
+          <div role=option>Name</div><div role=option>Recent</div></div></div>
+      </div></body>`;
+    await tab.navigate(`data:text/html,${encodeURIComponent(page)}`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) await new Promise((r) => setTimeout(r, 50));
+    const { layers } = await tab.evaluate(inPage(listLayers));
+    assert.deepEqual(layers.map((l) => `${l.kind} ${l.name}`), ['listbox Sort by', 'dialog Switch project']);
+  } finally { b.close(); }
+});
+
 test('a click re-aims after pointer arrival moves its target instead of hitting the old-position decoy', { skip: !hasChrome && 'needs Chrome' }, async () => {
   const b = await openBrowser({ width: 800, height: 600 });
   try {

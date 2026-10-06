@@ -24,9 +24,17 @@ Options: `--worktree <name|branch|path>` (default: the checkout next to this scr
 2026-10-05): a 1440×900 screen is a 2160×1350 picture. `--check`, `--collect` and `--contrast` stay at
 1× (their boxes are read by a script); `SHOOT_SCALE=<n>` overrides both. The manifest records each
 picture's `scale`, and the review deck turns `panel` boxes (CSS pixels) into picture pixels with it.
+Chrome is launched at that density for real (`CHROME_FLAGS`' `scale`), not only told to pretend:
+with the real one left at 1, taking a picture sent a late pointer event to the hovered point ÷ 1.5,
+and a hover picture lit the row above (project switcher, 2026-10-06; pinned in `engine.test.mjs`).
+Text sits up to a pixel differently from 1.5× pictures taken before that date — compare a
+before/after only within pictures taken the same way.
 
 Output: `<out>/<screen name>/<theme>.png`, `manifest.json` (per picture: ok, reason, the
-screen's panel box, page errors), and a contact sheet per theme.
+screen's panel box, page errors), and a contact sheet per theme. **Re-shooting a few screens into
+an existing `--out` folder keeps its other pictures in the manifest** (a re-shot screen × theme
+replaces its record; one whose file is gone is dropped) — a deck reading that folder loses nothing.
+To start a folder over, delete it first.
 
 ## How it works
 
@@ -126,7 +134,8 @@ guide is `scripts/ui-review/tester-kit.md`.
 
 - **What the page is asked** lives in `explore-page.mjs`: what counts as a control (roles,
   real controls, pointer-cursor elements), what counts as a layer (layer roles, the overlay
-  system's `data-layer`, anything fixed to the window at z-index 30+), and the check that a
+  system's `data-layer`, anything fixed to the window at z-index 30+ — but a `role=listbox` only
+  when it floats: a list laid out inside a dialog is part of that dialog), and the check that a
   click lands on its control. Before any click the page must stop moving (two equal readings),
   and the point is re-checked: a late row once pushed the message box under a quick chip.
 - **A background helper** holds the app between steps (one per workspace worktree; `start`

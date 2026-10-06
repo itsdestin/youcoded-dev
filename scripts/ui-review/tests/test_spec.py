@@ -1,7 +1,9 @@
 import json, os, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
+sys.path.insert(0, HERE)
 from deck.spec import load_spec, validate, run_names, step_runs, word_count, banned_in, workspace_root, SpecError
+from fixture import shoot_run
 
 def write_spec(d, **over):
     # images/deck names the spec stem ('deck.json'), which is what validate() wants — see
@@ -65,6 +67,19 @@ class SpecTests(unittest.TestCase):
         # "first-run#authenticate" has no "/" — the "#" state marker is what says shoot screen.
         s = load_spec(write_spec(self.d)); s['steps'][0]['crop'] = 'first-run#authenticate'
         self.assertFalse(any('unknown crop' in e for e in validate(s)[0]))
+    def test_a_one_word_screen_in_a_run_manifest_is_not_an_unknown_crop(self):
+        # WHY (project-switcher friction, proposal 7): "projects" (the Project View) is a real
+        # shoot screen with neither "/" nor "#", so "projects@…" was refused as an unknown crop.
+        # A name the run's own manifest.json lists is a shoot screen, whatever its shape.
+        run = shoot_run(os.path.join(self.d, 'run'), [{'name': 'projects', 'theme': 'light'}])
+        s = load_spec(write_spec(self.d, runs={'today': run}))
+        for crop in ('projects', 'projects@600x400+100+50'):
+            s['steps'][0]['crop'] = crop
+            errors = validate(s)[0]
+            self.assertFalse(any('unknown crop' in e for e in errors), (crop, errors))
+            self.assertFalse(any('needs a highlight' in e for e in errors), (crop, errors))
+        s['steps'][0]['crop'] = 'projectz'   # a typo of it is still refused
+        self.assertTrue(any('unknown crop' in e for e in validate(s)[0]))
     def test_a_single_run_shoot_screen_needs_no_highlight(self):
         # A shoot picture defaults to its own panel as the highlight, so — unlike a legacy crop
         # — one picture and no highlight is not an error.

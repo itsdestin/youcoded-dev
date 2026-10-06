@@ -398,6 +398,20 @@ model apps already detected running, vs. the default empty),
 `?screenFrame=cards|sheet|rail|bleed` (how the page view's panel and frame sit on a wallpaper
 in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships).
 
+States a screen entry already uses (documented 2026-10-06; each lives in `dev/workbench/mock-shim.ts`):
+`?sync=ok|auth-error|oversize|removed` (Backup & sync: every space synced, GitHub sign-in
+expired, files too big, or two projects removed from every device — the default is the
+failing-sync state), `?announcement=1` (a current announcement, so the status bar's
+Announcement popup opens), `?handleMissing=1` (with `?signedIn=1`: a just-signed-in account
+with no handle, for the handle prompt), `?gpus=2` (a two-graphics-chip computer, so Settings →
+Performance shows its row), `?queueSends=1` (sends answer "queued", so typed messages wait in
+the strip above the message box), `?quit=ask` (plays the window's close button, for the
+quit warning), `?switchFit=summary|working|error` (every model switch asks first; the summary
+runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-password card's
+"ask expired" state), `?docCommentsFail=<code>` (every new document comment fails with that
+real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
+quoted text is no longer in its file).
+
 Failure switches, for review shots of error states (added 2026-09-11):
 `?fail=<ns.method>[,<ns.method>…]` makes those channels REJECT from the very first call —
 `?fail=skills.list`, `?fail=tags.list`, nested `?fail=theme.marketplace.list`. Use it for any

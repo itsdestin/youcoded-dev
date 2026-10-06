@@ -165,7 +165,9 @@ export async function backOff() {
 async function launchBrowser(width, height, record) {
   const profile = mkdtempSync(join(tmpdir(), 'youcoded-shoot-'));
   // Port 0 = Chrome picks a free debugging port and writes it to DevToolsActivePort.
-  const proc = spawn('google-chrome-stable', CHROME_FLAGS(width, height, 0, profile), { stdio: 'ignore' });
+  // The real density matches the one each tab emulates (prepare → deviceScaleFactor): see
+  // CHROME_FLAGS' `scale` for the misplaced pointer event a mismatch caused.
+  const proc = spawn('google-chrome-stable', CHROME_FLAGS(width, height, 0, profile, SHOT_SCALE), { stdio: 'ignore' });
   record.browsers.push({ pid: proc.pid, profile }); record.save();
   let port = 0;
   for (let i = 0; i < 100 && !port; i++) {

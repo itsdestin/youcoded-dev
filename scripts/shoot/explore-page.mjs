@@ -185,6 +185,19 @@ export function listLayers() {
   };
   const cands = new Set(document.querySelectorAll(ROLE));
   for (const e of document.body.querySelectorAll('*')) if (!cands.has(e) && floating(e)) cands.add(e);
+  // A list is a layer only when it floats. WHY (project-switcher friction, proposal 6): a
+  // role=listbox laid out in a dialog's own flow (the switcher's project list) read as a second
+  // layer, and `shoot --check` failed seven screens with "Escape should close listbox … only".
+  // A dropdown's popup listbox is positioned (absolute/fixed) on it or on a wrapper between it
+  // and the layer around it — that one still counts.
+  const floatsInside = (e) => {
+    for (let p = e; p && p !== document.body; p = p.parentElement) {
+      if (p !== e && cands.has(p)) return false;   // reached the layer it sits in, never lifted out
+      if (/^(absolute|fixed)$/.test(getComputedStyle(p).position)) return true;
+    }
+    return false;
+  };
+  for (const e of [...cands]) if (e.matches('[role=listbox]') && !e.matches('[data-layer],[aria-modal=true]') && !floatsInside(e)) cands.delete(e);
   // A full-window wrapper the pointer passes through (Dialog's centring box) is not a layer.
   let els = [...cands].filter(shown).filter((e) => getComputedStyle(e).pointerEvents !== 'none');
   // A layer inside a layer is its own layer (the marketplace's detail page over the

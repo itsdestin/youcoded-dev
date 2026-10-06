@@ -46,7 +46,7 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | (run names) | — | `today`, `before`, `after`, or any short lowercase name (`round3`) — a slide comparing with an older round names that run in its own `runs`. `before` always shows left of `after` |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
-| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen |
+| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen. A name with `/` or `#` is taken as one on sight; a one-word screen (`projects`) is recognised because a run's own `manifest.json` lists it, so shoot it before you validate |
 | `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
 | `branch` | contract | the branch the contract will be built on |
 | `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |

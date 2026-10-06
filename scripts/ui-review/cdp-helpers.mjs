@@ -9,7 +9,7 @@
 
 // Argv for spawning throw-away headless Chrome, pointed at its own CDP port
 // and scratch profile directory so multiple instances never collide.
-export function CHROME_FLAGS(W, H, cdpPort, profileDir) {
+export function CHROME_FLAGS(W, H, cdpPort, profileDir, scale = 1) {
   return [
     '--headless=new', '--disable-gpu', '--no-sandbox',
     // WHY opt-out: a shot that must SHOW a styled scroll bar (float chrome's,
@@ -25,7 +25,12 @@ export function CHROME_FLAGS(W, H, cdpPort, profileDir) {
     // (PointerTypeFine). CDP's Emulation.setEmulatedMedia does NOT cover these two
     // features — it only knows the prefers-* family — so the flags are the only way.
     '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
-    `--window-size=${W},${H}`, '--force-device-scale-factor=1',
+    `--window-size=${W},${H}`,
+    // WHY a `scale` (project-switcher friction, proposal 8): a caller that emulates a density
+    // (shoot's 1.5× pictures, Emulation.setDeviceMetricsOverride) must launch Chrome at the SAME
+    // real density. With the real one left at 1, taking a picture made Chrome send a late, trusted
+    // mouseover at the hovered point divided by 1.5 — a hover picture lit the row above.
+    `--force-device-scale-factor=${scale}`,
     `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profileDir}`, 'about:blank',
   ];
 }

@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureBuild, openPool, poolSize, serve, sweepLeftovers } from '../engine.mjs';
+import { ensureBuild, openPool, poolSize, serve, setShotScale, sweepLeftovers } from '../engine.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CHECKOUT = resolve(HERE, '..', '..', '..', 'youcoded');
@@ -75,4 +75,34 @@ test('two tabs on the same address each keep their own theme', { skip: !canBrows
     assert.equal(await themeOf(a), 'dark');
     assert.equal(await themeOf(b), 'light');
   } finally { pool.close(); server.close(); }
+});
+
+// WHY (project-switcher friction, proposal 8): at 1.5× a hover picture lit the row ABOVE the
+// pointed one. Taking the picture made Chrome send a late, trusted `mouseover` at the hover's
+// point divided by the scale (720,454 → 480,302), because the browser ran at a real density
+// of 1 (`--force-device-scale-factor=1`) while the tab pretended 1.5 (emulation). It needs a
+// hover that changes layout (the bin appearing; here a taller row). Every pointer
+// event the page sees after a hover and a picture must be at the point the pointer was put.
+const canChrome = spawnSync('google-chrome-stable', ['--version']).status === 0;
+test('at 1.5× a picture never moves the pointer: no late event off the hovered point', { skip: !canChrome && 'needs Chrome' }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'youcoded-shoot-ptr-'));
+  writeFileSync(join(dir, 'index.html'), `<!doctype html><style>body{margin:0}div{height:100px;border-bottom:1px solid #888}div:hover{background:#f0f}div:hover::after{content:'';display:block;height:20px}</style>
+    ${Array.from({ length: 8 }, (_, i) => `<div id="r${i}">row ${i}</div>`).join('')}
+    <script>window.log=[];for(const t of ['mouseover','mousemove'])addEventListener(t,e=>log.push([t,e.clientX,e.clientY]),true)</script>`);
+  const server = await serve(dir);
+  setShotScale(1.5);
+  const pool = await openPool({ tabs: 1, browsers: 1, width: 800, height: 900 });
+  try {
+    const tab = pool.tabs[0];
+    await tab.prepare({ theme: 'light', width: 800, height: 900 });
+    await tab.navigate(`http://127.0.0.1:${server.port}/index.html`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('!!window.log').catch(() => false)); i++) await new Promise((r) => setTimeout(r, 50));
+    await tab.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 600, y: 450, pointerType: 'mouse' });
+    await tab.png();
+    await new Promise((r) => setTimeout(r, 400));
+    const log = await tab.evaluate('log');
+    const off = log.filter(([, x, y]) => x !== 600 || y !== 450);
+    assert.deepEqual(off, [], `pointer events away from (600, 450): ${JSON.stringify(off)}`);
+    assert.equal(await tab.evaluate("document.querySelector('div:hover')?.id"), 'r4', 'the hovered row is the one under the pointer');
+  } finally { setShotScale(1); pool.close(); server.close(); rmSync(dir, { recursive: true, force: true }); }
 });

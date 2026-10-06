@@ -59,7 +59,7 @@ const DPR = Number(process.env.DPR ?? 1.5);
 // workbench's stress scenario: 1 pill at 460x600, 11 at 1400x900.
 const W = Number(process.env.FUZZ_W ?? 460), H = Number(process.env.FUZZ_H ?? 600);
 const profile = mkdtempSync(join(tmpdir(), 'drag-fuzz-'));
-const flags = CHROME_FLAGS(W, H, 0, profile).map((f) => f === '--force-device-scale-factor=1' ? `--force-device-scale-factor=${DPR}` : f);
+const flags = CHROME_FLAGS(W, H, 0, profile, DPR);
 if (process.env.UNLIMITED) flags.unshift('--disable-frame-rate-limit', '--disable-gpu-vsync');
 const chrome = spawn('google-chrome-stable', flags, { stdio: 'ignore' });
 process.on('exit', () => { chrome.kill(); try { rmSync(profile, { recursive: true, force: true }); } catch {} });

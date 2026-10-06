@@ -27,6 +27,7 @@ import { inPage, listLayers } from './explore-page.mjs';
 import { makeDriver, openSteps, stepText } from './driver.mjs';
 import { ensureOfficeEditor } from './office-editor.mjs';
 import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
+import { mergeManifest, readManifest } from './manifest.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -343,7 +344,12 @@ function summarize(label, { results, screens }, outDir) {
   for (const p of parts) console.log(`  PARTS      ${p}`);
   const errs = ok.filter((r) => r.errors.length);
   for (const r of errs) console.log(`  PAGE ERROR ${r.name} · ${r.theme} — ${r.errors[0].split('\n')[0].slice(0, 160)}`);
-  writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(results.map(({ thumb, ...r }) => r), null, 2));
+  // A re-shoot into an existing run folder keeps that folder's other pictures in the manifest
+  // (manifest.mjs says why: a partial re-shoot used to drop them from the deck, silently).
+  const mf = join(outDir, 'manifest.json');
+  const { records, kept } = mergeManifest(readManifest(mf), results.map(({ thumb, ...r }) => r));
+  writeFileSync(mf, JSON.stringify(records, null, 2));
+  if (kept) console.log(`  kept ${kept} earlier picture(s) of this folder in its manifest (re-shot ones replaced)`);
   // --contrast: the painted-pixel report beside the pictures (text too faint on its own
   // background, per theme). Same report the old sweep wrote; it reads this manifest.
   if (opt.contrast) {
