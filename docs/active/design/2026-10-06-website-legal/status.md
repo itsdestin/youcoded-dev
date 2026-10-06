@@ -17,7 +17,9 @@ Inspected the live homepage in isolated Chrome and compared its HTML and screens
 
 Root `PRIVACY.md` and `TERMS.md` are unchanged. Generated pages preserve all wording, formatting and dates (September 15 and September 3, 2026 respectively). `docs/tools/gen-legal-pages.mjs --check` checks reproducibility; `docs/tools/legal-pages.test.mjs` independently checks fidelity and navigation.
 
-Nothing is published. Both public policy addresses returned HTTP 404 during this session. Publish the website pages before releasing the changed app links. This branch has other unrelated work; do not treat the entire branch as this task.
+Nothing is published. Implementation is saved locally in app commit `2d01f74f3`; approvals were saved in workspace commit `5a130ec1`. Remote-containment checks showed neither new HEAD on any remote-tracking ref. `close-out.sh` nevertheless printed “pushed to origin”; that verdict is not evidence these new commits were pushed. It also reported pre-existing branch divergence/conflicts with master; no merge, conflict resolution, unrelated-file staging or worktree removal was performed.
+
+Both public policy addresses returned HTTP 404 during this session. Publish the website pages before releasing the changed app links. This branch has other unrelated work; do not treat the entire branch as this task.
 
 ## Verification
 
