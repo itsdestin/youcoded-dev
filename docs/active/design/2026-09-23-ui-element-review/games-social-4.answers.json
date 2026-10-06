@@ -1,0 +1,53 @@
+{
+ "deck": "games-social-4",
+ "started": "2026-10-06T00:02:44.014Z",
+ "submitted": "2026-10-06T00:04:09Z",
+ "cur": 5,
+ "answers": {
+  "G4-1": {
+   "v": "yes",
+   "t": 1791244972052,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G4-2": {
+   "v": "yes",
+   "t": 1791244977231,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G4-3": {
+   "v": "other",
+   "t": 1791245017060,
+   "note": "they shouldn't be able to see me in incognito, but i feel like i should still be able to see who else is online.",
+   "seconds": 40,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G4-4": {
+   "v": "yes",
+   "t": 1791245026913,
+   "note": "",
+   "seconds": 10,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G4-5": {
+   "v": "yes",
+   "t": 1791245032434,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G4C-1": {
+   "v": "pick",
+   "pick": "details",
+   "t": 1791245048970,
+   "seconds": 17,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

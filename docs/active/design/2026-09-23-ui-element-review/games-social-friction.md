@@ -204,3 +204,69 @@ Deck `games-social-4.json` (before `runs/gs3-after`, after `runs/gs4-after`).
    typecheck caught it at once.
 4. `verify --full` 9/9 PASS. New tests: the details popup shows the handle and gates Block; the
    incognito line never shows a number (broke it, saw it fail, restored).
+
+## Round 5 (2026-10-05) — after Destin's games-social-4 answers
+
+G4C-1 picked the **friend details popup**; the Manage-in-place and edit-mode drafts, `?friendManage=`
+and `?manageOpen=` are removed. Decisions recorded in `decisions.md` ("Games: …" rows); backlog row 11
+is **done except incognito presence**.
+
+### Incognito presence (G4-3) — blocked on the server, not built
+Destin: "they shouldn't be able to see me in incognito, but i feel like i should still be able to
+see who else is online."
+
+- **Client today:** incognito = close the presence connection (`usePresence.ts` desired-state effect →
+  `social.presenceDisconnect`; `main/presence-socket.ts`; Android `social/PresenceClient.kt`).
+- **Server today** (`wecoded-marketplace/worker/src/social/presence-room.ts`, the `PresenceRoom`
+  Durable Object behind `GET /social/presence`): any connected socket IS "online". On connect it
+  sends you your friends' snapshot AND broadcasts `user-joined` to your online friends; every
+  friend's snapshot lists you; your close broadcasts `user-left`; the alarm writes your `last_seen_at`.
+  There is no invisible / receive-only flag anywhere in the worker.
+- **So it cannot be done client-side without revealing the user.** Keeping the socket open while
+  incognito would announce you online the moment you connect.
+- **What would be needed (not done):** in the worker, an invisible socket mode — e.g.
+  `/social/presence?invisible=1` stored on the socket's attachment; invisible sockets left out of
+  `liveSocketsFor()` (snapshots, "was online", challenge reachability), no `user-joined` /
+  `user-left` / `user-status` broadcasts for them, no `last_seen_at` writes from them, and challenges
+  or status messages FROM them refused. The server should confirm the mode in its `connected` frame,
+  and the client must disconnect if it doesn't get that confirmation (an older server would otherwise
+  silently mark the user online). Client: pass the flag on desktop AND Android (parity), keep receiving
+  `presence` / `user-*` frames, never send `status` or challenges while invisible.
+- **Privacy risks to weigh:** (1) a client/server version mismatch exposing the user — handled only by
+  the confirm-or-disconnect rule; (2) a second device that is NOT incognito still shows you online
+  (account-level vs device-level incognito needs a product call); (3) timing — a friend could notice
+  you appear the instant you leave incognito; (4) worker deploys are CI-driven on master, so this is a
+  marketplace-repo change with its own review.
+
+## Proposed guide and tooling changes (most valuable first — not implemented)
+
+1. **Guide: a "panel at the top of a pane" recipe** — `guide-draft.md` Recipes. Folded by default to one
+   Account-style header row (name + clickable status pill, grey line, arrow right); opens to a capped
+   scrolling list of boxed rows with its main action pinned inside (Appearance's themes box). Why: four
+   rounds converged on it from screens, not rules; nothing in the guide described it.
+2. **Guide: "a problem replaces the card it is about"** — `guide-draft.md` "Status and notices". When the
+   whole card can't work (offline, server down), the card IS the notice box (one sentence + Try again,
+   no title). Why: G2-5 and G3-7 corrected a label swap and a red title.
+3. **Decide the red danger title app-wide** — `ui/Callout.tsx` danger tone (`text-destructive-fg`)
+   against principle 2 ("status hues never in text"); 3 screens use it (Marketplace install failure,
+   integration error, local model load failure). Why: G3-7 called it "unique styling".
+4. **Deck: compose several screens into one picture** — `scripts/ui-review/deck/`: a crop that is a list
+   of screens laid side by side (and folded/opened pairs). Why: three rounds needed hand-cut composites
+   (three states ×2, concepts ×3).
+5. **Deck: an approve slide for a NEW state** — let a one-picture slide carry built-thing wording ("Yes keep
+   it") instead of "Yes build it". Why: every new practice state (incognito, offline, menu open) read as
+   unbuilt.
+6. **Deck: warn when a Choice slide will overflow sideways** — the builder could compare summed crop widths
+   with the stage. Why: R4 cut the first and last pictures silently.
+7. **Shoot: a "centres agree" check** — `scripts/shoot/parts-agree.mjs`: for a marked row of DIFFERENT-height
+   items (a name beside a pill, a button beside text), flag vertical centres more than 1px apart. Why: G2-7
+   ("vertical alignment is a bit off") could only be checked by eye at 1.5×.
+8. **A shared anchored menu primitive** — `components/ui/`: the small popover (outside-click + Esc,
+   menuitem / menuitemradio) used by the old ⋯ menu, the status pill and MarketplaceAuthChip. Why: three
+   hand copies.
+9. **Shoot: "open this first" steps on a screen entry** — e.g. `open: ['status pill']` replayed like a
+   journey before the picture. Why: every opened state (menu, popup, card) needed its own workbench switch.
+10. **Guide: say which rule wins** — "one filled button per view" vs a filled per-row action (Challenge,
+   Accept). Why: G2-8 asked for filled Challenge against the principle.
+11. **`Select` width** — `ui/Select.tsx` trigger is `w-full` and a caller's width class doesn't win; document
+   it or let `className` size the trigger. Why: R2's dropdown silently covered the summary line.
