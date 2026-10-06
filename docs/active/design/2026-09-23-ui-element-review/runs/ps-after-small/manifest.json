@@ -1,0 +1,155 @@
+[
+  {
+    "name": "projects/switcher",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/switcher/midnight.png",
+    "ms": 1607,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/switcher#many/midnight.png",
+    "ms": 1669,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/synced",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/remove/synced/midnight.png",
+    "ms": 2075,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 150,
+      "y": 48,
+      "w": 340,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/switcher#many/youcoded.png",
+    "ms": 2243,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/switcher/youcoded-night.png",
+    "ms": 2251,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/switcher/youcoded.png",
+    "ms": 2260,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/synced",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/remove/synced/youcoded-night.png",
+    "ms": 2323,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 150,
+      "y": 48,
+      "w": 340,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/switcher#many/youcoded-night.png",
+    "ms": 2330,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/synced",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-small/projects/remove/synced/youcoded.png",
+    "ms": 2332,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 150,
+      "y": 48,
+      "w": 340,
+      "h": 384
+    },
+    "parts": []
+  }
+]

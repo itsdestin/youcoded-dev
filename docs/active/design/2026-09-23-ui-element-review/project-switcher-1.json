@@ -1,0 +1,325 @@
+{
+  "title": "Project switcher: status pills, a Current pill and a Remove button — round 1",
+  "key": "project-switcher-1",
+  "out": "project-switcher-1.review.html",
+  "images": "images/project-switcher-1",
+  "runs": {
+    "before": "runs/ps-before",
+    "after": "runs/ps-after",
+    "phone": "runs/ps-after-phone",
+    "small": "runs/ps-after-small",
+    "hero": "runs/ps-after-hero"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Draft",
+    "phone": "Phone",
+    "small": "Small window",
+    "hero": "Draft"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "PS-1",
+      "surface": "Projects",
+      "path": "Projects → click the project's name",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher@660x610+390+128",
+      "headline": "The project switcher is now a normal popup: title and ✕, a search box, your projects in one box, Add a project below.",
+      "changed": "Same shell as Settings and Session details. The search box is a real field with its icon. \"Add a project\" is a full-width outlined button.",
+      "notice": "Typing still filters, ↑ ↓ and Enter still pick, Esc still closes. Only the list scrolls when you have many projects."
+    },
+    {
+      "id": "PS-2",
+      "surface": "Projects",
+      "path": "Projects → click the project's name",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher@660x610+390+128",
+      "headline": "Sync shows as a named pill, like Working and Inactive in the session switcher: Synced, Sync problem, Sync stopped, Only on this computer.",
+      "changed": "The bare coloured dot became a pill with its dot and a word. The check mark became a \"Current\" pill. Each row has a bin at its end.",
+      "notice": "The words match the sync pill on the project's own page. Hovering a pill still gives the full sentence."
+    },
+    {
+      "id": "PS-3",
+      "surface": "Projects",
+      "path": "Projects → click the name, with many projects (one folder moved away)",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/switcher#many",
+      "headline": "With many projects only the list scrolls, fading at its edges; a project whose folder is gone says \"Folder missing\".",
+      "changed": "New: a project whose folder was moved or deleted outside YouCoded gets an amber \"Folder missing\" pill instead of a sync pill.",
+      "notice": "That is usually the project you want to remove. The search box and Add a project never scroll away.",
+      "new": true
+    },
+    {
+      "id": "PS-4",
+      "surface": "Projects",
+      "path": "Project switcher → bin on a plain folder",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/remove@380x430+530+235",
+      "headline": "Removing a plain folder asks first and says plainly that the folder and its files stay where they are.",
+      "changed": "The confirm is the shared popup now: title, ✕, red Remove on top and Cancel under it, full width.",
+      "notice": "Same behaviour as before: it leaves your project list and the new-conversation folder list. The optional tick deletes only YouCoded's own file history.",
+      "new": true
+    },
+    {
+      "id": "PS-5",
+      "surface": "Projects",
+      "path": "Project switcher → bin on a synced project",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/remove/synced@380x450+530+225",
+      "headline": "Synced projects can now be removed: they leave this computer's list only and keep syncing.",
+      "changed": "Before, synced projects had no remove at all.",
+      "notice": "Nothing is deleted; sync isn't stopped (asked in PQ-1). Add a project brings it back.",
+      "new": true
+    },
+    {
+      "id": "PS-6",
+      "surface": "Projects",
+      "path": "Project switcher → bin on a project whose folder is missing",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/remove/missing@380x330+530+285",
+      "headline": "Removing a project whose folder is gone just takes it off your list, and says so.",
+      "changed": "A short version of the confirm with no tick box — there is nothing left on disk to tidy.",
+      "notice": "Nothing else changes.",
+      "new": true
+    },
+    {
+      "id": "PS-7",
+      "surface": "Projects",
+      "path": "Projects page, a synced project open",
+      "runs": [
+        "hero"
+      ],
+      "crop": "projects/files@1080x290+180+55",
+      "headline": "The project's own page now shows \"Remove from YouCoded\" for synced projects too, matching the switcher.",
+      "changed": "A red outlined \"Remove from YouCoded\" button now sits beside Rename on a synced project. Before, synced projects had none (no picture of before: the old page was not photographed).",
+      "notice": "It opens the same confirm as the switcher's bin.",
+      "new": true
+    },
+    {
+      "id": "PS-8",
+      "surface": "Projects",
+      "path": "Project switcher at phone width, many projects",
+      "runs": [
+        "phone"
+      ],
+      "crop": "projects/switcher#many",
+      "headline": "At phone width the counts hide and the pills stay; long names shorten to make room.",
+      "changed": "Same rows, narrower. The counts go (they also hid before), the path and pills stay.",
+      "notice": "\"Only on this computer\" is the widest pill and squeezes a long name like wecoded-marketplace (see PQ-2).",
+      "new": true
+    },
+    {
+      "id": "PS-9",
+      "surface": "Projects",
+      "path": "Project switcher in a 640 × 480 window",
+      "runs": [
+        "small"
+      ],
+      "crop": "projects/switcher#many",
+      "headline": "In a small window the popup fits: two rows show and the list scrolls between the search box and Add a project.",
+      "changed": "Nothing special for small windows — the list just gets shorter.",
+      "notice": "The search box and Add a project stay on screen.",
+      "new": true
+    },
+    {
+      "id": "PC-1",
+      "surface": "Projects",
+      "path": "Project switcher rows",
+      "runs": [
+        "after"
+      ],
+      "headline": "How should each project's file and chat counts show?",
+      "notice": "The counts hide at phone width in all three. My pick is the first: it is the guide's own recipe for a number in a summary line.",
+      "variants": [
+        {
+          "id": "summary",
+          "label": "Bold numbers",
+          "crop": "projects/switcher@640x600+400+150",
+          "summary": "\"21 files · 5 chats\" at the right of the second line, the numbers bold and the words grey."
+        },
+        {
+          "id": "chips",
+          "label": "Two chips",
+          "crop": "projects/switcher#counts-chips@640x600+400+150",
+          "summary": "\"21 files\" and \"5 chats\" as two small fact chips, like the Marketplace detail pages.",
+          "risk": "Busier: each row then has chips and a pill."
+        },
+        {
+          "id": "none",
+          "label": "No counts",
+          "crop": "projects/switcher#counts-none@640x600+400+150",
+          "summary": "No numbers in the switcher at all; the project's page still shows them.",
+          "risk": "You can't tell an empty project from a busy one before opening it."
+        }
+      ]
+    },
+    {
+      "id": "PC-2",
+      "surface": "Projects",
+      "path": "Project switcher, the project you are in",
+      "runs": [
+        "after"
+      ],
+      "headline": "How should the project you're already in be marked, now the check mark is gone?",
+      "notice": "My pick is the pill: it says what it means in a word, like the status pills.",
+      "variants": [
+        {
+          "id": "pill",
+          "label": "Current pill",
+          "crop": "projects/switcher@640x600+400+150",
+          "summary": "A small \"Current\" pill beside its name."
+        },
+        {
+          "id": "fill",
+          "label": "Tinted row",
+          "crop": "projects/switcher#current-fill@640x600+400+150",
+          "summary": "Its whole row is tinted; no word.",
+          "risk": "A tint alone can be mistaken for the row your pointer is on."
+        },
+        {
+          "id": "top",
+          "label": "Its own box",
+          "crop": "projects/switcher#current-top@640x600+400+150",
+          "summary": "It sits alone under \"Current project\", the others under \"Other projects\".",
+          "risk": "Taller popup; while you search it goes back into the one list."
+        }
+      ]
+    },
+    {
+      "id": "PC-3",
+      "surface": "Projects",
+      "path": "Project switcher rows",
+      "runs": [
+        "after"
+      ],
+      "headline": "Should the remove bin show on every row all the time, or only on the row your pointer is on?",
+      "notice": "On a phone or touch screen the bin always shows in both. My pick is always: Remove is easy to find, which was the complaint.",
+      "variants": [
+        {
+          "id": "icon",
+          "label": "Always shown",
+          "crop": "projects/switcher@640x600+400+150",
+          "summary": "A grey bin at the end of every row; it turns red when you point at it."
+        },
+        {
+          "id": "hover",
+          "label": "On the pointed row",
+          "crop": "projects/switcher#remove-hover@640x600+400+150",
+          "summary": "The bin appears only on the row under the pointer or the keyboard highlight.",
+          "risk": "Quieter, but you have to know to point at a row to find Remove."
+        }
+      ]
+    },
+    {
+      "id": "PQ-1",
+      "words": true,
+      "surface": "Projects",
+      "path": "Project switcher → bin on a synced project",
+      "headline": "When you remove a synced project, what should happen to its syncing?",
+      "today": "In this draft, removing a synced project only hides it on this computer. Its folder in YouCoded › Projects keeps syncing with your other devices, which still list it.",
+      "problem": "Hidden but still syncing means the folder keeps changing on this computer without you seeing it in the app.",
+      "proposal": "Pick what Remove should mean for a synced project. Nothing in any option deletes your files unless you choose the last one.",
+      "options": [
+        {
+          "id": "hide",
+          "label": "Hide here only",
+          "pros": [
+            "Safe: nothing changes on your other devices",
+            "easy to undo with Add a project. Built."
+          ],
+          "cons": [
+            "The hidden folder keeps syncing in the background."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "stop",
+          "label": "Also stop syncing",
+          "pros": [
+            "Nothing changes behind your back after you remove it."
+          ],
+          "cons": [
+            "Stopping sync is permanent and applies on every device (today's Stop syncing has no undo)."
+          ]
+        },
+        {
+          "id": "trash",
+          "label": "Offer the trash too",
+          "pros": [
+            "One place to get rid of a project completely."
+          ],
+          "cons": [
+            "Moves real files to the trash — easy to do by accident",
+            "on a synced project it would delete them on every device."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PQ-2",
+      "words": true,
+      "surface": "Projects",
+      "path": "Project switcher rows",
+      "headline": "Should folders that don't sync still carry an \"Only on this computer\" pill on every row?",
+      "today": "Every project that isn't synced shows a grey \"Only on this computer\" pill, the same words as the project page's sync pill.",
+      "problem": "Most people's projects aren't synced, so most rows carry the widest pill, and on a phone it squeezes long names.",
+      "proposal": "Keep it, shorten it, or show nothing for unsynced folders so only synced ones carry a pill.",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep as is",
+          "pros": [
+            "Matches the project page word for word",
+            "every row says where it lives."
+          ],
+          "cons": [
+            "Busiest",
+            "squeezes names on a phone."
+          ]
+        },
+        {
+          "id": "short",
+          "label": "Shorter: Not synced",
+          "pros": [
+            "Half the width",
+            "still says it on every row."
+          ],
+          "cons": [
+            "Differs from the project page's words unless that changes too."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No pill",
+          "pros": [
+            "Quietest",
+            "a pill then always means sync is on."
+          ],
+          "cons": [
+            "An unsynced row says nothing about sync."
+          ],
+          "recommended": true
+        }
+      ]
+    }
+  ]
+}
