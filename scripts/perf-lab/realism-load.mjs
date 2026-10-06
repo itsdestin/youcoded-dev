@@ -27,7 +27,7 @@ export const CHROME_BIN = '/usr/bin/google-chrome-stable';
  * Start the load. `display`: { kind:'x11', display:':99' } or { kind:'wayland', socketName, runtimeDir }.
  * Returns { pids, stop(), describe }. `hogs` and `canvasPage` can be turned off for tests.
  */
-export async function startBusyDesktop({ display, workDir, controlHtml, hogs = 4, duty = 0.35, browser = true, log = () => {} }) {
+export async function startBusyDesktop({ display, workDir, controlHtml, hogs = 4, duty = 0.35, browser = true, pageQuery = 'n=3&mode=bubbles&canvas=1&fps=60&spin=1', log = () => {} }) {
   const procs = [];
   const info = { hogs: 0, browser: false, browserPid: null };
   for (let i = 0; i < hogs; i++) {
@@ -40,7 +40,7 @@ export async function startBusyDesktop({ display, workDir, controlHtml, hogs = 4
       const profile = join(workDir, 'chrome-profile');
       mkdirSync(profile, { recursive: true });
       const env = { PATH: process.env.PATH, HOME: workDir };
-      const args = [`--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-sync', '--no-sandbox', `--app=file://${controlHtml}?n=3&mode=bubbles&canvas=1&fps=60&spin=1`, '--window-size=1280,800'];
+      const args = [`--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-sync', '--no-sandbox', `--app=file://${controlHtml}?${pageQuery}`, '--window-size=1280,800'];
       if (display.kind === 'x11') { env.DISPLAY = display.display; args.push('--ozone-platform=x11'); }
       else { env.WAYLAND_DISPLAY = display.socketName; env.XDG_RUNTIME_DIR = display.runtimeDir; args.push('--ozone-platform=wayland'); }
       // Refuse to ever point at the owner's session (a Wayland socket under /run/user, or the real X display).

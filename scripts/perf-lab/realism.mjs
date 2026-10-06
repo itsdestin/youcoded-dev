@@ -448,7 +448,7 @@ export async function runBoot(opts, bootNo, outFile) {
           await doRun('soaked');
         }
         else if (s === 'busy') {
-          busy = await startBusyDesktop({ ...(f.busy === 'heavy' ? { hogs: Math.ceil(cpus().length * 1.25), duty: 1 } : {}), display: busyDisplay, workDir: join(root, 'busy'), controlHtml: join(ROOT, 'scripts/perf-lab/gpu-control/control.html'), log: m => report.notes.push(m) });
+          busy = await startBusyDesktop({ ...(['heavy', 'both'].includes(f.busy) ? { hogs: Math.ceil(cpus().length * 1.25), duty: 1 } : {}), ...(['gpu', 'both'].includes(f.busy) ? { pageQuery: 'n=16&mode=full&canvas=1&fps=60&spin=1' } : {}), display: busyDisplay, workDir: join(root, 'busy'), controlHtml: join(ROOT, 'scripts/perf-lab/gpu-control/control.html'), log: m => report.notes.push(m) });
           report.busy = busy.info; await sleep(6000);
           try { await doRun('busy'); } finally { await busy.stop(); busy = null; }
         } else if (s === 'ctrl') {

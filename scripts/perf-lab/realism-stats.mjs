@@ -175,7 +175,7 @@ export const FACTORS = Object.freeze({
   history: ['fixture', 'real'],
   theme: ['stock', 'heavy'],
   display: ['xvfb', 'gpu'],
-  busy: ['off', 'on', 'heavy'],   // on = 4 hogs at 35% + a browser-like page; heavy = every core saturated (a build/VM storm, load ~40)
+  busy: ['off', 'on', 'heavy', 'gpu', 'both'],   // on = 4 hogs at 35% + a browser-like page; heavy = every core saturated (a build/VM storm, load ~35); gpu = the browser page fills the graphics chip; both = heavy + gpu
 });
 
 export const SESSION_COUNTS = [2, 3, 4, 5, 6, 8, 10, 12, 16, 20];
