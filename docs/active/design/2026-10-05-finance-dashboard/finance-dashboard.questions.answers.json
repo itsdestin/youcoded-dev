@@ -1,0 +1,114 @@
+{
+ "deck": "finance-dashboard-questions",
+ "started": "2026-10-05T23:56:18.924Z",
+ "submitted": "2026-10-06T00:01:40Z",
+ "cur": 3,
+ "answers": {
+  "Q-headline": {
+   "v": "pick",
+   "pick": "net-worth",
+   "t": 1791244896787,
+   "note": "maybe a couple options? net worth, plus cash available, plus total owed? like a full sumarry sheet type thing as the first thing i see?",
+   "seconds": 26,
+   "theme": "devils-garden"
+  },
+  "Q-grouping": {
+   "v": "pick",
+   "seconds": 26,
+   "theme": "devils-garden",
+   "t": 1791244896787,
+   "pick": "by-kind"
+  },
+  "Q-card-limits": {
+   "v": "pick",
+   "seconds": 26,
+   "theme": "devils-garden",
+   "t": 1791244896787,
+   "pick": "warn-30"
+  },
+  "Q-bills": {
+   "v": "pick",
+   "seconds": 26,
+   "theme": "devils-garden",
+   "t": 1791244896787,
+   "pick": "due-list",
+   "note": "with warning status for overdue payments, and unique/extra warnings when 1 week before the 30-day overdue point that would result in reporting and credit impact."
+  },
+  "Q-income": {
+   "v": "pick",
+   "seconds": 26,
+   "theme": "devils-garden",
+   "t": 1791244896787,
+   "pick": "income-later"
+  },
+  "Q-history": {
+   "v": "pick",
+   "seconds": 26,
+   "theme": "devils-garden",
+   "t": 1791244896787,
+   "pick": "chart"
+  },
+  "Q-refresh": {
+   "v": "pick",
+   "pick": "live-on-open",
+   "t": 1791244899072,
+   "seconds": 13,
+   "theme": "devils-garden"
+  },
+  "Q-stale": {
+   "v": "pick",
+   "pick": "stale-3",
+   "t": 1791244899072,
+   "seconds": 13,
+   "theme": "devils-garden"
+  },
+  "Q-manual": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1791244899072,
+   "seconds": 13,
+   "theme": "devils-garden"
+  },
+  "Q-transactions": {
+   "v": "pick",
+   "pick": "balances-only",
+   "t": 1791244899072,
+   "seconds": 13,
+   "theme": "devils-garden"
+  },
+  "Q-chat-edit": {
+   "v": "pick",
+   "pick": "ask-once",
+   "t": 1791244805772,
+   "seconds": 24,
+   "theme": "devils-garden"
+  },
+  "Q-chat-notice": {
+   "v": "other",
+   "t": 1791244805772,
+   "note": "this should just be a normal tool. no unique card with undo button",
+   "seconds": 24,
+   "theme": "devils-garden"
+  },
+  "Q-chat-read": {
+   "v": "yes",
+   "t": 1791244805772,
+   "seconds": 24,
+   "theme": "devils-garden"
+  },
+  "Q-sync": {
+   "v": "pick",
+   "pick": "sync",
+   "t": 1791244802581,
+   "seconds": 23,
+   "theme": "devils-garden"
+  },
+  "Q-plaid-name": {
+   "v": "other",
+   "t": 1791244802581,
+   "note": "can we investigate this further before deciding?",
+   "seconds": 23,
+   "theme": "devils-garden"
+  }
+ }
+}
