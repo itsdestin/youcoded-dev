@@ -1,0 +1,60 @@
+{
+  "title": "Home page: try each scene card style",
+  "key": "home-scenes-live",
+  "out": "scenes.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "SCL-1",
+      "surface": "Home page",
+      "path": "Home > Destin's Room > palette button",
+      "headline": "Slide through the scenes and press one. Which style would you rather live with?",
+      "notice": "Slide the row sideways. Press a scene, then open the lights arrow and the scenes button to see that only one of them is open at a time. Pressing a scene teaches the card its colours after a moment (in practice mode the lights do not change, so the colours it learns are the room's current ones).",
+      "risk": "Everything here is practice data; nothing reaches a real light.",
+      "live": {
+        "app": "default"
+      },
+      "variants": [
+        {
+          "id": "gradient",
+          "label": "Gradient cards",
+          "summary": "Each scene is a small card whose whole face is a soft blend of its colours, name at the bottom with its brightness. A moving scene wears a small Moving tag; the one you used last wears a Last used tag and a bright outline. The row opens already sliding to that one.",
+          "risk": "The most colourful and quickest to scan, but a scene you have never tried is a plain striped card that says Try it to see its colours, and very pale scenes look washed out.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-scenes-gradient"
+          }
+        },
+        {
+          "id": "swatch",
+          "label": "Swatch cards",
+          "summary": "Calm glass cards: the name on top, a row of round colour dots under it, a thin brightness bar and the percent. Moving scenes carry a small Moving tag; the one used last is outlined and tagged Last used.",
+          "risk": "Quietest and clearest about exact colours, but the cards are the tallest and the dots are small, so scenes with similar colours look alike at a glance.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-scenes-swatch"
+          }
+        },
+        {
+          "id": "preview",
+          "label": "Light preview cards",
+          "summary": "Each card is a tiny night-time picture of the room: its lights as glowing dots in the scene's colours, bigger and brighter when the scene is brighter. Name and percent sit underneath.",
+          "risk": "Shows how the room will feel, not just a palette, but the picture is always dark (even in Cr\u00e8me) and the dots are only a rough idea of where lights sit.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-scenes-preview"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "title": "Home page: how a room's scenes look (and scenes vs. each light)",
+  "key": "home-scenes",
+  "out": "scenes.choice.html",
+  "images": "images/scenes.deck",
+  "runs": {
+    "after": "scenes-runs"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "crops": {
+    "scn-gradient": [
+      "scenes",
+      "gradient",
+      "540x330+306+164"
+    ],
+    "scn-swatch": [
+      "scenes",
+      "swatch",
+      "540x330+306+164"
+    ],
+    "scn-preview": [
+      "scenes",
+      "preview",
+      "540x330+306+164"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SC-1",
+      "surface": "Home page",
+      "path": "Home > Lights tab > a room card > palette button",
+      "headline": "Which scene cards should rooms use?",
+      "notice": "In every option, opening Scenes closes the room's individual lights and opening the lights closes Scenes, on the Home tab and the Lights tab. Scenes slide sideways (wheel, trackpad, finger or arrow keys). Colours are learned: a scene shows its colours after you use it once from this page, and until then says Try it to see its colours.",
+      "risk": "Scenes you have never used from this page have no colours to show until you do. Nothing is guessed from names. Scenes are no longer on screen together with the lights.",
+      "variants": [
+        {
+          "id": "gradient",
+          "label": "Gradient cards",
+          "crop": "scn-gradient",
+          "summary": "Each scene is a small card whose whole face is a soft blend of its colours, name at the bottom with its brightness. A moving scene wears a small Moving tag; the one you used last wears a Last used tag and a bright outline. The row opens already sliding to that one.",
+          "risk": "The most colourful and quickest to scan, but a scene you have never tried is a plain striped card that says Try it to see its colours, and very pale scenes look washed out."
+        },
+        {
+          "id": "swatch",
+          "label": "Swatch cards",
+          "crop": "scn-swatch",
+          "summary": "Calm glass cards: the name on top, a row of round colour dots under it, a thin brightness bar and the percent. Moving scenes carry a small Moving tag; the one used last is outlined and tagged Last used.",
+          "risk": "Quietest and clearest about exact colours, but the cards are the tallest and the dots are small, so scenes with similar colours look alike at a glance."
+        },
+        {
+          "id": "preview",
+          "label": "Light preview cards",
+          "crop": "scn-preview",
+          "summary": "Each card is a tiny night-time picture of the room: its lights as glowing dots in the scene's colours, bigger and brighter when the scene is brighter. Name and percent sit underneath.",
+          "risk": "Shows how the room will feel, not just a palette, but the picture is always dark (even in Cr\u00e8me) and the dots are only a rough idea of where lights sit."
+        }
+      ]
+    }
+  ]
+}
