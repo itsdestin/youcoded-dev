@@ -1,0 +1,122 @@
+{
+  "title": "Project switcher: highlight on the current project, list fade, centred Add — round 3",
+  "key": "project-switcher-3",
+  "out": "project-switcher-3.review.html",
+  "images": "images/project-switcher-3",
+  "runs": {
+    "before": "runs/ps2-after",
+    "after": "runs/ps3-after",
+    "phone": "runs/ps3-after-phone"
+  },
+  "labels": {
+    "before": "Round 2",
+    "after": "Round 3",
+    "phone": "Phone"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "P3-1",
+      "surface": "Projects",
+      "path": "Projects → click the project's name",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher@680x470+380+120",
+      "headline": "\"Add a project\" is now centred at the bottom of the switcher.",
+      "changed": "Its plus and words moved from the left edge to the middle of the row.",
+      "notice": "It still opens the folder picker, as before."
+    },
+    {
+      "id": "P3-2",
+      "surface": "Projects",
+      "path": "Projects → click the project's name",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher@680x470+380+120",
+      "headline": "No mark on the project you're in: its row is simply highlighted when the switcher opens.",
+      "changed": "The check beside the name is gone. The outlined highlight starts on the project you are in.",
+      "notice": "The bin doesn't show on it until you point at it, so \"remove\" never waits on the row you were about to pick."
+    },
+    {
+      "id": "P3-3",
+      "new": true,
+      "surface": "Projects",
+      "path": "Project switcher, moved to another row",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/switcher#pointed@680x470+380+120",
+      "headline": "Point at (or arrow to) another project and the highlight moves there, with its bin; leave the list and it returns.",
+      "changed": "The highlight follows the pointer and the arrow keys; moving the pointer off the list puts it back on the project you're in.",
+      "notice": "This picture moved it with the arrow keys; pointing does the same."
+    },
+    {
+      "id": "P3-4",
+      "surface": "Projects",
+      "path": "Projects → click the name, with many projects",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher#many@680x640+380+120",
+      "headline": "With many projects, the list now fades at the edge that has more, like the sessions menu.",
+      "changed": "Rows fade out at the bottom (and at the top once you scroll) instead of being cut off by a hard edge.",
+      "notice": "The fade only shows on a side that has more to scroll to."
+    },
+    {
+      "id": "P3-5",
+      "surface": "Settings",
+      "path": "Settings → Backup & sync, scrolled down",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#removed@460x620+490+140",
+      "headline": "The popup's top fade now fades evenly; the bright stripes at the cards' edges are gone.",
+      "changed": "The fade used to leave a thin strip at each side unfaded, so card edges glowed. It now fades across the whole width.",
+      "notice": "Most visible on light themes; on dark ones the edges were already faint. This is the shared popup fade, so every scrolling popup changes the same way.",
+      "highlight": {
+        "box": [
+          2,
+          10,
+          96,
+          14
+        ]
+      }
+    },
+    {
+      "id": "P3-6",
+      "new": true,
+      "surface": "Projects",
+      "path": "Projects page, a folder that doesn't sync",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/files#not-synced@760x290+180+55",
+      "headline": "The project page's sync pill now says \"Not synced\", the same as the switcher.",
+      "changed": "Was \"Only on this computer\". Clicking the pill still explains it in a full sentence.",
+      "notice": "Nothing else on the page changed."
+    },
+    {
+      "id": "P3-7",
+      "new": true,
+      "surface": "Projects",
+      "path": "Project switcher at phone width, many projects",
+      "runs": [
+        "phone"
+      ],
+      "crop": "projects/switcher#many",
+      "headline": "At phone width the list fades the same way, and the bin shows on every row (there is no pointing on a phone).",
+      "changed": "Same as desktop, narrower.",
+      "notice": "The highlight still starts on the project you're in."
+    }
+  ]
+}

@@ -173,3 +173,57 @@ App commits `84e64bc2f` (feature) and `d7e505200` (sync-spaces doc); deck `proje
    the current project, and `scroll` to bring Backup & sync's new card into view — no app switches.
 5. Gradle needed bash globbing for the JDK lookup (`ls -d /usr/lib/jvm/*` fails in this zsh
    when `/opt/*/jbr` matches nothing); the workspace note's command assumes bash.
+
+## Round 3 (2026-10-06) — after Destin's project-switcher-2 answers
+
+App commit `62c4e5df0`; deck `project-switcher-3.json` (before `runs/ps2-after`, after
+`runs/ps3-after`, phone `runs/ps3-after-phone`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R3-1 | No current-project marker; the highlight rests on it, follows pointer/keys, returns when the pointer leaves the list; `aria-current` kept. The check/edge/words drafts and `?switcherCurrent=` removed. | P2C-1. |
+| R3-2 | The bin follows only a MOVED highlight, so it never shows on the project you're in by default. | My call (asked on P3-2): a resting bin would sit on the row you were most likely about to pick. |
+| R3-3 | "Add a project" centred; the list uses the masked fade. | P2-1, P2-2. |
+| R3-4 | The "strange fade" on Backup & sync was the **shared popup fade**: its second gradient left the outer 4% unfaded, so each card's edges stayed bright under the top fade. Removed (app-wide); the pin in `dialog-shell.test.tsx` now asserts there is no side strip. | P2-5 note. Removed once before (2026-09-28) and restored only because it wasn't the cause of Meadow Mist's separate glow — this time it is the cause. |
+| R3-5 | The project page's pill says "Not synced". | P2Q-1 "match". |
+| R3-6 | Rows got a short accessible name ("wecoded-themes, Sync problem"). | Found driving the open-first steps: the old name was every line of the row cut at 70 characters, which a screen reader reads too. |
+
+### Tooling friction this round
+1. **A pointer trip in an open-first `hover` left the wrong row lit.** Hovering the 4th row lit it,
+   but the row the pointer crossed just before kept its `:hover` look (bin and tint) — twice, on
+   different rows. I could not tell whether it is headless Chrome or the app, so the picture uses
+   the arrow keys; **pointing at rows should be checked by hand in a dev window.**
+2. **Open-first targets need the exact accessible name** (`{ role, label }`); a plain string only
+   works for short names. The error message listing what is on screen made this quick to fix.
+3. **An approve slide whose change only shows on light themes** is refused for the dark ones
+   ("nothing differs … name an element"); a hand-placed box was the only way through.
+4. The fade removal was caught by a **source pin that encoded the old CSS** (expected), which is
+   the right outcome — but it shows the pin tested the recipe, not the behaviour ("cards fade
+   evenly"); a browser check would have to measure pixels.
+
+## Proposed guide and tooling changes (most valuable first — not implemented)
+
+1. **Guide: quick pickers keep their palette shell** — `guide-draft.md` "Popups": replace "Quick
+   pickers … follow the same shell: a title and the ✕" with "a quick picker is a search row with
+   the ✕ (no title), plain rows, its add action as a centred last row". Why: round 1 followed the
+   guide and Destin preferred the old palette (PS-1).
+2. **Guide: "the one you're in" in a switcher** — "Lists and menus": the highlight rests on the
+   current item and follows the pointer; no check, pill or tint. Why: six markers declined over
+   two rounds (PC-2, P2C-1).
+3. **Guide: row actions appear where the pointer is** — a destructive row action (remove) shows on
+   the pointed row only, takes no space when hidden, always shows on touch, and never on a
+   resting highlight. Why: PC-3 + note, R3-2.
+4. **Guide: status words** — name "Not synced" (not "Only on this computer") and the pill set
+   for sync in "Status and notices", so the next sync surface doesn't reinvent them. Why: PQ-2/P2Q-1.
+5. **shoot: merge, don't overwrite, a run's manifest** on a partial reshoot into an existing
+   `--out` (round 2 lost every other picture silently).
+6. **shoot: a listbox inside a dialog is not a layer** (`explore-page.mjs`; round 1).
+7. **deck: accept a one-word screen name** in crops (`spec.py` looks for `/` or `#`; round 1).
+8. **Investigate the stale `:hover` after an open-first `hover` step** (`driver.mjs` `moveTo`) — if
+   it is headless Chrome, send a final no-op move; if it is real, it is an app bug (round 3 #1).
+9. **`useScrollFade` / `.scroll-fade` docs point new lists at `.scroll-mask`**; the painted band broke
+   a flex column in round 1 and Destin asked for the masked fade twice (sessions menu, here).
+10. **main-blocking-calls message**: offer "store it in a file this path already reads" beside
+    "go async" (round 1).
+11. **Line budgets: say in the failure which numbers a new IPC channel normally needs** (every
+    channel touches the same six files; round 2).
