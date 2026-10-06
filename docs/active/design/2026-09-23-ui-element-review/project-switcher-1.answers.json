@@ -1,0 +1,114 @@
+{
+ "deck": "project-switcher-1",
+ "started": "2026-10-06T05:44:56.025Z",
+ "submitted": "2026-10-06T05:52:00Z",
+ "cur": 13,
+ "answers": {
+  "PS-1": {
+   "note": "i honestly liked the old styling of the broader container (search, add project, row style) more? definitely  prefer the new sync status badges",
+   "t": 1791265612661,
+   "v": "other",
+   "seconds": 117,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-2": {
+   "v": "yes",
+   "t": 1791265617243,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-3": {
+   "v": "other",
+   "t": 1791265622775,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-4": {
+   "v": "yes",
+   "t": 1791265644209,
+   "seconds": 21,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-5": {
+   "v": "other",
+   "t": 1791265711247,
+   "note": "i think we need to rethink this. removing should probably also stop syncing for the project somehow? and remove from the list on all devices?",
+   "seconds": 67,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-6": {
+   "v": "yes",
+   "t": 1791265720850,
+   "seconds": 10,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-7": {
+   "v": "yes",
+   "t": 1791265731946,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-8": {
+   "v": "other",
+   "t": 1791265742803,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PS-9": {
+   "v": "other",
+   "t": 1791265744691,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PC-1": {
+   "v": "pick",
+   "t": 1791265775399,
+   "seconds": 29,
+   "theme": "youcoded",
+   "zoom": 1,
+   "pick": "summary"
+  },
+  "PC-2": {
+   "v": "other",
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791265782448
+  },
+  "PC-3": {
+   "v": "pick",
+   "pick": "hover",
+   "t": 1791265820119,
+   "note": "when hidden, the other chips and such should sit flush right.",
+   "seconds": 38,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PQ-1": {
+   "v": "pick",
+   "pick": "stop",
+   "t": 1791265882059,
+   "note": "stop syncing on all devices, remove from list on all devices. separate setting that explains the github backup remains in place, with an outlink and instructions for users to delete themselves on github if they desire",
+   "seconds": 62,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "PQ-2": {
+   "v": "pick",
+   "pick": "short",
+   "t": 1791265919511,
+   "seconds": 37,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
