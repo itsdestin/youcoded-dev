@@ -124,6 +124,9 @@ has passed ~8 items — graduate it to its own file.
       unique icon for each page that matches its purpose at-a-glance. users utilize these to tell pages
       apart." The set is nine glyphs (a money one added on that branch); it needs many more, and the
       skill a rule to pick one no other page uses.
+      Money page next: spot repeating bills from the bank's own purchase list (Transactions, free on Plaid's Trial;
+      Plaid's Recurring Transactions is a paid extra) and offer to add them — purchases stay in the app's bank
+      process, only accepted bills reach the page. After real banks are connected, to test against real data.
       `window-chrome` `all` `in-flight` `checked 2026-10-05` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
 - [ ] Publish the page-builder skill's connections update once an app release carries Pages
