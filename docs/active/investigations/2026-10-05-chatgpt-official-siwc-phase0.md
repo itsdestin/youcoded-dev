@@ -32,7 +32,7 @@ returned 403 to our fetcher and needs to be read by a person.
 | Extra authorize params | `resource=https://api.openai.com/v1`, `nonce`, scope `openid profile email offline_access resource.invoke chatgpt.tokens.use.direct` | — |
 | Access token | **1 h** (`expires_in: 3600`), JWT whose `auth` claim is opaque (`per_user_salt`, `encrypted_auth_metadata`); **no account id, no plan type** | 10 days, carries account id + plan |
 | id_token | `sub`, `email`, `email_verified`, `name`, `nonce` (matched) | email, plan, orgs |
-| Refresh | 200, **rotates** the refresh token, `resource` in the body | not rotating |
+| Refresh | 200, **rotates** the refresh token, `resource` in the body | not measured here |
 | Inference | `POST https://api.openai.com/v1/responses`, `Authorization: Bearer` only, no account header | `chatgpt.com/backend-api/codex/responses` + `chatgpt-account-id` |
 | Models | `GET https://api.openai.com/v1/models` → `{models:[…]}`, **the same manifest row shape as `/codex/models`** (`slug, display_name, visibility, priority, context_window 272000, supported_reasoning_levels, input_modalities…`). Listed: gpt-6-astra, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna (7 rows) | `/codex/models?client_version=` |
 | Usage windows | **none.** `/wham/usage` → 401 `rejected_by_access_enforcement`; no `x-codex-primary-*` headers on replies (header names: `x-codex-safety-buffering-*`, `x-codex-turn-state`, `x-models-etag`, `x-oai-request-id`) | `/wham/usage` + reply headers |
@@ -87,3 +87,12 @@ The answer is no: the official route exposes no source of plan usage.
 6. Error codes to map: `subscription_sharing_usage_limit_exceeded` (429, or a mid-stream
    `response.failed`), `subscription_sharing_user_not_eligible` (403), `subscription_sharing_invalid_user`
    (401 → sign in again), and refresh failures `invalid_grant` / `refresh_token_*`.
+
+## Decision and build (2026-10-05)
+
+Destin chose option A: **built in but switched off.** The Codex route stays the default because it
+keeps free plans and the usage bars. `ChatGptAuth` takes `route` ('codex' | 'official'), and
+`main.ts` reads `YOUCODED_CHATGPT_ROUTE=official`. A sign-in made on the other route reads as
+"sign in again" (questions deck Q-2). The daily `chatgpt-route-watch.yml` goes red when the
+Codex client id is refused or the Codex addresses disappear. It cannot see OpenAI refusing
+signed-in requests from apps that are not Codex; that check needs a real sign-in.
