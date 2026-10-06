@@ -54,7 +54,7 @@ const HIS_FILE = '/home/destin/.config/youcoded-perfzero/perf';
 // ── options ──────────────────────────────────────────────────────────────────
 
 export function parseOptions(argv) {
-  const o = { preset: 'real-use', checkout: null, appDir: null, devSource: null, out: join(WORK, 'out'), seqs: 'fresh,warm,busy,ctrl,noop', seconds: 75, tag: '', boots: 1, soakMinutes: 10, maxMinutes: 30, seed: 'real-use', waitMinutes: 40, aim: 'fresh', sha: null, devRef: null };
+  const o = { preset: 'real-use', checkout: null, appDir: null, devSource: null, out: join(WORK, 'out'), seqs: 'fresh,warm,busy,ctrl,noop', seconds: 75, tag: '', boots: 1, soakMinutes: 10, maxMinutes: 30, seed: 'real-use', waitMinutes: 40, aim: 'fresh', sha: null, devRef: null, pick: 'ladder', deep: 'off' };
   const over = {};
   for (let i = 0; i < argv.length; i += 2) {
     const k = argv[i], v = argv[i + 1];
@@ -68,6 +68,8 @@ export function parseOptions(argv) {
   for (const s of o.seqs) if (!['fresh', 'warm', 'soak', 'busy', 'ctrl', 'noop'].includes(s)) throw Error(`--seqs takes fresh,warm,soak,busy,ctrl,noop (got ${s})`);
   if (o.factors.busy === 'off' && !o.seqs.includes('keepbusy')) o.seqs = o.seqs.filter(s => s !== 'busy');
   if (!['fresh', 'cached'].includes(o.aim)) throw Error('--aim takes fresh|cached');
+  if (!['ladder', 'newest', 'biggest'].includes(o.pick)) throw Error('--pick takes ladder|newest|biggest');
+  if (!['on', 'off'].includes(o.deep)) throw Error('--deep takes on|off');
   for (const k of ['checkout', 'appDir', 'devSource', 'out']) if (o[k] && !isAbsolute(o[k])) throw Error(`--${k} must be absolute`);
   if (!o.checkout && !o.appDir) o.checkout = join(ROOT, 'youcoded');
   return o;
@@ -160,13 +162,13 @@ export function listRealTranscripts() {
   return out;
 }
 
-function installRealHistory(fixture, count) {
+function installRealHistory(fixture, count, mode = 'ladder') {
   const slugDir = join(fixture.home, '.claude', 'projects', ccProjectSlug(fixture.projects.alpha));
   if (resolve(fixture.home) === REAL_HOME) throw Error('refusing: fixture home is the real home');
   rmSync(join(fixture.home, '.claude', 'projects'), { recursive: true, force: true });
   mkdirSync(slugDir, { recursive: true });
   const all = listRealTranscripts();
-  const picks = shuffled(pickBySize(all, count), 'strip-order').map(i => all[i]);
+  const picks = shuffled(pickBySize(all, count, { mode }), 'strip-order').map(i => all[i]);
   return picks.map((t, k) => {
     // COPY (copy-on-write) — the original is never opened for writing; its text is never read here.
     execFileSync('cp', ['--reflink=always', t.path, join(slugDir, `${t.id}.jsonl`)]);
@@ -317,6 +319,21 @@ async function flipRun(ctx, label, { seconds, seed, block = 0, planOverride = nu
   return out;
 }
 
+// WHY deep: a person who has scrolled back through a conversation has made the app draw the older pages too. Scroll each chat to its top
+// until no older entries appear (bounded), then back to the newest. Setup only, never timed.
+async function deepScroll(ctx, i) {
+  const { cdp } = ctx;
+  let last = -1, stable = 0;
+  for (let r = 0; r < 40 && stable < 3; r++) {
+    const n = await cdp.evaluate(`(() => { const root = document.querySelector('[data-chat-session-id="${ctx.ids[i]}"]'); const sc = root && (root.querySelector('[data-chat-scroll], .overflow-y-auto') || root); if (sc) sc.scrollTop = 0; return root ? root.querySelectorAll('.timeline-entry').length : -1; })()`);
+    await sleep(600);
+    if (n === last) stable++; else { stable = 0; last = n; }
+  }
+  await cdp.evaluate(`(() => { const root = document.querySelector('[data-chat-session-id="${ctx.ids[i]}"]'); const sc = root && (root.querySelector('[data-chat-scroll], .overflow-y-auto') || root); if (sc) sc.scrollTop = sc.scrollHeight; return true; })()`);
+  await sleep(500);
+  return last;
+}
+
 async function warmUp(ctx) {
   const { cdp } = ctx;
   for (let i = 0; i < ctx.ids.length; i++) {
@@ -325,6 +342,7 @@ async function warmUp(ctx) {
     if (mid) { for (let k = 0; k < 10; k++) { await cdp.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: mid.x, y: mid.y, deltaX: 0, deltaY: -600 }); await sleep(40); } await sleep(400); for (let k = 0; k < 10; k++) { await cdp.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: mid.x, y: mid.y, deltaX: 0, deltaY: 600 }); await sleep(40); } await sleep(300); }
     await cdp.evaluate('window.__rl.stop && window.__rl.stop()').catch(() => {});
   }
+  if (ctx.opts.deep === 'on') { ctx.deepEntries = []; for (let i = 0; i < ctx.ids.length; i++) { await goTo(ctx, i, 700); ctx.deepEntries.push(await deepScroll(ctx, i)); } }
   await goTo(ctx, 0, 1500);
 }
 
@@ -351,7 +369,7 @@ function waitForQuiet(maxMs) {
 
 export async function runBoot(opts, bootNo, outFile) {
   const f = opts.factors, bound = bounded(opts.maxMinutes);
-  const report = { status: 'incomplete', factors: f, preset: opts.preset, boot: bootNo, tag: opts.tag, startedAt: new Date().toISOString(), loadAvgStart: readFileSync('/proc/loadavg', 'utf8').trim(), sessions: [], runs: {}, controls: {}, errors: {}, notes: [] };
+  const report = { status: 'incomplete', pick: opts.pick, deep: opts.deep, factors: f, preset: opts.preset, boot: bootNo, tag: opts.tag, startedAt: new Date().toISOString(), loadAvgStart: readFileSync('/proc/loadavg', 'utf8').trim(), sessions: [], runs: {}, controls: {}, errors: {}, notes: [] };
   report.unusable = Number(report.loadAvgStart.split(' ')[0]) > 8;
   let root, fake, xvfb, comp, app, busy, ctx;
   try {
@@ -368,7 +386,7 @@ export async function runBoot(opts, bootNo, outFile) {
       writeFileSync(join(fixture.home, '.claude/youcoded-appearance.json'), JSON.stringify({ theme: 'devils-garden', hideCodeAndConfigs: false, showDeletedArtifacts: false, contextDisplay: 'percent', reducedEffects: false, showTimestamps: true,
         lookOverrides: { chromeStyle: 'floating', glass: 'custom', bubbleStyle: 'default', roundness: 0.5, glassCustom: { 'panels-blur': 16, 'panels-opacity': 0.68, 'bubble-blur': 10, 'bubble-opacity': 0.68, 'terminal-opacity': 0.6, 'terminal-blur': 8, 'terminal-brightness': 0.86 } }, pagesSeeThrough: true }));
     }
-    const world = f.history === 'real' ? installRealHistory(fixture, f.sessions) : installFixtureHistory(fixture, f.sessions);
+    const world = f.history === 'real' ? installRealHistory(fixture, f.sessions, opts.pick) : installFixtureHistory(fixture, f.sessions);
     fake = await bound(startFakeProvider({ port: fixture.fakeProvider.port }), 'fake provider');
     // display
     let launchOpts = {}, busyDisplay;
@@ -421,7 +439,7 @@ export async function runBoot(opts, bootNo, outFile) {
     for (const s of opts.seqs) {
       try {
         if (s === 'fresh') { await doRun('fresh'); }
-        else if (s === 'warm') { await bound(warmUp(ctx), 'warm-up', 300000); report.census = await bound(censusAll(ctx), 'census', 200000); report.census.forEach((c, i) => { if (c) report.sessions[i].census = c; }); await goTo(ctx, 0, 1500); await doRun('warm'); }
+        else if (s === 'warm') { await bound(warmUp(ctx), 'warm-up', opts.deep === 'on' ? 900000 : 300000); report.census = await bound(censusAll(ctx), 'census', 200000); report.deepEntries = ctx.deepEntries ?? null; report.census.forEach((c, i) => { if (c) report.sessions[i].census = c; }); await goTo(ctx, 0, 1500); await doRun('warm'); }
         else if (s === 'soak') {
           // WHY: his app had been up 2.5 h with memory climbing; a soak of continuous human flipping approximates accumulation (listeners, caches, heap).
           await goTo(ctx, 0, 1000);
@@ -476,7 +494,7 @@ export async function main(argv = process.argv.slice(2)) {
   mkdirSync(opts.out, { recursive: true });
   const target = loadTarget();
   const f = opts.factors;
-  const stem = `${opts.tag || opts.preset}-${f.build}-${f.history}-${f.theme}-${f.display}-s${f.sessions}-b${f.busy}`;
+  const stem = `${opts.tag || opts.preset}-${f.build}-${f.history}-${f.theme}-${f.display}-s${f.sessions}-b${f.busy}${opts.pick !== 'ladder' ? '-' + opts.pick : ''}${opts.deep === 'on' ? '-deep' : ''}`;
   const reports = [];
   for (let b = 1; b <= opts.boots; b++) {
     const file = join(opts.out, `${stem}-boot${b}.json`);

@@ -206,11 +206,14 @@ export function resolveFactors(preset, overrides = {}) {
  * Returns indices into `files`, one per session slot, from a quantile ladder (12th..90th percentile of size) over the files
  * modified in the last `recentDays` days (what he actually flips between), else over all. Files above maxBytes are never picked.
  */
-export function pickBySize(files, count, { maxBytes = 120e6, minBytes = 20e3, recentDays = 3, now = Date.now() } = {}) {
+export function pickBySize(files, count, { maxBytes = 120e6, minBytes = 20e3, recentDays = 3, now = Date.now(), mode = 'ladder' } = {}) {
   const cand = files.map((f, i) => ({ ...f, i })).filter(f => f.size >= minBytes && f.size <= maxBytes);
   const recent = cand.filter(f => now - f.mtimeMs <= recentDays * 86400e3);
   const pool = (recent.length >= count ? recent : cand).sort((a, b) => a.size - b.size);
   if (pool.length < count) throw new Error(`only ${pool.length} real transcripts fit ${minBytes}..${maxBytes} bytes; need ${count}`);
+  // newest = the conversations touched most recently (what he was actually flipping between); biggest = the largest recent ones.
+  if (mode === 'newest') return [...pool].sort((a, b) => b.mtimeMs - a.mtimeMs).slice(0, count).map(f => f.i);
+  if (mode === 'biggest') return pool.slice(-count).map(f => f.i);
   const taken = new Set(), out = [];
   for (let k = 0; k < count; k++) {
     const q = count === 1 ? 0.5 : 0.12 + (0.9 - 0.12) * (k / (count - 1));
