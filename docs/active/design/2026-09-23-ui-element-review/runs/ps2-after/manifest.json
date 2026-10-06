@@ -1,0 +1,461 @@
+[
+  {
+    "name": "projects/switcher",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher/midnight.png",
+    "ms": 2053,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#many/midnight.png",
+    "ms": 2135,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 568
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher/youcoded.png",
+    "ms": 2444,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#pointed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#pointed/midnight.png",
+    "ms": 2524,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#current-edge",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#current-edge/midnight.png",
+    "ms": 2578,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#many/youcoded.png",
+    "ms": 2584,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 568
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#current-subtext",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#current-subtext/midnight.png",
+    "ms": 2667,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#current-subtext",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#current-subtext/youcoded-night.png",
+    "ms": 2669,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 408
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#pointed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#pointed/youcoded.png",
+    "ms": 2949,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#current-edge",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#current-edge/youcoded-night.png",
+    "ms": 3174,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/midnight.png",
+    "ms": 1135,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 550,
+      "y": 244,
+      "w": 340,
+      "h": 412
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/youcoded.png",
+    "ms": 3313,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 550,
+      "y": 264,
+      "w": 340,
+      "h": 373
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher/youcoded-night.png",
+    "ms": 3419,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#pointed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#pointed/youcoded-night.png",
+    "ms": 3506,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/missing",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/missing/midnight.png",
+    "ms": 1067,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 550,
+      "y": 324,
+      "w": 340,
+      "h": 252
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#current-edge",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#current-edge/youcoded.png",
+    "ms": 3792,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#many/youcoded-night.png",
+    "ms": 3892,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 568
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#current-subtext",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/switcher#current-subtext/youcoded.png",
+    "ms": 3928,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 408
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/youcoded-night.png",
+    "ms": 2171,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 550,
+      "y": 264,
+      "w": 340,
+      "h": 373
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/synced",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/synced/midnight.png",
+    "ms": 2072,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 174,
+      "w": 420,
+      "h": 552
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/missing",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/missing/youcoded.png",
+    "ms": 2208,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 550,
+      "y": 334,
+      "w": 340,
+      "h": 233
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#removed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/settings/sync#removed/midnight.png",
+    "ms": 1818,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/synced",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/synced/youcoded.png",
+    "ms": 2902,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 220,
+      "w": 420,
+      "h": 459
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/synced",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/synced/youcoded-night.png",
+    "ms": 2854,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 220,
+      "w": 420,
+      "h": 459
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/remove/missing",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/projects/remove/missing/youcoded-night.png",
+    "ms": 3944,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 550,
+      "y": 334,
+      "w": 340,
+      "h": 233
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#removed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/settings/sync#removed/youcoded-night.png",
+    "ms": 8195,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#removed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after/settings/sync#removed/youcoded.png",
+    "ms": 8924,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

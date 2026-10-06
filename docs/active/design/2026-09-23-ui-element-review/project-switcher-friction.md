@@ -125,3 +125,51 @@ under the masked fade inside its own box), and the **friends panel pills** (`ui/
    option beside "go async".
 7. **verify in a shared worktree**: run knip/type ratchets against the staged-or-committed
    tree only, or name which files a new finding comes from.
+
+## Round 2 (2026-10-06) — after Destin's project-switcher-1 answers
+
+App commits `84e64bc2f` (feature) and `d7e505200` (sync-spaces doc); deck `project-switcher-2.json`
+(before = round 1 `runs/ps-after`, after `runs/ps2-after`, plus `ps2-after-phone`, `ps2-after-small`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | Back to the OLD container and rows (search row with ✕, "Recent", outline highlight, Add a project row); round 1's Dialog shell, card and frozen height are gone. | PS-1 ("liked the old styling of the broader container … more"). **Guide vs Destin:** the guide's "Quick pickers follow the same shell: a title and the ✕" and "nothing bare on the popup" are what drove round 1, and Destin preferred the old look. The guide line about quick pickers needs to say "the ✕ in the search row" rather than "a title". |
+| R2-2 | Kept: sync pills (PS-2), Folder missing, counts with bold numbers (PC-1), "Not synced" (PQ-2). | Answers. The hero still says "Only on this computer" — asked as P2Q-1. |
+| R2-3 | The bin is `display:none` until the row is pointed at or keyboard-highlighted (always on touch), so counts and pill sit flush right. The highlight moved from the row button to its wrapper so the bin sits inside the outlined row. | PC-3 "hover" + note. |
+| R2-4 | Three fresh "current project" marks behind `?switcherCurrent=` (now in `workbench-mode.ts`): check beside the name (default), accent edge bar, "Current project" words. | PC-2 (none of round 1's liked). |
+| R2-5 | **Remove a synced project = stop + off every device's lists.** Built within the existing sync design: the stop is the existing permanent tombstone; "off every list" is a NEW marker file per project in `Personal/ProjectSync/Removed/`, carried by the same Personal sync. Lists skip removed folders unless this computer re-added it (`readded` on the saved entry). Files stay on every device; GitHub is never contacted. New channel `syncspaces:remove-project` (four desktop surfaces + Android stub). Round 1's local `hidden` marker is gone. | PS-5 note + PQ-1 "stop". See "Sync investigation" below. |
+| R2-6 | The GitHub note (link + how to delete it there) on the synced confirm AND as "Removed projects" in Settings → Backup & sync, from one component. The synced confirm widened to `panel` because the note pushed its buttons off a `prompt`-height popup. | PQ-1 note ("separate setting … with an outlink and instructions"). |
+
+### Sync investigation (answered before building)
+- **Each device's local copy:** untouched. Stop already detaches the space and KEEPS the folder;
+  the marker only changes which lists show it. Pinned by a real-git two-device test (laptop
+  removes → desktop pulls → marker arrives, both folders' files intact, the GitHub stand-in's
+  commit unchanged).
+- **An offline device:** learns on its next Personal pull — discovery runs after every Personal
+  sync, and it now re-reads the markers first (also at startup). Until then it keeps syncing
+  the project (exactly like Stop today).
+- **Older app versions on other devices:** they read only `ProjectSync/*.json`, so they ignore the
+  marker folder and see a plain stopped project (listed "Sync stopped", files kept, not syncing).
+  Pinned in the same test. A new `state: 'removed'` value was rejected because older builds read
+  any unknown state as `active` and would RESTART syncing.
+- **Re-adding:** "Add a project" on that folder lists it on that one computer again (as "Sync
+  stopped"); sync can't resume — the existing stop is permanent, and creating a new project with
+  the same name is still refused (existing rule). The confirm says so.
+- **Android / phones:** Android has no synced projects or Project View (stub added, 1,800 Android
+  unit-test results green, 0 failures). Remote browsers use the same service through the
+  remote server.
+
+### Tooling friction this round
+1. **The "centres agree" check paid off at once:** marking the counts + pill row caught a 3px
+   offset I had seen in the picture but couldn't measure — the inline `<span title>` around each
+   pill added a text line box below it. `flex` on the wrapper fixed it.
+2. **`shoot --out` into an existing run folder rewrites its manifest** with only the screens of
+   that run, so a partial reshoot silently made the deck lose every other picture. Re-shot the
+   whole run. Either merge manifests or refuse an existing folder.
+3. **The new line-budget test** failed on +1…+5 lines for a new channel on six files; the right
+   answer (raise with a reason) is spelled out in its message — fine. SyncPanel's +32 was moved
+   into its own component instead.
+4. **"Open this first" steps** (new) worked for both needs: `ArrowDown` to move the highlight off
+   the current project, and `scroll` to bring Backup & sync's new card into view — no app switches.
+5. Gradle needed bash globbing for the JDK lookup (`ls -d /usr/lib/jvm/*` fails in this zsh
+   when `/opt/*/jbr` matches nothing); the workspace note's command assumes bash.
