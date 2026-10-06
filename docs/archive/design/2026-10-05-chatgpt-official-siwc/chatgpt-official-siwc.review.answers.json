@@ -1,0 +1,30 @@
+{
+ "deck": "chatgpt-official-siwc-review",
+ "started": "2026-10-06T06:04:34.612Z",
+ "submitted": "2026-10-06T06:05:28Z",
+ "cur": 2,
+ "answers": {
+  "R-1": {
+   "note": "just leave my account and reomve the extra copy line",
+   "t": 1791266708474,
+   "v": "other",
+   "seconds": 34,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "t": 1791266716210,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "t": 1791266727379,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}
