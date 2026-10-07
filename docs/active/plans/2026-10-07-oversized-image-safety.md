@@ -34,7 +34,8 @@ date: 2026-10-07
 - Constants (one owner each): `IMAGE_PATCH_PX = 32` (`image-support.ts`); `MAX_DECODE_PIXELS = 80_000_000`, `HEADER_READ_BYTES = 256 * 1024`, `PREPARE_MARGIN = 0.9` (`image-prepare.ts`); `IMAGE_LIMITS_OPENAI = { maxEdgePx: 8192, maxPatches: 30_000 }`, `IMAGE_LIMITS_DEFAULT = { maxEdgePx: 4096, maxPatches: 16_384 }` (`capability-profile.ts`). There is NO flat preparation target: a picture is shrunk only when it fails `withinImageLimits` for the session's limits, to the largest size fitting BOTH limits with a 10% margin.
 - Note wording (one owner, `image-support.ts` `imageNote`/`parseImageNote`; the store parses it back exactly):
   - `[image not attached: <basename> is <W>×<H> px, above this model's image size limit]`
-  - `[image not attached: <basename> could not be read]` / `… exceeds the 10 MB per-image size limit]` / `… is not a deliverable image format]` / `… could not be downscaled for the model]`
+  - `[image not attached: <basename> could not be read]` / `… exceeds the 10 MB per-image size limit]` / `… is not a deliverable image format]` / `… could not be downscaled for the model]` or `… could not be downscaled for the model: <reason>]`
+- Notes are for PICTURES only: a non-image attachment (PDF, text, anything without a deliverable or known-undeliverable image extension) is skipped silently exactly as today, so ordinary attachments keep today's prompt text and checkpoint shape.
 - Test fixtures (PNG/JPEG/GIF/WebP header builders, one real pngjs writer) live ONLY in `tests/helpers/image-fixtures.ts`; no test imports another `.test.ts` file.
 - Finish with `bash scripts/verify.sh /home/destin/youcoded-dev/worktrees/sessions/image-patch-recovery/youcoded` from the workspace worktree, plus `npm run knip`, `npm run lint`, `npm run typecheck` in `desktop/`. Android needs nothing: the native runtime runs only on the computer (no image reader under `app/`, verified 2026-10-07).
 
@@ -146,7 +147,7 @@ git push -u origin session/image-patch-recovery
 - Fixtures (`tests/helpers/image-fixtures.ts`): `pngHeader(w,h): Buffer` (33 bytes), `jpegHeader(w,h,leadingSegments=0)`, `gifHeader(w,h)`, `webpVp8Header(w,h)`, `webpVp8lHeader(w,h)`, `webpVp8xHeader(w,h)`, and `writeRealPng(file: string, w: number, h: number): void` (a genuine pngjs-encoded gradient, used by Task 6).
 - `image-support.ts` produces:
   - `export const IMAGE_PATCH_PX = 32`; `patchCount(width, height)`; `withinImageLimits(dims, limits)`; `imageDimensions(buf): {width,height} | null`
-  - `export type ImageNote = { kind: 'oversized'; label: string; width: number; height: number } | { kind: 'unavailable'; label: string; reason: 'missing' | 'too-many-bytes' | 'undeliverable' | 'prepare-failed' }`
+  - `export type ImageNote = { kind: 'oversized'; label: string; width: number; height: number } | { kind: 'unavailable'; label: string; reason: 'missing' | 'too-many-bytes' | 'undeliverable' | 'prepare-failed'; detail?: string }` (`detail` only for `prepare-failed`: the preparer's reason)
   - `export function imageNote(n: ImageNote): string`; `export function parseImageNote(line: string): ImageNote | null`
   - `export type ImageReadResult = { ok: true; mediaType: string; data: Buffer; width?: number; height?: number } | { ok: false; reason: 'undeliverable' | 'missing' | 'too-many-bytes' | 'oversized'; width?: number; height?: number }`
   - `export function readImageFromDisk(absPath: string, limits?: ImageLimits): ImageReadResult` (same one stat + one read)
@@ -243,6 +244,7 @@ Add the dependencies now (Task 6 needs them too): `npm install --no-audit --no-f
         { kind: 'unavailable', label: 'x.png', reason: 'too-many-bytes' },
         { kind: 'unavailable', label: 'x.svg', reason: 'undeliverable' },
         { kind: 'unavailable', label: 'x.gif', reason: 'prepare-failed' },
+        { kind: 'unavailable', label: 'x.gif', reason: 'prepare-failed', detail: 'is 5000×5000 px and could not be downscaled for the model (the image decoder declined it)' },
       ];
       for (const n of notes) expect(parseImageNote(imageNote(n))).toEqual(n);
       expect(imageNote(notes[0])).toBe("[image not attached: contact.png is 2904×17528 px, above this model's image size limit]");
@@ -329,7 +331,7 @@ export function imageDimensions(buf: Buffer): { width: number; height: number } 
 // parseImageNote must stay the exact inverse of imageNote.
 export type ImageNote =
   | { kind: 'oversized'; label: string; width: number; height: number }
-  | { kind: 'unavailable'; label: string; reason: 'missing' | 'too-many-bytes' | 'undeliverable' | 'prepare-failed' };
+  | { kind: 'unavailable'; label: string; reason: 'missing' | 'too-many-bytes' | 'undeliverable' | 'prepare-failed'; detail?: string };
 const UNAVAILABLE_TEXT = {
   'missing': 'could not be read',
   'too-many-bytes': `exceeds the ${MAX_ATTACHMENT_BYTES / (1024 * 1024)} MB per-image size limit`,
@@ -338,13 +340,19 @@ const UNAVAILABLE_TEXT = {
 } as const;
 export function imageNote(n: ImageNote): string {
   if (n.kind === 'oversized') return `[image not attached: ${n.label} is ${n.width}×${n.height} px, above this model's image size limit]`;
-  return `[image not attached: ${n.label} ${UNAVAILABLE_TEXT[n.reason]}]`;
+  // `detail` (prepare-failed only) carries the preparer's own reason so the model
+  // learns WHY (decoder declined it, over the decode bound) and what to do.
+  const detail = n.reason === 'prepare-failed' && n.detail ? `: ${n.detail}` : '';
+  return `[image not attached: ${n.label} ${UNAVAILABLE_TEXT[n.reason]}${detail}]`;
 }
 const OVERSIZED_RE = /^\[image not attached: (.+) is (\d+)×(\d+) px, above this model's image size limit\]$/;
+const PREPARE_FAILED_RE = /^\[image not attached: (.+?) could not be downscaled for the model(?:: (.+))?\]$/;
 export function parseImageNote(line: string): ImageNote | null {
   const m = OVERSIZED_RE.exec(line);
   if (m) return { kind: 'oversized', label: m[1], width: Number(m[2]), height: Number(m[3]) };
-  for (const reason of Object.keys(UNAVAILABLE_TEXT) as Array<keyof typeof UNAVAILABLE_TEXT>) {
+  const f = PREPARE_FAILED_RE.exec(line);
+  if (f) return { kind: 'unavailable', label: f[1], reason: 'prepare-failed', ...(f[2] !== undefined ? { detail: f[2] } : {}) };
+  for (const reason of ['missing', 'too-many-bytes', 'undeliverable'] as const) {
     const suffix = ` ${UNAVAILABLE_TEXT[reason]}]`;
     if (line.startsWith('[image not attached: ') && line.endsWith(suffix)) {
       const label = line.slice('[image not attached: '.length, line.length - suffix.length);
@@ -385,17 +393,19 @@ export function readImageFromDisk(absPath: string, limits?: ImageLimits): ImageR
 **Files:**
 - Modify: `src/shared/transcript-event-types.ts` (`UserMessageData`, lines 120-127)
 - Modify: `src/main/harness/busy-message-boundary.ts` (`appendUserHistory`, lines 32-46)
-- Modify: `src/main/harness/harness-session.ts` (`imagePartsFor` 2476-2484; `resolveToolImages` 2500-2556; `send` 2413-2416; `acceptUserMessage` 2562-2566; `acceptReadyBusyMessage` 2568-2572; `beginTurn` 2572-2580; the tool ctx build at 4159)
+- Modify: `src/main/harness/harness-session.ts` (`takeReadyBusyMessage` opts type at line 231; `imagePartsFor` 2476-2484; `resolveToolImages` 2500-2556; `send` 2413-2416; `acceptUserMessage` 2562-2566; `acceptReadyBusyMessage` 2568-2572; `beginTurn` 2572-2580; the tool-result event at 3103-3108; the tool ctx build at 4159)
 - Modify: `src/main/harness/history-rebuild.ts` (`RebuildImageReader` 40; user-message branch 178-192; tool images 225-254)
-- Modify: `src/main/harness/native-session-host.ts` (import 28; `SendUnit` 105; queue entry type 331; `startingSends` 3074-3090; drain call 3364; `send()` 4094-4135; `seedResumedHistory` 3255-3256; add `imageLimitsFor`)
-- Modify: `src/main/harness/tools/types.ts` (`ToolContext`, near `supportsVision` 289-291)
-- Test: `tests/harness-history-rebuild.test.ts`, `tests/native-image-attachments.test.ts`, `tests/harness-session-loop.test.ts`
+- Modify: `src/main/harness/native-session-host.ts` (import 28; `SendUnit` 105; queue entry type 331; `startingSends` 3074-3090; drain call 3364; `send()` 4094-4135; `takeReadyBusyMessage` return type 4211; the busy drain `entry.session.send(next.text, next.attachments)` at 4264; `seedResumedHistory` 3255-3256; add `imageLimitsFor`)
+- Modify: `src/main/harness/tools/types.ts` (`ToolContext`, near `supportsVision` 289-291; `ToolResultPayload.imageLabels` at 342-356)
+- Test: `tests/harness-history-rebuild.test.ts`, `tests/native-image-attachments.test.ts`, `tests/harness-session-loop.test.ts`, `tests/native-session-host.test.ts`
 
 **Interfaces:**
 - `UserMessageData.modelAttachments?: string[]` — same length and order as `attachments`; present only when at least one entry differs (a prepared derivative). `attachments` stays the original picker path for the UI (`UserMessage.tsx` strips it from the bubble text by prefix).
 - `export type RebuildImageReader = (absPath: string) => ImageReadResult`.
-- `appendUserHistory(text, modelPaths: string[], emit, appGenerated, imageParts: (paths: string[]) => UserPart[], …)` where `UserPart = { type: 'file'; mediaType: string; data: Buffer } | { type: 'text'; text: string }`; content is `[{type:'text', text}, ...files, ...noteTextParts]` and only a message with no parts at all stays a plain string.
-- `HarnessSession.send(text, attachments = [], modelAttachments?: string[])`; `NativeSessionHost.send(sessionId, text, attachments = [], modelAttachments?: string[])`; `NativeSessionHost.imageLimitsFor(sessionId): ImageLimits` (the live session's `profileSnapshot.imageLimits`, else `IMAGE_LIMITS_DEFAULT`).
+- `export type ModelAttachment = string | { path: string; prepareFailed: string }` (`busy-message-boundary.ts`): what the model is handed per attachment — a path (the original or a prepared derivative), or the original path plus the preparer's refusal reason. Persisted as `modelAttachments: string[]` (the `path` of a failed entry), so a reopen re-gates the original and writes the oversized note.
+- `appendUserHistory(text, modelPaths: ModelAttachment[], emit, appGenerated, imageParts: (paths: ModelAttachment[]) => UserPart[], …)` where `UserPart = { type: 'file'; mediaType: string; data: Buffer } | { type: 'text'; text: string }`; content is `[{type:'text', text}, ...files, ...noteTextParts]` and only a message with no parts at all stays a plain string.
+- `HarnessSession.send(text, attachments = [], modelAttachments?: ModelAttachment[])`; `NativeSessionHost.send(sessionId, text, attachments = [], modelAttachments?: ModelAttachment[])`; `NativeSessionHost.imageLimitsFor(sessionId): ImageLimits` (the live session's `profileSnapshot.imageLimits`, else `IMAGE_LIMITS_DEFAULT`).
+- `ToolResultPayload.imageLabels?: string[]` (parallel to `images`): the model-facing name of each promised file. Read sets it to the ORIGINAL basename for a prepared derivative; `resolveToolImages` uses it as the part's `filename`; the tool-result event persists it as `imageLabels` and the rebuild reads it — so a shrunk `contact.png` is called `contact.png` live, on reopen and in the checkpoint (`ImageDescriptor.filename`), never `<hash>-contact.png`.
 - `ToolContext.imageLimits?: ImageLimits` (set from `this.profile.imageLimits` beside `supportsVision`).
 
 - [ ] **Step 1: Write the failing tests**
@@ -437,9 +447,27 @@ and in the attachment suite:
   });
 ```
 
-Update the existing `a vanished attachment degrades to the plain-string shape` and `mixed attachments` cases: a vanished attachment now yields the `missing` note part (array content, text first, files, then notes); rewrite their expectations accordingly.
+Also:
 
-`tests/native-image-attachments.test.ts` — give `capturePrompt(supportsVision, attachments)` (line 166) three optional trailing parameters: `profile?: CapabilityProfile` (used instead of the `CLOUD_DEFAULT` spread), `toolServices?: ToolServices`, `modelAttachments?: string[]` (passed as `send`'s third argument). Import `pngHeader` from `./helpers/image-fixtures` and `imageNote` from image-support. Add:
+```ts
+  it('non-image attachments never get a note — a PDF or text file is skipped silently, as today', () => {
+    const out = rebuildHistory([ev('user-message', { text: 'see', attachments: ['/tmp/notes.pdf', '/tmp/a.txt'] })], fakeReader);
+    expect(out).toEqual([{ role: 'user', content: 'see' }]);
+  });
+  it('a persisted imageLabels entry names a prepared derivative by its ORIGINAL basename', () => {
+    const out = rebuildHistory([
+      ev('tool-use', { toolUseId: 't1', toolName: 'Read', toolInput: { file_path: '/tmp/contact.png' } }),
+      ev('tool-result', { toolUseId: 't1', toolName: 'Read', toolResult: 'Read image', images: ['/cache/0123456789abcdef-ok.png'], imageLabels: ['contact.png'] }),
+      ev('turn-complete', {}),
+    ], fakeReader);
+    const toolMsg = out.find((m: any) => m.role === 'tool') as any;
+    expect(toolMsg.content[0].output.value[1]).toMatchObject({ type: 'file', filename: 'contact.png' });
+  });
+```
+
+Update the existing `a vanished attachment degrades to the plain-string shape` and `mixed attachments` cases: a vanished IMAGE attachment now yields the `missing` note part (array content, text first, files, then notes); rewrite their expectations accordingly.
+
+`tests/native-image-attachments.test.ts` — give `capturePrompt(supportsVision, attachments)` (line 166) three optional trailing parameters: `profile?: CapabilityProfile` (used instead of the `CLOUD_DEFAULT` spread), `toolServices?: ToolServices`, `modelAttachments?: ModelAttachment[]` (passed as `send`'s third argument). Import `pngHeader` from `./helpers/image-fixtures`, `imageNote` from image-support and `type ModelAttachment` from busy-message-boundary. Add:
 
 ```ts
   it('an attachment over the provider limit is NOT delivered, and the model is told so by basename', async () => {
@@ -455,6 +483,18 @@ Update the existing `a vanished attachment degrades to the plain-string shape` a
     const file = user.content.find((p: any) => p.type === 'file');
     const bytes = typeof file.data === 'string' ? Buffer.from(file.data, 'base64') : Buffer.from(file.data);
     expect(bytes).toEqual(pngHeader(610, 3686));
+  });
+  it('a message whose only attachments are non-images keeps today’s plain-string shape — no note, no parts', async () => {
+    const notes = path.join(dir, 'notes.txt'); fs.writeFileSync(notes, 'hello');
+    const user = await capturePrompt(true, [notes], resolveProfile({ providerType: 'chatgpt', modelId: 'gpt-x', contextLength: null }));
+    expect(user.content).toBe('look at this');
+  });
+  it('a preparation failure is told to the model as such, with the preparer’s reason — never as "above size limit"', async () => {
+    const huge = path.join(dir, 'huge.png'); fs.writeFileSync(huge, pngHeader(2904, 17528));
+    const user = await capturePrompt(true, [huge], resolveProfile({ providerType: 'chatgpt', modelId: 'gpt-x', contextLength: null }), undefined,
+      [{ path: huge, prepareFailed: 'is 2904×17528 px and could not be downscaled for the model (the image decoder declined it)' }]);
+    expect(user.content.some((p: any) => p.type === 'file')).toBe(false);
+    expect(user.content.at(-1)).toEqual({ type: 'text', text: imageNote({ kind: 'unavailable', label: 'huge.png', reason: 'prepare-failed', detail: 'is 2904×17528 px and could not be downscaled for the model (the image decoder declined it)' }) });
   });
 ```
 
@@ -482,7 +522,29 @@ For "persisted only when it differs", extend the suite's existing event-capturin
   });
 ```
 
-- [ ] **Step 2: Run** — all three files → FAIL.
+`tests/native-session-host.test.ts` — next to `overlapping send queues FIFO and both turns complete in order` (line 2027), mirroring its setup exactly:
+
+```ts
+    it('an over-limit picture queued behind a running turn still arrives as its prepared derivative', async () => {
+      // …same host/session construction and the same way of holding the first turn open as the FIFO test above…
+      const huge = path.join(dir, 'huge.png'); fs.writeFileSync(huge, pngHeader(2904, 17528));
+      const small = path.join(dir, 'small.png'); fs.writeFileSync(small, pngHeader(610, 3686));
+      // first send starts a turn and is held open; the second is queued with the derivative as its model-facing path
+      expect(host.send(id, 'picture', [huge], [small]).status).toBe('queued');
+      // …release the first turn, drain both…
+      const event = events.find((e) => e.type === 'user-message' && e.data.attachments?.[0] === huge)!;
+      expect(event.data.modelAttachments).toEqual([small]);
+      const prompt = prompts.at(-1);                                           // the queued turn's request
+      const user = prompt.prompt.filter((m: any) => m.role === 'user').at(-1);
+      const file = user.content.find((p: any) => p.type === 'file');
+      const bytes = typeof file.data === 'string' ? Buffer.from(file.data, 'base64') : Buffer.from(file.data);
+      expect(bytes).toEqual(pngHeader(610, 3686));
+    });
+```
+
+(Fill the elided lines from the FIFO test's own code; `host.send`'s fourth argument is the new `modelAttachments`. This proves the queue entry, `takeReadyBusyMessage` and the busy drain at 4264 all carry it.)
+
+- [ ] **Step 2: Run** — all four files → FAIL.
 
 - [ ] **Step 3: Implement**
 
@@ -490,17 +552,23 @@ For "persisted only when it differs", extend the suite's existing event-capturin
 ```ts
   /** Native (2026-10-07): the paths the MODEL was given, parallel to
    *  `attachments` — a prepared, downscaled copy where the original was over
-   *  the provider's image limits, the original elsewhere. Present only when at
-   *  least one entry differs. `attachments` stays the picker path for the UI. */
+   *  the provider's image limits, the original elsewhere (including a picture
+   *  whose preparation failed: reopen re-gates it and writes the oversized note).
+   *  Present only when at least one entry differs. `attachments` stays the
+   *  picker path for the UI. */
   modelAttachments?: string[];
 ```
+and in `ToolResultData` (same file), beside `images?: string[]`: `/** Model-facing name per `images` entry — the ORIGINAL basename for a prepared derivative. */ imageLabels?: string[];`.
 
 `busy-message-boundary.ts`:
 ```ts
 export type UserPart = { type: 'file'; mediaType: string; data: Buffer } | { type: 'text'; text: string };
+/** What the model is handed per attachment: a path (original or prepared
+ *  derivative), or the original plus the preparer's refusal reason. */
+export type ModelAttachment = string | { path: string; prepareFailed: string };
 export function appendUserHistory(
-  text: string, modelPaths: string[], emit: () => string, appGenerated: boolean,
-  imageParts: (paths: string[]) => UserPart[],
+  text: string, modelPaths: ModelAttachment[], emit: () => string, appGenerated: boolean,
+  imageParts: (paths: ModelAttachment[]) => UserPart[],
   markAppGenerated: (message: ModelMessage) => ModelMessage,
   history: ModelMessage[], origins: Array<string[] | null>, record: (uuid: string) => void,
 ): void {
@@ -518,12 +586,24 @@ export function appendUserHistory(
 ```
 
 `harness-session.ts`:
-- `imagePartsFor(paths)` returns `UserPart[]`: files first, then notes:
+- `imagePartsFor(entries)` returns `UserPart[]`: files first, then notes — and ONLY pictures get a note:
 ```ts
-  private imagePartsFor(paths: string[]): UserPart[] {
-    if (!paths.length || !this.profile.supportsVision) return [];
+  private imagePartsFor(entries: ModelAttachment[]): UserPart[] {
+    if (!entries.length || !this.profile.supportsVision) return [];
     const files: UserPart[] = []; const notes: UserPart[] = [];
-    for (const p of paths) {
+    for (const entry of entries) {
+      if (typeof entry !== 'string') {
+        // Preparation refused this picture: say so, with the preparer's reason —
+        // never "above size limit", which would send the model to crop a file
+        // the app itself could not decode.
+        notes.push({ type: 'text', text: imageNote({ kind: 'unavailable', label: path.basename(entry.path), reason: 'prepare-failed', detail: entry.prepareFailed }) });
+        continue;
+      }
+      const p = entry;
+      // WHY only image-shaped paths get a note: a PDF or text attachment was never
+      // a picture to deliver — it keeps today's silent skip (its path is in the
+      // text), so ordinary attachments keep today's prompt text and checkpoint shape.
+      if (!deliverableImageMediaType(p) && !UNDELIVERABLE_IMAGE_EXTENSIONS.has(path.extname(p).toLowerCase())) continue;
       const img = readImageFromDisk(p, this.profile.imageLimits);   // shared reader — one table, one cap, one pixel gate
       if (img.ok) files.push({ type: 'file', mediaType: img.mediaType, data: img.data });
       else if (img.reason === 'oversized') notes.push({ type: 'text', text: imageNote({ kind: 'oversized', label: path.basename(p), width: img.width ?? 0, height: img.height ?? 0 }) });
@@ -532,32 +612,36 @@ export function appendUserHistory(
     return [...files, ...notes];
   }
 ```
-- `send(text, attachments = [], modelAttachments?)`: the event is `{ text, attachments, ...(modelAttachments && modelAttachments.some((p, i) => p !== attachments[i]) ? { modelAttachments } : {}) }` when `attachments.length`, else `{ text }`; pass `modelAttachments ?? attachments` as `beginTurn`'s third argument. `beginTurn`/`acceptUserMessage` keep their shape (the third argument is now "the paths the model reads"). The busy path (`acceptReadyBusyMessage`, `claimBusyMessage`'s item) gains `modelAttachments?: string[]` alongside `item.attachments`, with the same event rule.
+- `send(text, attachments = [], modelAttachments?: ModelAttachment[])`: `const persisted = modelAttachments?.map((m) => typeof m === 'string' ? m : m.path);` the event is `{ text, attachments, ...(persisted && persisted.some((p, i) => p !== attachments[i]) ? { modelAttachments: persisted } : {}) }` when `attachments.length`, else `{ text }`; pass `modelAttachments ?? attachments` as `beginTurn`'s third argument (typed `ModelAttachment[]`). `beginTurn`/`acceptUserMessage` keep their shape (the third argument is now "what the model reads"). The busy path gains `modelAttachments?: ModelAttachment[]` alongside `attachments` in THREE typed places — the `takeReadyBusyMessage` option type at `harness-session.ts:231`, `acceptReadyBusyMessage`/`claimBusyMessage`'s item, and the host's `takeReadyBusyMessage` return type at `native-session-host.ts:4211` — with the same event rule.
+- The tool-result event (3103-3108) persists `...(delivered.labels ? { imageLabels: delivered.labels } : {})` beside `images`, where `resolveToolImages` returns `labels` (the `filename` it used per delivered image) whenever the payload supplied `imageLabels`.
 - `resolveToolImages`: replace from `const img = readImageFromDisk(p);` through the end of its `if (!img)` block:
 ```ts
+      const label = payload.imageLabels?.[paths.indexOf(p)] ?? path.basename(p);   // N9: a derivative keeps its ORIGINAL name
       const img = readImageFromDisk(p, this.profile.imageLimits);
       if (!img.ok) {
         // Name the real cause (error-message-standards.md). The oversized note is
         // the shared basename form so reopen rebuilds the identical text.
-        if (img.reason === 'oversized') text += `\n${imageNote({ kind: 'oversized', label: path.basename(p), width: img.width ?? 0, height: img.height ?? 0 })}`;
+        if (img.reason === 'oversized') text += `\n${imageNote({ kind: 'oversized', label, width: img.width ?? 0, height: img.height ?? 0 })}`;
         else if (img.reason === 'undeliverable') text += `\n[image not attached: ${p} is not a deliverable image format]`;
         else if (img.reason === 'too-many-bytes') text += `\n[image not attached: ${p} exceeds the ${MAX_ATTACHMENT_BYTES / (1024 * 1024)} MB per-image size limit]`;
         else text += `\n[image not attached: ${p} could not be read]`;
         continue;
       }
 ```
-(the three pre-existing wordings are unchanged on purpose: their tests pin them.) Add `imageNote` to the `image-support` import (line 41) and `type UserPart` to the `busy-message-boundary` import.
+(the three pre-existing wordings are unchanged on purpose: their tests pin them.) The later `images.push({ path: p, …, filename: path.basename(p) })` becomes `filename: label`. Add `imageNote, UNDELIVERABLE_IMAGE_EXTENSIONS` to the `image-support` import (line 41; `deliverableImageMediaType` is already there) and `type UserPart, type ModelAttachment` to the `busy-message-boundary` import. In `tools/types.ts`, add to `ToolResultPayload` after `images?`: `/** Model-facing name per `images` entry (same order). Read sets the ORIGINAL basename for a prepared derivative. */ imageLabels?: string[];`.
 - Tool ctx (4159): add `imageLimits: this.profile.imageLimits,` beside `supportsVision`.
 
 `tools/types.ts`: in `ToolContext` after `supportsVision?`: `/** The session's picture limits (profile.imageLimits); Read prepares against them. Absent → prepare uses IMAGE_LIMITS_DEFAULT. */ imageLimits?: ImageLimits;` (`import type { ImageLimits } from '../capability-profile';`).
 
-`history-rebuild.ts`: `import { imageNote, type ImageReadResult } from './image-support';` (pure string helpers keep the module's injected-reader rule); `export type RebuildImageReader = (absPath: string) => ImageReadResult;`. User-message branch:
+`history-rebuild.ts`: `import { imageNote, deliverableImageMediaType, UNDELIVERABLE_IMAGE_EXTENSIONS, type ImageReadResult } from './image-support';` (pure string helpers keep the module's injected-reader rule); `export type RebuildImageReader = (absPath: string) => ImageReadResult;`. User-message branch:
 ```ts
         const paths = Array.isArray(e.data?.modelAttachments) ? (e.data.modelAttachments as string[])
           : Array.isArray(e.data?.attachments) ? (e.data.attachments as string[]) : [];
         const files: Array<{ type: 'file'; mediaType: string; data: Buffer }> = [];
         const notes: Array<{ type: 'text'; text: string }> = [];
         if (readImage) for (const p of paths) {
+          // Pictures only (same rule as imagePartsFor): a PDF/text attachment is skipped silently, as today.
+          if (!deliverableImageMediaType(p) && !UNDELIVERABLE_IMAGE_EXTENSIONS.has(path.extname(p).toLowerCase())) continue;
           const img = readImage(p);
           if (img.ok) files.push({ type: 'file', mediaType: img.mediaType, data: img.data });
           else if (img.reason === 'oversized') notes.push({ type: 'text', text: imageNote({ kind: 'oversized', label: path.basename(p), width: img.width ?? 0, height: img.height ?? 0 }) });
@@ -567,15 +651,16 @@ export function appendUserHistory(
           ? ({ role: 'user', content: [{ type: 'text', text }, ...files, ...notes] } as ModelMessage)
           : { role: 'user', content: text } as ModelMessage;
 ```
-Tool-image loop:
+Tool-image loop (`const labels = Array.isArray(e.data?.imageLabels) ? (e.data.imageLabels as string[]) : [];` above it):
 ```ts
+          const label = labels[imagePaths.indexOf(p)] ?? path.basename(p);
           const img = readImage(p);
-          if (img.ok) files.push({ type: 'file', mediaType: img.mediaType, data: { type: 'data', data: img.data }, filename: path.basename(p) });
-          else if (img.reason === 'oversized') text += `\n${imageNote({ kind: 'oversized', label: path.basename(p), width: img.width ?? 0, height: img.height ?? 0 })}`;
+          if (img.ok) files.push({ type: 'file', mediaType: img.mediaType, data: { type: 'data', data: img.data }, filename: label });
+          else if (img.reason === 'oversized') text += `\n${imageNote({ kind: 'oversized', label, width: img.width ?? 0, height: img.height ?? 0 })}`;
           else text += `\n[image no longer available: ${p}]`;
 ```
 
-`native-session-host.ts`: thread `modelAttachments?: string[]` through every place `attachments` travels (`SendUnit` 105, the queue entry type 331, `startingSends` 3074/3085, the drain call 3364 → `this.send(sessionId, first.text, first.attachments, first.modelAttachments)`, `send()` 4094 → `session.send(text, attachments, modelAttachments)` and the queued/held entries), keeping the arrays parallel. Add:
+`native-session-host.ts`: thread `modelAttachments?: ModelAttachment[]` through every place `attachments` travels (`SendUnit` 105, the queue entry type 331, `startingSends` 3074/3085, the drain call 3364 → `this.send(sessionId, first.text, first.attachments, first.modelAttachments)`, `send()` 4094 → `session.send(text, attachments, modelAttachments)` and the queued/held entries, the `takeReadyBusyMessage` return type at 4211, and the busy drain at 4264 → `entry.session.send(next.text, next.attachments, next.modelAttachments)`), keeping the arrays parallel. Add:
 ```ts
   /** The live session's picture limits, for the send handler's preparation step.
    *  A session still starting gets the conservative default. */
@@ -597,7 +682,7 @@ and at 3255-3256:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add package.json package-lock.json src/shared/transcript-event-types.ts src/main/harness/image-support.ts src/main/harness/busy-message-boundary.ts src/main/harness/harness-session.ts src/main/harness/history-rebuild.ts src/main/harness/native-session-host.ts src/main/harness/tools/types.ts tests/helpers/image-fixtures.ts tests/image-support.test.ts tests/harness-history-rebuild.test.ts tests/native-image-attachments.test.ts tests/harness-session-loop.test.ts
+git add package.json package-lock.json src/shared/transcript-event-types.ts src/main/harness/image-support.ts src/main/harness/busy-message-boundary.ts src/main/harness/harness-session.ts src/main/harness/history-rebuild.ts src/main/harness/native-session-host.ts src/main/harness/tools/types.ts tests/helpers/image-fixtures.ts tests/image-support.test.ts tests/harness-history-rebuild.test.ts tests/native-image-attachments.test.ts tests/harness-session-loop.test.ts tests/native-session-host.test.ts
 git commit -m "harness: gate every image read on the provider's limits; basename notes; modelAttachments"
 ```
 
@@ -801,7 +886,7 @@ describe('prepareTarget shrinks only when the limits fail, to the largest size u
   });
 });
 
-describe('derivativeName is deterministic and keeps the original basename for the model-facing label', () => {
+describe('derivativeName is deterministic and keeps the original basename for a human reading the cache', () => {
   it('same inputs → same name; any input change → different name', () => {
     const a = derivativeName('/x/contact.png', 100, 5.9, { width: 1221, height: 7372 }, 'png');
     expect(a).toBe(derivativeName('/x/contact.png', 100, 5.9, { width: 1221, height: 7372 }, 'png'));
@@ -974,9 +1059,11 @@ export function prepareTarget(width: number, height: number, limits: ImageLimits
 }
 
 /** `<16 hex>-<original basename>.<ext>`: the hash keys the cache (path, size,
- *  mtime AND target — a different provider's limits give a different file),
- *  the basename rides into the model-facing "Image: <label>" (wire-adapter.ts
- *  labels by filename) so a shrunk contact.png is still called contact.png. */
+ *  mtime AND target — a different provider's limits give a different file);
+ *  the basename is for a human browsing the cache folder. The MODEL-facing
+ *  label is never derived from this file name: Read passes the original
+ *  basename explicitly (ToolResultPayload.imageLabels), so a shrunk contact.png
+ *  is still called contact.png on the wire, on reopen and in the checkpoint. */
 export function derivativeName(absPath: string, size: number, mtimeMs: number, target: { width: number; height: number }, ext: 'png' | 'jpg'): string {
   const key = createHash('sha1').update(`${absPath}|${size}|${Math.floor(mtimeMs)}|${target.width}x${target.height}`).digest('hex').slice(0, 16);
   return `${key}-${path.basename(absPath, path.extname(absPath))}.${ext}`;
@@ -1096,8 +1183,9 @@ import { imageDimensions } from '../src/main/harness/image-support';
 import { IMAGE_LIMITS_DEFAULT } from '../src/main/harness/capability-profile';
 import { writeRealPng } from './helpers/image-fixtures';
 
-/** Writing, decoding, box-filtering and re-encoding an 18-MP PNG in pure JS:
- *  measured ~4 s on the z13 (2026-10-07); Windows CI is slower. */
+/** Writing, decoding, box-filtering and re-encoding an 18-MP PNG in pure JS.
+ *  EXECUTOR: replace with 3× the wall time you measure in Task 11 step 2b
+ *  (never below 15 s; Windows CI is slower). */
 const REAL_PNG_BUDGET_MS = 30_000;
 
 describe('boxDownscale averages the source block of every destination pixel, channel by channel', () => {
@@ -1268,6 +1356,8 @@ export function runResizeJob(job: ResizeJob, decoder: typeof decodeImage = decod
 
 if (!isMainThread && parentPort) {
   const out = runResizeJob(workerData as ResizeJob);
+  // Peak RSS of THIS thread's process is what the Task 11 smoke reads back.
+  if (process.env.YOUCODED_RESIZE_SMOKE) console.error(`resize-worker rss=${Math.round(process.memoryUsage().rss / 1048576)} MB`);
   parentPort.postMessage(out ? new Uint8Array(out.buffer, out.byteOffset, out.byteLength) : null);
 }
 ```
@@ -1298,9 +1388,14 @@ function nodeSpawn(job: ResizeJob): WorkerLike {
   return new Worker(workerPath(), { workerData: job });
 }
 
+/** Per-job time limit. EXECUTOR: set this to 3× the wall time measured for the
+ *  real 2904×17528 incident size in Task 11 step 2b (never below 15 s) and
+ *  record the measurement here; 60 s is a placeholder, not a measurement. */
+export const RESIZE_JOB_TIMEOUT_MS = 60_000;
+
 export function createResizeService(opts: { spawn?: (job: ResizeJob) => WorkerLike; jobTimeoutMs?: number } = {}): { resize: ResizeFn } {
   const spawn = opts.spawn ?? nodeSpawn;
-  const jobTimeoutMs = opts.jobTimeoutMs ?? 60_000;
+  const jobTimeoutMs = opts.jobTimeoutMs ?? RESIZE_JOB_TIMEOUT_MS;
   const resize: ResizeFn = (req) => new Promise((resolve) => {
     let settled = false;
     const job: ResizeJob = { bytes: new Uint8Array(req.bytes.buffer, req.bytes.byteOffset, req.bytes.byteLength), width: req.width, height: req.height, format: req.format };
@@ -1344,7 +1439,7 @@ git commit -m "main: picture resize in a worker thread with pngjs/jpeg-js and a 
 
 **Interfaces:**
 - `ToolServices.images?: ImagePreparerLike`; `NativeRuntime.imagePreparer: ImagePreparer`.
-- `NATIVE_SEND` handler: async; per session, serialised through a module-level `Map<sessionId, Promise<unknown>>` chain so a later send cannot overtake an earlier one's preparation; for every deliverable image attachment, `prepare(path, nativeHost.imageLimitsFor(sessionId))`; then `nativeHost.send(sessionId, text, files, modelFiles)` where `modelFiles[i]` is the derivative path when `kind === 'prepared'`, else `files[i]`. A runtime without `imagePreparer` (older tests) sends unchanged.
+- `NATIVE_SEND` handler: async; per session, serialised through a module-level `Map<sessionId, Promise<unknown>>` chain so a later send cannot overtake an earlier one's preparation (an entry is deleted once its tail settles and is still the latest); for every deliverable image attachment, `prepare(path, nativeHost.imageLimitsFor(sessionId))`; then `nativeHost.send(sessionId, text, files, modelFiles)` where `modelFiles[i]` is the derivative path when `kind === 'prepared'`, `{ path: files[i], prepareFailed: reason }` when `kind === 'refused'`, else `files[i]`. A runtime without `imagePreparer` (older tests) sends unchanged.
 
 - [ ] **Step 1: Write the failing tests** — add to `describe('native:send')` in `tests/native-channels.test.ts`:
 
@@ -1359,6 +1454,14 @@ git commit -m "main: picture resize in a worker thread with pngjs/jpeg-js and a 
     expect(prepare.mock.calls[0][1]).toBe(limits);
     expect(send).toHaveBeenCalledWith('s', 'hi', ['/a/huge.png', '/b.txt', '/c/ok.png'], ['/cache/abc-huge.png', '/b.txt', '/c/ok.png']);
   });
+  it('a refused preparation reaches the host as a marker carrying the reason, so the note says what really happened', async () => {
+    const send = vi.fn(() => ({ status: 'sent' }));
+    const reason = 'is 20000×20000 px — too large to downscale for the model (over 80 megapixels). Crop or shrink it with Bash (e.g. magick in.png -resize 4000x4000 out.png) and Read the copy.';
+    const rt: any = { nativeHost: { send, imageLimitsFor: () => ({ maxEdgePx: 8192, maxPatches: 30_000 }) }, records: { noteSend: vi.fn() },
+      imagePreparer: { prepare: async () => ({ kind: 'refused', reason, width: 20000, height: 20000 }), preparedPathFor: () => null } };
+    await call('native:send', { sessionId: 's', text: 'hi', attachments: ['/vast.png'] }, desktopCtx(rt));
+    expect(send).toHaveBeenCalledWith('s', 'hi', ['/vast.png'], [{ path: '/vast.png', prepareFailed: reason }]);
+  });
   it('a preparer that throws never blocks the send; the original path is used', async () => {
     const send = vi.fn(() => ({ status: 'sent' }));
     const rt: any = { nativeHost: { send, imageLimitsFor: () => ({ maxEdgePx: 1, maxPatches: 1 }) }, records: { noteSend: vi.fn() }, imagePreparer: { prepare: async () => { throw new Error('boom'); }, preparedPathFor: () => null } };
@@ -1368,15 +1471,17 @@ git commit -m "main: picture resize in a worker thread with pngjs/jpeg-js and a 
   it('sends to one session are serialised: a plain follow-up waits behind a message whose picture is still being prepared', async () => {
     const order: string[] = [];
     const send = vi.fn((_s: string, text: string) => { order.push(text); return { status: 'sent' }; });
-    let release!: () => void;
+    let release!: () => void; let entered!: () => void;
     const gate = new Promise<void>((r) => { release = r; });
+    const preparing = new Promise<void>((r) => { entered = r; });   // resolved the moment the preparer is entered — no microtask guessing
     const rt: any = { nativeHost: { send, imageLimitsFor: () => ({ maxEdgePx: 8192, maxPatches: 30_000 }) }, records: { noteSend: vi.fn() },
-      imagePreparer: { prepare: async () => { await gate; return { kind: 'prepared', path: '/cache/x.png' }; }, preparedPathFor: () => null } };
+      imagePreparer: { prepare: async () => { entered(); await gate; return { kind: 'prepared', path: '/cache/x.png' }; }, preparedPathFor: () => null } };
     const first = call('native:send', { sessionId: 's', text: 'with picture', attachments: ['/a.png'] }, desktopCtx(rt));
     const second = call('native:send', { sessionId: 's', text: 'plain follow-up' }, desktopCtx(rt));
     const other = call('native:send', { sessionId: 'other', text: 'another session' }, desktopCtx(rt));
+    await preparing;
     await other;
-    expect(order).toEqual(['another session']);          // another session is not held back
+    expect(order).toEqual(['another session']);          // the picture is still being prepared; the follow-up waits; another session is not held back
     release();
     await Promise.all([first, second]);
     expect(order).toEqual(['another session', 'with picture', 'plain follow-up']);
@@ -1415,14 +1520,20 @@ import { deliverableImageMediaType } from '../harness/image-support';
 // while a picture is still being prepared must not reach the host first.
 const sendChains = new Map<string, Promise<unknown>>();
 
-async function modelPathsFor(runtime: NativeRuntime, sessionId: string, files: string[]): Promise<string[]> {
+async function modelPathsFor(runtime: NativeRuntime, sessionId: string, files: string[]): Promise<ModelAttachment[]> {
   const preparer = runtime.imagePreparer;
   if (!preparer) return files;
   const limits = runtime.nativeHost.imageLimitsFor(sessionId);
-  return Promise.all(files.map(async (f) => {
+  return Promise.all(files.map(async (f): Promise<ModelAttachment> => {
     if (!deliverableImageMediaType(f)) return f;
-    try { const r = await preparer.prepare(f, limits); return r.kind === 'prepared' ? r.path : f; }
-    catch { return f; }   // the gate still refuses an unprepared oversized file, with a note
+    try {
+      const r = await preparer.prepare(f, limits);
+      if (r.kind === 'prepared') return r.path;
+      // A refusal travels WITH its reason so the model is told preparation failed
+      // (and why), not that the picture is merely over a size limit.
+      if (r.kind === 'refused') return { path: f, prepareFailed: r.reason };
+      return f;
+    } catch { return f; }   // the gate still refuses an unprepared oversized file, with a note
   }));
 }
 ```
@@ -1439,11 +1550,14 @@ and the handler:
         if (sendId !== undefined && result && result.status !== 'failed') runtime.records.noteSend(sessionId, sendId);
         return result;
       });
-      sendChains.set(sessionId, turn.catch(() => undefined));
+      const tail = turn.catch(() => undefined);
+      sendChains.set(sessionId, tail);
+      // Forget a settled chain that nothing newer replaced, so idle sessions hold no entry.
+      void tail.then(() => { if (sendChains.get(sessionId) === tail) sendChains.delete(sessionId); });
       return turn;
     },
 ```
-(`NativeRuntime` type import from `../create-runtime`; keep the existing comments about text-only paths and `noteSend`.)
+(`NativeRuntime` type import from `../create-runtime`; `type ModelAttachment` from `../harness/busy-message-boundary`; keep the existing comments about text-only paths and `noteSend`.)
 
 - [ ] **Step 4: Run** — `npx vitest run tests/native-channels.test.ts tests/channel-table-families.test.ts tests/ipc-channels.test.ts` → PASS; `npm run typecheck` clean.
 
@@ -1482,6 +1596,7 @@ git commit -m "native send + tool services: prepare over-limit pictures, seriali
     expect(r.isError).toBeFalsy();
     expect(prepare).toHaveBeenCalledWith(p, IMAGE_LIMITS_OPENAI);
     expect(r.images).toEqual([small]);
+    expect(r.imageLabels).toEqual(['contact.png']);
     expect(r.text).toBe(`Read image ${p} (2904×17528 px, shown downscaled to 1221×7372, 42% of original; small text may be unreadable — Read individual screenshots or crops for detail).`);
   });
 
@@ -1538,6 +1653,7 @@ git commit -m "native send + tool services: prepare over-limit pictures, seriali
         return {
           text: `Read image ${args.file_path} (${prepared.width}×${prepared.height} px, shown downscaled to ${prepared.preparedWidth}×${prepared.preparedHeight}, ${pct}% of original; small text may be unreadable — Read individual screenshots or crops for detail).`,
           images: [prepared.path],
+          imageLabels: [path.basename(abs)],   // the model-facing name stays the ORIGINAL file's
         };
       }
       return { text: `Read image ${args.file_path} (${Math.max(1, Math.round(st.size / 1024))} KB, ${imageMediaType}).`, images: [abs] };
@@ -1857,7 +1973,7 @@ New methods after `commitPrune`:
       const dims = imageDimensions(buf);
       return dims && !withinImageLimits(dims, limits) ? dims : null;
     };
-    this.history = this.history.map((m) => {
+    const next = this.history.map((m) => {
       const content = (m as any).content;
       if (!Array.isArray(content)) return m;
       let touched = false;
@@ -1893,8 +2009,10 @@ New methods after `commitPrune`:
       }
       return m;
     });
-    if (changed) { this.capture.mutated(); this.shownImages.clear(); this.reconcileTriggerVisibility(); }
-    return changed;
+    if (!changed) return false;   // never swap the array for a no-op: untouched messages keep their identity
+    this.history = next;
+    this.capture.mutated(); this.shownImages.clear(); this.reconcileTriggerVisibility();
+    return true;
   }
 ```
 (`reconcileTriggerVisibility` is what `commitPrune` calls on a changed history — read it at line 1979 and keep the same call; do NOT call `markPruned`, this is a `mutated()` rewrite, not a prune transformation. `historyOrigins` needs no change: indices are unchanged. An untouched message keeps its identity — the "stable bytes" test depends on it.)
@@ -1934,7 +2052,12 @@ git commit -m "harness: enforce image limits on provider change and before summa
       stamp('turn-complete', {}), '',
     ].join('\n'));
     const second = makeHost({ home, userData, vision: true, fetchImpl: scriptedFetch([], [textStep('two', 'second answer')]) });
+    const secondLog = vi.spyOn(second.host as any, 'logContinuation');
     expect(await second.host.resume('collapsed-reopen', cwd)).toBe(true);
+    // WHICH path restored: the appended lines moved the transcript past the first
+    // host's checkpoint, so the private restore fails 'transcript-advanced' and the
+    // GATED REBUILD is what wrote the note.
+    expect(secondLog).toHaveBeenCalledWith('collapsed-reopen', 'transcript-advanced', 'restore');
     const note = imageNote({ kind: 'oversized', label: 'contact.png', width: 2904, height: 17528 });
     const resumed = (second.host as any).live.get('collapsed-reopen').session;
     expect(JSON.stringify(resumed.acceptedHistory().messages)).toContain(note);
@@ -1942,13 +2065,20 @@ git commit -m "harness: enforce image limits on provider change and before summa
     await turn(second.host, 'collapsed-reopen', 'and now');       // publishes a checkpoint describing the collapsed result
     await second.host.destroyAll();
     const third = makeHost({ home, userData, vision: true, fetchImpl: scriptedFetch([], []) });
+    const thirdLog = vi.spyOn(third.host as any, 'logContinuation');
     expect(await third.host.resume('collapsed-reopen', cwd)).toBe(true);
+    // This time the PRIVATE CHECKPOINT (published after the second host's turn,
+    // describing the collapsed result as `pruned.oversized`) is what restored:
+    // no restore-phase fallback was logged.
+    expect(thirdLog.mock.calls.filter((c: any[]) => c[2] === 'restore')).toEqual([]);
     const again = (third.host as any).live.get('collapsed-reopen').session;
     expect(JSON.stringify(again.acceptedHistory().messages)).toContain(note);
     expect(JSON.stringify(again.acceptedHistory().messages)).not.toContain('"type":"file"');
     await third.host.destroyAll();
   });
 ```
+
+(If `logContinuation`'s restore-phase call for the second host turns out to carry a different reason because the store's prefix fence ran first, assert on that exact reason — but the claim "rebuild wrote it" must match what the log says.)
 
 (`BINDING` is the ChatGPT binding, so the resumed profile carries `IMAGE_LIMITS_OPENAI`.) Run it: `npx vitest run tests/native-session-host-continuation.test.ts -t "collapse"` → PASS. Commit: `git add tests/native-session-host-continuation.test.ts && git commit -m "host: reopen after an oversized-image collapse keeps the repair"`.
 
@@ -1964,6 +2094,45 @@ w.on('message', (out) => { const r = PNG.sync.read(Buffer.from(out)); console.lo
 w.on('error', (e) => { console.error('worker error', e); process.exit(1); });"
 ```
 Expected output: `1843 3686`. This proves the compiled worker file loads standalone (no project imports) and answers over `parentPort`.
+
+- [ ] **Step 2b: Measure the incident size** — same shape at the real 2904×17528 (target 1221×7372), under `/usr/bin/time -v` and with the worker's own RSS line enabled:
+
+```bash
+YOUCODED_RESIZE_SMOKE=1 /usr/bin/time -v node -e "
+const { Worker } = require('worker_threads'); const { PNG } = require('pngjs');
+const png = new PNG({ width: 2904, height: 17528 }); png.data.fill(120);
+const bytes = new Uint8Array(PNG.sync.write(png));
+const t0 = Date.now();
+const w = new Worker('./dist/main/image-resize-worker.js', { workerData: { bytes, width: 1221, height: 7372, format: 'png' } });
+w.on('message', (out) => { const r = PNG.sync.read(Buffer.from(out)); console.log(r.width, r.height, 'wall ms', Date.now() - t0); });
+w.on('error', (e) => { console.error('worker error', e); process.exit(1); });" 2>&1 | rg "wall ms|resize-worker rss|Maximum resident set size"
+```
+
+Expected: `1221 7372 wall ms <N>`, one `resize-worker rss=<M> MB` line, and `Maximum resident set size (kbytes): <K>`. Record all three in the plan's close-out report, then set `RESIZE_JOB_TIMEOUT_MS` (image-resize-service.ts) to 3× `<N>` (never below 15 s) and `REAL_PNG_BUDGET_MS` (tests/image-resize.test.ts) likewise, each with the measurement in its comment. The numbers are the executor's to fill in from this run — the plan deliberately states none.
+
+- [ ] **Step 2c: Packaged-app layout** — the worker and its two libraries will live inside `app.asar`. Prove the worker thread can load from there before shipping, with this repo's own `@electron/asar` and electron binary (the method `electron-builder.yml`'s koffi comment used):
+
+```bash
+T=$(mktemp -d) && mkdir -p "$T/src/dist/main" "$T/src/node_modules" \
+  && cp dist/main/image-resize-worker.js "$T/src/dist/main/" \
+  && cp -r node_modules/pngjs node_modules/jpeg-js "$T/src/node_modules/" \
+  && npx @electron/asar pack "$T/src" "$T/app.asar" \
+  && cat > "$T/probe.js" <<'EOF'
+const { app } = require('electron'); const { Worker } = require('worker_threads'); const { PNG } = require('pngjs');
+app.whenReady().then(() => {
+  const png = new PNG({ width: 300, height: 600 }); png.data.fill(120);
+  const bytes = new Uint8Array(PNG.sync.write(png));
+  const w = new Worker(process.argv[2] + '/dist/main/image-resize-worker.js', { workerData: { bytes, width: 150, height: 300, format: 'png' } });
+  w.on('message', (out) => { const r = PNG.sync.read(Buffer.from(out)); console.log('asar worker ok', r.width, r.height); app.exit(0); });
+  w.on('error', (e) => { console.error('asar worker FAILED', e); app.exit(1); });
+});
+EOF
+./node_modules/.bin/electron "$T/probe.js" "$T/app.asar"; echo "exit $?"
+```
+
+Expected outcome, one of two — and the plan is written for the first:
+  - `asar worker ok 150 300`, exit 0 → everything stays inside `app.asar`; `workerPath()` as written is correct; no `electron-builder.yml` change. Record this in the close-out.
+  - `asar worker FAILED …` (a worker thread in Electron does not get the asar `fs` patch, or `Cannot find module 'pngjs'`) → unpack the worker AND both libraries TOGETHER (the koffi lesson: an unpacked file cannot require a packed sibling): add `dist/main/image-resize-worker.js`, `node_modules/pngjs/**`, `node_modules/jpeg-js/**` to `asarUnpack`, and make `workerPath()` swap `app.asar${path.sep}` → `app.asar.unpacked${path.sep}` exactly as `session-manager.ts:354` does for `pty-worker.js`. Re-run the probe with the three paths unpacked beside the asar (`$T/app.asar.unpacked/…`) and the worker path pointed there; expected `asar worker ok 150 300`. Note the choice in the close-out.
 
 - [ ] **Step 3: Verification** — from the workspace worktree: `bash scripts/verify.sh /home/destin/youcoded-dev/worktrees/sessions/image-patch-recovery/youcoded`; in `desktop/`: `npm run knip`, `npm run lint`, `npm run typecheck`, `npx vitest run tests/main-blocking-calls.test.ts` (allowlist unchanged: `readImageFromDisk` still 1 stat + 1 read; `read.ts` `execute` still 1 stat). Then the baseline suites the earlier session recorded: `npx vitest run tests/image-support.test.ts tests/native-image-attachments.test.ts tests/wire-adapter.test.ts tests/native-clear-barrier.test.ts tests/clear-preserves-timeline.test.ts`. Fix anything red now (CLAUDE.md: a failing test is fixed when found); commit by explicit path.
 
@@ -1988,7 +2157,7 @@ What broke: Read handed a 2,904×17,528 px contact sheet (6.8 MB, under the 10 M
 - **Enforcement** (`HarnessSession.enforceImageLimits`): the gate is re-applied to in-memory history on every provider/profile change (`setBinding`) and before any compaction or summary (`maybeCompact`, `compactNow`).
 - **Recovery** (`providers/image-too-large.ts`, `collapseOversizedImages`): on that exact 400 — accepted in `error.message`, `detail` or a top-level `message`; the live object was never captured — with no output started, image parts over the reported limit collapse to the note, the capture revision bumps, and the step is retried once. A second rejection surfaces the provider's own words.
 
-Accepted limitations: the image cache is never swept (a missing derivative becomes an "image no longer available" note on reopen); a user-message part collapsed in memory is labelled `image` (the rebuild, which knows the path, labels by basename). Guards: `tests/image-support.test.ts`, `image-prepare.test.ts`, `image-resize.test.ts`, `image-too-large.test.ts`, the over-limit pictures suite in `harness-session-loop.test.ts`, and the oversized cases in `accepted-history-store.test.ts`, `harness-history-rebuild.test.ts`, `harness-tools-core.test.ts`, `native-image-attachments.test.ts`, `native-channels.test.ts`, `native-session-host-continuation.test.ts`.
+Accepted limitations: the image cache is never swept (a missing derivative becomes an "image no longer available" note on reopen). After a switch to a provider with stricter limits, a derivative that no longer fits is COLLAPSED to the note, not re-prepared for the new limits — a fresh Read of the original prepares a copy for the new provider. A user-message file part collapsed in memory is labelled `image` until a reopen relabels it by basename (the rebuild knows the path). A picture whose preparation failed is told to the model with the preparer's reason live; on reopen the original is re-gated and gets the oversized note instead. The live ChatGPT error object was never captured: the classifier matches the sentence read off a screenshot, in three envelopes. Guards: `tests/image-support.test.ts`, `image-prepare.test.ts`, `image-resize.test.ts`, `image-too-large.test.ts`, the over-limit pictures suite in `harness-session-loop.test.ts`, and the oversized cases in `accepted-history-store.test.ts`, `harness-history-rebuild.test.ts`, `harness-tools-core.test.ts`, `native-image-attachments.test.ts`, `native-channels.test.ts`, `native-session-host-continuation.test.ts`.
 ```
 
 - [ ] **Step 2: `docs/MAP.md`** (workspace) — in the Native runtime row add to **Entry points**: `youcoded/desktop/src/main/harness/image-support.ts` (the one image reader + pixel gate + note family), `youcoded/desktop/src/main/harness/image-prepare.ts` + `youcoded/desktop/src/main/image-resize-service.ts` (shrink-once, worker thread), `youcoded/desktop/src/main/providers/image-too-large.ts`; to **Guard tests**: `youcoded/desktop/tests/image-support.test.ts`, `image-prepare.test.ts`, `image-resize.test.ts`, `image-too-large.test.ts`. In the on-disk state table add: `<userData>/image-cache/<hash>-<basename>.png|jpg` | shrunk copies of pictures over a provider's limits; safe to delete (a missing one becomes an "image no longer available" note on reopen) | `youcoded/desktop/src/main/harness/image-prepare.ts`. Run `node scripts/audit-anchors.mjs` from the workspace worktree and fix what it reports.
@@ -2004,5 +2173,6 @@ Accepted limitations: the image cache is never swept (a missing derivative becom
 ## Self-review (done while writing; re-run after executing)
 
 - **Spec coverage against the reviewer's twelve items:** (1) worker_threads + pngjs/jpeg-js + box filter, per-job termination, injectable decoder, in-process end-to-end on a real 3000×6000 PNG, built-worker smoke, 80 MP WHY → T6, T11; (2) `modelAttachments` persisted and read by rebuild/portable/store, dropped attachments get a note, the per-run limitation and its roadmap item are gone → T3, T4, T7, T12; (3) basename label at every site + collapse==rebuild test → T2, T3, T10; (4) prepare against the session's limits, no flat target, 10% margin, worked example 1221×7372, OpenAI `maxEdgePx` WHY → T1, T5, T8; (5) `enforceImageLimits` on `setBinding`/`maybeCompact`/`compactNow` with tests, error path kept as safety net → T10; (6) three envelopes + WHY → T9; (7) stale-map deletion + in-flight map → T5; (8) attachment refusal/failure notes with tests → T3, T7; (9) mixed-result descriptor required → T4; (10) per-session serialised send with an ordering test → T7; (11) live-gate test, host-level reopen, stable bytes, fixtures in `tests/helpers/image-fixtures.ts`, no `.test.ts` imports, `mkTmpDir` scoping, the send test in `native-channels.test.ts`, no unused imports (re-check after writing each file) → T2, T3, T10, T11; (12) line 13 → T1.
-- **Known gaps, stated:** a collapsed bare user part is labelled `image`; the equality test therefore compares tool events only (T10). The resize worker cannot decode GIF/WebP (declined with a hint). The image cache is never swept.
+- **Final round (N1–N10 + nit):** pictures-only notes in `imagePartsFor` and the rebuild, with a non-image test on both sides and a plain-string-shape assertion → T2/T3; explicit `modelAttachments` sites (`harness-session.ts:231`, host `:4211`, `:4264`) and a queued-behind-a-turn derivative test → T3; asar probe with both outcomes spelled out → T11 2c; incident-size measurement feeding `RESIZE_JOB_TIMEOUT_MS`/`REAL_PNG_BUDGET_MS` (numbers left to the executor) → T6/T11 2b; `prepare-failed` is live: `modelPathsFor` returns `{ path, prepareFailed }`, the note carries the reason, tested at the handler and the harness → T2/T3/T7; switch-collapses-not-re-prepares limitation and both reviewer caveats → T12; `sendChains` entry deleted when its tail settles and is still latest → T7; reopen test asserts the restoring path by `logContinuation` → T11; derivative labelled by the ORIGINAL basename via `imageLabels` end to end (Read → driver → event → rebuild → checkpoint), comment fixed → T3/T5/T8; ordering test gated on a deferred resolved inside the preparer → T7; `this.history` assigned only when changed → T10.
+- **Known gaps, stated:** a collapsed bare user part is labelled `image` until reopen; the equality test therefore compares tool events only (T10). The resize worker cannot decode GIF/WebP (declined with a hint). The image cache is never swept. A derivative is collapsed, not re-prepared, after a stricter switch.
 - **Type consistency:** `ImageReadResult`/`ImageNote` (T2) feed `RebuildImageReader`, `imagePartsFor`, `resolveToolImages` (T3), the store (T4) and `collapseOversizedImages` (T10); `ImageLimits` (T1) is threaded through `readImageFromDisk`, `restore({ imageLimits })`, `profileSnapshot.imageLimits`, `ToolContext.imageLimits`, `prepare(path, limits)` and `imageLimitsFor(sessionId)`; `UserPart` (T3) is what `appendUserHistory` and `imagePartsFor` share; `PreparedImage`/`ImagePreparerLike` (T5) are what `ToolServices.images` (T7) and Read (T8) consume; `ResizeFn` (T5) is what `createResizeService` (T6) returns and `runResizeJob` (T6) satisfies; `imageTooLarge` (T9) feeds the step loop (T10).
