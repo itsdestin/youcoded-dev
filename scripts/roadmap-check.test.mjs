@@ -10,12 +10,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import {
-  SEEN_ON, STATUS, FLAGS, SURFACES, SUBLEVELS, classifyToken, parseMetadata,
+  SEEN_ON, STATUS, FLAGS, PRIORITY, SURFACES, SUBLEVELS, classifyToken, parseMetadata,
   vocabHelp, tokenVocabLine, suggestToken,
 } from './roadmap-check.mjs';
 
 test('vocabularies are disjoint — a token can belong to exactly one', () => {
-  const all = [...SEEN_ON, ...STATUS, ...FLAGS, ...SURFACES];
+  const all = [...SEEN_ON, ...STATUS, ...PRIORITY, ...FLAGS, ...SURFACES];
   assert.equal(new Set(all).size, all.length);
 });
 
@@ -24,33 +24,37 @@ test('classifyToken: one kind per vocabulary, null for strangers', () => {
   assert.equal(classifyToken('android'), 'seen-on');
   assert.equal(classifyToken('needs-verify'), 'status');
   assert.equal(classifyToken('checked 2026-08-28'), 'checked');
-  assert.equal(classifyToken('urgent'), 'flag');
+  assert.equal(classifyToken('security'), 'flag');
+  assert.equal(classifyToken('P1'), 'priority');
+  assert.equal(classifyToken('P4'), null);
+  assert.equal(classifyToken('urgent'), null);   // retired 2026-10-05: P1 says it
   assert.equal(classifyToken('v1.3.1'), 'flag');
   assert.equal(classifyToken('v1'), null);
   assert.equal(classifyToken('setings'), null);
 });
 
 test('parseMetadata: full line with link', () => {
-  const m = parseMetadata('`settings` `android` `needs-verify` `checked 2026-08-28` `v1.3.1` `urgent` → docs/active/investigations/2026-08-28-x.md');
+  const m = parseMetadata('`settings` `android` `needs-verify` `P1` `checked 2026-08-28` `v1.3.1` `security` → docs/active/investigations/2026-08-28-x.md');
   assert.deepEqual(m.errors, []);
   assert.equal(m.surface, 'settings');
   assert.equal(m.seenOn, 'android');
   assert.equal(m.status, 'needs-verify');
   assert.equal(m.checked, '2026-08-28');
-  assert.deepEqual(m.flags, ['urgent']);
+  assert.deepEqual(m.flags, ['security']);
+  assert.equal(m.priority, 'P1');
   assert.equal(m.release, 'v1.3.1');
   assert.equal(m.link, 'docs/active/investigations/2026-08-28-x.md');
 });
 
 test('parseMetadata: minimal line, no surface, no link', () => {
-  const m = parseMetadata('`all` `confirmed` `checked 2026-07-01`');
+  const m = parseMetadata('`all` `confirmed` `P3` `checked 2026-07-01`');
   assert.deepEqual(m.errors, []);
   assert.equal(m.surface, null);
   assert.equal(m.link, null);
 });
 
 test('parseMetadata: unknown token is an error, never a surface', () => {
-  const m = parseMetadata('`setings` `all` `confirmed` `checked 2026-07-01`');
+  const m = parseMetadata('`setings` `all` `confirmed` `P3` `checked 2026-07-01`');
   assert.equal(m.errors.length, 1);
   assert.match(m.errors[0], /unknown token `setings`/);
 });
@@ -58,28 +62,28 @@ test('parseMetadata: unknown token is an error, never a surface', () => {
 // The whole point of the 2026-09-03 change: a rejection has to say what IS accepted,
 // or the next session goes reading an archived spec to find out.
 test('parseMetadata: a rejection spells out every short vocabulary and how to get the surfaces', () => {
-  const [err] = parseMetadata('`release-methods` `all` `confirmed` `checked 2026-07-01`').errors;
-  for (const v of [...SEEN_ON, ...STATUS, ...FLAGS]) assert.ok(err.includes(v), `rejection omits \`${v}\``);
+  const [err] = parseMetadata('`release-methods` `all` `confirmed` `P3` `checked 2026-07-01`').errors;
+  for (const v of [...SEEN_ON, ...STATUS, ...PRIORITY, ...FLAGS]) assert.ok(err.includes(v), `rejection omits \`${v}\``);
   assert.match(err, /--vocab/);
   assert.match(err, /v1\.3\.1/);
 });
 
 test('parseMetadata: a near-miss token gets a suggestion, a made-up one does not', () => {
-  assert.match(parseMetadata('`all` `needs-verif` `checked 2026-07-01`').errors[0], /did you mean `needs-verify`/);
-  assert.ok(!/did you mean/.test(parseMetadata('`release-methods` `all` `confirmed` `checked 2026-07-01`').errors[0]));
+  assert.match(parseMetadata('`all` `needs-verif` `P3` `checked 2026-07-01`').errors[0], /did you mean `needs-verify`/);
+  assert.ok(!/did you mean/.test(parseMetadata('`release-methods` `all` `confirmed` `P3` `checked 2026-07-01`').errors[0]));
   assert.equal(suggestToken('settings/sink'), 'settings/sync');
   assert.equal(suggestToken('release-methods'), null);
 });
 
 test('parseMetadata: two strangers on one line spell the vocabulary out only once', () => {
-  const errs = parseMetadata('`foo` `bar` `all` `confirmed` `checked 2026-07-01`').errors;
+  const errs = parseMetadata('`foo` `bar` `all` `confirmed` `P3` `checked 2026-07-01`').errors;
   assert.equal(errs.filter(e => e.includes('--vocab')).length, 1);
   assert.match(errs[1], /same vocabulary as above/);
 });
 
 test('--vocab prints every closed list, including the sublevels', () => {
   const out = execFileSync(process.execPath, [SCRIPT, '--vocab'], { encoding: 'utf8' });
-  for (const v of [...SURFACES, ...SEEN_ON, ...STATUS, ...FLAGS]) assert.ok(out.includes(v), `--vocab omits ${v}`);
+  for (const v of [...SURFACES, ...SEEN_ON, ...STATUS, ...PRIORITY, ...FLAGS]) assert.ok(out.includes(v), `--vocab omits ${v}`);
   for (const [area, subs] of Object.entries(SUBLEVELS)) {
     assert.ok(out.includes(area));
     for (const sub of subs) assert.ok(out.includes(sub), `--vocab omits sublevel ${sub}`);
@@ -99,11 +103,12 @@ test('ROADMAP.md "Filing an item" lists exactly the vocabularies the validator e
   };
   for (const v of SEEN_ON) assert.ok(row('seen-on').includes(`\`${v}\``), `seen-on row omits ${v}`);
   for (const v of STATUS) assert.ok(row('status').includes(`\`${v}\``), `status row omits ${v}`);
+  for (const v of PRIORITY) assert.ok(row('priority').includes(`\`${v}\``), `priority row omits ${v}`);
   for (const v of FLAGS) assert.ok(row('flags').includes(`\`${v}\``), `flags row omits ${v}`);
   assert.ok(row('surface').includes('--vocab'), 'surface row must point at --vocab, not list 29 names twice');
   assert.ok(row('checked').includes('checked YYYY-MM-DD'));
   // And the rows must not name a word the validator would reject.
-  for (const label of ['seen-on', 'status', 'flags']) {
+  for (const label of ['seen-on', 'status', 'priority', 'flags']) {
     for (const tok of [...row(label).matchAll(/`([^`]+)`/g)].map(m => m[1])) {
       assert.ok(classifyToken(tok) !== null, `Filing an item's ${label} row names \`${tok}\`, which classifyToken rejects`);
     }
@@ -127,12 +132,12 @@ test('parseMetadata: out-of-order tokens are an error', () => {
 });
 
 test('parseMetadata: text outside backticks means this is not a metadata line', () => {
-  const m = parseMetadata('and it also happens on `android` `confirmed` `checked 2026-07-01`');
+  const m = parseMetadata('and it also happens on `android` `confirmed` `P3` `checked 2026-07-01`');
   assert.ok(m.errors.some(e => /outside backticks/.test(e)));
 });
 
 test('parseMetadata: impossible date is an error', () => {
-  const m = parseMetadata('`all` `confirmed` `checked 2026-13-40`');
+  const m = parseMetadata('`all` `confirmed` `P3` `checked 2026-13-40`');
   assert.ok(m.errors.some(e => /not a real date/.test(e)));
 });
 
@@ -144,9 +149,9 @@ Not here: nothing.
 
 - [ ] Sync dead-ends on any machine without gh — the setup screen shows a spinner
       forever and never says what it is waiting for
-      \`settings/sync\` \`desktop\` \`confirmed\` \`checked 2026-08-20\` \`v1.3\` → docs/active/investigations/2026-08-20-sync-gh-missing.md
+      \`settings/sync\` \`desktop\` \`confirmed\` \`P3\` \`checked 2026-08-20\` \`v1.3\` → docs/active/investigations/2026-08-20-sync-gh-missing.md
 - [ ] Android says "Synced" while the last push failed
-      \`android\` \`needs-verify\` \`checked 2026-06-01\`
+      \`android\` \`needs-verify\` \`P3\` \`checked 2026-06-01\`
 `;
 
 test('parseAreaFile: heading, filing test, two entries with sections null', () => {
@@ -180,7 +185,7 @@ test('parseAreaFile: heading naming another area is an error', () => {
 });
 
 test('parseAreaFile: [x] in an area file is an error and is not an entry', () => {
-  const a = parseAreaFile(AREA_OK + '- [x] fixed thing\n      `all` `confirmed` `checked 2026-08-01`\n', 'sync.md');
+  const a = parseAreaFile(AREA_OK + '- [x] fixed thing\n      `all` `confirmed` `P3` `checked 2026-08-01`\n', 'sync.md');
   assert.ok(a.errors.some(e => /\[x\]/.test(e.message) && /shipped\.md/.test(e.message)));
   assert.equal(a.entries.length, 2);
 });
@@ -190,7 +195,7 @@ test('parseAreaFile: sublevel headings only where allowed, and only known ones',
   assert.ok(flat.errors.some(e => e.line === 4 && /has no sublevels/.test(e.message)));
   const bad = parseAreaFile('# native-harness — x\nFiling test: x\n\n## turns\n', 'native-harness.md');
   assert.ok(bad.errors.some(e => /unknown sublevel `turns`/.test(e.message)));
-  const ok = parseAreaFile('# native-harness — x\nFiling test: x\n\n## tools\n- [ ] Bash output is cut mid-line\n      `all` `confirmed` `checked 2026-08-01`\n', 'native-harness.md');
+  const ok = parseAreaFile('# native-harness — x\nFiling test: x\n\n## tools\n- [ ] Bash output is cut mid-line\n      `all` `confirmed` `P3` `checked 2026-08-01`\n', 'native-harness.md');
   assert.deepEqual(ok.errors, []);
   assert.equal(ok.entries[0].section, 'tools');
 });
@@ -215,10 +220,10 @@ Target: \`v1.3\`
 - sync: Sync dead-ends on any machine without gh — the setup screen shows a spinner
 
 ## Backlogs
-| Area | Open | Needs verify | Decisions | Parked |
-|---|---|---|---|---|
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 2 | 1 | 0 | 0 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 1 | 0 | 0 | 0 |
+| Area | Open | P1 | P2 | P3 | Needs verify | Decisions | Parked |
+|---|---|---|---|---|---|---|---|
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 2 | 0 | 0 | 2 | 1 | 0 | 0 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 
 ## Filing an item
 Pick the file whose Filing test says yes.
@@ -231,7 +236,7 @@ test('parseIndex: target, next-release lines, rows with line spans', () => {
   assert.deepEqual(ix.nextRelease, ['- sync: Sync dead-ends on any machine without gh — the setup screen shows a spinner']);
   assert.equal(ix.nrStart, 7); assert.equal(ix.nrEnd, 7);
   assert.equal(ix.rows.length, 2);
-  assert.deepEqual(ix.rows[0], { area: 'sync', heading: 'moving your stuff between devices', open: 2, needsVerify: 1, decisions: 0, parked: 0, line: 12 });
+  assert.deepEqual(ix.rows[0], { area: 'sync', heading: 'moving your stuff between devices', open: 2, p1: 0, p2: 0, p3: 2, needsVerify: 1, decisions: 0, parked: 0, line: 12 });
   assert.equal(ix.tableStart, 12); assert.equal(ix.tableEnd, 13);
 });
 
@@ -400,7 +405,7 @@ test('applyClaimFixes: flips exactly the broken confirmed item, leaves checked a
   const flipped = applyClaimFixes(rm, checkClaims(rm));
   assert.deepEqual(flipped, [{ area: 'sync', line: 4 }]);
   const after = read(root, 'docs/roadmap/sync.md');
-  assert.match(after, /`settings\/sync` `desktop` `needs-verify` `checked 2026-08-20` `v1\.3`/);
+  assert.match(after, /`settings\/sync` `desktop` `needs-verify` `P3` `checked 2026-08-20` `v1\.3`/);
   assert.equal((after.match(/needs-verify/g) || []).length, 2);   // the flipped one + the Android one
   // a second run finds nothing left to flip
   const rm2 = loadRoadmap(root);
@@ -441,11 +446,11 @@ test('symptomPass: exactly 60 days is not stale; 61 is', () => {
 test('expectedIndex: counts, headings, order by Open desc then name, next-release from flags', () => {
   const ex = expectedIndex(loadRoadmap(withFixture()));
   assert.deepEqual(ex.rows, [
-    { area: 'sync', heading: 'moving your stuff between devices', open: 3, needsVerify: 1, decisions: 0, parked: 1 },
-    { area: 'native-harness', heading: "the app's own agent doing work", open: 1, needsVerify: 0, decisions: 1, parked: 0 },
+    { area: 'sync', heading: 'moving your stuff between devices', open: 3, p1: 0, p2: 0, p3: 3, needsVerify: 1, decisions: 0, parked: 1 },
+    { area: 'native-harness', heading: "the app's own agent doing work", open: 1, p1: 1, p2: 0, p3: 0, needsVerify: 0, decisions: 1, parked: 0 },
   ]);
   assert.deepEqual(ex.nextRelease, ['- sync: Sync dead-ends on any machine without gh']);
-  assert.equal(renderRow(ex.rows[0]), '| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 3 | 1 | 0 | 1 |');
+  assert.equal(renderRow(ex.rows[0]), '| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 3 | 0 | 0 | 3 | 1 | 0 | 1 |');
 });
 
 test('diffIndex: clean fixture has no drift', () => {
@@ -454,7 +459,7 @@ test('diffIndex: clean fixture has no drift', () => {
 
 test('diffIndex: a wrong count, a changed heading, a stale next-release list', () => {
   const root = withFixture(r => {
-    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 2 | 1 | 0 | 1 |');
+    edit(r, 'ROADMAP.md', '| 3 | 0 | 0 | 3 | 1 | 0 | 1 |', '| 2 | 0 | 0 | 3 | 1 | 0 | 1 |');
     edit(r, 'docs/roadmap/native-harness.md', "the app's own agent doing work", 'the native agent');
     edit(r, 'docs/roadmap/sync.md', '`checked 2026-08-20` `v1.3`', '`checked 2026-08-20` `v1.3.1`');
   });
@@ -466,13 +471,13 @@ test('diffIndex: a wrong count, a changed heading, a stale next-release list', (
 
 test('rewriteIndex: touches only the table rows and the next-release lines', () => {
   const root = withFixture(r => {
-    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 9 | 9 | 9 | 9 |');
+    edit(r, 'ROADMAP.md', '| 3 | 0 | 0 | 3 | 1 | 0 | 1 |', '| 9 | 9 | 9 | 9 | 9 | 9 | 9 |');
     edit(r, 'docs/roadmap/sync.md', '`checked 2026-08-20` `v1.3`', '`checked 2026-08-20` `v1.3.1`');
   });
   const before = read(root, 'ROADMAP.md');
   const after = rewriteIndex(loadRoadmap(root));
-  assert.equal(after.includes('| 9 | 9 | 9 | 9 |'), false);
-  assert.ok(after.includes('| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 3 | 1 | 0 | 1 |'));
+  assert.equal(after.includes('| 9 | 9 | 9 | 9 | 9 | 9 | 9 |'), false);
+  assert.ok(after.includes('| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 3 | 0 | 0 | 3 | 1 | 0 | 1 |'));
   assert.equal(after.includes('- sync: Sync dead-ends'), false);   // no v1.3 items any more
   // everything outside those two regions is byte-identical
   const strip = t => t.split('\n').filter(l => !/^\| \[/.test(l) && !/^- /.test(l)).join('\n');
@@ -543,14 +548,14 @@ test('run: broken claim is listed with the sha it was checked against, exit 0, n
 test('run: --fix rewrites the index but leaves a broken-claim item alone, and says how to flip it', () => {
   const root = withFixture(r => {
     edit(r, 'youcoded/desktop/src/main/sync-service.ts', "['auth', 'status']", "['auth', 'login']");
-    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 3 | 0 | 0 | 1 |');
+    edit(r, 'ROADMAP.md', '| 3 | 0 | 0 | 3 | 1 | 0 | 1 |', '| 3 | 0 | 0 | 3 | 0 | 0 | 1 |');
   });
   const r = run({ root, fix: true, today: '2026-09-01' });
   assert.equal(r.exitCode, 0);
   assert.doesNotMatch(r.text, /flipped to needs-verify/);
   assert.match(r.text, /--fix-claims/);
   assert.match(r.text, /index rewritten/);
-  assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `confirmed` `checked 2026-08-20`/);   // untouched
+  assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `confirmed` `P3` `checked 2026-08-20`/);   // untouched
   assert.match(read(root, 'ROADMAP.md'), /\| 3 \| 1 \| 0 \| 1 \|/);   // counts match the files as they ARE
   assert.deepEqual(diffIndex(loadRoadmap(root)), []);
 });
@@ -558,13 +563,13 @@ test('run: --fix rewrites the index but leaves a broken-claim item alone, and sa
 test('run: --fix-claims flips the broken claim, rewrites the index, and says what it did', () => {
   const root = withFixture(r => {
     edit(r, 'youcoded/desktop/src/main/sync-service.ts', "['auth', 'status']", "['auth', 'login']");
-    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 3 | 0 | 0 | 1 |');
+    edit(r, 'ROADMAP.md', '| 3 | 0 | 0 | 3 | 1 | 0 | 1 |', '| 3 | 0 | 0 | 3 | 0 | 0 | 1 |');
   });
   const r = run({ root, fix: true, fixClaims: true, today: '2026-09-01' });
   assert.equal(r.exitCode, 0);
   assert.match(r.text, /flipped to needs-verify: sync:4/);
   assert.match(r.text, /index rewritten/);
-  assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `needs-verify` `checked 2026-08-20`/);
+  assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `needs-verify` `P3` `checked 2026-08-20`/);
   assert.match(read(root, 'ROADMAP.md'), /\| 3 \| 2 \| 0 \| 1 \|/);   // needs-verify went 1 → 2 after the flip
   assert.deepEqual(diffIndex(loadRoadmap(root)), []);
 });
@@ -584,7 +589,7 @@ test('defaultRoot: the git checkout you are standing in, when it holds a ROADMAP
 test('cli: --fix from inside a worktree writes THAT checkout and says so', () => {
   const root = withFixture(r => {
     execFileSync('git', ['init', '-q', r]);
-    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 4 | 1 | 0 | 1 |');
+    edit(r, 'ROADMAP.md', '| 3 | 0 | 0 | 3 | 1 | 0 | 1 |', '| 4 | 0 | 0 | 3 | 1 | 0 | 1 |');
   });
   const r = spawnSync(process.execPath, [SCRIPT, '--fix', '--today', '2026-09-01'], { cwd: root, encoding: 'utf8' });
   assert.equal(r.status, 0, r.stderr);
@@ -593,7 +598,7 @@ test('cli: --fix from inside a worktree writes THAT checkout and says so', () =>
 });
 
 test('run: index drift without --fix is a warning, exit 0', () => {
-  const root = withFixture(r => edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 4 | 1 | 0 | 1 |'));
+  const root = withFixture(r => edit(r, 'ROADMAP.md', '| 3 | 0 | 0 | 3 | 1 | 0 | 1 |', '| 4 | 0 | 0 | 3 | 1 | 0 | 1 |'));
   const r = cli(root);
   assert.equal(r.status, 0);
   assert.match(r.stdout, /### Index — drift \(run --fix\)/);
@@ -666,4 +671,32 @@ test('run: claims skipped for a missing repo are counted in the Claims header, n
   const root = withFixture(r => fs.rmSync(path.join(r, 'youcoded', '.git'), { recursive: true }));
   const r = run({ root, today: '2026-09-01' });
   assert.match(r.text, /### Claims — 0 checked, 0 broken, 1 skipped \(repo not checked out here/);
+});
+
+import { ROADMAP_MAX } from './roadmap-check.mjs';
+
+test('expectedIndex: the top-priority list is every P1 entry; a stale one is drift that --fix repairs', () => {
+  const root = withFixture(r => edit(r, 'docs/roadmap/sync.md', '`needs-verify` `P3`', '`needs-verify` `P1`'));
+  const rm = loadRoadmap(root);
+  assert.deepEqual(expectedIndex(rm).topPriority, [
+    '- native-harness: Should Bash keep its working directory across turns, or reset every call?',
+    '- sync: Android says "Synced" while the last push failed',
+  ]);
+  assert.ok(diffIndex(rm).some(d => /Top priority list is stale/.test(d.message)));
+  fs.writeFileSync(path.join(root, 'ROADMAP.md'), rewriteIndex(rm));
+  assert.deepEqual(diffIndex(loadRoadmap(root)), []);
+});
+
+test('parseMetadata: a missing priority is its own error and names the three tiers', () => {
+  const m = parseMetadata('`all` `confirmed` `checked 2026-07-01`');
+  assert.ok(m.errors.some(e => /missing priority token \(P1 · P2 · P3\)/.test(e)));
+});
+
+test('run: a roadmap over its size budget says so without failing', () => {
+  const extra = Array.from({ length: ROADMAP_MAX }, (_, i) => `- [ ] Filler item number ${i} for the budget test\n      \`all\` \`parked\` \`P3\` \`checked 2026-08-01\``).join('\n');
+  const root = withFixture(r => fs.appendFileSync(path.join(r, 'docs/roadmap/sync.md'), extra + '\n'));
+  const r = run({ root, today: '2026-08-28' });
+  assert.equal(r.exitCode, 0);
+  assert.match(r.text, /over budget: \d+ entries \(budget 150\)/);
+  assert.ok(!/over budget/.test(run({ root: withFixture(), today: '2026-08-28' }).text));
 });

@@ -863,3 +863,12 @@ recurred — the repetition is the data.
 - The "master failures" reported last round were already fixed on master (rule re-pointed in 3a10e51e) → a subagent confirmed, nothing to change; ledger line corrected
 - Destin merged wecoded-themes without waiting for the app release, knowing 1.3.x users on macOS 26 see a flat theme icon in the Dock until then → recorded in the archived merge handoff
 - deleted/merged: the Sonoma Mac VM (46 GB), `docs/favicon.svg`, the empty `fix-master-checks` branch, and the round 1–4 branch (its specs + answers kept in `docs/archive/design/2026-10-01-brand-identity/`, ~98 MB of pictures dropped)
+
+## 2026-10-05 — Personal sync stuck after a power cut: gentle repair, fsync, silence-based fetch (session/sync-repair-robust, youcoded + workspace)
+- RECURRED (3rd Z13 power-loss corruption since 2026-07-27): git never fsyncs loose objects by default, so each crash re-poisons the repo → applied: every sync git call carries `core.fsync=committed` + batch (prevention, not just repair)
+- Repair re-inited and re-downloaded 2.6 GB because only origin/main's tip was empty, then the 5-min exec timeout killed that download 49× (6.7 GB of partial packs, red "use git pull" error) → applied: repair rewinds to the last complete save point and refetches the gap (43 objects, seconds — done by hand on Destin's laptop first), fetch stops on 2 min of silence, tmp packs swept, push-behind-after-failed-fetch quiet; 4 tests shown red/green
+- Finding the sync repo on disk took a `find` sweep — MAP had no on-disk row for it → applied: MAP On-disk state row (sync.git, .broken-*, repair log line)
+- This session ran inside the live app; "quit YouCoded" would have killed it mid-repair → applied: one line in live-app-safety.md (stage via `systemd-run --user` waiting for exit)
+- No progress shown for a long first download; sync history grows forever (2.6 GB online / 8 GB local) → roadmap: sync.md (both, this session)
+- Destin: "don't overcomplicate the design/buildout process" — no UI changed, so no deck; already covered by CLAUDE.md's small-fix route
+- deleted/merged: none found in docs; ~16 GB of dead sync data on the Z13 awaits Destin's OK to delete after the swap

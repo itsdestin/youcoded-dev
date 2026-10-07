@@ -145,7 +145,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 
 | Knowledge | Home |
 |---|---|
-| Planned feature / bug / idea | `docs/roadmap/<area>.md`; follow its Filing test and `ROADMAP.md` grammar, dedup first, symptoms in Destin's words; run `node scripts/roadmap-check.mjs --fix` |
+| Planned feature / bug / idea | `docs/roadmap/<area>.md`; follow its Filing test and `ROADMAP.md` grammar; **add to an existing bundled entry before creating one** (150-entry budget), priority `P3` unless it is a blocker or Destin named it; symptoms in Destin's words; run `node scripts/roadmap-check.mjs --fix` |
 | Invariant / lesson | Knowledge ladder above; cross-repo only in `docs/PITFALLS.md` |
 | Doc contradicting code | Fix verified drift within authorized editing scope; otherwise report it. Deferred work goes in `docs/roadmap/dev-workspace.md` → knowledge |
 | Claude Code dependency watch | `youcoded/docs/cc-dependencies.md` |
