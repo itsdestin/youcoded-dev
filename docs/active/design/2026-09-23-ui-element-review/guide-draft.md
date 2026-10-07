@@ -72,7 +72,15 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 - Every popup and side panel uses the shared popup (`Dialog`): a **one-line 16px semibold
   title**, the **✕** at the right, a **tapered line** under the header. Every popup has the
   ✕ and closes on Esc. Examples: Settings, Session Files, Git review.
-- The close control is always the ✕ — never the words "Esc" or "Close". Quick pickers (the project switcher) follow the same shell: a title and the ✕.
+- The close control is always the ✕ — never the words "Esc" or "Close".
+- **A quick picker** (jump to something by typing — the project switcher) keeps its own **palette
+  shell, not the titled popup**: a search row with the ✕ at its right (no title), a small label
+  ("Recent"), plain rows (Lists and menus), and its add action as a **centred last row** ("+ Add a
+  project"). The list alone scrolls, under the masked fade at the edge that has more; the
+  search row and the add row stay put. (Decisions "Project switcher: container" and "Project
+  switcher: rows" — project-switcher-1#PS-1, project-switcher-2#P2-1, #P2-2; round 1 built the
+  titled shell from the old line here and Destin preferred the palette. Replaces the older
+  "Quick pickers" decision.)
 - When the body scrolls, the content fades at the hidden edge; never a solid strip.
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide**
   popups are larger.
@@ -244,6 +252,18 @@ friend rows and list", "Games: managing a friend".)
   soft tinted box with a small gap. Reference: the Settings list.
 - **Pick-one menus and switchers** (right-click menu, session list): **plain rows** — no box,
   no line; hover highlights; the selected row always looks different from a hovered one.
+- **The one you're in, in a switcher** (the project you are in): **no marker** — no check, pill,
+  tint, edge bar or words. The highlight **rests on it** when the switcher opens, follows the
+  pointer and the arrow keys, and **returns to it** when the pointer leaves the list; screen
+  readers still hear it as current. One highlight at a time: never a second row lit by hover.
+  (Decisions "Project switcher: the project you are in" — six markers declined over two rounds,
+  project-switcher-1#PC-2, project-switcher-2#P2C-1; approved project-switcher-3#P3-2, #P3-3.)
+- **A row's own action** (remove) **appears where the pointer is**: only on the pointed or
+  arrowed-to row, always on touch, **never on the resting highlight** (the row you were most
+  likely about to pick). Hidden, it **takes no space**, so the row's pills and counts sit flush
+  right. A remove is a bin, red on hover — never a ✕, which means close. (Decisions "Project
+  switcher: remove" — project-switcher-1#PC-3, project-switcher-2#P2-3; resting highlight
+  project-switcher-3#P3-2.)
 - **A few choices dropping from a pill or an icon** (your status in Games, your account in the
   Marketplace) use the **shared small menu** (`Menu` in `components/ui/`): it hangs under its
   trigger, closes on a click outside or Escape, and works with the arrow keys. Never a hand-made
@@ -253,6 +273,12 @@ friend rows and list", "Games: managing a friend".)
 - A status label is a **small tinted pill in its status colour, normal case** ("Installed").
   A live status (a session Working / Inactive) carries its **coloured dot inside the pill**,
   centred on the line of the name beside it.
+- **Sync status words are one set**, wherever a project's sync shows (the switcher's rows, the
+  project page): **Synced** (green), **Sync problem** (red), **Sync stopped** · **Sync off** ·
+  **Not synced** (grey) — a pill with its dot — and **Folder missing** (amber) for a project whose
+  folder has moved. "Not synced", never "Only on this computer". The full sentence goes in the
+  pill's hover title. (Decisions "Project switcher: rows" — project-switcher-1#PS-2, #PQ-2,
+  project-switcher-2#P2Q-1.)
 - **Every warning, error or info notice is the one tinted box with a matching border**
   (Reference: Backup & Sync → "conversations too big to sync"). **Only the box — its tint and
   border — carries the colour.** Its title and text are the normal text colours: **never a red

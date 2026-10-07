@@ -242,3 +242,43 @@ App commit `62c4e5df0`; deck `project-switcher-3.json` (before `runs/ps2-after`,
     "go async" (round 1).
 11. **Line budgets: say in the failure which numbers a new IPC channel normally needs** (every
     channel touches the same six files; round 2).
+
+## Proposals implemented (2026-10-06, approved by Destin)
+
+All 11 done. No visible change in the app (comments and tests only), so no tooling-3 deck; the
+pointer fix's before/after is `runs/tooling3-pointer/` (YouCoded, YouCoded Night, Midnight).
+
+1. **Quick pickers keep their palette shell** — `guide-draft.md` "Popups and side panels"; the
+   older "Quick pickers" row in `decisions.md` is marked superseded.
+2. **"The one you're in"** — `guide-draft.md` "Lists and menus": highlight rests on it, no marker.
+3. **Row actions where the pointer is** — `guide-draft.md` "Lists and menus" (bin, pointed row
+   only, no space when hidden, always on touch, never on the resting highlight).
+4. **Sync status words** — `guide-draft.md` "Status and notices" (Synced / Sync problem / Sync
+   stopped / Sync off / Not synced, Folder missing).
+5. **Partial re-shoot keeps the manifest** — `scripts/shoot/manifest.mjs` (`mergeManifest`), used by
+   `shoot.mjs`; reproduced first (a 2-screen folder re-shot with 1 screen kept only 1), then fixed.
+   Tests: `scripts/shoot/tests/manifest.test.mjs`.
+6. **A listbox inside a dialog is not a layer** — `explore-page.mjs` `listLayers`: a `role=listbox`
+   counts only when it floats (absolute/fixed between it and its layer). Test in
+   `explore.test.mjs`, seen red first.
+7. **One-word screen names in crops** — `deck/spec.py`: a name a run's `manifest.json` lists is a
+   shoot screen (`projects`, `projects@…`); a typo is still refused. Test in `test_spec.py`, seen
+   red first.
+8. **1.5× hover lit the row above — root cause found.** Chrome was launched at a real density of 1
+   (`--force-device-scale-factor=1`) while each tab emulated 1.5. Taking a picture then made Chrome
+   send a late, trusted `mouseover` at the hovered point ÷ 1.5 (measured: 720,454 → 480,302, 45 ms
+   after `captureScreenshot`), whenever the hover had changed layout (the bin appearing). Chrome
+   now launches at the emulated density (`CHROME_FLAGS(…, scale)`, `engine.mjs`). Before: 10 of 15
+   hover shots wrong (every dark-theme one); after: 15 of 15 right, no stray events. Pinned in
+   `engine.test.mjs` (seen red with the old density). **Side effect:** 1.5× text now sits up to a
+   pixel differently than in older 1.5× runs — compare before/after only within pictures taken
+   the same way (shoot README says so).
+9. **New lists use `.scroll-mask`** — `useScrollFade.ts` header; `tests/scroll-mask.test.ts`
+   ratchets the 14 files still on the painted `.scroll-fade` (new file fails; list only shrinks).
+   Not deleted: 14 callers remain. (A note in `globals.css` was dropped — it pushed the file over
+   its line budget.)
+10. **main-blocking-calls message** names "store it in the file this path already reads".
+11. **line-budgets message** names one IPC channel's usual cost per file when that is the overrun.
+
+Also: the 10 undocumented workbench switches (`?sync=`, `?announcement=` …) are in
+`scripts/ui-review/README.md` → "Workbench switches"; audit-anchors no longer warns about them.
