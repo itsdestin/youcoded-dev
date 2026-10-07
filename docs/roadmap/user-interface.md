@@ -114,3 +114,8 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       docs/active/investigations/2026-09-01-markdown-image-capability.md); (e) panel-opening
       transitions feel abrupt (Destin, 2026-07-20), no design pass yet.
       `all` `parked` `P3` `checked 2026-09-01`
+
+- [ ] After the window reloads it returns to the first session instead of the one you were on.
+      Seen 2026-10-05 in the performance rig's reload test (a chat message typed after the
+      reload went to the wrong session); not caused by the performance work
+      `all` `needs-verify` `P3` `checked 2026-10-05` → docs/active/investigations/2026-10-04-performance-gap-review.md

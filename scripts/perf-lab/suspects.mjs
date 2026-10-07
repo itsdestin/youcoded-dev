@@ -549,7 +549,36 @@ async function legReload(ctx) {
   if (!(await cdp.evaluate(FULL))) throw Error('reload leg: the program\'s screen never appeared before the reload');
   const painted = readEmissions(fixtureHome).find(r => r.event === 'screen-painted');
   out.baseCols = painted?.cols ?? null; out.baseRows = painted?.rows ?? null;
+  // WHY (2026-10-05 correction): a reloaded page opens the FIRST session (the active session is not kept across a reload), so every
+  // send after a reload went to some other fixture session and was correctly refused (the first version of this leg blamed the app). The leg now
+  // re-selects its own session after each reload and asserts, before EVERY send, that the visible pane is the leg's, naming the visible one if not.
+  const visibleNow = () => cdp.evaluate(`(() => { const i = window.__perfLab?.visiblePaneIdx?.() ?? -2; const pill = document.querySelector('[data-session-strip] [data-session-idx="' + i + '"]'); return { pane: i, pill: pill ? (pill.getAttribute('data-session-id') + ' / ' + (pill.textContent || '').trim().slice(0, 40)) : null }; })()`);
+  out.legPane = (await visibleNow()).pane;
+  const assertLegSession = async label => {
+    const v = await visibleNow();
+    if (v.pane !== out.legPane) throw Error(`reload leg: ${label}: the visible session is pane ${v.pane} (${v.pill}), not the leg's pane ${out.legPane}; refusing to send into another session`);
+  };
+  const reselect = async function reselect() {
+    // After a reload: wait for the strip and panes, re-install the page helpers, switch back to the leg's session.
+    let ready = false;
+    // WHY (2026-10-05, second correction): the same readiness the rig uses at boot (the new page's `yc:sessions-listed` mark; performance marks
+    // restart with each page) PLUS one pill and one chat pane per session. A single early pill is not "ready": the first attempt switched while
+    // the strip was still filling and found neither the leg's pill nor the "All Sessions" button.
+    const want = ctx.ids.length;
+    for (let i = 0; i < 600 && !ready; i++) { ready = await cdp.evaluate(`!window.__preReload && performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed') && document.querySelectorAll('[data-session-strip] [data-session-idx]').length === ${want} && document.querySelectorAll('.chat-scroll').length >= ${want}`).catch(() => false); if (!ready) await sleep(50); }
+    if (!ready) throw Error('reload leg: the page did not come back with the session list, one pill per session and a chat pane per session within 30 s: ' + JSON.stringify(await cdp.evaluate(`({ mark: performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed'), pills: document.querySelectorAll('[data-session-strip] [data-session-idx]').length, panes: document.querySelectorAll('.chat-scroll').length })`).catch(() => null)));
+    // WHY the marker: Page.reload returns before the old page is gone, so the OLD page's strip satisfied the check once (then vanished
+    // mid-switch). The marker is set on the old page just before each reload; a page that has it is not the new page.
+    await sleep(500);
+    if (!(await cdp.evaluate(`!window.__preReload && document.querySelectorAll('[data-session-strip] [data-session-idx]').length === ${want}`).catch(() => false))) return reselect();
+    await installPageHelpers(cdp);
+    if ((await visibleNow()).pane !== out.legPane) {
+      try { await switchTo(emptyIdx); } catch (e) { throw Error(e.message + ' :: page state ' + JSON.stringify(await cdp.evaluate(`({ ids: ${want}, pills: window.__perfLab ? window.__perfLab.pills().map(p => p.getAttribute('data-session-idx') + '|' + p.getAttribute('title')) : 'no helpers', strip: !!document.querySelector('[data-session-strip]'), visible: window.__perfLab?.visiblePaneIdx?.() })`).catch(x => x.message))); }
+    }
+    await sleep(150);
+  };
   const trySend = async tag => {
+    await assertLegSession('before a send');
     const focused = await cdp.evaluate(`(() => { const e = [...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length); if (!e) return false; e.focus(); return document.activeElement === e; })()`).catch(() => false);
     if (!focused) return { focused: false, reached: false };
     const t = Date.now();
@@ -574,13 +603,15 @@ async function legReload(ctx) {
   const scenario = async (name, reloads) => {
     const r = { reloads }, tag = `probe-${name}-${Date.now() % 100000}`;
     const t0 = Date.now(); r.t0 = t0; r.loadAvgStart = readFileSync('/proc/loadavg', 'utf8').trim();
-    await cdp.send('Page.reload');
-    for (let k = 1; k < reloads; k++) { await sleep(300); await cdp.send('Page.reload'); }
+    await cdp.evaluate('window.__preReload = true').catch(() => {}); await cdp.send('Page.reload');
+    for (let k = 1; k < reloads; k++) { await sleep(300); await cdp.evaluate('window.__preReload = true').catch(() => {}); await cdp.send('Page.reload'); }
+    await reselect(); r.reselectedMs = Date.now() - t0;
     let paintedMs = null, composerMs = null, sentAt = null;
     while (Date.now() - t0 < 30000 && (paintedMs === null || (sentAt === null))) {
       if (composerMs === null && await cdp.evaluate(COMPOSER).catch(() => false)) {
         composerMs = Date.now() - t0;
         // Send as soon as the composer exists: the moment the owner's hand test hit. Real keystrokes into the real composer.
+        await assertLegSession('before the send after a reload');
         const ok = await cdp.evaluate(`(() => { const e = [...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length); if (!e) return false; e.focus(); return document.activeElement === e; })()`).catch(() => false);
         if (ok) {
           sentAt = Date.now();
