@@ -1,0 +1,24 @@
+{
+ "deck": "voice-custom-vocabulary-review",
+ "started": "2026-10-06T09:28:23.589Z",
+ "submitted": "2026-10-06T09:29:35Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "ehh idk if i like this as a full settings menu card. where else could we put it?",
+   "t": 1791278950219,
+   "v": "other",
+   "seconds": 47,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "no, these should be like chips or something. ",
+   "t": 1791278974610,
+   "v": "other",
+   "seconds": 24,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

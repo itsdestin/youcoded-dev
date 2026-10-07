@@ -116,7 +116,8 @@ seen-on is always n/a here.
       it recurred 2026-09-23 (report: docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md);
       (c) workspace-start will not resume after post-merge cleanup removed a component worktree;
       (d) a fresh worktree came up missing a package its lockfile names (fifth time; cause unknown);
-      (e) close-out says "the work landed" and suggests deleting a worktree that holds uncommitted edits;
+      (e) close-out says "the work landed" and suggests deleting a worktree that holds uncommitted edits
+      (recurred 2026-10-06 on voice-custom-vocabulary; no cleanup performed);
       (f) work still lives on one disk only: a complete implementation sat uncommitted 14 hours, and a
       committed but unpushed branch was lost across machines
       `n/a` `confirmed` `P1` `checked 2026-09-13` `regression`
