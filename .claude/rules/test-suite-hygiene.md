@@ -47,7 +47,8 @@ with `"` or `\r\n`, are POSIX-only; text reads strip `\r` first.
 **Guard:** `scripts/ast-grep/rules/test-file-url-to-path.yml`; the rest — candidate.
 
 ## Never assert on wall-clock time
-**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock.
+**Invariant:** budgets measure CPU time, never wall clock — a pure-CPU group calls
+`budgetCpuPerTest()` (`tests/helpers/cpu-budget.ts`).
 **Guard:** none — candidate.
 
 ## Unmount what you render

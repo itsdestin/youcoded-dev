@@ -106,3 +106,30 @@ test('at 1.5× a picture never moves the pointer: no late event off the hovered 
     assert.equal(await tab.evaluate("document.querySelector('div:hover')?.id"), 'r4', 'the hovered row is the one under the pointer');
   } finally { setShotScale(1); pool.close(); server.close(); rmSync(dir, { recursive: true, force: true }); }
 });
+
+// WHY (2026-10-07, shoot --check under verify's load): a screen opened a real window
+// (window.open → github.com/login). It became the front tab of our tab's window, so our page went
+// `hidden`; a hidden page runs no requestAnimationFrame, and every later screen on that tab hung
+// for 20 s in the app's open step (measured: 0 frames in 20 s, timers still ticking, visibility
+// hidden, the GitHub page listed among the browser's targets). The engine closes any page a tab opens.
+test('a page a tab opens is closed, and the tab stays visible with frames running', { skip: !canChrome && 'needs Chrome' }, async () => {
+  const pool = await openPool({ tabs: 1, browsers: 1, width: 800, height: 600 });
+  try {
+    const tab = pool.tabs[0];
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    await tab.navigate('data:text/html,<p>main');
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete"').catch(() => false)); i++) await new Promise((r) => setTimeout(r, 50));
+    // userGesture: the app opens these from a click (a screen's open step), which the popup blocker allows.
+    await tab.send('Runtime.evaluate', { expression: "window.open('about:blank#popup', '_blank'); 0", userGesture: true });
+    await new Promise((r) => setTimeout(r, 300));
+    let pages = [];
+    for (let i = 0; i < 40; i++) {
+      pages = (await tab.send('Target.getTargets', {})).targetInfos.filter((t) => t.type === 'page' && t.url.includes('#popup'));
+      if (!pages.length) break;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    assert.deepEqual(pages.map((t) => t.url), [], 'the opened page is closed');
+    const frames = await tab.evaluate('new Promise((r) => { let f = 0; const go = () => { f++; requestAnimationFrame(go); }; requestAnimationFrame(go); setTimeout(() => r(document.visibilityState + ":" + (f > 2)), 500); })', 5000);
+    assert.equal(frames, 'visible:true');
+  } finally { pool.close(); }
+});

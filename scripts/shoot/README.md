@@ -60,7 +60,9 @@ To start a folder over, delete it first.
   it on a free port, and runs a few headless Chromes with private tabs sized from the core
   count. It waits for the screen to be still — no fetch in flight, animations done, images
   loaded — never a fixed time; every browser call has a time limit; a crashed run's browsers are
-  cleaned up by the next.
+  cleaned up by the next. **A page a tab opens (`window.open`, a link to GitHub) is closed at
+  once**: it became the front tab, our page went hidden, a hidden page draws no frames, and the
+  next screens on that tab hung 20 s each (`shoot --check` under load, 2026-10-07).
 
 ## Checks every picture makes
 

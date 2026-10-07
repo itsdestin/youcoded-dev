@@ -175,6 +175,18 @@ async function launchBrowser(width, height, record) {
   }
   if (!port) { proc.kill('SIGKILL'); throw new Error('Chrome did not start within 10 s'); }
   const conn = await connect(port);
+  // Close every page one of our tabs opens (window.open, a target=_blank link). WHY (2026-10-07):
+  // a screen opened github.com/login in a real window; it became the front tab of our tab's
+  // window, our page went `hidden`, and a hidden page runs no requestAnimationFrame — every later
+  // screen on that tab hung 20 s in the app's open step (0 frames, timers ticking). Under
+  // verify's load this failed shoot --check on 4–5 random screens a run. Pictures never need a
+  // second window, and closing it also keeps the run off the network. Engine-launched browsers
+  // only: an attached dev window (attachPage) is a real app and keeps its windows.
+  conn.onEvent((m) => {
+    const t = m.method === 'Target.targetCreated' ? m.params.targetInfo : null;
+    if (t && t.type === 'page' && t.openerId) conn.send('Target.closeTarget', { targetId: t.targetId }).catch(() => {});
+  });
+  await conn.send('Target.setDiscoverTargets', { discover: true });
   // WHY the catch: Chrome's helper processes outlive the SIGKILL by a beat and
   // keep writing into the profile, so its removal can throw ENOTEMPTY. That
   // failed a green run of explore.test.mjs on CI (2026-10-01, youcoded-dev#225).
@@ -190,11 +202,12 @@ async function connect(port) {
   const ver = await (await fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(5000) })).json();
   const ws = new WebSocket(ver.webSocketDebuggerUrl);
   await new Promise((r, j) => { ws.onopen = r; ws.onerror = () => j(new Error('could not connect to Chrome')); });
-  let id = 0; const pending = new Map(); const sessions = new Map();
+  let id = 0; const pending = new Map(); const sessions = new Map(); const browserEvents = new Set();
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
     if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); return; }
     if (m.sessionId) sessions.get(m.sessionId)?.(m);
+    else if (m.method) for (const f of browserEvents) f(m);
   };
   // WHY every command has a time limit: without one a single stuck page hung a whole
   // run forever (3 screens in the prototype; 16 of 303 jobs in the 9/23 sweep).
@@ -204,7 +217,7 @@ async function connect(port) {
     pending.set(i, { res: (v) => { clearTimeout(timer); res(v); }, rej: (e) => { clearTimeout(timer); rej(e); } });
     ws.send(JSON.stringify({ id: i, method, params, ...(sessionId ? { sessionId } : {}) }));
   });
-  return { send, sessions, close: () => { try { ws.close(); } catch { /* gone */ } } };
+  return { send, sessions, onEvent: (f) => browserEvents.add(f), close: () => { try { ws.close(); } catch { /* gone */ } } };
 }
 
 // "Still": no fetch in flight, no finite animation running, every image on the page finished
