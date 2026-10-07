@@ -1,0 +1,1219 @@
+[
+  {
+    "name": "settings/development/bug-report#from-error",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#from-error/midnight.png",
+    "ms": 15388,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 112,
+      "w": 600,
+      "h": 676
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#from-error",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#from-error/youcoded-night.png",
+    "ms": 15412,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 121,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report/youcoded.png",
+    "ms": 15848,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 121,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report/midnight.png",
+    "ms": 15890,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 112,
+      "w": 600,
+      "h": 676
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#from-error",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#from-error/youcoded.png",
+    "ms": 17335,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 121,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#feature",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#feature/midnight.png",
+    "ms": 19679,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 154,
+      "w": 600,
+      "h": 593
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report/youcoded-night.png",
+    "ms": 20676,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 121,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#feature",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#feature/youcoded.png",
+    "ms": 21296,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 162,
+      "w": 600,
+      "h": 576
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#filled",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#filled/youcoded.png",
+    "ms": 22030,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 121,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#filled",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#filled/midnight.png",
+    "ms": 23395,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review/midnight.png",
+    "ms": 3489,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 240,
+      "w": 600,
+      "h": 419
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#feature",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#feature/youcoded-night.png",
+    "ms": 29263,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 162,
+      "w": 600,
+      "h": 576
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#filled",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#filled/youcoded-night.png",
+    "ms": 31806,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 121,
+      "w": 600,
+      "h": 659
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#filled-all",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#filled-all/midnight.png",
+    "ms": 31948,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 80,
+      "w": 600,
+      "h": 741
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-files",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-files/midnight.png",
+    "ms": 4209,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 198,
+      "w": 600,
+      "h": 505
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#filled-all",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#filled-all/youcoded-night.png",
+    "ms": 37336,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 80,
+      "w": 600,
+      "h": 740
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review/youcoded.png",
+    "ms": 44538,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 240,
+      "w": 600,
+      "h": 419
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-ai",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-ai/midnight.png",
+    "ms": 4209,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 144,
+      "w": 600,
+      "h": 613
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#filled-all",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#filled-all/youcoded.png",
+    "ms": 51976,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 80,
+      "w": 600,
+      "h": 740
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-error",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-error/midnight.png",
+    "ms": 15379,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 238,
+      "w": 600,
+      "h": 423
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-files",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-files/youcoded.png",
+    "ms": 24929,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 198,
+      "w": 600,
+      "h": 505
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-logs",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-logs/midnight.png",
+    "ms": 27566,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 161,
+      "w": 600,
+      "h": 578
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review/youcoded-night.png",
+    "ms": 34148,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 240,
+      "w": 600,
+      "h": 419
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-logs",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-logs/youcoded.png",
+    "ms": 35191,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 161,
+      "w": 600,
+      "h": 578
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-ai",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-ai/youcoded.png",
+    "ms": 25065,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 144,
+      "w": 600,
+      "h": 613
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-error",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-error/youcoded.png",
+    "ms": 36396,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 238,
+      "w": 600,
+      "h": 423
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-error",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-error/youcoded-night.png",
+    "ms": 35690,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 238,
+      "w": 600,
+      "h": 423
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-logs",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-logs/youcoded-night.png",
+    "ms": 44089,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 161,
+      "w": 600,
+      "h": 578
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-ai",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-ai/youcoded-night.png",
+    "ms": 30127,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 144,
+      "w": 600,
+      "h": 613
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-folded",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-folded/midnight.png",
+    "ms": 23956,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 205,
+      "w": 600,
+      "h": 491
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-files",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-files/youcoded-night.png",
+    "ms": 49590,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 198,
+      "w": 600,
+      "h": 505
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-folded",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-folded/youcoded.png",
+    "ms": 34800,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 205,
+      "w": 600,
+      "h": 491
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-onepage",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-onepage/midnight.png",
+    "ms": 17600,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 48,
+      "w": 600,
+      "h": 804
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sending",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#sending/midnight.png",
+    "ms": 4098,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 384,
+      "w": 600,
+      "h": 131
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handover-failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handover-failed/midnight.png",
+    "ms": 15359,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 366,
+      "w": 600,
+      "h": 167
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#sent/midnight.png",
+    "ms": 3736,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 348,
+      "w": 600,
+      "h": 204
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-onepage",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-onepage/youcoded.png",
+    "ms": 36572,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 48,
+      "w": 600,
+      "h": 804
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handover-failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handover-failed/youcoded.png",
+    "ms": 30886,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 374,
+      "w": 600,
+      "h": 151
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-folded",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-folded/youcoded-night.png",
+    "ms": 48582,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 205,
+      "w": 600,
+      "h": 491
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#review-onepage",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#review-onepage/youcoded-night.png",
+    "ms": 36368,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 48,
+      "w": 600,
+      "h": 804
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sending",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#sending/youcoded-night.png",
+    "ms": 39694,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 384,
+      "w": 600,
+      "h": 131
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sending",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#sending/youcoded.png",
+    "ms": 43641,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 384,
+      "w": 600,
+      "h": 131
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#failed/youcoded-night.png",
+    "ms": 23537,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 218,
+      "w": 600,
+      "h": 465
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#failed/midnight.png",
+    "ms": 22163,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 210,
+      "w": 600,
+      "h": 481
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#sent/youcoded-night.png",
+    "ms": 37263,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 348,
+      "w": 600,
+      "h": 204
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handover-failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handover-failed/youcoded-night.png",
+    "ms": 53320,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 374,
+      "w": 600,
+      "h": 151
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#failed/youcoded.png",
+    "ms": 28049,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 218,
+      "w": 600,
+      "h": 465
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#sent/youcoded.png",
+    "ms": 41729,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 348,
+      "w": 600,
+      "h": 204
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#offline",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#offline/youcoded-night.png",
+    "ms": 19932,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 218,
+      "w": 600,
+      "h": 465
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#offline",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#offline/midnight.png",
+    "ms": 19799,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 210,
+      "w": 600,
+      "h": 481
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#browser",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#browser/midnight.png",
+    "ms": 41242,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 340,
+      "w": 600,
+      "h": 220
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#offline",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#offline/youcoded.png",
+    "ms": 36827,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 218,
+      "w": 600,
+      "h": 465
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#phone/midnight.png",
+    "ms": 2570,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 82,
+      "w": 343,
+      "h": 681
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#phone-review",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#phone-review/midnight.png",
+    "ms": 4489,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 88,
+      "w": 343,
+      "h": 668
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#small",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#small/midnight.png",
+    "ms": 2380,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#phone/youcoded-night.png",
+    "ms": 7775,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 82,
+      "w": 343,
+      "h": 680
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handing-over",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handing-over/midnight.png",
+    "ms": 13115,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 366,
+      "w": 600,
+      "h": 167
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#small",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#small/youcoded-night.png",
+    "ms": 5746,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#small-review",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#small-review/midnight.png",
+    "ms": 4061,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#browser",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#browser/youcoded.png",
+    "ms": 54095,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 340,
+      "w": 600,
+      "h": 220
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#phone-review",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#phone-review/youcoded-night.png",
+    "ms": 13133,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 99,
+      "w": 343,
+      "h": 647
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#phone/youcoded.png",
+    "ms": 16406,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 82,
+      "w": 343,
+      "h": 680
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handing-over",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handing-over/youcoded-night.png",
+    "ms": 37160,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 374,
+      "w": 600,
+      "h": 151
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handing-over",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handing-over/youcoded.png",
+    "ms": 45244,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 374,
+      "w": 600,
+      "h": 151
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#small-review",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#small-review/youcoded.png",
+    "ms": 17493,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#small-review",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#small-review/youcoded-night.png",
+    "ms": 17851,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 38,
+      "y": 48,
+      "w": 563,
+      "h": 384
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#browser",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#browser/youcoded-night.png",
+    "ms": 63579,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 340,
+      "w": 600,
+      "h": 220
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handed-over",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handed-over/midnight.png",
+    "ms": 27581,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 366,
+      "w": 600,
+      "h": 167
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#handed-over",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handed-over/youcoded-night.png",
+    "ms": 29659,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 374,
+      "w": 600,
+      "h": 151
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#small",
+    "theme": "youcoded",
+    "ok": false,
+    "reason": "Runtime.evaluate timed out after 20s",
+    "file": null,
+    "ms": 28560,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "settings/development/bug-report#handed-over",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#handed-over/youcoded.png",
+    "ms": 38530,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 374,
+      "w": 600,
+      "h": 151
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#phone-review",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/st-after/settings/development/bug-report#phone-review/youcoded.png",
+    "ms": 35406,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 99,
+      "w": 343,
+      "h": 647
+    },
+    "parts": []
+  }
+]
