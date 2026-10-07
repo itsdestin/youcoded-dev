@@ -1,6 +1,6 @@
 {
-  "title": "Home page: how a room's scenes look (and scenes vs. each light)",
-  "key": "home-scenes",
+  "title": "Home page: scene card layouts",
+  "key": "home-scenes-2",
   "out": "scenes.choice.html",
   "images": "images/scenes.deck",
   "runs": {
@@ -11,51 +11,100 @@
     "creme"
   ],
   "crops": {
-    "scn-gradient": [
+    "sc-rows2": [
       "scenes",
-      "gradient",
-      "540x330+306+164"
+      "rows2",
+      "540x370+306+164"
     ],
-    "scn-swatch": [
+    "sc-big": [
       "scenes",
-      "swatch",
-      "540x330+306+164"
+      "big",
+      "540x370+306+164"
     ],
-    "scn-preview": [
+    "sc-mosaic": [
       "scenes",
-      "preview",
-      "540x330+306+164"
+      "mosaic",
+      "540x370+306+164"
     ]
+  },
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
   },
   "steps": [
     {
       "id": "SC-1",
       "surface": "Home page",
       "path": "Home > Lights tab > a room card > palette button",
-      "headline": "Which scene cards should rooms use?",
-      "notice": "In every option, opening Scenes closes the room's individual lights and opening the lights closes Scenes, on the Home tab and the Lights tab. Scenes slide sideways (wheel, trackpad, finger or arrow keys). Colours are learned: a scene shows its colours after you use it once from this page, and until then says Try it to see its colours.",
-      "risk": "Scenes you have never used from this page have no colours to show until you do. Nothing is guessed from names. Scenes are no longer on screen together with the lights.",
+      "headline": "Which layout should the scene cards use?",
+      "notice": "All three keep the gradient card you chose and no longer have a Last used chip; the last scene used just has a thin bright outline. Opening Scenes still closes the room's lights, and the other way round. Some scenes show Try it to see its colours until you use them once.",
+      "risk": "Never-used scenes stay plain until used from this page, and the compact layouts leave less room for their hint.",
       "variants": [
         {
-          "id": "gradient",
-          "label": "Gradient cards",
-          "crop": "scn-gradient",
-          "summary": "Each scene is a small card whose whole face is a soft blend of its colours, name at the bottom with its brightness. A moving scene wears a small Moving tag; the one you used last wears a Last used tag and a bright outline. The row opens already sliding to that one.",
-          "risk": "The most colourful and quickest to scan, but a scene you have never tried is a plain striped card that says Try it to see its colours, and very pale scenes look washed out."
+          "id": "rows2",
+          "label": "Two stacked rows",
+          "crop": "sc-rows2",
+          "summary": "The same gradient cards, smaller, in two rows that slide sideways together, so about eight scenes show at once on a wide card. Moving scenes carry a tiny wave mark; the scene used last has a thin bright outline.",
+          "risk": "Most scenes in view, but each card is small, the name can be cut short, and a never-used scene has less room for its Try it to see its colours hint."
         },
         {
-          "id": "swatch",
-          "label": "Swatch cards",
-          "crop": "scn-swatch",
-          "summary": "Calm glass cards: the name on top, a row of round colour dots under it, a thin brightness bar and the percent. Moving scenes carry a small Moving tag; the one used last is outlined and tagged Last used.",
-          "risk": "Quietest and clearest about exact colours, but the cards are the tallest and the dots are small, so scenes with similar colours look alike at a glance."
+          "id": "big",
+          "label": "Big cards",
+          "crop": "sc-big",
+          "summary": "One row of large, tall cards so you see plenty of each gradient. About two and a half fit at once, and you slide for the rest. Name and brightness sit large at the bottom.",
+          "risk": "Prettiest and easiest to read, but you see the fewest scenes at a time and must slide more to find one."
         },
         {
-          "id": "preview",
-          "label": "Light preview cards",
-          "crop": "scn-preview",
-          "summary": "Each card is a tiny night-time picture of the room: its lights as glowing dots in the scene's colours, bigger and brighter when the scene is brighter. Name and percent sit underneath.",
-          "risk": "Shows how the room will feel, not just a palette, but the picture is always dark (even in Cr\u00e8me) and the dots are only a rough idea of where lights sit."
+          "id": "mosaic",
+          "label": "Mosaic",
+          "crop": "sc-mosaic",
+          "summary": "Two rows of small cards where scenes that move through colours are twice as wide, so they stand out and show more of their colours. Brightness percent is dropped to save room.",
+          "risk": "Most playful and makes moving scenes easy to spot, but the uneven sizes feel less orderly and the order can look shuffled."
+        }
+      ]
+    },
+    {
+      "id": "SCL-1",
+      "surface": "Home page",
+      "path": "Home > Destin's Room > palette button",
+      "headline": "Slide through the scenes in each layout. Which feels best to browse?",
+      "notice": "Use the wheel, trackpad, your finger or the arrow keys. Press a scene, then use the lights arrow and scenes button to see only one stays open.",
+      "risk": "Everything here is practice data; nothing reaches a real light.",
+      "live": {
+        "app": "default"
+      },
+      "variants": [
+        {
+          "id": "rows2",
+          "label": "Two stacked rows",
+          "summary": "The same gradient cards, smaller, in two rows that slide sideways together, so about eight scenes show at once on a wide card. Moving scenes carry a tiny wave mark; the scene used last has a thin bright outline.",
+          "risk": "Most scenes in view, but each card is small, the name can be cut short, and a never-used scene has less room for its Try it to see its colours hint.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-scenes-rows2"
+          }
+        },
+        {
+          "id": "big",
+          "label": "Big cards",
+          "summary": "One row of large, tall cards so you see plenty of each gradient. About two and a half fit at once, and you slide for the rest. Name and brightness sit large at the bottom.",
+          "risk": "Prettiest and easiest to read, but you see the fewest scenes at a time and must slide more to find one.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-scenes-big"
+          }
+        },
+        {
+          "id": "mosaic",
+          "label": "Mosaic",
+          "summary": "Two rows of small cards where scenes that move through colours are twice as wide, so they stand out and show more of their colours. Brightness percent is dropped to save room.",
+          "risk": "Most playful and makes moving scenes easy to spot, but the uneven sizes feel less orderly and the order can look shuffled.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-scenes-mosaic"
+          }
         }
       ]
     }
