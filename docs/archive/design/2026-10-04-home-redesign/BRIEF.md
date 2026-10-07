@@ -70,7 +70,7 @@ practice app, or by reasoning from the CSS — do not build a recording rig.
 ## Your deliverable
 
 1. Three options that differ in **kind**, not degree (not "fast / medium / slow").
-2. A deck fragment at `docs/active/design/2026-10-04-home-redesign/<your-task>.deck.json` —
+2. A deck fragment at `docs/archive/design/2026-10-04-home-redesign/<your-task>.deck.json` —
    a normal deck spec (copy `scripts/ui-review/templates/choice.json` for pictures or
    `live.json` for operable panes; field rules in `scripts/ui-review/deck/AUTHORING.md`).
    - Pictures: `"runs": {"after": "<your --out dir>"}`, `"themes": ["golden-sunbreak", "creme"]`,

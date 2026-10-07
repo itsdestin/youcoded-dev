@@ -1,7 +1,7 @@
 ---
-status: draft
+status: shipped
 date: 2026-10-04
-reviews: docs/active/specs/2026-10-04-page-live-socket-and-camera-video.md
+reviews: docs/archive/specs/2026-10-04-page-live-socket-and-camera-video.md
 ---
 
 # Design review 1: page live socket and camera video

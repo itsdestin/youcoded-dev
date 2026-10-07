@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-10-04
-revision: 4 (after design reviews 1–3 — docs/active/reviews/2026-10-04-page-live-socket-design-review-{1,2,3}.md; [n] = review 1, [R2-n]/[R3-n] = reviews 2/3)
+revision: 4 (after design reviews 1–3 — docs/archive/reviews/2026-10-04-page-live-socket-design-review-{1,2,3}.md; [n] = review 1, [R2-n]/[R3-n] = reviews 2/3)
 source: home-page-next.questions (Q-speed "instant" + note "reusable tooling … part of the page platform, with appropriate guardrails"); camera decision in chat 2026-10-04 ("yes, a. event history recordings should also be able to play"); home-page-next-designs (C-camera "events")
 branch: youcoded session/ha-pages-connection
 builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)

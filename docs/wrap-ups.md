@@ -872,3 +872,13 @@ recurred — the repetition is the data.
 - No progress shown for a long first download; sync history grows forever (2.6 GB online / 8 GB local) → roadmap: sync.md (both, this session)
 - Destin: "don't overcomplicate the design/buildout process" — no UI changed, so no deck; already covered by CLAUDE.md's small-fix route
 - deleted/merged: none found in docs; ~16 GB of dead sync data on the Z13 awaits Destin's OK to delete after the swap
+
+## 2026-10-07 — Pages home-device connection, live socket, camera video, see-through glass + the Home Assistant Home page (session/ha-pages-connection, youcoded + workspace)
+- The rooms template is rendered by the REAL Home Assistant; a Hue group's `entity_id` came back as a set and blanked the whole page, which the fake house could not show → applied: `| list` + type guards with WHY at `home-assistant-page-templates.ts`; every template change since was rendered read-only against the real house before install
+- I rewrote a websocket render-template script three times from scratch (scratchpad wiped by a crash) while `~/system/home/home-assistant.md` already documents the REST `/api/template` curl → dropped: already written down; I did not look there first
+- One commit landed while verify had a FAIL (globals.css over budget) → applied in-session: commits gated on `! grep -q "^FAIL"`; no new guidance (the "never chain behind a check" rule already covers it)
+- A scene-row style copied from a design option set `scrollbar-width`, which silently turns off the page's themed scrollbars; the existing pin in `home-page-camera.test.ts` caught it → nothing to change, the guard worked
+- Master moved twice during the branch; both merges conflicted only in `line-budgets.json` (and, the second time, master's bundled roadmap) → dropped: a minute each, resolved by measuring the merged files
+- Two machine crashes mid-session; uncommitted work survived as WIP commits relabelled after → nothing to change (push-every-commit did its job)
+- Home page deferred items (search, multi-select, single-light scenes, Framed see-through), the page-builder skill update and Appearance thumbnails cut off → roadmap: other-features.md (Pages follow-ups a/b), themes.md (to-verify c)
+- deleted/merged: the `home-variants/scenes.ts` options shelf (built); this work's specs, reviews, hand-off and two design folders moved to `docs/archive/`

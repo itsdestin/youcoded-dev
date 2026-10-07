@@ -40,11 +40,11 @@
     "home-redesign-r3": "home-redesign-r3.answers.json"
   },
   "steps": [],
-  "skipped": "2026-10-05 — Destin chose \"Skip it, record why\" for the contract, grader and acceptance route. The decision record is the answered decks listed under sources (their *.answers.json files, in docs/active/design/2026-10-01-home-device-pages/ and 2026-10-04-home-redesign/), not a signed contract. No rows were written, nothing was signed, no acceptance deck was run.",
+  "skipped": "2026-10-05 — Destin chose \"Skip it, record why\" for the contract, grader and acceptance route. The decision record is the answered decks listed under sources (their *.answers.json files, in docs/archive/design/2026-10-01-home-device-pages/ and 2026-10-04-home-redesign/), not a signed contract. No rows were written, nothing was signed, no acceptance deck was run.",
   "checkedInstead": [
-    "Three fresh code reviews of the branch with triage and fix commits: docs/active/reviews/2026-10-05-ha-pages-platform-code-review.md, 2026-10-05-ha-home-page-code-review.md, 2026-10-05-ha-pages-tooling-code-review.md",
-    "Earlier step reviews: docs/active/reviews/2026-10-04-live-socket-step{1,2,3}-code-review.md; Edit board and redraw reviews",
-    "Three design reviews of the live-socket spec: docs/active/reviews/2026-10-04-page-live-socket-design-review-{1,2,3}.md",
-    "A context-free UX review of the built Home page: docs/active/reviews/2026-10-05-ha-home-page-ux-review*.md"
+    "Three fresh code reviews of the branch with triage and fix commits: docs/archive/reviews/2026-10-05-ha-pages-platform-code-review.md, 2026-10-05-ha-home-page-code-review.md, 2026-10-05-ha-pages-tooling-code-review.md",
+    "Earlier step reviews: docs/archive/reviews/2026-10-04-live-socket-step{1,2,3}-code-review.md; Edit board and redraw reviews",
+    "Three design reviews of the live-socket spec: docs/archive/reviews/2026-10-04-page-live-socket-design-review-{1,2,3}.md",
+    "A context-free UX review of the built Home page: docs/archive/reviews/2026-10-05-ha-home-page-ux-review*.md"
   ]
 }

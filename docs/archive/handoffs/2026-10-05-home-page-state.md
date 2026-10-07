@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-10-05
-branch: session/ha-pages-connection (workspace + youcoded); pushed, nothing merged
+branch: session/ha-pages-connection (workspace + youcoded); merged 2026-10-07
 ---
 
 # Home page (Home Assistant) and the Pages platform work — where it stands
@@ -45,10 +45,10 @@ Added after the first rewrite of this file (2026-10-05 to 10-07):
   draggable handle, and −/+ presses wait 0.8 s then send once; the target is held up to 20 s until the Nest reports it (ce0012a33).
 - Scenes (`-scenes.ts`, 1eca83579): colour cards in two sliding rows; colours are learned when a scene is pressed from the page
   (saved as `sceneLook` in the page's data), brightness and "moves" come from Home Assistant. Scenes and the lights list never
-  open together. Decks: `2026-10-04-home-redesign/scenes-all*` and `scenes.deck*`. Decisions and answers: `docs/active/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
+  open together. Decks: `2026-10-04-home-redesign/scenes-all*` and `scenes.deck*`. Decisions and answers: `docs/archive/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
 
 **Checks done:** three fresh code reviews (platform, Home page, tooling; fixes committed), earlier step reviews, a
-UX review (`docs/active/reviews/2026-10-05-ha-home-page-ux-review-2.md`, 17 fixed, U6/U12/U20 not, see its Triage).
+UX review (`docs/archive/reviews/2026-10-05-ha-home-page-ux-review-2.md`, 17 fixed, U6/U12/U20 not, see its Triage).
 Phone access to the 7 page socket/video channels signed off by Destin (`tests/fixtures/phone-open-channels.json`). Contract/grader/acceptance skipped on
 Destin's call (`2026-10-04-home-redesign/home-redesign.contract.skipped.json`).
 

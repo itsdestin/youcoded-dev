@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-10-04
 reviews: youcoded commit 88e70c04e (step 1 of 2026-10-04-page-live-socket-and-camera-video.md)
 ---

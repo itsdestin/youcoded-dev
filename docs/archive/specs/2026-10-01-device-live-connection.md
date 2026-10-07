@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-10-01
 source: home-page-v2.questions (Q-where: "mixed"; Q-kind earlier: any-device)
 branch: youcoded session/ha-pages-live

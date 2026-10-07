@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-10-04
 reviews: youcoded commit 4a0215be5 (step 3: camera video played by the app, Part 2)
 ---

@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-10-04
 reviews: youcoded commit bb7680b44 (step 2 of 2026-10-04-page-live-socket-and-camera-video.md, Part 1)
 ---
