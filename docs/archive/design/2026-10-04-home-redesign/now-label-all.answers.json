@@ -1,0 +1,32 @@
+{
+ "deck": "now-label-all",
+ "started": "2026-10-06T02:02:40.148Z",
+ "submitted": "2026-10-06T02:03:38Z",
+ "cur": 2,
+ "answers": {
+  "NL-1": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791252197233,
+   "seconds": 37,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "NL-2": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791252205148,
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "NLV-1": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791252217061,
+   "seconds": 12,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

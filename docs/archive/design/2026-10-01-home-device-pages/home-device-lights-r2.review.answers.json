@@ -1,0 +1,30 @@
+{
+ "deck": "home-device-lights-r2",
+ "started": "2026-10-01T10:10:43.412Z",
+ "submitted": "2026-10-01T10:12:08Z",
+ "cur": 2,
+ "answers": {
+  "S-room": {
+   "note": "i think it should be a single all on/all off button that just flips back and forth depending on whether any lights are on. aalso cna improve the ac/thermostat card visually.",
+   "t": 1790849514652,
+   "v": "other",
+   "seconds": 71,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-colour": {
+   "v": "yes",
+   "t": 1790849523483,
+   "seconds": 9,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-speaker": {
+   "v": "yes",
+   "t": 1790849527339,
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

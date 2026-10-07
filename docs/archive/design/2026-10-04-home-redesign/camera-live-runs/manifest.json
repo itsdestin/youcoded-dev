@@ -1,0 +1,92 @@
+[
+  {
+    "name": "pages/page/page-home#v-look-cam-b",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/camera-live-runs/pages/page/page-home#v-look-cam-b/creme.png",
+    "ms": 1502,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#v-look-cam-a",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/camera-live-runs/pages/page/page-home#v-look-cam-a/creme.png",
+    "ms": 1521,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#v-look-cam-c",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/camera-live-runs/pages/page/page-home#v-look-cam-c/creme.png",
+    "ms": 1535,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#v-look-cam-a",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/camera-live-runs/pages/page/page-home#v-look-cam-a/golden-sunbreak.png",
+    "ms": 1783,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#v-look-cam-b",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/camera-live-runs/pages/page/page-home#v-look-cam-b/golden-sunbreak.png",
+    "ms": 1797,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-home#v-look-cam-c",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/camera-live-runs/pages/page/page-home#v-look-cam-c/golden-sunbreak.png",
+    "ms": 1801,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  }
+]

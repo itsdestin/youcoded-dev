@@ -1,0 +1,60 @@
+{
+  "title": "Home page background: try each one",
+  "key": "home-page-bg-live",
+  "out": "page-bg.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "PBL-1",
+      "surface": "Home page",
+      "path": "Home > whole page",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Switch a light on or off and scroll. Which background feels best to live with?",
+      "notice": "Try switching lights in Destin's Room and watch the third option's colours follow. The second one drifts very slowly. Everything is practice data.",
+      "risk": "Nothing here reaches a real light.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "See-through",
+          "summary": "A stand-in wallpaper behind glass cards (the real version needs an app change).",
+          "risk": "Looks like a flat colour in themes without a wallpaper.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-page-bg-a-play"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Frosted canvas",
+          "summary": "A soft theme-coloured glow that slowly drifts behind glass cards.",
+          "risk": "The drift is very slow and stops with reduced motion or when the page is hidden.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-page-bg-b-play"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Colours of the house",
+          "summary": "The glow takes the colours of the lights that are on and the playing app.",
+          "risk": "The page's colour changes as you switch lights.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-page-bg-c-play"
+          }
+        }
+      ]
+    }
+  ]
+}

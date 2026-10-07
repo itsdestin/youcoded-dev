@@ -150,6 +150,7 @@ checkout with a desktop/ folder"). A pane shows one of two things:
 | `{"surface", "round", "candidate"}` | ONE authored design out of `compare/registry.tsx`. `round` is required, because candidate names repeat across rounds |
 | `{"app": "<scenario>"}` | a real screen of the app: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`. Add `"stalled": true` for the parked-turn state |
 | `{"view": "<name>"}` | one of the standalone surfaces: `tools`, `compare`, `assistant-final`, `attachments`, `session-pills` |
+| `"params": {"key": "value"}` (on an app pane) | extra workbench switches, text to text, e.g. `{"openPage": "page-home", "pagesHome": "connected"}` opens a Pages screen. A step-level `params` and a variant's add up (the variant wins a clash). Keys the pane already sets (`mode`, `child`, `theme`, `latency`, `scenario`, `view`, `stalled`) are refused at build time |
 
 `variants[]` (each naming its own candidate or screen) makes it a pick-one; without them it is
 yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app

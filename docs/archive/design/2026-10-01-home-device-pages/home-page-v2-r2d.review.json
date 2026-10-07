@@ -1,0 +1,33 @@
+{
+  "title": "The Home page, next version — round 2, fourth look",
+  "key": "home-page-v2-r2d",
+  "out": "home-page-v2-r2d.review.html",
+  "images": "images/home-page-v2-r2d.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-tv-final",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 61.8, 21.8, 38.0] },
+      "headline": "The TV's arrow became a remote icon, lit while the remote is open, and the app buttons moved to the bottom of the remote.",
+      "changed": "Your two notes on the last look. The remote now reads top to bottom: arrows and OK, Back/Home/Play-pause, volume, then the apps.",
+      "notice": "Tapping the TV's name opens the remote too; the icon is the same press.",
+      "risk": "With the apps at the bottom, a short window may need a scroll to reach them."
+    },
+    {
+      "id": "S-source",
+      "surface": "Pages",
+      "path": "Pages → Home, Living Room speaker",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [47.8, 26.5, 21.8, 26.0] },
+      "headline": "A speaker playing from Spotify shows Spotify's mark and \"on Spotify\"; the soundbar playing the TV shows a TV.",
+      "changed": "Your note on Now playing. The mark comes from what Home Assistant reports the music is from: Spotify, YouTube Music, Apple Music, Amazon Music and Pandora are known.",
+      "notice": "When Home Assistant does not say where the music is from, the music note stays.",
+      "risk": "Some speakers never report a source, so the same song can show a mark on one speaker and a note on another."
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "title": "Home page Lights tab: try it",
+  "key": "home-lights-tab-live",
+  "out": "lights-tab.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "LV-1",
+      "surface": "Home page",
+      "path": "Home > Lights tab",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Switch the whole room off, dim it, then change one light. Which feels the most obvious?",
+      "notice": "In Destin's Room press All off, then All on. Drag the room bar. Switch one light and dim it (tiles: tap, or drag sideways; mixer: pull a fader). Press the paint palette for scenes and a colour dot for colours. Press the arrow to fold the card.",
+      "risk": "Everything here is practice data; nothing reaches a real light.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Room strip",
+          "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+          "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Tile grid",
+          "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+          "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Mixer",
+          "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+          "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-c"
+          }
+        }
+      ]
+    },
+    {
+      "id": "LV-2",
+      "surface": "Home page",
+      "path": "Home > Lights tab",
+      "live": {
+        "app": "default"
+      },
+      "headline": "With a whole room unreachable, is it clear what you can and cannot do?",
+      "notice": "Living Room's lights are unreachable, so its card sits last and greyed. Try its buttons, then Destin's Room's last light.",
+      "risk": "The unreachable state is set up just for this practice pane.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Room strip",
+          "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+          "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-a-gone"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Tile grid",
+          "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+          "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-b-gone"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Mixer",
+          "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+          "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-c-gone"
+          }
+        }
+      ]
+    }
+  ]
+}

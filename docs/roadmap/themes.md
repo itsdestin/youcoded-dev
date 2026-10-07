@@ -13,12 +13,13 @@ here: installing or browsing themes (marketplace).
       monospace); six of eight published themes specify a font.
       `all` `confirmed` `P3` `checked 2026-09-01`
 
-- [ ] Themes to verify, not build: 2 checks.
+- [ ] Themes to verify, not build: 3 checks.
       (a) Unverified whether a theme's app icon reaches the dock on Ubuntu's default desktop (GNOME on
       Wayland reads the icon from an installed .desktop entry, which an AppImage has none of); Destin
       stopped testing ("i think this is fine"). (b) The session switcher's corners should follow the
       theme's rounding rule; probably already does, nothing to see until a differently-rounded theme
-      is installed.
+      is installed. (c) Settings → Appearance: the first theme pictures (Crème, Halftone Dimension)
+      open cut off at the top of the theme list (a UX tester, 2026-10-05).
       `all` `needs-verify` `P3` `checked 2026-07-20`
 
 - [ ] Parked ideas: 3 theme ideas.

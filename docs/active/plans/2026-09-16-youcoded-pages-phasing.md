@@ -11,6 +11,16 @@ include. This plan puts it in build order. Each phase ends with something a pers
 Phases 1 and 2 are built and on master; Phases 3 and 4 are directions, not decisions — their
 open questions get answered on a questions deck when each phase starts.
 
+## Update 2026-10-07 — the home-network connection is on master
+
+Merged 2026-10-07 from `session/ha-pages-connection`: a page's home-device connection (approval with address + key, one-shot socket),
+a live socket for pages, camera video played by the app, recorded clips, the 17 `pages:*` channels as table entries,
+and the Home Assistant Home page itself (a hand-installed page, not shipped in the app). Specs:
+`docs/archive/specs/2026-10-01-device-live-connection.md`, `2026-10-04-page-live-socket-and-camera-video.md`. Pages and
+Office also frost over the theme wallpaper (Appearance switch "Show theme background behind pages"). Phases 3 and 4
+are still open. State and unverified items: `docs/archive/handoffs/2026-10-05-home-page-state.md`. The "Next build"
+bullet below is done.
+
 ## Where to pick up (2026-09-23)
 
 - **Released?** Phase 2 is on master (youcoded#552) but in no app release yet. When the release

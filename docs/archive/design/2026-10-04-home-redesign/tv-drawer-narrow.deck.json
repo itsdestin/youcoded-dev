@@ -1,0 +1,61 @@
+{
+  "title": "TV remote: the app drawer on a narrow card",
+  "key": "home-tv-drawer-narrow",
+  "out": "tv-drawer-narrow.deck.html",
+  "images": "images/tv-drawer-narrow.deck",
+  "runs": {
+    "after": "tv-drawer-runs/narrow"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "TD-2",
+      "surface": "Home page",
+      "path": "Home > Media or Home tab, narrow card",
+      "headline": "On a narrow card, is this bottom bar the right way for the drawer to collapse?",
+      "notice": "Below roughly 460 pixels the drawer drops under the arrow pad as one row you slide sideways. The Home tab card is always this narrow.",
+      "risk": "Apps past the first five or six are hidden until you slide the row, and the grid option needs a tap on More.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "a",
+          "label": "Icon rail",
+          "crop": "pages/page/page-home#v-tv-remote-a",
+          "summary": "A slim column of app icons to the left of the arrow pad, no names (hover shows one). The app on the TV has a ring. Two columns on a normal card, three on a very wide one, and the icons grow a little.",
+          "risk": "Quietest and tidiest, but you must recognise an app by its logo alone; the less common ones (Tubi, Plex) are easy to mistake.",
+          "runs": [
+            "after"
+          ]
+        },
+        {
+          "id": "b",
+          "label": "Launcher grid",
+          "crop": "pages/page/page-home#v-tv-remote-b",
+          "summary": "A small grid of app icons with names under them, left of the pad, like a phone home screen. Only the first few show, with a More tile that opens the rest.",
+          "risk": "Easiest to read, but the apps past the first few take a tap on More, and opening them makes the card taller.",
+          "runs": [
+            "after"
+          ]
+        },
+        {
+          "id": "c",
+          "label": "Name list",
+          "crop": "pages/page/page-home#v-tv-remote-c",
+          "summary": "A list left of the pad: logo and name on each row, with On now beside the open app. Becomes two or three columns on a wider card.",
+          "risk": "Clearest labels and best for many apps, but the widest and busiest of the three.",
+          "runs": [
+            "after"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -76,3 +76,34 @@ test('two tabs on the same address each keep their own theme', { skip: !canBrows
     assert.equal(await themeOf(b), 'light');
   } finally { pool.close(); server.close(); }
 });
+
+// STILL runs inside the page; a tiny fake page lets the cap logic be tested without a browser.
+// WHY (2026-10-05 review F1): the cap ended the wait at 3 s even while the page said "my first answer is coming (up to 8 s)".
+import vm from 'node:vm';
+import { STILL } from '../engine.mjs';
+const runStill = (cap, win) => {
+  let now = 0;
+  const timers = [];
+  const ctx = { performance: { now: () => now }, document: { getAnimations: () => [], images: [] },
+    requestAnimationFrame: (f) => f(), setTimeout: (f) => timers.push(f), window: win };
+  vm.createContext(ctx);
+  let result = null;
+  vm.runInContext(STILL(cap), ctx).then((v) => { result = v; });
+  return async (limit) => { while (result === null && now < limit) { now += 16; timers.splice(0).forEach((f) => f()); await Promise.resolve(); await Promise.resolve(); } return result; };
+};
+
+test('still stops at its cap while work is in flight', async () => {
+  const win = { __shootInflight: 1 };
+  assert.ok((await runStill(3000, win)(20000)) <= 3100);
+});
+
+test('still keeps waiting past its cap while the page holds its first picture, up to the hold deadline', async () => {
+  const win = { __shootInflight: 1, __shootHoldUntil: 8000 };
+  const t = await runStill(3000, win)(20000);
+  assert.ok(t >= 7900 && t <= 8100, `waited ${t} ms`);
+});
+
+test('still ends as soon as the hold is released and nothing is in flight', async () => {
+  const win = { __shootInflight: 0, __shootHoldUntil: 8000 };
+  assert.ok((await runStill(3000, win)(20000)) < 100);
+});

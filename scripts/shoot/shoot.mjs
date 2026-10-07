@@ -215,15 +215,27 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // the panel under it, not two at once. WHY (2026-09-26): ten dialogs got this wrong
     // before the shell took it over, and nothing noticed until a sweep like this one.
     if (opt.check) {
-      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip').map((l) => `${l.kind} "${l.name}"`);
-      const before = await layersNow();
-      if (before.length) {
+      // Every layer with its real element's index into window.__exploreLayers (listLayers sets it).
+      const read = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.map((l, i) => ({ ...l, i })).filter((l) => l.kind !== 'tooltip');
+      const label = (ls) => ls.map((l) => `${l.kind} "${l.name}"`);
+      const first = await read();
+      const before = label(first);
+      if (first.length) {
+        // WHY identity, not names (2026-10-04): a layer's name is read from its text or its
+        // screen mark, and a mark that mounts a moment later renames the SAME panel ("Office
+        // Back to chat..." -> "office/document") — under load that read as "Escape closed two
+        // layers" on office/versions. So pin the real elements now and, after Escape, ask which
+        // of them are still on the page; names stay only for the error message.
+        await tab.evaluate(`window.__shootBefore = ${JSON.stringify(first.map((l) => l.i))}.map((i) => window.__exploreLayers[i]); 0`, 10_000);
         await tab.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
         await tab.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
         await tab.still(2000);
-        const after = await layersNow();
-        const want = before.slice(1).join(' › ');
-        if (after.join(' › ') !== want) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        const after = await read();
+        const kept = JSON.parse(await tab.evaluate(`JSON.stringify(window.__shootBefore.map((e) => window.__exploreLayers.includes(e)))`, 10_000));
+        // Exactly the top one gone, every one under it still there, and nothing new opened.
+        await tab.evaluate('delete window.__shootBefore; 0', 10_000); // WHY (review F11): leave nothing of the check on the page
+        const ok = kept[0] === false && kept.slice(1).every(Boolean) && after.length === first.length - 1;
+        if (!ok) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${label(after).join(' › ') || 'nothing'}`);
       }
     }
     r.ok = true;
