@@ -118,6 +118,9 @@ Then:
   the check returned.
 - **Roadmap:** the area file whose `Filing test:` says yes; **dedupe by file or symbol name,
   not by symptom** — searching `flaky` instead of `sync-spaces-engine` filed a duplicate.
+  A small finding becomes one more lettered clause in its theme's bundled entry, not a new
+  entry (the roadmap is budgeted at 150 entries and was 423 before 2026-10-05); a new entry
+  is `P3` unless it blocks the next release or Destin named it.
 - **Dropped:** say so in your reply, with the reason. An unrecorded rejection gets re-argued.
 - **When editing is authorized:** append this session's entry to `docs/wrap-ups.md` — its header explains the format. In a read-only session, give the retrospective in chat and ask before recording it. The ledger is Step 1 for the next editing session.
 

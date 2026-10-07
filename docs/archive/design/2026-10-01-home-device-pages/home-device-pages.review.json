@@ -1,0 +1,52 @@
+{
+  "title": "A page that reaches a device at home — the screens",
+  "key": "home-device-pages-review",
+  "out": "home-device-pages.review.html",
+  "images": "images/home-device-pages.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["golden-sunbreak", "midnight", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-card",
+      "surface": "Pages",
+      "path": "Pages → Home, the first time it opens",
+      "crop": "pages/page/page-home",
+      "headline": "Before the Home page opens, it asks to reach your Home Assistant, with the address in a box you can change.",
+      "changed": "A new kind of line on the approval card you already approved for websites. It names the device, shows the page's suggested address in an editable box, and says the connection is usually not encrypted (your S-plain-connection answer).",
+      "notice": "One card, one decision, same Continue and Not now as every other page. Changing the address changes the sentence above it as you type.",
+      "risk": "Someone who doesn't know their Home Assistant's address has to find it; the suggestion (homeassistant.local:8123) is right for most homes but not yours (yours is 100.99.234.114:8123)."
+    },
+    {
+      "id": "S-refused",
+      "surface": "Pages",
+      "path": "Pages → Home, with a website typed into the address box",
+      "crop": "pages/page/page-home#refused",
+      "headline": "Type a website into the box and the card says why it can't be used, and Continue stays greyed out.",
+      "changed": "The address is checked as you type, with the same rule the app enforces behind the scenes: home addresses (192.168…, 10…, 172.16–31…), Tailscale ones (100…), and names ending in .local, .lan or .ts.net. Anything else is explained and refused.",
+      "notice": "The sentence above stops naming an address until the box holds one that is allowed, so it never reads as if a website were \"a device in your home\".",
+      "risk": ""
+    },
+    {
+      "id": "S-key",
+      "surface": "Pages",
+      "path": "Pages → Home → Continue",
+      "crop": "pages/page/page-home#key",
+      "headline": "Step two asks for the Home Assistant key, with a button that opens the right Home Assistant screen.",
+      "changed": "Same key step as the weather and Todoist pages, plus an Open Home Assistant button that goes straight to the screen where keys are made, at the address you allowed. The steps under it are the page's own words.",
+      "notice": "The note under the box names exactly where the key will be sent (your allowed address). The key is stored encrypted on this computer only, as with every other key.",
+      "risk": "Home Assistant shows a new key only once; if it is closed before copying, a second key has to be made (the old one does no harm)."
+    },
+    {
+      "id": "S-page",
+      "surface": "Pages",
+      "path": "Pages → Home, after Allow",
+      "crop": "pages/page/page-home#connected",
+      "headline": "The Home page: your rooms as cards, each light with a switch and brightness, plus the thermostat, TVs and speakers, and cameras.",
+      "changed": "Everything you picked on the questions page: lights by room, thermostat and TV, camera snapshots. Rooms and devices come from Home Assistant itself, so they stay right as you add things. Shown here against a pretend Home Assistant.",
+      "measured": "Checks every 5 seconds while on screen; camera pictures every 10 seconds",
+      "notice": "Switches move the moment you press them. A device that is off or unplugged reads \"Not responding\" and is greyed. \"Hide things\" (top right) lets you tuck away anything you never use; your choice is kept with the page.",
+      "risk": "A change made elsewhere (a wall switch, the phone) can take up to 5 seconds to show. Pictures and colours of individual bulbs (hue, colour temperature) are not in this first version."
+    }
+  ]
+}

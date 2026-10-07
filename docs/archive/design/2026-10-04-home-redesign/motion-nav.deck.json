@@ -1,0 +1,60 @@
+{
+  "title": "Home page motion when moving around \u2014 try three ways",
+  "key": "home-motion-nav-live",
+  "out": "motion-nav.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "MN-1",
+      "surface": "Home page",
+      "path": "Home > any tab, any card, the device pop-up",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Which way of moving around the Home page feels most polished without slowing you down?",
+      "notice": "Do the same in each: click Lights, Media, Home, then the gear. In Destin's Room open and close the Lights arrow, Scenes, the TV's Remote and a speaker's Group. Press and hold a card (or right-click) for the pop-up; close it with X, Escape, then a click outside. Click quickly between things.",
+      "risk": "All three add a short movement (about a fifth of a second) to actions that are instant today. None of them moves anything when the page refreshes by itself, and all turn off if the computer is set to reduce motion.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Quiet fades",
+          "summary": "What you open fades in and rises a few pixels. The page you leave does not move. Closing a card fades its contents out first; closing the pop-up fades it away. The arrows turn smoothly.",
+          "risk": "The calmest, but cards below a card you open or close still jump to their new places, and closing a card waits about a tenth of a second before it happens.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-nav-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Whole-page morph",
+          "summary": "The browser takes a snapshot before and after each click and blends between them. Room cards slide and stretch to their new size, the tab row stays put, and the pop-up fades up from slightly smaller.",
+          "risk": "Touches the most screen at once, and during the short blend (a fifth of a second) the page ignores clicks. Text inside a stretching card can look briefly squashed. Costs the most on a slow computer.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-nav-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Glide and grow",
+          "summary": "Pages slide in from the side the tab sits on, and the filled tab glides along the row. The pop-up grows out of the card you pressed and shrinks back into it. A card's contents drop in one after another, and cards below glide to their new places.",
+          "risk": "The most movement, so the most noticeable. The pop-up's text looks stretched for the first moment while it grows, and a card that opens near the screen's edge can make the glide look uneven.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-nav-c"
+          }
+        }
+      ]
+    }
+  ]
+}

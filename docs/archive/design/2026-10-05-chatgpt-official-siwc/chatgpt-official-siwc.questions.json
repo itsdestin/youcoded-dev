@@ -1,0 +1,193 @@
+{
+  "title": "Switching ChatGPT sign-in to OpenAI's official version",
+  "key": "chatgpt-official-siwc-questions",
+  "out": "chatgpt-official-siwc.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "ChatGPT sign-in",
+      "path": "Assistant settings → Cloud providers → ChatGPT",
+      "headline": "Which ChatGPT plan is your own account on today?",
+      "today": "Your account was on the free plan when the ChatGPT sign-in was first built in September. Today's tests of the official version worked on your account.",
+      "problem": "OpenAI says only Plus and Pro accounts can use the official version to run an app's AI. If you are still on free and it worked anyway, that rule is looser than written, and question 3 matters much less.",
+      "proposal": "Type the plan name as ChatGPT shows it: Free, Go, Plus, Pro, or Business.",
+      "answer": "words",
+      "prompt": "e.g. Plus"
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "ChatGPT sign-in",
+      "path": "Assistant settings → Cloud providers → ChatGPT",
+      "headline": "What happens to people already signed in with ChatGPT when the update arrives?",
+      "today": "Everyone signed in now is connected the unofficial way, by borrowing OpenAI's Codex app's identity. OpenAI could switch that off at any time.",
+      "problem": "An old sign-in can't be carried over to the official version, so each person has to sign in once more. The only question is when.",
+      "proposal": "Pick when people are moved over.",
+      "options": [
+        {
+          "id": "switch-now",
+          "label": "Ask everyone once",
+          "summary": "After updating, the ChatGPT card says \"Sign in again to keep using ChatGPT\". ChatGPT models are unavailable until they do.",
+          "pros": [
+            "One sign-in click per person, and everyone is on the supported version from day one.",
+            "If OpenAI later blocks the unofficial route, nobody is caught by surprise.",
+            "Only one way of connecting to maintain, so fewer places for bugs."
+          ],
+          "cons": [
+            "Anyone mid-conversation with a ChatGPT model after updating has to stop and sign in first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-old",
+          "label": "Keep old sign-ins",
+          "summary": "Existing sign-ins keep working the old way until the person signs out. New sign-ins use the official version.",
+          "pros": [
+            "Nobody notices anything when they update."
+          ],
+          "cons": [
+            "Those people stay on the route OpenAI could cut off, and when it breaks they get an error with no warning.",
+            "Both ways of connecting have to be kept working, roughly doubling what can break."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "ChatGPT sign-in",
+      "path": "Assistant settings → Cloud providers → ChatGPT",
+      "headline": "Should free ChatGPT accounts keep a way in?",
+      "today": "Any ChatGPT account, free ones included, can use its models in YouCoded through the unofficial route.",
+      "problem": "OpenAI says the official version only lets Plus and Pro accounts run an app's AI. Free users would sign in and then get OpenAI's \"not eligible\" refusal.",
+      "proposal": "Pick what free users get.",
+      "options": [
+        {
+          "id": "official-only",
+          "label": "Official version only",
+          "summary": "Free users who sign in see a plain message that their ChatGPT plan doesn't include using it in other apps. OpenRouter and local models stay available to them.",
+          "pros": [
+            "Everything runs on the version OpenAI supports.",
+            "Simplest to build and keep working."
+          ],
+          "cons": [
+            "Free ChatGPT users who use it in YouCoded today lose it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "free-fallback",
+          "label": "Old route for free plans",
+          "summary": "If OpenAI refuses an account as not eligible, YouCoded quietly falls back to the old unofficial route for that person.",
+          "pros": [
+            "Free users keep working as they do today."
+          ],
+          "cons": [
+            "Keeps the route OpenAI could cut off at any time, for exactly the people least likely to report it.",
+            "Two ways of connecting to maintain, and the person can't tell which one they're on."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "ChatGPT usage",
+      "path": "Under the ChatGPT card, the usage card, and the status bar",
+      "headline": "What should replace the ChatGPT usage bars?",
+      "today": "A ChatGPT session shows how much of the 5-hour and weekly allowance is left: bars under the ChatGPT card, the same windows in the usage card, and a chip in the status bar. The card also names your plan, such as \"Plus\".",
+      "problem": "The official version doesn't tell apps any of this (tested: OpenAI refuses the request). The bars, the chips and the plan name would have nothing to show.",
+      "proposal": "Pick what fills the gap.",
+      "options": [
+        {
+          "id": "link",
+          "label": "Link to ChatGPT's page",
+          "summary": "The bars and chips go. A \"Manage usage\" link opens ChatGPT's own usage page, where people also set how much YouCoded may use. When the limit is hit, the chat says so with the same link.",
+          "pros": [
+            "Always correct, because it's ChatGPT's own number.",
+            "It's also where people set YouCoded's share of their plan, so they need that page anyway.",
+            "OpenAI's guidelines ask apps to show exactly this link."
+          ],
+          "cons": [
+            "Checking how much is left takes a click into the browser instead of a glance."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove",
+          "label": "Remove them, nothing else",
+          "pros": [
+            "Least on screen."
+          ],
+          "cons": [
+            "People only find out they're near the limit when they hit it."
+          ]
+        },
+        {
+          "id": "estimate",
+          "label": "Estimate from our own counts",
+          "summary": "YouCoded counts what it has used and draws a bar against a guessed limit.",
+          "pros": [
+            "Something to glance at, like today."
+          ],
+          "cons": [
+            "Often wrong: it can't see the ChatGPT website or other apps using the same plan, and OpenAI doesn't publish the limits.",
+            "A wrong bar is worse than no bar: it can say \"plenty left\" right before a refusal."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "ChatGPT sign-in",
+      "path": "Assistant settings → Cloud providers → ChatGPT, and the first-run setup screen",
+      "headline": "Should the sign-in button follow OpenAI's official style?",
+      "today": "The button is YouCoded's own plain button reading \"Sign in with ChatGPT\", in the current theme's colours.",
+      "problem": "OpenAI's guidelines for the official version describe a \"Continue with ChatGPT\" button with ChatGPT's logo. I couldn't read whether that's required or only suggested.",
+      "proposal": "Pick the button.",
+      "options": [
+        {
+          "id": "keep-ours",
+          "label": "Keep our button",
+          "summary": "Same plain themed button, same words. Only what happens after clicking changes.",
+          "pros": [
+            "Matches every other button in the app and every theme.",
+            "Nothing new to review."
+          ],
+          "cons": [
+            "If OpenAI's guidelines turn out to be a requirement, we'd have to change it later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "official-button",
+          "label": "OpenAI's button",
+          "summary": "\"Continue with ChatGPT\" with ChatGPT's logo, as OpenAI's guidelines describe.",
+          "pros": [
+            "Instantly recognisable to people who've seen it on other sites.",
+            "Safest if OpenAI enforces its guidelines."
+          ],
+          "cons": [
+            "Brings OpenAI's look into the app, so it may clash with community themes.",
+            "Using OpenAI's logo comes with OpenAI's brand rules."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "How this gets built",
+      "path": "The steps between now and you trying it",
+      "headline": "Can this go the short way: one before/after deck of the changed screens, then building it?",
+      "today": "Bigger features go through an outside tester, a written definition of done you sign, and a final grading round, about 13 extra review agents in all.",
+      "problem": "Most of this change is invisible: how the app talks to OpenAI. On screen, only the ChatGPT card and the usage spots change. The full route would mostly review plumbing.",
+      "proposal": "Yes: after this page you get one before/after deck of the ChatGPT card, the usage card and the status bar. Then I build it, run the checks, and you try it in a test copy of the app. No: the full route, with the tester, a contract to sign and grading.",
+      "yes": "Short way",
+      "no": "Full route"
+    }
+  ]
+}

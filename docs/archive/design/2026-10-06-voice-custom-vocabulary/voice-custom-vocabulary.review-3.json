@@ -1,0 +1,19 @@
+{
+  "title": "Vocabulary — directly from the microphone",
+  "key": "voice-custom-vocabulary-review-3",
+  "out": "voice-custom-vocabulary.review-3.html",
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "live": { "worktree": "youcoded" },
+  "steps": [
+    {
+      "id": "L-6",
+      "surface": "Microphone",
+      "path": "Right-click the microphone beside Send",
+      "headline": "6. Right-click the microphone to open vocabulary directly.",
+      "changed": "The extra menu is gone. Right-click opens the chip editor you approved.",
+      "notice": "Try right-clicking the mic, then adding or removing a chip. Normal clicks still control dictation.",
+      "risk": "Preview only; saving does not affect recordings yet.",
+      "live": { "app": "default" }
+    }
+  ]
+}

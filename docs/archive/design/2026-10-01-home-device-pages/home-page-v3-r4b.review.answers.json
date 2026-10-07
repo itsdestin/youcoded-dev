@@ -1,0 +1,16 @@
+{
+ "deck": "home-page-v3-r4b",
+ "started": "2026-10-04T06:18:40.914Z",
+ "submitted": "2026-10-04T06:19:41Z",
+ "cur": 0,
+ "answers": {
+  "S-tab-clear": {
+   "note": "is the \"home assistsant/home\" header at the top of our page a page thing or a youcoded thing? could we remove and push the pills up?",
+   "t": 1791094780566,
+   "v": "other",
+   "seconds": 60,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

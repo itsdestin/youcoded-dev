@@ -1,0 +1,55 @@
+{
+  "title": "The Home page — round 3",
+  "key": "home-device-lights-r3",
+  "out": "home-device-lights-r3.review.html",
+  "images": "images/home-device-lights-r3.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built (test app, pretend Home Assistant)"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "midnight",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "S-room-one",
+      "surface": "Pages",
+      "path": "Pages → Home, the top of each room",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          38.8,
+          9.0,
+          6.6,
+          2.8
+        ]
+      },
+      "headline": "Each room has one button that flips: All off while any light is on, All on once they are all off.",
+      "changed": "The two buttons became one, as you asked. It reads the room each time: if even one light is on, it offers All off.",
+      "notice": "One press darkens a room no matter how many lights were on; the next press lights them all again.",
+      "risk": "A half-lit room can only go to all off in one press, never straight to all on; a second press then turns them all on."
+    },
+    {
+      "id": "S-thermostat",
+      "surface": "Pages",
+      "path": "Pages → Home, Upstairs, the thermostat",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          72.2,
+          11.4,
+          22.8,
+          16.0
+        ]
+      },
+      "headline": "The thermostat card is redrawn: the room's temperature large, the setting between two big round buttons, a scale, and the modes as pills.",
+      "changed": "The card takes a tint of what it is doing (blue cooling, orange heating, none when off) and says it under the temperature (Cooling, Heating, Holding). A scale from lowest to highest shows where the room is and where it is set. Off, Cool, Heat and Auto switch the mode in one press, showing only the modes your thermostat has.",
+      "notice": "You can see at a glance how far the room is from the setting, and change the mode without opening Home Assistant.",
+      "risk": "Your real thermostat is currently disconnected from Home Assistant (Nest needs you to sign in again), so this is shown with a pretend one."
+    }
+  ]
+}

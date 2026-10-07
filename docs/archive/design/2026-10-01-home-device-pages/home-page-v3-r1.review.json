@@ -1,0 +1,77 @@
+{
+  "title": "The Home page, round 4 — chips, their pages, scenes, settings, problems",
+  "key": "home-page-v3-r1",
+  "out": "home-page-v3-r1.review.html",
+  "images": "images/home-page-v3-r1.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-chips",
+      "surface": "Pages",
+      "path": "Pages → Home, the top of the page",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [21.6, 13.3, 74.1, 8.8] },
+      "headline": "Four live chips sit at the top: Lights, Media, Climate and Problems, each saying what is happening right now.",
+      "changed": "New. Lights reads \"5 on in 3 rooms\" or \"All off\", with \"1 not responding\" under it. Media reads \"2 playing · 1 TV on\" or \"All quiet\". Climate shows the weather and the thermostat. Problems reads \"4 to fix\" or \"All good\", and turns red when something needs you.",
+      "notice": "A chip's icon fills in while something of its kind is on. The gear can hide any chip.",
+      "risk": "Four chips need about 700 pixels side by side; on a narrow window they wrap onto two rows."
+    },
+    {
+      "id": "S-problems",
+      "surface": "Pages",
+      "path": "Pages → Home → Problems",
+      "crop": "pages/page/page-home#problems",
+      "highlight": { "box": [21.6, 27.6, 52.8, 58.5] },
+      "headline": "Problems lists what is wrong in plain words, most urgent first, each with the button that fixes it.",
+      "changed": "New. Sign in again opens the exact Home Assistant screen. Reconnect reloads that connection (the fix that brought the Hue lights back yesterday) and says Working while it runs. Open goes to the device. One cause is one problem: Nest's expired sign-in names every device it affects instead of listing each again.",
+      "notice": "Low batteries show here too: your light switches are at 1% and 5%.",
+      "risk": "Signing in to Nest itself has to happen in Home Assistant's own screen; the page can only take you there."
+    },
+    {
+      "id": "S-lights-page",
+      "surface": "Pages",
+      "path": "Pages → Home → Lights",
+      "crop": "pages/page/page-home#lights",
+      "highlight": { "box": [22.8, 27.6, 21.8, 72.0] },
+      "headline": "The Lights page shows only lights, every room open, with each room's Hue scenes in a folding Scenes section.",
+      "changed": "New. Scenes fold under the room's brightness bar and show which was used last; open, they are one-tap buttons named without the room's name (\"Tokyo\", not \"Destin's Room Tokyo\"). Scenes show the same way on the main page.",
+      "notice": "Pressing a scene marks it as the last one straight away; the lights follow a moment later.",
+      "risk": "Destin's Room has 32 Hue scenes, so its list is long when open."
+    },
+    {
+      "id": "S-media-page",
+      "surface": "Pages",
+      "path": "Pages → Home → Media",
+      "crop": "pages/page/page-home#media",
+      "highlight": { "box": [21.6, 27.6, 49.1, 64.0] },
+      "headline": "The Media page shows only TVs, soundbars and speakers, room by room, with everything you already approved for them.",
+      "changed": "New. Sonos grouping (your tick-list pick) will live here next.",
+      "notice": "Back, top left, returns to the full page; so does pressing the same chip again.",
+      "risk": "For now it is the same cards as the main page, filtered; it gets its own layout as grouping lands."
+    },
+    {
+      "id": "S-climate-page",
+      "surface": "Pages",
+      "path": "Pages → Home → Climate",
+      "crop": "pages/page/page-home#climate",
+      "highlight": { "box": [21.6, 27.6, 24.4, 65.0] },
+      "headline": "The Climate page shows the weather outside, then each thermostat.",
+      "changed": "New. Outside temperature, conditions and humidity come from Home Assistant's weather; your thermostat card sits under it.",
+      "notice": "Your real thermostat is Nest, so it stays unavailable until Nest is signed in again.",
+      "risk": "No forecast yet; say if you want one."
+    },
+    {
+      "id": "S-settings",
+      "surface": "Pages",
+      "path": "Pages → Home → the gear",
+      "crop": "pages/page/page-home#settings",
+      "highlight": { "box": [66.7, 12.2, 29.2, 34.5] },
+      "headline": "The gear next to Edit opens Page settings: one switch each for the four chips, Hue scenes, Favourites and camera pictures.",
+      "changed": "New. Switches take effect at once and are remembered.",
+      "notice": "Edit is still for single devices; the gear is for whole features.",
+      "risk": "Turning off camera pictures hides camera cards entirely."
+    }
+  ]
+}

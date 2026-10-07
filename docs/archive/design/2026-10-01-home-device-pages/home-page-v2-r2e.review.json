@@ -1,0 +1,44 @@
+{
+  "title": "The Home page, next version — round 2, fifth look",
+  "key": "home-page-v2-r2e",
+  "out": "home-page-v2-r2e.review.html",
+  "images": "images/home-page-v2-r2e.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-np-controls",
+      "surface": "Pages",
+      "path": "Pages → Home, Now playing on the TV and a speaker",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 64.4, 20.2, 14.0] },
+      "headline": "Previous, play/pause and next now sit inside the Now playing block, on TVs and on speakers alike.",
+      "changed": "Play/pause left the remote and the speaker's separate row: it lives with what is playing. On the TV the buttons go through the remote, so they work in any app.",
+      "notice": "The big middle button shows pause while playing and play while paused. A soundbar playing the TV's sound has none, as there is nothing of its own to pause.",
+      "risk": "Previous and next do whatever the app on the TV does with those keys; some apps skip, some seek."
+    },
+    {
+      "id": "S-remote-bar",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 82.0, 20.2, 4.5] },
+      "headline": "The remote opens from a full-width bar labelled Remote under Now playing; open, it reads Hide remote and its arrow flips.",
+      "changed": "The round remote icon is gone. The bar says what it does, and the TV's name is no longer cut short beside it.",
+      "notice": "The power button stays alone on the right of the TV's header.",
+      "risk": "It adds one row to every paired TV, even with the remote closed."
+    },
+    {
+      "id": "S-soundbar-vol",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV, volume",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 79.0, 20.2, 3.0] },
+      "headline": "The TV's volume bar and the remote's volume buttons now change the soundbar, because that is where the TV's sound comes out.",
+      "changed": "Home Assistant reports the Sonos Beam's source as TV, so the page sends volume there. The TV box's own volume keys never reached it, which is why volume did nothing.",
+      "notice": "Moving the TV's volume bar moves the soundbar's bar too: they are the same volume.",
+      "risk": "If the soundbar is switched to music, the TV's volume goes back to the TV box's own keys."
+    }
+  ]
+}

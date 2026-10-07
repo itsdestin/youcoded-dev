@@ -1,0 +1,27 @@
+{
+ "title": "Home page — slider handle, thermostat and tab row, built",
+ "key": "home-check-r2",
+ "out": "home-check-r2.html",
+ "themes": ["golden-sunbreak", "creme"],
+ "live": {"worktree": "sessions/ha-pages-connection/youcoded"},
+ "steps": [
+  {"id": "C-slider", "surface": "Pages", "path": "Pages → Home, any brightness or volume bar",
+   "headline": "Does the round handle now look attached to the bar, with no straight edge of fill showing beside it?",
+   "changed": "The fill now ends in a round cap exactly behind the handle, so the handle reads as the rounded tip of the fill at every value.",
+   "notice": "Drag a light's brightness bar slowly from empty to full, and the soundbar's volume bar. Look at the handle at 0%, halfway and 100%. Switch themes with the buttons at the top right.",
+   "risk": "Below 10% volume the speaker icon inside the bar hides, because the handle would sit on top of it.",
+   "live": {"app": "default", "params": {"openPage": "page-home", "pagesHome": "connected"}}},
+  {"id": "C-thermo", "surface": "Pages", "path": "Pages → Home, the Upstairs room",
+   "headline": "Is the Home page's thermostat now the Climate page's design, and does it fit the room card?",
+   "changed": "The room card and Favourites show the Climate page's dial (arc, set point, now-dot) with − and + either side and the modes underneath, scaled down to fit.",
+   "notice": "Scroll to Upstairs: press − and + and a mode. Then press the Climate pill and compare with the big one there.",
+   "risk": "On a very narrow window the dial shrinks a little more so nothing overflows.",
+   "live": {"app": "default", "params": {"openPage": "page-home", "pagesHome": "connected"}}},
+  {"id": "C-tabs", "surface": "Pages", "path": "Pages → Home, the row of pills at the top",
+   "headline": "When you change pages, does the row of pills now stay perfectly still?",
+   "changed": "The selected pill's fill no longer glides between pills, and the selected pill is no longer bold, so it no longer grows and pushes its neighbours.",
+   "notice": "Press Lights, Media, Climate, Problems, Activity and Home in turn, and the gear. Only the page below should slide.",
+   "risk": "The selected tab is now marked by its fill colour alone.",
+   "live": {"app": "default", "params": {"openPage": "page-home", "pagesHome": "connected"}}}
+ ]
+}

@@ -1,0 +1,73 @@
+{
+  "title": "The Home page, tiles — round 2",
+  "key": "home-device-lights-r2",
+  "out": "home-device-lights-r2.review.html",
+  "images": "images/home-device-lights-r2.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built (test app, pretend Home Assistant)"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "midnight",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "S-room",
+      "surface": "Pages",
+      "path": "Pages → Home, the top of each room",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          34.5,
+          9.2,
+          10.4,
+          2.6
+        ]
+      },
+      "headline": "Each room has All on and All off buttons instead of one switch.",
+      "changed": "The room's switch became two buttons, as you asked. A button that would do nothing is greyed: in Destin's Room every working light is on, so All on is greyed.",
+      "notice": "A half-lit room goes fully on or fully off in one press. Lights that are not responding, and lights you hid, are left alone.",
+      "risk": "A room with only one light shows no buttons, since the light's own tile does the same thing."
+    },
+    {
+      "id": "S-colour",
+      "surface": "Pages",
+      "path": "Pages → Home, the coloured dot on a light that is on",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          23.2,
+          19.5,
+          21.6,
+          16.5
+        ]
+      },
+      "headline": "Colour is now a dot of the light's own colour; pressing it opens whites and colours as two rows, the current one ticked.",
+      "changed": "The \"Colour\" label is gone: the button is the colour. The picker has a Whites row (warm, neutral, daylight) and a Colours row (eight colours plus a rainbow circle that opens a picker for any colour at all). The chosen one carries a tick.",
+      "notice": "The dot, the glow behind the bulb, the tile's tint and the brightness bar all change together the moment you pick. A bulb that only does whites shows only the Whites row.",
+      "risk": "\"Any colour\" uses your computer's own colour picker, which looks different on each system."
+    },
+    {
+      "id": "S-speaker",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room speaker and the TV",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          22.5,
+          59.8,
+          22.4,
+          12.8
+        ]
+      },
+      "headline": "The speaker and the TV are tiles too: press to switch on or off, and the speaker's volume is the same thick bar as brightness.",
+      "changed": "They used the old switch and a thin slider. Now the tile is the power button, the icon lights up when on, the song playing shows under the name, and volume is a thick bar beside a speaker symbol.",
+      "notice": "Everything on the page now works the same way: press a tile to switch it, drag its bar to adjust.",
+      "risk": "The TV shows no volume bar while it is off, and some TVs never report a volume Home Assistant can set."
+    }
+  ]
+}

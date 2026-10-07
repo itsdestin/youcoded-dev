@@ -1,152 +1,87 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
-- [ ] A project where a password file (like `.env`) was uploaded by an older app version keeps that copy
-      online and in its history. New edits now stay on the device, but nothing removes what already went up;
-      removing it means rewriting the project's history on every device. Decided out of scope, 2026-09-23.
-      `settings/sync` `desktop` `decision` `checked 2026-09-23` `security`
+- [ ] Two devices editing the same file: no way in the app to see or resolve the conflict.
+      The only sign is one amber line in Backup & Sync that vanishes on restart and names no file; there is no
+      way to find the "(from …)" copy or pick which version to keep, and the panel can show a green "All synced"
+      beside that amber line (seen 2026-09-23). Destin (beta.9 dogfood 2026-07-24; 2026-09-23): "we need to add
+      a better resolution mechanism/ui to the roadmap for split conversations with multiple copies" —
+      conversation-specific resolution, not just a warning; design open.
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#22): postponed — "1.3.3"
+      `settings/sync` `desktop` `decision` `P2` `checked 2026-09-23` `v1.3.3` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 
-- [ ] Two projects created before 2026-09-23 whose names differ only by capital letters ("Notes" and
-      "notes") still share one online copy and mix their files. New ones are refused; existing pairs are
-      not detected or separated.
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-23`
-
-- [ ] If the app crashes in the middle of a sync, the copies it saved of files git doesn't manage stay in the
-      hidden sync folder for good (never lost, never cleaned up, never offered back).
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-23`
-
-- [ ] The Android app's GitHub backup copies `mcp.json` (which can hold service keys) and settings into the
-      backup repository, with only junk files excluded. The desktop app no longer has this backup.
-      `android` `needs-verify` `checked 2026-09-23` `security`
-
-- [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
-      them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
+- [ ] Very long conversations (over 50 MB) stop updating on your other devices. The device that has them keeps
+      them, and the Sync panel now says so, but other devices never get the newest messages. Six of Destin's
       conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
-      `settings/sync` `all` `decision` `checked 2026-09-16`
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#23): postponed until after 1.3.1
+      `settings/sync` `all` `decision` `P2` `checked 2026-09-16`
 
-- [ ] If a conversation is over the sync size limit on this device AND another device changes its older
-      copy, sync here may fail every cycle with "Sync merge could not complete". Reasoned in the 2026-09-16
-      code review, not reproduced.
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+- [ ] Personal sync history only grows, and a first download of it shows nothing (2 things).
+      (a) Sync keeps every old version of every conversation forever: 2.6 GB online and 8 GB on the Z13
+      on 2026-10-05, more than the 5.6 GB of actual files (it was 1.7 GB and 2.5 GB in September). A new
+      device, or a repair that has to start over, must download all of it first. Needs a choice of how
+      much old history to keep, without losing any device's copy (report:
+      docs/active/investigations/2026-09-01-transcript-storage-long-term.md). (b) While that first
+      download runs, the Sync panel shows nothing about it; it can take an hour with no sign anything
+      is happening.
+      `settings/sync` `all` `confirmed` `P2` `checked 2026-10-05` `performance`
 
-- [ ] A dev copy of the app syncs the same Personal folder as the real app at the same time, so the two
-      race each other's sync steps. It let six over-limit files into the unpublished history on 2026-09-07
-      (that case is now blocked at upload); other effects of the race are unverified.
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+- [ ] Sync security gaps: three things that could expose secrets or let one device pose as another.
+      (a) A project where an older app version uploaded a password file (like `.env`) keeps that copy online and
+      in history; new edits stay on the device, but removing it means rewriting the project's history on every
+      device (decided out of scope, 2026-09-23). (b) The Android app's GitHub backup copies `mcp.json` (which can
+      hold service keys) and settings into the backup repository; the desktop app no longer has this backup.
+      (c) The sync worker accepts whatever device id a lease message claims without checking the signed-in
+      connection, so a client in your account could act as another of your devices (decided 2026-09-21 to file
+      as a potential issue, not fix now; report: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md).
+      `settings/sync` `all` `needs-verify` `P2` `checked 2026-09-21` `security`
 
-- [ ] "Last synced" on the Backup & Sync self row is the NEWEST time across all your spaces, so
-      one healthy space and two that cannot reach GitHub still read "just synced". Left as it
-      was when the offline-ticking half shipped 2026-09-16; needs a call on newest vs oldest
-      (or per-space rows). The rule itself lives in one helper (`self-sync-status.ts`) called
-      from two places in main; the panel only picks which source to read
-      `settings/sync` `desktop` `decision` `checked 2026-09-16`
+- [ ] Same conversation on two computers: four gaps in warnings and takeover.
+      (a) With the SyncHub down, force-taking-over a session leaves the original holder running as if nothing
+      happened, and the two installs keep rewriting each other's lease file (dev repro 2026-07-23; report:
+      docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md). (b) You can open a
+      conversation your other machine is actively working in with no warning (Destin, 2026-09-03); with the hub
+      unreachable the app stays silent, and the repro was a dev profile, so confirm in the installed app first.
+      (c) A device that slept past its 300 s lease can wake still writing a conversation another device took, with
+      no warning; the "yield and take back over" step was not built. (d) Unverified: a conversation resumed on
+      another computer may miss the latest helper messages (deferred by Destin 2026-09-23; report:
+      docs/active/investigations/2026-09-23-handoff-message-freshness.md).
+      `all` `confirmed` `P3` `checked 2026-09-01` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
-- [ ] With the SyncHub down, force-taking-over a session from a second install leaves the original holder running as
-      if nothing happened — no interrupt, no "moved" pill, and the two installs keep rewriting each other's lease file.
-      Seen in the M2 dev repro, 2026-07-23 (CC and native alike).
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
+- [ ] Backup & Sync panel: three wording and status gaps.
+      (a) "Last synced" shows the NEWEST time across spaces, so one healthy space and two that cannot reach
+      GitHub still read "just synced"; needs a call on newest vs oldest or per-space rows. (b) The (i) popup says
+      nothing about two devices having the same conversation open, and the takeover dialog says "didn't answer"
+      when it really "couldn't confirm the handoff" (Destin asked, 2026-09-21; decided: no hub-down warning, a
+      2–3 sentence paragraph in the popup, keep the first confirmation short). (c) From the PR #126 redesign: the
+      "additional backups" master toggle has no real saved state, and the main toggle reads OFF while "Waiting on
+      GitHub" (undecided).
+      `settings/sync` `desktop` `needs-verify` `P3` `checked 2026-09-01`
 
-- [ ] A device that slept past its 300 s lease can come back still writing a conversation another
-      device has since taken, with no warning on either side. Opening is now admitted by the backend
-      before any writer starts (youcoded#557: a losing device gets a message and Try again, a second
-      denial asks before taking over), but the waking-device case — yield to the device that kept
-      working, with a take-back-over affordance — was not built, and click-to-ready latency has not
-      been measured on two real computers. From the lease/handoff audit, 2026-09-21 (H5).
-      `settings/sync` `all` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+- [ ] Sync housekeeping: six leftovers and rare edge cases.
+      (a) Two projects made before 2026-09-23 whose names differ only by capitals ("Notes", "notes") still share
+      one online copy and mix files. (b) If the app crashes mid-sync, saved copies of files git doesn't manage
+      stay in the hidden sync folder forever. (c) A conversation over the size limit here, plus a change to its
+      older copy on another device, may fail every sync with "Sync merge could not complete" (reasoned, not
+      reproduced). (d) A dev copy of the app syncs the same Personal folder as the real app and they race each
+      other (once let six over-limit files into history; now blocked at upload). (e) The old frozen conversation
+      index is still read by the resume browser as a fallback; delete it once unneeded. (f) Decided 2026-09-02:
+      ignore stray `*.tmp` files everywhere (a crash can strand one and it rides to every device), which would
+      also stop syncing a file a user genuinely named `.tmp`.
+      `desktop` `confirmed` `P3` `checked 2026-09-01`
 
-- [ ] Verify whether a conversation resumed on another computer includes the latest helper messages,
-      not just the main conversation; a completed handoff may leave helper-card history incomplete.
-      Destin deferred this check on 2026-09-23; not reproduced across devices yet.
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-23` → docs/active/investigations/2026-09-23-handoff-message-freshness.md
+- [ ] Starring a model as a favourite on one device leaves the model picker on your other device empty until you
+      type, since favourites never leave the device (youcoded#279, 2026-07-31). Same empty list, second cause
+      (2026-09-06): a FRESH install has no favourites, so the picker offers nothing — not downloaded local
+      models, not even a Claude one — until you guess a name. Destin read it as "local models are missing". A fix
+      must cover both: syncing helps the second device, not first run.
+      `model-picker` `all` `confirmed` `P3` `checked 2026-09-06` → docs/active/investigations/2026-09-01-model-favourites-localstorage-only.md
 
-- [ ] Backup & Sync transparency pass on lease handoffs: the (i) popup says nothing about what
-      happens when two devices have the same conversation open, and the takeover dialog's wording
-      promises more than the system can know — "didn't answer" when really it "couldn't confirm the
-      handoff". The first confirmation also doesn't say the old device ends up with its own separate
-      copy unless you hover, and the conflict notice disappears. Destin asked for this directly
-      (2026-09-21). Same audit (F1/F4 hub-down warning, F3, F7, M1). Decided the same day
-      (deck Q-4/Q-5/Q-6/Q-7): NO hub-down warning — keep today's silence; the (i) popup gets a short
-      paragraph (2-3 sentences), not a full section; the separate-copy line in the first dialog was
-      NOT decided — Destin asked how the "second copy" interacts with git sync first (answered in
-      chat 2026-09-21: git merges cleanly unless both devices changed the same part, in which case
-      the other device's version keeps the filename and the local one becomes the "(from …)" copy);
-      Resolved 2026-09-23 (admission-repair deck Q-6): keep the ordinary confirmation short;
-      track better resolution of split conversations in the conflict-copy resolver item below.
-      The timeout wording becomes "couldn't confirm the handoff".
-      `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
-
-- [ ] The sync worker accepts whatever device id a lease message claims without checking it against
-      the signed-in connection that sent it, so a client in your account could act as another of
-      your devices — acquiring, renewing or releasing its lease. Needs the lease to be bound to the
-      authenticated connection plus a test that a forged device id is refused. Same audit (M2).
-      Decided 2026-09-21 (deck Q-10): NOT now — file it as a potential issue needing further
-      exploration rather than fix it in this feature (this item is that filing; revisit on its own).
-      `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
-
-- [ ] You can open a conversation your OTHER machine is actively working in, and nothing warns you —
-      no dialog, no pill, no note. Destin, 2026-09-03, resuming from a dev window while the same
-      sessions ran on his laptop. Mechanism is understood and is the ACQUIRER half of the item
-      above: `acquire()` in `conversations/lease-client.ts` asks the hub, and on a null reply
-      (hub down / no delivery path) holds OPTIMISTICALLY and returns ok — the never-block rule.
-      The takeover dialog's three phases (`confirm` / `force` / `undeliverable`, `App.tsx`) all
-      hang off the hub having ANSWERED, so a hub that cannot answer produces silence rather than
-      any of them. The lease-FILE fallback cannot cover this since files moved to `userData`
-      (`fbc5d296`, 2026-07-30) and two machines never share that dir. So cross-machine protection
-      is exactly as good as hub reachability, and degrades silently to none. Never-block is a
-      deliberate choice; never-WARN looks like an oversight of it — an optimistic hold could still
-      say "couldn't check your other devices". CAVEAT before acting: this repro was a dev profile,
-      whose isolated userData may mean it never connects to the hub at all, so confirm in the
-      installed app first
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-03` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
-
-- [ ] Star a model as a favourite on one device and the model picker on your other device opens empty, with no hint
-      why, until you type. Favourites never leave the device they were set on. From youcoded#279, 2026-07-31.
-      **Same empty list, second cause, seen 2026-09-06:** a FRESH install has no favourites at all, so the picker
-      offers nothing — not the local models you just downloaded, not even a Claude one — until you guess to type a
-      name. Destin hit it in a clean profile and reasonably read it as "local models are missing". Whatever fixes the
-      empty state has to cover both: syncing favourites helps the second device and does nothing for the first run.
-      `model-picker` `all` `confirmed` `checked 2026-09-06` → docs/active/investigations/2026-09-01-model-favourites-localstorage-only.md
-
-- [ ] Backup & Sync popup follow-ups still owed from the PR #126 redesign: the "additional backups" master toggle has
-      no real saved on/off (it just mirrors whether any backup is active), and the main toggle's checked-state while
-      "Waiting on GitHub" reads OFF — undecided. 2026-07-15.
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-01`
-
-- [ ] Legacy conversation-index full retirement: the frozen read-only index (and its on-disk file) is still read by
-      the resume browser as a fallback; delete the read path and the file once the residual legacy-only rows are
-      confirmed unneeded. From the PITFALLS "Legacy sync demolition (Plan 2c)" sweep, 2026-07-15.
-      `desktop` `needs-verify` `checked 2026-09-01`
-
-- [ ] Decided 2026-09-02: ignore stray `*.tmp` files everywhere. A crash between write and rename can strand one
-      in a synced folder and it then rides to every device as junk. Per-writer sweeps (PR #296) already cover the
-      known writers; a blanket rule would also stop syncing and backing up any file a user genuinely named `.tmp`.
-      Destin's call, deliberately not slipped into #296 (2026-08-12).
-      `desktop` `confirmed` `checked 2026-09-02`
-
-- [ ] When two devices edit the same file, the only sign is one amber line in Backup & Sync that vanishes on restart
-      and names no file — there is no way in the app to find the "(from …)" copy or pick which version to keep.
-      Destin, beta.9 dogfood 2026-07-24; milestone his call. Reaffirmed 2026-09-23 in admission-repair
-      deck Q-6: "we need to add a better resolution mechanism/ui to the roadmap for split conversations
-      with multiple copies." Include conversation-specific resolution, not just a warning; design remains open.
-      Also: the panel can show a green "All synced" right beside that amber line (seen 2026-09-23).
-      `settings/sync` `desktop` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
-
-- [ ] Idea: same-machine takeover handoff without the hub — two installs sharing `~/YouCoded` (dev instance + built
-      app) can see each other's lease files but can't deliver a takeover request when the SyncHub is down, since
-      the request has exactly one transport. A file-based request signal would make hub-less handoff work. 2026-07-23.
-      `desktop` `parked` `checked 2026-09-01`
-
-- [ ] Idea: restore-from-backup redesign (removed in Plan 2c) — rethink it around local models, accounts and platform.
-      2026-07-15.
-      `all` `parked` `checked 2026-07-15`
-
-- [ ] Idea: YouCoded Cloud sync transport — zero-setup sync with no GitHub needed, likely a paid tier (R2 content-
-      addressed chunked storage, client-side end-to-end encryption, accounts). Must slot in below the SyncTransport
-      contract-test seam with nothing above it changing. Spec §16. 2026-07-03.
-      `all` `parked` `checked 2026-07-03`
-
-- [ ] Idea: a synced per-device SystemState file (CPU/GPU/RAM/storage, OS, tool versions, local models, last seen)
-      in the Personal space, queryable by the assistant ("what machines do I have", "can my laptop run this model"),
-      with an optional Settings → System View dashboard. 2026-07-14.
-      `all` `parked` `checked 2026-07-14`
-
+- [ ] Parked ideas: sync (four things).
+      (a) Same-machine takeover without the hub: two installs sharing `~/YouCoded` cannot deliver a takeover
+      request when the SyncHub is down; a file-based request signal would fix it. (b) Restore-from-backup
+      redesign (removed earlier), rethought around local models, accounts and platform. (c) YouCoded Cloud sync:
+      zero-setup sync with no GitHub, likely a paid tier, end-to-end encrypted, below the existing transport
+      contract. (d) A synced per-device SystemState file (hardware, OS, tool versions, local models) the
+      assistant can query ("can my laptop run this model"), with an optional Settings dashboard.
+      `all` `parked` `P3` `checked 2026-07-03`

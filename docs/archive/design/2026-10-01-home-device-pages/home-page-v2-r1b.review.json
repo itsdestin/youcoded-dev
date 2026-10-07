@@ -1,0 +1,22 @@
+{
+  "title": "The Home page, next version — round 1, the lights card again",
+  "key": "home-page-v2-r1b",
+  "out": "home-page-v2-r1b.review.html",
+  "images": "images/home-page-v2-r1b.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-nest",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room, lights card open",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [22.8, 48.6, 21.9, 51.0] },
+      "headline": "The All row is now the lights card's header, and each light sits indented beneath it on a guide line, inside the card.",
+      "changed": "Before, All and each light were the same tile side by side, so the lights did not look like they belonged to All. Now the card has one border; All is its top row, a line separates it, and the lights are indented under it.",
+      "notice": "Folded, the card is just its header row, the same size as a single light's tile.",
+      "risk": "The indent makes each light a little narrower, so the colour swatches wrap onto one more line."
+    }
+  ]
+}

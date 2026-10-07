@@ -1,0 +1,66 @@
+{
+  "title": "Home page Lights tab: pick a card style (round 2b)",
+  "key": "home-lights-tab-2b",
+  "out": "lights-tab-2b.choice.html",
+  "images": "images/lights-tab-2b.deck",
+  "runs": {
+    "after": "lights-tab-2b-runs"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "crops": {
+    "lt2b-rows": [
+      "lights",
+      "rows",
+      "540x730+306+168"
+    ],
+    "lt2b-tiles": [
+      "lights",
+      "tiles",
+      "540x440+306+168"
+    ],
+    "lt2b-chips": [
+      "lights",
+      "chips",
+      "540x360+306+168"
+    ]
+  },
+  "steps": [
+    {
+      "id": "LT2B-1",
+      "surface": "Home page",
+      "path": "Home > Lights tab",
+      "headline": "Which card style should each room use on the Lights tab?",
+      "notice": "Each room is one card with the page's own round All button, the palette scenes button, the fold arrow and the room bar on top. Cards start closed; here Destin's Room is open, with its unreachable TV backlight last.",
+      "risk": "All three keep your earlier choices; colour pop-ups close on an outside click or Escape.",
+      "variants": [
+        {
+          "id": "rows",
+          "label": "Roomy rows",
+          "crop": "lt2b-rows",
+          "summary": "One wide, roomy row per light: bulb, name and percent on top, a thick bar underneath, and a colour dot. The dot opens the colour menu inside the card, pushing the lights below it down.",
+          "risk": "Longest card: three working lights already fill a screen, and opening a colour menu makes it taller still. On a phone every bar stays easy to hit."
+        },
+        {
+          "id": "tiles",
+          "label": "Big tiles",
+          "crop": "lt2b-tiles",
+          "summary": "Two or three big tiles per row. A tile glows and fills to show how bright it is, with the percent in large type. Tap to switch, drag sideways to dim. The colour dot opens a small floating colour panel next to the tile.",
+          "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. The floating panel covers the lights beside it until you tap away or press Escape. On a phone two tiles fit per row."
+        },
+        {
+          "id": "chips",
+          "label": "Chips",
+          "crop": "lt2b-chips",
+          "summary": "Every light is one small chip you tap to switch, packed in a wrapped line so a whole room fits in a few lines. Press the little arrow on a chip and it opens into a full-width panel with its bar and a colour dot; the dot opens the floating colour panel.",
+          "risk": "Dimming or recolouring takes an extra press to open a chip first, and the open panel pushes the other chips down. Chips are the most compact, so names that are long get cut short on a phone."
+        }
+      ],
+      "runs": [
+        "after"
+      ]
+    }
+  ]
+}
