@@ -69,7 +69,7 @@ has passed ~8 items — graduate it to its own file.
       floating themes) and Phase 2 (connections and refresh) are on master; Destin tested a live
       dashboard and a keyed weather page. 2026-10-07: a page's home-device connection (approval with
       address + key), a live connection for pages, camera video played by the app, see-through page
-      glass and the hand-installed Home Assistant Home page merged from session/ha-pages-connection
+      glass and the hand-installed Home Assistant Home page merged (youcoded#611, youcoded-dev#244)
       (record: docs/archive/handoffs/2026-10-05-home-page-state.md). Next: Phases 3–4 (model tasks, files, marketplace); later,
       chat-alongside visual editing and durable automation.
       Destin 2026-10-05 triage (roadmap-triage-2026-10-05#16): next phases postponed — "finsih in 1.3.2/1.3.3"

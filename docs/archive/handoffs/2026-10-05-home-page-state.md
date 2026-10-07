@@ -1,7 +1,7 @@
 ---
 status: shipped
 date: 2026-10-05
-branch: session/ha-pages-connection (workspace + youcoded); merged 2026-10-07
+branch: session/ha-pages-connection (workspace + youcoded); merged 2026-10-07 (youcoded#611, youcoded-dev#244)
 ---
 
 # Home page (Home Assistant) and the Pages platform work — where it stands
