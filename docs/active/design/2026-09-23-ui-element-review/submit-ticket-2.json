@@ -1,0 +1,181 @@
+{
+  "title": "Submit a ticket — round 2: plain choices, folds that open inside, results that keep your ticket",
+  "key": "submit-ticket-2",
+  "out": "submit-ticket-2.review.html",
+  "images": "images/submit-ticket-2",
+  "runs": {
+    "before": "runs/st-after",
+    "after": "runs/st2-after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "ST2-1",
+      "surface": "Submit a ticket",
+      "path": "Settings → Help & feedback → Report a bug",
+      "crop": "settings/development/bug-report#filled-all@620x750+410+75",
+      "headline": "Each choice now says, in its own row, what ticking it adds. No more (i) buttons, and no error choice here.",
+      "changed": "\"Error details and version\" is gone when you open this from Settings — there is no error to send, and the version now always goes. Recent logs and Screenshots each carry a plain line saying what they do.",
+      "notice": "The files note under Screenshots is shorter. Your ticket's own words and fields are unchanged."
+    },
+    {
+      "id": "ST2-C1",
+      "surface": "Submit a ticket",
+      "path": "Report a bug, opened from an error (all three choices showing)",
+      "headline": "Which look for the three choices? Pick one.",
+      "variants": [
+        {
+          "id": "rows",
+          "label": "Tick box right",
+          "crop": "settings/development/bug-report#from-error@620x730+410+85",
+          "summary": "Like a Settings row: words on the left, tick box on the right."
+        },
+        {
+          "id": "switches",
+          "label": "Switches",
+          "crop": "settings/development/bug-report#ticks-switches@620x730+410+85",
+          "summary": "The same rows with an on/off switch, like most of Settings."
+        },
+        {
+          "id": "left",
+          "label": "Tick box left",
+          "crop": "settings/development/bug-report#ticks-left@620x730+410+85",
+          "summary": "The whole line is one box you tap, tick box on the left; it lights up when ticked."
+        }
+      ]
+    },
+    {
+      "id": "ST2-2",
+      "surface": "Submit a ticket",
+      "path": "An error's \"Report bug\" button (here, Office)",
+      "crop": "settings/development/bug-report#from-error@620x710+410+95",
+      "headline": "From an error, the description stays empty; \"The error you saw\" is a choice that says what it adds.",
+      "changed": "Round 1 typed \"This happened in Office.\" into your description. Now that line and the error message travel as the first choice, ticked, with \"Adds where it happened (Office) and the error message.\"",
+      "notice": "Opened from Settings, this choice doesn't appear at all."
+    },
+    {
+      "id": "ST2-3",
+      "surface": "Submit a ticket",
+      "path": "From an error → Review ticket → open \"The error you saw\"",
+      "crop": "settings/development/bug-report#review-error@620x560+410+170",
+      "headline": "On review, the version is always listed, and the error is a folded row you open to read.",
+      "changed": "\"App version and system\" is always the first line under Sent with it. The error is a row (\"From Office\") that opens inside its own box.",
+      "notice": "You picked folded rows last round; this is them, with the error opened."
+    },
+    {
+      "id": "ST2-4",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Optional AI help",
+      "crop": "settings/development/bug-report#review-ai@620x620+410+140",
+      "headline": "Optional AI help now opens inside its own box, not as a second card below it.",
+      "changed": "The note and the two actions sit inside the same box as the \"Optional AI help\" row. The second action now says what it does: downloads YouCoded's code and starts a new conversation that works on a fix.",
+      "notice": "Same two actions, same buttons."
+    },
+    {
+      "id": "ST2-5",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Submit public ticket",
+      "crop": "settings/development/bug-report#sent@620x280+410+310",
+      "headline": "After sending, your ticket stays on screen with a \"Submitted\" tag, and the buttons stay where Submit was.",
+      "changed": "Instead of a separate result card, the ticket card you just reviewed gains a green \"Submitted\" tag and one line at its foot. Done and Open my ticket sit at the right, like Back to draft and Submit did.",
+      "notice": "Same words as before, in the ticket's own card."
+    },
+    {
+      "id": "ST2-6",
+      "surface": "Submit a ticket",
+      "path": "Tick Screenshots or files → Continue in GitHub",
+      "crop": "settings/development/bug-report#browser@620x280+410+310",
+      "headline": "Finishing in GitHub works the same way: your ticket with a \"Finish in GitHub\" tag, Done and Open it again at the right.",
+      "changed": "The ticket card stays, tagged; the line under it says it's open in your browser and to attach files there.",
+      "notice": "Open it again is now the filled one, on the right, matching Open my ticket."
+    },
+    {
+      "id": "ST2-7",
+      "surface": "Submit a ticket",
+      "path": "Optional AI help → Let your assistant try to fix it",
+      "crop": "settings/development/bug-report#handing-over@620x310+410+295",
+      "headline": "While the assistant gets ready: \"Downloading YouCoded's code for your assistant\" — not \"setting up a working copy\".",
+      "changed": "Your ticket stays on screen, tagged \"Not sent\". Under it, the wait says what is happening in plain words and that it can take a few minutes the first time.",
+      "notice": "Nothing about what it does changed — only the words and where they sit."
+    },
+    {
+      "id": "ST2-8",
+      "surface": "Submit a ticket",
+      "path": "… → the assistant has started",
+      "crop": "settings/development/bug-report#handed-over@620x310+410+295",
+      "headline": "Once the assistant has started: your ticket tagged \"Not sent\", and you can still send it from here.",
+      "changed": "The separate card with one big Done is gone. The ticket stays, with a line saying your assistant is working on it in a new conversation; Done and Submit public ticket sit at the right.",
+      "notice": "New: Submit public ticket here. Before, sending after the assistant started meant closing and starting again."
+    },
+    {
+      "id": "ST2-9",
+      "surface": "Submit a ticket",
+      "path": "… → the download fails",
+      "crop": "settings/development/bug-report#handover-failed@620x685+410+105",
+      "headline": "If the download fails: \"YouCoded's code couldn't be downloaded, so your assistant didn't start\" — then the reason.",
+      "changed": "Round 1 said \"A working copy couldn't be set up\". Same red box, same Try again (which tries the download again), plain words.",
+      "notice": "It still says your ticket hasn't been sent."
+    },
+    {
+      "id": "ST2-10",
+      "surface": "Submit a ticket",
+      "path": "Submit public ticket, while it sends",
+      "crop": "settings/development/bug-report#sending@620x290+410+305",
+      "headline": "While sending, your ticket stays on screen above the \"Sending\" card you approved.",
+      "changed": "The approved sending card now takes the buttons' place, under the ticket, instead of replacing the whole popup.",
+      "notice": "It only shows for a moment."
+    },
+    {
+      "id": "ST2-Q1",
+      "words": true,
+      "surface": "Every folded box in the app",
+      "path": "Settings → About (Privacy, Licenses); Performance; Backup & sync's Sync log; the status bar menu's Theme cycle",
+      "headline": "Should every folded box open inside itself, like AI help here — starting with About?",
+      "today": "About's Privacy card has four folding rows (Your account, Friends & presence, Anonymous usage stats, Remote access and games) and Licenses has one (Open-source libraries). Performance, Backup & sync's Sync log and the status bar menu's Theme cycle use the same folding row.",
+      "problem": "Each of those opens its text BELOW its box, so the opened text looks like it isn't part of the row you clicked — the mistake you spotted on AI help.",
+      "proposal": "Change the one shared folding row so its content opens inside its box. That changes all of those places at once; nothing else on them moves.",
+      "options": [
+        {
+          "id": "all",
+          "label": "All of them now",
+          "pros": [
+            "Every folded box behaves the same",
+            "One change fixes About, Performance, Backup & sync and the status bar menu"
+          ],
+          "cons": [
+            "Touches five screens in one go — each needs a quick look"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "about",
+          "label": "About only first",
+          "pros": [
+            "Smallest change; you check one screen"
+          ],
+          "cons": [
+            "The other screens stay different until later"
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Not now",
+          "pros": [
+            "Nothing else changes"
+          ],
+          "cons": [
+            "The ticket screen and the rest of the app fold differently"
+          ]
+        }
+      ]
+    }
+  ]
+}

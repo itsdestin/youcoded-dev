@@ -167,6 +167,9 @@ underline under its words. Labels over short settings groups stay plain.
   right.
 - **Anything that folds open** (a log, advanced options, details) is a **boxed row like a
   setting, arrow on the right**. One fold-out style everywhere.
+- **A folded box opens inside itself.** What it reveals appears within the same box, under its
+  header row — never as a separate card or loose text below it (decisions "Folded box contains
+  its own content", submit-ticket-1#ST-3). Example: the ticket review's Optional AI help.
 - **"I understand" before a risky action:** the whole line is a tappable box, tick box on
   the left, lighting up when ticked; the action stays disabled until it is ticked.
 

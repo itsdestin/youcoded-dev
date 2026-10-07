@@ -106,6 +106,36 @@ screen shows that line. Also seen: a bug ticket with logs unticked still carries
 - `#small · youcoded` picture not taken (friction 3); `#small-review` is in every theme.
 - No UX-tester / code-reviewer run (short route; ask Destin).
 
+## Round 2 (2026-10-07) — after Destin's submit-ticket-1 answers
+
+Deck `submit-ticket-2.json` (before = round 1 `runs/st-after`, after `runs/st2-after`).
+Approved and recorded in decisions.md: read-only review (ST-2), folded rows (ST-C1), side-by-side
+buttons reversing R21 (ST-4), failure notice (ST-5/6), sending card (ST-10), phone (ST-14),
+version always sent (ST-Q1 "show").
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | Include choices explain themselves in a plain hint; the (i) buttons are gone (reverses signed R18). Three looks behind `?ticketTicks=` (rows shipped / switches / left) → ST2-C1. | ST-1 "the checkbox ux is still odd", ST-13. **Guide silent** on how a set of "include this" tick choices looks — Settings rows are for settings, ConsentRow for consent. |
+| R2-2 | Version dropped from the tick box: "The error you saw" shows only when opened from an error, says what it adds, and sends where + the error. Description never pre-filled. The review lists "App version and system — always sent". | ST-13, ST-Q1. **Data change, both asked for:** the description no longer carries a duplicate version line (the main process's Environment line still sends it); the place-it-happened line moved from the description into the error details, sent only while ticked; the hand-over prompt now carries the error details. |
+| R2-3 | `FoldCard` (local): a folded box whose content opens inside it; AI help and the review's folded rows use it. Guide rule added ("A folded box opens inside itself") — **guide-draft.md edited, the other helper's file.** | ST-3. The shared `FoldRow` opens BELOW its box; About (Privacy ×4, Licenses ×1), Performance, Backup & sync's Sync log and the status bar's Theme cycle use it — asked as ST2-Q1, not changed. |
+| R2-4 | Outcomes keep the ticket card on screen with a status pill (Submitted / Finish in GitHub / Not sent) and one line at its foot; the buttons stay where Submit was, in the approved pair. "Assistant started" gains Submit public ticket. | ST-8/ST-9 "a better happy medium", ST-12 "looks weird". The middle: neither bare text nor a separate card — the card he already approved, re-tagged. |
+| R2-5 | Hand-over in plain words: "Downloads YouCoded's code to this computer and starts a new conversation that works on it"; "Downloading YouCoded's code for your assistant"; "couldn't be downloaded, so your assistant didn't start". | ST-7, ST-11 ("what does that even mean"). "Working copy" was developer language that slipped past round 1. |
+
+### Tooling friction this round
+1. **A JSX `aria-label` on a component that doesn't take one type-checks and vanishes.**
+   Hyphenated props are never checked in TSX, so `ConsentRow aria-label=…` compiled and did
+   nothing. Caught only by reading the props.
+2. **A row's accessible name is title + hint**, so adding a hint to a fold header renamed it
+   ("Optional AI help Your assistant can…") and broke every test and open-first step that
+   clicks it by name. Open-first steps need the full joined name ("Recent logs 4 lines — open
+   to read…"). A `{ role, label: /^Recent logs/ }` prefix match would make both sturdier.
+3. **A `waitMs` state's panel box is measured before the wait**, so the manifest records the
+   pre-wait (spinner) size; the deck's crop boxes had to be read off the pictures instead.
+4. **shoot's load fix landed between rounds** (42e3377f): 75/75 pictures, no timeouts, at a
+   load average near 50. Round 1's friction 3 is gone.
+5. **The pointer stays where the last open step clicked**, so the clicked fold header shows its
+   hover tint in the picture — reads like a selected state.
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Guide: "a review before sending" recipe** — the item as read text in a top card (with its
@@ -120,3 +150,20 @@ screen shows that line. Also seen: a bug ticket with logs unticked still carries
 5. **Deck: allow `"panel"` on a close-up of one screen**, or stop warning (friction 2).
 6. **shoot: merge, don't replace, a run's manifest on a partial reshoot** (again; friction 3).
 7. **MAP: link the 2026-09-08 ticket contract from the Help & feedback row** (friction 5).
+
+Added after round 2 (ranked into the list above by value):
+- **(now #1) FoldRow opens inside its box** — make the shared `FoldRow` render its content inside
+  its own box (the `FoldCard` shape in `ReportDesign.tsx`), so About, Performance, Backup & sync
+  and the status bar follow the new guide rule in one change; then delete `FoldCard`. Pending
+  ST2-Q1.
+- **(#3) Guide: "include this with it" choices** — a recipe for opt-in attachments (rows that
+  explain themselves; whichever look ST2-C1 picks), and "a choice that doesn't apply isn't shown".
+- **(#4) Guide: plain words for developer actions** — name what happens to the user's computer
+  ("downloads YouCoded's code"), never the mechanism ("a working copy"); add to the checklist.
+- **(#6) Guide: an outcome keeps its subject** — after an action finishes, keep the card it acted
+  on, tag it with a status pill, and keep the buttons where the action's were.
+- **shoot / journeys: match a control by label prefix** (`label: /^…/`) for open-first steps.
+- **shoot: measure a `waitMs` screen's panel after the wait.**
+- **shoot: move the pointer off the page before the picture** when the last open step clicked.
+- **TSX: an ast-grep rule (or wrapper type) flagging `aria-*` on a component whose props don't
+  accept it.**
