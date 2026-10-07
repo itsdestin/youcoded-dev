@@ -30,13 +30,22 @@ Rewritten 2026-10-05 at merge prep. The code is the truth; this says where to lo
 **The Home page** (not shipped in the app; installed by hand): source is
 `youcoded/desktop/src/renderer/dev/workbench/fixtures/home-assistant-page*.ts` (page, -style, -look, -motion, -feel,
 -redraw, -pending, -edit, -history, -live, -camera, -icons, -templates, -tv, -media, -lights, -climate, -drawer, -glass,
--tabs, -basic).
-Fake Home Assistant: `fixtures/fake-home-assistant.ts`. Options shelf (empty since merge prep): `fixtures/home-variants/`. What it does:
+-tabs, -basic, -computer, -memory, -dial, -scenes).
+Fake Home Assistant: `fixtures/fake-home-assistant.ts`. Options shelf (empty again since the scenes choice was built): `fixtures/home-variants/`. What it does:
 Lights tab (a card per room, colour pop-up, scenes), Media tab, Climate, TV card with remote and app drawer,
 Cameras tab (all live) with events and play disc, Activity, Edit = Organise board, instant updates over the live
 socket, and every media player with no paired remote shows exactly the controls its supported_features allow
 (play/pause, stop, ±10 s, prev/next, volume or volume steps, mute, power, input; unpaired Google/Chromecast TVs get a
-"pair the remote" note) — `-basic.ts`, e00960ff0. Decisions and answers: `docs/active/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
+"pair the remote" note) — `-basic.ts`, e00960ff0.
+Added after the first rewrite of this file (2026-10-05 to 10-07):
+- Computer card (`-computer.ts`): a ping sensor + wake-on-LAN button paired by name in one room (his desktop PC, Destin's Room). Wake only; no off.
+- Brightness/volume remember their last value through off→on, because Home Assistant blanks brightness when a light turns off (`-memory.ts`).
+- A Cast-only TV (plain Chromecast, no remote) reads "Nothing casting" instead of "Off" when idle (`castOnlyOff`).
+- Thermostat dial (`-dial.ts`): the current temperature is a tick across the ring with a "now" number beside it, the target has a
+  draggable handle, and −/+ presses wait 0.8 s then send once; the target is held up to 20 s until the Nest reports it (ce0012a33).
+- Scenes (`-scenes.ts`, 1eca83579): colour cards in two sliding rows; colours are learned when a scene is pressed from the page
+  (saved as `sceneLook` in the page's data), brightness and "moves" come from Home Assistant. Scenes and the lights list never
+  open together. Decks: `2026-10-04-home-redesign/scenes-all*` and `scenes.deck*`. Decisions and answers: `docs/active/design/2026-10-01-home-device-pages/` and `2026-10-04-home-redesign/`.
 
 **Checks done:** three fresh code reviews (platform, Home page, tooling; fixes committed), earlier step reviews, a
 UX review (`docs/active/reviews/2026-10-05-ha-home-page-ux-review-2.md`, 17 fixed, U6/U12/U20 not, see its Triage).
@@ -56,6 +65,8 @@ Destin's call (`2026-10-04-home-redesign/home-redesign.contract.skipped.json`).
   app restart.
 - The basic-controls pairing note's Google/Chromecast check (maker/model) and the Samsung (DLNA) controls while it is on;
   the U17 `reading-flow` keyboard order inside Electron.
+- The thermostat −/+ fix with the real Nest (only the practice thermostat's lag and refusals were tested); the dial handle by touch.
+- Scene colour learning on real Hue lights (a moving scene is caught at one moment of its cycle).
 - Android: unbuilt and untested, no JDK here. Android lists the new channels as not-implemented
   (`SessionService.kt`), so Pages there is unchanged.
 
