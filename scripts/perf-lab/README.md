@@ -616,6 +616,32 @@ or never reached the page, is DROPPED and counted (`dropped` in each summary), n
 **Limits.** Software GL on Xvfb; frames are not the physical panel; fake Claude Code producer; fixture sizes (50 / 2,500 / 3,500 turns) not the owner's histories;
 the leg runs the PACKAGED build (React production mode) while owner hand tests ran a Vite dev build. Results: `docs/active/investigations/2026-10-05-session-switch-measurement.md`.
 
+### `realism.mjs` — the "real-use" lab: does the lab feel what Destin feels? *(added 2026-10-07; findings in `docs/active/investigations/2026-10-05-lab-realism.md`)*
+
+```
+# the standard configuration, one line (packaged build, his real conversations copied by size, his glass+particle theme, the real GPU at 2560x1600 / 1.5, 4 sessions, a machine-wide CPU storm):
+node scripts/perf-lab/realism.mjs --preset real-use-storm --checkout <worktree>/youcoded --boots 3 --seqs fresh,warm,busy
+# the closest to his dev-build hand test: add  --build dev --pick newest --deep on
+node scripts/perf-lab/realism-table.mjs scratch/perf-lab/realism/out/<dir>        # one table from the result files
+```
+
+Every realism factor is a flag, so a gap is explained by switching ONE factor at a time: `--build packaged|dev`, `--history fixture|real`
+(`--pick ladder|newest|biggest`, `--deep on` scrolls each chat back through its older pages first), `--theme stock|heavy`, `--display xvfb|gpu`
+(gpu = the private invisible KWin on the Radeon; refused if Chromium reports software GL; the renderer string is saved in every result),
+`--sessions 2..20`, `--busy off|on|heavy|gpu|both` (on = light background load; heavy = every core saturated, machine load ~35; gpu = a browser page filling the graphics chip).
+Presets: `real-use`, `real-use-storm`, `cheap`. One boot runs `fresh` (right after opening the sessions), then a warm-up + census, `warm`, optionally `soak`, `busy`, and the controls `ctrl` and `noop`.
+
+**What it measures.** The same three numbers the owner's hitch recorder logs for a click (browser Event Timing): input delay, handler time, presentation delay, plus
+click-to-paint, for pointerdown/pointerup/click, with human timing (150-600 ms gaps, a 60-140 ms press, pointer arrives first, occasional wheel / typing / the Shift switcher) and the pill position read fresh before each click.
+Also long animation frames, CPU and (gpu display) per-process GPU engine time, and the right-pane check 450 ms after each press.
+**Content census** per session is counts only (entries, folded, tool cards, code blocks, tables, images, DOM elements). **Controls:** `ctrl` = a 200 ms handler injected on every pill press must read ~+200 ms (it does: 220-270);
+`noop` = clicking the active session changes nothing.
+
+**Privacy.** `--history real` COPIES (copy-on-write, `cp --reflink=always`) transcripts into a scratch fixture HOME and never opens the originals for writing; only file sizes and dates of the originals and DOM counts of the copies are read, never conversation text.
+The fixture is deleted at the end of every boot (`fixtureDeleted` in the result). Do not commit or paste result files from `--history real` runs without checking they hold only sizes and counts (they do by construction).
+
+**Limits.** The invisible compositor does not scan out: no real vblank, VRR or panel timing. Machine contention is a factor of its own: runs that start at load > 8 from OTHER work are excluded from the quiet columns.
+
 ## Reference numbers — what we already measured
 
 Compare a new run against these at a glance. **All figures below are from
