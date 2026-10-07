@@ -13,7 +13,7 @@ open questions get answered on a questions deck when each phase starts.
 
 ## Update 2026-10-07 — the home-network connection is on master
 
-Merged 2026-10-07 from `session/ha-pages-connection`: a page's home-device connection (approval with address + key, one-shot socket),
+Merged 2026-10-07 (youcoded#611, youcoded-dev#244): a page's home-device connection (approval with address + key, one-shot socket),
 a live socket for pages, camera video played by the app, recorded clips, the 17 `pages:*` channels as table entries,
 and the Home Assistant Home page itself (a hand-installed page, not shipped in the app). Specs:
 `docs/archive/specs/2026-10-01-device-live-connection.md`, `2026-10-04-page-live-socket-and-camera-video.md`. Pages and
