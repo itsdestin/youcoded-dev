@@ -178,6 +178,11 @@ underline under its words. Labels over short settings groups stay plain.
 - **Pointing at a folded box lights the whole box** — its own rounded shape, open or closed —
   never a strip across its header that ends in a hard line (submit-ticket-3#ST3-5,
   submit-ticket-4#ST4-2). The shared fold does it; a hand-built one is moved onto it.
+- **A slider is the shared `Slider`**: a thick round track, the accent fill from its start to a
+  round handle, the fill's end curving around the handle so the two read as one shape (Home
+  Assistant's light slider). Its value sits at the right in small grey text. Never the
+  browser's own thin slider. Reference: Settings → Sound → Volume; Appearance → Fine-tune glass
+  (submit-ticket-5#ST5-5).
 - **Choosing what goes with something** (the details a ticket carries, what a download
   includes): one setting row per choice, **its switch at the right**, and **a plain line under
   the title saying what turning it on adds** — no (i) to explain it. **A choice that does not
@@ -201,6 +206,9 @@ Settings → Backup & Sync, Assistant → General, Account.
 - **A card's own header row** (its title, hint and switch) sits in the card with no box of its
   own — a boxed header inside a card reads as a card in a card.
 - **Text that describes a card lives inside it.** No loose lines between cards.
+- **A short list of separate facts may sit in a card** as plain bullet points — three or four
+  short lines, each one fact, no buttons in them (Contribute's "what happens" list). Longer
+  reading stays paragraphs; anything you act on stays rows (submit-ticket-5#ST5-Q1 "allow").
 - **No line crosses the full width** of a card or popup. Separate with spacing; a divider, if
   one is needed, is the tapered line.
 - **Lists of short names** (saved devices) are plain rows inside **one** shared box, not a box

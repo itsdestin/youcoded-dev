@@ -1,0 +1,287 @@
+[
+  {
+    "name": "settings/sound",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/sound/youcoded.png",
+    "ms": 4400,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sound",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/sound/midnight.png",
+    "ms": 4981,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#open-failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/development/contribute#open-failed/midnight.png",
+    "ms": 7242,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 300,
+      "w": 420,
+      "h": 299
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sound",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/sound/youcoded-night.png",
+    "ms": 7718,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#open-failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/development/contribute#open-failed/youcoded.png",
+    "ms": 8496,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 308,
+      "w": 420,
+      "h": 283
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files/open/a-launch-brief#git-review",
+    "theme": "youcoded-night",
+    "ok": false,
+    "reason": "not showing: its mark is not on the page",
+    "file": null,
+    "ms": 11056,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "settings/development/contribute#failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/development/contribute#failed/midnight.png",
+    "ms": 11956,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 289,
+      "w": 420,
+      "h": 322
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files/open/a-launch-brief#git-review",
+    "theme": "midnight",
+    "ok": false,
+    "reason": "not showing: its mark is not on the page",
+    "file": null,
+    "ms": 12299,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "settings/development/contribute#failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/development/contribute#failed/youcoded-night.png",
+    "ms": 12803,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 299,
+      "w": 420,
+      "h": 302
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/open-tasks#open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/dev/open-tasks#open/youcoded-night.png",
+    "ms": 8604,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 219,
+      "w": 420,
+      "h": 463
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#open-failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/development/contribute#open-failed/youcoded-night.png",
+    "ms": 13637,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 308,
+      "w": 420,
+      "h": 283
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#finetune-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/appearance#finetune-open/midnight.png",
+    "ms": 13762,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/open-tasks#open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/dev/open-tasks#open/midnight.png",
+    "ms": 8918,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 217,
+      "w": 420,
+      "h": 467
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files/open/a-launch-brief#git-review",
+    "theme": "youcoded",
+    "ok": false,
+    "reason": "not showing: its mark is not on the page",
+    "file": null,
+    "ms": 14527,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "dev/open-tasks#open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/dev/open-tasks#open/youcoded.png",
+    "ms": 15662,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 219,
+      "w": 420,
+      "h": 463
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/development/contribute#failed/youcoded.png",
+    "ms": 20228,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 299,
+      "w": 420,
+      "h": 302
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#finetune-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/appearance#finetune-open/youcoded.png",
+    "ms": 24537,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#finetune-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r6/after/settings/appearance#finetune-open/youcoded-night.png",
+    "ms": 33579,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

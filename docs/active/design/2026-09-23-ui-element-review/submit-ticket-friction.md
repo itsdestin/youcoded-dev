@@ -245,6 +245,55 @@ Deck `submit-ticket-5.json`. Hover pictures at 1× (`runs/r5-before-1x`/`r5-afte
 4. **A fold that is already open on a screen can't be "opened" by an open step** — the click closes
    it (model settings); the screen list has no way to say "already open".
 
+## Round 6 (2026-10-08) — after Destin's submit-ticket-5 answers
+
+Deck `submit-ticket-6.json`. Before pictures made with the new `shoot --before-file` (no file
+swapping by hand): `runs/r6`, `r6-git`, `r6-tasks`; after-only `r6-extra`.
+
+| # | What I did | Driven by |
+|---|---|---|
+| R6-1 | **`Slider`** (`components/ui/Slider.tsx`): a real range input over the drawing (keyboard, screen readers, touch for free), its thumb sized to the drawn handle so a press lands on it; the fill ends half a track past the handle's centre so its round end wraps the handle. Used for Volume and the seven glass sliders — every slider in the app (search: `type="range"` in `src/renderer`). Guard: `primitive-adoption.test.ts` fails on a hand-made range input; `tests/Slider.test.tsx`. Not changed: the **Pages kit's `.yc-range`** (plain HTML in users' Pages) — asked as ST6-Q1. Guide: Settings → slider rule. | ST5-5 note. |
+| R6-2 | Contribute's failures in plain words, the raw reason behind a **Details** fold; "no network" only when the computer reports none. The practice errors are now real-world ones (`spawn claude ENOENT` through Electron's IPC wrapper; git's own exit-128 output) via `?devOpen=fail` and the `refused` scenario. **The real app had the same problem**: both failures put `plainMessage(e)` — the operation's own text — into the message; fixed by the same change. | ST5-9. |
+| R6-3 | Git review commit cards light as one box (`GitReviewCard`); practice state `chat/files/open/a-launch-brief#git-review` (marked by the drawer's own `chat/files`). Open tasks' two folded sections are the shared FoldRow; practice screen `dev/open-tasks` mounts the real popup over fixed tasks (`OpenTasksPractice.tsx`). Guards in their own test files, seen red. | ST5-Q2 "yes". |
+| R6-4 | Guide: lists in a card allowed. | ST5-Q1 "allow". |
+| R6-5 | The ticket and Contribute read the network flag once at the failure (`networkOnlineNow`) instead of keeping window listeners on while closed (performance rule 2). | Found while editing. |
+| R6-6 | The stale "shoot hover at 1×" notes in the screen list removed (fixed at the root 2026-10-06, a394a871). | Coordinator. |
+
+Seen while there, not changed: Open tasks shows the running task in **blue italic text** — a status
+hue in text, against the guide.
+
+### Tooling friction this round
+1. **`--before-file` worked first time** and replaced the hand swap. One limit: the before side gets
+   ONLY the named files at HEAD, so a screen state added this round must work on both — fine here.
+2. **A named `mark` is checked BEFORE the open steps** (`shoot.mjs` initial mark check uses
+   `markOf(screen)`), so a mark that only appears after the steps (Git review) can't be named;
+   I used the drawer's always-present mark instead. Proposal below.
+3. **A hover that changes nothing visible on one theme blocks the build** ("nothing differs … in
+   youcoded-night"); `highlight: "panel"` (new) got it through.
+4. Live slides work in a picture deck, and the build reuses the photo-only copy.
+
+## Proposals implemented
+
+The tooling helper built items 10–21 of the round-4 list (workspace `2be2dcf3`, app `b25fea743`):
+
+| # | Proposal | Done as |
+|---|---|---|
+| 10 | Deck: fit two tall pictures side by side | Tall pairs stay side by side, shrunk to fit (deck-render test). |
+| 11 | Deck: `"panel"` on a close-up | Works on a close-up; the whole-surface warning points at it. |
+| 12 | shoot: one-file before | `--before-file <path>@<ref>` (`before-file.mjs`, tests). |
+| 13 | shoot: per-screen scale / 1.5× pointer | The 1.5× pointer offset was fixed at the root on 2026-10-06 (a394a871); re-checked on the fold hovers. |
+| 14 | shoot: pointer off the page before the picture | Done after open steps that end on a click. |
+| 15 | shoot/journeys: match by the start of a name | `labelStarts`, or a label ending in "…". |
+| 16 | shoot: measure a `waitMs` screen after the wait | Done. |
+| 17 | shoot: refuse an argument with a space | Refused before any build. |
+| 18 | shoot: a state names its mark | `mark` on a screen entry (checked before the steps — see round 6 friction 2). |
+| 19 | Guard `aria-*` a component drops | `tests/aria-props.test.ts` (type checker per call site). |
+| 20 | Deck guide: today/problem/proposal on decide slides | The build keeps them; AUTHORING says so. |
+| 21 | Workbench: fixed clock for practice logs | `PRACTICE_LOG_CLOCK` in the mock. |
+
+Also implemented by me (rounds 3–6): the shared fold opens inside its box (R3); the code download
+is reused (R4); every hand-built fold moved (R5); guide rules 2–8 (R5–R6); the MAP link (R5).
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Guide: "a review before sending" recipe** — the item as read text in a top card (with its
@@ -303,3 +352,10 @@ Added after round 5:
   given in the screen's own pixels.
 - **Fix the two sweep finds** if Destin says yes on ST5-Q2 (Git review cards, Open tasks line), and
   give them practice states.
+
+Added after round 6:
+- **shoot: check a named `mark` after the open steps** (or allow it to appear by then) — a view
+  reached only by clicking can't be named today (round 6 friction 2).
+- **Open tasks: the running task's blue italic words** — status colour in text; give it the
+  guide's look (a dot and a pill).
+- **Pages kit slider** if Destin says yes on ST6-Q1.
