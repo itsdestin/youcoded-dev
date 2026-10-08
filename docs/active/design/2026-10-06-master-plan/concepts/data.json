@@ -1,0 +1,3841 @@
+{
+ "generatedAt": "2026-10-08T12:39:02.441Z",
+ "commit": "0bf355f9a4ea3e0c516f3e6537a9b85b27874ea8",
+ "systems": [
+  {
+   "id": "chat-agents",
+   "name": "Chat & agents",
+   "purpose": "Talking to your assistant, and the agents that work for you.",
+   "files": 588,
+   "screensFiles": 267,
+   "behindFiles": 321,
+   "parts": [
+    {
+     "id": "chat-view",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 43,
+     "lines": 10320,
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "chat-state",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 20,
+     "lines": 7844,
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "chat-input",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 32,
+     "lines": 7327,
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "session-strip",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 23,
+     "lines": 7285,
+     "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+    },
+    {
+     "id": "tool-cards",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 18,
+     "lines": 4420,
+     "purpose": "The little cards that show what the assistant did (ran a command, read a file, searched past chats)."
+    },
+    {
+     "id": "buddy-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 20,
+     "lines": 3984,
+     "purpose": "The small floating companion window that shows your assistant and its mascot."
+    },
+    {
+     "id": "status-bar",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 15,
+     "lines": 3834,
+     "purpose": "The strip showing the model, usage, cost and health of the current conversation."
+    },
+    {
+     "id": "attention-prompts",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 25,
+     "lines": 3410,
+     "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+    },
+    {
+     "id": "model-picker",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 11,
+     "lines": 2843,
+     "purpose": "Choosing which AI model answers, and the prompts when you switch."
+    },
+    {
+     "id": "session-resume",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 4,
+     "lines": 2470,
+     "purpose": "Picking an old conversation to reopen, and the choices offered when you do."
+    },
+    {
+     "id": "local-models-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 4,
+     "lines": 2433,
+     "purpose": "Downloading and managing AI models that run on your own computer."
+    },
+    {
+     "id": "permission-prompts",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 12,
+     "lines": 1972,
+     "purpose": "The screens that ask \"may the assistant do this?\" and let you manage what it is allowed to do."
+    },
+    {
+     "id": "providers-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 4,
+     "lines": 1958,
+     "purpose": "Signing in to AI providers (ChatGPT, OpenRouter, Claude) and showing which one is active."
+    },
+    {
+     "id": "specialists-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 10,
+     "lines": 1827,
+     "purpose": "The helper assistants a conversation can hand work to, and their reports."
+    },
+    {
+     "id": "terminal-view",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 11,
+     "lines": 1471,
+     "purpose": "The raw terminal view of a conversation, for people who want to see what Claude Code shows."
+    },
+    {
+     "id": "voice-input",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 4,
+     "lines": 1337,
+     "purpose": "The microphone button that turns speech into a message."
+    },
+    {
+     "id": "tags-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 10,
+     "lines": 1018,
+     "purpose": "Labels and notes you attach to conversations to find them later."
+    },
+    {
+     "id": "skills-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 1,
+     "lines": 161,
+     "purpose": "Viewing, editing and running your installed skills from inside a chat."
+    },
+    {
+     "id": "chat-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 20,
+     "lines": 2768,
+     "purpose": "The agreed shapes of messages, sessions and prompts used by both sides of the app."
+    },
+    {
+     "id": "agent-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 12,
+     "lines": 1272,
+     "purpose": "The agreed shapes for models, providers and the native assistant engine."
+    },
+    {
+     "id": "permissions-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 1015,
+     "purpose": "The agreed shapes and rules for permissions, used by both sides."
+    },
+    {
+     "id": "local-models",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 23,
+     "lines": 10328,
+     "purpose": "Downloads, sizes up and runs AI models on your own computer."
+    },
+    {
+     "id": "native-runtime",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 24,
+     "lines": 9678,
+     "purpose": "YouCoded own assistant engine: runs a conversation, keeps its history, assembles prompts."
+    },
+    {
+     "id": "harness-tools",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 34,
+     "lines": 8406,
+     "purpose": "The abilities the native assistant can use: read and edit files, run commands, browse."
+    },
+    {
+     "id": "native-permissions",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 9,
+     "lines": 6886,
+     "purpose": "Decides what the native assistant may do and remembers your approvals."
+    },
+    {
+     "id": "session-manager",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 20,
+     "lines": 5849,
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "providers",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 27,
+     "lines": 5509,
+     "purpose": "Sign-in and secret storage for cloud AI services, and the catalog of their models."
+    },
+    {
+     "id": "claude-code-link",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 22,
+     "lines": 4071,
+     "purpose": "Connects YouCoded to Claude Code: its settings, hooks, built-in commands and prompts."
+    },
+    {
+     "id": "conversation-store",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 13,
+     "lines": 2999,
+     "purpose": "Saves conversation titles, tags and records on disk."
+    },
+    {
+     "id": "transcript-pipeline",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 10,
+     "lines": 2587,
+     "purpose": "Reads Claude Code conversation files as they grow and turns them into messages on screen."
+    },
+    {
+     "id": "native-specialists",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 13,
+     "lines": 2491,
+     "purpose": "Runs helper assistants on behalf of the main one."
+    },
+    {
+     "id": "voice-engine",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 2339,
+     "purpose": "Turns speech into text on your computer."
+    },
+    {
+     "id": "harness-askpass",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 2128,
+     "purpose": "Safely asks you for an admin password when the assistant needs one."
+    },
+    {
+     "id": "buddy-window",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 7,
+     "lines": 1974,
+     "purpose": "Opens and positions the floating companion window."
+    },
+    {
+     "id": "chatsearch-index",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 11,
+     "lines": 1858,
+     "purpose": "Builds the searchable index of all your past conversations."
+    },
+    {
+     "id": "harness-mcp",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 1227,
+     "purpose": "Lets the native assistant use outside tool servers (MCP)."
+    },
+    {
+     "id": "harness-injection",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 784,
+     "purpose": "Extra information slipped into the assistant context before it answers."
+    },
+    {
+     "id": "harness-search",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 8,
+     "lines": 714,
+     "purpose": "Web search for the native assistant and where its search keys are kept."
+    },
+    {
+     "id": "status-data",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 3,
+     "lines": 542,
+     "purpose": "Collects the usage and health numbers shown in the status bar."
+    },
+    {
+     "id": "harness-prompts",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 223,
+     "purpose": "The standing instructions the native assistant is given."
+    },
+    {
+     "id": "harness-skills",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 140,
+     "purpose": "Lets the native assistant find and use skills."
+    },
+    {
+     "id": "android-runtime",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 23,
+     "lines": 12435,
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "android-parser",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 7,
+     "lines": 2137,
+     "purpose": "Android reading of conversation files."
+    }
+   ]
+  },
+  {
+   "id": "pages",
+   "name": "Pages",
+   "purpose": "Screens you build or bring in and make your own: money, home, anything.",
+   "files": 20,
+   "screensFiles": 13,
+   "behindFiles": 7,
+   "parts": [
+    {
+     "id": "pages-screens",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 12,
+     "lines": 1769,
+     "purpose": "Your Pages: small apps living inside YouCoded, their list, creation and display."
+    },
+    {
+     "id": "page-connections-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 1,
+     "lines": 403,
+     "purpose": "Choosing which outside accounts and data a Page may use."
+    },
+    {
+     "id": "pages-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 1,
+     "lines": 218,
+     "purpose": "The agreed shape of a Page and its tools."
+    },
+    {
+     "id": "page-runtime",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 4,
+     "lines": 1063,
+     "purpose": "Stores, serves and refreshes Pages and keeps their data."
+    },
+    {
+     "id": "page-connections",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 533,
+     "purpose": "Holds the links between a Page and outside services."
+    }
+   ]
+  },
+  {
+   "id": "marketplace",
+   "name": "Marketplace",
+   "purpose": "Plugins, themes and tools from the community, and your library of them.",
+   "files": 80,
+   "screensFiles": 34,
+   "behindFiles": 46,
+   "parts": [
+    {
+     "id": "marketplace-screens",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 23,
+     "lines": 5467,
+     "purpose": "Browsing, installing, liking and reviewing community skills and themes."
+    },
+    {
+     "id": "marketplace-state",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 6,
+     "lines": 1541,
+     "purpose": "Remembers what the marketplace screens have loaded and what you favorited."
+    },
+    {
+     "id": "marketplace-account-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 3,
+     "lines": 1286,
+     "purpose": "Signing in to your community account."
+    },
+    {
+     "id": "theme-share-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 2,
+     "lines": 434,
+     "purpose": "Sharing your own theme with the community."
+    },
+    {
+     "id": "marketplace-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 8,
+     "lines": 476,
+     "purpose": "The agreed shapes for community listings, skills and sign-in."
+    },
+    {
+     "id": "skill-library",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 2166,
+     "purpose": "Finds, shares and stores the skills installed on this computer.",
+     "alsoServes": [
+      "chat-agents"
+     ]
+    },
+    {
+     "id": "theme-marketplace",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 1407,
+     "purpose": "Shares community themes and checks their submissions."
+    },
+    {
+     "id": "github-connection",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 1333,
+     "purpose": "Links your GitHub account so you can share your work.",
+     "alsoServes": [
+      "marketplace"
+     ]
+    },
+    {
+     "id": "plugin-install",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 4,
+     "lines": 1097,
+     "purpose": "Installs and keeps up to date the add-ons that skills and themes ship in."
+    },
+    {
+     "id": "marketplace-account",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 333,
+     "purpose": "Your community account: sign-in tokens and profile."
+    },
+    {
+     "id": "marketplace-backend",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 4,
+     "lines": 319,
+     "purpose": "Talks to the community server for listings, installs and sign-in."
+    },
+    {
+     "id": "android-skills",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 13,
+     "lines": 3907,
+     "purpose": "Android version of skills and the marketplace."
+    }
+   ]
+  },
+  {
+   "id": "social",
+   "name": "Social",
+   "purpose": "Friends, games and sharing.",
+   "files": 33,
+   "screensFiles": 29,
+   "behindFiles": 4,
+   "parts": [
+    {
+     "id": "games-arcade",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 28,
+     "lines": 6250,
+     "purpose": "The built-in games, leaderboards and playing against friends."
+    },
+    {
+     "id": "social-presence-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 1,
+     "lines": 248,
+     "purpose": "The friends-online indicator."
+    },
+    {
+     "id": "social-presence",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 331,
+     "purpose": "Shows which friends are around and lets you reach them."
+    },
+    {
+     "id": "arcade-backend",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 179,
+     "purpose": "Game scores and head-to-head play."
+    }
+   ]
+  },
+  {
+   "id": "projects-files",
+   "name": "Projects & files",
+   "purpose": "Your projects, documents and the files the assistant works in.",
+   "files": 234,
+   "screensFiles": 115,
+   "behindFiles": 119,
+   "parts": [
+    {
+     "id": "project-view",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 20,
+     "lines": 6299,
+     "purpose": "The project screen: your files, folders and what the assistant changed."
+    },
+    {
+     "id": "artifact-views",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 40,
+     "lines": 5667,
+     "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+    },
+    {
+     "id": "document-comments-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 22,
+     "lines": 4978,
+     "purpose": "Comments on documents shared between you and the assistant."
+    },
+    {
+     "id": "office-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 12,
+     "lines": 2501,
+     "purpose": "Opening and editing Word, Excel and PowerPoint files inside the app."
+    },
+    {
+     "id": "git-review-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 10,
+     "lines": 1406,
+     "purpose": "Reviewing the changes the assistant made to a project and undoing them."
+    },
+    {
+     "id": "artifact-state",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 11,
+     "lines": 1214,
+     "purpose": "Tracks which files the assistant has made or changed."
+    },
+    {
+     "id": "projects-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 23,
+     "lines": 2193,
+     "purpose": "The agreed shapes for files, documents, folders and project history."
+    },
+    {
+     "id": "document-comments",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 16,
+     "lines": 7808,
+     "purpose": "Reads and writes comments inside Word, Excel and other documents."
+    },
+    {
+     "id": "office",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 23,
+     "lines": 5072,
+     "purpose": "Runs the Office document editor."
+    },
+    {
+     "id": "artifacts",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 17,
+     "lines": 4420,
+     "purpose": "Finds and keeps track of the files a conversation produced."
+    },
+    {
+     "id": "git-service",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 904,
+     "purpose": "Reads the state of a project git history."
+    },
+    {
+     "id": "project-context",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 8,
+     "lines": 487,
+     "purpose": "Understands a project: its folders, repository and instructions."
+    },
+    {
+     "id": "folders",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 3,
+     "lines": 152,
+     "purpose": "Remembers the folders you work in."
+    },
+    {
+     "id": "file-access",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 124,
+     "purpose": "Controls which files the app and your phone may read."
+    },
+    {
+     "id": "android-doc-comments",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 13,
+     "lines": 7506,
+     "purpose": "Android version of document comments."
+    },
+    {
+     "id": "android-artifacts",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 8,
+     "lines": 1424,
+     "purpose": "Android version of file tracking."
+    }
+   ]
+  },
+  {
+   "id": "sync-devices",
+   "name": "Sync & devices",
+   "purpose": "Your computer, phone and remote access staying in step.",
+   "files": 76,
+   "screensFiles": 21,
+   "behindFiles": 55,
+   "parts": [
+    {
+     "id": "sync-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 8,
+     "lines": 3970,
+     "purpose": "Setting up and checking sync and backup."
+    },
+    {
+     "id": "remote-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 9,
+     "lines": 707,
+     "purpose": "Screens for connecting a phone or browser to this computer."
+    },
+    {
+     "id": "handoff-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 4,
+     "lines": 338,
+     "purpose": "The screens for moving a conversation between devices."
+    },
+    {
+     "id": "sync-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 81,
+     "purpose": "The agreed shapes used by sync and device pairing."
+    },
+    {
+     "id": "sync-spaces",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 21,
+     "lines": 5557,
+     "purpose": "Keeps your projects and conversations backed up and in step across your devices."
+    },
+    {
+     "id": "remote-access",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 13,
+     "lines": 3285,
+     "purpose": "Lets your phone or a web browser use the app running on your computer."
+    },
+    {
+     "id": "sync-service",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 3222,
+     "purpose": "The older sync and backup machinery and its error handling."
+    },
+    {
+     "id": "conversation-handoff",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 12,
+     "lines": 2444,
+     "purpose": "Moves a live conversation from one device to another."
+    },
+    {
+     "id": "device-identity",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 1,
+     "lines": 66,
+     "purpose": "Gives each of your devices a name the others recognise."
+    }
+   ]
+  },
+  {
+   "id": "foundations",
+   "name": "Foundations",
+   "purpose": "The window, settings, themes and plumbing everything else stands on.",
+   "files": 281,
+   "screensFiles": 167,
+   "behindFiles": 114,
+   "parts": [
+    {
+     "id": "app-shell",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 38,
+     "lines": 9731,
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "settings-screens",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 15,
+     "lines": 5446,
+     "purpose": "The Settings window and its pages."
+    },
+    {
+     "id": "ui-primitives",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 38,
+     "lines": 4870,
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    },
+    {
+     "id": "theming",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 18,
+     "lines": 4521,
+     "purpose": "Colors, wallpapers, fonts and effects that restyle the whole app."
+    },
+    {
+     "id": "bridge-client",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 9,
+     "lines": 4115,
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "context-menu",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 9,
+     "lines": 2160,
+     "purpose": "The right-click menu."
+    },
+    {
+     "id": "development-popups",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 8,
+     "lines": 1539,
+     "purpose": "Report a bug and contribute, from inside the app."
+    },
+    {
+     "id": "first-run-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 9,
+     "lines": 1241,
+     "purpose": "The first-time setup screens."
+    },
+    {
+     "id": "renderer-utils",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 9,
+     "lines": 741,
+     "purpose": "Small shared helpers for screens: time, sounds, announcements."
+    },
+    {
+     "id": "guide-tour",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 8,
+     "lines": 630,
+     "purpose": "The tips and walkthrough that teach new people the app."
+    },
+    {
+     "id": "updates-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 2,
+     "lines": 546,
+     "purpose": "Checking for and installing app updates, and release notes."
+    },
+    {
+     "id": "performance-ui",
+     "layer": "screens",
+     "side": "screens",
+     "phone": false,
+     "files": 4,
+     "lines": 414,
+     "purpose": "The performance button and its options."
+    },
+    {
+     "id": "bridge-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 7,
+     "lines": 3323,
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    },
+    {
+     "id": "app-contract",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 12,
+     "lines": 955,
+     "purpose": "Shared shapes for updates, announcements, preferences and first-run."
+    },
+    {
+     "id": "shared-utils",
+     "layer": "shared",
+     "side": "behind",
+     "phone": false,
+     "files": 3,
+     "lines": 75,
+     "purpose": "Small helpers used everywhere: versions, time, text."
+    },
+    {
+     "id": "ipc-bridge",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 5113,
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "app-shell-backend",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 9,
+     "lines": 3134,
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "first-run",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 2778,
+     "purpose": "Checks and installs what the app needs on first launch."
+    },
+    {
+     "id": "updates",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 11,
+     "lines": 2105,
+     "purpose": "Downloads and installs new versions of the app."
+    },
+    {
+     "id": "platform-support",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 7,
+     "lines": 1339,
+     "purpose": "Differences between Windows, Mac and Linux."
+    },
+    {
+     "id": "window-management",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 7,
+     "lines": 1185,
+     "purpose": "Opens, tracks and closes windows, including moving a chat into its own window."
+    },
+    {
+     "id": "development-backend",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 988,
+     "purpose": "Gathers what is needed to file a bug report or contribute a change, from inside the app."
+    },
+    {
+     "id": "app-logging",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 543,
+     "purpose": "Logs, crash reports and timing marks."
+    },
+    {
+     "id": "theming-backend",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 521,
+     "purpose": "Loads, watches and converts theme files."
+    },
+    {
+     "id": "app-telemetry",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 5,
+     "lines": 420,
+     "purpose": "The daily anonymous check-in that says the app is in use."
+    },
+    {
+     "id": "settings-backend",
+     "layer": "backend",
+     "side": "behind",
+     "phone": false,
+     "files": 6,
+     "lines": 362,
+     "purpose": "Stores your preferences."
+    },
+    {
+     "id": "android-app",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 13,
+     "lines": 2224,
+     "purpose": "The Android app built around the same screens."
+    },
+    {
+     "id": "android-bridge",
+     "layer": "android",
+     "side": "behind",
+     "phone": true,
+     "files": 8,
+     "lines": 951,
+     "purpose": "Android connection between the screens and the phone code."
+    }
+   ]
+  },
+  {
+   "id": "workshop",
+   "name": "Workshop",
+   "purpose": "The tools we use to build and check the app itself.",
+   "files": 84,
+   "screensFiles": 0,
+   "behindFiles": 84,
+   "parts": [
+    {
+     "id": "workbench",
+     "layer": "devtools",
+     "side": "behind",
+     "phone": false,
+     "files": 59,
+     "lines": 19952,
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "harness-eval",
+     "layer": "devtools",
+     "side": "behind",
+     "phone": false,
+     "files": 20,
+     "lines": 4604,
+     "purpose": "Scoring rig that compares how well different models drive the native assistant."
+    },
+    {
+     "id": "shoot-mode",
+     "layer": "devtools",
+     "side": "behind",
+     "phone": false,
+     "files": 3,
+     "lines": 383,
+     "purpose": "The hooks that let the screenshot tool photograph named screens."
+    },
+    {
+     "id": "dev-probes",
+     "layer": "devtools",
+     "side": "behind",
+     "phone": false,
+     "files": 2,
+     "lines": 75,
+     "purpose": "Small checks used when developing and launching the app."
+    }
+   ]
+  }
+ ],
+ "seams": [
+  {
+   "a": "chat-agents",
+   "b": "foundations",
+   "strength": 3877,
+   "byType": {
+    "import": 725,
+    "event": 70,
+    "cochange": 2499,
+    "channel": 583
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "foundations",
+   "b": "projects-files",
+   "strength": 955,
+   "byType": {
+    "import": 208,
+    "cochange": 662,
+    "event": 11,
+    "channel": 74
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "foundations",
+   "b": "sync-devices",
+   "strength": 908,
+   "byType": {
+    "import": 96,
+    "cochange": 746,
+    "channel": 65,
+    "event": 1
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "foundations",
+   "b": "workshop",
+   "strength": 695,
+   "byType": {
+    "import": 59,
+    "cochange": 635,
+    "event": 1
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "chat-agents",
+   "b": "workshop",
+   "strength": 513,
+   "byType": {
+    "import": 95,
+    "event": 6,
+    "cochange": 401,
+    "channel": 11
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "chat-agents",
+   "b": "projects-files",
+   "strength": 505,
+   "byType": {
+    "import": 114,
+    "cochange": 305,
+    "event": 19,
+    "channel": 67
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "chat-agents",
+   "b": "sync-devices",
+   "strength": 381,
+   "byType": {
+    "cochange": 231,
+    "import": 74,
+    "event": 4,
+    "channel": 72
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "foundations",
+   "b": "marketplace",
+   "strength": 379,
+   "byType": {
+    "import": 157,
+    "cochange": 155,
+    "channel": 67
+   },
+   "mostly": "import",
+   "words": "code that calls the other side"
+  },
+  {
+   "a": "foundations",
+   "b": "pages",
+   "strength": 216,
+   "byType": {
+    "import": 26,
+    "cochange": 179,
+    "event": 1,
+    "channel": 10
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "projects-files",
+   "b": "workshop",
+   "strength": 197,
+   "byType": {
+    "cochange": 157,
+    "import": 34,
+    "channel": 6
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "pages",
+   "b": "workshop",
+   "strength": 194,
+   "byType": {
+    "cochange": 187,
+    "import": 7
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "chat-agents",
+   "b": "marketplace",
+   "strength": 158,
+   "byType": {
+    "channel": 86,
+    "cochange": 48,
+    "import": 24
+   },
+   "mostly": "channel",
+   "words": "requests the screen sends to the backend"
+  },
+  {
+   "a": "projects-files",
+   "b": "sync-devices",
+   "strength": 99,
+   "byType": {
+    "cochange": 65,
+    "import": 32,
+    "channel": 2
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "pages",
+   "b": "projects-files",
+   "strength": 95,
+   "byType": {
+    "import": 17,
+    "cochange": 72,
+    "event": 6
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "foundations",
+   "b": "social",
+   "strength": 95,
+   "byType": {
+    "import": 38,
+    "event": 1,
+    "cochange": 34,
+    "channel": 22
+   },
+   "mostly": "import",
+   "words": "code that calls the other side"
+  },
+  {
+   "a": "sync-devices",
+   "b": "workshop",
+   "strength": 69,
+   "byType": {
+    "cochange": 66,
+    "import": 2,
+    "event": 1
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "marketplace",
+   "b": "social",
+   "strength": 32,
+   "byType": {
+    "cochange": 15,
+    "import": 17
+   },
+   "mostly": "import",
+   "words": "code that calls the other side"
+  },
+  {
+   "a": "chat-agents",
+   "b": "social",
+   "strength": 31,
+   "byType": {
+    "channel": 24,
+    "import": 7
+   },
+   "mostly": "channel",
+   "words": "requests the screen sends to the backend"
+  },
+  {
+   "a": "chat-agents",
+   "b": "pages",
+   "strength": 30,
+   "byType": {
+    "channel": 10,
+    "cochange": 15,
+    "import": 5
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "marketplace",
+   "b": "workshop",
+   "strength": 28,
+   "byType": {
+    "import": 9,
+    "cochange": 17,
+    "channel": 2
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "pages",
+   "b": "sync-devices",
+   "strength": 28,
+   "byType": {
+    "cochange": 28
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "marketplace",
+   "b": "sync-devices",
+   "strength": 28,
+   "byType": {
+    "cochange": 18,
+    "import": 8,
+    "channel": 2
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "social",
+   "b": "workshop",
+   "strength": 16,
+   "byType": {
+    "import": 6,
+    "cochange": 9,
+    "channel": 1
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "social",
+   "b": "sync-devices",
+   "strength": 15,
+   "byType": {
+    "cochange": 13,
+    "import": 2
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "marketplace",
+   "b": "projects-files",
+   "strength": 9,
+   "byType": {
+    "cochange": 6,
+    "import": 3
+   },
+   "mostly": "cochange",
+   "words": "files edited together in the same changes"
+  },
+  {
+   "a": "marketplace",
+   "b": "pages",
+   "strength": 1,
+   "byType": {
+    "import": 1
+   },
+   "mostly": "import",
+   "words": "code that calls the other side"
+  },
+  {
+   "a": "projects-files",
+   "b": "social",
+   "strength": 1,
+   "byType": {
+    "import": 1
+   },
+   "mostly": "import",
+   "words": "code that calls the other side"
+  }
+ ],
+ "efforts": [
+  {
+   "branch": "session/ui-consistency-audit",
+   "title": "UI consistency audit: every screen on the shared parts",
+   "purpose": "Every screen uses the same shared buttons, rows and folds, so nothing looks home-made.",
+   "members": [
+    "session/ui-consistency-audit"
+   ],
+   "commits": 182,
+   "lastTouched": "2026-10-08",
+   "daysAgo": 0,
+   "active": true,
+   "uiFiles": 199,
+   "behindFiles": 40,
+   "kind": "screens",
+   "systems": [
+    {
+     "id": "foundations",
+     "files": 74
+    },
+    {
+     "id": "chat-agents",
+     "files": 68
+    },
+    {
+     "id": "projects-files",
+     "files": 29
+    },
+    {
+     "id": "marketplace",
+     "files": 27
+    },
+    {
+     "id": "workshop",
+     "files": 13
+    },
+    {
+     "id": "sync-devices",
+     "files": 12
+    },
+    {
+     "id": "social",
+     "files": 9
+    },
+    {
+     "id": "pages",
+     "files": 7
+    }
+   ],
+   "parts": [
+    {
+     "id": "marketplace-screens",
+     "files": 19,
+     "side": "screens",
+     "purpose": "Browsing, installing, liking and reviewing community skills and themes."
+    },
+    {
+     "id": "project-view",
+     "files": 16,
+     "side": "screens",
+     "purpose": "The project screen: your files, folders and what the assistant changed."
+    },
+    {
+     "id": "ui-primitives",
+     "files": 15,
+     "side": "screens",
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    },
+    {
+     "id": "workbench",
+     "files": 11,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "settings-screens",
+     "files": 10,
+     "side": "screens",
+     "purpose": "The Settings window and its pages."
+    },
+    {
+     "id": "app-shell",
+     "files": 9,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "chat-view",
+     "files": 8,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "theming",
+     "files": 8,
+     "side": "screens",
+     "purpose": "Colors, wallpapers, fonts and effects that restyle the whole app."
+    },
+    {
+     "id": "first-run-ui",
+     "files": 7,
+     "side": "screens",
+     "purpose": "The first-time setup screens."
+    },
+    {
+     "id": "session-strip",
+     "files": 7,
+     "side": "screens",
+     "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+    },
+    {
+     "id": "games-arcade",
+     "files": 7,
+     "side": "screens",
+     "purpose": "The built-in games, leaderboards and playing against friends."
+    },
+    {
+     "id": "tags-ui",
+     "files": 7,
+     "side": "screens",
+     "purpose": "Labels and notes you attach to conversations to find them later."
+    },
+    {
+     "id": "development-popups",
+     "files": 6,
+     "side": "screens",
+     "purpose": "Report a bug and contribute, from inside the app."
+    },
+    {
+     "id": "git-review-ui",
+     "files": 6,
+     "side": "screens",
+     "purpose": "Reviewing the changes the assistant made to a project and undoing them."
+    },
+    {
+     "id": "pages-screens",
+     "files": 6,
+     "side": "screens",
+     "purpose": "Your Pages: small apps living inside YouCoded, their list, creation and display."
+    },
+    {
+     "id": "chat-input",
+     "files": 5,
+     "side": "screens",
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "status-bar",
+     "files": 5,
+     "side": "screens",
+     "purpose": "The strip showing the model, usage, cost and health of the current conversation."
+    },
+    {
+     "id": "sync-ui",
+     "files": 5,
+     "side": "screens",
+     "purpose": "Setting up and checking sync and backup."
+    },
+    {
+     "id": "model-picker",
+     "files": 4,
+     "side": "screens",
+     "purpose": "Choosing which AI model answers, and the prompts when you switch."
+    },
+    {
+     "id": "providers-ui",
+     "files": 4,
+     "side": "screens",
+     "purpose": "Signing in to AI providers (ChatGPT, OpenRouter, Claude) and showing which one is active."
+    },
+    {
+     "id": "permission-prompts",
+     "files": 4,
+     "side": "screens",
+     "purpose": "The screens that ask \"may the assistant do this?\" and let you manage what it is allowed to do."
+    },
+    {
+     "id": "buddy-ui",
+     "files": 4,
+     "side": "screens",
+     "purpose": "The small floating companion window that shows your assistant and its mascot."
+    },
+    {
+     "id": "local-models-ui",
+     "files": 3,
+     "side": "screens",
+     "purpose": "Downloading and managing AI models that run on your own computer."
+    },
+    {
+     "id": "session-resume",
+     "files": 3,
+     "side": "screens",
+     "purpose": "Picking an old conversation to reopen, and the choices offered when you do."
+    },
+    {
+     "id": "specialists-ui",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The helper assistants a conversation can hand work to, and their reports."
+    },
+    {
+     "id": "guide-tour",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The tips and walkthrough that teach new people the app."
+    },
+    {
+     "id": "bridge-client",
+     "files": 3,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "android-runtime",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "android-app",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The Android app built around the same screens."
+    },
+    {
+     "id": "first-run",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Checks and installs what the app needs on first launch."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "remote-access",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Lets your phone or a web browser use the app running on your computer."
+    },
+    {
+     "id": "providers",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Sign-in and secret storage for cloud AI services, and the catalog of their models."
+    },
+    {
+     "id": "sync-spaces",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Keeps your projects and conversations backed up and in step across your devices."
+    },
+    {
+     "id": "marketplace-account-ui",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Signing in to your community account."
+    },
+    {
+     "id": "attention-prompts",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+    },
+    {
+     "id": "updates-ui",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Checking for and installing app updates, and release notes."
+    },
+    {
+     "id": "artifact-views",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+    },
+    {
+     "id": "theme-share-ui",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Sharing your own theme with the community."
+    },
+    {
+     "id": "shoot-mode",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The hooks that let the screenshot tool photograph named screens."
+    },
+    {
+     "id": "chat-state",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "marketplace-state",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Remembers what the marketplace screens have loaded and what you favorited."
+    },
+    {
+     "id": "android-bridge",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android connection between the screens and the phone code."
+    },
+    {
+     "id": "android-skills",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android version of skills and the marketplace."
+    },
+    {
+     "id": "artifacts",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Finds and keeps track of the files a conversation produced."
+    },
+    {
+     "id": "development-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Gathers what is needed to file a bug report or contribute a change, from inside the app."
+    },
+    {
+     "id": "folders",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Remembers the folders you work in."
+    },
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "project-context",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Understands a project: its folders, repository and instructions."
+    },
+    {
+     "id": "skill-library",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Finds, shares and stores the skills installed on this computer."
+    },
+    {
+     "id": "social-presence",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Shows which friends are around and lets you reach them."
+    },
+    {
+     "id": "sync-service",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The older sync and backup machinery and its error handling."
+    },
+    {
+     "id": "performance-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The performance button and its options."
+    },
+    {
+     "id": "skills-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Viewing, editing and running your installed skills from inside a chat."
+    },
+    {
+     "id": "tool-cards",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The little cards that show what the assistant did (ran a command, read a file, searched past chats)."
+    },
+    {
+     "id": "page-connections-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Choosing which outside accounts and data a Page may use."
+    },
+    {
+     "id": "remote-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Screens for connecting a phone or browser to this computer."
+    },
+    {
+     "id": "handoff-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The screens for moving a conversation between devices."
+    },
+    {
+     "id": "artifact-state",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Tracks which files the assistant has made or changed."
+    },
+    {
+     "id": "social-presence-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The friends-online indicator."
+    },
+    {
+     "id": "projects-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes for files, documents, folders and project history."
+    },
+    {
+     "id": "chat-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes of messages, sessions and prompts used by both sides of the app."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/perf-switch-marks-20261005",
+   "title": "Zero-hitch performance: faster session switching",
+   "purpose": null,
+   "members": [
+    "session/perf-switch-marks-20261005"
+   ],
+   "commits": 60,
+   "lastTouched": "2026-10-08",
+   "daysAgo": 0,
+   "active": true,
+   "uiFiles": 33,
+   "behindFiles": 8,
+   "kind": "screens",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 24
+    },
+    {
+     "id": "foundations",
+     "files": 15
+    },
+    {
+     "id": "projects-files",
+     "files": 2
+    }
+   ],
+   "parts": [
+    {
+     "id": "chat-view",
+     "files": 8,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "terminal-view",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The raw terminal view of a conversation, for people who want to see what Claude Code shows."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "session-manager",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "app-shell",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "attention-prompts",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+    },
+    {
+     "id": "chat-input",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "settings-screens",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The Settings window and its pages."
+    },
+    {
+     "id": "session-strip",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+    },
+    {
+     "id": "artifact-views",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+    },
+    {
+     "id": "context-menu",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The right-click menu."
+    },
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "app-logging",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Logs, crash reports and timing marks."
+    },
+    {
+     "id": "first-run-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The first-time setup screens."
+    },
+    {
+     "id": "model-picker",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Choosing which AI model answers, and the prompts when you switch."
+    },
+    {
+     "id": "status-bar",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The strip showing the model, usage, cost and health of the current conversation."
+    },
+    {
+     "id": "session-resume",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Picking an old conversation to reopen, and the choices offered when you do."
+    },
+    {
+     "id": "development-popups",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Report a bug and contribute, from inside the app."
+    },
+    {
+     "id": "bridge-client",
+     "files": 1,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "chat-state",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "renderer-utils",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Small shared helpers for screens: time, sounds, announcements."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    },
+    {
+     "id": "chat-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes of messages, sessions and prompts used by both sides of the app."
+    }
+   ],
+   "pr": {
+    "number": 616,
+    "state": "merged",
+    "note": "merged today"
+   }
+  },
+  {
+   "branch": "session/perf-recorder-integration-20261005",
+   "title": "Freeze recorder for the performance program",
+   "purpose": null,
+   "members": [
+    "session/perf-recorder-integration-20261005",
+    "session/perf-hitch-recorder-20261005",
+    "session/perf-integration-20261005",
+    "session/perf-reload-repaint-20261005",
+    "session/perf-zero-hitch-20261004"
+   ],
+   "commits": 45,
+   "lastTouched": "2026-10-05",
+   "daysAgo": 3,
+   "active": true,
+   "uiFiles": 23,
+   "behindFiles": 10,
+   "kind": "screens",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 18
+    },
+    {
+     "id": "foundations",
+     "files": 12
+    },
+    {
+     "id": "projects-files",
+     "files": 2
+    },
+    {
+     "id": "sync-devices",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "chat-view",
+     "files": 8,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "terminal-view",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The raw terminal view of a conversation, for people who want to see what Claude Code shows."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "session-manager",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "artifact-views",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+    },
+    {
+     "id": "context-menu",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The right-click menu."
+    },
+    {
+     "id": "bridge-client",
+     "files": 2,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    },
+    {
+     "id": "chat-input",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "app-logging",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Logs, crash reports and timing marks."
+    },
+    {
+     "id": "session-strip",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+    },
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "chat-state",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "renderer-utils",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Small shared helpers for screens: time, sounds, announcements."
+    },
+    {
+     "id": "chat-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes of messages, sessions and prompts used by both sides of the app."
+    },
+    {
+     "id": "remote-access",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets your phone or a web browser use the app running on your computer."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/dev-xray-tools",
+   "title": "X-ray: see what a turn actually did, in plain words",
+   "purpose": "A view that explains what the assistant did in a turn, step by step, in plain words.",
+   "members": [
+    "session/dev-xray-tools"
+   ],
+   "commits": 2,
+   "lastTouched": "2026-10-04",
+   "daysAgo": 4,
+   "active": true,
+   "uiFiles": 4,
+   "behindFiles": 3,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "workshop",
+     "files": 3
+    },
+    {
+     "id": "foundations",
+     "files": 3
+    },
+    {
+     "id": "chat-agents",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "workbench",
+     "files": 3,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "chat-view",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "development-popups",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Report a bug and contribute, from inside the app."
+    },
+    {
+     "id": "bridge-client",
+     "files": 1,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/fix-permission-approve-flake",
+   "title": "Fix a flaky permission test",
+   "purpose": null,
+   "members": [
+    "session/fix-permission-approve-flake"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-10-03",
+   "daysAgo": 5,
+   "active": true,
+   "uiFiles": 0,
+   "behindFiles": 0,
+   "kind": "both",
+   "systems": [],
+   "parts": [],
+   "pr": null
+  },
+  {
+   "branch": "session/usage-visibility-20260929",
+   "title": "Usage: see how much of each account you have used",
+   "purpose": "Shows how much of each cloud account you have used, under the provider it belongs to.",
+   "members": [
+    "session/usage-visibility-20260929"
+   ],
+   "commits": 3,
+   "lastTouched": "2026-09-29",
+   "daysAgo": 9,
+   "active": false,
+   "uiFiles": 4,
+   "behindFiles": 4,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "workshop",
+     "files": 4
+    },
+    {
+     "id": "chat-agents",
+     "files": 3
+    },
+    {
+     "id": "foundations",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "workbench",
+     "files": 4,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "providers-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Signing in to AI providers (ChatGPT, OpenRouter, Claude) and showing which one is active."
+    },
+    {
+     "id": "status-bar",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The strip showing the model, usage, cost and health of the current conversation."
+    },
+    {
+     "id": "settings-screens",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The Settings window and its pages."
+    },
+    {
+     "id": "attention-prompts",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "feat/specialists-plans-ui",
+   "title": "Specialists and plans: spending rework",
+   "purpose": "Plans with a spending cap, and specialists that run inside them.",
+   "members": [
+    "feat/specialists-plans-ui"
+   ],
+   "commits": 138,
+   "lastTouched": "2026-09-24",
+   "daysAgo": 14,
+   "active": false,
+   "uiFiles": 24,
+   "behindFiles": 49,
+   "kind": "behind",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 54
+    },
+    {
+     "id": "foundations",
+     "files": 11
+    },
+    {
+     "id": "workshop",
+     "files": 7
+    },
+    {
+     "id": "sync-devices",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "harness-tools",
+     "files": 20,
+     "side": "behind",
+     "purpose": "The abilities the native assistant can use: read and edit files, run commands, browse."
+    },
+    {
+     "id": "workbench",
+     "files": 7,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "native-runtime",
+     "files": 5,
+     "side": "behind",
+     "purpose": "YouCoded own assistant engine: runs a conversation, keeps its history, assembles prompts."
+    },
+    {
+     "id": "chat-state",
+     "files": 5,
+     "side": "screens",
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "providers",
+     "files": 4,
+     "side": "behind",
+     "purpose": "Sign-in and secret storage for cloud AI services, and the catalog of their models."
+    },
+    {
+     "id": "chat-view",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "ui-primitives",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    },
+    {
+     "id": "specialists-ui",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The helper assistants a conversation can hand work to, and their reports."
+    },
+    {
+     "id": "tool-cards",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The little cards that show what the assistant did (ran a command, read a file, searched past chats)."
+    },
+    {
+     "id": "bridge-client",
+     "files": 3,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "native-permissions",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Decides what the native assistant may do and remembers your approvals."
+    },
+    {
+     "id": "native-specialists",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Runs helper assistants on behalf of the main one."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "app-shell",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "android-runtime",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "harness-mcp",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets the native assistant use outside tool servers (MCP)."
+    },
+    {
+     "id": "status-data",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Collects the usage and health numbers shown in the status bar."
+    },
+    {
+     "id": "session-manager",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "remote-access",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets your phone or a web browser use the app running on your computer."
+    },
+    {
+     "id": "buddy-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The small floating companion window that shows your assistant and its mascot."
+    },
+    {
+     "id": "attention-prompts",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+    },
+    {
+     "id": "agent-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes for models, providers and the native assistant engine."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/plugin-project-controls",
+   "title": "Project skills & tools: per-project control of what the assistant uses",
+   "purpose": "Lets each project choose which plugins and tools the assistant may use.",
+   "members": [
+    "session/plugin-project-controls"
+   ],
+   "commits": 21,
+   "lastTouched": "2026-09-24",
+   "daysAgo": 14,
+   "active": false,
+   "uiFiles": 13,
+   "behindFiles": 16,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 9
+    },
+    {
+     "id": "foundations",
+     "files": 8
+    },
+    {
+     "id": "marketplace",
+     "files": 7
+    },
+    {
+     "id": "projects-files",
+     "files": 3
+    },
+    {
+     "id": "sync-devices",
+     "files": 1
+    },
+    {
+     "id": "workshop",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "marketplace-screens",
+     "files": 4,
+     "side": "screens",
+     "purpose": "Browsing, installing, liking and reviewing community skills and themes."
+    },
+    {
+     "id": "native-runtime",
+     "files": 2,
+     "side": "behind",
+     "purpose": "YouCoded own assistant engine: runs a conversation, keeps its history, assembles prompts."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "skill-library",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Finds, shares and stores the skills installed on this computer."
+    },
+    {
+     "id": "ui-primitives",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    },
+    {
+     "id": "artifact-state",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Tracks which files the assistant has made or changed."
+    },
+    {
+     "id": "android-runtime",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "harness-mcp",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets the native assistant use outside tool servers (MCP)."
+    },
+    {
+     "id": "native-permissions",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Decides what the native assistant may do and remembers your approvals."
+    },
+    {
+     "id": "harness-skills",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets the native assistant find and use skills."
+    },
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "session-manager",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "remote-access",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets your phone or a web browser use the app running on your computer."
+    },
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "chat-input",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "session-strip",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+    },
+    {
+     "id": "project-view",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The project screen: your files, folders and what the assistant changed."
+    },
+    {
+     "id": "workbench",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "bridge-client",
+     "files": 1,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "marketplace-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes for community listings, skills and sign-in."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    }
+   ],
+   "pr": {
+    "number": 571,
+    "state": "draft",
+    "note": "UI review pending"
+   }
+  },
+  {
+   "branch": "session/theme-plugin-update",
+   "title": "Theme and plugin update check",
+   "purpose": null,
+   "members": [
+    "session/theme-plugin-update"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-20",
+   "daysAgo": 18,
+   "active": false,
+   "uiFiles": 0,
+   "behindFiles": 3,
+   "kind": "behind",
+   "systems": [
+    {
+     "id": "marketplace",
+     "files": 2
+    },
+    {
+     "id": "foundations",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "plugin-install",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Installs and keeps up to date the add-ons that skills and themes ship in."
+    },
+    {
+     "id": "skill-library",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Finds, shares and stores the skills installed on this computer."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "diag/mm-memory-timing",
+   "title": "Memory timing diagnosis",
+   "purpose": null,
+   "members": [
+    "diag/mm-memory-timing"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-18",
+   "daysAgo": 20,
+   "active": false,
+   "uiFiles": 0,
+   "behindFiles": 0,
+   "kind": "both",
+   "systems": [],
+   "parts": [],
+   "pr": null
+  },
+  {
+   "branch": "feat/specialists-plans-5b",
+   "title": "Specialists and plans: round 5b review fixes",
+   "purpose": null,
+   "members": [
+    "feat/specialists-plans-5b"
+   ],
+   "commits": 45,
+   "lastTouched": "2026-09-16",
+   "daysAgo": 22,
+   "active": false,
+   "uiFiles": 15,
+   "behindFiles": 18,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 22
+    },
+    {
+     "id": "foundations",
+     "files": 6
+    },
+    {
+     "id": "workshop",
+     "files": 5
+    }
+   ],
+   "parts": [
+    {
+     "id": "workbench",
+     "files": 5,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "chat-state",
+     "files": 5,
+     "side": "screens",
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "native-runtime",
+     "files": 4,
+     "side": "behind",
+     "purpose": "YouCoded own assistant engine: runs a conversation, keeps its history, assembles prompts."
+    },
+    {
+     "id": "native-permissions",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Decides what the native assistant may do and remembers your approvals."
+    },
+    {
+     "id": "providers",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Sign-in and secret storage for cloud AI services, and the catalog of their models."
+    },
+    {
+     "id": "app-shell",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "specialists-ui",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The helper assistants a conversation can hand work to, and their reports."
+    },
+    {
+     "id": "tool-cards",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The little cards that show what the assistant did (ran a command, read a file, searched past chats)."
+    },
+    {
+     "id": "native-specialists",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Runs helper assistants on behalf of the main one."
+    },
+    {
+     "id": "harness-tools",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The abilities the native assistant can use: read and edit files, run commands, browse."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "session-manager",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "chat-view",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "buddy-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The small floating companion window that shows your assistant and its mascot."
+    },
+    {
+     "id": "ui-primitives",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    },
+    {
+     "id": "bridge-client",
+     "files": 1,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/onedrive-no-auto-download",
+   "title": "OneDrive read protection (paused, known regressions)",
+   "purpose": "Stops the assistant from pulling whole OneDrive folders down just by reading them.",
+   "members": [
+    "session/onedrive-no-auto-download"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-15",
+   "daysAgo": 23,
+   "active": false,
+   "uiFiles": 9,
+   "behindFiles": 19,
+   "kind": "behind",
+   "systems": [
+    {
+     "id": "projects-files",
+     "files": 15
+    },
+    {
+     "id": "chat-agents",
+     "files": 5
+    },
+    {
+     "id": "foundations",
+     "files": 4
+    },
+    {
+     "id": "workshop",
+     "files": 2
+    },
+    {
+     "id": "sync-devices",
+     "files": 1
+    },
+    {
+     "id": "marketplace",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "artifacts",
+     "files": 5,
+     "side": "behind",
+     "purpose": "Finds and keeps track of the files a conversation produced."
+    },
+    {
+     "id": "project-context",
+     "files": 3,
+     "side": "behind",
+     "purpose": "Understands a project: its folders, repository and instructions."
+    },
+    {
+     "id": "artifact-views",
+     "files": 3,
+     "side": "screens",
+     "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+    },
+    {
+     "id": "project-view",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The project screen: your files, folders and what the assistant changed."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "workbench",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "android-runtime",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "claude-code-link",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Connects YouCoded to Claude Code: its settings, hooks, built-in commands and prompts."
+    },
+    {
+     "id": "native-permissions",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Decides what the native assistant may do and remembers your approvals."
+    },
+    {
+     "id": "native-runtime",
+     "files": 1,
+     "side": "behind",
+     "purpose": "YouCoded own assistant engine: runs a conversation, keeps its history, assembles prompts."
+    },
+    {
+     "id": "remote-access",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Lets your phone or a web browser use the app running on your computer."
+    },
+    {
+     "id": "skill-library",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Finds, shares and stores the skills installed on this computer."
+    },
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "chat-view",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "bridge-client",
+     "files": 1,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    },
+    {
+     "id": "projects-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The agreed shapes for files, documents, folders and project history."
+    }
+   ],
+   "pr": {
+    "number": 476,
+    "state": "draft",
+    "note": "paused, known regressions"
+   }
+  },
+  {
+   "branch": "session/agent-lint-tooling",
+   "title": "Lint tooling for agents",
+   "purpose": null,
+   "members": [
+    "session/agent-lint-tooling"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-14",
+   "daysAgo": 24,
+   "active": false,
+   "uiFiles": 1,
+   "behindFiles": 1,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 1
+    },
+    {
+     "id": "foundations",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "harness-tools",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The abilities the native assistant can use: read and edit files, run commands, browse."
+    },
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/files-drawer-honesty",
+   "title": "Files drawer: show only what is really there",
+   "purpose": null,
+   "members": [
+    "session/files-drawer-honesty"
+   ],
+   "commits": 4,
+   "lastTouched": "2026-09-11",
+   "daysAgo": 27,
+   "active": false,
+   "uiFiles": 9,
+   "behindFiles": 7,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "projects-files",
+     "files": 12
+    },
+    {
+     "id": "chat-agents",
+     "files": 2
+    },
+    {
+     "id": "foundations",
+     "files": 2
+    }
+   ],
+   "parts": [
+    {
+     "id": "artifact-views",
+     "files": 4,
+     "side": "screens",
+     "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+    },
+    {
+     "id": "android-artifacts",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Android version of file tracking."
+    },
+    {
+     "id": "artifact-state",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Tracks which files the assistant has made or changed."
+    },
+    {
+     "id": "projects-contract",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The agreed shapes for files, documents, folders and project history."
+    },
+    {
+     "id": "android-runtime",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "artifacts",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Finds and keeps track of the files a conversation produced."
+    },
+    {
+     "id": "ipc-bridge",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+    },
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "session-strip",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+    },
+    {
+     "id": "project-view",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The project screen: your files, folders and what the assistant changed."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/model-picker-tags",
+   "title": "Model picker: cost and intelligence tags",
+   "purpose": "Cost and intelligence tags beside each model so choosing does not need the names.",
+   "members": [
+    "session/model-picker-tags"
+   ],
+   "commits": 4,
+   "lastTouched": "2026-09-11",
+   "daysAgo": 27,
+   "active": false,
+   "uiFiles": 4,
+   "behindFiles": 4,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "workshop",
+     "files": 4
+    },
+    {
+     "id": "foundations",
+     "files": 3
+    },
+    {
+     "id": "chat-agents",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "workbench",
+     "files": 4,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "ui-primitives",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    },
+    {
+     "id": "model-picker",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Choosing which AI model answers, and the prompts when you switch."
+    },
+    {
+     "id": "bridge-client",
+     "files": 1,
+     "side": "screens",
+     "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/quick-cache-check",
+   "title": "Quick cache check",
+   "purpose": null,
+   "members": [
+    "session/quick-cache-check"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-11",
+   "daysAgo": 27,
+   "active": false,
+   "uiFiles": 2,
+   "behindFiles": 1,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 2
+    },
+    {
+     "id": "workshop",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "model-picker",
+     "files": 2,
+     "side": "screens",
+     "purpose": "Choosing which AI model answers, and the prompts when you switch."
+    },
+    {
+     "id": "workbench",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/prerelease-sep07",
+   "title": "September pre-release notes",
+   "purpose": null,
+   "members": [
+    "session/prerelease-sep07"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-11",
+   "daysAgo": 27,
+   "active": false,
+   "uiFiles": 0,
+   "behindFiles": 0,
+   "kind": "both",
+   "systems": [],
+   "parts": [],
+   "pr": null
+  },
+  {
+   "branch": "session/sync-safety-audit-20260908",
+   "title": "Sync safety audit",
+   "purpose": null,
+   "members": [
+    "session/sync-safety-audit-20260908"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-11",
+   "daysAgo": 27,
+   "active": false,
+   "uiFiles": 1,
+   "behindFiles": 4,
+   "kind": "behind",
+   "systems": [
+    {
+     "id": "sync-devices",
+     "files": 2
+    },
+    {
+     "id": "chat-agents",
+     "files": 1
+    },
+    {
+     "id": "foundations",
+     "files": 1
+    },
+    {
+     "id": "workshop",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "conversation-store",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Saves conversation titles, tags and records on disk."
+    },
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "sync-spaces",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Keeps your projects and conversations backed up and in step across your devices."
+    },
+    {
+     "id": "sync-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Setting up and checking sync and backup."
+    },
+    {
+     "id": "workbench",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "session/sync-retry-feedback",
+   "title": "Sync: say when a retry is happening",
+   "purpose": "When sync retries, the screen says so instead of looking stuck.",
+   "members": [
+    "session/sync-retry-feedback"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-07",
+   "daysAgo": 31,
+   "active": false,
+   "uiFiles": 1,
+   "behindFiles": 1,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "sync-devices",
+     "files": 2
+    }
+   ],
+   "parts": [
+    {
+     "id": "sync-spaces",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Keeps your projects and conversations backed up and in step across your devices."
+    },
+    {
+     "id": "sync-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "Setting up and checking sync and backup."
+    }
+   ],
+   "pr": {
+    "number": 444,
+    "state": "open",
+    "note": "open since 8 Sep, nobody has looked"
+   }
+  },
+  {
+   "branch": "feat/dev-dashboard",
+   "title": "Old dev dashboard sketch (ideas only)",
+   "purpose": null,
+   "members": [
+    "feat/dev-dashboard"
+   ],
+   "commits": 5,
+   "lastTouched": "2026-09-05",
+   "daysAgo": 33,
+   "active": false,
+   "uiFiles": 1,
+   "behindFiles": 0,
+   "kind": "screens",
+   "systems": [
+    {
+     "id": "foundations",
+     "files": 1
+    }
+   ],
+   "parts": [
+    {
+     "id": "app-shell",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "chore/conversation-triage-script",
+   "title": "Conversation triage script",
+   "purpose": null,
+   "members": [
+    "chore/conversation-triage-script"
+   ],
+   "commits": 1,
+   "lastTouched": "2026-09-04",
+   "daysAgo": 34,
+   "active": false,
+   "uiFiles": 0,
+   "behindFiles": 0,
+   "kind": "both",
+   "systems": [],
+   "parts": [],
+   "pr": null
+  },
+  {
+   "branch": "feat/permission-ask-timeout",
+   "title": "Permission prompts that time out",
+   "purpose": null,
+   "members": [
+    "feat/permission-ask-timeout"
+   ],
+   "commits": 20,
+   "lastTouched": "2026-07-31",
+   "daysAgo": 69,
+   "active": false,
+   "uiFiles": 12,
+   "behindFiles": 11,
+   "kind": "both",
+   "systems": [
+    {
+     "id": "chat-agents",
+     "files": 16
+    },
+    {
+     "id": "foundations",
+     "files": 5
+    },
+    {
+     "id": "workshop",
+     "files": 2
+    }
+   ],
+   "parts": [
+    {
+     "id": "chat-state",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+    },
+    {
+     "id": "android-parser",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Android reading of conversation files."
+    },
+    {
+     "id": "android-runtime",
+     "files": 2,
+     "side": "behind",
+     "purpose": "Android version of the conversation runtime and terminal."
+    },
+    {
+     "id": "app-shell",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "chat-input",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "tool-cards",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The little cards that show what the assistant did (ran a command, read a file, searched past chats)."
+    },
+    {
+     "id": "workbench",
+     "files": 2,
+     "side": "behind",
+     "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+    },
+    {
+     "id": "attention-prompts",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+    },
+    {
+     "id": "android-bridge",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Android connection between the screens and the phone code."
+    },
+    {
+     "id": "claude-code-link",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Connects YouCoded to Claude Code: its settings, hooks, built-in commands and prompts."
+    },
+    {
+     "id": "app-shell-backend",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+    },
+    {
+     "id": "session-manager",
+     "files": 1,
+     "side": "behind",
+     "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+    },
+    {
+     "id": "buddy-ui",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The small floating companion window that shows your assistant and its mascot."
+    },
+    {
+     "id": "bridge-contract",
+     "files": 1,
+     "side": "behind",
+     "purpose": "The single list of requests between screens and the app, and their shapes."
+    }
+   ],
+   "pr": null
+  },
+  {
+   "branch": "feat/ask-claude-reference-ux",
+   "title": "Ask Claude about a selection",
+   "purpose": null,
+   "members": [
+    "feat/ask-claude-reference-ux"
+   ],
+   "commits": 27,
+   "lastTouched": "2026-07-28",
+   "daysAgo": 72,
+   "active": false,
+   "uiFiles": 15,
+   "behindFiles": 0,
+   "kind": "screens",
+   "systems": [
+    {
+     "id": "foundations",
+     "files": 9
+    },
+    {
+     "id": "chat-agents",
+     "files": 6
+    }
+   ],
+   "parts": [
+    {
+     "id": "context-menu",
+     "files": 5,
+     "side": "screens",
+     "purpose": "The right-click menu."
+    },
+    {
+     "id": "chat-view",
+     "files": 4,
+     "side": "screens",
+     "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+    },
+    {
+     "id": "app-shell",
+     "files": 3,
+     "side": "screens",
+     "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+    },
+    {
+     "id": "chat-input",
+     "files": 2,
+     "side": "screens",
+     "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+    },
+    {
+     "id": "ui-primitives",
+     "files": 1,
+     "side": "screens",
+     "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+    }
+   ],
+   "pr": null
+  }
+ ],
+ "briefing": {
+  "date": "2026-10-08",
+  "release": {
+   "version": "1.3.0",
+   "date": "2026-09-20"
+  },
+  "prerelease": {
+   "version": "1.3.1-beta.87",
+   "date": "2026-09-20"
+  },
+  "mergedSinceRelease": 69,
+  "mergedSincePrerelease": 68,
+  "mergedToday": [
+   {
+    "number": 616,
+    "title": "Zero-hitch performance: fixes, freeze recorder, faster session switching"
+   },
+   {
+    "number": 615,
+    "title": "Money page: Plaid bank connection, bills and subscription review"
+   },
+   {
+    "number": 613,
+    "title": "Oversized image safety: shrink and disclose, history heal, bounded retry"
+   },
+   {
+    "number": 612,
+    "title": "Pages socket: point the design comment at the archived spec"
+   }
+  ],
+  "mergedYesterday": [
+   {
+    "number": 611,
+    "title": "Pages: home-device connection, live camera video, see-through glass; Home Assistant Home page"
+   },
+   {
+    "number": 610,
+    "title": "Custom desktop voice vocabulary"
+   }
+  ],
+  "mergeable": [
+   {
+    "number": 444,
+    "branch": "session/sync-retry-feedback",
+    "title": "Sync: say when a retry is happening",
+    "since": "2026-09-08",
+    "note": "Open for a month. Small: 2 parts, 1 commit."
+   },
+   {
+    "number": 614,
+    "branch": "dependabot",
+    "title": "31 small library updates for the desktop app",
+    "since": "2026-10-08",
+    "note": "Automatic. Tests pass."
+   },
+   {
+    "number": 466,
+    "branch": "dependabot",
+    "title": "Test runner update (vitest 4 \u2192 5)",
+    "since": "2026-10-05",
+    "note": "Automatic. Tests pass."
+   }
+  ],
+  "cleanup": {
+   "localBranchesMerged": 11,
+   "worktrees": 16,
+   "worktreesIdle": 9,
+   "remoteBranchesMerged": 1,
+   "examples": [
+    "session/perf-switch-marks-20261005 (merged today)",
+    "session/finance-dashboard (merged today)",
+    "session/ha-pages-connection (merged yesterday)",
+    "plans-r12-before, plans-r12-after (comparison copies)"
+   ]
+  },
+  "bugs": [
+   {
+    "title": "The settings screen exists twice, once for desktop and once for phone, so changes are made twice and can disagree.",
+    "area": "Foundations",
+    "tags": [
+     "release blocker",
+     "on hold since 18 Sep"
+    ]
+   },
+   {
+    "title": "Error messages still guess at causes in many places; batch 1 of 7 shipped.",
+    "area": "Foundations",
+    "tags": [
+     "confirmed"
+    ]
+   },
+   {
+    "title": "A permission near-miss can pass silently on tool cards.",
+    "area": "Chat & agents",
+    "tags": [
+     "confirmed"
+    ]
+   },
+   {
+    "title": "Project files background index can stall on big folders.",
+    "area": "Projects & files",
+    "tags": [
+     "confirmed"
+    ]
+   }
+  ],
+  "recommendation": {
+   "effort": "session/sync-retry-feedback",
+   "why": "Smallest open thing with a finished review: one commit, two parts, no overlap with anything else in flight. Merging it clears the oldest open item.",
+   "links": "Touches the same sync parts as the sync safety audit (idle since 11 Sep); nothing active collides.",
+   "seams": "The retry message comes from the sync engine and is shown by the sync screen. Make the wording a setting of the engine, not the screen, so the phone shows the same words."
+  }
+ },
+ "gallery": {
+  "total": 216,
+  "shown": [
+   "home",
+   "projects",
+   "marketplace",
+   "themes",
+   "model-picker",
+   "permissions",
+   "tags",
+   "connect4"
+  ],
+  "names": {
+   "home": "Home",
+   "projects": "Projects",
+   "marketplace": "Marketplace",
+   "themes": "Themes",
+   "model-picker": "Model picker",
+   "permissions": "Permissions",
+   "tags": "Tags",
+   "connect4": "Connect Four"
+  },
+  "changedBy": {
+   "home": [
+    {
+     "pr": 605,
+     "title": "Brand icons: glass app icon",
+     "date": "2026-10-05"
+    }
+   ],
+   "projects": [
+    {
+     "pr": 615,
+     "title": "Money page: Plaid bank connection",
+     "date": "2026-10-08"
+    }
+   ],
+   "marketplace": [
+    {
+     "pr": 571,
+     "title": "Project skills & tools (in review)",
+     "date": "2026-09-24"
+    }
+   ],
+   "themes": [],
+   "model-picker": [
+    {
+     "pr": 609,
+     "title": "ChatGPT: official sign in",
+     "date": "2026-10-06"
+    }
+   ],
+   "permissions": [
+    {
+     "pr": 613,
+     "title": "Oversized image safety",
+     "date": "2026-10-08"
+    }
+   ],
+   "tags": [],
+   "connect4": []
+  }
+ },
+ "counts": {
+  "parts": 121,
+  "desktopFiles": 1311,
+  "androidFiles": 85,
+  "efforts": 23,
+  "activeEfforts": 5
+ }
+}

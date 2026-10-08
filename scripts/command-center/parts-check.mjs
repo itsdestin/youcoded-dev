@@ -19,6 +19,16 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..');
 const app = path.join(root, 'youcoded');
 const cfg = JSON.parse(fs.readFileSync(path.join(here, 'parts.rules.json'), 'utf8'));
+// WHY: a part's extra homes ("also") must name systems that exist and differ from its own,
+// or the map would draw a box in a column nobody defined.
+{
+  const systems = new Set(Object.values(cfg.parts).map((p) => p.system));
+  for (const [name, p] of Object.entries(cfg.parts)) {
+    for (const s of p.also || []) {
+      if (!systems.has(s) || s === p.system) { console.error(`parts.rules.json: ${name} "also" names ${s}, which is ${systems.has(s) ? 'its own system' : 'not a system'}`); process.exit(2); }
+    }
+  }
+}
 const argv = new Set(process.argv.slice(2));
 
 // Glob -> RegExp: ** = anything incl. slashes, * = anything but slash, ? = one non-slash char, {a,b} = alternatives.

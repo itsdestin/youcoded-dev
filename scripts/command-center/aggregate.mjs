@@ -62,7 +62,9 @@ for (const [part, t] of Object.entries(partTotals)) {
   for (const f of placed.files) if (f.part === part) { const o = (byLayer[f.layer] ||= { files: 0, lines: 0 }); o.files++; o.lines += f.lines || 0; }
   for (const [layer, o] of Object.entries(byLayer)) {
     const c = cells[`${info.system}/${layer}`] ||= { parts: [], files: 0, lines: 0 };
-    c.parts.push({ part, files: o.files, lines: o.lines, purpose: info.purpose || '' });
+    // WHY also: a part may serve a second system (GitHub sign-in: sync AND marketplace); the
+    // map draws it in both places instead of forcing one column (Destin, 2026-10-08).
+    c.parts.push({ part, files: o.files, lines: o.lines, purpose: info.purpose || '', also: info.also || [], alsoWhy: info.alsoWhy || '' });
     c.files += o.files; c.lines += o.lines;
   }
 }
