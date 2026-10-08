@@ -1,10 +1,12 @@
 ---
 title: Oversized images — admission gate, shrink-once preparation, bounded recovery
-status: active
+status: shipped
 date: 2026-10-07
 ---
 
 # Oversized Image Safety Implementation Plan
+
+> Executed subagent-driven, each task reviewed, final whole-branch review clean. App merged in youcoded#613 (`3da1da214`); workspace records in youcoded-dev#246. Documented limitations live in `docs/roadmap/native-harness.md` → "Tools and permissions: small faults and checks" clause (f).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
