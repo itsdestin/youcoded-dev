@@ -121,9 +121,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       (e) Local and OpenRouter sessions have no "Skip Permissions"; the toggle is hidden and the
       chip stops at Full Auto (report: docs/active/investigations/2026-09-01-native-no-bypass-mode.md).
       (f) Pictures too big for the model (2026-10-07): shrinking a very tall one briefly takes about
-      1.5 GB of memory; the shrunk copies are never cleaned up; after switching to a stricter model a
-      shrunk picture becomes a note instead of being shrunk again; ChatGPT's exact rejection was never
-      captured, so its wording is matched from a screenshot.
+      0.6–1.2 GB of memory; the shrunk copies are never cleaned up — wanted: a sweep of the
+      `image-cache` folder by size or age (each copy up to 10 MB, one per provider switch); after
+      switching to a stricter model a shrunk picture becomes a note instead of being shrunk again;
+      after sending a huge picture the desktop shows nothing for up to ~30 s — wanted: a "preparing"
+      state; ChatGPT's exact rejection was never captured, so its wording is matched from a
+      screenshot, and OpenAI's longest-edge limit (8192 px) is a guess — wanted: capture a real
+      rejection for each.
       `desktop` `confirmed` `P3` `checked 2026-08-12`
 
 - [ ] Parked ideas: tools, secrets and sandboxing — 9 things.
