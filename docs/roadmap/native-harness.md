@@ -107,7 +107,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       to the "assume you can do it, find a way" prompt rule
       `marketplace-screen` `desktop` `needs-verify` `P1` `checked 2026-09-05` `v1.3.1`
 
-- [ ] Tools and permissions: small faults and checks — 5 things.
+- [ ] Tools and permissions: small faults and checks — 6 things.
       (a) The assistant's standing instructions grew about five times on 2026-09-05; the effect on
       a small model is unmeasured (two runs inconclusive); needs repeated runs, and the compact
       local prompt and "keep going" looping are untested.
@@ -120,6 +120,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       files are unverified outside a dev instance.
       (e) Local and OpenRouter sessions have no "Skip Permissions"; the toggle is hidden and the
       chip stops at Full Auto (report: docs/active/investigations/2026-09-01-native-no-bypass-mode.md).
+      (f) Pictures too big for the model (2026-10-07): shrinking a very tall one briefly takes about
+      1.5 GB of memory; the shrunk copies are never cleaned up; after switching to a stricter model a
+      shrunk picture becomes a note instead of being shrunk again; ChatGPT's exact rejection was never
+      captured, so its wording is matched from a screenshot.
       `desktop` `confirmed` `P3` `checked 2026-08-12`
 
 - [ ] Parked ideas: tools, secrets and sandboxing — 9 things.
