@@ -1,0 +1,65 @@
+{
+  "title": "Your money page \u2014 round 2",
+  "key": "finance-dashboard-review-2",
+  "out": "finance-dashboard.review-2.html",
+  "stage": "review",
+  "images": "images/finance-dashboard.review-2",
+  "runs": {
+    "before": "runs/round1",
+    "after": "runs/round2"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "live": {
+    "worktree": "sessions/finance-dashboard/youcoded"
+  },
+  "steps": [
+    {
+      "id": "A-look",
+      "surface": "Money page",
+      "path": "Pages, then Money",
+      "crop": "pages/page/page-money",
+      "headline": "The money page now has the Home page's look, brackets for negative amounts, a bank mark on every row and links out.",
+      "changed": "Raised rounded cards with a soft glow, a pill row along the top, net worth beside its chart, warnings as glowing tiles, coloured marks for each bank, and thicker limit bars. Negatives read ($35,329). Every account and bill has a button that opens that company's site.",
+      "notice": "The page reads like part of the app's newer pages. To pay a bill, press the arrow on its row and the company's site opens in your browser.",
+      "risk": "Bank marks are letters in each company's colour, not their real logos, which a page cannot load without asking. The links open each company's main site, not the exact payment screen."
+    },
+    {
+      "id": "L-try",
+      "surface": "Money page",
+      "path": "Pages, then Money (in the practice app)",
+      "headline": "Try it again: open Pages, then Money. Press a bill's arrow, change a range on the chart, and update a loan.",
+      "live": {
+        "app": "default"
+      },
+      "notice": "This is the practice app: nothing you change is saved and the banks are pretend. In the practice app a link may open nothing; in the real app it opens your browser.",
+      "yes": "Feels right",
+      "no": "Something's off"
+    },
+    {
+      "id": "B-icon",
+      "surface": "Pages",
+      "path": "The page buttons along the top of the window, and the Pages list",
+      "crop": "pages/page/page-money",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Round 2"
+      },
+      "headline": "The money page gets its own banknote icon, so it no longer looks like the analytics page.",
+      "changed": "A ninth page icon, a banknote with a coin, that any page can pick. Your wider ask \u2014 the page builder choosing a distinct icon for every page from a much bigger set \u2014 is on the roadmap as its own piece of work.",
+      "notice": "Along the top of the window, Money and YouCoded analytics no longer share a bar chart.",
+      "highlight": {
+        "box": [
+          5,
+          0.4,
+          6.5,
+          3.6
+        ]
+      }
+    }
+  ]
+}

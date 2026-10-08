@@ -1,0 +1,50 @@
+{
+  "title": "Your money page \u2014 first look",
+  "key": "finance-dashboard-review",
+  "out": "finance-dashboard.review.html",
+  "stage": "design",
+  "images": "images/finance-dashboard.review",
+  "runs": {
+    "today": "runs/today"
+  },
+  "labels": {
+    "today": "Mockup"
+  },
+  "live": {
+    "worktree": "sessions/finance-dashboard/youcoded"
+  },
+  "steps": [
+    {
+      "id": "B-page",
+      "surface": "Money page",
+      "path": "Pages, then Money",
+      "crop": "pages/page/page-money",
+      "headline": "Build the money page like this: warnings first, then four totals, a net-worth chart, accounts by kind, and bills by due date.",
+      "changed": "A new page built from your answers, with made-up numbers. One warning row per account, so a card with three problems is one row. Each warning has its own button: Reconnect for a broken bank link, Update for a number you enter.",
+      "notice": "The top of the page answers \"does anything need me today?\"; scroll for card limits (bars turn amber past 30%, red past 80%), loans and every bill with days left.",
+      "risk": "The numbers here are fake. Which banks actually connect is unknown until you sign up for Plaid."
+    },
+    {
+      "id": "L-try",
+      "surface": "Money page",
+      "path": "Pages, then Money (in the practice app)",
+      "headline": "Try it: open Pages, then Money, and press Update on the Earnest student loan to change its balance.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Works for me",
+      "no": "Something's off",
+      "notice": "This is the practice app: nothing you change is saved and the banks are pretend. Clicking around tells us whether the layout and buttons feel right."
+    },
+    {
+      "id": "Q-icon",
+      "words": true,
+      "surface": "Pages",
+      "path": "The page buttons along the top of the window, and the Pages list",
+      "headline": "Should the money page get its own icon instead of sharing the bar-chart one?",
+      "today": "Pages pick from eight icons. The money page uses the bar chart, the same one as the YouCoded analytics page.",
+      "problem": "The tester found the two buttons along the top almost identical and opened the wrong one.",
+      "proposal": "Yes adds a money icon (a dollar sign) that any page can use. No keeps the bar chart."
+    }
+  ]
+}
