@@ -1,0 +1,140 @@
+{
+ "deck": "home-redesign-r1",
+ "started": "2026-10-05T00:26:34.935Z",
+ "submitted": "2026-10-05T00:51:54Z",
+ "cur": 15,
+ "answers": {
+  "A-1": {
+   "v": "pick",
+   "pick": "inplace",
+   "t": 1791160068453,
+   "seconds": 74,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "pick",
+   "pick": "once",
+   "t": 1791160080792,
+   "seconds": 12,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "pick",
+   "pick": "stamp",
+   "t": 1791160090784,
+   "seconds": 10,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "pick",
+   "pick": "pending",
+   "t": 1791160110899,
+   "note": "maybe loading spinner/state or something while an action waits/works",
+   "seconds": 20,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "A-5": {
+   "v": "pick",
+   "pick": "parts",
+   "t": 1791160119788,
+   "seconds": 9,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "A-6": {
+   "v": "pick",
+   "pick": "ledger",
+   "t": 1791160155516,
+   "seconds": 36,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "A-7": {
+   "v": "pick",
+   "pick": "stay",
+   "t": 1791160190420,
+   "seconds": 35,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "E-1": {
+   "v": "pick",
+   "pick": "c",
+   "t": 1791160887759,
+   "seconds": 697,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "L-1": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791160912732,
+   "seconds": 25,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791160937086,
+   "seconds": 24,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "L-3": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791160959435,
+   "note": "but i hate the thumbnail effect/style",
+   "seconds": 22,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "L-4": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791160971039,
+   "seconds": 12,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "MN-1": {
+   "v": "pick",
+   "pick": "c",
+   "t": 1791161090090,
+   "seconds": 119,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "M-1": {
+   "v": "pick",
+   "pick": "c",
+   "t": 1791161147729,
+   "note": "may want to refine a bit tho",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "pick",
+   "pick": "c",
+   "t": 1791161444711,
+   "note": "don't really like the spin animation thing for play/pause. it's also kinda hard to see the exact differences between variants side by side here",
+   "seconds": 297,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "M-3": {
+   "note": "again, kinda hard to tell. i think c, but the +/- buttons still feel weird/laggy on soundbar, and some of the other buttons are also janky. need a better way to see the exact differences and such",
+   "t": 1791161513197,
+   "v": "other",
+   "seconds": 68,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

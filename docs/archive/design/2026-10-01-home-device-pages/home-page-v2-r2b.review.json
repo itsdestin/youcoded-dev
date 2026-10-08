@@ -1,0 +1,33 @@
+{
+  "title": "The Home page, next version — round 2 again: TVs, soundbars and speakers",
+  "key": "home-page-v2-r2b",
+  "out": "home-page-v2-r2b.review.html",
+  "images": "images/home-page-v2-r2b.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-kinds",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 26.5, 21.8, 27.2] },
+      "headline": "Each player now says what it is (TV, Soundbar, Speaker or Display) with its own icon, and gets only the controls that fit it.",
+      "changed": "A small label sits above each name. The soundbar has a soundbar icon, says \"TV sound\" while it plays the TV, and gets play/pause and skip instead of a remote. Speakers get the same.",
+      "notice": "Play/pause and skip appear only while something is playing or paused; the big middle button shows what pressing it will do.",
+      "risk": "The type comes from the model name Home Assistant reports; an unusual model could be labelled Speaker when it is something else."
+    },
+    {
+      "id": "S-remote-own",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 54.6, 21.8, 45.0] },
+      "headline": "Only the TV the remote belongs to gets it, and its power switch now works the TV's real power through that remote.",
+      "changed": "Before, the soundbar named \"Destin's Room\" also got this TV's remote, because the remote's name begins with \"Destin's Room\". Now the names must match exactly, once \"remote\" is taken off. Pressing the TV tile turns the TV on or off for real, and the switch holds while the TV catches up.",
+      "notice": "The Samsung TV tile has no remote: it is the same screen, but the remote is paired to the Google TV box.",
+      "risk": "Destin's Samsung TV and Destin's Room TV are still two tiles for one screen; hide the Samsung one in Edit if you never use it."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "title": "The Home page, next version — round 1, the lights card, third look",
+  "key": "home-page-v2-r1c",
+  "out": "home-page-v2-r1c.review.html",
+  "images": "images/home-page-v2-r1c.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built (test app, pretend Home Assistant)"
+  },
+  "themes": [
+    "midnight",
+    "golden-sunbreak",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "S-inside",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room, lights card open",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          22.8,
+          48.6,
+          21.9,
+          51.0
+        ]
+      },
+      "headline": "Each light is now a card inside the lights card, evenly spaced on both sides, with no indent and no line.",
+      "changed": "The indent and the guide line on the left are gone. The lights card holds its All header and, when open, each light as its own card, the same gap on the left, right and bottom.",
+      "notice": "Folded, the card is just its header row.",
+      "risk": "None known beyond the earlier ones."
+    }
+  ]
+}

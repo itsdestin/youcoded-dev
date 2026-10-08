@@ -1,0 +1,38 @@
+{
+ "deck": "home-device-pages-review",
+ "started": "2026-10-01T09:24:11.277Z",
+ "submitted": "2026-10-01T09:27:14Z",
+ "cur": 3,
+ "answers": {
+  "S-card": {
+   "v": "yes",
+   "t": 1790846663348,
+   "seconds": 12,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-refused": {
+   "v": "yes",
+   "t": 1790846669605,
+   "seconds": 6,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-key": {
+   "note": "make the open home assistant button full width",
+   "t": 1790846708163,
+   "v": "other",
+   "seconds": 39,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-page": {
+   "v": "other",
+   "t": 1790846833259,
+   "note": "i think we should come up with a better power button for the lights instead of the basic toggle. also want to try styling the brightness sliders differently and adding color/pallette control.",
+   "seconds": 125,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

@@ -5,873 +5,214 @@ seen-on is always n/a here.
 
 ## tests
 
-- [ ] The Office add-on's early editor script (the one that silences external-link checks and
-      peer-to-peer connections) is only tested for what it blocks, never for leaving the
-      editor's ordinary features working (the add-on's test file for it was read 2026-10-02 and
-      still has no test of that kind)
-      `n/a` `needs-verify` `checked 2026-10-02`
+- [ ] Flaky and load-sensitive tests: 9 that fail on CI or only in full-suite runs.
+      (a) Windows CI: two import-file "failed copy rollback" cases sometimes report "skipped" instead
+      of failing; one green re-run so far; (b) the specialist background-completion test timed out
+      once on Windows (15 s budget); (c) two tests failed only under full-suite load (waiting line
+      clears; resume pre-fills last model); (d) the shell-registry "still-running marks" test goes red
+      on every run on this machine because it counts real milliseconds; (e) three different
+      step-guard-row tests flaked in full runs only, on four unrelated branches; (f) three suites fail
+      their own cleanup on macOS/Ubuntu CI ("ENOTEMPTY") after passing, which can block a good PR;
+      (g) macOS-only: a finished background command's notice arrives without its output; if real, a
+      slow machine shows "finished" with nothing; (h) the desktop CI job exits red with every test
+      passing ("Closing rpc" error); (i) subagent-view and mcp-startup-wiring never failed in 27 local
+      runs: trigger unknown, or already fixed
+      `n/a` `confirmed` `P3` `checked 2026-09-02` `regression`
 
-- [ ] The review-page before-and-after check (`review-cards.py selfie`) renders a fixed sample
-      deck that has no live step shown on its own, so a change to how those steps look shows
-      "nothing moved" on every page (2026-09-27: 18 empty pages sent to Destin for the Meadow Mist
-      blur fix, which he had confirmed by eye). Add that kind of step to the sample deck
-      `n/a` `confirmed` `checked 2026-09-28`
+- [ ] Test-suite cleanup work: 8 things left over from the simplification plans.
+      (a) ~330 startup-only or rarely-used blocking calls still sit in the unreviewed bucket of the
+      blocking-call test (report: docs/active/investigations/2026-09-24-main-blocking-calls-triage.md);
+      (b) finish Plan C, test files grouped by feature: part doable now, part blocked until
+      `feat/specialists-plans-ui` merges; 892 → 783 files so far (plan:
+      docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md); (c) 102 fixed sleeps still
+      stand in for real signals (report: docs/active/investigations/2026-09-01-fixed-sleeps-and-mcp-wiring-import.md);
+      (d) 57 test files are excluded from the test type-check (201 errors); (e) the lint gate leaves 79
+      floating promises and 43 exhaustive-deps hits unguarded; (f) 26 more tests read app source as
+      text and were never classified, plus two exemption lists that can silently disagree; (g) no
+      bundle-size budget, no view of oversized window-to-main messages, no nightly coverage ratchet
+      (report: docs/active/investigations/2026-09-16-simplification-audit.md); (h) duplicated chat-line
+      listeners, a third history reader and a repeated divider test remain after the one-core work
+      `n/a` `confirmed` `P3` `checked 2026-09-01`
 
-- [ ] A headless page check (`scripts/ui-probe.mjs`) shows Word, Excel, PDF and image files
-      stuck on "Loading viewer…" when it waits a fixed time after a click. The tab it opens is
-      never brought to the front, so Chrome holds back the page's queued work until the next
-      check runs; waiting with `--wait` instead of `--settle` works. Bring the tab to the front
-      when it opens (found 2026-09-27, the same on master)
-      `n/a` `confirmed` `checked 2026-09-27`
+- [ ] Test and check gaps: 8 places where nothing guards a behaviour.
+      (a) the Office add-on's early editor script is tested only for what it blocks, not for leaving
+      ordinary editor features working; (b) the quick local check skips tests that read files outside
+      `desktop/` (Android manifest, workspace files), so it says "tests: none" while CI would fail;
+      (c) on a Mac, a new file, a theme edit and a session title may miss a change made right after
+      watching starts (audited, not reproduced; report: docs/archive/investigations/2026-09-01-sync-engine-debounce-macos-flake.md);
+      (d) feature-flow coverage debt: contract table, verdict column, corrupt verdicts file untested;
+      (e) review-deck tests print warnings that bury failures and never test a build failure;
+      (f) the phone's presence client has no test harness; (g) the voice install's "runs no other
+      program" guard misses `execSync`, `fork` and `require('child_process')`; whether to widen it is
+      Destin's call; (h) nothing replays Claude Code's launch menus (trust folder, theme, login,
+      model safeguard), so a reworded prompt hangs a session instead of failing a test
+      `n/a` `confirmed` `P3` `checked 2026-07-22` `regression`
 
-- [ ] The main-process blocking-call test's classification still has ~330 startup-only/user-rare calls to move out of its unreviewed bucket (JSON lines in the triage). This is test allowlist maintenance; the separate B2/B4/B5/B7/B10/B12 runtime blocking work, including theme slider writes, has its primary open item in perf
-      `n/a` `confirmed` `checked 2026-09-24` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
-
-- [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
-      → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
-      the tool-card, chat-reducer, ipc-handlers, chatview and EngineCard-remnant follow-ups listed
-      there (each a few files, same method as the merged clusters; the Task 3 lessons apply).
-      **Blocked until `feat/specialists-plans-ui` merges** (unmerged, no PR as of 2026-09-19):
-      Task 2 (split `native-session-host.test.ts`), the `harness-`, `native-`, `specialist-` clusters,
-      that branch's new `plan-`/`plan-card-` files, then Task 5 (regenerate the inventory, reconcile the
-      count, archive the plan). Start the blocked half by checking
-      `git merge-base --is-ancestor origin/feat/specialists-plans-ui origin/master`.
-      Merged so far: test files 892 → 783, cases 11,533 → 11,533 (youcoded#509–#532)
-      `n/a` `confirmed` `checked 2026-09-19`
-
-- [ ] `tests/artifacts/import-file.test.ts` — the two `failed copy rollback` cases that use
-      `onCollision: 'replace'` with `disclosedCollisions` (ENOSPC and COPY_INCOMPLETE) sometimes
-      return `{ok: true, skipped: true}` on the Windows CI leg, so the mocked copy failure is never
-      reached. An unchanged re-run of 01a2fa4b went green on all three (2026-09-06); the file and
-      its source were untouched since 2026-07-23. Re-run before bisecting
-      `n/a` `needs-verify` `checked 2026-09-06`
-
-- [ ] `tests/specialist-run.test.ts` "a background completion is injected as a user-role turn when
-      the parent goes idle" timed out once on the Windows CI leg (run 35156247052, 2026-09-16, the
-      merged-commit dispatch of session/ci-test-health): the child's ledger status was still
-      `running` after the 15 s `vi.waitFor` budget — a whole specialist session has to spawn and
-      stream inside that budget on the slowest runner. Green on the seven earlier Windows
-      dispatches; not touched by that branch. One observation, filed as a Windows load timeout;
-      if it recurs, measure the child's real duration on the runner before widening anything
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] Two cases failed only under full-suite load and passed alone (2026-09-16, `verify.sh --full`,
-      11,550 tests, on a branch touching neither): "the waiting line CLEARS once the change lands"
-      (then in `local-engine-fields-rendered.test.tsx`; after Plan C its EngineCard sections are
-      in that file's remnant, due to move into `EngineCard.test.tsx`) and "pre-fills each previewed
-      conversation with ITS last model" (now `tests/ResumeBrowser.test.tsx`; a `waitFor` on a button
-      role). Both re-ran green in one isolated run right after. Wall-clock waits under load; not
-      re-checked on pristine master. (The third, chatgpt-request-diagnostics, was fixed 2026-09-18.)
-      `n/a` `needs-verify` `checked 2026-09-19`
-
-- [ ] `tests/shell-registry.test.ts` fails on this machine in ISOLATION, not only under load —
-      one of its two "still-running marks" cases goes red on every run, alternating between
-      them (4 runs, 2026-09-16). Both assert on wall-clock milliseconds (60 ms / 140 ms marks),
-      which `test-suite-hygiene.md` forbids for exactly this reason; they shipped 2026-09-16
-      in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
-      bigger budget
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] Stopping a dev instance lists its own `claude` children without marking them as children. Show their process ancestry in `run-dev.sh --stop`, so the developer can distinguish the dev instance from other sessions. The separate ~490 MB repeated perf-fixture download has its primary measurement-cost item in perf; the unrelated early line-budget check shipped 2026-09-27
-      `n/a` `confirmed` `checked 2026-09-27`
-
-- [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
-      failed once in a full suite run and passed on the two full runs after it, plus three
-      isolated runs and three paired with the naming settings suite. Seen 2026-09-09, hours
-      after the test landed on master. It asserts an ordering between two queued writes
-      (`expected [[20],[40]] to equal [[30],[40]]` — the first write's value, not the
-      superseding one), so a scheduling race in the test rather than the queue is the
-      likeliest read. Nothing on the session-naming branch touches StepGuardRow.
-      SECOND occurrence 2026-09-09, a DIFFERENT test in the same file — "serializes rapid
-      commits and applies the latest intent after the in-flight write" — in a full suite run
-      on session/claude-auth-live-status, which touches no step-guard file at all; 3 of 3
-      isolated re-runs green. Two of the file's eight tests have now flaked in full runs and
-      only in full runs, which points at the suite's shared timers rather than either test.
-      THIRD occurrence 2026-09-10, a THIRD test in the same file — "invalid text does not
-      save null and visibly restores the saved value" — in a `verify.sh --full` run on
-      perf/markdown-open, whose four changed files are markdown rendering and CSS and are
-      imported by nothing in this suite; 3 of 3 isolated re-runs green and the very next
-      full run green at 10,280 passed. Three of eight tests, three unrelated branches, never
-      once outside a full run: treat the file's shared timer setup as the suspect, not the
-      assertions. It costs a re-run on every branch that trips it.
-      FOURTH occurrence 2026-09-10, inside `verify.sh` on session/remote-first-connect (remote
-      access batch 2, which touches no step-guard file); 5 of 5 isolated runs green and the
-      re-run green. The 2026-09-09 sighting of "failed write rolls back and Retry persists the
-      same intent" (twice in one full run, three isolated passes after) is the same family and
-      was filed separately until 2026-09-16; the Retry-persists worry itself was closed on
-      2026-09-16 as the test, not the product (shipped.md)
-      `desktop` `confirmed` `checked 2026-09-16` `regression`
-
-- [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
-      `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
-      an Android manifest or a workspace file yields "tests: none", and the guard that
-      exists to catch exactly that edit stays silent. Found 2026-09-05 reviewing the voice
-      prompting manifest guard, which reads `app/src/main/AndroidManifest.xml` from a test in
-      `desktop/tests/`. CI's full `npm test` does catch it, so this is about the local loop
-      lying, not about shipping broken. Fix: let a test declare the paths it watches, or
-      widen the source-scanning-guard fallback to spot cross-repo reads
-      `n/a` `confirmed` `checked 2026-09-05`
-
-- [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
-      `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
-      already passed, so the red names the wrong thing. Seen 2026-09-03 on youcoded#399, passed
-      on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
-      prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
-      3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
-      but it fails whole runs, which is how a real failure next to it gets ignored.
-      2026-09-16: now THREE files, same `ENOTEMPTY … /.youcoded/sessions` on teardown —
-      `specialist-run.test.ts` on master's own Ubuntu leg (run 35158812538), `task-tool.test.ts`
-      on macOS and `native-session-host.test.ts` on Ubuntu (run 35160811595). With master
-      protected on the Linux check (Plan A) this can block a good PR. Same shape as the two
-      write-after-teardown races Plan A fixed (engine stopAll, lease destroy): find what still
-      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] On a Mac, three things can miss a change made in the split second after they start
-      watching: a new file may not appear in the Files panel, an edited theme may not
-      hot-reload, and a session title may not update. Same cause as the watcher bug fixed in
-      youcoded#399 (macOS reports the watch as live before it actually is) — those two got the
-      fix and a measured proof; these three were audited but not reproduced, so they were left
-      out of that PR rather than shipped unproven. Sites: artifacts/project-watcher.ts,
-      theme-watcher.ts, the topic watch in ipc-handlers.ts. The other four watcher sites are
-      already safe (they re-check on a timer)
-      `n/a` `confirmed` `checked 2026-09-03` → docs/archive/investigations/2026-09-01-sync-engine-debounce-macos-flake.md
-
-- [ ] `native-session-host` "a finished run is injected ONCE as a user turn with injected:
-      shell-complete" fails on the macOS CI leg only: the finished-notice text arrives without the
-      command's own output ("done"), so the exact-match regex misses. Passed on a plain re-run of
-      the same commit, and the same suite is green in 27 local runs — but if it is real rather
-      than a test race, a user on a slow machine sees a background command report finished with
-      no output
-      `n/a` `needs-verify` `checked 2026-09-02` `regression`
-
-- [ ] Coverage debt from the feature-flow build: nothing renders the contract table or its
-      verdict column in a browser test, the close-out Contract section runs only locally so no
-      unattended check guards it, and an empty verdict, a two-hash source, a corrupt verdicts file
-      and a missing git are all unpinned. None is a known failure
-      `n/a` `needs-verify` `checked 2026-09-02`
-
-- [ ] 102 fixed sleeps still stand in for real signals across the desktop suite (was 108; the six
-      worst in native-session-host — five copies of "guess 20 ms that the child's turn started",
-      the bug youcoded#363 already fixed once in that file, plus one whose own comment said "poll"
-      while it slept — now wait on the real event). The MCP startup-wiring test did not blow its
-      budget in any of 27 local runs on 2026-09-02, including two 8-way concurrent sweeps
-      `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-fixed-sleeps-and-mcp-wiring-import.md
-
-- [ ] 57 test files are excluded from the test typecheck (58 entries in
-      `desktop/tsconfig.tests.json`, one a duplicate or a non-test) — they hold the 201 type
-      errors it found on the day it was switched on, mostly fixtures built as partial objects.
-      verify.sh prints the remaining count every run
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] The desktop CI job fails while every test passes — 7,971 passed, 0 failed, job exits 1 on
-      "EnvironmentTeardownError: Closing rpc while onUserConsoleLog was pending". Console output
-      still in flight when a worker shuts down, so the red names no test and points at whichever
-      file happened to be running. Seen on the Windows leg on master (#405 and #407 merges) and on
-      a PR branch the same day. Different from the flake items above: nothing fails, the job just
-      exits 1 — so "re-run it" is the only response anyone can give today
-      `n/a` `confirmed` `checked 2026-09-03` `regression`
-
-- [ ] subagent-view and mcp-startup-wiring were filed as suites that flake under parallel load,
-      but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to 4 cores, 2 x 8
-      concurrent) never failed either — the four that DID fail at 8-way concurrency were different
-      files and are fixed. Either they need a different trigger or they are already fixed.
-      (project-watcher, the third, had a real cause — a fixed 1.2 s sleep against macOS FSEvents'
-      start-up gap — fixed 2026-09-18, youcoded#532)
-      `n/a` `needs-verify` `checked 2026-09-19`
-
-- [ ] A whole session edited files that a path-scoped rule covers and the rule never loaded.
-      First seen 2026-09-03, blamed on the session working entirely through Bash (cat/sed/python
-      heredocs, as bypass-permissions mode asks for) rather than Read/Edit. **That explanation is
-      wrong, or not the whole cause:** on 2026-09-07 a session edited six files through Edit/Write
-      — `ChatView.tsx`, `App.tsx`, `ipc-handlers.ts`, `remote-server.ts`, `BubbleFeed.tsx`,
-      `types.ts`, covered by at least four rules — and `~/.claude/instructions-loaded.log` recorded
-      4 loads for it, all `load_reason: session_start`, none path-scoped. The log DOES record
-      path matches (309 across other sessions), and it records them for worktree files (273),
-      so neither the tool nor the worktree is the discriminator. The one variable left: those
-      sessions' cwd was inside the worktree, this one's stayed at the workspace root while its
-      edits were four directories below it. Unproven — a session started with cwd inside the
-      worktree, editing the same files, would settle it in one run. If that is the cause, every
-      session following `CLAUDE.md`'s "use absolute worktree paths" from the root loses every rule.
-      The earlier 2026-09-05 measurement (a Bash-only session got 0 of the 6 rules its edits
-      matched) stands as one confirmed way to lose them; a PostToolUse hook on edit-shaped Bash
-      that names the rule that did not load is still the cheapest instrument for that half
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] The lint gate only enables rules already at zero; the deferred list at the bottom of the
-      ESLint config still fires — 79 renderer floating promises and 43 exhaustive-deps hits (the
-      highest-value set: stale-closure bugs) are unguarded
-      `n/a` `needs-verify` `checked 2026-09-01`
-
-- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS 26 Tahoe on quickemu) and
-      since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
-      install of any build as a real download). The full first-run → setup → sign-in pass has now run
-      by hand on the Windows and macOS guests (2026-10-02/03: Git, Apple's tools, sign-in, Office).
-      Still untested: the same pass on the Ubuntu guest, the deb/rpm/pacman installers there, and
-      the winget-only flows that remain (Tailscale, rclone, `gh`) on a Windows guest without App
-      Installer
-      `n/a` `needs-verify` `checked 2026-10-03`
-
-- [ ] Nothing tests a new user's whole path — download from youcoded.ai, install, setup, sign-in,
-      first chat — on every platform without Destin clicking through it. Destin (2026-10-01): "could
-      be interesting to set up". Proposed shape: on-demand GitHub Actions runs on real Windows, Apple
-      Silicon Mac and Linux machines (free for the public repo), driving the installed app with the
-      existing click-path tooling, OpenRouter key sign-in, screenshot report per step; dev tools
-      hidden so the prerequisite installer still runs. Local VMs stay for the SmartScreen /
-      Gatekeeper wall and home-edition Windows, which runners don't show
-      `n/a` `parked` `checked 2026-10-01`
-
-- [ ] YouCoded's page in the Linux app catalog (appimage.github.io, request #8053, found by their
-      robot) would show an auto-captured setup screen; our own pictures ship in the next release's
-      Linux builds (youcoded#596, served from youcoded.ai/screenshots). After that release: comment
-      `/retest` on #8053 and reply that Destin is the author (their bot wants 15+ words and none of
-      "community build"/"repackaged") — both public, in Destin's name, so ask him first
-      `n/a` `blocked` `checked 2026-10-01`
-
-- [ ] Linux downloads: the AppImage needs libfuse2, which stock Ubuntu 22.04+ lacks, so it won't
-      open until the user installs it (the deb avoids this); electron-builder's newer AppImage
-      runtime likely removes the need — untested. The Linux build also warns that taskbars may not
-      tie the running window to YouCoded's icon (a missing window-class setting). Both seen
-      2026-10-01, neither touched
-      `desktop` `needs-verify` `checked 2026-10-01`
-
-- [ ] Visual-regression harness for the renderer's chrome invariants (single-backdrop chrome-glass,
-      framed-shell insets, overlay layers) — they are guarded only by eyeballing; the UI review sweep
-      now captures every screen per theme, so the missing piece is a baseline + diff verdict
-      `n/a` `parked` `checked 2026-07-15`
-
-- [ ] Review-deck test hygiene: bare `open()` in the Python deck tests prints ResourceWarnings that
-      bury real failures; shot-measure sleeps 800 ms for the http server instead of polling and never
-      tests the `run: null` branch; nothing drives the deck's build-failure short-circuit
-      `n/a` `needs-verify` `checked 2026-08-27`
-
-- [ ] The phone's presence client (ping loop, reconnect state machine) has no test harness at all —
-      it is verified only by compiling; desktop's twin is fully tested. Add Robolectric or extract the
-      timing logic behind an injectable clock
-      `n/a` `needs-verify` `checked 2026-07-22`
-
-- [ ] The voice install's "runs no other program" guard does not ban every way to start one. The
-      ast-grep rule `voice-assets-runs-no-other-program` bans `execFile`, `execFileSync`, `spawn`,
-      `spawnSync` and `exec` calls, and oxlint bans importing `child_process`; `execSync` and
-      `fork` were never on the call list (not in the retired test either), and a
-      `require('child_process')` call gets past the import ban. Whether to widen it is Destin's
-      call — a stricter ban may also catch a harmless helper later
-      `n/a` `decision` `checked 2026-09-17`
-
-- [ ] Source-grep sweep, round 2: tests the 2026-09 inventory missed. Plan B converted or deleted
-      its 114 classified files, but 26 more tests still read app source as text and were never
-      classified. (a) Found once the inventory learned to follow a path held in a variable
-      (2026-09-17): buddy-position-source, buddy-title-guard, claude-specialist-default-parity,
-      ipc-error, remote-devices-channels, remote-password-always-required, remote-recovery,
-      remote-setup-flow, remote-status-channel, rocm-prereqs, session-drawer-deleted-toggle,
-      statusline-context-remaining, transcript-page-channel-parity, transcript-reducer,
-      update-install-ipc, voice-service. (b) Added after the classification snapshot:
-      harness-eval-not-shipped, hook-scripts-android-parity, infinite-animation-allowlist,
-      line-budgets, prompt-git-snapshot-precomputed, session-strip-layout-effects-have-deps,
-      visible-intervals, no-bare-disclosure, claude-settings, launch-settings-chores. (c) infinite-animation-allowlist keeps its own
-      exception list (`SMOOTH_OK`) beside the `no-unstepped-infinite-animation` generator's own
-      (`EXEMPT`); `check.sh` does not pair the two, so an exemption added to one can silently disagree
-      with the other. Classify each file (rule, split, keep with a reason, or delete) the way
-      Plan B did; the live list is `node scripts/test-inventory.mjs` section 3
-      `n/a` `confirmed` `checked 2026-09-17`
-
-- [ ] Three growth checks the 2026-09-16 simplification audit named and the tooling-ratchet
-      phase left unscheduled (G7, G10, G12): no bundle-size budget (nothing stops a new library
-      making the app's web bundle a third bigger; four lazy-loaded points in 962 files; PDF,
-      spreadsheet, Word, editor and chess libraries all load up front), no view of how big the
-      messages between the window and the main process are (291 handlers checked for name
-      parity only), and no coverage measurement at all. Wanted, in that order: a size guard on
-      the built bundle with about 10 % headroom, a dev-only trace that logs oversized messages
-      with a nightly top-20 table, and a nightly-only downward coverage ratchet on the harness
-      and renderer state — never a coverage gate on PRs
-      `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
-
-- [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
-      turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
-      pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
-      showed it fine. These are Ink TUI menus parsed by screen-scrape
-      (`shared/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
-      whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
-      sessions by a path that skips the gate entirely, and the UI workbench has no session
-      launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
-      method, model-switch safeguard — replayed through the parser and rendered, so a reworded
-      CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
-      the 2026-07-16 "trust" substring collision in `docs/archive/roadmap/shipped-full-to-2026-09-23.md`
-      `desktop` `needs-verify` `checked 2026-09-03` `regression`
-
-- [ ] Tidy-up left over after the one-core work (simplification Phase 5): the main window and the
-      floating buddy now share the chat-line listeners, but each still wires its own near-identical
-      copies of the hook, helper-run and shell-run listeners (and, separately, the "permission
-      replay finished" signal); the session preview pane builds its own history-page loop, a third
-      reader of the page path; the "already drawn?" test for a divider still appears inline in
-      the page merge and the archive boundary; and several tests hand-build their own fake screen
-      where one shared helper would cut about 40 lines. Nothing changes on screen. Found 2026-10-04
-      while unifying "Conversation cleared" (one-core sync-fix6)
-      `n/a` `confirmed` `checked 2026-10-04`
+- [ ] Cross-platform first-run testing: 5 open pieces.
+      (a) the full first-run, setup and sign-in pass is untested on the Ubuntu guest, its deb/rpm/pacman
+      installers, and the winget-only flows (Tailscale, rclone, `gh`) on Windows without App Installer;
+      (b) Linux AppImage needs libfuse2 (stock Ubuntu 22.04+ lacks it) and taskbars may not tie the
+      window to YouCoded's icon; (c) the Linux app catalog page (request #8053) needs a `/retest` and a
+      reply in Destin's name after the next release; ask him first; (d) the VM helper's Mac `load`
+      answers "nothing matched" for some builds and fails on file names with spaces; (e) the macOS 26 VM
+      has no saved "ready" state, so every start is a ~5 minute cold boot
+      `n/a` `confirmed` `P3` `checked 2026-10-01`
 
 ## rigs
 
-- [ ] A dev instance writes its pinned-pages list (Office is one of the pages) into the real
-      ~/YouCoded/Personal folder, under the dev profile's own device id, so a stray pin file for
-      a device that is not real can sync to the other devices. The real app's own pin file was
-      not touched (checked 2026-10-02). Office's Recent list and kept versions do follow the dev
-      profile's own folder, so they are not part of this
-      `desktop` `confirmed` `checked 2026-10-02`
+- [ ] Dev instance: 11 faults where it touches the real app or its launcher fails.
+      (a) a dev instance writes its pinned-pages list into the real Personal folder under a fake device
+      id, which can sync to other devices; (b) removing a provider in a dev window removes it from the
+      real app; (c) picking a theme in a dev window (or a connected phone) changes the live app's next
+      theme; (d) the cross-device sync state file is shared, so two apps can write it at once; (e) a dev
+      window silently rewrote the real app's engine settings (backend flipped to "rocm" overnight);
+      Destin decides which files a dev instance shares before any build; (f) wanted: a dev instance that
+      starts signed in with the real app's keys and a borrowed ChatGPT sign-in; Destin: "it's sometimes
+      annoying to add separate api keys and such for a quick test"; (g) Stop lists the dev instance's own
+      `claude` children without marking them; (h) the launcher has no reliable stop and leaves its Vite
+      server (even on port 5173) holding a port, so the next launch dies; (i) a bad `--offset` fails late
+      with a bare "Port in use" naming nobody; (j) three copies of "which checkout?" each know different
+      layouts; the launcher's own copy is the odd one
+      `n/a` `confirmed` `P2` `checked 2026-09-05`
 
-- [ ] Two screenshot runs of Office screens from the same checkout at the same time share the
-      one Office editor server: the second run reuses it and never stops it, the first stops it
-      when it finishes, so the second run's pictures can fail (read in the shoot script
-      2026-10-02)
-      `n/a` `confirmed` `checked 2026-10-02`
+- [ ] Screenshot, review-deck and workbench tooling: 10 faults.
+      (a) the before/after check shows "nothing moved" for live steps (18 empty pages sent to Destin);
+      (b) the headless page check shows Word/Excel/PDF/image viewers stuck on "Loading viewer…" unless
+      `--wait` is used; (c) two Office screenshot runs from one checkout share one editor server, so the
+      second fails; (d) deck preview silently clips What changed / You'll notice / Risk cards at smaller
+      windows; (e) two specs in one feature folder can share a key, caught only hours later; (f) the drag
+      sweep crashes writing its frame dump on a 60-drag run; (g) wanted: a before/after diff card, so an
+      "approve these edits" question stays in the deck; (h) screenshot drivers lack touch and 1.5× scale
+      (real mouse input already exists in `explore`); (i) eleven workbench `?switch=` values were never
+      booted by the boot check; (j) terminal text wraps at about two-thirds width, only ever seen in the
+      review rig (report: docs/active/investigations/2026-09-01-terminal-pty-column-count.md)
+      `n/a` `confirmed` `P3` `checked 2026-09-02`
 
-- [ ] The VM helper's `load` step is rough for Mac: `mac load run:<id>` answered "nothing
-      matched" even though the build's artifact held an x64 installer (it only keeps files named
-      like `YouCoded-Installer-*-x64.dmg`), and `mac load` fails on a file name with spaces
-      (the download address is not escaped). Found 2026-10-02 loading build 36958200637
-      `n/a` `needs-verify` `checked 2026-10-02`
+- [ ] Workspace tooling friction: 7 things.
+      (a) wanted: one-off scans with Fallow and React Doctor before anything is added; Destin: "optimize
+      tf out of our workspace"; (b) the CI-red-vs-master script lists Windows-only failures as "NEW" on a
+      Linux job; (c) a 526-line conversation-triage script sits on `chore/conversation-triage-script`:
+      merge it or delete the branch; (d) committing a workspace doc takes six manual steps and leaves
+      residue in the shared checkout; (e) the app's log is in Claude Code's folder, nobody finds it, and
+      it keeps only 500 lines; (f) the harness evaluator has no CI gate and hand-written eval cases;
+      (g) nothing refuses a commit that still holds merge-conflict markers: one landed in docs/wrap-ups.md
+      on 2026-10-07 (abdcb153) after a failed resolve script; the commit hooks could refuse `<<<<<<<` lines
+      `n/a` `confirmed` `P3` `checked 2026-10-07`
 
-- [ ] The macOS 26 (Tahoe) test VM has no saved "ready" state, so every start is a cold boot
-      through the OpenCore picker (which defaults to Recovery) and ~5 minutes of slow desktop.
-      It was started by hand with quickemu (virtio-sound, non-migratable CPU), so `vm.sh tahoe
-      save-ready` needs a `vm.sh tahoe start` boot first; it is the only Mac VM since the Sonoma one was deleted
-      (2026-10-04) to free disk; `vm.sh mac` and `vm.sh tahoe` both start it
-      `n/a` `confirmed` `checked 2026-10-04`
+- [ ] The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has
+      never run end to end on a real feature. The first small UI feature Destin asks for is the trial;
+      its handoff records rounds, Destin-seconds, reopens and failed acceptance rows
+      `n/a` `in-flight` `P3` `checked 2026-09-02` → docs/active/plans/2026-09-01-feature-flow-plan.md
 
-- [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
-      ChatGPT sign-in that never renews, so the real app is never signed out). Destin
-      2026-09-24: "it's sometimes annoying to add separate api keys and such for a quick test".
-      Investigated, not built: keys are locked under the app's name, so dev needs the keychain
-      helper under the built name (may prompt KWallet); ChatGPT renewal in dev would sign the real
-      app out; needs a written read-only exemption in live-app-safety.md; Linux first. Recommended
-      design B (keys + borrowed ChatGPT, no marketplace). OpenCode is not an in-app sign-in
-      `n/a` `decision` `checked 2026-09-24`
-
-- [ ] Removing a provider in a dev instance also removes it from the real app — both read and
-      write the shared `~/.youcoded/providers.json` (provider-registry remove), so a quick test
-      can silently delete a real provider row
-      `n/a` `needs-verify` `checked 2026-09-24`
-
-- [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
-      cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
-      catches it. `deck/AUTHORING.md` already warns about it, and on 2026-09-17 it still took three
-      rebuilds (two slides lost their Risk card at 1280 and 1024 wide). Preview should measure
-      each card against its box and print which slide and window size clips
-      `n/a` `confirmed` `checked 2026-09-17`
-
-- [ ] Destin asked to “optimize tf out of our workspace” (2026-09-14). Oxlint, TypeScript 7 and the
-      design check shipped; still untried: one-off scans with Fallow (dead code, copy-paste,
-      tangled imports — could replace knip) and React Doctor (bad React patterns), reported
-      before anything is added to the checks. React Doctor sends usage data unless turned off
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
-      remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
-      failing file — the known remote-download inode test, also red on master's Linux run. It
-      seems to take names from the whole workflow run rather than the one job, so its verdict
-      said "read it before merging" for a PR that added no failure (2026-09-16)
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] A dev instance shares the live app's saved theme choice: picking a theme in the dev window,
-      or on a phone connected to it, changes the theme the live app opens with next time.
-      `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
-      `desktop` `confirmed` `checked 2026-09-11`
-
-- [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
-      contract check, hours later, refuses the later rounds' sources; a warning at build time
-      would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
-      `desktop` `confirmed` `checked 2026-09-10`
-
-- [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
-      read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
-      never created, so the one artefact that says WHICH drag was bad does not exist for the
-      run size the README prescribes. Smaller runs write it fine. Found 2026-09-07 chasing a
-      non-zero continuity score
-      `desktop` `confirmed` `checked 2026-09-07`
-
-- [ ] A session needing Destin to approve a set of concrete text changes rebuilds its own
-      loopback answer page instead of using the deck — happened 2026-09-05 for a nine-item
-      prompt diff review. Wanted: a card type that renders a before/after diff, so one surface
-      answers every "approve these specific edits" question. Narrowed 2026-09-06: the original
-      framing was "the question deck can only ask multiple-choice questions", which is no
-      longer true — a slide can now take several ticks or an answer he types. What is still
-      missing is the DIFF itself, not the answer shape
-      `desktop` `needs-verify` `checked 2026-09-06`
-
-- [ ] A dev instance still shares one file with Destin's live app: the cross-device sync state
-      at ~/.claude/toolkit-state/sync-spaces.json is a hardcoded path, so --profile does not
-      separate it and two apps can write it at once. Found 2026-09-05 while handing over the
-      ChatGPT sign-in build, right after the setup-wizard state was given the same treatment
-      (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
-      `desktop` `needs-verify` `checked 2026-09-05`
-
-- [ ] A dev instance silently changed the engine settings of Destin's real, installed app. Same
-      class as the sync-spaces item above, second file: ~/.youcoded/config.json is one shared
-      path, so --profile separates a dev instance's userData but not this. Switching engine
-      backends in a dev window overnight 2026-09-05 rewrote the live app's config (stamped 03:01,
-      backend now "rocm") while the live app was still running its Vulkan build — it would have
-      come up on ROCm at its next restart, with nothing on screen tracing that back to a test
-      session. This is the isolation run-dev.sh exists to provide. The file was left alone: what
-      his app runs on is his call, not a session's.
-      Sized 2026-09-16 and NOT picked up, because it needs a decision first: `~/.youcoded/` is one
-      folder (`native-home.ts` is its single writer, plus hardcoded readers in `session-browser.ts`,
-      `prerequisite-installer.ts`, `chatsearch-index/`, `slug-repair*.ts`, `specialists/catalog.ts`),
-      and it holds the engine config AND the provider keys, native transcripts, MCP registry and
-      specialists. Pointing a dev instance at its own copy fixes the overwrite but also means a dev
-      window starts with no provider signed in and no past native chats, which every dev-window
-      test so far has relied on; the theme choice was not found in that folder at all (where it
-      lives is still unlocated). Destin decides which files a dev instance shares before any build
-      `desktop` `decision` `checked 2026-09-16`
-
-- [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
-      1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
-      context-free tester cannot claim to have covered either. Add pointer and scale switches to
-      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them.
-      **Deeper than switches, found 2026-09-10:** `ui-probe.mjs` cannot produce REAL input at
-      all — it has no CDP `Input` domain, so the only ways to ask a hover/press question are a
-      synthetic `dispatchEvent` (which skips hit-testing, so it answers a different question
-      and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
-      synthetic dispatch "proved" disabled controls receive pointer events when it proved
-      nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
-      `--move-to x,y` on ui-probe would execute where a switch only asks.
-      **Recurred the same day (unselectable-chrome):** proving a text box still drag-selects
-      took TWO more throwaway CDP scripts (a mouse drag, then a rerun with
-      `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
-      the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
-      and focus emulation on by default, beside `--hover`
-      **Half done 2026-09-26:** real input exists now — `scripts/shoot/explore.mjs` hovers,
-      presses, drags and types through CDP `Input`, and the tester kit uses it. Still missing:
-      touch and a 1.5× scale in `explore`/`shoot` (a tester still cannot claim to cover either)
-      `n/a` `confirmed` `checked 2026-09-26`
-
-- [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
-      different subset of the layouts: `scripts/lib/resolve-checkout.sh` (run-workbench),
-      `run-dev.sh`'s own inline version, and `deck/serve.py:resolve_worktree`. Two of the
-      three were fixed on separate days for the same missing shape — the session layout
-      `worktrees/sessions/<name>/youcoded` — at a cost of three failed launches on
-      2026-09-09 and two more plus a failed deck serve on 2026-09-10. run-dev is the one
-      still carrying its own; folding it in was deliberately not done in a wrap-up because
-      it is the launcher that paints a real window on Destin's desktop
-      `n/a` `confirmed` `checked 2026-09-10`
-
-- [ ] Measure the feature flow's two reviewers: after three features have run through the
-      2026-09-04 flow, count findings, accepted, rejected and rows failed at acceptance per
-      reviewer, and whether the UX tester's first run cut Destin's review-deck rounds; decide
-      from those numbers whether each reviewer earns its cost
-      `n/a` `parked` `checked 2026-09-04`
-
-- [ ] A 526-line conversation-triage script for the test engine exists only on branch
-      `chore/conversation-triage-script` (rescued 2026-09-04 from the deleted assistant-settings
-      mockup branch, where it had hitched a ride). Nobody has said whether it is wanted: merge it
-      with a README line, or delete the branch
-      `n/a` `decision` `checked 2026-09-04`
-
-- [ ] Committing a workspace doc takes six manual steps every time, and the leftovers are what
-      the sync healer exists to clean up. The pre-commit hook refuses commits in the shared
-      `youcoded-dev` checkout (correctly), so every edit becomes: copy each changed path into a
-      linked worktree, stage by explicit path, commit, push — done seven times in the
-      2026-09-04 buddy session alone. Nothing removes the original in the shared checkout, and
-      that residue is exactly what `workspace-sync.sh`'s classifier had to be built to
-      untangle. Copying whole files across also sweeps other sessions' work: doing it during
-      this very wrap-up pulled six unrelated index rows into the staging area. Wanted: one
-      command that takes the paths, does the copy/stage/commit/push in a worktree, and cleans
-      the shared copy — so the drift is never created rather than healed afterwards.
-      `n/a` `confirmed` `checked 2026-09-04`
-
-- [ ] The app's log is in a folder nobody would guess — Claude Code's, not the app's — so anyone
-      poking around for it concludes there is no log at all, as a tester with full access to the
-      machine did on 2026-09-03. Less bad than it first looked: Report a bug already attaches the
-      log for the user, so nothing is lost when they use that path. What is left is that the log
-      keeps only its last 500 lines, which can be shorter than one session, and that there is no
-      way to just go and look at it
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
-- [ ] The feature flow — a questions deck before anything is drawn, review rounds, a signed
-      contract, then a graded acceptance deck — is built but has never been run end to end on a
-      real feature; the first small UI feature Destin asks for is the trial, and its handoff
-      records rounds, Destin-seconds, reopens and rows that failed at acceptance
-      `n/a` `in-flight` `checked 2026-09-02` → docs/active/plans/2026-09-01-feature-flow-plan.md
-
-- [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
-      drawn from a failure taxonomy over the stored conversations — waiting on the step-1 triage
-      tool, which is now gone from disk (see the decision above)
-      `n/a` `blocked` `checked 2026-08-26`
-
-- [ ] Workbench serves community theme folders (`theme-asset://`) so review decks show real
-      theme previews
-      `n/a` `parked` `checked 2026-08-27`
-
-- [ ] Attach your own screenshot to a review-deck step (the serve endpoint can accept uploads)
-      `n/a` `parked` `checked 2026-08-27`
-
-- [ ] Re-author the session-strip motion review as live pick-one steps: the branch is built, the
-      four before/after clip steps were "just rough to compare", and the live-pane deck shipped
-      2026-09-01 — needs a design session naming the built behaviour as one real candidate among
-      real alternatives, not a build step
-      In progress in another session on branch feat/session-strip-motion (Destin, 2026-09-02)
-      `n/a` `in-flight` `checked 2026-09-02`
-
-- [ ] Terminal text wraps about two-thirds (only ever seen in the UI-review rig, never the live app —
-      Destin 2026-09-02; still a rig bug to fix if it persists) of the way across the pane — Claude Code's screen and
-      input line stop near 950 px in a 1440-wide window (dev instance under xvfb, 2026-08-27; Destin
-      has not seen it in his own app — check whether a maximized-at-launch window avoids it)
-      `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
-
-- [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
-      orphans its Vite server. Stopping a dev instance the documented way — derive the pid
-      from its port, kill it — leaves the renderer's dev server holding port 5223, so the
-      next `run-dev.sh` dies with a bind error that names Vite rather than the leftover.
-      Cost 2026-09-10: one failed relaunch plus a second kill, mid-test, while Destin was
-      waiting on his phone. A `--stop` that kills the pair, or a pidfile the script cleans
-      up, would execute; the launcher already knows both ports
-      `n/a` `confirmed` `checked 2026-09-10`
-
-- [ ] RECURRENCE, 2026-09-20, with the mechanism the entry above was missing. `run-dev.sh --stop`
-      killed the Electron pair, printed "offset 50's ports are free" and was RIGHT about 5223/9950/9272 —
-      but `npm run dev:renderer` and its Vite child were still alive, orphaned to init (ppid 1673), with
-      **Vite listening on 5173: its own default, which the offset never moves.** The stop path finds
-      leftovers by scanning the offset's three ports, so a socket the offset does not control is invisible
-      to it, and the next launch dies with a bind error naming Vite rather than the orphan. Detected only
-      because the backgrounded launcher reported `exit=1` after 1h49m and the port was checked by hand;
-      found with `ss -ltnp`, killed by exact pid (never a name match — the live app runs node too).
-      Whatever fixes this should scan the process tree the launcher started, not a port list
-      `n/a` `confirmed` `checked 2026-09-20`
-
-- [ ] `workbench-boot-check.mjs` boots sixteen routes (the `scenario=*` / `view=*` set plus a
-      stalled and a first-run variant), so eleven of the twenty-seven `?switch=` values
-      `mock-shim.ts` reads have never been booted by any check — `planUsage`, `chatgpt`,
-      `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`, `student`, `voice`,
-      `buddyHelper` (counts re-taken 2026-09-16). `scripts/ui-review/README.md` → Extending has told
-      every session to add a route for a new switch since the file was written; none of the
-      eleven has one. A switch that crashes the mock would surface as a failed screenshot in
-      whichever session next used it, not as a red check. Counted 2026-09-09 while adding the
-      `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
-      same instruction but cannot boot anything
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] `run-dev.sh --offset N` fails with a bare Vite "Port 5233 is already in use" when the offset
-      collides with another session's dev instance — after the whole launch sequence has run, and
-      without saying that a dev instance is what owns it or which offset is free. Hit 2026-09-10:
-      picked `--offset 60`, which another session's `remote-mesh-roadmap` instance already held.
-      With four-plus concurrent session worktrees on this machine this is the normal case, not the
-      rare one, and CLAUDE.md's "concurrent instances also need distinct --offset and --profile"
-      cannot help — the rule was followed, the guess was just taken. A preflight that checks the
-      three ports the offset resolves to, names the worktree holding one, and suggests the next
-      free offset would turn a cryptic late failure into a one-line answer
-      `n/a` `confirmed` `checked 2026-09-10`
-
-- [ ] A finished session's worktree manifest is never removed, so its session key is permanently
-      poisoned and the manifests pile up. `workspace-start` records each worktree in
-      `.git/youcoded-sessions/<key>.json` and `validateWorktree` refuses a recorded-but-missing
-      path with "Missing recorded worktree: … Restore it or use a new session key; it will not be
-      recreated automatically." Nothing deletes the file: `close-out.sh` lists the worktree, local
-      branch and remote branch as mechanical TODOs but never mentions the manifest, and no script
-      greps for `youcoded-sessions` to unlink one. Counted 2026-09-20 while closing out
-      `shared-component-sync-context`: 20 of 33 manifests pointed at worktrees that no longer
-      exist. Harmless until someone reuses a natural key — "analytics-dashboard" and
-      "paste-attachments" are exactly the names a later session would pick again — and then it
-      fails at startup with advice to invent a different key rather than "that session is over,
-      I cleaned it up". Either `close-out.sh` should list the manifest beside the other three
-      cleanup items, or removing the last worktree it records should drop it
-      `n/a` `confirmed` `checked 2026-09-20`
-
-- [ ] A session worktree disappeared mid-session and took the only copy of the work with it,
-      and nothing in the workspace noticed — no warning before, none after. Destin asked for a
-      one-line buddy cursor fix; it was made, tested and verified in `worktrees/sessions/buddy-cursor`;
-      the next turn found the directory, its git admin dir, the `session/buddy-cursor` branch AND its
-      manifest all gone together. A `kwin_wayland` coredump at 19:16:02 killed his desktop session
-      (no reboot — uptime ran continuously from 14:23), so a crash was the first suspect, but a crash
-      does not un-register a worktree and delete a branch: `git worktree prune` had nothing to prune.
-      Nothing in `scripts/` or the app removes one (the dev-dashboard is clipboard-only by design);
-      what actually issued it is NOT established. The work was rebuilt and shipped, so the cost was
-      one re-do — the durable gap is that uncommitted work has no second copy, a branch with zero
-      commits preserves nothing, and re-running the same `--session` key silently created a fresh
-      worktree at master rather than hinting anything was lost. Full timeline and the searches that
-      ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
-      Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
-      worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
-      RECURRED 2026-09-23/24: `worktrees/sessions/perf-many-tabs-baseline` (a clean, zero-commit
-      baseline kept for perf-rig comparisons) vanished with its branch between a PC crash and the
-      next rig run; four "before" runs failed with `spawn git ENOENT` before it was noticed, and
-      re-running the key now REFUSES ("Missing recorded worktree … will not be recreated") — an
-      improvement, but a new key was the only way on. Lead, unconfirmed: the same evening a tooling
-      session pruned "9 finished session worktrees"; a clean worktree at master with no commits
-      looks exactly like finished work to a pruner
-      `n/a` `needs-verify` `checked 2026-09-20`
+- [ ] Session-strip motion review: re-author as live pick-one steps. The four before/after clip steps
+      were "just rough to compare"; needs a design session naming the built behaviour as one real
+      candidate among alternatives. In progress in another session on branch feat/session-strip-motion
+      (Destin, 2026-09-02)
+      `n/a` `in-flight` `P3` `checked 2026-09-02`
 
 ## knowledge
 
-- [ ] Nine roadmap items point at reports whose proof no longer matches the code, so each may be
-      quietly fixed, moved, or still true under new wording (found 2026-09-23 once the app was
-      checked out beside the workspace; one of the same batch, the landing embed blur, turned
-      out fixed). Re-check each against the code and close, re-anchor or keep it:
-      dev-workspace (Backup & Sync workbench crash), local-models (second large model crash,
-      faster engine builds, LM Studio parity), other-features (silent sign-out on one rejected
-      call), remote-access (oldest reply on connect, slow first connect, remote hydration), sync
-      (GitHub size ceiling). `node scripts/roadmap-check.mjs` from a worktree that has every repo
-      lists them with the failing check
-      `n/a` `confirmed` `checked 2026-09-23`
+- [ ] Session work lost or stranded: 6 ways a session's work or worktree goes missing.
+      (a) a finished session's manifest is never removed (179 of 198 stale), poisoning its key;
+      (b) a worktree vanished mid-session with its branch and manifest, taking the only copy of the work;
+      it recurred 2026-09-23 (report: docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md);
+      (c) workspace-start will not resume after post-merge cleanup removed a component worktree;
+      (d) a fresh worktree came up missing a package its lockfile names (fifth time; cause unknown);
+      (e) close-out says "the work landed" and suggests deleting a worktree that holds uncommitted edits
+      (recurred 2026-10-06 on voice-custom-vocabulary; no cleanup performed);
+      (f) work still lives on one disk only: a complete implementation sat uncommitted 14 hours, and a
+      committed but unpushed branch was lost across machines
+      `n/a` `confirmed` `P1` `checked 2026-09-13` `regression`
 
-- [ ] A Worker setting the code reads can exist only as a test value with nothing loading it into
-      the live Worker, and every check stays green: the admin-device filter sat that way until
-      2026-09-13 even though the 2026-09-01 audit named it, so every admin analytics number counted
-      Destin's own devices. Wanted: an `audit-anchors.mjs` check that each optional field of the
-      Worker's `Env` type is a `[vars]` entry or a `secret put` line in `worker-deploy.yml`
-      `n/a` `confirmed` `checked 2026-09-13`
+- [ ] Roadmap and docs drift: 9 upkeep items.
+      (a) nine roadmap items point at reports whose proof no longer matches the code; re-check each;
+      (b) a Worker setting can exist only as a test value; wanted: an anchors check on the Worker's
+      optional fields; (c) the design guide has two G-22 rules (renumbered on `session/convo-tab-lag`;
+      close when it merges); (d) recheck the old cleanup handoff's remaining unused-code ideas;
+      (e) the roadmap checker reads whatever sub-repo copy is on disk, so stale checkouts keep fixed
+      bugs "confirmed"; (f) every branch filing a roadmap item conflicts on the ROADMAP.md table;
+      (g) two 2026-07-28 guardrails unshipped: spec counts undated, and `run-dev.sh --list` shows
+      worktrees not running instances; (h) no "review the attached document" command, longer plans,
+      worktrees in five places; (i) the archived youcoded-core status line still references a deleted
+      script
+      `n/a` `confirmed` `P3` `checked 2026-09-02`
 
-- [ ] `workspace-start` will not resume a session after the documented post-merge cleanup removed
-      one of its component worktrees ("Missing recorded worktree … will not be recreated"), so
-      doing more work in that repo the same session needs a hand `git worktree add`. Hit twice on
-      2026-09-13 (wecoded-marketplace, after PRs #91 and #92); either the cleanup recipe or the
-      script should give way
-      `n/a` `confirmed` `checked 2026-09-13`
+- [ ] Path-scoped rules not reaching sessions: 2 findings.
+      (a) a whole session edited files a rule covers and the rule never loaded; the Bash-only
+      explanation was wrong or partial; the working directory sitting at the workspace root is the
+      untested suspect; (b) sessions editing through Bash get no rules and cannot tell; wanted: a
+      non-blocking hook or a `rules-for <path>` command, after measuring the noise
+      `n/a` `needs-verify` `P3` `checked 2026-09-03`
 
-- [ ] We can see how many people open the app and nothing else. The daily ping carries a device, a
-      version, a platform and a country, so there is no way to answer which features get used, where
-      someone gives up during setup, or what people did before they stopped coming back. Destin was
-      shown this gap on 2026-09-13, alongside the beta-channel work, and parked it as its own
-      conversation rather than folding it in
-      `n/a` `confirmed` `checked 2026-09-13`
+- [ ] We can see how many people open the app and nothing else. The daily ping carries a device,
+      version, platform and country, so we cannot tell which features get used, where people give up in
+      setup, or what they did before they stopped coming back. Destin was shown the gap 2026-09-13 and
+      parked it as its own conversation
+      `n/a` `confirmed` `P2` `checked 2026-09-13`
 
-- [ ] A fresh worktree came up missing a package its own lockfile names (`dompurify`), so the first
-      full verify failed 41 test files at import. `workspace-start` already has the fix for this —
-      `fillMissingPackages` — and it printed no note; run by hand against the same worktree straight
-      after, it fetched the package correctly first time. So the routine works and something about
-      the creation path skipped it; the cause is NOT established. Evidence: the worktree was created
-      at fresh `origin/master` (whose lock names dompurify) while its `node_modules` was hardlinked
-      from the shared checkout (whose lock does not), and the only `deps:` line printed was
-      `hardlinked`. This is the FIFTH time this package has cost a session — four on 2026-09-11, all
-      closed as "the recipe works" or "fixed on master".
-      2026-09-16: cause still unknown, but no longer a dead end — `workspace-start` now tops up on
-      RESUME too, so re-running it with the same key fetches what creation missed. Creation printed
-      its `fetched` note correctly on two fresh worktrees that day
-      `n/a` `needs-verify` `checked 2026-09-16` `regression`
-
-- [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
-      own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
-      ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.
-      Do not renumber a guide Destin has signed off; the fix is his call (rename one, or add a
-      suffix). Found 2026-09-06 while shrinking the expandable-rows item.
-      2026-09-18: renumbered on `session/convo-tab-lag` (render-cost plan Task 14, which Destin's
-      plan approval covered): Expandable rows is now G-29, the find bar keeps G-22, the index and
-      the one code citation (`RuntimeBinding.tsx`) follow. Close this when that branch merges.
-      `n/a` `confirmed` `checked 2026-09-18`
-
-- [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
-      then recommend deleting its worktree; it should notice unfinished edits before declaring success.
-      Reproduced 2026-09-27 on the release-skill session worktrees in both workspace and
-      `youcoded-admin`: the tip was just fetched master and the remote branch did not exist,
-      but both worktrees hold uncommitted edits. `close-out.sh` printed "the work landed",
-      "remote branch deleted" and TODOs to delete both worktrees. Those verdicts refer only to
-      the branch tip, not the unfinished files; do NOT follow those deletion suggestions.
-      `n/a` `confirmed` `checked 2026-09-27`
-
-- [ ] Recheck the old cleanup handoff's remaining unused-code and bug-hunt ideas before
-      treating them as completed; its retired tooling instructions are no longer a safe starting point
-      `n/a` `needs-verify` `checked 2026-09-05` → docs/archive/handoffs/2026-08-05-code-cleanup-with-serena.md
-
-- [ ] Planning, design, review and wrap-up instructions can send an assistant down conflicting
-      routes or to a skill it cannot invoke; consolidate the routes and check availability
-      without turning a read-only review into permission to edit or ship
-      `n/a` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
-
-- [ ] roadmap-check verifies a report's claim against whatever copy of the sub-repo happens to
-      be on disk beside it, so a stale main checkout can keep a fixed bug "confirmed" for days
-      (two specialist bugs fixed 2026-09-02 were re-listed as open on 2026-09-04), and from a
-      scratchpad worktree every claim is skipped as "repo not on disk". Read claims from
-      origin/<default> with git show, and fall back to $YOUCODED_WORKSPACE for the sub-repos
-      `n/a` `confirmed` `checked 2026-09-05`
-
-- [ ] Every branch that files a roadmap item conflicts on the generated area table in ROADMAP.md
-      at merge time (three times on 2026-09-04/05). `roadmap-check --fix` could resolve a conflict
-      it recognises as only the table (strip the markers inside the table block and regenerate),
-      leaving any other conflict alone
-      `n/a` `confirmed` `checked 2026-09-05`
-
-- [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
-      bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
-      43f47281): ~200 lines were changed under `desktop/src/renderer/components/project-view/`,
-      and `artifacts.md`, `react-renderer.md` and `narrow-viewport.md` — all three of whose
-      `paths:` globs match that directory — never loaded. The only two `path_glob_match` events
-      in that session were triggered by a SUBAGENT's `Read` of a file it was handed; across the
-      whole of `~/.claude/instructions-loaded.log` there have only ever been three such events.
-      Injection is keyed to Read/Edit/Write, so `sed`/`python3` edits deliver no rules and the
-      loss is silent — the session cannot tell it is missing anything. Wanted: something that
-      names the covering rules when a Bash command writes a matching path (a non-blocking
-      PreToolUse companion to `glob-guard.py`), or a `rules-for <path>` command cheap enough to
-      run before an edit. The evidence is `~/.claude/instructions-loaded.log`; measure the
-      noise before shipping a per-Bash-call hook
-      `n/a` `needs-verify` `checked 2026-09-03`
-
-- [ ] Every plan, spec and investigation is stamped with a one-word state, but nothing checks
-      the word: 15 of them say `settled`, `review`, `applied`, `superseded-in-part` or a whole
-      sentence instead of one of the four allowed states. All 15 are already archived, so
-      nothing in flight is mislabelled today — but the same closed list is unenforced, so the
-      next one lands wherever someone types it and "what is still open?" stops being answerable
-      by looking
-      `n/a` `parked` `checked 2026-09-03`
-
-- [ ] Nobody knows whether a third round of adversarial design review improves a design or just
-      churns it; after three features have run the flow, count accepted findings, reversals and
-      defect-vs-taste per round and set the default round count from the numbers — tooling for it
-      waits on that data
-      `n/a` `parked` `checked 2026-09-02` → docs/active/specs/2026-09-01-feature-flow-design.md
-
-- [ ] Work keeps existing on one disk only. The standing check SHIPPED 2026-09-09:
-      `strandedWorktrees` in `scripts/audit-anchors.mjs` warns (never fails) for any worktree
-      dirty or unpushed whose newest work is 24h+ old, so `/audit` names it before anyone follows
-      the "remove the worktree after merging" rule. It found three on its first real run.
-      RECURRED first, expensively: on 2026-09-09 a COMPLETE, review-clean implementation
-      (3,383 lines, 53 specialist dispatches) sat uncommitted 14 hours because its session was
-      interrupted before it could ask to commit, and eight other worktrees were in the same state.
-      Its branch had zero commits and no upstream, so the wrap-up ref sweep — the thing this item
-      assumed was enough — reported nothing to push; ref sweeps are structurally blind to a
-      working tree. Still open, and deliberately NOT the original "sweep that commits what it
-      finds": committing another session's in-flight WIP under this session's authorship is the
-      more dangerous failure. Wanted instead: an exit condition in plan templates, so a plan that
-      forbids committing during implementation says when that constraint ENDS
-      RECURRED 2026-09-16, across machines: a session committed its work on the desktop PC
-      but never pushed (pushing still needed Destin’s OK), then continued on the Z13, where
-      none of it existed; everything was rebuilt from the transcript. The stranded-worktree
-      check only sees the local disk, so it cannot catch this. Destin’s global rule now says
-      push every branch as soon as it has a commit.
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] Two guardrails from the 2026-07-28 retrospective are still unshipped: spec counts are
-      neither anchored nor dated (no "specs are snapshots" convention exists), and `run-dev.sh
-      --list` lists registered worktrees, not what is actually running (no offset/profile/PID)
-      (the unlisted "five PITFALLS papercuts" were dropped 2026-09-02)
-      `n/a` `needs-verify` `checked 2026-09-02`
-
-- [ ] Workspace friction from the 2026-08-28 session-opening study still open: "review the attached
-      document" is the #1 task shape and has no command (`.claude/commands/` still holds only
-      audit.md); plans run 4–6 reads long and are getting longer; worktrees live in five places on
-      disk (`beta/`, `flappy-bird/`, `worktrees/`, `youcoded.wt/`, `wecoded-marketplace.wt/` — the
-      last two not even registered)
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] `youcoded/desktop/docs/` is down to two spec files (`theme-spec.md`,
-      `transcript-watcher-spec.md`), but `desktop/CLAUDE.md` still points at the folder as a
-      lifecycle-doc home, and a preload comment points at a `docs/superpowers/specs/…` path that
-      no longer exists (its content lives in the workspace's `docs/archive/plans/`); finish by
-      moving the two specs where the census put everything else and fixing both pointers
-      `n/a` `parked` `checked 2026-09-16`
-
-- [ ] Deferred clean-ups from the 2026-07-10 master review that nobody has picked up (xterm WebGL
-      detach, sync idle-poll backoff, status-data dedup, folder-list canonicalising, big-file
-      decompositions). Catalog: `docs/active/handoffs/2026-07-10-review-followups.md`.
-      2026-09-17: simplification phase 2 (youcoded#503) covered the sync idle-poll backoff and
-      the status-data dedup; the other three stand
-      `n/a` `parked` `checked 2026-09-18`
-
-- [ ] youcoded-core's status line and write-guard still reference the deleted usage-fetch script (the
-      file itself is gone there, so nothing runs) — clean up, or let the scheduled archive take it
-      `n/a` `confirmed` `checked 2026-09-03`
+- [ ] Parked ideas: 10 dev-workspace ideas.
+      (a) run the new-user path (download, install, setup, sign-in, first chat) on real Windows, Mac and
+      Linux machines in CI; Destin: "could be interesting to set up"; (b) a baseline-and-diff check for the
+      renderer's chrome invariants; (c) measure whether the feature flow's two reviewers earn their cost
+      after three features; (d) workbench serves community theme folders so decks show real previews;
+      (e) attach your own screenshot to a review-deck step; (f) merge the conflicting planning, design,
+      review and wrap-up routes (report: docs/active/investigations/2026-09-05-native-guidance-followups.md);
+      (g) check the one-word state on plans, specs and investigations (15 archived ones are off-list);
+      (h) measure whether a third adversarial design-review round helps or churns; (i) move the two
+      leftover specs out of `youcoded/desktop/docs/` and fix two pointers; (j) the 2026-07-10 review's
+      unpicked clean-ups: xterm WebGL detach, folder-list canonicalising, big-file splits (report:
+      docs/active/handoffs/2026-07-10-review-followups.md)
+      `n/a` `parked` `P3` `checked 2026-07-15`
 
 ## release
 
-- [ ] The public Office add-on repo (itsdestin/youcoded-office) once held a personal budget memo
-      of Destin's as a test file. Its history was rewritten and the current files and the
-      v0.1.0 tag now hold a neutral "Test memo" (checked 2026-10-02), but GitHub can keep
-      serving the old commit by its address, and anyone who cloned early still has it, until
-      GitHub support purges it. A support request is not recorded as made, and whether the old
-      address still loads was not tested
-      `n/a` `needs-verify` `checked 2026-10-02` `security`
+- [ ] The public Office add-on repo (youcoded-office) once held a personal budget memo of Destin's as a
+      test file. History was rewritten and current files and the v0.1.0 tag are neutral, but GitHub can
+      keep serving the old commit by address, and early clones still have it, until GitHub support
+      purges it. No support request is recorded and whether the old address still loads was not tested
+      `n/a` `needs-verify` `P2` `checked 2026-10-02` `security`
 
-- [ ] A scheduled check that every id in the model switcher's recommended list
-      (`desktop/src/shared/recommended-models.ts`, added 2026-09-20) is still live on its
-      provider, feeding the release skill recommendations for what to change. OpenRouter's own
-      catalog already drops a dead id from the picker for free (the list is intersected with the
-      live catalog at render), so the runner's real job is RENAMES and new "latest" aliases:
-      which ids to add, which to swap, which to retire. The ChatGPT plan families match by name
-      rather than id and self-heal. Destin 2026-09-20: roadmapped for now, not built
-      `n/a` `confirmed` `checked 2026-09-20`
+- [ ] Mac installers: nothing is signed or notarized, and a Mac download may open as "broken".
+      Since 2026-07-23 a dependency update stopped the Mac build being stamped, so macOS rejects it and
+      the "Open Anyway" button vanished (terminal command only; in-app updates hit it too). Fix merged
+      2026-09-04 (build checks its own seal, fails if it cannot sign); still open: a Mac confirming
+      "Open Anyway" is back on a build cut after it (test run 33921417200). Signing is blocked: Apple
+      refused the LLC's account on 2026-10-01; retry from an Apple device or via Apple Support, then it is
+      CI wiring. Windows is done (signed "Destin Moss"). (report:
+      docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md)
+      `n/a` `blocked` `P1` `checked 2026-09-04` `regression` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Waiting on CI runs eats whole sessions. Destin, 2026-09-20: "just fixing a few minor test
       issues and such has seemingly eaten over an hour of our time today just waiting around on
       runs. is there any way we could improve this in the future for better/faster iteration and
-      fixes?" Two answers he liked, neither
-      built yet. (1) A NIGHTLY rehearsal build: dispatch `desktop-test-build.yml` from master on
-      a schedule, publish nothing, and notify on failure — today's broken launch check had been
-      broken since 2026-09-16 and surfaced only when a release needed it, because that check runs
-      in NO other workflow. (2) A way to run ONE test file on ONE OS: every proof of a one-test
-      fix cost a full ~15-minute three-OS matrix, four times over
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
+      fixes?" Two answers he liked, neither built: (1) a NIGHTLY rehearsal build from master that
+      publishes nothing and notifies on failure (the launch check runs in no other workflow and sat
+      broken from 2026-09-16); (2) a way to run ONE test file on ONE OS instead of a ~15-minute
+      three-OS matrix
+      `n/a` `confirmed` `P1` `checked 2026-09-20` `v1.3.1`
 
-- [ ] A one-line change to `announcements.txt` runs the full Linux build — ~20 minutes before an
-      announcement can merge, and the repo has auto-merge disabled so a session has to sit on it.
-      `desktop-ci.yml`'s `changes` gate skips the matrix only when EVERY changed file is under
-      `docs/`, and the announcement file sits at the repo root. Widen the gate to the files no
-      build step reads (`announcements.txt`, `README.md`, `CHANGELOG.md`), keeping the skipped-
-      but-completed check master requires
-      `n/a` `confirmed` `checked 2026-09-20`
-
-- [ ] The Linux package update path has never run on real hardware: `pkexec` raising the password
-      dialog, `pacman -U` over a running /opt install, and the relaunch. A dev build reports its
-      install kind as `unknown` by design, so only a packaged beta can prove it. Ask Destin to
-      click Update on his Arch install once a beta carrying youcoded#546 ships; the macOS halves
-      (Rosetta detection, the removed any-dmg fallback) have no machine here at all
-      `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
-
-- [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
-      a button that no longer appears — a routine dependency update quietly stopped the Mac build
-      from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
-      one, and the approval step our site walks users through vanished with it. Only a terminal
-      command gets past it. v1.2.4 was stamped correctly and 1.3.0-beta.72 is not; both dmgs read
-      off directly. Affects releases, not just betas. It is not a one-time install hurdle either —
-      the in-app update button downloads the same kind of build, so a Mac user who is happily
-      using the app is walked back into the same dead end on every update. MERGED 2026-09-04
-      (`youcoded` 2c369762, after a review that hardened the guard: CI now asks macOS itself
-      whether the seal is valid, the packager fails the build on its own if it cannot sign, and
-      the packager's minor updates are bumped by hand from now on). Open only until a Mac
-      confirms the "Open Anyway" button is back on a build cut after the merge — test build run
-      33921417200 was dispatched for that on 2026-09-04
-      `n/a` `needs-verify` `checked 2026-09-04` `regression` `v1.3.1` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
-- [ ] Re-work the release method: releases tag master directly, so every release ships the
-      undifferentiated 3,200-odd commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
-      be cut without dragging in hordes of unreleased features. Goal: keep master as the trunk,
-      cut `release/vX.Y.x` branches off the last tag, and ship bug-fix minors by cherry-picking
-      fixes onto them — so a minor can go out while the next major is still blocked. Caveats to
-      fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
-      one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
-      versionCode bump and ships a paired Android build (no bare desktop-only hotfixes). Promoted to a
-      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first. Taken off 1.3.1 in Destin's triage 2026-09-23
-      `n/a` `confirmed` `checked 2026-09-03`
-
-- [ ] Every compiled file ships inside the installer, tests included — 47 test files and 19
-      workbench files in the 1.2.4 asar, none reachable; installer weight, not a blocker
-      `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-asar-ships-tests.md
-
-- [ ] PDF reading needs one smoke test in a packaged build — the pdf.js worker import is
-      verified under Node but unverified inside app.asar (youcoded#354 added the unpack rules).
-      Four packaged pre-releases have been cut since (1.3.0-beta.72, .75, .76, .80), so there is
-      an installer to test against now; nobody has
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] Dependency majors that are real work, not bumps — still open on 2026-09-16: TypeScript
-      5.9 → 7.0 (#242, now 7.0.2), okhttp + mockwebserver 4.12 → 5.5 (#389, #392 — the pair that
-      forces compileSdk 36; #235 was closed and superseded), org.json (#388), and the Android
-      toolchain chain below; knip 6, jsdom 30 and vitest 4 landed outside dependabot and their
-      PRs are closed
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] Android toolchain migration: Kotlin 2.4.10 + Gradle 9.7.1 landed 2026-09-01, but AGP
-      8.7 → 9.4 (#390; #237 closed and superseded) and compose-bom 2024.12 → 2026.08 (#391; #236
-      closed and superseded) are still open and red; they were diagnosed as one coupled chain, so
-      re-run them together now that the Kotlin half is in
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] macOS installers still hit the security wall — nothing is signed or notarized. Windows is
-      done: releases and master betas are signed as "Destin Moss" (Azure Artifact Signing,
-      individual validation, youcoded#594), and its warning fades with downloads. Mac is blocked on
-      the Apple Developer account in the LLC's name: Apple's account creation refused
-      destin@youcoded.ai on 2026-10-01 ("cannot be created at this time"); retry from an Apple
-      device or via Apple Support, then it is CI wiring and the wall disappears at once
-      `n/a` `blocked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+- [ ] Re-work the release method: releases tag master directly, so each ships all ~3,200 commits since
+      v1.2.4 and bug-fix minors cannot go out alone. Goal: cut `release/vX.Y.x` branches off the last tag
+      and cherry-pick fixes, so a minor ships while the next major is blocked. Caveats: a "goes in the
+      minor?" decision per fix, and one-tag-both-platforms means an Android versionCode bump and paired
+      Android build. A 1.3 blocker since 2026-09-03; off 1.3.1 in Destin's triage 2026-09-23
+      `n/a` `confirmed` `P2` `checked 2026-09-03`
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
       data-safety form, content rating and account-deletion link. Destin 2026-10-01: "google play
       isnt priority" — Apple and Windows signing first (reverses 2026-09-10's deck Q-3)
-      `android` `parked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      Destin 2026-10-05 triage (roadmap-triage-2026-10-05#2): "1.3.2+. not a current priority just yet"
+      `android` `parked` `P2` `checked 2026-10-01` `v1.3.2` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] Release and build upkeep: 6 loose ends.
+      (a) wanted: a scheduled check that every id in the model switcher's recommended list is still
+      current, reporting renames and new "latest" aliases (Destin 2026-09-20: roadmapped, not built);
+      (b) a one-line `announcements.txt` change runs the full ~20-minute Linux build; widen the skip gate
+      to files no build step reads; (c) installers ship test and workbench files (47 + 19 in 1.2.4;
+      weight only; report: docs/active/investigations/2026-09-01-asar-ships-tests.md); (d) PDF reading
+      needs one smoke test in a packaged build; (e) dependency majors that are real work: TypeScript 7,
+      okhttp 5.5, org.json; (f) Android toolchain: AGP 9.4 and compose-bom 2026.08 are open and red;
+      re-run them together now that Kotlin is in
+      `n/a` `confirmed` `P3` `checked 2026-09-01`

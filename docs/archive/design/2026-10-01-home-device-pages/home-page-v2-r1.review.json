@@ -1,0 +1,66 @@
+{
+  "title": "The Home page, next version — round 1: folding rooms, favourites, Edit",
+  "key": "home-page-v2-r1",
+  "out": "home-page-v2-r1.review.html",
+  "images": "images/home-page-v2-r1.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-fold",
+      "surface": "Pages",
+      "path": "Pages → Home, a room's lights",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [22.8, 48.9, 21.9, 50.5] },
+      "headline": "A room's lights are one card that folds; the arrow opens it to show each light, and the page remembers which you left open.",
+      "changed": "Lights used to be a long list of tiles. Now each room shows one Lights card; the round arrow on its right shows or hides every light underneath. Destin's Room is open here, Living Room and Kitchen are folded.",
+      "notice": "TVs, speakers, the thermostat and cameras stay outside the card, always in view. A room with only one light shows that light's tile, no card.",
+      "risk": "Folds are remembered on this computer only; the phone (later) starts folded."
+    },
+    {
+      "id": "S-all",
+      "surface": "Pages",
+      "path": "Pages → Home, the top of a lights card",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [23.4, 49.8, 20.6, 7.2] },
+      "headline": "The card's top tile is a bulb with \"All\" under it: press it to switch the whole room's lights; it says how many are on.",
+      "changed": "It replaces the All on / All off text button. It glows in the colour of a light that is on, reads \"3 of 3 on\" or \"All off\", and flips: any light on turns them all off; none on turns them all on.",
+      "notice": "It never touches the TV or speaker. Lights that are not responding, or that you hid, are left alone.",
+      "risk": "Pressing the tile switches lights; only the round arrow folds the card. Both live on the same row."
+    },
+    {
+      "id": "S-favs",
+      "surface": "Pages",
+      "path": "Pages → Home, the top of the page",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [21.7, 12.2, 74.0, 28.7] },
+      "headline": "Things you star appear in a Favourites row at the top, side by side, and work exactly like they do in their room.",
+      "changed": "New. Here the floor lamp and the thermostat are starred. Starring is done in Edit mode.",
+      "notice": "A starred thing still appears in its own room too, so it shows twice. With nothing starred, the row is not there.",
+      "risk": "Favourites are this page's own: Home Assistant's app does not see them."
+    },
+    {
+      "id": "S-off",
+      "surface": "Pages",
+      "path": "Pages → Home, top right",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [83.6, 6.8, 8.4, 3.3] },
+      "headline": "Everything off asks first, \"Turn off 5 lights?\" with Turn off and Cancel in its place, then switches off every light in the house.",
+      "changed": "New, beside Edit. The question replaces the button on the same line rather than opening a window. It is greyed when no light is on.",
+      "notice": "Only lights: TVs, speakers and the thermostat keep running.",
+      "risk": "The question is not in this picture; press Everything off in the test app to see it."
+    },
+    {
+      "id": "S-edit",
+      "surface": "Pages",
+      "path": "Pages → Home → Edit",
+      "crop": "pages/page/page-home#edit",
+      "highlight": { "box": [23.4, 74.3, 20.8, 8.4] },
+      "headline": "Edit puts a row of small controls under everything: star, move up or down, rename, change room, hide, and open in Home Assistant.",
+      "changed": "\"Hide things\" became Edit. Each room's name also gets up/down arrows and an Open in Home Assistant button. Every lights card opens while editing so each light can be reached. Choosing \"New room…\" in the room list asks for a name and moves it there.",
+      "notice": "Order, stars and hiding are saved by this page. Names and rooms change in Home Assistant itself, so they show everywhere.",
+      "risk": "Rename and change room are not connected to Home Assistant yet (that part is being built alongside): today they change the page only, and the next check puts the old name back."
+    }
+  ]
+}

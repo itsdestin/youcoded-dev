@@ -4,222 +4,88 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
-- [ ] **v1.3.1 release blocker.** Searching a big project's files still stops at the first
-      2,000 files and says "This folder is large — showing the first batch of files", and the
-      file counts read "2,000+" (Destin, 2026-09-18: "i just want everything to work, even if
-      it requires a smidge more backend work"). Browsing any folder at any depth was fixed
-      first (Stages 0–1 of the spec); this is Stage 2: one shared background helper, off the
-      app's main thread, that keeps a saved, disposable list of every file per project, kept
-      fresh by watching for changes plus periodic re-checks, so name/type search and counts
-      cover the whole project, fill in progressively, and show rough-then-exact counts. Four
-      questions for Destin come first (spec "Open questions" 2–4: can excluded folders be
-      searched, wording for "still looking" and rough counts, whether a home folder is
-      indexed in the background by default)
-      `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
+- [ ] v1.3.1 release blocker: searching a big project stops early, for file names and for text inside files.
+      (a) File search stops at the first 2,000 files with "This folder is large — showing the first batch of
+      files", and counts read "2,000+" (Destin, 2026-09-18: "i just want everything to work, even if it
+      requires a smidge more backend work"). Folder browsing at any depth is already fixed; the remaining work
+      is one background helper that keeps a list of every file per project, kept fresh, so search and counts
+      cover everything and fill in progressively. Four questions for Destin come first (spec "Open questions"
+      2–4: excluded folders, "still looking" wording, background indexing of a home folder).
+      (b) Text search inside files stops at 200 matches ("200+") with no way to see the rest. Wanted: matches
+      stream in, more load as you scroll, and an unfinished search says it is still looking, not "no results".
+      `projects` `desktop` `confirmed` `P1` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
 
-- [ ] **v1.3.1 release blocker.** Searching inside files' text in a project stops at 200
-      matches (20 per file, 5 seconds) and shows "200+", with no way to see the rest.
-      Stage 3 of the same spec: make that search cancellable and progressive — matches stream
-      in, more load as you scroll, and an unfinished search says it is still looking instead
-      of "no results". Builds on the Stage 2 item just above
-      `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
+- [ ] Files: five ways work can be silently lost.
+      (a) An unsaved text-file draft in a window that is not the last one open is lost without a question when
+      that window is closed with its X. (b) If the assistant or another program changes a Word/Excel/PowerPoint
+      file while it is open in Office, Office's next autosave writes over the change without asking; the planned
+      fix was never written (design: docs/archive/specs/2026-09-28-office-build-design.md §4a).
+      (c) When the assistant adds, edits or deletes a comment in a Word/Excel file while Office is not ready,
+      the change is thrown away after 10 minutes (or 50 waiting changes) with no message.
+      (d) Closing an Office tab's kept typing after a restore can remove pictures a "Save a copy…" still in
+      progress needs. (e) In a rare case, a copy saved from an Office tab kept open across a restore comes out
+      missing some pictures (not yet confirmed).
+      `desktop` `confirmed` `P1` `checked 2026-10-02`
 
-- [ ] Comment times are only relative ("5h ago"): hovering one could show the exact date and
-      time, a resolved comment could say when it was resolved (not possible for Word/Excel,
-      which don't record it), and the assistant could see comment times when it reads them.
-      Offered 2026-09-28, not chosen for the first version
-      `files-panel` `all` `decision` `checked 2026-09-28`
+- [ ] Office: four safety and privacy edge cases.
+      (a) On Mac and Windows, an Office document holding a picture given as a web address can make the converter
+      download it outside the app's own checks; only Linux blocks this. (b) On Windows, the private folders for
+      saving and temporary files rely on inherited permissions, so another account on the PC might read a
+      document mid-save (untested). (c) An Office editor error line can copy up to 300 characters of the
+      document's text into the app's log. (d) A picture dropped from a web address is checked as public, but the
+      download looks it up again, so a site could still point it at a home-network address; one disguise
+      (Teredo) is not unwrapped either.
+      `files-panel` `desktop` `confirmed` `P2` `checked 2026-10-02` `security`
 
-- [ ] On the phone, an open comments panel does not update by itself when the file's comments
-      change somewhere else (the assistant, another device, another app); reopening the file shows
-      the change. Desktop and the web version update live. Destin: fine for now (2026-09-28)
-      `files-panel` `android` `confirmed` `checked 2026-09-28`
+- [ ] Office editor: seven small faults.
+      (a) The Home tab's Recent list is out of date until you leave the Office page and return. (b) When the
+      Office page gives up listing a very large project's files, "In <project>" looks like a project with no
+      Office files. (c) Ctrl+S during an automatic save can make the label say "Saved" a moment early. (d) A
+      printed or PDF-saved document can break pages differently than on screen; a spreadsheet PDF can have blank
+      pages past the chosen range. (e) The File tab sometimes lacks its Export entry just after opening (seen
+      once). (f) Dropping several pictures at once into Excel or PowerPoint may stack them (only Word tried).
+      (g) After applying Heading 1, the style gallery's dark tiles once showed empty (seen once).
+      `files-panel` `desktop` `confirmed` `P3` `checked 2026-10-02` `needs-repro`
 
-- [ ] Saving a comment into a Word or Excel file keeps one backup copy per file, and those
-      copies are never cleared out, so they pile up for every document ever commented on
-      (re-checked 2026-10-02: still one rolling copy per file, kept in the app's backup folder
-      under the user's home)
-      `files-panel` `all` `confirmed` `checked 2026-10-02`
+- [ ] Office saving: four leftovers and stale warnings.
+      (a) Saving a comment into a Word/Excel file keeps one backup per file, never cleared, so they pile up.
+      (b) "This file looks open in another app" can keep appearing for a closed file after Word or Excel crashes
+      and leaves its hidden marker (accepted limit). (c) If the app quits mid-save, a hidden leftover folder with
+      a copy of the document stays beside it until that file's next save, and only once over an hour old.
+      (d) Reloading the app window, or a crash of its page, leaves its open Office documents open in the
+      background until the window closes.
+      `files-panel` `all` `confirmed` `P3` `checked 2026-10-02`
 
-- [ ] "This file looks open in another app" (shown before a comment is saved into a Word or
-      Excel file) can keep appearing for a file that is actually closed, after Word or Excel
-      crashes and leaves its hidden marker file behind. (Long file names, whose marker Word names
-      differently, are now recognised — fixed 2026-09-28.) Still true 2026-10-02: the code
-      names a stale marker as a known, accepted limit
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
+- [ ] File viewer gaps: four things Office and the viewer do not cover.
+      (a) A `.csv` is look-only: no cell can be typed into, and "Edit" opens raw comma text instead of the grid
+      (Destin expected in-grid editing, 2026-09-03); `.xlsx` is look-only on phone and remote web.
+      (b) Office opens only .docx/.xlsx/.pptx; older .doc/.xls/.ppt, OpenDocument and .csv open in the default
+      app or the look-only viewer (design: docs/archive/design/2026-09-27-office/office-odf.questions.json).
+      (c) Office's editors offer only the add-on's fonts, not ones installed on the computer.
+      (d) Office is not available on ARM Linux or Windows on ARM (no converter exists; about 1–2 days to build;
+      Destin, 2026-10-01: ship without it for now).
+      `files-panel` `all` `confirmed` `P3` `checked 2026-10-02`
 
-- [ ] A file chip in chat for a file that exists but lives outside the project folder (Claude
-      named a document in Destin's notes repo) fails with "Couldn't open README.md — the file
-      wasn't found in this project", and the chip shows only the bare filename so two READMEs
-      look identical; the same click on a project file works (Destin, 2026-09-03)
-      `chat` `desktop` `needs-verify` `checked 2026-09-03`
+- [ ] Document comments: two gaps.
+      (a) Comment times are only relative ("5h ago"): hovering could show the exact time, a resolved comment
+      could say when it was resolved (not possible for Word/Excel), and the assistant could see comment times
+      (offered 2026-09-28, not chosen for the first version). (b) On the phone, an open comments panel does not
+      update when comments change elsewhere; reopening the file shows them (Destin: fine for now).
+      `files-panel` `all` `confirmed` `P3` `checked 2026-09-28`
 
-- [ ] HTML preview: fonts and background images referenced by `url()` inside a linked
-      stylesheet do not load (the stylesheet itself is inlined; what it points at is not — a
-      deliberate first-version cut, still in place)
-      `files-panel` `all` `parked` `checked 2026-09-01`
+- [ ] A file chip in chat for a file outside the project folder fails with "Couldn't open README.md — the file
+      wasn't found in this project", and the chip shows only the bare filename so two READMEs look identical.
+      The same click on a project file works (Destin, 2026-09-03, a document in his notes repo).
+      `chat` `desktop` `needs-verify` `P3` `checked 2026-09-03`
 
-- [ ] Git surface phase 2 — branch operations, push and PR creation, repo-wide review,
-      hunk-level staging, an error state when a review fails to refresh, and plain-English
-      text for raw error codes like `path-outside-project` (deferred from the per-file MVP).
-      On resuming, fold the five copies of the "outside the project / not a repo" check into
-      one helper and retain the Android/multi-window release checkpoint. Refresh cost has
-      its single primary performance item in perf
-      `files-panel` `desktop` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-29-perf-roadmap-consolidation.md
-
-- [ ] Go-to-definition / find-references in the code editor without a full language server
-      (tree-sitter or ctags-grade indexing; runs in the Android WebView too, so desktop and
-      phone stay the same) — the cheap alternative to the full LSP idea below
-      `files-panel` `all` `parked` `checked 2026-07-20`
-
-- [ ] Full language server — real diagnostics, hover types, rename-symbol. Almost certainly
-      desktop-only (a phone cannot host language servers), which would fork the shared UI;
-      do the tree-sitter item above first and see whether the remaining gap is worth it
-      `files-panel` `desktop` `parked` `checked 2026-07-20`
-
-- [ ] Project view: a Roadmap tab that renders any project's `ROADMAP.md`, discovered the
-      same way as context files
-      `projects` `all` `parked` `checked 2026-07-15`
-
-- [ ] Editor tabs — open more than one file at a time in the files pane. Both hosts are strictly
-      one-file-at-a-time today; the most-missed thing after syntax highlighting
-      `files-panel` `all` `parked` `checked 2026-07-20`
-
-- [ ] A real file tree in the files pane — what exists is a one-level-at-a-time folder browser.
-      The data is already there (the whole-folder listing the Project View's file list reads,
-      recursive with relative paths); what is missing is the tree itself
-      `files-panel` `all` `parked` `checked 2026-09-16`
-
-- [ ] Debugger / breakpoints — considered and declined (IDE table stakes, enormous effort, not this
-      product's fight). On record only; revisit if the "open, personal Cowork" positioning is dropped
-      `files-panel` `all` `parked` `checked 2026-07-20`
-
-- [ ] A `.csv` in the files pane is still look-only: it opens as a grid you can click around, but
-      no cell can be typed into, and "Edit" drops you into the raw comma-separated text instead
-      of the grid (Destin expected in-grid editing, 2026-09-03). An `.xlsx` is now edited in the
-      Office editor on desktop once the add-on is installed (checked in code 2026-10-02: Edit
-      hands `.xlsx`/`.docx`/`.pptx` to Office); on the phone and remote web it is still look-only
-      `files-panel` `all` `confirmed` `checked 2026-10-02`
-
-- [ ] Office's Home tab can show an out-of-date Recent list: open a document, switch back to
-      the Home tab without leaving the Office page, and the file you just opened is not yet
-      listed — it appears only after leaving the page and coming back. Accepted for now in
-      the Office build (the lists refresh each time the page is shown, not on a tab switch)
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
-
-- [ ] Office isn't available on ARM Linux (Raspberry Pi, some newer Linux laptops) or on
-      Windows on ARM: Word, Excel and PowerPoint files open with the default app there instead.
-      The add-on is published for Linux x64, Mac (Intel and Apple silicon) and Windows x64 only
-      (checked in the app's add-on pin 2026-10-02). No ready-made converter (x2t) exists for
-      linux-arm64, so it would have to be built from Euro-Office/core source (about 1–2 days of
-      build setup; Destin, 2026-10-01: ship without it for now, record the follow-up)
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
-
-- [ ] On Mac and Windows, saving or opening an Office document that holds a picture given as a
-      web address can still make the converter download it, outside the app's own picture checks
-      (public addresses only, size cap). Linux blocks this by running the converter with no
-      network (unshare); the converter ignores proxy settings, so Mac/Windows need their own
-      no-network wrapper (macOS sandbox-exec is a candidate; Windows has no simple equivalent).
-      Still true 2026-10-02: the no-network wrapper is Linux-only in the code
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02` `security`
-
-- [ ] When the app quits or crashes in the middle of an Office save, a hidden leftover folder
-      holding a copy of the document can stay beside it; it is cleaned up only by that file's
-      next save, and only once it is over an hour old — opening the file does not clean it
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
-
-- [ ] On Windows, the private folders an Office save and the editor's temporary files use
-      rely on the parent folder's inherited permissions (the code sets no Windows-specific
-      protection), so another account on the PC might read a document while it is being saved.
-      Windows builds of Office now ship; whether another account can really read them is untested
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02` `security`
-
-- [ ] An unsaved text-file draft parked in a window that is not the last one open is lost
-      without a question when that window is closed with its X (the unsaved-files question is
-      only asked for the last window — checked in the close handler 2026-10-02)
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
-
-- [ ] In a rare case, a copy saved from an Office tab that was kept open across a restore can
-      come out missing some of its pictures
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02`
-
-- [ ] Letting go of an Office tab's kept typing after a restore is done straight away instead
-      of waiting its turn behind that document's other work, so it could remove pictures a
-      "Save a copy…" still in progress needs (checked in code 2026-10-02: the release is not
-      queued)
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
-
-- [ ] When the Office page gives up listing a very large project's files, the "In <project>"
-      section looks the same as a project with no Office files at all
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02`
-
-- [ ] Reloading the app window, or a crash of its page, leaves that page's open Office documents
-      open in the background until the window itself closes (documents are let go only when the
-      window is destroyed, not on a reload)
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02`
-
-- [ ] An error line from the Office editor can copy up to 300 characters of the document's text
-      into the app's log file (checked in code 2026-10-02: the editor's error message is cut at
-      300 characters, not cleaned)
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02` `security`
-
-- [ ] Dropping a picture into an Office document from a web address is checked to be a public
-      address first, but the download looks the address up a second time, so a site that
-      answers the check with a public address and the download with a home-network one is not
-      fully stopped; one disguise for private addresses (Teredo) is not unwrapped either
-      (both noted in the code, 2026-10-02)
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02` `security`
-
-- [ ] When the assistant adds, edits or deletes a comment in a Word or Excel file while that
-      file's Office editor is not ready yet, the change waits and retries, but after 10 minutes
-      (or 50 waiting changes for one file) it is thrown away with no message to anyone
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
-
-- [ ] Pressing Ctrl+S while an automatic save is running can make the Office save label say
-      "Saved" a moment before the file is really written (label only; found in the 2026-09-28
-      review, not re-checked since the label became "Edited")
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02`
-
-- [ ] Printing or saving an Office document as a PDF goes through a different layout engine
-      than the editor's page view, so a page can break in a different place than on screen
-      (Word, PowerPoint); a PDF made from a spreadsheet can come out with blank pages past the
-      page range chosen. Reported in the 2026-09-29/30 reviews, never re-measured
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02`
-
-- [ ] The Office editor's File tab sometimes lacks its Export entry right after a document
-      opens (seen once in review, 2026-09-30)
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02` `needs-repro`
-
-- [ ] Dropping several pictures at once into an Excel sheet or a PowerPoint slide may stack them
-      on top of each other; only Word was tried (2026-09-29)
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02`
-
-- [ ] In the Office editor, after applying Heading 1, the style gallery's dark tiles sometimes
-      showed empty (seen in the dark theme once, 2026-10-01; not reproduced)
-      `files-panel` `desktop` `needs-verify` `checked 2026-10-02` `needs-repro`
-
-- [ ] PDF editing in Office: Euro-Office has a PDF editor (its sources include `pdfeditor` and
-      `sdkjs/pdf`), but the trimmed build the add-on uses (euro-office-lite) does not build it,
-      so PDFs still open read-only in the viewer. Destin, 2026-10-01: "can we add pdfs? i
-      didn't realize onlyoffice/eurooffice already had pdf support", then "okay we will skip
-      pdf for now". Estimated 2–4 days (build the PDF editor into the add-on, route `.pdf`
-      through it, version history and saving)
-      `files-panel` `desktop` `parked` `checked 2026-10-02`
-
-- [ ] If the assistant or another program changes a Word/Excel/PowerPoint file while it is open
-      in Office, Office's next autosave writes over that change without asking — Office does
-      not watch the open file (only comments are routed into the open editor). Designed as the
-      "on-disk-change conflict" (design §4a) and put off by the build plan to its own plan,
-      which was never written
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02` → docs/archive/specs/2026-09-28-office-build-design.md
-
-- [ ] Office opens only .docx, .xlsx and .pptx. Older .doc/.xls/.ppt files, OpenDocument
-      (.odt/.ods/.odp) and .csv still open in the default app or the look-only viewer, though
-      Save As can already write those formats. Designed (R21–R24, and the office-odf questions
-      deck) and put off by the build plan to its own plan, never written
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02` → docs/archive/design/2026-09-27-office/office-odf.questions.json
-
-- [ ] Office's editors only offer the fonts that ship with the add-on; fonts installed on the
-      computer are not listed (only PDF export uses them). The design's user-fonts overlay was
-      put off by the build plan and never built
-      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
+- [ ] Parked ideas: files pane and editor (nine things).
+      (a) HTML preview: fonts and background images referenced inside a linked stylesheet do not load.
+      (b) Git surface phase 2: branch operations, push and PR creation, repo-wide review, hunk-level staging, an
+      error state when a review fails to refresh, plain-English text for raw error codes.
+      (c) Go-to-definition / find-references in the code editor without a full language server. (d) Full language
+      server (diagnostics, hover types, rename); likely desktop-only, so do (c) first. (e) Project view: a
+      Roadmap tab that shows a project's `ROADMAP.md`. (f) Editor tabs: more than one file open at once.
+      (g) A real file tree in the files pane, not a one-level browser. (h) Debugger / breakpoints: declined,
+      on record only. (i) PDF editing in Office: PDFs open read-only; 2–4 days to build in (Destin, 2026-10-01:
+      "okay we will skip pdf for now").
+      `all` `parked` `P3` `checked 2026-07-15`

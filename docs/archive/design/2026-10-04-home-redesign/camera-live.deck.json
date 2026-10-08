@@ -1,0 +1,95 @@
+{
+  "title": "Camera card: how should Live start and stop?",
+  "key": "home-camera-live",
+  "out": "camera-live.choice.html",
+  "images": "images/camera-live.deck",
+  "runs": {
+    "after": "camera-live-runs"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "CL-1",
+      "surface": "Home page",
+      "path": "Home > a Nest camera's card",
+      "headline": "Which way of starting and stopping live video do you want on a camera card?",
+      "notice": "Pictures of each, with the camera's recordings list underneath. The next slide lets you press all three for real.",
+      "risk": "The Cameras tab is not affected; it starts every camera on its own.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "A play button on the picture",
+          "crop": "pages/page/page-home#v-look-cam-a",
+          "summary": "The camera card always has its picture area. A big round play button sits in the middle of it, with 'Watch live' under it. Press it and the live picture starts; a small Stop sits in the corner and the LIVE badge shows.",
+          "risk": "The card is taller when nothing is playing (a dark picture box with only a button on it), and the header has no control at all."
+        },
+        {
+          "id": "b",
+          "label": "A camera icon in the header",
+          "crop": "pages/page/page-home#v-look-cam-b",
+          "summary": "The word is gone: a small round camera-icon button at the top right of the card. Press it and it turns red with a stop square while live; press it again to stop.",
+          "risk": "An icon alone says less than a word; someone new has to hover to learn what it does."
+        },
+        {
+          "id": "c",
+          "label": "A Live / Recordings switch",
+          "crop": "pages/page/page-home#v-look-cam-c",
+          "summary": "A two-part switch under the header. 'Recordings' (the list) is the resting side; press 'Live' and the card shows only the live picture, press 'Recordings' to stop and get the list back.",
+          "risk": "You never see the list and the live picture together, and starting live is one press further from the name."
+        }
+      ]
+    },
+    {
+      "id": "CL-2",
+      "surface": "Home page",
+      "path": "Home > a Nest camera's card",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Press them: which one feels right?",
+      "notice": "Each is the real card with the pretend camera. Start live, stop it, press a recording.",
+      "risk": "The picture here is a moving test card, not a real camera.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "A play button on the picture",
+          "summary": "The camera card always has its picture area. A big round play button sits in the middle of it, with 'Watch live' under it. Press it and the live picture starts; a small Stop sits in the corner and the LIVE badge shows.",
+          "risk": "The card is taller when nothing is playing (a dark picture box with only a button on it), and the header has no control at all.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-look-cam-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "A camera icon in the header",
+          "summary": "The word is gone: a small round camera-icon button at the top right of the card. Press it and it turns red with a stop square while live; press it again to stop.",
+          "risk": "An icon alone says less than a word; someone new has to hover to learn what it does.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-look-cam-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "A Live / Recordings switch",
+          "summary": "A two-part switch under the header. 'Recordings' (the list) is the resting side; press 'Live' and the card shows only the live picture, press 'Recordings' to stop and get the list back.",
+          "risk": "You never see the list and the live picture together, and starting live is one press further from the name.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-look-cam-c"
+          }
+        }
+      ]
+    }
+  ]
+}

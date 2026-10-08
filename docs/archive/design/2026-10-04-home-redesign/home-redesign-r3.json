@@ -1,0 +1,240 @@
+{
+ "title": "Home page round 3 \u2014 TV app drawer, page background",
+ "key": "home-redesign-r3",
+ "out": "home-redesign-r3.html",
+ "images": "images/home-redesign-r3",
+ "runs": {
+  "after": "r3-runs",
+  "today": "tv-drawer-runs/narrow"
+ },
+ "themes": [
+  "golden-sunbreak",
+  "creme"
+ ],
+ "live": {
+  "worktree": "sessions/ha-pages-connection/youcoded"
+ },
+ "steps": [
+  {
+   "id": "TD-1",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card > remote icon",
+   "headline": "Which app drawer should the TV remote use?",
+   "notice": "Shown on a very wide window with the remote open: the apps sit left of the arrow pad as one compact block, instead of the pad alone with four apps spread along the bottom. The apps are YouTube, Netflix, HBO Max, Disney+, Prime Video, Hulu, Apple TV, Peacock, Paramount+, Spotify, YouTube Music, Plex, Tubi, Twitch and Crunchyroll. The one open on the TV is marked, not swapped out. The volume bar is also shorter on wide cards.",
+   "risk": "The page cannot see which apps are installed, so some buttons may open nothing. The newer app addresses are untested on the real TV.",
+   "runs": [
+    "after"
+   ],
+   "variants": [
+    {
+     "id": "a",
+     "label": "Icon rail",
+     "crop": "pages/page/page-home#v-tv-remote-a-wide",
+     "summary": "A slim column of app icons to the left of the arrow pad, no names (hover shows one). The app on the TV has a ring. Two columns on a normal card, three on a very wide one, and the icons grow a little.",
+     "risk": "Quietest and tidiest, but you must recognise an app by its logo alone; the less common ones (Tubi, Plex) are easy to mistake.",
+     "runs": [
+      "after"
+     ]
+    },
+    {
+     "id": "b",
+     "label": "Launcher grid",
+     "crop": "pages/page/page-home#v-tv-remote-b-wide",
+     "summary": "A small grid of app icons with names under them, left of the pad, like a phone home screen. Only the first few show, with a More tile that opens the rest.",
+     "risk": "Easiest to read, but the apps past the first few take a tap on More, and opening them makes the card taller.",
+     "runs": [
+      "after"
+     ]
+    },
+    {
+     "id": "c",
+     "label": "Name list",
+     "crop": "pages/page/page-home#v-tv-remote-c-wide",
+     "summary": "A list left of the pad: logo and name on each row, with On now beside the open app. Becomes two or three columns on a wider card.",
+     "risk": "Clearest labels and best for many apps, but the widest and busiest of the three.",
+     "runs": [
+      "after"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "TD-2",
+   "surface": "Home page",
+   "path": "Home > Media or Home tab, narrow card",
+   "headline": "On a narrow card, is this bottom bar the right way for the drawer to collapse?",
+   "notice": "Below roughly 460 pixels the drawer drops under the arrow pad as one row you slide sideways. The Home tab card is always this narrow.",
+   "risk": "Apps past the first five or six are hidden until you slide the row, and the grid option needs a tap on More.",
+   "runs": [
+    "today"
+   ],
+   "variants": [
+    {
+     "id": "a",
+     "label": "Icon rail",
+     "crop": "pages/page/page-home#v-tv-remote-a",
+     "summary": "A slim column of app icons to the left of the arrow pad, no names (hover shows one). The app on the TV has a ring. Two columns on a normal card, three on a very wide one, and the icons grow a little.",
+     "risk": "Quietest and tidiest, but you must recognise an app by its logo alone; the less common ones (Tubi, Plex) are easy to mistake.",
+     "runs": [
+      "after"
+     ]
+    },
+    {
+     "id": "b",
+     "label": "Launcher grid",
+     "crop": "pages/page/page-home#v-tv-remote-b",
+     "summary": "A small grid of app icons with names under them, left of the pad, like a phone home screen. Only the first few show, with a More tile that opens the rest.",
+     "risk": "Easiest to read, but the apps past the first few take a tap on More, and opening them makes the card taller.",
+     "runs": [
+      "after"
+     ]
+    },
+    {
+     "id": "c",
+     "label": "Name list",
+     "crop": "pages/page/page-home#v-tv-remote-c",
+     "summary": "A list left of the pad: logo and name on each row, with On now beside the open app. Becomes two or three columns on a wider card.",
+     "risk": "Clearest labels and best for many apps, but the widest and busiest of the three.",
+     "runs": [
+      "after"
+     ]
+    }
+   ],
+   "labels": {
+    "today": "Narrow window"
+   }
+  },
+  {
+   "id": "TDL-1",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Open the remote and try the drawer. Which feels best to use?",
+   "notice": "Open the remote icon on the TV card. Resize the window to watch the drawer grow, shrink and drop to a bottom bar. In the grid, press More. Presses go to the practice TV only.",
+   "risk": "Everything here is practice data; nothing reaches a real TV.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Icon rail",
+     "summary": "A slim column of app icons to the left of the arrow pad, no names (hover shows one). The app on the TV has a ring. Two columns on a normal card, three on a very wide one, and the icons grow a little.",
+     "risk": "Quietest and tidiest, but you must recognise an app by its logo alone; the less common ones (Tubi, Plex) are easy to mistake.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-a"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Launcher grid",
+     "summary": "A small grid of app icons with names under them, left of the pad, like a phone home screen. Only the first few show, with a More tile that opens the rest.",
+     "risk": "Easiest to read, but the apps past the first few take a tap on More, and opening them makes the card taller.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-b"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Name list",
+     "summary": "A list left of the pad: logo and name on each row, with On now beside the open app. Becomes two or three columns on a wider card.",
+     "risk": "Clearest labels and best for many apps, but the widest and busiest of the three.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "PB-1",
+   "surface": "Home page",
+   "path": "Home > whole page",
+   "headline": "Which page background should the Home page use?",
+   "notice": "The room and device cards are see-through glass in all three, so the background shows through them a little. Cards stay readable in both the dark and the light theme.",
+   "risk": "Only the background changes. Nothing moves or works differently. The wallpaper in the first option is a stand-in (see its note).",
+   "variants": [
+    {
+     "id": "today",
+     "label": "Today",
+     "crop": "pages/page/page-home#v-page-bg-today",
+     "summary": "A plain flat background in the theme's colour, with solid cards on top."
+    },
+    {
+     "id": "a",
+     "label": "See-through",
+     "crop": "pages/page/page-home#v-page-bg-a",
+     "summary": "The page has no background of its own, so the app's own wallpaper would show through the glass cards. Here a stand-in wallpaper (soft light from the top left, faint diagonal sheen) is drawn to show the idea.",
+     "risk": "Needs a change in the app itself: today the app paints a solid background behind every page. It only helps themes that have a wallpaper; in a plain theme like Cr\u00e8me it looks like a flat colour. The wallpaper stays sharp, so the cards must stay fairly solid to keep text readable."
+    },
+    {
+     "id": "b",
+     "label": "Frosted canvas",
+     "crop": "pages/page/page-home#v-page-bg-b",
+     "summary": "A soft, blurry-looking glow of the theme's colours behind everything, with glass cards over it. Drawn by the page itself, so it works in every theme. In the live pane it drifts very slowly.",
+     "risk": "The glow is mostly seen around the edges and between cards, so the change is gentle. Dark themes show it more than light ones."
+    },
+    {
+     "id": "c",
+     "label": "Colours of the house",
+     "crop": "pages/page/page-home#v-page-bg-c",
+     "summary": "The same soft glow, tinted by what is on: the colours of up to three lights that are on, and the colour of the app that is playing. It changes when the house does.",
+     "risk": "The page's colour changes through the day as lights go on and off, which some people find lively and others distracting. A bright blue or red light tints the whole page."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "PBL-1",
+   "surface": "Home page",
+   "path": "Home > whole page",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Switch a light on or off and scroll. Which background feels best to live with?",
+   "notice": "Try switching lights in Destin's Room and watch the third option's colours follow. The second one drifts very slowly. Everything is practice data.",
+   "risk": "Nothing here reaches a real light.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "See-through",
+     "summary": "A stand-in wallpaper behind glass cards (the real version needs an app change).",
+     "risk": "Looks like a flat colour in themes without a wallpaper.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-page-bg-a-play"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Frosted canvas",
+     "summary": "A soft theme-coloured glow that slowly drifts behind glass cards.",
+     "risk": "The drift is very slow and stops with reduced motion or when the page is hidden.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-page-bg-b-play"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Colours of the house",
+     "summary": "The glow takes the colours of the lights that are on and the playing app.",
+     "risk": "The page's colour changes as you switch lights.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-page-bg-c-play"
+     }
+    }
+   ]
+  }
+ ]
+}

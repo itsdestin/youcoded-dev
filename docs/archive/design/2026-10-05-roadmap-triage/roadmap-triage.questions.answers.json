@@ -1,0 +1,209 @@
+{
+ "deck": "roadmap-triage-2026-10-05",
+ "started": "2026-10-05T23:08:06.498Z",
+ "submitted": "2026-10-05T23:40:20Z",
+ "cur": 4,
+ "answers": {
+  "1": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791241953081,
+   "seconds": 53,
+   "theme": "devils-garden"
+  },
+  "2": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791241953081,
+   "note": "1.3.2+. not a current priority just yet",
+   "seconds": 53,
+   "theme": "devils-garden"
+  },
+  "3": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791241953081,
+   "note": "1.3.2+. rebuild will be tied to google play/iphone listings.",
+   "seconds": 53,
+   "theme": "devils-garden"
+  },
+  "4": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791241953081,
+   "seconds": 53,
+   "theme": "devils-garden"
+  },
+  "5": {
+   "v": "pick",
+   "pick": "remove",
+   "t": 1791241953081,
+   "seconds": 53,
+   "theme": "devils-garden"
+  },
+  "6": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243327112,
+   "note": "after fleshing out design, goals, interactions with future and current app elements, etc",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "7": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243327112,
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "8": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243327112,
+   "note": "we can do with 15, but this should be a top priority i think",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "9": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243327112,
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "10": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243327112,
+   "note": "i think we have some work done for this, but never completed? or at least explored a bit in conversation? we should ensure everything is properly recorded together and current state is reflected accurately",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "11": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243327112,
+   "note": "but a significant priority for 1.3.2/1.3.3",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "12": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243327112,
+   "note": "but significant for 1.3.2/1.3.3",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "13": {
+   "v": "other",
+   "t": 1791243327112,
+   "note": "what actually remains to be done with this?",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "14": {
+   "v": "other",
+   "t": 1791243404444,
+   "note": "i thought we fixed this already?",
+   "seconds": 19,
+   "theme": "devils-garden"
+  },
+  "15": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243404444,
+   "seconds": 19,
+   "theme": "devils-garden"
+  },
+  "16": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243404444,
+   "note": "finsih in 1.3.2/1.3.3",
+   "seconds": 19,
+   "theme": "devils-garden"
+  },
+  "17": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243404444,
+   "seconds": 19,
+   "theme": "devils-garden"
+  },
+  "18": {
+   "v": "other",
+   "t": 1791243555778,
+   "note": "is this already being dealt with in the ui consistency branch?",
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "19": {
+   "v": "other",
+   "t": 1791243555778,
+   "note": "want to deal with all in 1.3.2",
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "20": {
+   "v": "pick",
+   "t": 1791243555778,
+   "pick": "later",
+   "note": "1.3.2/1.3.3",
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "21": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243555778,
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "22": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243555778,
+   "note": "1.3.3",
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "23": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1791243555778,
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "24": {
+   "note": "confused.",
+   "t": 1791243555778,
+   "v": "other",
+   "seconds": 22,
+   "theme": "devils-garden"
+  },
+  "25": {
+   "note": "i think a lot of this is already done or underway in branches?",
+   "t": 1791243619975,
+   "v": "other",
+   "seconds": 21,
+   "theme": "devils-garden"
+  },
+  "26": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243619975,
+   "note": "sure none of this is already completed/underway?",
+   "seconds": 21,
+   "theme": "devils-garden"
+  },
+  "27": {
+   "v": "pick",
+   "pick": "next",
+   "t": 1791243619975,
+   "note": "i'm already working on these separately. you don't need to worry about these rn",
+   "seconds": 21,
+   "theme": "devils-garden"
+  }
+ }
+}

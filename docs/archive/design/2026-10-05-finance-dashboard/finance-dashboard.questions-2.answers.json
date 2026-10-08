@@ -1,0 +1,54 @@
+{
+ "deck": "finance-dashboard-questions-2",
+ "started": "2026-10-07T22:56:42.999Z",
+ "submitted": "2026-10-07T22:59:29Z",
+ "cur": 0,
+ "answers": {
+  "Q-purchases": {
+   "v": "pick",
+   "pick": "with-page",
+   "t": 1791413967851,
+   "seconds": 28,
+   "theme": "creme"
+  },
+  "Q-charts": {
+   "v": "picks",
+   "picks": [
+    "net-worth",
+    "spending",
+    "bills-subs",
+    "debt",
+    "account"
+   ],
+   "t": 1791413967851,
+   "seconds": 28,
+   "theme": "creme"
+  },
+  "Q-types": {
+   "v": "yes",
+   "t": 1791413967851,
+   "seconds": 28,
+   "theme": "creme"
+  },
+  "Q-categories": {
+   "v": "yes",
+   "t": 1791413967851,
+   "seconds": 28,
+   "theme": "creme"
+  },
+  "Q-link": {
+   "v": "pick",
+   "pick": "auto-confirm",
+   "t": 1791413967851,
+   "note": "want as much automatic discovery as possible tho",
+   "seconds": 28,
+   "theme": "creme"
+  },
+  "Q-card": {
+   "v": "yes",
+   "t": 1791413967851,
+   "seconds": 28,
+   "theme": "creme"
+  }
+ }
+}

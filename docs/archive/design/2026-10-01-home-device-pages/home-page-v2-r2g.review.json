@@ -1,0 +1,22 @@
+{
+  "title": "The Home page, next version — round 2, seventh look",
+  "key": "home-page-v2-r2g",
+  "out": "home-page-v2-r2g.review.html",
+  "images": "images/home-page-v2-r2g.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-vol-icon",
+      "surface": "Pages",
+      "path": "Pages → Home, Now playing",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 62.0, 20.2, 18.8] },
+      "headline": "The volume bar is bigger with smaller − and +, carries a see-through speaker showing the level, and bars bounce beside Now playing.",
+      "changed": "Your notes on the last look. The speaker on the bar shows an X when silent and one, two or three waves as it gets louder, changing while you drag. The bars beside Now playing move while playing and stand still when paused.",
+      "notice": "The bouncing bars stop entirely when your system asks for reduced motion.",
+      "risk": "At very low volume the speaker sits on the empty part of the bar, so it switches to the plain text colour to stay visible."
+    }
+  ]
+}

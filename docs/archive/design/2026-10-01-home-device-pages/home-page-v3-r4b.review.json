@@ -1,0 +1,22 @@
+{
+  "title": "The Home page, round 4 — telling the open tab apart",
+  "key": "home-page-v3-r4b",
+  "out": "home-page-v3-r4b.review.html",
+  "images": "images/home-page-v3-r4b.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-tab-clear",
+      "surface": "Pages",
+      "path": "Pages → Home → Climate, the pills at the top",
+      "crop": "pages/page/page-home#climate",
+      "highlight": { "box": [21.6, 12.0, 43.0, 4.2] },
+      "headline": "Only the open tab is filled now; status colour stays in each pill's round icon, so the two can no longer be confused.",
+      "changed": "Your note: selected was hard to tell from the status colours. Pills no longer tint when something is on; the coloured icon says that. The open tab is filled in the text colour, in bold.",
+      "notice": "Shown on the Climate page, so Climate is the filled one; on the main page it is Home.",
+      "risk": "The pills are quieter overall: a lit pill now only shows it in its small icon."
+    }
+  ]
+}
