@@ -1,0 +1,7408 @@
+{
+ "coverage": {
+  "files": 1247,
+  "lines": 303087,
+  "unclaimedFiles": 763,
+  "unclaimedLines": 138452,
+  "biggestGaps": [
+   [
+    "renderer/components (root files) (misc)",
+    92,
+    20871
+   ],
+   [
+    "main/harness",
+    79,
+    13433
+   ],
+   [
+    "main (misc)",
+    59,
+    8260
+   ],
+   [
+    "renderer/hooks/use-*",
+    53,
+    5910
+   ],
+   [
+    "shared (misc)",
+    53,
+    4232
+   ],
+   [
+    "renderer/components/artifact-views",
+    38,
+    4911
+   ],
+   [
+    "renderer/state (misc)",
+    33,
+    5349
+   ],
+   [
+    "renderer/components/marketplace",
+    21,
+    4918
+   ],
+   [
+    "renderer/components/project-view",
+    19,
+    5937
+   ],
+   [
+    "main/office",
+    16,
+    2172
+   ],
+   [
+    "main/conversations",
+    14,
+    4229
+   ],
+   [
+    "renderer/components/game",
+    14,
+    3419
+   ],
+   [
+    "renderer/utils",
+    14,
+    1157
+   ],
+   [
+    "main/artifacts",
+    13,
+    3515
+   ],
+   [
+    "main/sync-spaces",
+    13,
+    2232
+   ],
+   [
+    "main/providers",
+    12,
+    861
+   ],
+   [
+    "renderer/components/buddy",
+    12,
+    2706
+   ],
+   [
+    "renderer/components/office",
+    11,
+    1603
+   ],
+   [
+    "main/doc-comments",
+    9,
+    3203
+   ],
+   [
+    "renderer/components/pages",
+    9,
+    864
+   ],
+   [
+    "renderer/components/guide",
+    8,
+    630
+   ],
+   [
+    "renderer/components/tags",
+    8,
+    727
+   ],
+   [
+    "renderer/components/tool-views",
+    8,
+    1847
+   ],
+   [
+    "main/theme-*",
+    7,
+    1552
+   ],
+   [
+    "renderer/components/context-menu",
+    7,
+    1565
+   ]
+  ]
+ },
+ "nodes": {
+  "S:61": {
+   "id": "S:61",
+   "name": "App telemetry (who used the app — the daily device heartbeat)",
+   "files": 3,
+   "lines": 427,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "App telemetry"
+  },
+  "S:59": {
+   "id": "S:59",
+   "name": "Games arcade (4 games, leaderboards, head-to-head)",
+   "files": 10,
+   "lines": 1990,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Games arcade"
+  },
+  "S:28": {
+   "id": "S:28",
+   "name": "Artifact viewer",
+   "files": 9,
+   "lines": 1463,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Artifact viewer"
+  },
+  "S:38": {
+   "id": "S:38",
+   "name": "Chat Search (chatsearch)",
+   "files": 6,
+   "lines": 1008,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Chat Search"
+  },
+  "S:42": {
+   "id": "S:42",
+   "name": "\"What the assistant was given\" — the line above every chat and the panel behind it. **Almost nothing is cut at session start**: only the root instruction file is, and skills/rules are read when they are USED, so a skill's row reports what WOULD be shortened. A Claude Code chat is described from what this machine can honestly answer for (files on disk, installed skills) and says nothing about the CLI's own prompt, tools or trimming",
+   "files": 4,
+   "lines": 959,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "What the assistant was given"
+  },
+  "S:27": {
+   "id": "S:27",
+   "name": "Document comments (Google-Docs-style comments in the file viewer; Word/Excel comments live inside the file — or, while Office has the file open, go through its editor — and everything else in a .youcoded/comments folder in the project)",
+   "files": 30,
+   "lines": 11018,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Document comments"
+  },
+  "S:58": {
+   "id": "S:58",
+   "name": "Registries & plugins",
+   "files": 3,
+   "lines": 458,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Registries & plugins"
+  },
+  "S:65": {
+   "id": "S:65",
+   "name": "Claude Code hooks the app registers (`~/.claude/settings.json`)",
+   "files": 5,
+   "lines": 988,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Claude Code hooks the app registers"
+  },
+  "S:37": {
+   "id": "S:37",
+   "name": "Conversation handoff between computers (admission, confirmed final messages, pending tab)",
+   "files": 7,
+   "lines": 1163,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Conversation handoff between computers"
+  },
+  "S:35": {
+   "id": "S:35",
+   "name": "Session naming — who named a conversation, the user or the assistant; Off/Basic/AI, the review schedule, and the rename UI",
+   "files": 6,
+   "lines": 1278,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Session naming"
+  },
+  "S:36": {
+   "id": "S:36",
+   "name": "Conversation store",
+   "files": 8,
+   "lines": 1644,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Conversation store"
+  },
+  "S:19": {
+   "id": "S:19",
+   "name": "App logging + bug reports (what the app leaves behind)",
+   "files": 3,
+   "lines": 1145,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "App logging + bug reports"
+  },
+  "S:3": {
+   "id": "S:3",
+   "name": "The runtime (\"the core\") and the two doors",
+   "files": 3,
+   "lines": 2722,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "The runtime"
+  },
+  "S:53": {
+   "id": "S:53",
+   "name": "Local engine & models",
+   "files": 12,
+   "lines": 5999,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Local engine & models"
+  },
+  "S:56": {
+   "id": "S:56",
+   "name": "Prerequisite installer (Git for everyone; Node.js and Claude Code on demand — 2026-10-02 / 2026-09-14)",
+   "files": 3,
+   "lines": 2411,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Prerequisite installer"
+  },
+  "S:33": {
+   "id": "S:33",
+   "name": "Git surface (status, review, watching)",
+   "files": 5,
+   "lines": 1151,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Git surface"
+  },
+  "S:41": {
+   "id": "S:41",
+   "name": "Prompt caching across providers, and ChatGPT cache continuation & diagnostics (youcoded#461 2026-09-09, youcoded#464 2026-09-10)",
+   "files": 9,
+   "lines": 3063,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Prompt caching across providers"
+  },
+  "S:47": {
+   "id": "S:47",
+   "name": "Admin password card (sudo from chat: approval, the in-app password prompt, what the model is told)",
+   "files": 6,
+   "lines": 2320,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Admin password card"
+  },
+  "S:39": {
+   "id": "S:39",
+   "name": "Native runtime (harness) — `SessionProvider` has three values: claude, native, and **shell, a plain terminal with no assistant in it**, created only by `engine:run-in-terminal` (`session-manager.ts` → `prepareRunInTerminal`)",
+   "files": 14,
+   "lines": 12695,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Native runtime"
+  },
+  "S:40": {
+   "id": "S:40",
+   "name": "Cloud context defaults — Assistant settings → General → Context (independent OpenRouter/ChatGPT 250k / 1M; local models unchanged)",
+   "files": 4,
+   "lines": 493,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Cloud context defaults"
+  },
+  "S:49": {
+   "id": "S:49",
+   "name": "Harness evaluator",
+   "files": 6,
+   "lines": 2689,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Harness evaluator"
+  },
+  "S:48": {
+   "id": "S:48",
+   "name": "Full Auto safety stops (outside edits, risky commands, specialists)",
+   "files": 3,
+   "lines": 2221,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Full Auto safety stops"
+  },
+  "S:46": {
+   "id": "S:46",
+   "name": "Native permissions (Always-allow grants; the per-session mode chip)",
+   "files": 13,
+   "lines": 3499,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Native permissions"
+  },
+  "S:44": {
+   "id": "S:44",
+   "name": "Status bar & `/usage` (what every number counts)",
+   "files": 7,
+   "lines": 3230,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Status bar & /usage"
+  },
+  "S:43": {
+   "id": "S:43",
+   "name": "Specialists (native subagents, plan 1a + 1b + 1c)",
+   "files": 15,
+   "lines": 3719,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Specialists"
+  },
+  "S:2": {
+   "id": "S:2",
+   "name": "IPC bridge (parity) — ONE table both doors serve",
+   "files": 58,
+   "lines": 16367,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "IPC bridge"
+  },
+  "S:18": {
+   "id": "S:18",
+   "name": "In-app updates (the Update button, and what it refuses)",
+   "files": 7,
+   "lines": 1751,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "In-app updates"
+  },
+  "S:32": {
+   "id": "S:32",
+   "name": "Claude Code prompts — permission cards, the plan card, the startup dialogs and the \"Initializing session…\" cover",
+   "files": 10,
+   "lines": 1391,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Claude Code prompts"
+  },
+  "S:29": {
+   "id": "S:29",
+   "name": "Office (Word / Excel / PowerPoint editing in the desktop app — Euro-Office editors from the separate AGPL add-on itsdestin/youcoded-office, converted by a native x2t in main; desktop only, docx/xlsx/pptx only)",
+   "files": 7,
+   "lines": 3657,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Office"
+  },
+  "S:30": {
+   "id": "S:30",
+   "name": "YouCoded Pages — personal/project pages framed in the app, pinned in the header, built by the `/page-builder` skill",
+   "files": 12,
+   "lines": 3163,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "YouCoded Pages"
+  },
+  "S:8": {
+   "id": "S:8",
+   "name": "Multi-window session detach",
+   "files": 4,
+   "lines": 694,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Multi-window session detach"
+  },
+  "S:14": {
+   "id": "S:14",
+   "name": "Perf lab / stress suite (dev-only)",
+   "files": 1,
+   "lines": 20,
+   "kind": "map",
+   "extFiles": 10,
+   "label": "Perf lab / stress suite"
+  },
+  "S:4": {
+   "id": "S:4",
+   "name": "Remote access (reaching this computer from another device)",
+   "files": 23,
+   "lines": 7098,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Remote access"
+  },
+  "S:60": {
+   "id": "S:60",
+   "name": "Friends presence (who is online; the socket that heals itself after sleep)",
+   "files": 4,
+   "lines": 923,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Friends presence"
+  },
+  "S:0": {
+   "id": "S:0",
+   "name": "Model switcher recommendations (desktop + Android shared renderer)",
+   "files": 4,
+   "lines": 3194,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Model switcher recommendations"
+  },
+  "S:51": {
+   "id": "S:51",
+   "name": "Sign in with ChatGPT — TWO routes: `codex` (default; the Codex CLI's client id, usage bars, any plan) and `official` (OpenAI's own sign-in, built in but OFF until the Codex route breaks — `YOUCODED_CHATGPT_ROUTE=official`; no usage source; Plus/Pro)",
+   "files": 3,
+   "lines": 1004,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Sign in with ChatGPT"
+  },
+  "S:50": {
+   "id": "S:50",
+   "name": "Claude Code's own sign-in, read LIVE",
+   "files": 4,
+   "lines": 1459,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Claude Code's own sign-in"
+  },
+  "S:52": {
+   "id": "S:52",
+   "name": "OpenRouter key check & Sign in with OpenRouter (youcoded#533, 2026-09-18)",
+   "files": 4,
+   "lines": 789,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "OpenRouter key check & Sign in with OpenRouter"
+  },
+  "S:31": {
+   "id": "S:31",
+   "name": "PTY I/O & keyboard",
+   "files": 5,
+   "lines": 1882,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "PTY I/O & keyboard"
+  },
+  "S:64": {
+   "id": "S:64",
+   "name": "Marketplace catalog (serve + hourly ingest)",
+   "files": 1,
+   "lines": 1357,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Marketplace catalog"
+  },
+  "S:45": {
+   "id": "S:45",
+   "name": "Status push (the 10 s status bar data)",
+   "files": 1,
+   "lines": 111,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Status push"
+  },
+  "S:34": {
+   "id": "S:34",
+   "name": "Sync spaces & GitHub",
+   "files": 4,
+   "lines": 2235,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Sync spaces & GitHub"
+  },
+  "S:17": {
+   "id": "S:17",
+   "name": "Desktop packaging + release (how a build becomes an installer)",
+   "files": 1,
+   "lines": 84,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Desktop packaging + release"
+  },
+  "S:1": {
+   "id": "S:1",
+   "name": "Chat & transcript",
+   "files": 12,
+   "lines": 7941,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Chat & transcript"
+  },
+  "S:54": {
+   "id": "S:54",
+   "name": "Voice prompting",
+   "files": 6,
+   "lines": 2662,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Voice prompting"
+  },
+  "S:6": {
+   "id": "S:6",
+   "name": "React renderer / chrome",
+   "files": 14,
+   "lines": 10620,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "React renderer / chrome"
+  },
+  "S:5": {
+   "id": "S:5",
+   "name": "Find in loaded chat messages",
+   "files": 4,
+   "lines": 929,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Find in loaded chat messages"
+  },
+  "S:26": {
+   "id": "S:26",
+   "name": "Narrow / mobile viewport",
+   "files": 3,
+   "lines": 281,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Narrow / mobile viewport"
+  },
+  "S:57": {
+   "id": "S:57",
+   "name": "Mascot rigs (the buddy's body, faces and poses)",
+   "files": 4,
+   "lines": 999,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Mascot rigs"
+  },
+  "S:24": {
+   "id": "S:24",
+   "name": "UI control primitives",
+   "files": 27,
+   "lines": 2979,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "UI control primitives"
+  },
+  "S:25": {
+   "id": "S:25",
+   "name": "Hover hints (the app's own, not `title=`)",
+   "files": 3,
+   "lines": 675,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Hover hints"
+  },
+  "S:7": {
+   "id": "S:7",
+   "name": "Error states (every user-facing failure message)",
+   "files": 2,
+   "lines": 324,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Error states"
+  },
+  "S:9": {
+   "id": "S:9",
+   "name": "UI Workbench (dev-only)",
+   "files": 51,
+   "lines": 19704,
+   "kind": "map",
+   "extFiles": 1,
+   "label": "UI Workbench"
+  },
+  "S:10": {
+   "id": "S:10",
+   "name": "Screenshots by name (`shoot`) and click-through (`explore`), dev-only",
+   "files": 10,
+   "lines": 566,
+   "kind": "map",
+   "extFiles": 4,
+   "label": "Screenshots by name"
+  },
+  "S:67": {
+   "id": "S:67",
+   "name": "Build & release",
+   "files": 1,
+   "lines": 23,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Build & release"
+  },
+  "U:main/buddy-*": {
+   "id": "U:main/buddy-*",
+   "name": "unclaimed: main/buddy-*",
+   "files": 6,
+   "lines": 1723,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/buddy-*"
+  },
+  "U:main/github-*": {
+   "id": "U:main/github-*",
+   "name": "unclaimed: main/github-*",
+   "files": 4,
+   "lines": 1309,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/github-*"
+  },
+  "U:main/marketplace-*": {
+   "id": "U:main/marketplace-*",
+   "name": "unclaimed: main/marketplace-*",
+   "files": 4,
+   "lines": 365,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/marketplace-*"
+  },
+  "U:main/project-*": {
+   "id": "U:main/project-*",
+   "name": "unclaimed: main/project-*",
+   "files": 4,
+   "lines": 256,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/project-*"
+  },
+  "U:main/remote-*": {
+   "id": "U:main/remote-*",
+   "name": "unclaimed: main/remote-*",
+   "files": 4,
+   "lines": 754,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/remote-*"
+  },
+  "U:main/sync-*": {
+   "id": "U:main/sync-*",
+   "name": "unclaimed: main/sync-*",
+   "files": 4,
+   "lines": 2907,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/sync-*"
+  },
+  "U:main/theme-*": {
+   "id": "U:main/theme-*",
+   "name": "unclaimed: main/theme-*",
+   "files": 7,
+   "lines": 1552,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/theme-*"
+  },
+  "U:main (misc)": {
+   "id": "U:main (misc)",
+   "name": "unclaimed: main (misc)",
+   "files": 59,
+   "lines": 8260,
+   "kind": "unclaimed",
+   "label": "unclaimed: main (misc)"
+  },
+  "U:main/artifacts": {
+   "id": "U:main/artifacts",
+   "name": "unclaimed: main/artifacts",
+   "files": 13,
+   "lines": 3515,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/artifacts"
+  },
+  "U:main/chatsearch-index": {
+   "id": "U:main/chatsearch-index",
+   "name": "unclaimed: main/chatsearch-index",
+   "files": 5,
+   "lines": 894,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/chatsearch-index"
+  },
+  "U:main/conversations": {
+   "id": "U:main/conversations",
+   "name": "unclaimed: main/conversations",
+   "files": 14,
+   "lines": 4229,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/conversations"
+  },
+  "U:main/doc-comments": {
+   "id": "U:main/doc-comments",
+   "name": "unclaimed: main/doc-comments",
+   "files": 9,
+   "lines": 3203,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/doc-comments"
+  },
+  "U:main/engine": {
+   "id": "U:main/engine",
+   "name": "unclaimed: main/engine",
+   "files": 4,
+   "lines": 3249,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/engine"
+  },
+  "U:other small dirs": {
+   "id": "U:other small dirs",
+   "name": "unclaimed: other small dirs",
+   "files": 12,
+   "lines": 1473,
+   "kind": "unclaimed",
+   "label": "unclaimed: other small dirs"
+  },
+  "U:main/harness": {
+   "id": "U:main/harness",
+   "name": "unclaimed: main/harness",
+   "files": 79,
+   "lines": 13433,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/harness"
+  },
+  "U:main/models": {
+   "id": "U:main/models",
+   "name": "unclaimed: main/models",
+   "files": 6,
+   "lines": 1120,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/models"
+  },
+  "U:main/office": {
+   "id": "U:main/office",
+   "name": "unclaimed: main/office",
+   "files": 16,
+   "lines": 2172,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/office"
+  },
+  "U:main/providers": {
+   "id": "U:main/providers",
+   "name": "unclaimed: main/providers",
+   "files": 12,
+   "lines": 861,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/providers"
+  },
+  "U:main/sync-spaces": {
+   "id": "U:main/sync-spaces",
+   "name": "unclaimed: main/sync-spaces",
+   "files": 13,
+   "lines": 2232,
+   "kind": "unclaimed",
+   "label": "unclaimed: main/sync-spaces"
+  },
+  "U:renderer": {
+   "id": "U:renderer",
+   "name": "unclaimed: renderer",
+   "files": 6,
+   "lines": 642,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer"
+  },
+  "U:renderer/components (root files)/model-*": {
+   "id": "U:renderer/components (root files)/model-*",
+   "name": "unclaimed: renderer/components (root files)/model-*",
+   "files": 4,
+   "lines": 985,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/model-*"
+  },
+  "U:renderer/components (root files)/resume-*": {
+   "id": "U:renderer/components (root files)/resume-*",
+   "name": "unclaimed: renderer/components (root files)/resume-*",
+   "files": 4,
+   "lines": 2470,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/resume-*"
+  },
+  "U:renderer/components (root files)/session-*": {
+   "id": "U:renderer/components (root files)/session-*",
+   "name": "unclaimed: renderer/components (root files)/session-*",
+   "files": 5,
+   "lines": 2122,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/session-*"
+  },
+  "U:renderer/components (root files)/sync-*": {
+   "id": "U:renderer/components (root files)/sync-*",
+   "name": "unclaimed: renderer/components (root files)/sync-*",
+   "files": 4,
+   "lines": 3463,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/sync-*"
+  },
+  "U:renderer/components (root files)/theme-*": {
+   "id": "U:renderer/components (root files)/theme-*",
+   "name": "unclaimed: renderer/components (root files)/theme-*",
+   "files": 5,
+   "lines": 1247,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/theme-*"
+  },
+  "U:renderer/components (root files) (misc)": {
+   "id": "U:renderer/components (root files) (misc)",
+   "name": "unclaimed: renderer/components (root files) (misc)",
+   "files": 92,
+   "lines": 20871,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components (misc)"
+  },
+  "U:renderer/components/artifact-views": {
+   "id": "U:renderer/components/artifact-views",
+   "name": "unclaimed: renderer/components/artifact-views",
+   "files": 38,
+   "lines": 4911,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/artifact-views"
+  },
+  "U:renderer/components/assistant-settings": {
+   "id": "U:renderer/components/assistant-settings",
+   "name": "unclaimed: renderer/components/assistant-settings",
+   "files": 5,
+   "lines": 568,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/assistant-setti"
+  },
+  "U:renderer/components/buddy": {
+   "id": "U:renderer/components/buddy",
+   "name": "unclaimed: renderer/components/buddy",
+   "files": 12,
+   "lines": 2706,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/buddy"
+  },
+  "U:renderer/components/context-menu": {
+   "id": "U:renderer/components/context-menu",
+   "name": "unclaimed: renderer/components/context-menu",
+   "files": 7,
+   "lines": 1565,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/context-menu"
+  },
+  "U:renderer/components/development": {
+   "id": "U:renderer/components/development",
+   "name": "unclaimed: renderer/components/development",
+   "files": 6,
+   "lines": 725,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/development"
+  },
+  "U:renderer/components/first-run": {
+   "id": "U:renderer/components/first-run",
+   "name": "unclaimed: renderer/components/first-run",
+   "files": 5,
+   "lines": 440,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/first-run"
+  },
+  "U:renderer/components/game": {
+   "id": "U:renderer/components/game",
+   "name": "unclaimed: renderer/components/game",
+   "files": 14,
+   "lines": 3419,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/game"
+  },
+  "U:renderer/components/git": {
+   "id": "U:renderer/components/git",
+   "name": "unclaimed: renderer/components/git",
+   "files": 3,
+   "lines": 126,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/git"
+  },
+  "U:renderer/components/guide": {
+   "id": "U:renderer/components/guide",
+   "name": "unclaimed: renderer/components/guide",
+   "files": 8,
+   "lines": 630,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/guide"
+  },
+  "U:renderer/components/header": {
+   "id": "U:renderer/components/header",
+   "name": "unclaimed: renderer/components/header",
+   "files": 3,
+   "lines": 259,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/header"
+  },
+  "U:renderer/components/marketplace": {
+   "id": "U:renderer/components/marketplace",
+   "name": "unclaimed: renderer/components/marketplace",
+   "files": 21,
+   "lines": 4918,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/marketplace"
+  },
+  "U:renderer/components/mascot": {
+   "id": "U:renderer/components/mascot",
+   "name": "unclaimed: renderer/components/mascot",
+   "files": 3,
+   "lines": 232,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/mascot"
+  },
+  "U:renderer/components/office": {
+   "id": "U:renderer/components/office",
+   "name": "unclaimed: renderer/components/office",
+   "files": 11,
+   "lines": 1603,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/office"
+  },
+  "U:renderer/components/pages": {
+   "id": "U:renderer/components/pages",
+   "name": "unclaimed: renderer/components/pages",
+   "files": 9,
+   "lines": 864,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/pages"
+  },
+  "U:renderer/components/project-view": {
+   "id": "U:renderer/components/project-view",
+   "name": "unclaimed: renderer/components/project-view",
+   "files": 19,
+   "lines": 5937,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/project-view"
+  },
+  "U:renderer/components/specialists": {
+   "id": "U:renderer/components/specialists",
+   "name": "unclaimed: renderer/components/specialists",
+   "files": 3,
+   "lines": 288,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/specialists"
+  },
+  "U:renderer/components/tags": {
+   "id": "U:renderer/components/tags",
+   "name": "unclaimed: renderer/components/tags",
+   "files": 8,
+   "lines": 727,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/tags"
+  },
+  "U:renderer/components/tool-views": {
+   "id": "U:renderer/components/tool-views",
+   "name": "unclaimed: renderer/components/tool-views",
+   "files": 8,
+   "lines": 1847,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/components/tool-views"
+  },
+  "U:renderer/game": {
+   "id": "U:renderer/game",
+   "name": "unclaimed: renderer/game",
+   "files": 3,
+   "lines": 435,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/game"
+  },
+  "U:renderer/hooks/use-*": {
+   "id": "U:renderer/hooks/use-*",
+   "name": "unclaimed: renderer/hooks/use-*",
+   "files": 53,
+   "lines": 5910,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/hooks/use-*"
+  },
+  "U:renderer/hooks (misc)": {
+   "id": "U:renderer/hooks (misc)",
+   "name": "unclaimed: renderer/hooks (misc)",
+   "files": 1,
+   "lines": 110,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/hooks (misc)"
+  },
+  "U:renderer/state/artifact-*": {
+   "id": "U:renderer/state/artifact-*",
+   "name": "unclaimed: renderer/state/artifact-*",
+   "files": 4,
+   "lines": 691,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/state/artifact-*"
+  },
+  "U:renderer/state/marketplace-*": {
+   "id": "U:renderer/state/marketplace-*",
+   "name": "unclaimed: renderer/state/marketplace-*",
+   "files": 4,
+   "lines": 1256,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/state/marketplace-*"
+  },
+  "U:renderer/state (misc)": {
+   "id": "U:renderer/state (misc)",
+   "name": "unclaimed: renderer/state (misc)",
+   "files": 33,
+   "lines": 5349,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/state (misc)"
+  },
+  "U:renderer/themes": {
+   "id": "U:renderer/themes",
+   "name": "unclaimed: renderer/themes",
+   "files": 5,
+   "lines": 756,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/themes"
+  },
+  "U:renderer/utils": {
+   "id": "U:renderer/utils",
+   "name": "unclaimed: renderer/utils",
+   "files": 14,
+   "lines": 1157,
+   "kind": "unclaimed",
+   "label": "unclaimed: renderer/utils"
+  },
+  "U:shared/doc-*": {
+   "id": "U:shared/doc-*",
+   "name": "unclaimed: shared/doc-*",
+   "files": 4,
+   "lines": 612,
+   "kind": "unclaimed",
+   "label": "unclaimed: shared/doc-*"
+  },
+  "U:shared/session-*": {
+   "id": "U:shared/session-*",
+   "name": "unclaimed: shared/session-*",
+   "files": 5,
+   "lines": 294,
+   "kind": "unclaimed",
+   "label": "unclaimed: shared/session-*"
+  },
+  "U:shared (misc)": {
+   "id": "U:shared (misc)",
+   "name": "unclaimed: shared (misc)",
+   "files": 53,
+   "lines": 4232,
+   "kind": "unclaimed",
+   "label": "unclaimed: shared (misc)"
+  },
+  "U:shared/artifacts": {
+   "id": "U:shared/artifacts",
+   "name": "unclaimed: shared/artifacts",
+   "files": 6,
+   "lines": 578,
+   "kind": "unclaimed",
+   "label": "unclaimed: shared/artifacts"
+  },
+  "S:11": {
+   "id": "S:11",
+   "name": "UI review rig (dev-only)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 56,
+   "label": "UI review rig"
+  },
+  "S:12": {
+   "id": "S:12",
+   "name": "Landing page + demo clips (live at youcoded.ai via `youcoded/docs/CNAME`; the old itsdestin.github.io/youcoded address redirects there)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 42,
+   "label": "Landing page + demo clips"
+  },
+  "S:13": {
+   "id": "S:13",
+   "name": "Promo video (the Reddit cut shipped 2026-09-04, the second cut 2026-09-09; the tooling stays for the next film, dev-only)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 56,
+   "label": "Promo video"
+  },
+  "S:15": {
+   "id": "S:15",
+   "name": "Luna live cache-measurement rig (dev-only; spends ChatGPT-plan quota — ask first)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 5,
+   "label": "Luna live cache-measurement rig"
+  },
+  "S:16": {
+   "id": "S:16",
+   "name": "Roadmap (the backlog itself)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 8,
+   "label": "Roadmap"
+  },
+  "S:20": {
+   "id": "S:20",
+   "name": "Session workspace startup + reorientation (dev-only)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 6,
+   "label": "Session workspace startup + reorientation"
+  },
+  "S:21": {
+   "id": "S:21",
+   "name": "Session close-out + workspace retrospective (dev-only)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 4,
+   "label": "Session close-out + workspace retrospective"
+  },
+  "S:22": {
+   "id": "S:22",
+   "name": "CI health and the test-suite inventory (dev-only)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 2,
+   "label": "CI health and the test-suite inventory"
+  },
+  "S:23": {
+   "id": "S:23",
+   "name": "Desktop checks (types, lint, design check — dev-only)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 1,
+   "label": "Desktop checks"
+  },
+  "S:55": {
+   "id": "S:55",
+   "name": "Android runtime",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Android runtime"
+  },
+  "S:62": {
+   "id": "S:62",
+   "name": "Website analytics (separate from app telemetry)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Website analytics"
+  },
+  "S:63": {
+   "id": "S:63",
+   "name": "Marketplace worker",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Marketplace worker"
+  },
+  "S:66": {
+   "id": "S:66",
+   "name": "Archived youcoded-core plugin (read-only history; not a release target)",
+   "files": 0,
+   "lines": 0,
+   "kind": "map",
+   "extFiles": 0,
+   "label": "Archived youcoded-core plugin"
+  }
+ },
+ "edges": [
+  {
+   "a": "S:61",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:19",
+   "w": 5
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:shared (misc)",
+   "w": 11
+  },
+  {
+   "a": "S:59",
+   "b": "U:main/marketplace-*",
+   "w": 2
+  },
+  {
+   "a": "S:59",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 4
+  },
+  {
+   "a": "S:59",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/artifacts",
+   "b": "U:shared/artifacts",
+   "w": 12
+  },
+  {
+   "a": "U:main/artifacts",
+   "b": "S:28",
+   "w": 20
+  },
+  {
+   "a": "U:main/artifacts",
+   "b": "U:main (misc)",
+   "w": 6
+  },
+  {
+   "a": "U:main/artifacts",
+   "b": "U:main/harness",
+   "w": 2
+  },
+  {
+   "a": "U:main/artifacts",
+   "b": "U:main/sync-spaces",
+   "w": 1
+  },
+  {
+   "a": "U:main/artifacts",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:main/providers",
+   "w": 3
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:3",
+   "w": 2
+  },
+  {
+   "a": "U:main/buddy-*",
+   "b": "U:shared (misc)",
+   "w": 6
+  },
+  {
+   "a": "U:main/buddy-*",
+   "b": "S:8",
+   "w": 1
+  },
+  {
+   "a": "U:main/buddy-*",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:1",
+   "w": 10
+  },
+  {
+   "a": "S:38",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "S:38",
+   "b": "U:main/conversations",
+   "w": 2
+  },
+  {
+   "a": "S:38",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:38",
+   "b": "S:14",
+   "w": 1
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "S:38",
+   "w": 5
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "U:shared (misc)",
+   "w": 4
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "U:main/conversations",
+   "w": 3
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "U:main/sync-spaces",
+   "w": 1
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main/chatsearch-index",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:42",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:42",
+   "b": "S:39",
+   "w": 1
+  },
+  {
+   "a": "S:42",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "U:shared/doc-*",
+   "w": 15
+  },
+  {
+   "a": "S:58",
+   "b": "S:65",
+   "w": 1
+  },
+  {
+   "a": "S:65",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "S:65",
+   "b": "U:main (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:65",
+   "b": "S:19",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "U:main/artifacts",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:36",
+   "w": 7
+  },
+  {
+   "a": "S:37",
+   "b": "U:main/conversations",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "U:main/sync-spaces",
+   "w": 5
+  },
+  {
+   "a": "S:37",
+   "b": "U:main/sync-spaces",
+   "w": 2
+  },
+  {
+   "a": "S:37",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "S:37",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:37",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "S:37",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:34",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "S:35",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "S:36",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "U:main (misc)",
+   "w": 7
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:38",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:35",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:19",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:37",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:14",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:36",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "U:main/conversations",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:3",
+   "b": "U:shared/session-*",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:3",
+   "b": "U:main (misc)",
+   "w": 21
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/providers",
+   "w": 4
+  },
+  {
+   "a": "S:3",
+   "b": "S:39",
+   "w": 5
+  },
+  {
+   "a": "S:3",
+   "b": "S:52",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "S:50",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:0",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "S:35",
+   "w": 3
+  },
+  {
+   "a": "S:3",
+   "b": "S:40",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/engine",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/models",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:41",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/harness",
+   "w": 10
+  },
+  {
+   "a": "S:3",
+   "b": "S:43",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/conversations",
+   "w": 7
+  },
+  {
+   "a": "S:3",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "S:2",
+   "w": 9
+  },
+  {
+   "a": "S:3",
+   "b": "S:4",
+   "w": 2
+  },
+  {
+   "a": "S:19",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:19",
+   "b": "U:main/harness",
+   "w": 1
+  },
+  {
+   "a": "S:19",
+   "b": "U:main/github-*",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:65",
+   "w": 2
+  },
+  {
+   "a": "S:27",
+   "b": "U:main/doc-comments",
+   "w": 11
+  },
+  {
+   "a": "S:27",
+   "b": "U:main/artifacts",
+   "w": 4
+  },
+  {
+   "a": "U:main/doc-comments",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:main/doc-comments",
+   "b": "S:27",
+   "w": 3
+  },
+  {
+   "a": "U:main/doc-comments",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:main/doc-comments",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "U:main/doc-comments",
+   "b": "U:shared/doc-*",
+   "w": 1
+  },
+  {
+   "a": "U:main/engine",
+   "b": "S:53",
+   "w": 13
+  },
+  {
+   "a": "U:main/engine",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main/engine",
+   "b": "U:shared (misc)",
+   "w": 4
+  },
+  {
+   "a": "U:main/engine",
+   "b": "U:main/models",
+   "w": 1
+  },
+  {
+   "a": "S:53",
+   "b": "U:shared (misc)",
+   "w": 9
+  },
+  {
+   "a": "S:53",
+   "b": "U:main/engine",
+   "w": 2
+  },
+  {
+   "a": "S:56",
+   "b": "U:shared (misc)",
+   "w": 4
+  },
+  {
+   "a": "S:56",
+   "b": "S:19",
+   "w": 2
+  },
+  {
+   "a": "S:56",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:main/sync-spaces",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:shared/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:28",
+   "w": 4
+  },
+  {
+   "a": "S:33",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:33",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "U:main/github-*",
+   "b": "S:56",
+   "w": 2
+  },
+  {
+   "a": "U:main/github-*",
+   "b": "U:main/sync-spaces",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:main/marketplace-*",
+   "w": 3
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 2
+  },
+  {
+   "a": "S:41",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "S:47",
+   "b": "S:19",
+   "w": 2
+  },
+  {
+   "a": "S:47",
+   "b": "U:main/harness",
+   "w": 6
+  },
+  {
+   "a": "S:47",
+   "b": "S:48",
+   "w": 1
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:19",
+   "w": 2
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:47",
+   "w": 4
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:39",
+   "w": 26
+  },
+  {
+   "a": "S:39",
+   "b": "U:main/harness",
+   "w": 46
+  },
+  {
+   "a": "S:39",
+   "b": "U:shared (misc)",
+   "w": 5
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:1",
+   "w": 5
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:41",
+   "w": 5
+  },
+  {
+   "a": "S:41",
+   "b": "U:main/harness",
+   "w": 2
+  },
+  {
+   "a": "S:40",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:40",
+   "b": "U:shared (misc)",
+   "w": 6
+  },
+  {
+   "a": "S:49",
+   "b": "U:main/harness",
+   "w": 18
+  },
+  {
+   "a": "S:49",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "S:49",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:49",
+   "w": 10
+  },
+  {
+   "a": "S:49",
+   "b": "S:39",
+   "w": 4
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:44",
+   "w": 1
+  },
+  {
+   "a": "S:49",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:49",
+   "b": "S:48",
+   "w": 1
+  },
+  {
+   "a": "S:39",
+   "b": "S:41",
+   "w": 11
+  },
+  {
+   "a": "S:39",
+   "b": "S:52",
+   "w": 2
+  },
+  {
+   "a": "S:39",
+   "b": "U:main/providers",
+   "w": 6
+  },
+  {
+   "a": "S:39",
+   "b": "S:1",
+   "w": 4
+  },
+  {
+   "a": "S:39",
+   "b": "S:46",
+   "w": 7
+  },
+  {
+   "a": "S:39",
+   "b": "S:47",
+   "w": 4
+  },
+  {
+   "a": "S:39",
+   "b": "S:48",
+   "w": 2
+  },
+  {
+   "a": "S:39",
+   "b": "S:43",
+   "w": 9
+  },
+  {
+   "a": "S:39",
+   "b": "S:44",
+   "w": 3
+  },
+  {
+   "a": "S:39",
+   "b": "S:19",
+   "w": 5
+  },
+  {
+   "a": "S:39",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "S:39",
+   "b": "U:main (misc)",
+   "w": 5
+  },
+  {
+   "a": "S:48",
+   "b": "S:46",
+   "w": 4
+  },
+  {
+   "a": "S:48",
+   "b": "S:1",
+   "w": 3
+  },
+  {
+   "a": "S:46",
+   "b": "U:main (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:main/harness",
+   "b": "U:shared (misc)",
+   "w": 5
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "S:41",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:41",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:41",
+   "b": "S:35",
+   "w": 1
+  },
+  {
+   "a": "S:41",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:43",
+   "b": "U:main (misc)",
+   "w": 4
+  },
+  {
+   "a": "S:43",
+   "b": "U:main/harness",
+   "w": 4
+  },
+  {
+   "a": "S:43",
+   "b": "S:1",
+   "w": 6
+  },
+  {
+   "a": "S:43",
+   "b": "S:48",
+   "w": 2
+  },
+  {
+   "a": "S:43",
+   "b": "S:39",
+   "w": 2
+  },
+  {
+   "a": "S:43",
+   "b": "S:46",
+   "w": 2
+  },
+  {
+   "a": "S:43",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main/harness",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:47",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "S:46",
+   "b": "U:main/harness",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "S:39",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "U:main/harness",
+   "w": 1
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:27",
+   "w": 1
+  },
+  {
+   "a": "U:main/harness",
+   "b": "S:43",
+   "w": 4
+  },
+  {
+   "a": "S:65",
+   "b": "S:58",
+   "w": 1
+  },
+  {
+   "a": "S:65",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:58",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "U:shared (misc)",
+   "w": 32
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/marketplace-*",
+   "w": 8
+  },
+  {
+   "a": "S:2",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "U:main (misc)",
+   "w": 42
+  },
+  {
+   "a": "S:2",
+   "b": "S:60",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:59",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:61",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:1",
+   "w": 12
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/theme-*",
+   "w": 7
+  },
+  {
+   "a": "S:2",
+   "b": "S:28",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/artifacts",
+   "w": 17
+  },
+  {
+   "a": "S:2",
+   "b": "S:19",
+   "w": 7
+  },
+  {
+   "a": "S:2",
+   "b": "S:3",
+   "w": 5
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/chatsearch-index",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:56",
+   "w": 7
+  },
+  {
+   "a": "S:2",
+   "b": "S:4",
+   "w": 18
+  },
+  {
+   "a": "S:2",
+   "b": "S:8",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "S:31",
+   "w": 7
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/doc-comments",
+   "w": 6
+  },
+  {
+   "a": "S:2",
+   "b": "S:27",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:53",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "S:0",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:39",
+   "w": 5
+  },
+  {
+   "a": "S:2",
+   "b": "S:50",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/engine",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/models",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "S:33",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/github-*",
+   "w": 5
+  },
+  {
+   "a": "S:2",
+   "b": "S:37",
+   "w": 5
+  },
+  {
+   "a": "S:2",
+   "b": "S:42",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/conversations",
+   "w": 10
+  },
+  {
+   "a": "S:2",
+   "b": "S:30",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "S:65",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/project-*",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:36",
+   "w": 5
+  },
+  {
+   "a": "S:2",
+   "b": "S:32",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:14",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:58",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:64",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "S:43",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/sync-spaces",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/sync-*",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "U:other small dirs",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:54",
+   "w": 3
+  },
+  {
+   "a": "S:2",
+   "b": "S:17",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:41",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:47",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:46",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/harness",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "S:45",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "U:shared/artifacts",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:38",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/office",
+   "w": 1
+  },
+  {
+   "a": "S:58",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:65",
+   "w": 3
+  },
+  {
+   "a": "S:3",
+   "b": "S:8",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "S:64",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:32",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:19",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "S:56",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/theme-*",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/office",
+   "w": 4
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/sync-*",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/sync-spaces",
+   "w": 3
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/github-*",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:38",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/chatsearch-index",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/marketplace-*",
+   "w": 2
+  },
+  {
+   "a": "S:3",
+   "b": "S:60",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:59",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:other small dirs",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "U:main/buddy-*",
+   "w": 4
+  },
+  {
+   "a": "S:3",
+   "b": "S:18",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:61",
+   "w": 1
+  },
+  {
+   "a": "S:3",
+   "b": "S:14",
+   "w": 1
+  },
+  {
+   "a": "U:main/marketplace-*",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:main/marketplace-*",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/marketplace-*",
+   "b": "S:2",
+   "w": 1
+  },
+  {
+   "a": "U:main/marketplace-*",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "U:main/marketplace-*",
+   "b": "S:58",
+   "w": 1
+  },
+  {
+   "a": "S:39",
+   "b": "S:58",
+   "w": 1
+  },
+  {
+   "a": "U:main/models",
+   "b": "U:shared (misc)",
+   "w": 7
+  },
+  {
+   "a": "U:main/models",
+   "b": "S:53",
+   "w": 11
+  },
+  {
+   "a": "S:53",
+   "b": "U:main/models",
+   "w": 1
+  },
+  {
+   "a": "U:main/models",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/models",
+   "b": "U:main/engine",
+   "w": 2
+  },
+  {
+   "a": "S:35",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:38",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:shared/session-*",
+   "w": 2
+  },
+  {
+   "a": "U:main/office",
+   "b": "U:main/artifacts",
+   "w": 4
+  },
+  {
+   "a": "U:main/office",
+   "b": "S:19",
+   "w": 5
+  },
+  {
+   "a": "U:main/office",
+   "b": "S:29",
+   "w": 10
+  },
+  {
+   "a": "U:main/office",
+   "b": "S:27",
+   "w": 1
+  },
+  {
+   "a": "U:main/office",
+   "b": "S:2",
+   "w": 2
+  },
+  {
+   "a": "S:29",
+   "b": "U:main/artifacts",
+   "w": 2
+  },
+  {
+   "a": "S:29",
+   "b": "S:28",
+   "w": 2
+  },
+  {
+   "a": "S:29",
+   "b": "S:19",
+   "w": 3
+  },
+  {
+   "a": "S:29",
+   "b": "U:main/office",
+   "w": 15
+  },
+  {
+   "a": "S:27",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "U:main/office",
+   "w": 1
+  },
+  {
+   "a": "U:main/office",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:main/artifacts",
+   "w": 3
+  },
+  {
+   "a": "S:30",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:main/providers",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:main/harness",
+   "w": 1
+  },
+  {
+   "a": "S:32",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:32",
+   "b": "U:shared/doc-*",
+   "w": 1
+  },
+  {
+   "a": "S:32",
+   "b": "S:27",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "U:main/harness",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "S:1",
+   "w": 6
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main/project-*",
+   "b": "U:main (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:main/project-*",
+   "b": "U:other small dirs",
+   "w": 2
+  },
+  {
+   "a": "U:main/project-*",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/project-*",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:main/project-*",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "U:main/project-*",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:41",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "U:main/providers",
+   "w": 2
+  },
+  {
+   "a": "S:0",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:0",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:51",
+   "w": 1
+  },
+  {
+   "a": "S:51",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:50",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "S:50",
+   "b": "S:56",
+   "w": 1
+  },
+  {
+   "a": "S:52",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:52",
+   "b": "S:51",
+   "w": 2
+  },
+  {
+   "a": "U:main/providers",
+   "b": "S:53",
+   "w": 1
+  },
+  {
+   "a": "S:41",
+   "b": "S:39",
+   "w": 1
+  },
+  {
+   "a": "S:39",
+   "b": "U:main/engine",
+   "w": 1
+  },
+  {
+   "a": "S:39",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:39",
+   "b": "S:51",
+   "w": 1
+  },
+  {
+   "a": "U:main/providers",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:4",
+   "w": 2
+  },
+  {
+   "a": "S:4",
+   "b": "U:shared (misc)",
+   "w": 8
+  },
+  {
+   "a": "S:4",
+   "b": "S:56",
+   "w": 1
+  },
+  {
+   "a": "U:main/remote-*",
+   "b": "S:28",
+   "w": 3
+  },
+  {
+   "a": "U:main/remote-*",
+   "b": "U:main/artifacts",
+   "w": 2
+  },
+  {
+   "a": "U:main/remote-*",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "U:main/remote-*",
+   "w": 4
+  },
+  {
+   "a": "S:2",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:40",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "S:52",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:18",
+   "w": 1
+  },
+  {
+   "a": "S:36",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:36",
+   "b": "S:41",
+   "w": 1
+  },
+  {
+   "a": "S:36",
+   "b": "S:14",
+   "w": 1
+  },
+  {
+   "a": "S:36",
+   "b": "U:main/conversations",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "S:2",
+   "w": 2
+  },
+  {
+   "a": "S:4",
+   "b": "S:31",
+   "w": 5
+  },
+  {
+   "a": "S:31",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "S:27",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "U:shared/session-*",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "S:41",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:shared/session-*",
+   "w": 4
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:2",
+   "w": 2
+  },
+  {
+   "a": "S:64",
+   "b": "U:main (misc)",
+   "w": 4
+  },
+  {
+   "a": "S:64",
+   "b": "S:58",
+   "w": 2
+  },
+  {
+   "a": "S:64",
+   "b": "U:main/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "S:65",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "S:39",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:64",
+   "b": "U:main/github-*",
+   "w": 1
+  },
+  {
+   "a": "S:60",
+   "b": "U:main/marketplace-*",
+   "w": 2
+  },
+  {
+   "a": "S:60",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "S:60",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:60",
+   "b": "S:19",
+   "w": 1
+  },
+  {
+   "a": "S:60",
+   "b": "S:8",
+   "w": 1
+  },
+  {
+   "a": "S:60",
+   "b": "S:2",
+   "w": 1
+  },
+  {
+   "a": "S:34",
+   "b": "S:60",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-*",
+   "b": "U:main/sync-spaces",
+   "w": 3
+  },
+  {
+   "a": "U:main/sync-*",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main/sync-*",
+   "b": "S:56",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "U:main/sync-*",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "U:main/artifacts",
+   "w": 3
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:34",
+   "b": "U:main/sync-spaces",
+   "w": 7
+  },
+  {
+   "a": "S:34",
+   "b": "U:main/sync-*",
+   "w": 2
+  },
+  {
+   "a": "S:34",
+   "b": "U:main/github-*",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "U:shared/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "S:34",
+   "w": 5
+  },
+  {
+   "a": "S:34",
+   "b": "U:main/artifacts",
+   "w": 1
+  },
+  {
+   "a": "S:34",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:34",
+   "b": "U:shared/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:main/sync-spaces",
+   "b": "U:main/github-*",
+   "w": 2
+  },
+  {
+   "a": "S:17",
+   "b": "U:main (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:17",
+   "b": "U:main/buddy-*",
+   "w": 1
+  },
+  {
+   "a": "S:17",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:17",
+   "b": "S:2",
+   "w": 1
+  },
+  {
+   "a": "U:main/theme-*",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/theme-*",
+   "b": "S:58",
+   "w": 1
+  },
+  {
+   "a": "U:main/theme-*",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:main/theme-*",
+   "b": "U:renderer/themes",
+   "w": 1
+  },
+  {
+   "a": "U:main/theme-*",
+   "b": "U:main/github-*",
+   "w": 4
+  },
+  {
+   "a": "U:main/theme-*",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:1",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "S:1",
+   "b": "U:main (misc)",
+   "w": 6
+  },
+  {
+   "a": "S:18",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:main (misc)",
+   "b": "S:18",
+   "w": 6
+  },
+  {
+   "a": "S:18",
+   "b": "U:main (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "S:54",
+   "w": 3
+  },
+  {
+   "a": "S:8",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/artifact-views",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:other small dirs",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components (root files)/session-*",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 43
+  },
+  {
+   "a": "S:6",
+   "b": "S:37",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "S:44",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components (root files)/model-*",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/utils",
+   "w": 4
+  },
+  {
+   "a": "S:6",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "S:10",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "S:24",
+   "w": 6
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/state (misc)",
+   "w": 19
+  },
+  {
+   "a": "S:6",
+   "b": "U:shared/session-*",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/game",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "S:1",
+   "w": 5
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/state/artifact-*",
+   "w": 4
+  },
+  {
+   "a": "S:6",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/hooks/use-*",
+   "w": 30
+  },
+  {
+   "a": "S:6",
+   "b": "S:4",
+   "w": 8
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "S:51",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:main/sync-*",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components (root files)/sync-*",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "S:60",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "S:32",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components (root files)/resume-*",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "S:0",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "U:shared (misc)",
+   "w": 4
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/marketplace",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components (root files)/theme-*",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/project-view",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/pages",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "S:30",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "S:8",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/context-menu",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/buddy",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "S:26",
+   "w": 4
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/guide",
+   "w": 7
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/hooks (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:61",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:61",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:61",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:61",
+   "b": "S:67",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/hooks/use-*",
+   "w": 46
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/state (misc)",
+   "w": 42
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:main/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:24",
+   "w": 65
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:10",
+   "w": 10
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:shared/artifacts",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:1",
+   "w": 13
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/utils",
+   "w": 13
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components (root files)/session-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:48",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:28",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:shared (misc)",
+   "w": 17
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:36",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/project-view",
+   "w": 1
+  },
+  {
+   "a": "S:52",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:52",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:52",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:52",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:4",
+   "w": 16
+  },
+  {
+   "a": "S:5",
+   "b": "U:renderer/state (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:44",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:32",
+   "w": 7
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:52",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components (root files)/model-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:6",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:42",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/state/artifact-*",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:5",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/guide",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/tags",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:7",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/pages",
+   "w": 1
+  },
+  {
+   "a": "S:5",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:5",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:28",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "S:28",
+   "b": "U:shared/artifacts",
+   "w": 2
+  },
+  {
+   "a": "S:28",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "S:28",
+   "b": "S:26",
+   "w": 1
+  },
+  {
+   "a": "S:28",
+   "b": "U:renderer/hooks/use-*",
+   "w": 2
+  },
+  {
+   "a": "S:28",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:28",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "S:28",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:28",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/development",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:53",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/hooks (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/first-run",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components (root files)/sync-*",
+   "w": 1
+  },
+  {
+   "a": "S:37",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:37",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:67",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:57",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/mascot",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/themes",
+   "w": 1
+  },
+  {
+   "a": "S:32",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:32",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:32",
+   "b": "U:renderer/hooks (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:32",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/context-menu",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/tool-views",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:27",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "S:53",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "S:24",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "U:renderer/hooks/use-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "S:44",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/model-*",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:50",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:50",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:50",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:50",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:50",
+   "b": "S:51",
+   "w": 2
+  },
+  {
+   "a": "S:50",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:26",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:26",
+   "b": "S:24",
+   "w": 3
+  },
+  {
+   "a": "S:26",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "S:26",
+   "b": "U:renderer/components/artifact-views",
+   "w": 1
+  },
+  {
+   "a": "S:26",
+   "b": "U:renderer/components/pages",
+   "w": 1
+  },
+  {
+   "a": "S:26",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "S:26",
+   "b": "U:renderer/hooks/use-*",
+   "w": 2
+  },
+  {
+   "a": "S:26",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:37",
+   "b": "U:renderer/components (root files)/session-*",
+   "w": 2
+  },
+  {
+   "a": "S:37",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:46",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:46",
+   "b": "U:renderer/components/development",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:51",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:24",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:35",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:renderer/hooks/use-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:26",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:renderer/components (root files)/session-*",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:renderer/components/tags",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/resume-*",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "S:6",
+   "w": 3
+  },
+  {
+   "a": "S:30",
+   "b": "U:renderer/components/pages",
+   "w": 9
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:1",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/tags",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:42",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:42",
+   "b": "U:renderer/state (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:42",
+   "b": "U:other small dirs",
+   "w": 1
+  },
+  {
+   "a": "S:42",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:42",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/state (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/hooks/use-*",
+   "w": 7
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/utils",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/artifact-views",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/context-menu",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:27",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:5",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:33",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/git",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:shared/artifacts",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/project-view",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:26",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/tool-views",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components (root files)/resume-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/guide",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/office",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "U:renderer/components/development",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:35",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 2
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/header",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/tags",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "S:35",
+   "w": 1
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/session-*",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:other small dirs",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/components (root files)/theme-*",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/components (root files)/sync-*",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 7
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/state (misc)",
+   "w": 6
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/hooks/use-*",
+   "w": 5
+  },
+  {
+   "a": "S:4",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:4",
+   "b": "S:61",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/components/development",
+   "w": 4
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "S:67",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/components/guide",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer/utils",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/marketplace",
+   "w": 1
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/utils",
+   "w": 2
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/hooks/use-*",
+   "w": 2
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/components/specialists",
+   "w": 3
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/components/tool-views",
+   "w": 1
+  },
+  {
+   "a": "S:43",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 4
+  },
+  {
+   "a": "S:43",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:43",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "U:renderer/state (misc)",
+   "w": 5
+  },
+  {
+   "a": "S:44",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "S:44",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:44",
+   "b": "U:main/sync-*",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 5
+  },
+  {
+   "a": "S:44",
+   "b": "S:18",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "U:renderer/components/tags",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "S:43",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:44",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:44",
+   "b": "S:51",
+   "w": 2
+  },
+  {
+   "a": "S:44",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "U:renderer/components/development",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "U:main/sync-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "U:renderer/hooks/use-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "S:7",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/sync-*",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "U:renderer/hooks/use-*",
+   "w": 3
+  },
+  {
+   "a": "S:31",
+   "b": "U:renderer/hooks (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:31",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:31",
+   "b": "U:renderer/state (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:31",
+   "b": "S:4",
+   "w": 2
+  },
+  {
+   "a": "S:31",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:31",
+   "b": "S:9",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:renderer/state (misc)",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:renderer/hooks/use-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:renderer/themes",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:other small dirs",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files)/theme-*",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "U:renderer/state (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:48",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 6
+  },
+  {
+   "a": "S:48",
+   "b": "S:43",
+   "w": 2
+  },
+  {
+   "a": "S:48",
+   "b": "U:renderer/utils",
+   "w": 4
+  },
+  {
+   "a": "S:48",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "U:renderer/components/tool-views",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "S:47",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "U:other small dirs",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/office",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "U:renderer/components/artifact-views",
+   "w": 1
+  },
+  {
+   "a": "S:18",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:18",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:18",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:54",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/themes",
+   "w": 4
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "S:6",
+   "w": 2
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "S:24",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:shared/artifacts",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "S:28",
+   "w": 7
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:other small dirs",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "S:4",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "S:27",
+   "w": 9
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/hooks/use-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/components/office",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/state (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "S:24",
+   "w": 10
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/components/context-menu",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/artifact-views",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "U:renderer/components/guide",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "S:24",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "S:0",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "S:10",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/assistant-settings",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:40",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 1
+  },
+  {
+   "a": "S:40",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:40",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "S:35",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 5
+  },
+  {
+   "a": "S:0",
+   "b": "S:50",
+   "w": 3
+  },
+  {
+   "a": "S:0",
+   "b": "S:46",
+   "w": 2
+  },
+  {
+   "a": "S:0",
+   "b": "S:43",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:35",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:40",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:24",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:1",
+   "w": 8
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "U:renderer/hooks/use-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "U:renderer/state (misc)",
+   "w": 12
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 12
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:32",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:44",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:57",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "U:renderer/components/mascot",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:24",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:0",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "U:shared/session-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/buddy",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:5",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:5",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:5",
+   "b": "U:renderer/components/context-menu",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/components/artifact-views",
+   "w": 2
+  },
+  {
+   "a": "S:27",
+   "b": "S:7",
+   "w": 5
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/components/context-menu",
+   "w": 9
+  },
+  {
+   "a": "S:27",
+   "b": "S:24",
+   "w": 12
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/components (root files)/session-*",
+   "w": 2
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/utils",
+   "w": 2
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "S:26",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "S:25",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "S:10",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "U:renderer/components/artifact-views",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "S:27",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/context-menu",
+   "b": "U:shared/doc-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/development",
+   "b": "S:24",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/development",
+   "b": "U:renderer/hooks/use-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/development",
+   "b": "S:7",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/development",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/development",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "S:1",
+   "w": 4
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/hooks/use-*",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/first-run",
+   "b": "S:24",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/first-run",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/first-run",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components (root files) (misc)",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "S:59",
+   "w": 13
+  },
+  {
+   "a": "S:59",
+   "b": "U:renderer/state (misc)",
+   "w": 4
+  },
+  {
+   "a": "S:59",
+   "b": "U:renderer/components/game",
+   "w": 11
+  },
+  {
+   "a": "S:59",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:59",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:59",
+   "b": "U:renderer/game",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/state (misc)",
+   "w": 9
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/game",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "S:24",
+   "w": 8
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/utils",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "S:57",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/components/mascot",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "U:renderer/components/office",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "S:9",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/game",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/git",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/git",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:33",
+   "b": "U:other small dirs",
+   "w": 1
+  },
+  {
+   "a": "S:33",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "S:33",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:33",
+   "b": "U:renderer/components/git",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/guide",
+   "b": "S:24",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/guide",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/header",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/header",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/components/marketplace",
+   "w": 3
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "U:shared (misc)",
+   "w": 12
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 12
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:24",
+   "w": 18
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "U:renderer/state (misc)",
+   "w": 8
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "U:renderer/hooks/use-*",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:1",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:58",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:10",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:26",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/marketplace",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:57",
+   "b": "U:renderer/components/mascot",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/mascot",
+   "b": "U:renderer/themes",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "U:renderer/components/guide",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "U:renderer/hooks/use-*",
+   "w": 2
+  },
+  {
+   "a": "S:0",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "S:0",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:50",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "S:50",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:29",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:29",
+   "b": "U:renderer/components/office",
+   "w": 2
+  },
+  {
+   "a": "S:29",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:29",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:29",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "S:24",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "U:renderer/components/artifact-views",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "S:29",
+   "w": 8
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "S:30",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "S:10",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "U:renderer/components/development",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/office",
+   "b": "U:renderer/components/pages",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "S:30",
+   "w": 8
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "S:24",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "U:renderer/components/buddy",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:renderer",
+   "w": 2
+  },
+  {
+   "a": "S:30",
+   "b": "S:24",
+   "w": 4
+  },
+  {
+   "a": "S:30",
+   "b": "U:renderer/components/office",
+   "w": 3
+  },
+  {
+   "a": "S:30",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "U:renderer/state/artifact-*",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "U:renderer/components/office",
+   "w": 2
+  },
+  {
+   "a": "S:30",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/pages",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "S:47",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:47",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:47",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:47",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:other small dirs",
+   "b": "U:renderer/components/tool-views",
+   "w": 1
+  },
+  {
+   "a": "S:48",
+   "b": "S:44",
+   "w": 1
+  },
+  {
+   "a": "S:46",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:46",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:51",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:24",
+   "w": 20
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/hooks/use-*",
+   "w": 13
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:10",
+   "w": 10
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:shared (misc)",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:4",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:1",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components (root files)/session-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:35",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components/tags",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components (root files)/resume-*",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:shared/artifacts",
+   "w": 10
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components (root files)/sync-*",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:26",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/state/artifact-*",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:30",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/utils",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "S:6",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components/context-menu",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components/artifact-views",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/components/project-view",
+   "b": "U:renderer/components/office",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/specialists",
+   "b": "S:1",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/specialists",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/specialists",
+   "b": "S:48",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/specialists",
+   "b": "S:47",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/specialists",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/specialists",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tags",
+   "b": "S:24",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components/tags",
+   "b": "U:renderer/hooks/use-*",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/components/tags",
+   "b": "U:shared (misc)",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components/tags",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/hooks/use-*",
+   "w": 7
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/utils",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:shared (misc)",
+   "w": 9
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/components/tags",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 8
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "S:48",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/components/specialists",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:other small dirs",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/state (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:renderer/state/artifact-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "U:shared/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/components/tool-views",
+   "b": "S:43",
+   "w": 1
+  },
+  {
+   "a": "S:25",
+   "b": "S:24",
+   "w": 2
+  },
+  {
+   "a": "S:25",
+   "b": "U:renderer/hooks/use-*",
+   "w": 2
+  },
+  {
+   "a": "S:24",
+   "b": "U:renderer/hooks/use-*",
+   "w": 3
+  },
+  {
+   "a": "S:24",
+   "b": "S:10",
+   "w": 1
+  },
+  {
+   "a": "S:24",
+   "b": "S:25",
+   "w": 3
+  },
+  {
+   "a": "S:24",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:24",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "S:7",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:7",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "S:7",
+   "b": "U:renderer/components/guide",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "S:24",
+   "w": 7
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/state (misc)",
+   "w": 8
+  },
+  {
+   "a": "S:9",
+   "b": "S:48",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 11
+  },
+  {
+   "a": "S:9",
+   "b": "S:28",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:1",
+   "w": 11
+  },
+  {
+   "a": "S:9",
+   "b": "S:46",
+   "w": 6
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/tags",
+   "w": 5
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/hooks/use-*",
+   "w": 3
+  },
+  {
+   "a": "S:9",
+   "b": "S:26",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:other small dirs",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "U:shared (misc)",
+   "w": 15
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/tool-views",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/game",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "U:shared/artifacts",
+   "w": 5
+  },
+  {
+   "a": "S:9",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:shared/doc-*",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:29",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:30",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:44",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:4",
+   "w": 5
+  },
+  {
+   "a": "S:9",
+   "b": "S:50",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:main/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:54",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/guide",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/project-view",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/buddy",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "S:57",
+   "w": 6
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/game",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/mascot",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "S:6",
+   "w": 3
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/state/artifact-*",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components/assistant-settings",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "U:renderer/components (root files)/resume-*",
+   "w": 1
+  },
+  {
+   "a": "S:10",
+   "b": "S:9",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/game",
+   "b": "S:59",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks (misc)",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:51",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/state (misc)",
+   "w": 28
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:44",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:36",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:1",
+   "w": 7
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/state/artifact-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:4",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/utils",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:31",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/game",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:59",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/components (root files)/theme-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:shared (misc)",
+   "w": 6
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:shared/artifacts",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/components (root files) (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/components/artifact-views",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:7",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:32",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/hooks (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:60",
+   "b": "U:renderer/state (misc)",
+   "w": 2
+  },
+  {
+   "a": "S:60",
+   "b": "S:59",
+   "w": 1
+  },
+  {
+   "a": "S:60",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "S:4",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:shared/session-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "S:43",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:main/sync-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "U:renderer/themes",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/hooks/use-*",
+   "b": "S:54",
+   "w": 2
+  },
+  {
+   "a": "S:9",
+   "b": "S:2",
+   "w": 1
+  },
+  {
+   "a": "S:9",
+   "b": "S:10",
+   "w": 2
+  },
+  {
+   "a": "S:32",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "U:renderer",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "U:renderer",
+   "b": "S:2",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "U:renderer",
+   "w": 2
+  },
+  {
+   "a": "S:2",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:main/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:renderer/hooks/use-*",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:4",
+   "w": 5
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:1",
+   "w": 13
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:36",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state/artifact-*",
+   "b": "U:shared/artifacts",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/state/artifact-*",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state/artifact-*",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "S:1",
+   "b": "U:renderer/state (misc)",
+   "w": 9
+  },
+  {
+   "a": "S:1",
+   "b": "S:44",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:44",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:53",
+   "w": 1
+  },
+  {
+   "a": "S:27",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:1",
+   "b": "U:shared/session-*",
+   "w": 1
+  },
+  {
+   "a": "S:1",
+   "b": "S:4",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:59",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/state/marketplace-*",
+   "b": "S:1",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state/marketplace-*",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/state/marketplace-*",
+   "b": "U:renderer/state (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:renderer/state/marketplace-*",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:renderer/utils",
+   "w": 3
+  },
+  {
+   "a": "S:32",
+   "b": "U:renderer/hooks/use-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:shared (misc)",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:7",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:renderer/components/context-menu",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:main/sync-*",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "U:renderer/themes",
+   "w": 4
+  },
+  {
+   "a": "U:renderer/state (misc)",
+   "b": "S:6",
+   "w": 1
+  },
+  {
+   "a": "S:1",
+   "b": "U:shared (misc)",
+   "w": 3
+  },
+  {
+   "a": "S:6",
+   "b": "U:renderer/themes",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/utils",
+   "b": "S:1",
+   "w": 3
+  },
+  {
+   "a": "U:renderer/utils",
+   "b": "S:24",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/utils",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/utils",
+   "b": "U:renderer/state (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:renderer/utils",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "S:7",
+   "b": "U:renderer",
+   "w": 1
+  },
+  {
+   "a": "S:7",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "S:30",
+   "b": "U:renderer/utils",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:renderer/state/marketplace-*",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/marketplace-*",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:4",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:59",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:1",
+   "w": 9
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:shared/doc-*",
+   "w": 1
+  },
+  {
+   "a": "U:shared/artifacts",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "S:29",
+   "w": 1
+  },
+  {
+   "a": "S:2",
+   "b": "U:shared/session-*",
+   "w": 3
+  },
+  {
+   "a": "S:46",
+   "b": "U:shared (misc)",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/artifacts",
+   "w": 5
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/project-*",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:33",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:28",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/chatsearch-index",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:30",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:3",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:50",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:53",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:46",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:39",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:29",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:0",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:shared/session-*",
+   "b": "S:1",
+   "w": 2
+  },
+  {
+   "a": "U:shared/session-*",
+   "b": "S:31",
+   "w": 1
+  },
+  {
+   "a": "U:shared/session-*",
+   "b": "U:shared (misc)",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/sync-*",
+   "w": 2
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/sync-spaces",
+   "w": 1
+  },
+  {
+   "a": "U:shared (misc)",
+   "b": "U:main/github-*",
+   "w": 3
+  },
+  {
+   "a": "S:1",
+   "b": "S:2",
+   "w": 1
+  }
+ ],
+ "groupings": {
+  "A": {
+   "U:renderer/components (root files) (misc)": "renderer/components (misc) + UI Workbench",
+   "S:9": "renderer/components (misc) + UI Workbench",
+   "S:6": "renderer/components (misc) + UI Workbench",
+   "S:4": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/project-view": "renderer/components (misc) + UI Workbench",
+   "U:renderer/hooks/use-*": "renderer/components (misc) + UI Workbench",
+   "U:renderer/state (misc)": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/marketplace": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components (root files)/sync-*": "renderer/components (misc) + UI Workbench",
+   "S:44": "renderer/components (misc) + UI Workbench",
+   "S:0": "renderer/components (misc) + UI Workbench",
+   "S:24": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/buddy": "renderer/components (misc) + UI Workbench",
+   "S:54": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components (root files)/resume-*": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components (root files)/session-*": "renderer/components (misc) + UI Workbench",
+   "S:31": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/tool-views": "renderer/components (misc) + UI Workbench",
+   "U:other small dirs": "renderer/components (misc) + UI Workbench",
+   "S:32": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components (root files)/theme-*": "renderer/components (misc) + UI Workbench",
+   "U:renderer/utils": "renderer/components (misc) + UI Workbench",
+   "S:57": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components (root files)/model-*": "renderer/components (misc) + UI Workbench",
+   "S:42": "renderer/components (misc) + UI Workbench",
+   "S:5": "renderer/components (misc) + UI Workbench",
+   "U:renderer/themes": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/tags": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/development": "renderer/components (misc) + UI Workbench",
+   "S:25": "renderer/components (misc) + UI Workbench",
+   "U:renderer": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/guide": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/assistant-settings": "renderer/components (misc) + UI Workbench",
+   "S:10": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/first-run": "renderer/components (misc) + UI Workbench",
+   "S:61": "renderer/components (misc) + UI Workbench",
+   "S:7": "renderer/components (misc) + UI Workbench",
+   "S:26": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/header": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/mascot": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/git": "renderer/components (misc) + UI Workbench",
+   "U:renderer/hooks (misc)": "renderer/components (misc) + UI Workbench",
+   "S:67": "renderer/components (misc) + UI Workbench",
+   "U:renderer/components/game": "renderer/components/game + Games arcade",
+   "S:59": "renderer/components/game + Games arcade",
+   "U:renderer/state/marketplace-*": "renderer/components/game + Games arcade",
+   "U:renderer/game": "renderer/components/game + Games arcade",
+   "S:27": "Document comments + renderer/components/artifact-views",
+   "U:renderer/components/artifact-views": "Document comments + renderer/components/artifact-views",
+   "S:29": "Document comments + renderer/components/artifact-views",
+   "U:main/artifacts": "Document comments + renderer/components/artifact-views",
+   "U:main/doc-comments": "Document comments + renderer/components/artifact-views",
+   "S:30": "Document comments + renderer/components/artifact-views",
+   "U:main/office": "Document comments + renderer/components/artifact-views",
+   "U:renderer/components/office": "Document comments + renderer/components/artifact-views",
+   "U:renderer/components/context-menu": "Document comments + renderer/components/artifact-views",
+   "S:28": "Document comments + renderer/components/artifact-views",
+   "U:renderer/components/pages": "Document comments + renderer/components/artifact-views",
+   "U:main/remote-*": "Document comments + renderer/components/artifact-views",
+   "U:renderer/state/artifact-*": "Document comments + renderer/components/artifact-views",
+   "U:shared/doc-*": "Document comments + renderer/components/artifact-views",
+   "U:shared/artifacts": "Document comments + renderer/components/artifact-views",
+   "S:2": "IPC bridge + main (misc)",
+   "U:main (misc)": "IPC bridge + main (misc)",
+   "S:1": "IPC bridge + main (misc)",
+   "S:53": "IPC bridge + main (misc)",
+   "U:shared (misc)": "IPC bridge + main (misc)",
+   "U:main/conversations": "IPC bridge + main (misc)",
+   "U:main/engine": "IPC bridge + main (misc)",
+   "U:main/sync-*": "IPC bridge + main (misc)",
+   "S:3": "IPC bridge + main (misc)",
+   "S:56": "IPC bridge + main (misc)",
+   "S:34": "IPC bridge + main (misc)",
+   "U:main/sync-spaces": "IPC bridge + main (misc)",
+   "S:18": "IPC bridge + main (misc)",
+   "U:main/buddy-*": "IPC bridge + main (misc)",
+   "S:36": "IPC bridge + main (misc)",
+   "U:main/theme-*": "IPC bridge + main (misc)",
+   "S:50": "IPC bridge + main (misc)",
+   "S:64": "IPC bridge + main (misc)",
+   "U:main/github-*": "IPC bridge + main (misc)",
+   "S:35": "IPC bridge + main (misc)",
+   "S:37": "IPC bridge + main (misc)",
+   "S:33": "IPC bridge + main (misc)",
+   "S:19": "IPC bridge + main (misc)",
+   "U:main/models": "IPC bridge + main (misc)",
+   "S:38": "IPC bridge + main (misc)",
+   "S:51": "IPC bridge + main (misc)",
+   "S:65": "IPC bridge + main (misc)",
+   "S:60": "IPC bridge + main (misc)",
+   "U:main/chatsearch-index": "IPC bridge + main (misc)",
+   "S:52": "IPC bridge + main (misc)",
+   "S:8": "IPC bridge + main (misc)",
+   "S:40": "IPC bridge + main (misc)",
+   "S:58": "IPC bridge + main (misc)",
+   "U:main/marketplace-*": "IPC bridge + main (misc)",
+   "U:shared/session-*": "IPC bridge + main (misc)",
+   "U:main/project-*": "IPC bridge + main (misc)",
+   "S:45": "IPC bridge + main (misc)",
+   "S:17": "IPC bridge + main (misc)",
+   "S:14": "IPC bridge + main (misc)",
+   "U:main/harness": "main/harness + Native runtime",
+   "S:39": "main/harness + Native runtime",
+   "S:43": "main/harness + Native runtime",
+   "S:46": "main/harness + Native runtime",
+   "S:41": "main/harness + Native runtime",
+   "S:49": "main/harness + Native runtime",
+   "S:47": "main/harness + Native runtime",
+   "S:48": "main/harness + Native runtime",
+   "U:main/providers": "main/harness + Native runtime",
+   "U:renderer/components/specialists": "main/harness + Native runtime",
+   "S:11": "No code links (dev tools, workers)",
+   "S:12": "No code links (dev tools, workers)",
+   "S:13": "No code links (dev tools, workers)",
+   "S:15": "No code links (dev tools, workers)",
+   "S:16": "No code links (dev tools, workers)",
+   "S:20": "No code links (dev tools, workers)",
+   "S:21": "No code links (dev tools, workers)",
+   "S:22": "No code links (dev tools, workers)",
+   "S:23": "No code links (dev tools, workers)",
+   "S:55": "No code links (dev tools, workers)",
+   "S:62": "No code links (dev tools, workers)",
+   "S:63": "No code links (dev tools, workers)",
+   "S:66": "No code links (dev tools, workers)"
+  },
+  "B": {
+   "S:61": "Foundations",
+   "S:59": "Social",
+   "S:28": "Projects & files",
+   "S:38": "Chat & agents",
+   "S:42": "Chat & agents",
+   "S:27": "Projects & files",
+   "S:58": "Marketplace",
+   "S:65": "Foundations",
+   "S:37": "Sync & devices",
+   "S:35": "Chat & agents",
+   "S:36": "Foundations",
+   "S:19": "Foundations",
+   "S:3": "Foundations",
+   "S:53": "Chat & agents",
+   "S:56": "Foundations",
+   "S:33": "Projects & files",
+   "S:41": "Chat & agents",
+   "S:47": "Chat & agents",
+   "S:39": "Chat & agents",
+   "S:40": "Chat & agents",
+   "S:49": "Workshop",
+   "S:48": "Chat & agents",
+   "S:46": "Chat & agents",
+   "S:44": "Chat & agents",
+   "S:43": "Chat & agents",
+   "S:2": "Foundations",
+   "S:18": "Foundations",
+   "S:32": "Chat & agents",
+   "S:29": "Projects & files",
+   "S:30": "Pages",
+   "S:8": "Foundations",
+   "S:14": "Workshop",
+   "S:4": "Sync & devices",
+   "S:60": "Social",
+   "S:0": "Chat & agents",
+   "S:51": "Chat & agents",
+   "S:50": "Chat & agents",
+   "S:52": "Chat & agents",
+   "S:31": "Chat & agents",
+   "S:64": "Marketplace",
+   "S:45": "Chat & agents",
+   "S:34": "Sync & devices",
+   "S:17": "Workshop",
+   "S:1": "Chat & agents",
+   "S:54": "Chat & agents",
+   "S:6": "Foundations",
+   "S:5": "Chat & agents",
+   "S:26": "Foundations",
+   "S:57": "Foundations",
+   "S:24": "Foundations",
+   "S:25": "Foundations",
+   "S:7": "Foundations",
+   "S:9": "Workshop",
+   "S:10": "Workshop",
+   "S:67": "Workshop",
+   "U:main/buddy-*": "Chat & agents",
+   "U:main/github-*": "Sync & devices",
+   "U:main/marketplace-*": "Marketplace",
+   "U:main/project-*": "Projects & files",
+   "U:main/remote-*": "Sync & devices",
+   "U:main/sync-*": "Sync & devices",
+   "U:main/theme-*": "Foundations",
+   "U:main (misc)": "Foundations",
+   "U:main/artifacts": "Projects & files",
+   "U:main/chatsearch-index": "Chat & agents",
+   "U:main/conversations": "Foundations",
+   "U:main/doc-comments": "Projects & files",
+   "U:main/engine": "Chat & agents",
+   "U:other small dirs": "Foundations",
+   "U:main/harness": "Chat & agents",
+   "U:main/models": "Chat & agents",
+   "U:main/office": "Projects & files",
+   "U:main/providers": "Chat & agents",
+   "U:main/sync-spaces": "Sync & devices",
+   "U:renderer": "Foundations",
+   "U:renderer/components (root files)/model-*": "Chat & agents",
+   "U:renderer/components (root files)/resume-*": "Sync & devices",
+   "U:renderer/components (root files)/session-*": "Chat & agents",
+   "U:renderer/components (root files)/sync-*": "Sync & devices",
+   "U:renderer/components (root files)/theme-*": "Foundations",
+   "U:renderer/components (root files) (misc)": "Foundations",
+   "U:renderer/components/artifact-views": "Projects & files",
+   "U:renderer/components/assistant-settings": "Foundations",
+   "U:renderer/components/buddy": "Chat & agents",
+   "U:renderer/components/context-menu": "Foundations",
+   "U:renderer/components/development": "Foundations",
+   "U:renderer/components/first-run": "Foundations",
+   "U:renderer/components/game": "Social",
+   "U:renderer/components/git": "Projects & files",
+   "U:renderer/components/guide": "Foundations",
+   "U:renderer/components/header": "Foundations",
+   "U:renderer/components/marketplace": "Marketplace",
+   "U:renderer/components/mascot": "Foundations",
+   "U:renderer/components/office": "Projects & files",
+   "U:renderer/components/pages": "Pages",
+   "U:renderer/components/project-view": "Projects & files",
+   "U:renderer/components/specialists": "Chat & agents",
+   "U:renderer/components/tags": "Chat & agents",
+   "U:renderer/components/tool-views": "Chat & agents",
+   "U:renderer/game": "Social",
+   "U:renderer/hooks/use-*": "Foundations",
+   "U:renderer/hooks (misc)": "Foundations",
+   "U:renderer/state/artifact-*": "Projects & files",
+   "U:renderer/state/marketplace-*": "Marketplace",
+   "U:renderer/state (misc)": "Foundations",
+   "U:renderer/themes": "Foundations",
+   "U:renderer/utils": "Foundations",
+   "U:shared/doc-*": "Projects & files",
+   "U:shared/session-*": "Chat & agents",
+   "U:shared (misc)": "Foundations",
+   "U:shared/artifacts": "Projects & files",
+   "S:11": "Workshop",
+   "S:12": "Workshop",
+   "S:13": "Workshop",
+   "S:15": "Workshop",
+   "S:16": "Workshop",
+   "S:20": "Workshop",
+   "S:21": "Workshop",
+   "S:22": "Workshop",
+   "S:23": "Workshop",
+   "S:55": "Foundations",
+   "S:62": "Workshop",
+   "S:63": "Marketplace",
+   "S:66": "Workshop"
+  },
+  "C": {
+   "S:61": "Backend & experience",
+   "S:59": "Backend & experience",
+   "S:28": "Backend & experience",
+   "S:38": "Backend & experience",
+   "S:42": "Harness engineering",
+   "S:27": "Backend & experience",
+   "S:58": "Integrations & plugins",
+   "S:65": "Integrations & plugins",
+   "S:37": "Backend & experience",
+   "S:35": "Backend & experience",
+   "S:36": "Backend & experience",
+   "S:19": "Backend & experience",
+   "S:3": "Backend & experience",
+   "S:53": "Harness engineering",
+   "S:56": "Backend & experience",
+   "S:33": "Backend & experience",
+   "S:41": "Harness engineering",
+   "S:47": "Harness engineering",
+   "S:39": "Harness engineering",
+   "S:40": "Harness engineering",
+   "S:49": "Harness engineering",
+   "S:48": "Harness engineering",
+   "S:46": "Harness engineering",
+   "S:44": "UI",
+   "S:43": "Harness engineering",
+   "S:2": "Backend & experience",
+   "S:18": "Backend & experience",
+   "S:32": "UI",
+   "S:29": "Integrations & plugins",
+   "S:30": "Integrations & plugins",
+   "S:8": "UI",
+   "S:14": "Workflow engineering",
+   "S:4": "Backend & experience",
+   "S:60": "Backend & experience",
+   "S:0": "Harness engineering",
+   "S:51": "Integrations & plugins",
+   "S:50": "Integrations & plugins",
+   "S:52": "Integrations & plugins",
+   "S:31": "Backend & experience",
+   "S:64": "Integrations & plugins",
+   "S:45": "Backend & experience",
+   "S:34": "Backend & experience",
+   "S:17": "Workflow engineering",
+   "S:1": "Backend & experience",
+   "S:54": "UI",
+   "S:6": "UI",
+   "S:5": "UI",
+   "S:26": "UI",
+   "S:57": "UI",
+   "S:24": "UI",
+   "S:25": "UI",
+   "S:7": "UI",
+   "S:9": "Workflow engineering",
+   "S:10": "Workflow engineering",
+   "S:67": "Workflow engineering",
+   "U:main/buddy-*": "UI",
+   "U:main/github-*": "Backend & experience",
+   "U:main/marketplace-*": "Integrations & plugins",
+   "U:main/project-*": "Backend & experience",
+   "U:main/remote-*": "Backend & experience",
+   "U:main/sync-*": "Backend & experience",
+   "U:main/theme-*": "UI",
+   "U:main (misc)": "Backend & experience",
+   "U:main/artifacts": "Backend & experience",
+   "U:main/chatsearch-index": "Backend & experience",
+   "U:main/conversations": "Backend & experience",
+   "U:main/doc-comments": "Backend & experience",
+   "U:main/engine": "Harness engineering",
+   "U:other small dirs": "Backend & experience",
+   "U:main/harness": "Harness engineering",
+   "U:main/models": "Harness engineering",
+   "U:main/office": "Integrations & plugins",
+   "U:main/providers": "Harness engineering",
+   "U:main/sync-spaces": "Backend & experience",
+   "U:renderer": "UI",
+   "U:renderer/components (root files)/model-*": "UI",
+   "U:renderer/components (root files)/resume-*": "Backend & experience",
+   "U:renderer/components (root files)/session-*": "UI",
+   "U:renderer/components (root files)/sync-*": "UI",
+   "U:renderer/components (root files)/theme-*": "UI",
+   "U:renderer/components (root files) (misc)": "UI",
+   "U:renderer/components/artifact-views": "UI",
+   "U:renderer/components/assistant-settings": "UI",
+   "U:renderer/components/buddy": "UI",
+   "U:renderer/components/context-menu": "UI",
+   "U:renderer/components/development": "UI",
+   "U:renderer/components/first-run": "UI",
+   "U:renderer/components/game": "UI",
+   "U:renderer/components/git": "Backend & experience",
+   "U:renderer/components/guide": "UI",
+   "U:renderer/components/header": "UI",
+   "U:renderer/components/marketplace": "Integrations & plugins",
+   "U:renderer/components/mascot": "UI",
+   "U:renderer/components/office": "Integrations & plugins",
+   "U:renderer/components/pages": "Integrations & plugins",
+   "U:renderer/components/project-view": "UI",
+   "U:renderer/components/specialists": "Harness engineering",
+   "U:renderer/components/tags": "UI",
+   "U:renderer/components/tool-views": "UI",
+   "U:renderer/game": "UI",
+   "U:renderer/hooks/use-*": "UI",
+   "U:renderer/hooks (misc)": "UI",
+   "U:renderer/state/artifact-*": "UI",
+   "U:renderer/state/marketplace-*": "Integrations & plugins",
+   "U:renderer/state (misc)": "UI",
+   "U:renderer/themes": "UI",
+   "U:renderer/utils": "UI",
+   "U:shared/doc-*": "Backend & experience",
+   "U:shared/session-*": "Backend & experience",
+   "U:shared (misc)": "Backend & experience",
+   "U:shared/artifacts": "Backend & experience",
+   "S:11": "Workflow engineering",
+   "S:12": "Workflow engineering",
+   "S:13": "Workflow engineering",
+   "S:15": "Workflow engineering",
+   "S:16": "Workflow engineering",
+   "S:20": "Workflow engineering",
+   "S:21": "Workflow engineering",
+   "S:22": "Workflow engineering",
+   "S:23": "Workflow engineering",
+   "S:55": "Backend & experience",
+   "S:62": "Workflow engineering",
+   "S:63": "Integrations & plugins",
+   "S:66": "Integrations & plugins"
+  }
+ },
+ "metrics": {
+  "A": {
+   "groups": 6,
+   "within": 2140,
+   "across": 988,
+   "withinPct": 68.4,
+   "seams": [
+    {
+     "seam": "IPC bridge + main (misc) <> renderer/components (misc) + UI Workbench",
+     "imports": 384,
+     "top": [
+      "IPC bridge -> Remote access (18)",
+      "unclaimed: renderer/components (misc) -> unclaimed: shared (misc) (17)",
+      "UI Workbench -> unclaimed: shared (misc) (15)"
+     ]
+    },
+    {
+     "seam": "Document comments + renderer/components/artifact-views <> renderer/components (misc) + UI Workbench",
+     "imports": 200,
+     "top": [
+      "Document comments -> UI control primitives (12)",
+      "unclaimed: renderer/components/artifact-views -> UI control primitives (10)",
+      "unclaimed: renderer/components/project-view -> unclaimed: shared/artifacts (10)"
+     ]
+    },
+    {
+     "seam": "IPC bridge + main (misc) <> main/harness + Native runtime",
+     "imports": 128,
+     "top": [
+      "The runtime -> unclaimed: main/harness (10)",
+      "Specialists -> Chat & transcript (6)",
+      "The runtime -> Native runtime (5)"
+     ]
+    }
+   ]
+  },
+  "B": {
+   "groups": 8,
+   "within": 1375,
+   "across": 1753,
+   "withinPct": 44,
+   "seams": [
+    {
+     "seam": "Chat & agents <> Foundations",
+     "imports": 672,
+     "top": [
+      "unclaimed: renderer/components (misc) -> Chat & transcript (13)",
+      "unclaimed: renderer/state (misc) -> Chat & transcript (13)",
+      "IPC bridge -> Chat & transcript (12)"
+     ]
+    },
+    {
+     "seam": "Foundations <> Projects & files",
+     "imports": 270,
+     "top": [
+      "unclaimed: renderer/components/project-view -> UI control primitives (20)",
+      "IPC bridge -> unclaimed: main/artifacts (17)",
+      "unclaimed: renderer/components/project-view -> unclaimed: renderer/hooks/use-* (13)"
+     ]
+    },
+    {
+     "seam": "Foundations <> Sync & devices",
+     "imports": 213,
+     "top": [
+      "IPC bridge -> Remote access (18)",
+      "unclaimed: renderer/components (misc) -> Remote access (16)",
+      "Remote access -> unclaimed: shared (misc) (8)"
+     ]
+    }
+   ]
+  },
+  "C": {
+   "groups": 5,
+   "within": 1816,
+   "across": 1312,
+   "withinPct": 58.1,
+   "seams": [
+    {
+     "seam": "Backend & experience <> UI",
+     "imports": 536,
+     "top": [
+      "unclaimed: renderer/components (misc) -> unclaimed: shared (misc) (17)",
+      "unclaimed: renderer/components (misc) -> Remote access (16)",
+      "unclaimed: renderer/components (misc) -> Chat & transcript (13)"
+     ]
+    },
+    {
+     "seam": "Backend & experience <> Harness engineering",
+     "imports": 203,
+     "top": [
+      "The runtime -> unclaimed: main/harness (10)",
+      "Local engine & models -> unclaimed: shared (misc) (9)",
+      "unclaimed: main/models -> unclaimed: shared (misc) (7)"
+     ]
+    },
+    {
+     "seam": "Backend & experience <> Integrations & plugins",
+     "imports": 147,
+     "top": [
+      "unclaimed: renderer/components/marketplace -> unclaimed: shared (misc) (12)",
+      "IPC bridge -> unclaimed: main/marketplace-* (8)",
+      "unclaimed: main/office -> App logging + bug reports (5)"
+     ]
+    }
+   ]
+  }
+ },
+ "sizes": {
+  "A": {
+   "renderer/components (misc) + UI Workbench": {
+    "nodes": 43,
+    "files": 520,
+    "lines": 123613
+   },
+   "renderer/components/game + Games arcade": {
+    "nodes": 4,
+    "files": 31,
+    "lines": 7100
+   },
+   "Document comments + renderer/components/artifact-views": {
+    "nodes": 15,
+    "files": 179,
+    "lines": 39769
+   },
+   "IPC bridge + main (misc)": {
+    "nodes": 39,
+    "files": 357,
+    "lines": 87817
+   },
+   "main/harness + Native runtime": {
+    "nodes": 10,
+    "files": 160,
+    "lines": 44788
+   },
+   "No code links (dev tools, workers)": {
+    "nodes": 13,
+    "files": 0,
+    "lines": 0
+   }
+  },
+  "B": {
+   "Foundations": {
+    "nodes": 36,
+    "files": 538,
+    "lines": 104234
+   },
+   "Social": {
+    "nodes": 4,
+    "files": 31,
+    "lines": 6767
+   },
+   "Projects & files": {
+    "nodes": 15,
+    "files": 178,
+    "lines": 40893
+   },
+   "Chat & agents": {
+    "nodes": 35,
+    "files": 309,
+    "lines": 92095
+   },
+   "Marketplace": {
+    "nodes": 6,
+    "files": 33,
+    "lines": 8354
+   },
+   "Sync & devices": {
+    "nodes": 9,
+    "files": 67,
+    "lines": 23631
+   },
+   "Workshop": {
+    "nodes": 17,
+    "files": 70,
+    "lines": 23086
+   },
+   "Pages": {
+    "nodes": 2,
+    "files": 21,
+    "lines": 4027
+   }
+  },
+  "C": {
+   "Backend & experience": {
+    "nodes": 38,
+    "files": 423,
+    "lines": 103072
+   },
+   "Harness engineering": {
+    "nodes": 16,
+    "files": 194,
+    "lines": 59802
+   },
+   "Integrations & plugins": {
+    "nodes": 16,
+    "files": 104,
+    "lines": 24053
+   },
+   "UI": {
+    "nodes": 39,
+    "files": 462,
+    "lines": 95763
+   },
+   "Workflow engineering": {
+    "nodes": 15,
+    "files": 64,
+    "lines": 20397
+   }
+  }
+ },
+ "hard": [
+  {
+   "id": "S:61",
+   "label": "App telemetry",
+   "files": 3,
+   "B": "Foundations",
+   "C": "Backend & experience",
+   "why": "usage counting: not a user feature, not dev tooling"
+  },
+  {
+   "id": "S:59",
+   "label": "Games arcade",
+   "files": 10,
+   "B": "Social",
+   "C": "Backend & experience",
+   "why": "games are a feature; no stream owns features"
+  },
+  {
+   "id": "S:28",
+   "label": "Artifact viewer",
+   "files": 9,
+   "B": "Projects & files",
+   "C": "Backend & experience",
+   "why": "file feature, no matching work stream"
+  },
+  {
+   "id": "S:42",
+   "label": "What the assistant was given",
+   "files": 4,
+   "B": "Chat & agents",
+   "C": "Harness engineering",
+   "why": "a screen showing harness state"
+  },
+  {
+   "id": "S:27",
+   "label": "Document comments",
+   "files": 30,
+   "B": "Projects & files",
+   "C": "Backend & experience",
+   "why": "file feature, no matching work stream (files is not one of the five streams)"
+  },
+  {
+   "id": "S:65",
+   "label": "Claude Code hooks the app registers",
+   "files": 5,
+   "B": "Foundations",
+   "C": "Integrations & plugins",
+   "why": "hooks wire the app into Claude Code"
+  },
+  {
+   "id": "S:37",
+   "label": "Conversation handoff between computers",
+   "files": 7,
+   "B": "Sync & devices",
+   "C": "Backend & experience",
+   "why": "chat handoff is both chat and device sync"
+  },
+  {
+   "id": "S:49",
+   "label": "Harness evaluator",
+   "files": 6,
+   "B": "Workshop",
+   "C": "Harness engineering",
+   "why": "evaluator is a dev tool whose subject is the harness"
+  },
+  {
+   "id": "S:44",
+   "label": "Status bar & /usage",
+   "files": 7,
+   "B": "Chat & agents",
+   "C": "UI",
+   "why": "a status screen fed by harness numbers"
+  },
+  {
+   "id": "S:18",
+   "label": "In-app updates",
+   "files": 7,
+   "B": "Foundations",
+   "C": "Backend & experience",
+   "why": "update check is app plumbing yet a visible button"
+  },
+  {
+   "id": "S:32",
+   "label": "Claude Code prompts",
+   "files": 10,
+   "B": "Chat & agents",
+   "C": "UI",
+   "why": "permission cards are chat UI but answer terminal menus"
+  },
+  {
+   "id": "S:29",
+   "label": "Office",
+   "files": 7,
+   "B": "Projects & files",
+   "C": "Integrations & plugins",
+   "why": "separate add-on, but a file feature to users"
+  },
+  {
+   "id": "S:30",
+   "label": "YouCoded Pages",
+   "files": 12,
+   "B": "Pages",
+   "C": "Integrations & plugins",
+   "why": "pages are built by a plugin skill but run as part of the app"
+  },
+  {
+   "id": "S:8",
+   "label": "Multi-window session detach",
+   "files": 4,
+   "B": "Foundations",
+   "C": "UI",
+   "why": "window management: neither chat nor a standalone system"
+  },
+  {
+   "id": "S:0",
+   "label": "Model switcher recommendations",
+   "files": 4,
+   "B": "Chat & agents",
+   "C": "Harness engineering",
+   "why": "model picker UI is renderer, but its content is provider/model data"
+  },
+  {
+   "id": "S:51",
+   "label": "Sign in with ChatGPT",
+   "files": 3,
+   "B": "Chat & agents",
+   "C": "Integrations & plugins",
+   "why": "sign-in is a connection but sits inside chat setup"
+  },
+  {
+   "id": "S:50",
+   "label": "Claude Code's own sign-in",
+   "files": 4,
+   "B": "Chat & agents",
+   "C": "Integrations & plugins",
+   "why": "sign-in is a connection but sits inside chat setup"
+  },
+  {
+   "id": "S:52",
+   "label": "OpenRouter key check & Sign in with OpenRouter",
+   "files": 4,
+   "B": "Chat & agents",
+   "C": "Integrations & plugins",
+   "why": "sign-in is a connection but sits inside chat setup"
+  },
+  {
+   "id": "S:45",
+   "label": "Status push",
+   "files": 1,
+   "B": "Chat & agents",
+   "C": "Backend & experience",
+   "why": "tiny feed for the status bar"
+  },
+  {
+   "id": "S:17",
+   "label": "Desktop packaging + release",
+   "files": 1,
+   "B": "Workshop",
+   "C": "Workflow engineering",
+   "why": "packaging is dev tooling but ships to every user"
+  },
+  {
+   "id": "S:1",
+   "label": "Chat & transcript",
+   "files": 12,
+   "B": "Chat & agents",
+   "C": "Backend & experience",
+   "why": "chat reducer is renderer code but the transcript is conversation data"
+  },
+  {
+   "id": "S:54",
+   "label": "Voice prompting",
+   "files": 6,
+   "B": "Chat & agents",
+   "C": "UI",
+   "why": "voice is input UI, but also uses local models"
+  },
+  {
+   "id": "U:main/buddy-*",
+   "label": "unclaimed: main/buddy-*",
+   "files": 6,
+   "B": "Chat & agents",
+   "C": "UI",
+   "why": "the floating buddy window: chat surface, or its own thing?"
+  },
+  {
+   "id": "U:main (misc)",
+   "label": "unclaimed: main (misc)",
+   "files": 59,
+   "B": "Foundations",
+   "C": "Backend & experience",
+   "why": "59 loose top-level files; mixed purposes"
+  },
+  {
+   "id": "U:main/conversations",
+   "label": "unclaimed: main/conversations",
+   "files": 14,
+   "B": "Foundations",
+   "C": "Backend & experience",
+   "why": "conversation store is Foundations by definition but is chat data"
+  },
+  {
+   "id": "U:other small dirs",
+   "label": "unclaimed: other small dirs",
+   "files": 12,
+   "B": "Foundations",
+   "C": "Backend & experience",
+   "why": "82 leftover files from many small folders"
+  },
+  {
+   "id": "U:main/providers",
+   "label": "unclaimed: main/providers",
+   "files": 12,
+   "B": "Chat & agents",
+   "C": "Harness engineering",
+   "why": "providers: a connection (Integrations) or the brain (Harness)?"
+  },
+  {
+   "id": "U:renderer/components (root files)/resume-*",
+   "label": "unclaimed: renderer/components/resume-*",
+   "files": 4,
+   "B": "Sync & devices",
+   "C": "Backend & experience",
+   "why": "resume screens: chat or handoff?"
+  },
+  {
+   "id": "U:renderer/components (root files) (misc)",
+   "label": "unclaimed: renderer/components (misc)",
+   "files": 92,
+   "B": "Foundations",
+   "C": "UI",
+   "why": "92 loose components of every kind (chat, settings, dialogs)"
+  },
+  {
+   "id": "U:renderer/components/buddy",
+   "label": "unclaimed: renderer/components/buddy",
+   "files": 12,
+   "B": "Chat & agents",
+   "C": "UI",
+   "why": "the floating buddy window: chat surface, or its own thing?"
+  },
+  {
+   "id": "U:renderer/components/development",
+   "label": "unclaimed: renderer/components/development",
+   "files": 6,
+   "B": "Foundations",
+   "C": "UI",
+   "why": "bug-report and contribute popups: app chrome or workflow?"
+  },
+  {
+   "id": "U:renderer/components/tags",
+   "label": "unclaimed: renderer/components/tags",
+   "files": 8,
+   "B": "Chat & agents",
+   "C": "UI",
+   "why": "session tags: chat organisation or projects?"
+  },
+  {
+   "id": "U:renderer/hooks/use-*",
+   "label": "unclaimed: renderer/hooks/use-*",
+   "files": 53,
+   "B": "Foundations",
+   "C": "UI",
+   "why": "53 hooks that serve every feature"
+  },
+  {
+   "id": "U:renderer/hooks (misc)",
+   "label": "unclaimed: renderer/hooks (misc)",
+   "files": 1,
+   "B": "Foundations",
+   "C": "UI",
+   "why": "53 hooks that serve every feature"
+  },
+  {
+   "id": "U:renderer/state (misc)",
+   "label": "unclaimed: renderer/state (misc)",
+   "files": 33,
+   "B": "Foundations",
+   "C": "UI",
+   "why": "33 state files: mostly chat, but filed as shared"
+  },
+  {
+   "id": "S:15",
+   "label": "Luna live cache-measurement rig",
+   "files": 0,
+   "B": "Workshop",
+   "C": "Workflow engineering",
+   "why": "a test rig, but it measures prompt caching (a harness topic)"
+  },
+  {
+   "id": "S:55",
+   "label": "Android runtime",
+   "files": 0,
+   "B": "Foundations",
+   "C": "Backend & experience",
+   "why": "Android is out of the desktop graph"
+  },
+  {
+   "id": "S:62",
+   "label": "Website analytics",
+   "files": 0,
+   "B": "Workshop",
+   "C": "Workflow engineering",
+   "why": "a website measure, not the app"
+  },
+  {
+   "id": "S:66",
+   "label": "Archived youcoded-core plugin",
+   "files": 0,
+   "B": "Workshop",
+   "C": "Integrations & plugins",
+   "why": "archived history"
+  }
+ ]
+}
