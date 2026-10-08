@@ -213,6 +213,38 @@ Contribute: `runs/contribute-before` vs `runs/st4-after`).
 4. **The highlight change is subtle at 15% tint** — the before/after differ by a thin strip of
    pixels; a pointer-state slide would read better as a zoomed close-up.
 
+## Round 5 (2026-10-08) — after Destin's submit-ticket-4 answers; building the proposals
+
+Deck `submit-ticket-5.json`. Hover pictures at 1× (`runs/r5-before-1x`/`r5-after-1x`), the rest at
+1.5× (`runs/r5-before`/`r5-after`, `r5-ms-*` for Local models).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R5-1 | The shared fold lights its WHOLE box while its header is pointed at (`has-[>button:hover]` on the box); a clickable header row (`SettingRow header`) takes no tint of its own. Guard rewritten in `tests/FoldRow.test.tsx`, red on round 4's fold. | ST4-2 note. |
+| R5-2 | **Sweep for the same hard edge** (`rg "aria-expanded"` + `hover:bg-` over `src/renderer/components`, then by eye): Permissions folder cards (fixed — the card lights, header untinted), Session context skills (fixed by moving onto FoldRow; also lost a divider line), the new-session memory warning (fixed, FoldRow), Git review commit cards (`GitReviewCard.tsx`, own component, header `hover:bg-inset` edge to edge — not fixed, asked ST5-Q2), Open tasks' "Inactive" heading (a full-width `border-t` line — not fixed, asked ST5-Q2). RepoCard (model cards) has no header tint — fine. Tool cards / chat bubbles / SubagentTimeline: outside the guide ("Not covered yet"). | ST4-2 "check other screens/menus". |
+| R5-3 | **Hand-built folds moved onto FoldRow:** Session context (rules ExpandRow + skill cards; `DetailCardCollapsible` deleted), Appearance (Additional customizations, Fine-tune glass), Local engine Advanced, a model's Advanced, the memory warning (RuntimeBinding). FoldRow gained `flush` for content with its own padding. Not moved: RepoCard ×3 (already contains its content, no tint), GitReviewCard ×2 (asked), SubagentTimeline (tool view, exempt). With round 4's walkthrough that is all 14 accounted for. | Proposal 1. |
+| R5-4 | **Tag tints measured** on all 14 themes (`dev/pills` sheet, pixel ΔE fill vs surface, table in `status-tag-tints.txt`): green 8.4–18 (reads grey on pale themes), neutral in a card 2.5–8.7 (under 5 on Light, Dark, Midnight, Crème, Devil's Garden, Morning Rounds, YouCoded Night). Proposed stronger tints behind `?pillTint=strong` (`pill-practice.ts`), not shipped: lowest green 26.9, neutral 5.9. ST5-10. | Proposal 9. |
+| R5-5 | Guide: "a review before sending" recipe; "when an action finishes, keep its subject"; "a failed action replaces its buttons"; "choosing what goes with something"; "say what happens on the user's computer"; the fold highlight rule; one checklist line. | Proposals 2–7. |
+| R5-6 | MAP's Help & feedback row links the signed 2026-09-08 contract and says R18/R21 were replaced. | Proposal 22. |
+| R5-7 | Contribute's two failures are the notice box in place of the buttons, inside the card, with Try again (Back to ticket when from a ticket); `ErrorState` no longer used there. 2 guards, red on round 4. | Coordinator item 6. |
+| R5-8 | List in a card: asked as ST5-Q1, no rule written. | Proposal 8. |
+
+### Not pictured
+- **The memory warning** (new-session form, a local model too big): no practice screen reaches
+  it (it needs the local provider and a 14B model chosen in the form). Covered by its tests only.
+- **Git review cards and Open tasks' line**: no practice screen (no git repo; Open tasks is empty
+  in the practice app).
+
+### Tooling friction this round
+1. **Measuring a colour needed a purpose-built sheet** (`dev/pills`, fixed positions, 1×) and a
+   throwaway pixel script; there is no "sample these points across themes" in shoot.
+2. **`--themes all` is only six themes** — YouCoded, YouCoded Night and six community themes were
+   missing; I listed all 14 by hand.
+3. **A decide slide with a two-picture composite squeezes its text** into three thin columns and
+   pushes the options below the fold; and its percent `box` had to be found by trial (three tries).
+4. **A fold that is already open on a screen can't be "opened" by an open step** — the click closes
+   it (model settings); the screen list has no way to say "already open".
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Guide: "a review before sending" recipe** — the item as read text in a top card (with its
@@ -262,3 +294,12 @@ Added after round 4:
 - **shoot: a screen entry can carry its own scale** (`scale: 1` for hover states).
 - **shoot: a screen state may name the mark it expects** when one dialog hands over to another.
 - **Guide: a short list of facts inside a card** — allowed or not (Contribute uses three bullets).
+
+Added after round 5:
+- **shoot: sample named points across themes** (a `--measure` that writes colours at given
+  coordinates per picture) — would have replaced the throwaway pixel script.
+- **shoot: `--themes all` means every theme the workbench has** (14, not 6).
+- **deck: a decide slide gives its text room** when its picture is a composite; and a `box` can be
+  given in the screen's own pixels.
+- **Fix the two sweep finds** if Destin says yes on ST5-Q2 (Git review cards, Open tasks line), and
+  give them practice states.

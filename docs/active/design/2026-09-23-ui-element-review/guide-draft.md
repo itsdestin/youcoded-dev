@@ -103,6 +103,11 @@ underline under its words. Labels over short settings groups stay plain.
 - A count beside a label or tab is the word then a smaller, fainter number: "Files 17". In a
   summary line it is a bold number then a grey word: "17 files". Never "(17)" and never a
   number in a bubble.
+- **Say what happens on the user's computer, not how it works.** A developer action is named by
+  its effect — "downloads YouCoded's code (about 1 GB, the first time)", "opens a new
+  conversation" — never by its mechanism ("a working copy", "set up a development
+  workspace"). Size and time come with any download. (submit-ticket-2#ST2-7, #ST2-11:
+  "what does that even mean"; submit-ticket-3#ST3-Q1 note.)
 
 ### Spacing
 - One scale: **4 · 8 · 12 · 16 · 24 px.** 4 between an icon and its label; 8 between
@@ -170,6 +175,14 @@ underline under its words. Labels over short settings groups stay plain.
 - **A folded box opens inside itself.** What it reveals appears within the same box, under its
   header row — never as a separate card or loose text below it (decisions "Folded box contains
   its own content", submit-ticket-1#ST-3). Example: the ticket review's Optional AI help.
+- **Pointing at a folded box lights the whole box** — its own rounded shape, open or closed —
+  never a strip across its header that ends in a hard line (submit-ticket-3#ST3-5,
+  submit-ticket-4#ST4-2). The shared fold does it; a hand-built one is moved onto it.
+- **Choosing what goes with something** (the details a ticket carries, what a download
+  includes): one setting row per choice, **its switch at the right**, and **a plain line under
+  the title saying what turning it on adds** — no (i) to explain it. **A choice that does not
+  apply is not shown** (no error to attach → no error row). Reference: Submit a ticket →
+  "Include with ticket" (submit-ticket-1#ST-1, #ST-13; submit-ticket-2#ST2-C1).
 - **"I understand" before a risky action:** the whole line is a tappable box, tick box on
   the left, lighting up when ticked; the action stays disabled until it is ticked.
 
@@ -233,6 +246,23 @@ detail pages — shell" and the rows after it.)
 - Show a state only once: no "Installed" pill where the buttons already say so (themes); a number that
   changes when you click (likes) is a chip that moves at once.
 
+### Writing something others will read, then sending it (a ticket, a post, a share)
+Reference: Submit a ticket. (Decisions "Ticket: review step", "Ticket: what goes with it",
+"Ticket: send buttons"; submit-ticket-1…3.)
+- **Draft:** a "Your ticket"-style card holding the kind (a tab strip, first), the fields, and at
+  its foot **who will be able to read it** ("Tickets are public on GitHub, where anyone can read
+  them"), joined by **the reason the main button is grey** when it is. Then the choices of what
+  goes with it (Settings → "Choosing what goes with something"), then the one full-width main
+  button ("Review ticket").
+- **Review:** the item **as it will read** — not the draft's boxes again — in a top card: title
+  with its kind pill, the text, the "will be public" line at its foot. Under a "Sent with it"
+  label, one card: everything always sent (the app version) as a plain row, each chosen piece as
+  a **folded row with a short summary** that opens inside itself to read or edit. Changing the
+  words means going back a step.
+- **Buttons:** the way back outlined, the send filled, side by side at the right in a wide popup,
+  stacked (filled on top) at phone width. A failure takes their place (Status and notices).
+- **After:** the card stays, tagged (Status and notices → "When an action finishes").
+
 ### A panel at the top of a side pane (Games → Friends)
 Reference: the Games friends card; Settings → Account's profile row for its header; Appearance's
 themes box for its opened list. (Decisions "Games: signed-out card", "Games: friends card", "Games:
@@ -295,6 +325,16 @@ friend rows and list", "Games: managing a friend".)
   inside a card that cannot work. Reference: Games → Friends while offline. (Decisions "Games:
   connection states"; games-social-2#G2-5 "just replace the whole card with the error state",
   games-social-3#G3-7.)
+- **A failed action replaces the buttons it came from.** When Send, Download or Open fails, the
+  notice box takes the buttons' place — one sentence with the reason the operation gave, and its
+  own buttons inside it (the way back outlined, Try again filled at the right). What the user
+  wrote stays as it was. Reference: Submit a ticket's failed send; Contribute's failed download
+  (submit-ticket-1#ST-5, #ST-6).
+- **When an action finishes, keep its subject.** The card the action was about stays on screen,
+  tagged with a status pill ("Submitted", "Not sent") and one line at its foot saying what
+  happened; the next buttons sit where the action's were. While it runs, a single box with the
+  spinner sits under the same label, and is replaced by that card. Reference: Submit a ticket
+  after sending (submit-ticket-2#ST2-5, #ST2-8, #ST2-10).
 - A notice **about one thing sits inside that thing** — inside the setting's or the list
   item's own box — and **its buttons (Try again, Resume, Show details) go inside the notice,
   at the right**.
@@ -330,6 +370,8 @@ view**, which stays exactly as it is.
       named when showing the work.
 - [ ] Every element matches a recipe here and is built from its shared piece; nothing invented.
 - [ ] Checked in its hard states too: error, empty, loading, very long text.
+- [ ] Every action says what happens on the user's computer in plain words; any download says
+      its size.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only.
 - [ ] No spaced-out capitals; headings from the three levels.
 - [ ] Actions on the right; one filled button (one per row in a list of actions); nothing filled

@@ -1,0 +1,79 @@
+{
+ "deck": "submit-ticket-4",
+ "started": "2026-10-08T12:25:03.501Z",
+ "submitted": "2026-10-08T12:27:13Z",
+ "cur": 9,
+ "answers": {
+  "ST4-1": {
+   "v": "yes",
+   "t": 1791462311665,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-2": {
+   "note": "i don't like when hover cuts off like this in an expanded card. the hard divider line at the bottom is bad. we should check other screens/menus for similar issues too",
+   "t": 1791462351585,
+   "v": "other",
+   "seconds": 40,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-3": {
+   "v": "yes",
+   "t": 1791462367173,
+   "seconds": 16,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-4": {
+   "v": "yes",
+   "t": 1791462375292,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-5": {
+   "v": "yes",
+   "t": 1791462379231,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-6": {
+   "v": "yes",
+   "t": 1791462388974,
+   "seconds": 10,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-7": {
+   "v": "yes",
+   "t": 1791462416135,
+   "seconds": 27,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-8": {
+   "v": "yes",
+   "t": 1791462423430,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-9": {
+   "v": "yes",
+   "t": 1791462425853,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST4-10": {
+   "v": "yes",
+   "t": 1791462432316,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

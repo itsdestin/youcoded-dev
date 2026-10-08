@@ -1,0 +1,255 @@
+{
+  "title": "Submit a ticket — round 5: highlights without hard lines, every fold on the shared row, Contribute's failures, tag colours",
+  "key": "submit-ticket-5",
+  "out": "submit-ticket-5.review.html",
+  "images": "images/submit-ticket-5",
+  "runs": {
+    "b1x": "runs/r5-before-1x",
+    "a1x": "runs/r5-after-1x",
+    "b": "runs/r5-before",
+    "a": "runs/r5-after",
+    "msb": "runs/r5-ms-before",
+    "msa": "runs/r5-ms-after"
+  },
+  "labels": {
+    "b1x": "Today",
+    "a1x": "Proposed",
+    "b": "Today",
+    "a": "Proposed",
+    "msb": "Today",
+    "msa": "Proposed"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "ST5-1",
+      "surface": "Every folded row",
+      "path": "Settings → Performance → an opened row, pointer on its header",
+      "runs": [
+        "b1x",
+        "a1x"
+      ],
+      "crop": "settings/performance#fold-open-hover@440x600+500+150",
+      "headline": "Pointing at an opened row lights the whole box — no strip across the top ending in a hard line.",
+      "changed": "Round 4 lit only the header, with a hard edge where the opened text began. Now the box itself lights, open or closed.",
+      "notice": "Every folded row in the app behaves this way; the pictures below show each one."
+    },
+    {
+      "id": "ST5-2",
+      "surface": "Settings → Permissions",
+      "path": "Assistant settings → Permissions → a folder, opened and pointed at",
+      "runs": [
+        "b1x",
+        "a1x"
+      ],
+      "crop": "settings/assistant/permissions#folder-open-hover@760x220+340+600",
+      "headline": "Found in the same sweep: a Permissions folder now lights as one box, not as a band ending above its rules.",
+      "changed": "Its header used to tint edge to edge and stop in a hard line above the opened rules.",
+      "notice": "Same shape and contents; only the highlight changed."
+    },
+    {
+      "id": "ST5-3",
+      "surface": "What the assistant was given",
+      "path": "Session → What the assistant was given → Skills → a skill",
+      "runs": [
+        "b1x",
+        "a1x"
+      ],
+      "crop": "chat/session-context#skill-open-hover@440x600+500+150",
+      "headline": "A skill's fold is now the shared folded row: it lights as one box, with no line between its name and its text.",
+      "changed": "It was a hand-built card with a divider line under the header and a header-only highlight.",
+      "notice": "Same text and buttons inside."
+    },
+    {
+      "id": "ST5-4",
+      "surface": "Appearance",
+      "path": "Settings → Appearance → Additional customizations",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "settings/appearance#custom-open@440x600+500+150",
+      "headline": "Additional customizations is now the shared folded row; its settings open inside it.",
+      "changed": "It was a hand-built fold. It looks almost the same; its outline now matches every other folded row.",
+      "notice": "Everything inside is unchanged."
+    },
+    {
+      "id": "ST5-5",
+      "surface": "Appearance",
+      "path": "Additional customizations → Fine-tune glass",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "settings/appearance#finetune-open@440x600+500+150",
+      "headline": "Fine-tune glass opens its sliders inside its own box instead of below it.",
+      "changed": "The sliders used to sit loose under the row.",
+      "notice": "Same sliders."
+    },
+    {
+      "id": "ST5-6",
+      "surface": "Local models",
+      "path": "Settings → Assistant → Local models → a model's Settings",
+      "runs": [
+        "msb",
+        "msa"
+      ],
+      "crop": "settings/assistant/local/model-settings@440x450+500+225",
+      "headline": "A model's Advanced settings open inside the Advanced box.",
+      "changed": "They used to sit under the row as separate boxes.",
+      "notice": "Same two settings."
+    },
+    {
+      "id": "ST5-7",
+      "surface": "Local models",
+      "path": "Settings → Assistant → Local models → Local engine → Advanced",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "settings/assistant/local/engine-advanced@820x700+310+100",
+      "headline": "The engine's Advanced settings open inside the Advanced box, without the indent.",
+      "changed": "They used to hang under the row, indented.",
+      "notice": "Same settings."
+    },
+    {
+      "id": "ST5-8",
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute → the download fails",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "settings/development/contribute#failed@440x300+500+300",
+      "headline": "A failed download is now the red notice box with Try again inside, under what Contribute is for.",
+      "changed": "Was a grey box with a bold title and a Retry button — the older error look.",
+      "notice": "Same reason shown; nothing is left behind, so trying again starts cleanly."
+    },
+    {
+      "id": "ST5-9",
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute → the conversation won't open",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "settings/development/contribute#open-failed@440x300+500+300",
+      "headline": "If the conversation won't open, the same red notice box says so, with Try again.",
+      "changed": "Was the older grey error box with a title.",
+      "notice": "It still says where the code is."
+    },
+    {
+      "id": "ST5-10",
+      "surface": "Every status tag",
+      "path": "Tags such as Submitted, Installed, Online, Sync problem — on every screen",
+      "runs": [
+        "a1x"
+      ],
+      "crop": [
+        {
+          "crop": "dev/pills@440x420+40+40",
+          "label": "Today"
+        },
+        {
+          "crop": "dev/pills#strong@440x420+40+40",
+          "label": "Proposed"
+        }
+      ],
+      "highlight": {
+        "box": [
+          0,
+          32,
+          100,
+          7
+        ]
+      },
+      "headline": "Should every coloured tag be easier to see? It changes tags across the whole app.",
+      "today": "A tag's colour is a faint tint behind grey words. On all 14 themes, green (Submitted, Online, Synced) is the faintest; on YouCoded it reads grey.",
+      "problem": "Too faint to see at a glance, so the colour says nothing.",
+      "proposal": "Pick one. Nothing changes in the app yet.",
+      "measured": "Colour difference behind the tag, lowest on any theme: green 8.4 → 26.9; grey in a card 2.5 → 5.9 (under 5 is hard to see).",
+      "options": [
+        {
+          "id": "stronger",
+          "label": "Stronger tags",
+          "recommended": true,
+          "pros": [
+            "Green, amber and red read as colours on every theme",
+            "Grey tags stay visible inside cards"
+          ],
+          "cons": [
+            "Every tag in the app gets a little heavier"
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Keep today's",
+          "pros": [
+            "Nothing changes"
+          ],
+          "cons": [
+            "Green tags read grey on light themes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ST5-Q1",
+      "words": true,
+      "surface": "Contribute to YouCoded",
+      "path": "Settings → Help & feedback → Contribute",
+      "headline": "May a card hold a short bulleted list of facts, like Contribute's three lines?",
+      "today": "Contribute's card says what it does in one sentence, then three bullet points: the first-time 1 GB download, that your app and files don't change, and what opens next.",
+      "problem": "The design guide doesn't say whether a list belongs in a card. Everywhere else, facts are rows or sentences.",
+      "proposal": "Pick one; the guide records it either way.",
+      "options": [
+        {
+          "id": "allow",
+          "label": "Allow short lists",
+          "recommended": true,
+          "pros": [
+            "Three separate facts read faster as a list",
+            "Keeps Contribute as approved last round"
+          ],
+          "cons": [
+            "One more look the guide allows"
+          ]
+        },
+        {
+          "id": "sentences",
+          "label": "Sentences only",
+          "pros": [
+            "One less look in the app"
+          ],
+          "cons": [
+            "Contribute's three facts become a longer paragraph"
+          ]
+        },
+        {
+          "id": "rows",
+          "label": "Rows",
+          "pros": [
+            "Matches settings rows"
+          ],
+          "cons": [
+            "Rows suggest something to click; these are just facts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ST5-Q2",
+      "words": true,
+      "surface": "Two other places the sweep found",
+      "path": "Git review side panel; Open tasks popup",
+      "headline": "Fix two more hard edges the sweep found, the same way?",
+      "today": "Git review: each commit card's header lights edge to edge when pointed at and stops in a hard line above the opened changes. Open tasks: a full-width line sits above the \"Inactive\" heading.",
+      "problem": "The same hard line you didn't like on the folded rows. Neither has a practice screen, so there are no pictures of them yet.",
+      "proposal": "Yes: the commit card lights as one box, and the Open tasks line goes (spacing instead). No: leave them."
+    }
+  ]
+}
