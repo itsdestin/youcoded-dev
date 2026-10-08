@@ -892,6 +892,15 @@ recurred — the repetition is the data.
 - deleted/merged: the `home-variants/scenes.ts` options shelf (built); this work's specs, reviews, hand-off and two design folders moved to `docs/archive/`
 - RECURRED the same day: a merge commit (abdcb153) carried conflict markers in this file because the resolve script failed and a `;` let `git add && commit` run anyway; fixed in the next commit → applied in-session only; the "never chain behind a check" rule already says it, and a pre-commit refusal of conflict markers is the executable fix → roadmap: dev-workspace.md (tooling friction g)
 
+## 2026-10-08 — oversized pictures: admission gate, shrink-once, bounded retry (session/image-patch-recovery, youcoded#613 + youcoded-dev#246)
+- RECURRED (3rd time: 2026-08-31, 2026-09-11, now): a subagent ran `npm install pngjs jpeg-js` in a worktree and rewrote `.package-lock.json` across 80 hardlinks; PITFALLS prose did not stop it → applied: `glob-guard.py` guard 8 blocks install/add/ci/remove/update under `/worktrees/` (tests red→green, 163 pass); the PITFALLS bullet shrank to make room
+- PR #613's Linux run failed 5 cases in `home-page-tv.test.ts` that master had passed: the fake house stamped each seeded device with its own `Date.now()`, so a 1 ms tick between TV and remote made the Cast side look stale → applied: one stamp per seed in `fake-home-assistant.ts` (fceccdb60); reproduced with a ticking clock first  [1 red CI run, ~5 min agent]
+- I claimed Electron `nativeImage` works in a utilityProcess; a reviewer proved `namespace Utility` exports only net/parentPort/systemPreferences → applied: worker_threads + pure-JS codecs, WHY at the top of `image-resize-worker.ts`
+- The workspace PR went red before the app merged because its check scans app master (documented order) → dropped: already in workspace-workflows; cost one red run
+- `.claude/hooks/glob-guard.py` zsh glob warning fired on `--include=*.md` → dropped: it did its job; `rg -g` used instead
+- Limitations the plan left (cache sweep, "preparing" state, real rejection capture, stricter-switch re-prepare, host-level checkpoint test) → roadmap: native-harness.md clause (f), filed during the build
+- deleted/merged: the PITFALLS npm-install bullet (guard replaces its "none — candidate" line); knip ceiling lowered to 132 after un-exporting unused symbols; the plan moved to `docs/archive/plans/`
+
 ## 2026-10-07 — zero-hitch performance program: fixes, hitch recorder, switch fix, realism lab (session/perf-switch-marks-20261005, app + workspace)
 - Destin's felt switch lag was reproduced only by "dev build + loaded machine"; installed-style stays <0.1 s. His recorder data came from a dev window and the file could not say so → applied: `packaged` on the recorder's startup line + a hitch-report warning, both unit-tested
 - His test window ran from a worktree a helper was editing (HMR reload → blank terminal, send refused, misread as an app bug), and helpers loaded the machine while he hand-tested → applied: `docs/local-dev.md` paragraph (detached worktree, quiet machine)
