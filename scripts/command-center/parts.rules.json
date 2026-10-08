@@ -1,0 +1,5044 @@
+{
+ "_doc": "Ordered rules, first match wins. See scripts/command-center/parts-check.mjs. \"broad\" = catch-all not counted for multi-match warnings; \"doubtful\" = placement needs owner review.",
+ "parts": {
+  "chat-view": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The conversation itself: message bubbles, the scrolling timeline, find-in-chat and text formatting."
+  },
+  "tool-cards": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The little cards that show what the assistant did (ran a command, read a file, searched past chats)."
+  },
+  "chat-input": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The box where you type and send a message, plus attachments, queued messages and the stop button."
+  },
+  "attention-prompts": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The banners and cards that stop and ask you something (pick an option, approve a plan, answer a question)."
+  },
+  "permission-prompts": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The screens that ask \"may the assistant do this?\" and let you manage what it is allowed to do."
+  },
+  "session-strip": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The row of tabs along the top and the side drawer that list your open conversations."
+  },
+  "session-resume": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "Picking an old conversation to reopen, and the choices offered when you do."
+  },
+  "terminal-view": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The raw terminal view of a conversation, for people who want to see what Claude Code shows."
+  },
+  "status-bar": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The strip showing the model, usage, cost and health of the current conversation."
+  },
+  "model-picker": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "Choosing which AI model answers, and the prompts when you switch."
+  },
+  "local-models-ui": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "Downloading and managing AI models that run on your own computer."
+  },
+  "providers-ui": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "Signing in to AI providers (ChatGPT, OpenRouter, Claude) and showing which one is active."
+  },
+  "specialists-ui": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The helper assistants a conversation can hand work to, and their reports."
+  },
+  "tags-ui": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "Labels and notes you attach to conversations to find them later."
+  },
+  "buddy-ui": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The small floating companion window that shows your assistant and its mascot."
+  },
+  "voice-input": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The microphone button that turns speech into a message."
+  },
+  "chat-state": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "The behind-the-screen memory of a conversation: messages, sending, loading history, tasks."
+  },
+  "skills-ui": {
+   "system": "chat-agents",
+   "layer": "screens",
+   "purpose": "Viewing, editing and running your installed skills from inside a chat."
+  },
+  "transcript-pipeline": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Reads Claude Code conversation files as they grow and turns them into messages on screen."
+  },
+  "session-manager": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Starts, tracks, names and closes the live conversations and their terminals."
+  },
+  "claude-code-link": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Connects YouCoded to Claude Code: its settings, hooks, built-in commands and prompts."
+  },
+  "native-runtime": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "YouCoded own assistant engine: runs a conversation, keeps its history, assembles prompts."
+  },
+  "native-permissions": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Decides what the native assistant may do and remembers your approvals."
+  },
+  "harness-tools": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "The abilities the native assistant can use: read and edit files, run commands, browse."
+  },
+  "harness-injection": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Extra information slipped into the assistant context before it answers."
+  },
+  "harness-mcp": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Lets the native assistant use outside tool servers (MCP)."
+  },
+  "harness-skills": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Lets the native assistant find and use skills."
+  },
+  "harness-search": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Web search for the native assistant and where its search keys are kept."
+  },
+  "harness-prompts": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "The standing instructions the native assistant is given."
+  },
+  "harness-askpass": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Safely asks you for an admin password when the assistant needs one."
+  },
+  "native-specialists": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Runs helper assistants on behalf of the main one."
+  },
+  "providers": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Sign-in and secret storage for cloud AI services, and the catalog of their models."
+  },
+  "local-models": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Downloads, sizes up and runs AI models on your own computer."
+  },
+  "chatsearch-index": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Builds the searchable index of all your past conversations."
+  },
+  "conversation-store": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Saves conversation titles, tags and records on disk."
+  },
+  "voice-engine": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Turns speech into text on your computer."
+  },
+  "buddy-window": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Opens and positions the floating companion window."
+  },
+  "status-data": {
+   "system": "chat-agents",
+   "layer": "backend",
+   "purpose": "Collects the usage and health numbers shown in the status bar."
+  },
+  "chat-contract": {
+   "system": "chat-agents",
+   "layer": "shared",
+   "purpose": "The agreed shapes of messages, sessions and prompts used by both sides of the app."
+  },
+  "agent-contract": {
+   "system": "chat-agents",
+   "layer": "shared",
+   "purpose": "The agreed shapes for models, providers and the native assistant engine."
+  },
+  "permissions-contract": {
+   "system": "chat-agents",
+   "layer": "shared",
+   "purpose": "The agreed shapes and rules for permissions, used by both sides."
+  },
+  "pages-screens": {
+   "system": "pages",
+   "layer": "screens",
+   "purpose": "Your Pages: small apps living inside YouCoded, their list, creation and display."
+  },
+  "page-connections-ui": {
+   "system": "pages",
+   "layer": "screens",
+   "purpose": "Choosing which outside accounts and data a Page may use."
+  },
+  "page-runtime": {
+   "system": "pages",
+   "layer": "backend",
+   "purpose": "Stores, serves and refreshes Pages and keeps their data."
+  },
+  "page-connections": {
+   "system": "pages",
+   "layer": "backend",
+   "purpose": "Holds the links between a Page and outside services."
+  },
+  "pages-contract": {
+   "system": "pages",
+   "layer": "shared",
+   "purpose": "The agreed shape of a Page and its tools."
+  },
+  "marketplace-screens": {
+   "system": "marketplace",
+   "layer": "screens",
+   "purpose": "Browsing, installing, liking and reviewing community skills and themes."
+  },
+  "marketplace-state": {
+   "system": "marketplace",
+   "layer": "screens",
+   "purpose": "Remembers what the marketplace screens have loaded and what you favorited."
+  },
+  "marketplace-account-ui": {
+   "system": "marketplace",
+   "layer": "screens",
+   "purpose": "Signing in to your community account."
+  },
+  "marketplace-backend": {
+   "system": "marketplace",
+   "layer": "backend",
+   "purpose": "Talks to the community server for listings, installs and sign-in."
+  },
+  "marketplace-account": {
+   "system": "marketplace",
+   "layer": "backend",
+   "purpose": "Your community account: sign-in tokens and profile."
+  },
+  "theme-marketplace": {
+   "system": "marketplace",
+   "layer": "backend",
+   "purpose": "Shares community themes and checks their submissions."
+  },
+  "plugin-install": {
+   "system": "marketplace",
+   "layer": "backend",
+   "purpose": "Installs and keeps up to date the add-ons that skills and themes ship in."
+  },
+  "skill-library": {
+   "system": "marketplace",
+   "layer": "backend",
+   "purpose": "Finds, shares and stores the skills installed on this computer."
+  },
+  "github-connection": {
+   "system": "marketplace",
+   "layer": "backend",
+   "purpose": "Links your GitHub account so you can share your work."
+  },
+  "theme-share-ui": {
+   "system": "marketplace",
+   "layer": "screens",
+   "purpose": "Sharing your own theme with the community."
+  },
+  "marketplace-contract": {
+   "system": "marketplace",
+   "layer": "shared",
+   "purpose": "The agreed shapes for community listings, skills and sign-in."
+  },
+  "games-arcade": {
+   "system": "social",
+   "layer": "screens",
+   "purpose": "The built-in games, leaderboards and playing against friends."
+  },
+  "arcade-backend": {
+   "system": "social",
+   "layer": "backend",
+   "purpose": "Game scores and head-to-head play."
+  },
+  "social-presence": {
+   "system": "social",
+   "layer": "backend",
+   "purpose": "Shows which friends are around and lets you reach them."
+  },
+  "social-presence-ui": {
+   "system": "social",
+   "layer": "screens",
+   "purpose": "The friends-online indicator."
+  },
+  "project-view": {
+   "system": "projects-files",
+   "layer": "screens",
+   "purpose": "The project screen: your files, folders and what the assistant changed."
+  },
+  "artifact-views": {
+   "system": "projects-files",
+   "layer": "screens",
+   "purpose": "Viewers and editors for documents, spreadsheets, code and images."
+  },
+  "artifact-state": {
+   "system": "projects-files",
+   "layer": "screens",
+   "purpose": "Tracks which files the assistant has made or changed."
+  },
+  "document-comments-ui": {
+   "system": "projects-files",
+   "layer": "screens",
+   "purpose": "Comments on documents shared between you and the assistant."
+  },
+  "office-ui": {
+   "system": "projects-files",
+   "layer": "screens",
+   "purpose": "Opening and editing Word, Excel and PowerPoint files inside the app."
+  },
+  "git-review-ui": {
+   "system": "projects-files",
+   "layer": "screens",
+   "purpose": "Reviewing the changes the assistant made to a project and undoing them."
+  },
+  "artifacts": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Finds and keeps track of the files a conversation produced."
+  },
+  "document-comments": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Reads and writes comments inside Word, Excel and other documents."
+  },
+  "office": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Runs the Office document editor."
+  },
+  "git-service": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Reads the state of a project git history."
+  },
+  "project-context": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Understands a project: its folders, repository and instructions."
+  },
+  "folders": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Remembers the folders you work in."
+  },
+  "file-access": {
+   "system": "projects-files",
+   "layer": "backend",
+   "purpose": "Controls which files the app and your phone may read."
+  },
+  "projects-contract": {
+   "system": "projects-files",
+   "layer": "shared",
+   "purpose": "The agreed shapes for files, documents, folders and project history."
+  },
+  "sync-spaces": {
+   "system": "sync-devices",
+   "layer": "backend",
+   "purpose": "Keeps your projects and conversations backed up and in step across your devices."
+  },
+  "sync-service": {
+   "system": "sync-devices",
+   "layer": "backend",
+   "purpose": "The older sync and backup machinery and its error handling."
+  },
+  "conversation-handoff": {
+   "system": "sync-devices",
+   "layer": "backend",
+   "purpose": "Moves a live conversation from one device to another."
+  },
+  "remote-access": {
+   "system": "sync-devices",
+   "layer": "backend",
+   "purpose": "Lets your phone or a web browser use the app running on your computer."
+  },
+  "device-identity": {
+   "system": "sync-devices",
+   "layer": "backend",
+   "purpose": "Gives each of your devices a name the others recognise."
+  },
+  "sync-ui": {
+   "system": "sync-devices",
+   "layer": "screens",
+   "purpose": "Setting up and checking sync and backup."
+  },
+  "remote-ui": {
+   "system": "sync-devices",
+   "layer": "screens",
+   "purpose": "Screens for connecting a phone or browser to this computer."
+  },
+  "handoff-ui": {
+   "system": "sync-devices",
+   "layer": "screens",
+   "purpose": "The screens for moving a conversation between devices."
+  },
+  "sync-contract": {
+   "system": "sync-devices",
+   "layer": "shared",
+   "purpose": "The agreed shapes used by sync and device pairing."
+  },
+  "app-shell": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The window itself: header, menus, startup, errors and layout on narrow screens."
+  },
+  "settings-screens": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The Settings window and its pages."
+  },
+  "theming": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Colors, wallpapers, fonts and effects that restyle the whole app."
+  },
+  "ui-primitives": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The shared buttons, dialogs, menus and inputs every screen is built from."
+  },
+  "context-menu": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The right-click menu."
+  },
+  "guide-tour": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The tips and walkthrough that teach new people the app."
+  },
+  "updates-ui": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Checking for and installing app updates, and release notes."
+  },
+  "first-run-ui": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The first-time setup screens."
+  },
+  "performance-ui": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "The performance button and its options."
+  },
+  "development-popups": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Report a bug and contribute, from inside the app."
+  },
+  "bridge-client": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "How screens talk to the rest of the app, on a computer or a phone."
+  },
+  "renderer-utils": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Small shared helpers for screens: time, sounds, announcements."
+  },
+  "app-shell-backend": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Starts the app, makes the windows, handles quitting and the operating system."
+  },
+  "ipc-bridge": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "The one list of everything the screens can ask the app to do, and the code that answers."
+  },
+  "settings-backend": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Stores your preferences."
+  },
+  "theming-backend": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Loads, watches and converts theme files."
+  },
+  "updates": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Downloads and installs new versions of the app."
+  },
+  "app-telemetry": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "The daily anonymous check-in that says the app is in use."
+  },
+  "first-run": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Checks and installs what the app needs on first launch."
+  },
+  "app-logging": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Logs, crash reports and timing marks."
+  },
+  "platform-support": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Differences between Windows, Mac and Linux."
+  },
+  "window-management": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Opens, tracks and closes windows, including moving a chat into its own window."
+  },
+  "shared-utils": {
+   "system": "foundations",
+   "layer": "shared",
+   "purpose": "Small helpers used everywhere: versions, time, text."
+  },
+  "bridge-contract": {
+   "system": "foundations",
+   "layer": "shared",
+   "purpose": "The single list of requests between screens and the app, and their shapes."
+  },
+  "app-contract": {
+   "system": "foundations",
+   "layer": "shared",
+   "purpose": "Shared shapes for updates, announcements, preferences and first-run."
+  },
+  "workbench": {
+   "system": "workshop",
+   "layer": "devtools",
+   "purpose": "The fake-backend playground where screens are built and previewed without the real app."
+  },
+  "shoot-mode": {
+   "system": "workshop",
+   "layer": "devtools",
+   "purpose": "The hooks that let the screenshot tool photograph named screens."
+  },
+  "harness-eval": {
+   "system": "workshop",
+   "layer": "devtools",
+   "purpose": "Scoring rig that compares how well different models drive the native assistant."
+  },
+  "dev-probes": {
+   "system": "workshop",
+   "layer": "devtools",
+   "purpose": "Small checks used when developing and launching the app."
+  },
+  "android-app": {
+   "system": "foundations",
+   "layer": "android",
+   "purpose": "The Android app built around the same screens."
+  },
+  "android-runtime": {
+   "system": "chat-agents",
+   "layer": "android",
+   "purpose": "Android version of the conversation runtime and terminal."
+  },
+  "android-doc-comments": {
+   "system": "projects-files",
+   "layer": "android",
+   "purpose": "Android version of document comments."
+  },
+  "android-artifacts": {
+   "system": "projects-files",
+   "layer": "android",
+   "purpose": "Android version of file tracking."
+  },
+  "android-skills": {
+   "system": "marketplace",
+   "layer": "android",
+   "purpose": "Android version of skills and the marketplace."
+  },
+  "android-bridge": {
+   "system": "foundations",
+   "layer": "android",
+   "purpose": "Android connection between the screens and the phone code."
+  },
+  "android-parser": {
+   "system": "chat-agents",
+   "layer": "android",
+   "purpose": "Android reading of conversation files."
+  },
+  "development-backend": {
+   "system": "foundations",
+   "layer": "backend",
+   "purpose": "Gathers what is needed to file a bug report or contribute a change, from inside the app."
+  },
+  "unsorted-components": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Loose screen pieces nobody has placed yet."
+  },
+  "unsorted-state": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Loose screen memory files nobody has placed yet."
+  },
+  "unsorted-hooks": {
+   "system": "foundations",
+   "layer": "screens",
+   "purpose": "Loose screen helper files nobody has placed yet."
+  }
+ },
+ "rules": [
+  {
+   "match": "desktop/src/renderer/components/SessionDrawerGitFooter.test.tsx",
+   "part": "git-review-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Git review] components/git, components/diff"
+  },
+  {
+   "match": "desktop/src/renderer/components/header/session-runtime-label.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/RemoteUnsupportedNotice.tsx",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote; components/remote"
+  },
+  {
+   "match": "desktop/src/renderer/components/sync-space-error-summary.ts",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync, chat/handoff; [rules:sync-spaces.md]"
+  },
+  {
+   "match": "desktop/src/renderer/components/ExpiredApprovalActions.tsx",
+   "part": "permission-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-permissions.md] paths: components/permissions/**, PermissionsSection.tsx; screen settings/assistant/permissions/skip-confirm"
+  },
+  {
+   "match": "desktop/src/renderer/components/pages/page-connections.tsx",
+   "part": "page-connections-ui",
+   "system": "pages",
+   "layer": "screens",
+   "why": "[screen] pages/library/connections"
+  },
+  {
+   "match": "desktop/src/renderer/components/HandoffFreshnessInline.tsx",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync, chat/handoff; [rules:sync-spaces.md]"
+  },
+  {
+   "match": "desktop/src/renderer/components/StatsWithHealthBridge.tsx",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists StatusBar.tsx, UsageCard.tsx; screen chat/status-bar, chat/open-tasks"
+  },
+  {
+   "match": "desktop/src/renderer/components/resume-browser-filters.ts",
+   "part": "session-resume",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/resume"
+  },
+  {
+   "match": "desktop/src/renderer/components/ask-question-normalize.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionContextBanner.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/session-context-facts.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/session-refs-context.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/device-activity-label.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/header/pack-sessions.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionRenameDialog.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionContextPopup.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/SkillInvocationCard.tsx",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat search]/[screen:chat] tool cards mounted only by chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/ModelProvidersPopup.tsx",
+   "part": "providers-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] settings/assistant/cloud/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/MarketplaceAuthChip.tsx",
+   "part": "marketplace-account-ui",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] settings/account"
+  },
+  {
+   "match": "desktop/src/renderer/components/takeover-dialog-copy.ts",
+   "part": "handoff-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[MAP:Conversation handoff] pending/takeover screens"
+  },
+  {
+   "match": "desktop/src/renderer/components/terminal-key-handler.ts",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal files"
+  },
+  {
+   "match": "desktop/src/renderer/components/QueuedMessagesStrip.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/AssistantTurnBubble.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/state/should-forward-esc-to-pty.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useInlineFilepathDetector.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSessionPreviewListener.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/components/PermissionsSection.tsx",
+   "part": "permission-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-permissions.md] paths: components/permissions/**, PermissionsSection.tsx; screen settings/assistant/permissions/skip-confirm"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionCardDetails.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionPreviewPane.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/first-time-warnings.ts",
+   "part": "first-run-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:prereq-installer.md] first-run"
+  },
+  {
+   "match": "desktop/src/renderer/components/ConnectGithubModal.tsx",
+   "part": "development-popups",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/development/*; bug-report",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/ImportProjectModal.tsx",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync, chat/handoff; [rules:sync-spaces.md]"
+  },
+  {
+   "match": "desktop/src/renderer/components/PendingHandoffView.tsx",
+   "part": "handoff-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[MAP:Conversation handoff] pending/takeover screens"
+  },
+  {
+   "match": "desktop/src/renderer/components/CloseSessionPrompt.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/QuitSessionsPrompt.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/SpecialistEnvelope.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/state/slash-command-dispatcher.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-wallpaper-header-ink.ts",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance"
+  },
+  {
+   "match": "desktop/src/renderer/components/ArtifactThumbnail.tsx",
+   "part": "artifact-views",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] paths: components/artifact-views/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/FileViewerOverlay.tsx",
+   "part": "artifact-views",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] paths: components/artifact-views/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/native-model-label.ts",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/SettingsExplainer.tsx",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/components/theme-effects-mask.ts",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance; renderer/themes/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/WallpaperBackdrop.tsx",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance; renderer/themes/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/RootErrorBoundary.tsx",
+   "part": "ui-primitives",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[MAP:UI primitives] components/ui/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/BetaChannelToggle.tsx",
+   "part": "updates-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] chat/update"
+  },
+  {
+   "match": "desktop/src/renderer/components/ConnectedAccounts.tsx",
+   "part": "marketplace-account-ui",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] settings/account"
+  },
+  {
+   "match": "desktop/src/renderer/components/xterm-render-pause.ts",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal files"
+  },
+  {
+   "match": "desktop/src/renderer/components/PendingAnswerNote.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/UnsavedBeforeQuit.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/InitializingCover.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] startup gates",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/ThinkingIndicator.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/TimelineEntryHint.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/selector-rerender.test.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/components/DeliverablesCard.tsx",
+   "part": "artifact-views",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] paths: components/artifact-views/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/header/drag-order.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/NarrowViewToggle.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md]+[narrow-viewport.md] list HeaderBar.tsx, OverflowMenu.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/ModelPickerPopup.tsx",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/ProvidersSection.tsx",
+   "part": "providers-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] settings/assistant/cloud/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/FirstTimeWarning.tsx",
+   "part": "first-run-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:prereq-installer.md] first-run"
+  },
+  {
+   "match": "desktop/src/renderer/components/PlanApprovalCard.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/chat-message-find.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/EditPencilButton.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/state/publish-state-resolver.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] lists state/artifact-tracker.ts, artifact-tool-use-tracker.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/worker-health-context.tsx",
+   "part": "marketplace-state",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] marketplace; marketplace-context.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useRemoteAttentionSync.ts",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePhoneSessionActions.ts",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote"
+  },
+  {
+   "match": "desktop/src/main/conversations/transcript-mirror.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/ThemeShareSheet.tsx",
+   "part": "theme-share-ui",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[MAP:theme marketplace] sharing sheets"
+  },
+  {
+   "match": "desktop/src/renderer/components/SpecialistsChip.tsx",
+   "part": "specialists-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-specialists.md]+[screen] chat/specialists"
+  },
+  {
+   "match": "desktop/src/renderer/components/ModelLoadingBar.tsx",
+   "part": "local-models-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:engine-local-models.md] model files; EngineCard"
+  },
+  {
+   "match": "desktop/src/renderer/components/SyncSetupWizard.tsx",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync, chat/handoff; [rules:sync-spaces.md]"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionTerminal.tsx",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal files"
+  },
+  {
+   "match": "desktop/src/renderer/components/outgoing-message.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionDropZone.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/AttentionBanner.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/ChatTimelineRow.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/MarkdownContent.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/FlowingKeywords.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/PreviewTimeline.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/state/deliverable-auto-open.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] lists state/artifact-tracker.ts, artifact-tool-use-tracker.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/expired-card-resolver.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] cc-background; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/state/phone-session-actions.ts",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote, phone actions"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useAnyAttentionNeeded.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Claude Code prompts] attention hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSubmitConfirmation.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists hooks/useSubmitConfirmation.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-chatview-handlers.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-chat-message-find.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useCompactionWatchdog.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/main/conversations/resume-admission.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/WideViewToggle.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md]+[narrow-viewport.md] list HeaderBar.tsx, OverflowMenu.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/ViewToggleHint.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md]+[narrow-viewport.md] list HeaderBar.tsx, OverflowMenu.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/AccountSection.tsx",
+   "part": "marketplace-account-ui",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] settings/account"
+  },
+  {
+   "match": "desktop/src/renderer/components/OpenTasksPopup.tsx",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists StatusBar.tsx, UsageCard.tsx; screen chat/status-bar, chat/open-tasks"
+  },
+  {
+   "match": "desktop/src/renderer/components/AttachmentChip.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/FolderSwitcher.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/RuntimeBinding.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] startup gates",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/CompactingCard.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/ContentFindBar.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useOnRemoteReconnect.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/native-slash-actions.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/startup-dialog-store.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] shell-level state",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-container-narrow.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionDrawer.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/BuddyStyleRow.tsx",
+   "part": "buddy-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:buddy-floater.md]+[screen] settings/buddy",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/provider-brand.ts",
+   "part": "providers-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] settings/assistant/cloud/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/DonateConfirm.tsx",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/components/SettingsPanel.tsx",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/components/ErrorBoundary.tsx",
+   "part": "ui-primitives",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[MAP:UI primitives] components/ui/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/sync-dot-state.ts",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync, chat/handoff; [rules:sync-spaces.md]"
+  },
+  {
+   "match": "desktop/src/renderer/components/OpenTasksChip.tsx",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists StatusBar.tsx, UsageCard.tsx; screen chat/status-bar, chat/open-tasks"
+  },
+  {
+   "match": "desktop/src/renderer/components/CommandDrawer.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/FilepathToken.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/filepath-match.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-stick-to-bottom.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useMissingArtifacts.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] artifact hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-narrow-viewport.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-esc-close.test.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-one-shot-window.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSessionSummaries.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:session list] session hooks"
+  },
+  {
+   "match": "desktop/src/renderer/utils/extract-copy-blocks.ts",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat & transcript] parser/tool helpers"
+  },
+  {
+   "match": "desktop/src/main/migrate-permission-overrides.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/SessionStrip.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/OverflowMenu.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md]+[narrow-viewport.md] list HeaderBar.tsx, OverflowMenu.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/ProviderIcon.tsx",
+   "part": "providers-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] settings/assistant/cloud/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/FirstRunView.tsx",
+   "part": "first-run-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:prereq-installer.md] first-run"
+  },
+  {
+   "match": "desktop/src/renderer/components/ContextPopup.tsx",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists StatusBar.tsx, UsageCard.tsx; screen chat/status-bar, chat/open-tasks"
+  },
+  {
+   "match": "desktop/src/renderer/components/HandlePrompt.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/plan-windows.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/components/LinkableText.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/SystemMarker.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/ChatEdgeFade.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/state/doc-comments-store.ts",
+   "part": "document-comments-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Document comments] store"
+  },
+  {
+   "match": "desktop/src/renderer/state/sync-display-state.ts",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync"
+  },
+  {
+   "match": "desktop/src/renderer/state/apply-session-live.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/screen-input-store.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useExpandAllToggle.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSessionDefaults.ts",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker"
+  },
+  {
+   "match": "desktop/src/renderer/utils/blocked-send-toast.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[folder] blocked-send",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/harness/native-session-host.ts",
+   "part": "native-permissions",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:native-permissions.md] paths list permission-store, native-session-host"
+  },
+  {
+   "match": "desktop/src/main/conversations/symlink-sweep.ts",
+   "part": "sync-spaces",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] paths list conversations/symlink-sweep.ts; slug-repair is its sibling"
+  },
+  {
+   "match": "desktop/src/main/providers/provider-registry.ts",
+   "part": "providers",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:engine-local-models.md] lists providers/provider-registry.ts"
+  },
+  {
+   "match": "desktop/src/renderer/components/ZoomOverlay.tsx",
+   "part": "ui-primitives",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[MAP:UI primitives] components/ui/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/UpdatePanel.tsx",
+   "part": "updates-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] chat/update"
+  },
+  {
+   "match": "desktop/src/renderer/components/VoiceButton.tsx",
+   "part": "voice-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[folder] VoiceButton",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/SkillEditor.tsx",
+   "part": "skills-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/skills/edit"
+  },
+  {
+   "match": "desktop/src/renderer/components/UserMessage.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/ChatFindBar.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/HeadPreview.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/terminal-registry.ts",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal bridge/registry"
+  },
+  {
+   "match": "desktop/src/renderer/state/permission-answer.ts",
+   "part": "permission-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-permissions.md] permission answers"
+  },
+  {
+   "match": "desktop/src/renderer/state/card-keys-context.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] cc-background; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/state/resume-lease-gate.ts",
+   "part": "handoff-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[MAP:Conversation handoff]"
+  },
+  {
+   "match": "desktop/src/renderer/state/on-screen-context.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] shell-level state",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/first-page-loader.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/session-list-sync.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePromptDetector.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Claude Code prompts] attention hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useStatusBarProps.ts",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] status data hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-provider-type.ts",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useVisualViewport.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useAttentionSound.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:session list] session hooks"
+  },
+  {
+   "match": "desktop/src/shared/marketplace-channel-types.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/main/conversations/lease-client.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/doc-comments/live-comments.ts",
+   "part": "document-comments",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[rules:office.md] lists doc-comments/live-comments.ts"
+  },
+  {
+   "match": "desktop/src/main/theme-marketplace-provider.ts",
+   "part": "theme-marketplace",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:theme marketplace] name; used only for sharing/browsing community themes"
+  },
+  {
+   "match": "desktop/src/renderer/components/ShareSheet.tsx",
+   "part": "theme-share-ui",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[MAP:theme marketplace] sharing sheets"
+  },
+  {
+   "match": "desktop/src/renderer/components/EngineCard.tsx",
+   "part": "local-models-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:engine-local-models.md] model files; EngineCard"
+  },
+  {
+   "match": "desktop/src/renderer/components/AboutPopup.tsx",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/components/ScreenBand.tsx",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal files"
+  },
+  {
+   "match": "desktop/src/renderer/components/QuickChips.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/StopButton.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/CopyPicker.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/PromptCard.tsx",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] handle-prompt, chat/close-session, chat/quit-sessions; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/state/ArtifactContext.tsx",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] lists state/artifact-tracker.ts, artifact-tool-use-tracker.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/account-context.tsx",
+   "part": "marketplace-account-ui",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] settings/account"
+  },
+  {
+   "match": "desktop/src/renderer/state/plan-menu-driver.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] cc-background; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/state/first-page-retry.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/archive-boundary.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSendReconcile.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists hooks/useSubmitConfirmation.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useArtifactCount.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] artifact hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useActiveProject.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] artifact hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useGitFileStatus.ts",
+   "part": "git-review-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Git review]"
+  },
+  {
+   "match": "desktop/src/renderer/utils/specialist-cards.ts",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat & transcript] parser/tool helpers"
+  },
+  {
+   "match": "desktop/src/main/conversations/lane-guards.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/disable-prompt-suggestion.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/StatusDot.tsx",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/HeaderBar.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md]+[narrow-viewport.md] list HeaderBar.tsx, OverflowMenu.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/SkillCard.tsx",
+   "part": "marketplace-screens",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen chain] screens/marketplace.ts family; components/marketplace/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/model-chip.ts",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/HelpPopup.tsx",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/components/SyncPanel.tsx",
+   "part": "sync-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/sync, chat/handoff; [rules:sync-spaces.md]"
+  },
+  {
+   "match": "desktop/src/renderer/components/StatusBar.tsx",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists StatusBar.tsx, UsageCard.tsx; screen chat/status-bar, chat/open-tasks"
+  },
+  {
+   "match": "desktop/src/renderer/components/UsageCard.tsx",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists StatusBar.tsx, UsageCard.tsx; screen chat/status-bar, chat/open-tasks"
+  },
+  {
+   "match": "desktop/src/renderer/components/MovedGate.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] startup gates",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/TrustGate.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] startup gates",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/unsaved-editors.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] lists state/artifact-tracker.ts, artifact-tool-use-tracker.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/ink-menu-driver.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] cc-background; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/state/submit-outgoing.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/pending-handoff.ts",
+   "part": "handoff-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[MAP:Conversation handoff]"
+  },
+  {
+   "match": "desktop/src/renderer/state/hook-dispatcher.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] shell-level state",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useOpenFilepath.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useProjectWatch.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] artifact hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useZoomControls.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useAnchoredMenu.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/utils/focus-chat-card.ts",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat & transcript] parser/tool helpers"
+  },
+  {
+   "match": "desktop/src/shared/theme-marketplace-types.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/main/conversations/reconciler.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/ToolCard.tsx",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat search]/[screen:chat] tool cards mounted only by chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/InputBar.tsx",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/ChatView.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/android-local-bridge.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePtyRawBytes.ts",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal bridge/registry"
+  },
+  {
+   "match": "desktop/src/renderer/state/skill-context.tsx",
+   "part": "marketplace-state",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] marketplace; marketplace-context.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/state/theme-context.tsx",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance"
+  },
+  {
+   "match": "desktop/src/renderer/state/status-widgets.ts",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists state/status-widgets, session-totals, usage-snapshot"
+  },
+  {
+   "match": "desktop/src/renderer/state/session-totals.ts",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists state/status-widgets, session-totals, usage-snapshot"
+  },
+  {
+   "match": "desktop/src/renderer/state/usage-snapshot.ts",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] lists state/status-widgets, session-totals, usage-snapshot"
+  },
+  {
+   "match": "desktop/src/renderer/state/pty-input-gate.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/send-reconcile.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/pending-action.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useMatchReport.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Claude Code prompts] attention hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useBlockedSend.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists hooks/useSubmitConfirmation.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSecondsTick.ts",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] status data hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSpecialists.ts",
+   "part": "specialists-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-specialists.md]"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useRemoteWatch.ts",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useThemeMascot.ts",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-esc-close.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSessionMeta.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:session list] session hooks"
+  },
+  {
+   "match": "desktop/src/shared/transcript-event-types.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/pages/connections-store.ts",
+   "part": "page-connections",
+   "system": "pages",
+   "layer": "backend",
+   "why": "[MAP:Page connections] + file names"
+  },
+  {
+   "match": "desktop/src/main/permission-auto-approve.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/theme-preview-generator.ts",
+   "part": "theme-marketplace",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:theme marketplace] name; used only for sharing/browsing community themes"
+  },
+  {
+   "match": "desktop/src/main/local-theme-synthesizer.ts",
+   "part": "theming-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] name prefix theme-; MAP row Themes",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useVoiceInput.ts",
+   "part": "voice-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[folder] voice",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/held-comments.ts",
+   "part": "document-comments-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Document comments] store"
+  },
+  {
+   "match": "desktop/src/renderer/state/cc-background.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] cc-background; [MAP:Claude Code prompts]"
+  },
+  {
+   "match": "desktop/src/renderer/state/phone-actions.ts",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote, phone actions"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useScrollFade.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "desktop/src/main/conversations/takeover.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/pages/page-connections.ts",
+   "part": "page-connections",
+   "system": "pages",
+   "layer": "backend",
+   "why": "[MAP:Page connections] + file names"
+  },
+  {
+   "match": "desktop/src/main/prerequisite-installer.ts",
+   "part": "first-run",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:prereq-installer.md] lists prerequisite-installer.ts, first-run.ts"
+  },
+  {
+   "match": "desktop/src/main/launch-settings-chores.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/marketplace-auth-store.ts",
+   "part": "marketplace-account",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[folder] marketplace-auth-store",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/remote-unsupported.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/renderer/session-drag-model.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md] lists renderer/App.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/state/prompt-input.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/remote-place.ts",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote, phone actions"
+  },
+  {
+   "match": "desktop/src/renderer/state/welcome-back.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] shell-level state",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/chat-reducer.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/chat-context.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/session-fill.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useChessGame.ts",
+   "part": "games-arcade",
+   "system": "social",
+   "layer": "screens",
+   "why": "[MAP:Games arcade]"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePartyGame.ts",
+   "part": "games-arcade",
+   "system": "social",
+   "layer": "screens",
+   "why": "[MAP:Games arcade]"
+  },
+  {
+   "match": "desktop/src/shared/models-channel-types.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/claude-account-types.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/native-channel-types.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/update-install-types.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/shared/attention-classifier.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/shared/terminal-screen-text.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/renderer/shoot-app-screens.ts",
+   "part": "shoot-mode",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[screen chain] named by shoot/workbench scripts (scripts/shoot) not by any product screen"
+  },
+  {
+   "match": "desktop/src/main/ipc/theme-marketplace.ts",
+   "part": "theme-marketplace",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/project-conversations.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/close-request-manager.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/sync-error-classifier.ts",
+   "part": "sync-service",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] lists sync-service/snapshot-retention/sync-hub-socket/sync-error-classifier"
+  },
+  {
+   "match": "desktop/src/main/integration-installer.ts",
+   "part": "plugin-install",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:Plugin install] name"
+  },
+  {
+   "match": "desktop/src/renderer/components/Icons.tsx",
+   "part": "ui-primitives",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[MAP:UI primitives] components/ui/**"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePtyReset.ts",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal bridge/registry"
+  },
+  {
+   "match": "desktop/src/renderer/state/screen-feed.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/cache-reuse.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePlanMenu.ts",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Claude Code prompts] attention hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePresence.ts",
+   "part": "social-presence-ui",
+   "system": "social",
+   "layer": "screens",
+   "why": "[bridge] ipc/social.ts presence"
+  },
+  {
+   "match": "desktop/src/shared/context-preferences.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/files-channel-types.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/admin-password-copy.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/main/session-summary-push.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/announcement-service.ts",
+   "part": "updates",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[MAP:In-app updates] name prefix update-/changelog-"
+  },
+  {
+   "match": "desktop/src/main/windows-taskbar-icon.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/first-run-screen.ts",
+   "part": "first-run-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:prereq-installer.md] first-run"
+  },
+  {
+   "match": "desktop/src/renderer/state/chat-types.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/state/task-state.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/utils/git-footer.ts",
+   "part": "git-review-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Git review]"
+  },
+  {
+   "match": "desktop/src/shared/recommended-models.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/remote-file-limits.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/sync-channel-types.ts",
+   "part": "sync-contract",
+   "system": "sync-devices",
+   "layer": "shared",
+   "why": "[rules:sync-spaces.md] shared sync shapes"
+  },
+  {
+   "match": "desktop/src/main/harness/cache-usage.ts",
+   "part": "status-data",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:status-bar-relevance.md] lists main/harness/pricing.ts"
+  },
+  {
+   "match": "desktop/src/main/native-resume-title.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/sync-setup-handlers.ts",
+   "part": "sync-service",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] lists sync-service/snapshot-retention/sync-hub-socket/sync-error-classifier"
+  },
+  {
+   "match": "desktop/src/main/cc-builtin-commands.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/watch-set.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/shared/app-channel-types.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/shared/ink-select-parser.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/renderer/workbench-mode.ts",
+   "part": "shoot-mode",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[screen chain] named by shoot/workbench scripts (scripts/shoot) not by any product screen"
+  },
+  {
+   "match": "desktop/src/main/session-id-mapping.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/welcome-back-store.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/snapshot-retention.ts",
+   "part": "sync-service",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] lists sync-service/snapshot-retention/sync-hub-socket/sync-error-classifier"
+  },
+  {
+   "match": "desktop/src/main/linux-install-kind.ts",
+   "part": "first-run",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:prereq-installer.md] lists prerequisite-installer.ts, first-run.ts"
+  },
+  {
+   "match": "desktop/src/main/theme-content-hash.ts",
+   "part": "theme-marketplace",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:theme marketplace] name; used only for sharing/browsing community themes"
+  },
+  {
+   "match": "desktop/src/main/performance-config.ts",
+   "part": "app-logging",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] logger/crash/perf",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/startup-dialog-log.ts",
+   "part": "app-logging",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] logger/crash/perf",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/styles/mascot.css",
+   "part": "buddy-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:buddy-floater.md]+[screen] settings/buddy",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/send-ids.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists state/pty-input-gate.ts, prompt-input.ts"
+  },
+  {
+   "match": "desktop/src/shared/backend-contract.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/table-error-flag.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/platform-display.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/harness-manifest.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/main/ipc/channel-table.ts",
+   "part": "ipc-bridge",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:ipc-bridge.md] paths: main/ipc/**"
+  },
+  {
+   "match": "desktop/src/main/ipc/session-state.ts",
+   "part": "ipc-bridge",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:ipc-bridge.md] paths: main/ipc/**"
+  },
+  {
+   "match": "desktop/src/main/retention-default.ts",
+   "part": "transcript-pipeline",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:chat-reducer.md] lists main/transcript-watcher.ts, subagent-watcher.ts; siblings by name prefix"
+  },
+  {
+   "match": "desktop/src/main/youcoded-commands.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/install-reconcile.ts",
+   "part": "plugin-install",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:Plugin install] name"
+  },
+  {
+   "match": "desktop/src/main/crash-diagnostics.ts",
+   "part": "app-logging",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] logger/crash/perf",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/electron-platform.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/styles/buddy.css",
+   "part": "buddy-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:buddy-floater.md]+[screen] settings/buddy",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/remote-events.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/renderer/css-imports.d.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md] lists renderer/App.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/voice-capture.ts",
+   "part": "voice-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[folder] voice",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/bundled-plugins.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/shared/first-run-types.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/shared/chatsearch-refs.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/ipc/doc-comments.ts",
+   "part": "document-comments",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/integrations.ts",
+   "part": "plugin-install",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/remote-admin.ts",
+   "part": "remote-access",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/menu-answer-lock.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/status-push-gate.ts",
+   "part": "status-data",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Status push] 10s status push"
+  },
+  {
+   "match": "desktop/src/main/command-provider.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/plugin-installer.ts",
+   "part": "plugin-install",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:Plugin install] name"
+  },
+  {
+   "match": "desktop/src/renderer/remote-gate.tsx",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useIpc.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/shared/provider-types.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/cc-input-focus.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/renderer/shoot-mode.tsx",
+   "part": "shoot-mode",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[screen chain] named by shoot/workbench scripts (scripts/shoot) not by any product screen"
+  },
+  {
+   "match": "desktop/src/main/dev-mount-probe.ts",
+   "part": "dev-probes",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[folder+header] file header says installer launch check / dev blank-mount watchdog"
+  },
+  {
+   "match": "desktop/src/main/harness/pricing.ts",
+   "part": "status-data",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:status-bar-relevance.md] lists main/harness/pricing.ts"
+  },
+  {
+   "match": "desktop/src/main/ipc/channel-def.ts",
+   "part": "ipc-bridge",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:ipc-bridge.md] paths: main/ipc/**"
+  },
+  {
+   "match": "desktop/src/main/ipc/claude-code.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/marketplace.ts",
+   "part": "marketplace-backend",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/permissions.ts",
+   "part": "native-permissions",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/specialists.ts",
+   "part": "native-specialists",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/sync-spaces.ts",
+   "part": "sync-spaces",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/phone-read-deny.ts",
+   "part": "remote-access",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[MAP:Remote access] remote-server/remote-config/remote-devices; phone-read-deny/upload-store serve phone reads",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/presence-socket.ts",
+   "part": "remote-access",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[MAP:Remote access] remote-server/remote-config/remote-devices; phone-read-deny/upload-store serve phone reads",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/reconnecting-ws.ts",
+   "part": "remote-access",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[MAP:Remote access] remote-server/remote-config/remote-devices; phone-read-deny/upload-store serve phone reads",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/session-manager.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/session-screens.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/session-browser.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/pending-acquire.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/device-identity.ts",
+   "part": "device-identity",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md] lists main/device-identity.ts"
+  },
+  {
+   "match": "desktop/src/main/sync-hub-socket.ts",
+   "part": "sync-service",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] lists sync-service/snapshot-retention/sync-hub-socket/sync-error-classifier"
+  },
+  {
+   "match": "desktop/src/main/first-run-local.ts",
+   "part": "first-run",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:prereq-installer.md] lists prerequisite-installer.ts, first-run.ts"
+  },
+  {
+   "match": "desktop/src/main/claude-settings.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/command-scanner.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/theme-pr-lookup.ts",
+   "part": "theme-marketplace",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:theme marketplace] name; used only for sharing/browsing community themes"
+  },
+  {
+   "match": "desktop/src/main/arcade-handlers.ts",
+   "part": "arcade-backend",
+   "system": "social",
+   "layer": "backend",
+   "why": "[MAP:Games arcade] arcade-handlers"
+  },
+  {
+   "match": "desktop/src/main/social-handlers.ts",
+   "part": "social-presence",
+   "system": "social",
+   "layer": "backend",
+   "why": "[bridge] ipc/social.ts"
+  },
+  {
+   "match": "desktop/src/main/folders-service.ts",
+   "part": "folders",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] ipc/folders.ts"
+  },
+  {
+   "match": "desktop/src/main/naming-settings.ts",
+   "part": "settings-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] ipc/settings.ts"
+  },
+  {
+   "match": "desktop/src/main/update-settings.ts",
+   "part": "settings-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] ipc/settings.ts"
+  },
+  {
+   "match": "desktop/src/main/share-in-flight.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] generic main-process helpers; no domain",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/remote-shim.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/renderer/app-version.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/shared/fill-protocol.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/chatgpt-types.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/catalog-types.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/shared/account-types.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/shared/handoff-draft.ts",
+   "part": "sync-contract",
+   "system": "sync-devices",
+   "layer": "shared",
+   "why": "[rules:sync-spaces.md] shared sync shapes"
+  },
+  {
+   "match": "desktop/src/shared/stuck-tracker.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/ipc/appearance.ts",
+   "part": "theming-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/openrouter.ts",
+   "part": "providers",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/chatsearch.ts",
+   "part": "chatsearch-index",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/file-gates.ts",
+   "part": "file-access",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/create-runtime.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:code-search.md] lists main/main.ts as the app entry"
+  },
+  {
+   "match": "desktop/src/main/session-record.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/legacy-cleanup.ts",
+   "part": "first-run",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:prereq-installer.md] lists prerequisite-installer.ts, first-run.ts"
+  },
+  {
+   "match": "desktop/src/main/mcp-reconciler.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/app-navigation.ts",
+   "part": "window-management",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:multi-window-detach.md] + name prefix window-"
+  },
+  {
+   "match": "desktop/src/main/safe-json-path.ts",
+   "part": "conversation-store",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] conversation slug/path helpers",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/capabilities.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/subject-glob.ts",
+   "part": "permissions-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:native-permissions.md] lists shared/permission-types.ts"
+  },
+  {
+   "match": "desktop/src/shared/engine-types.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/skills-types.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/shared/announcement.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/main/ipc/analytics.ts",
+   "part": "app-telemetry",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/artifacts.ts",
+   "part": "artifacts",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/first-run.ts",
+   "part": "first-run",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/handler-utils.ts",
+   "part": "ipc-bridge",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:ipc-bridge.md] paths: preload.ts, ipc-handlers.ts"
+  },
+  {
+   "match": "desktop/src/main/session-namer.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/audience-fill.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/saved-folders.ts",
+   "part": "project-context",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:project] name prefix project-"
+  },
+  {
+   "match": "desktop/src/main/prefs-service.ts",
+   "part": "settings-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] ipc/settings.ts"
+  },
+  {
+   "match": "desktop/src/main/mac-icon-look.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/slug-encoding.ts",
+   "part": "conversation-store",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] conversation slug/path helpers",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/theme-icons.ts",
+   "part": "marketplace-contract",
+   "system": "marketplace",
+   "layer": "shared",
+   "why": "[rules:catalog.md]+[registries.md] catalog/marketplace types"
+  },
+  {
+   "match": "desktop/src/shared/pages-types.ts",
+   "part": "pages-contract",
+   "system": "pages",
+   "layer": "shared",
+   "why": "[bridge] pages domain"
+  },
+  {
+   "match": "desktop/src/shared/prefs-types.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/shared/divider-ids.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/shared/voice-types.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/ipc/provider.ts",
+   "part": "providers",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/defaults.ts",
+   "part": "settings-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/settings.ts",
+   "part": "settings-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc-handlers.ts",
+   "part": "ipc-bridge",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:ipc-bridge.md] paths: preload.ts, ipc-handlers.ts"
+  },
+  {
+   "match": "desktop/src/main/upload-store.ts",
+   "part": "remote-access",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[MAP:Remote access] remote-server/remote-config/remote-devices; phone-read-deny/upload-store serve phone reads",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/session-open.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/session-live.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/unsaved-quit.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/fs-read-head.ts",
+   "part": "transcript-pipeline",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:chat-reducer.md] lists main/transcript-watcher.ts, subagent-watcher.ts; siblings by name prefix"
+  },
+  {
+   "match": "desktop/src/main/sync-service.ts",
+   "part": "sync-service",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] lists sync-service/snapshot-retention/sync-hub-socket/sync-error-classifier"
+  },
+  {
+   "match": "desktop/src/main/atomic-write.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] generic main-process helpers; no domain",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/platform.ts",
+   "part": "bridge-client",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:ipc-bridge.md] lists renderer/remote-shim.ts"
+  },
+  {
+   "match": "desktop/src/shared/gguf-split.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/main/smoke-probe.ts",
+   "part": "dev-probes",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[folder+header] file header says installer launch check / dev blank-mount watchdog"
+  },
+  {
+   "match": "desktop/src/main/ipc/account.ts",
+   "part": "marketplace-account",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/chatgpt.ts",
+   "part": "providers",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/folders.ts",
+   "part": "folders",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/handoff.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/project.ts",
+   "part": "project-context",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/session.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/native-home.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/kwin-helper.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/app-restart.ts",
+   "part": "window-management",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:multi-window-detach.md] + name prefix window-"
+  },
+  {
+   "match": "desktop/src/shared/git-types.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/read-head.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/no-folder.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/dev-types.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/main/ipc/window.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/detach.ts",
+   "part": "window-management",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/engine.ts",
+   "part": "local-models",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/models.ts",
+   "part": "local-models",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/github.ts",
+   "part": "github-connection",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/native.ts",
+   "part": "native-runtime",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/office.ts",
+   "part": "office",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/search.ts",
+   "part": "harness-search",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/skills.ts",
+   "part": "skill-library",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/social.ts",
+   "part": "social-presence",
+   "system": "social",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/update.ts",
+   "part": "updates",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/pty-worker.js",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/main/scan-cache.ts",
+   "part": "transcript-pipeline",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:chat-reducer.md] lists main/transcript-watcher.ts, subagent-watcher.ts; siblings by name prefix"
+  },
+  {
+   "match": "desktop/src/main/sync-state.ts",
+   "part": "sync-service",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] lists sync-service/snapshot-retention/sync-hub-socket/sync-error-classifier"
+  },
+  {
+   "match": "desktop/src/main/perf-marks.ts",
+   "part": "app-logging",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] logger/crash/perf",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/index.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md] lists renderer/App.tsx"
+  },
+  {
+   "match": "desktop/src/main/ipc/shell.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/buddy.ts",
+   "part": "buddy-window",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/modes.ts",
+   "part": "settings-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/files.ts",
+   "part": "file-access",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/model.ts",
+   "part": "native-runtime",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/pages.ts",
+   "part": "page-runtime",
+   "system": "pages",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/voice.ts",
+   "part": "voice-engine",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/bootstrap.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:code-search.md] lists main/main.ts as the app entry"
+  },
+  {
+   "match": "desktop/src/main/first-run.ts",
+   "part": "first-run",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:prereq-installer.md] lists prerequisite-installer.ts, first-run.ts"
+  },
+  {
+   "match": "desktop/src/main/no-folder.ts",
+   "part": "folders",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] ipc/folders.ts"
+  },
+  {
+   "match": "desktop/src/main/dev-tools.ts",
+   "part": "development-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[header] \"IPC handler bodies for the Settings > Development feature\""
+  },
+  {
+   "match": "desktop/src/main/ipc/game.ts",
+   "part": "arcade-backend",
+   "system": "social",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/sync.ts",
+   "part": "sync-spaces",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/tags.ts",
+   "part": "conversation-store",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/platform.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/kde-dbus.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/app-icon.ts",
+   "part": "platform-support",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] OS-specific files",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/App.tsx",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md] lists renderer/App.tsx"
+  },
+  {
+   "match": "desktop/src/shared/semver.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/main/ipc/app.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/dev.ts",
+   "part": "development-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/ipc/git.ts",
+   "part": "git-service",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/preload.ts",
+   "part": "ipc-bridge",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:ipc-bridge.md] paths: preload.ts, ipc-handlers.ts"
+  },
+  {
+   "match": "desktop/src/main/publish.ts",
+   "part": "session-manager",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:pty-io.md] lists pty-worker.js, session-manager.ts; siblings by name prefix session-*"
+  },
+  {
+   "match": "desktop/src/shared/types.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/ports.ts",
+   "part": "bridge-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[rules:ipc-bridge.md] lists shared/backend-contract.ts; channel-types files named by bridge table",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/ipc/ui.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[bridge] main/ipc one file per domain; domain prefix of channels = file name"
+  },
+  {
+   "match": "desktop/src/main/logger.ts",
+   "part": "app-logging",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] logger/crash/perf",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/tags.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/main.ts",
+   "part": "app-shell-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:code-search.md] lists main/main.ts as the app entry"
+  },
+  {
+   "match": "desktop/src/renderer/components/ModelSwitchPrompt*.tsx",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/PreferencesPopup*.tsx",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/components/SkipPermissions*.tsx",
+   "part": "permission-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-permissions.md] paths: components/permissions/**, PermissionsSection.tsx; screen settings/assistant/permissions/skip-confirm"
+  },
+  {
+   "match": "desktop/src/renderer/components/assistant-settings/**",
+   "part": "settings-screens",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen chain] screens/settings.ts family; assistant-settings"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useResolvedConversations*",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:session list] session hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-switch-first-frame*",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/doccomments/**",
+   "part": "android-doc-comments",
+   "system": "projects-files",
+   "layer": "android",
+   "why": "[rules:office.md] doc-comments"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/marketplace/**",
+   "part": "android-skills",
+   "system": "marketplace",
+   "layer": "android",
+   "why": "[folder] skills/marketplace",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/UpdateButton*.tsx",
+   "part": "marketplace-screens",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen chain] screens/marketplace.ts family; components/marketplace/**"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useActiveSessionModel*",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker"
+  },
+  {
+   "match": "desktop/src/renderer/components/artifact-views/**",
+   "part": "artifact-views",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] paths: components/artifact-views/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/header/pill-*.ts",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:session-strip-motion.md] paths: SessionStrip.tsx, header/drag-order|pack-sessions|pill-*; [rules:artifacts.md] lists SessionDrawer.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/Performance*.tsx",
+   "part": "performance-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/performance"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePerformanceConfig*",
+   "part": "performance-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/performance"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/artifacts/**",
+   "part": "android-artifacts",
+   "system": "projects-files",
+   "layer": "android",
+   "why": "[rules:artifacts.md]"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/analytics/**",
+   "part": "android-app",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[folder] app shell, ui, util, analytics, social",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/Specialist*.tsx",
+   "part": "specialists-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-specialists.md]+[screen] chat/specialists"
+  },
+  {
+   "match": "desktop/src/renderer/components/LocalModel*.tsx",
+   "part": "local-models-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:engine-local-models.md] model files; EngineCard"
+  },
+  {
+   "match": "desktop/src/renderer/components/native-send*.ts",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/quick-chips; InputBar mounted only by chat",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSessionAttention*",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Claude Code prompts] attention hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useNativeSession*.ts",
+   "part": "status-bar",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:status-bar-relevance.md] status data hooks"
+  },
+  {
+   "match": "desktop/src/main/conversations/slug-repair*.ts",
+   "part": "sync-spaces",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] paths list conversations/symlink-sweep.ts; slug-repair is its sibling"
+  },
+  {
+   "match": "desktop/src/renderer/components/project-view/**",
+   "part": "project-view",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] paths: components/project-view/**; screen family projects"
+  },
+  {
+   "match": "desktop/src/renderer/components/context-menu/**",
+   "part": "context-menu",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] components/context-menu",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/__tests__/chat-*.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-chunked-reveal*",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/runtime/**",
+   "part": "android-runtime",
+   "system": "chat-agents",
+   "layer": "android",
+   "why": "[rules:android-runtime.md] paths: **/app/**; runtime folder"
+  },
+  {
+   "match": "desktop/src/renderer/components/permissions/**",
+   "part": "permission-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-permissions.md] paths: components/permissions/**, PermissionsSection.tsx; screen settings/assistant/permissions/skip-confirm"
+  },
+  {
+   "match": "desktop/src/renderer/components/marketplace/**",
+   "part": "marketplace-screens",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen chain] screens/marketplace.ts family; components/marketplace/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/specialists/**",
+   "part": "specialists-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:native-specialists.md]+[screen] chat/specialists"
+  },
+  {
+   "match": "desktop/src/renderer/components/development/**",
+   "part": "development-popups",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/development/*; bug-report",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/Terminal*.tsx",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal files"
+  },
+  {
+   "match": "desktop/src/renderer/components/markdown-*.ts",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-entry-folding*",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:renderer-lists.md] lists hooks/use-chunked-reveal.ts, use-entry-folding.ts"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/bridge/**",
+   "part": "android-bridge",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[rules:android-runtime.md] lists bridge/TranscriptSerializer.kt"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/config/**",
+   "part": "android-bridge",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[rules:android-runtime.md] lists bridge/TranscriptSerializer.kt"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/parser/**",
+   "part": "android-parser",
+   "system": "chat-agents",
+   "layer": "android",
+   "why": "[folder] app/parser",
+   "doubtful": true
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/skills/**",
+   "part": "android-skills",
+   "system": "marketplace",
+   "layer": "android",
+   "why": "[folder] skills/marketplace",
+   "doubtful": true
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/social/**",
+   "part": "android-app",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[folder] app shell, ui, util, analytics, social",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/tool-views/**",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat search]/[screen:chat] tool cards mounted only by chat"
+  },
+  {
+   "match": "desktop/src/renderer/components/appearance/**",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance; renderer/themes/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/Braille*.tsx",
+   "part": "chat-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists components/ChatView.tsx; rest mounted by screen chat"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useStreamingGate*",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists hooks/useSubmitConfirmation.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/use-observed-ref*",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/main/conversations/handoff-*.ts",
+   "part": "conversation-handoff",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:Conversation handoff] handoff-*, lease, takeover move a chat between devices",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/first-run/**",
+   "part": "first-run-ui",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:prereq-installer.md] first-run"
+  },
+  {
+   "match": "desktop/src/renderer/components/Resume*.tsx",
+   "part": "session-resume",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/resume"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useAttention*.ts*",
+   "part": "attention-prompts",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Claude Code prompts] attention hooks"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useSessionTasks*",
+   "part": "session-strip",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:session list] session hooks"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/util/**",
+   "part": "android-app",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[folder] app shell, ui, util, analytics, social",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/comments/**",
+   "part": "document-comments-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:office.md]+[MAP:Document comments] components/comments"
+  },
+  {
+   "match": "desktop/src/renderer/components/Theme*.tsx",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance; renderer/themes/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/overlays/**",
+   "part": "ui-primitives",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[MAP:UI primitives] components/ui/**"
+  },
+  {
+   "match": "desktop/src/renderer/state/transcript-*.ts",
+   "part": "chat-state",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:chat-reducer.md] lists chat-reducer.ts, chat-types.ts; [MAP:Chat & transcript] lists screen-feed, first-page-loader, transcript-*"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/usePreviewMeta*",
+   "part": "chat-input",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] lists hooks/useSubmitConfirmation.ts"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useTagRegistry*",
+   "part": "tags-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/tags"
+  },
+  {
+   "match": "desktop/src/renderer/components/library/**",
+   "part": "marketplace-screens",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen chain] screens/marketplace.ts family; components/marketplace/**"
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/*.kt",
+   "part": "android-app",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[folder] app shell, ui, util, analytics, social",
+   "doubtful": true
+  },
+  {
+   "match": "app/src/main/kotlin/com/youcoded/app/ui/**",
+   "part": "android-app",
+   "system": "foundations",
+   "layer": "android",
+   "why": "[folder] app shell, ui, util, analytics, social",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/harness/permission-*.ts",
+   "part": "native-permissions",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:native-permissions.md] paths list permission-store, native-session-host"
+  },
+  {
+   "match": "desktop/src/renderer/components/office/**",
+   "part": "office-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:office.md] paths: components/office/**; screen office/versions"
+  },
+  {
+   "match": "desktop/src/renderer/components/header/**",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:react-renderer.md]+[narrow-viewport.md] list HeaderBar.tsx, OverflowMenu.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/components/mascot/**",
+   "part": "buddy-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:buddy-floater.md]+[screen] settings/buddy",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/remote/**",
+   "part": "remote-ui",
+   "system": "sync-devices",
+   "layer": "screens",
+   "why": "[screen] settings/remote; components/remote"
+  },
+  {
+   "match": "desktop/src/renderer/state/artifact-*.ts",
+   "part": "artifact-state",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[rules:artifacts.md] lists state/artifact-tracker.ts, artifact-tool-use-tracker.ts"
+  },
+  {
+   "match": "desktop/src/renderer/state/marketplace-*",
+   "part": "marketplace-state",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[screen] marketplace; marketplace-context.tsx"
+  },
+  {
+   "match": "desktop/src/renderer/hooks/useChrome*.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[rules:narrow-viewport.md] lists hooks/use-narrow-viewport.ts"
+  },
+  {
+   "match": "desktop/src/renderer/components/pages/**",
+   "part": "pages-screens",
+   "system": "pages",
+   "layer": "screens",
+   "why": "[screen chain] screens/pages.ts family; components/pages/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/buddy/**",
+   "part": "buddy-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:buddy-floater.md]+[screen] settings/buddy",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/model/**",
+   "part": "model-picker",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/model-picker/*"
+  },
+  {
+   "match": "desktop/src/renderer/components/guide/**",
+   "part": "guide-tour",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] components/guide; HelpPopup launches it",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/harness/specialists/**",
+   "part": "native-specialists",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:native-specialists.md] paths: harness/specialists/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/diff/**",
+   "part": "git-review-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Git review] components/git, components/diff"
+  },
+  {
+   "match": "desktop/src/renderer/components/game/**",
+   "part": "games-arcade",
+   "system": "social",
+   "layer": "screens",
+   "why": "[MAP:Games arcade] components/game; renderer/game"
+  },
+  {
+   "match": "desktop/src/renderer/components/tags/**",
+   "part": "tags-ui",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[screen] chat/tags/manage; components/tags"
+  },
+  {
+   "match": "desktop/src/renderer/state/drawer-*.ts",
+   "part": "app-shell",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] shell-level state",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/git/**",
+   "part": "git-review-ui",
+   "system": "projects-files",
+   "layer": "screens",
+   "why": "[MAP:Git review] components/git, components/diff"
+  },
+  {
+   "match": "desktop/src/main/harness/injection/**",
+   "part": "harness-injection",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:harness-tools.md] paths: harness/injection/**"
+  },
+  {
+   "match": "desktop/src/renderer/components/ui/**",
+   "part": "ui-primitives",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[MAP:UI primitives] components/ui/**"
+  },
+  {
+   "match": "desktop/src/renderer/state/game-*.ts",
+   "part": "games-arcade",
+   "system": "social",
+   "layer": "screens",
+   "why": "[MAP:Games arcade] game-context/reducer"
+  },
+  {
+   "match": "desktop/src/renderer/utils/tool-*.ts",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat & transcript] parser/tool helpers"
+  },
+  {
+   "match": "desktop/src/shared/doc-comments-*.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/main/harness/admin-*.ts",
+   "part": "native-permissions",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:native-permissions.md] paths list permission-store, native-session-host"
+  },
+  {
+   "match": "desktop/src/main/chatsearch-index/**",
+   "part": "chatsearch-index",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] main/chatsearch-index; MAP row Chat search",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/prompt-card-*.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/harness/bash-*.ts",
+   "part": "native-permissions",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:native-permissions.md] paths list permission-store, native-session-host"
+  },
+  {
+   "match": "desktop/src/main/harness/askpass/**",
+   "part": "harness-askpass",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] harness/askpass, header: asks for admin password",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/harness/prompts/**",
+   "part": "harness-prompts",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] harness/prompts",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/shared/permission-*.ts",
+   "part": "permissions-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:native-permissions.md] lists shared/permission-types.ts"
+  },
+  {
+   "match": "desktop/src/main/harness/skills/**",
+   "part": "harness-skills",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:harness-tools.md] paths: harness/skills/**"
+  },
+  {
+   "match": "desktop/src/main/harness/search/**",
+   "part": "harness-search",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] harness/search; IPC main/ipc/search.ts",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/claude-code-*.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/marketplace-*.ts",
+   "part": "marketplace-backend",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[rules:registries.md]+[MAP:marketplace] name prefix marketplace-"
+  },
+  {
+   "match": "desktop/src/main/harness/tools/**",
+   "part": "harness-tools",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:harness-tools.md] paths: harness/tools/**"
+  },
+  {
+   "match": "desktop/src/main/transcript-*.ts",
+   "part": "transcript-pipeline",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:chat-reducer.md] lists main/transcript-watcher.ts, subagent-watcher.ts; siblings by name prefix"
+  },
+  {
+   "match": "desktop/src/renderer/bootstrap/**",
+   "part": "terminal-view",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[rules:pty-io.md] terminal bridge/registry"
+  },
+  {
+   "match": "desktop/src/main/harness/eval/**",
+   "part": "harness-eval",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[rules:harness-evaluator.md] paths: main/harness/eval/**",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/changelog-*.ts",
+   "part": "updates",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[MAP:In-app updates] name prefix update-/changelog-"
+  },
+  {
+   "match": "desktop/src/main/analytics-*.ts",
+   "part": "app-telemetry",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[MAP:App telemetry] name prefix analytics-"
+  },
+  {
+   "match": "desktop/src/shared/project-*.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/version-*.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/shared/session-*.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/harness/mcp/**",
+   "part": "harness-mcp",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:harness-tools.md] paths: harness/mcp/**"
+  },
+  {
+   "match": "desktop/src/main/sync-spaces/**",
+   "part": "sync-spaces",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[rules:sync-spaces.md] paths: main/sync-spaces/**"
+  },
+  {
+   "match": "desktop/src/main/subagent-*.ts",
+   "part": "transcript-pipeline",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:chat-reducer.md] lists main/transcript-watcher.ts, subagent-watcher.ts; siblings by name prefix"
+  },
+  {
+   "match": "desktop/src/shared/artifacts/**",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/shared/office-*.ts",
+   "part": "projects-contract",
+   "system": "projects-files",
+   "layer": "shared",
+   "why": "[rules:artifacts.md]+[office.md] shared artifacts/office/doc-comments types"
+  },
+  {
+   "match": "desktop/src/main/project-*.ts",
+   "part": "project-context",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[rules:conversations.md]+[MAP:project] name prefix project-"
+  },
+  {
+   "match": "desktop/src/renderer/themes/**",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance; renderer/themes/**"
+  },
+  {
+   "match": "desktop/src/renderer/styles/**",
+   "part": "theming",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[screen] settings/appearance; renderer/themes/**"
+  },
+  {
+   "match": "desktop/src/renderer/parser/**",
+   "part": "tool-cards",
+   "system": "chat-agents",
+   "layer": "screens",
+   "why": "[MAP:Chat & transcript] parser/tool helpers"
+  },
+  {
+   "match": "desktop/src/shared/model-*.ts",
+   "part": "agent-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:engine-local-models.md] lists shared/engine-types.ts; model/provider shapes"
+  },
+  {
+   "match": "desktop/src/shared/buddy-*.ts",
+   "part": "app-contract",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[bridge] app/update/prefs/first-run channels"
+  },
+  {
+   "match": "desktop/src/main/artifacts/**",
+   "part": "artifacts",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[rules:artifacts.md] paths: main/artifacts/**"
+  },
+  {
+   "match": "desktop/src/main/providers/**",
+   "part": "providers",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] main/providers; IPC chatgpt/openrouter/provider",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/remote-*.ts",
+   "part": "remote-access",
+   "system": "sync-devices",
+   "layer": "backend",
+   "why": "[MAP:Remote access] remote-server/remote-config/remote-devices; phone-read-deny/upload-store serve phone reads",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/github-*.ts",
+   "part": "github-connection",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[bridge] ipc/github.ts; files github-auth/client/connect/fork-publish",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/update-*.ts",
+   "part": "updates",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[MAP:In-app updates] name prefix update-/changelog-"
+  },
+  {
+   "match": "desktop/src/main/window-*.ts",
+   "part": "window-management",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[rules:multi-window-detach.md] + name prefix window-"
+  },
+  {
+   "match": "desktop/src/shared/bash-*.ts",
+   "part": "permissions-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:native-permissions.md] lists shared/permission-types.ts"
+  },
+  {
+   "match": "desktop/src/shared/send-*.ts",
+   "part": "chat-contract",
+   "system": "chat-agents",
+   "layer": "shared",
+   "why": "[rules:chat-reducer.md] lists shared/attention-classifier.ts; session/transcript shapes"
+  },
+  {
+   "match": "desktop/src/main/theme-*.ts",
+   "part": "theming-backend",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] name prefix theme-; MAP row Themes",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/skill-*.ts",
+   "part": "skill-library",
+   "system": "marketplace",
+   "layer": "backend",
+   "why": "[MAP:Skills] name prefix skill-"
+  },
+  {
+   "match": "desktop/src/main/buddy-*.ts",
+   "part": "buddy-window",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:buddy-floater.md] file-name prefix buddy-"
+  },
+  {
+   "match": "desktop/src/renderer/game/**",
+   "part": "games-arcade",
+   "system": "social",
+   "layer": "screens",
+   "why": "[MAP:Games arcade] components/game; renderer/game"
+  },
+  {
+   "match": "desktop/src/renderer/data/**",
+   "part": "marketplace-state",
+   "system": "marketplace",
+   "layer": "screens",
+   "why": "[folder] data/skill-registry.json — bundled skill listing",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/dev/**",
+   "part": "workbench",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[rules:landing-page.md] paths: renderer/dev/workbench/**; screens/*.ts only mount real components"
+  },
+  {
+   "match": "desktop/src/main/project/**",
+   "part": "project-context",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[folder] main/project; MAP row project context",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/hook-*.ts",
+   "part": "claude-code-link",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[MAP:Claude Code hooks / prompts] file-name prefix claude-code-/hook-/command-",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/cdp-*.ts",
+   "part": "dev-probes",
+   "system": "workshop",
+   "layer": "devtools",
+   "why": "[folder+header] file header says installer launch check / dev blank-mount watchdog"
+  },
+  {
+   "match": "desktop/src/main/engine/**",
+   "part": "local-models",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:engine-local-models.md] paths: main/engine/**, main/models/**"
+  },
+  {
+   "match": "desktop/src/main/models/**",
+   "part": "local-models",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:engine-local-models.md] paths: main/engine/**, main/models/**"
+  },
+  {
+   "match": "desktop/src/main/office/**",
+   "part": "office",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[rules:office.md] paths: main/office/**"
+  },
+  {
+   "match": "desktop/src/main/pages/**",
+   "part": "page-runtime",
+   "system": "pages",
+   "layer": "backend",
+   "why": "[folder] main/pages; IPC main/ipc/pages.ts",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/voice/**",
+   "part": "voice-engine",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[folder] main/voice; IPC main/ipc/voice.ts",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/git/**",
+   "part": "git-service",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[folder] main/git; IPC main/ipc/git.ts",
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/components/*",
+   "part": "unsorted-components",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "no evidence; needs owner decision",
+   "broad": true,
+   "unsorted": true
+  },
+  {
+   "match": "desktop/src/main/conversations/**",
+   "part": "conversation-store",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:conversations.md] paths: main/conversations/** (store, naming, tag registry)",
+   "broad": true
+  },
+  {
+   "match": "desktop/src/main/doc-comments/**",
+   "part": "document-comments",
+   "system": "projects-files",
+   "layer": "backend",
+   "why": "[folder] main/doc-comments; IPC main/ipc/doc-comments.ts",
+   "broad": true,
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/__tests__/**",
+   "part": "updates",
+   "system": "foundations",
+   "layer": "backend",
+   "why": "[folder] main/__tests__ holds only the changelog tests",
+   "broad": true,
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/renderer/state/**",
+   "part": "unsorted-state",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "no evidence; needs owner decision",
+   "broad": true,
+   "unsorted": true
+  },
+  {
+   "match": "desktop/src/renderer/hooks/**",
+   "part": "unsorted-hooks",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "no evidence; needs owner decision",
+   "broad": true,
+   "unsorted": true
+  },
+  {
+   "match": "desktop/src/renderer/utils/**",
+   "part": "renderer-utils",
+   "system": "foundations",
+   "layer": "screens",
+   "why": "[folder] renderer/utils",
+   "broad": true,
+   "doubtful": true
+  },
+  {
+   "match": "desktop/src/main/harness/*",
+   "part": "native-runtime",
+   "system": "chat-agents",
+   "layer": "backend",
+   "why": "[rules:native-runtime.md] paths: main/harness/*",
+   "broad": true
+  },
+  {
+   "match": "desktop/src/shared/*.ts",
+   "part": "shared-utils",
+   "system": "foundations",
+   "layer": "shared",
+   "why": "[folder] shared/ loose files without a domain",
+   "broad": true,
+   "doubtful": true
+  }
+ ]
+}
