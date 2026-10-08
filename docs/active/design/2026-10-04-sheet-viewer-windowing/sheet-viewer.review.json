@@ -1,0 +1,71 @@
+{
+  "title": "Spreadsheet viewer: what looks different after the speed fix",
+  "key": "sheet-viewer-windowing",
+  "out": "sheet-viewer.review.html",
+  "images": "images/sheet-viewer",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "labels": { "before": "Before (today)", "after": "After" },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "small": ["sheet", "1-small-sheet", "480x340+0+0"],
+    "wide": ["sheet", "2-wide-mid-scroll", "480x340+0+0"],
+    "select": ["sheet", "3-selection", "480x340+0+0"],
+    "find": ["sheet", "4-find", "480x340+0+0"],
+    "report": ["sheet", "5-merged-wrapped", "480x340+0+0"],
+    "longtext": ["sheet", "6-long-text", "480x340+0+0"]
+  },
+  "steps": [
+    {
+      "id": "S-1", "surface": "Files", "path": "Open a small spreadsheet (CSV) from the file list",
+      "crop": "small",
+      "headline": "A small sheet looks almost the same; every row is now exactly the same height.",
+      "changed": "Rows are all the same height (the old view alternated between two slightly different heights), and columns are sized to the text they show.",
+      "notice": "Hardly anything, on a small file. It opens a little quicker.",
+      "measured": "a 200 by 10 sheet opens in 0.1 s instead of 0.3 to 0.6 s",
+      "risk": "Column widths can differ from before by a few pixels."
+    },
+    {
+      "id": "S-2", "surface": "Files", "path": "Open a very large sheet (2,000 rows by 100 columns) and scroll to the middle",
+      "crop": "wide",
+      "headline": "A huge sheet looks the same in the middle, but it opens instantly instead of freezing the app for seconds.",
+      "changed": "Only the part you can see is drawn; the rest is filled in as you scroll. Row numbers and column letters stay pinned.",
+      "notice": "No freeze when opening, clicking, scrolling or closing a big sheet.",
+      "measured": "opens in 0.2 s instead of 10 to 15 s; a click takes 0.03 s instead of 0.5 s",
+      "risk": "A very fast scroll can show empty paper for an instant before cells fill in."
+    },
+    {
+      "id": "S-3", "surface": "Files", "path": "Drag across some cells (shown here as a drag; the old view could only highlight text)",
+      "crop": "select",
+      "headline": "Dragging across cells now selects them as a green block instead of the blue text highlight.",
+      "changed": "Select a block of cells by dragging, shift-clicking, or Ctrl+A. Copy gives you every selected cell, tab-separated, even when the block is far bigger than the screen.",
+      "notice": "A green block with a ring on the first cell. Selecting just some words inside one cell still works as before.",
+      "measured": "select-all and copy on a 200,000-cell sheet takes about 0.02 s",
+      "risk": "Cells hidden under a merged cell copy as empty, so pasted columns line up (the old copy had one fewer column on that row)."
+    },
+    {
+      "id": "S-4", "surface": "Files", "path": "Press Ctrl+F in a spreadsheet and type a word",
+      "crop": "find",
+      "headline": "Find looks the same, but it now counts and reaches matches far off screen too.",
+      "changed": "The match count comes from the whole sheet, and Next/Previous scrolls to each match in reading order.",
+      "notice": "The count is per cell (a cell with the word twice counts once). Row numbers and column letters are not searched.",
+      "measured": "22,220 matches counted in 0.03 s on a 200,000-cell sheet",
+      "risk": "None known."
+    },
+    {
+      "id": "S-5", "surface": "Files", "path": "Open an Excel file with a merged title, a merged block and wrapped notes",
+      "crop": "report",
+      "headline": "Merged cells look the same; notes that wrap now wrap inside a sensible column width.",
+      "changed": "A column no longer grows as wide as its longest text: it stops at a limit and wrapped text wraps there.",
+      "notice": "Rows with wrapped notes are taller, and the notes column is narrower than it used to be.",
+      "risk": "A wrapped row's height is estimated first and corrected the instant it appears, so it can nudge once."
+    },
+    {
+      "id": "S-6", "surface": "Files", "path": "Click a cell with a very long line of text in an Excel file",
+      "crop": "longtext",
+      "headline": "Very long text now ends in an ellipsis in the cell, with the whole text in the bar above.",
+      "changed": "Before, the column grew to show the whole line, pushing everything else off screen. Now the cell is cut with an ellipsis, hover shows all of it, and the formula bar wraps the full text.",
+      "notice": "You read long text in the bar at the top (or by hovering), not by scrolling sideways.",
+      "risk": "Text longer than about 400 pixels is no longer visible inside the cell itself."
+    }
+  ]
+}

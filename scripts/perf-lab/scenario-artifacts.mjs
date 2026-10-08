@@ -381,7 +381,10 @@ export async function installArtifactHelpers(cdp) {
       clickTitle: async (title, scopeSel) => {
         const root = scopeSel ? $(scopeSel) : document;
         if (!root) return { ok: false, reason: 'scope ' + scopeSel + ' is not in the DOM' };
-        const el = $('button[title=' + JSON.stringify(title) + ']', root);
+        // WHY the aria-label fallback (2026-10-04): HeaderBar's Session Files button (and others) now carry a Tooltip +
+        // aria-label and NO title attribute, so a title-only lookup silently found nothing and this whole scenario
+        // died at its first click. Title still wins where a button has one.
+        const el = $('button[title=' + JSON.stringify(title) + ']', root) || $('button[aria-label=' + JSON.stringify(title) + ']', root);
         if (!el) {
           const titles = all('button[title]', root).map((b) => b.getAttribute('title')).slice(0, 25);
           return { ok: false, reason: 'no button[title=' + JSON.stringify(title) + '] under ' + (scopeSel || 'document') + '; titles present: ' + JSON.stringify(titles) };
@@ -466,6 +469,8 @@ export async function installArtifactHelpers(cdp) {
        */
       viewerState: (withTail) => {
         const c = contentPane();
+        // NOTE (2026-10-04): [data-artifact-viewer] exists only on some viewers now (code editor, commentable documents);
+        // CSV/HTML have none, so steps that wait on it for those files are stale — suspects-b.mjs 'sheet' waits on the grid instead.
         const viewer = c ? $('[data-artifact-viewer]', c) : null;
         const cm = c ? $('.cm-content', c) : null;
         const frame = c ? $('iframe[title="HTML preview"]', c) : null;
@@ -720,7 +725,7 @@ export async function step(cdp, label, fn, { pingMs = 50 } = {}) {
  * So the honest way for the rig to produce one is exactly that: put the file on
  * disk, then tell the app an agent wrote it.
  *
- * appendVersion returns { ok, project } and NOT the new id (ipc-handlers.ts:3521),
+ * appendVersion returns { ok, project } and NOT the new id (main/ipc/artifacts.ts, artifacts:append-version),
  * so the ids are read back with artifacts:list-session afterwards.
  */
 function writeArtifactFiles(fixture, { dirName, smallBytes, largeBytes }) {
@@ -764,7 +769,7 @@ export async function registerArtifacts(cdp, projectRoot, sessionId, files) {
           // kind 'internal' + absolutePath null is the shape the app's own
           // tracker sends for a file inside the project root
           // (artifact-tool-use-tracker.ts) and the shape the handler types
-          // (ipc-handlers.ts:3475-3482). toolUseId makes the append idempotent.
+          // (main/ipc/artifacts.ts, artifacts:append-version). toolUseId makes the append idempotent.
           { path: rel, kind: 'internal', absolutePath: null, type: 'create', author: 'agent', toolUseId: 'perf-lab-' + rel });
         out.push({ rel, ok: !!(r && r.ok), raw: r });
       } catch (e) {
@@ -1330,7 +1335,7 @@ export async function runArtifactScenario(app, fixture, {
           warnings.push(`type-${key}: the typed text landed but no beforeinput fired on .cm-content, so keystroke-to-paint could not be measured; only the Node-side dispatch times are available for this step`);
         }
 
-        // Save through the app's real path (artifacts:save, ipc-handlers.ts:3849)
+        // Save through the app's real path (artifacts:save, main/ipc/artifacts.ts)
         // so the write cost is measured too, and so the next artifact selection
         // is not blocked by the unsaved-changes guard (SessionDrawer.tsx guardUnsaved).
         const tSave = Date.now();

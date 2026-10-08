@@ -125,7 +125,7 @@ const json = (res, status, body) => {
  * Times are Date.now() epoch ms so a scenario can line them up with its own clock.
  */
 export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127.0.0.1' } = {}) {
-  let current = { deltas: 200, perSec: 100, seed: 'perf-lab-stream', chars: null };
+  let current = { deltas: 200, perSec: 100, seed: 'perf-lab-stream', chars: null, text: null };
   let planned = null;   // { text, pieces } built lazily from `current`
   const requests = [];
   const waiters = [];   // expectCompletion() resolvers, in call order
@@ -134,7 +134,9 @@ export async function startFakeProvider({ port = FAKE_PROVIDER_PORT, host = '127
   const ensurePlanned = () => {
     if (planned) return planned;
     const chars = current.chars ?? Math.max(1000, current.deltas * 5);
-    const text = buildReplyText({ chars, seed: current.seed });
+    // WHY `text`: the suspects probe streams ONE long code fence, a shape the
+    // seeded prose generator never produces. The caller sizes `deltas` to the text.
+    const text = typeof current.text === "string" ? current.text : buildReplyText({ chars, seed: current.seed });
     const pieces = splitDeltas(text, current.deltas);
     planned = { pieces, text: pieces.join('') };
     return planned;

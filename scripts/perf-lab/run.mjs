@@ -1429,7 +1429,7 @@ async function main(argv) {
               // (scenario-workload.mjs:449-471), so index 4 named 'native-0' is the native chat.
               //
               // WHY NOT window.claude.session.switch(id): on desktop that IPC handler is a
-              // parity STUB that returns { ok: true } and switches nothing (ipc-handlers.ts:820-824
+              // parity STUB that returns { ok: true } and switches nothing (main/ipc/session.ts, the session:switch entry
               // — "Switch is a client-side concern on desktop"). Using it would leave the
               // previous conversation on screen and save it as `native-chat.png` — a
               // confidently mislabelled screenshot, which is worse than a missing one.

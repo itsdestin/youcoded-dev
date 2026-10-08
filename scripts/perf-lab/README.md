@@ -255,6 +255,14 @@ shakedown. Fix what breaks, run it again, and only then record the result as a
 baseline. Ranking anything from a first run is how the rig ends up measuring itself
 (see *Reference numbers* → the retracted 3.3-second startup).
 
+Two more traps from 2026-10-04. **A fix can pass a timing leg without engaging at all**:
+the fence leg once reported a long-code-block fix as working while the fix was never used.
+Assert the mechanism (a non-zero count of the pieces the fix creates; the leg now fails on
+zero), not just the time. **A fake producer that does not behave like the real program
+produces false findings**: swallowed write errors, a blocking write loop that never reads
+stdin, and frames wider than the 80-column terminal gave three false findings in one night.
+When the app looks guilty, instrument the producer first.
+
 ---
 
 ## The two probes, and why there are two
@@ -274,7 +282,7 @@ not the conversation you are looking at, not the other five.
 
 `probe-ipc.mjs` measures that by pinging `window.claude.getPlatform()` every 100 ms and
 timing the round trip. That handler is literally `() => process.platform`
-(`ipc-handlers.ts:1387-1389`) — zero work — so every millisecond it reports is
+(`main/ipc/ui.ts, the platform:get entry`) — zero work — so every millisecond it reports is
 queueing and thread availability, never the cost of the handler itself. Its thresholds
 are chosen against what a person perceives: >100 ms a click feels laggy, >250 ms the UI
 feels stuck, >1000 ms the app looks frozen.
@@ -571,6 +579,69 @@ null and the report is refused (exit 4).
 
 ---
 
+### `switch-pingpong.mjs` — session switching the way a person does it *(standalone, one boot per configuration; added 2026-10-05)*
+
+```
+node scripts/perf-lab/switch-pingpong.mjs --checkout <worktree>/youcoded   # or --app-dir <linux-unpacked>
+  [--pairs small-huge,huge-huge,idle-streaming,idle-caughtup,term-term,term-flood2,term-flood20]
+  [--sessions 6|16|6,16] [--only a,b400,b250,b150,c,d,e,f,ctrl,noop,late,probe,profile] [--probe-reps 4] [--out dir] [--tag x]
+node scripts/perf-lab/switch-table.mjs scratch/perf-lab/switch/*.json      # the headline table
+```
+
+It never builds (it reads the package stamp, like `gpu-theme.mjs`) and waits for a quiet machine and for other perf-lab runs to end.
+Use `bg-run.sh`-style detachment (`setsid nohup`) for a full matrix: one configuration is ~7 minutes.
+
+**What it measures that the old switch clock did not.** REAL input through the browser's input path (mouse press/release on the
+pill; the app's own hold-Shift switcher), not `el.click()`; the page's event timestamp as t0; *first frame at which the destination is the
+visible pane* and the frame after it; *settled* (no change in that pane for 150 ms: DOM changes and layout shifts in chat, buffer / output
+changes in terminal); every frame gap over 1.5x the frame period (not only over 40 ms); long animation frames with script attribution;
+main-process IPC pings across the sequence; and the work that lands AFTER arrival (CDP metric deltas, `late`). Sequences: `a` spaced 1 s,
+`b400/b250/b150` human ping-pong, `c` burst (10 clicks 40 ms apart across 4 sessions), `d` interrupted (second click 60 ms later), `e` the keyboard
+switcher, `f` hidden-work arrival (a streamed reply / a terminal flood landed while hidden), `probe` typing and a wheel tick at +50/150/300/600 ms.
+
+**Controls — read these before any number.** `ctrl`: the same switch with a known 200 ms main-thread block injected right after each click
+must move first paint by ~200 ms (it did: +185 to +197 ms). `noop`: clicking the already-active session must report "no switch", never 0 ms.
+Every switch is checked against the intended session (chat: `data-chat-session-id`; terminal: terminal order); a click that landed on another pill,
+or never reached the page, is DROPPED and counted (`dropped` in each summary), never averaged in.
+
+**Traps this leg already hit.**
+- *The pill row moves.* The active pill grows and the others shrink, so coordinates read once go stale (at 150 ms spacing 31 of 40 clicks missed).
+  Each click now reads ONE pill's rectangle just before the click (a layout flush just before t0, outside the timed window); runs are labelled.
+- *After a pill click, keyboard focus is on the pill button*, not the composer: typed keys go nowhere unless the app moves focus. The key probe
+  forces focus (so it measures main-thread availability) and reports the natural focus (`naturalFocusAfterClick`).
+- *Machine load.* Every sequence records `/proc/loadavg` at start and end; `loadHigh` / the table's `[LOAD n]` marks a sequence run above load 8. Repeat those.
+- *Cold visit.* The pill-position pass shows each of the four sessions once before timing; "cold" means the first TIMED visit, not a first-ever render.
+- *Settle is never before first paint*, and is not reported (null, `n/a-streaming`) for a destination that is streaming (it never goes quiet).
+
+**Limits.** Software GL on Xvfb; frames are not the physical panel; fake Claude Code producer; fixture sizes (50 / 2,500 / 3,500 turns) not the owner's histories;
+the leg runs the PACKAGED build (React production mode) while owner hand tests ran a Vite dev build. Results: `docs/archive/investigations/2026-10-05-session-switch-measurement.md`.
+
+### `realism.mjs` — the "real-use" lab: does the lab feel what Destin feels? *(added 2026-10-07; findings in `docs/archive/investigations/2026-10-05-lab-realism.md`)*
+
+```
+# the standard configuration, one line (packaged build, his real conversations copied by size, his glass+particle theme, the real GPU at 2560x1600 / 1.5, 4 sessions, a machine-wide CPU storm):
+node scripts/perf-lab/realism.mjs --preset real-use-storm --checkout <worktree>/youcoded --boots 3 --seqs fresh,warm,busy
+# the closest to his dev-build hand test: add  --build dev --pick newest --deep on
+node scripts/perf-lab/realism-table.mjs scratch/perf-lab/realism/out/<dir>        # one table from the result files
+```
+
+Every realism factor is a flag, so a gap is explained by switching ONE factor at a time: `--build packaged|dev`, `--history fixture|real`
+(`--pick ladder|newest|biggest`, `--deep on` scrolls each chat back through its older pages first), `--theme stock|heavy`, `--display xvfb|gpu`
+(gpu = the private invisible KWin on the Radeon; refused if Chromium reports software GL; the renderer string is saved in every result),
+`--sessions 2..20`, `--busy off|on|heavy|gpu|both` (on = light background load; heavy = every core saturated, machine load ~35; gpu = a browser page filling the graphics chip).
+Presets: `real-use`, `real-use-storm`, `cheap`. One boot runs `fresh` (right after opening the sessions), then a warm-up + census, `warm`, optionally `soak`, `busy`, and the controls `ctrl` and `noop`.
+
+**What it measures.** The same three numbers the owner's hitch recorder logs for a click (browser Event Timing): input delay, handler time, presentation delay, plus
+click-to-paint, for pointerdown/pointerup/click, with human timing (150-600 ms gaps, a 60-140 ms press, pointer arrives first, occasional wheel / typing / the Shift switcher) and the pill position read fresh before each click.
+Also long animation frames, CPU and (gpu display) per-process GPU engine time, and the right-pane check 450 ms after each press.
+**Content census** per session is counts only (entries, folded, tool cards, code blocks, tables, images, DOM elements). **Controls:** `ctrl` = a 200 ms handler injected on every pill press must read ~+200 ms (it does: 220-270);
+`noop` = clicking the active session changes nothing.
+
+**Privacy.** `--history real` COPIES (copy-on-write, `cp --reflink=always`) transcripts into a scratch fixture HOME and never opens the originals for writing; only file sizes and dates of the originals and DOM counts of the copies are read, never conversation text.
+The fixture is deleted at the end of every boot (`fixtureDeleted` in the result). Do not commit or paste result files from `--history real` runs without checking they hold only sizes and counts (they do by construction).
+
+**Limits.** The invisible compositor does not scan out: no real vblank, VRR or panel timing. Machine contention is a factor of its own: runs that start at load > 8 from OTHER work are excluded from the quiet columns.
+
 ## Reference numbers — what we already measured
 
 Compare a new run against these at a glance. **All figures below are from
@@ -596,7 +667,7 @@ row is also no longer reproducible by default: `huge` was recalibrated to 3,500 
 **Mechanism, for the record:** `TranscriptWatcher.getHistory()`
 (`youcoded/desktop/src/main/transcript-watcher.ts:451-488`) does a synchronous
 `fs.readFileSync` of the entire transcript plus a full parse of every line, called from
-an IPC handler (`ipc-handlers.ts:2489`). The main process is single-threaded and serves
+an IPC handler (`main/ipc/session.ts, the session:history entry`). The main process is single-threaded and serves
 IPC for every session, so while it runs, nothing anywhere in the app can respond.
 
 ### Startup (status doc §3.4)
@@ -977,6 +1048,20 @@ instrument can see the thing it was built for.
 
 ---
 
+### Real-GPU cost without a visible window — `gpu-cost.mjs` (added 2026-10-05)
+
+The rig's Xvfb lane is software-drawn, so it cannot rank blur, particles or wallpapers. `gpu-cost.mjs` runs the
+packaged app on the **real Radeon** inside a private, invisible `kwin_wayland --virtual` (own socket, own
+D-Bus, own runtime dir, 2560x1600 at ~180 Hz, scale 1.5; nothing reaches the real screen or the live session)
+and reads the app's own GPU time from amdgpu `fdinfo`, which other processes (the owner's desktop, VMs) cannot
+contaminate. It REFUSES to report if Chromium is not on the Radeon with GPU compositing and rasterization on.
+Suites: `--suite control` (known-cost positive control + noise floor) and `--suite themes --cells
+'midnight,cotton-candy-sky+noparticles,...' --scene welcome|chat|stream`. Toggles: `+reduced +noparticles
++smallwall +noblur`. Pure parsing is unit-tested in `tests/gpu-cost-parse.test.mjs`. Method, limits and first
+readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`. Run it with no other rig or dev app
+holding ports 10000/10020/9558 (it checks), and compare megacycles/second as well as percent because the GPU
+clock moves with load.
+
 ## Tests
 
 ```bash
@@ -1051,7 +1136,7 @@ each would have silently produced a *plausible* wrong number rather than an erro
   GGUF basename without `.gguf`.
 
 **`window.claude.session.switch(id)` does nothing on desktop.** It is a parity stub
-that returns `{ ok: true }` and switches nothing (`ipc-handlers.ts:820-824` — "Switch
+that returns `{ ok: true }` and switches nothing (`main/ipc/session.ts, the session:switch entry` — "Switch
 is a client-side concern on desktop"). Timing it reports a ~0 ms switch that never
 happened, and screenshotting after it saves the *previous* conversation under the new
 name. Drive `window.__perfLab.switchTo(...)` from `scenario-workload.mjs` instead — it

@@ -900,3 +900,13 @@ recurred — the repetition is the data.
 - `.claude/hooks/glob-guard.py` zsh glob warning fired on `--include=*.md` → dropped: it did its job; `rg -g` used instead
 - Limitations the plan left (cache sweep, "preparing" state, real rejection capture, stricter-switch re-prepare, host-level checkpoint test) → roadmap: native-harness.md clause (f), filed during the build
 - deleted/merged: the PITFALLS npm-install bullet (guard replaces its "none — candidate" line); knip ceiling lowered to 132 after un-exporting unused symbols; the plan moved to `docs/archive/plans/`
+
+## 2026-10-07 — zero-hitch performance program: fixes, hitch recorder, switch fix, realism lab (session/perf-switch-marks-20261005, app + workspace)
+- Destin's felt switch lag was reproduced only by "dev build + loaded machine"; installed-style stays <0.1 s. His recorder data came from a dev window and the file could not say so → applied: `packaged` on the recorder's startup line + a hitch-report warning, both unit-tested
+- His test window ran from a worktree a helper was editing (HMR reload → blank terminal, send refused, misread as an app bug), and helpers loaded the machine while he hand-tested → applied: `docs/local-dev.md` paragraph (detached worktree, quiet machine)
+- Lab rigs produced false findings 3× (swallowed write errors, blocking stdin, 81-col frames) before any app code was wrong → applied earlier: known-cost `ctrl` and `noop` controls in realism/switch legs, documented as "read these before any number" in the perf-lab README
+- A test mock hid a method missing on the real SessionManager (`bounceSize`) → applied earlier: dependency made required, so tsc catches it
+- RECURRED: the 2026-09-18 preference "don't hand him a second copy to compare against" — I recommended an installed-style test copy for him to try → applied: recurrence noted in `~/system/me/preferences.md` (global.md has another session's uncommitted edit, so not promoted there)
+- Destin: "i think this is becoming overcomplicated....." (composer focus) and "measure what users actually feel, closest to real use" → applied: two `~/system/me/preferences.md` bullets
+- Branch sprawl: 8 stacked perf session branches + 4 detached worktrees (~35 GB incl. scratch) for one program → dropped as guidance (workspace-start already supports one session branch); cleanup candidates listed for merge time
+- deleted/merged: 3.6 GB realism builds and the fix worktree deleted; perf roadmap folded into master's bundled entries; superseded reload-repaint app commits recorded as dropped rather than carried

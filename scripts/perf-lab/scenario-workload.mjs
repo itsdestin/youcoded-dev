@@ -338,7 +338,7 @@ export async function installPageHelpers(cdp) {
        *
        * The bare IPC \`window.claude.session.switch(id)\` is NOT used as a fallback:
        * on desktop that handler is a parity stub that returns { ok: true } and
-       * changes nothing (ipc-handlers.ts:820-824 — "Switch is a client-side
+       * changes nothing (main/ipc/session.ts, the session:switch entry — "Switch is a client-side
        * concern on desktop"). Timing it would report a ~0 ms switch that never
        * happened. When the pill is not in the strip the real user path is the
        * overflow dropdown, so that is what we drive, and it is reported and
@@ -826,7 +826,7 @@ export async function openJourneySessions(cdp, fixture, { ids, warnings = [], na
   // ── 2 native (YouCoded harness) sessions ─────────────────────────────
   // `binding` and `preset` are absent from preload's TS type for session.create
   // (preload.ts:376-377) but ARE forwarded verbatim by structured clone and are
-  // what main reads (ipc-handlers.ts:681); session-manager.ts:85-87 THROWS if a
+  // what main reads (main/ipc/session.ts, the session:create entry); session-manager.ts:85-87 THROWS if a
   // fresh native session has no binding. skipPermissions is passed false to
   // match the journey — the native branch hardcodes false anyway
   // (session-manager.ts:95-96), since there is no PTY for it to affect.
@@ -875,7 +875,7 @@ export async function runWorkloadScenario(app, fixture, {
 
     // ── First native token ───────────────────────────────────────────────
     // Switch by CLICKING the pill. window.claude.session.switch() is a no-op stub
-    // on desktop (ipc-handlers.ts:820-824), so using it here would leave some
+    // on desktop (main/ipc/session.ts, the session:switch entry), so using it here would leave some
     // other session on screen and time the wrong pane.
     await mark(cdp, 'native-send:start');
     const natIdx = ids.indexOf(nat[0].id);

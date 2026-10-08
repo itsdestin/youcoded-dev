@@ -75,3 +75,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Tailscale. Long-horizon, around v1.4, not a release commitment; related to YouCoded Mesh and Cloud
       fallback in the native-harness backlog. Hosting and privacy design open.
       `remote` `parked` `P3` `checked 2026-09-08` `v1.4`
+
+
+- [ ] The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that joins late may replay a garbled start. This predates the 2026-10-04 terminal work; fixing it changes the offsets phones replay against, so it needs a phone check. Filed here because the fix is the phone protocol; the memory cost of that buffer is in perf
+      `remote` `needs-verify` `P3` `checked 2026-10-04` `performance` → docs/archive/investigations/2026-10-04-performance-gap-review.md
