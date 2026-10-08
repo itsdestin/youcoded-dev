@@ -1,0 +1,146 @@
+{
+  "title": "The map — its shape, drawn from the real code",
+  "key": "master-plan-map-shape",
+  "out": "master-plan.map-shape.html",
+  "images": "images/master-plan.map-shape",
+  "runs": {
+    "today": "runs/map-today"
+  },
+  "labels": {
+    "today": "Drawn from the code today"
+  },
+  "stage": "ask",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "YouCoded plan",
+      "path": "The map tab",
+      "crop": "grid-top",
+      "headline": "The map is a grid: your product systems across the top, the layers of the app down the side.",
+      "changed": "Each box is a part of the app, placed by a rule file that covers every source file. Columns are the systems you named plus Foundations and Workshop; rows are screens, shared, backend, Android and dev tools. Lines are real connections: blue for code imports, green for shared request names, orange for edited together. A bubble on a box counts the in-flight efforts touching it.",
+      "measured": "124 parts, 1,311 desktop files, 85 Android files, 0 unplaced",
+      "notice": "Chat and agents is half the app. Pages and Social are tiny. Orange lines outnumber blue, so the real seams are things edited together, not things that call each other.",
+      "risk": "Dense at full size; the built page folds columns and shows names on hover, which the picture cannot.",
+      "highlight": {
+        "box": [
+          4,
+          12,
+          92,
+          6
+        ]
+      }
+    },
+    {
+      "id": "B-2",
+      "surface": "YouCoded plan",
+      "path": "The briefing tab, active work",
+      "crop": "branches-top",
+      "headline": "Active work is one row per effort, newest first, showing which parts of which systems it touches.",
+      "changed": "Branches that carry the same change are folded into one effort, so the five stacked speed-lab branches read as one row. Each pill is a part the effort changes, with its file count.",
+      "measured": "23 efforts from 27 branches, as of this morning",
+      "notice": "You can see at a glance that the UI consistency audit touches 63 parts across every column, while most efforts touch one or two.",
+      "risk": "A branch whose files are all new shows an empty row until its files are placed.",
+      "highlight": {
+        "box": [
+          1,
+          12,
+          99,
+          8
+        ]
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "pick": "several",
+      "surface": "YouCoded plan",
+      "path": "The red and orange marks on the map's boxes",
+      "headline": "Which problem signals should the map show? Pick every one you would act on.",
+      "today": "The collector can compute five kinds of trouble from the code and history without anyone writing them down. On the first drawing it found 11 parts with no tests, 10 pairs that depend on each other in a circle, and dozens of parts being edited together with no code link between them.",
+      "problem": "Every mark costs attention. A mark you would never act on is noise that hides the one you would.",
+      "proposal": "Only the kinds you pick are drawn. The others are still computed and listed on the side, off the picture.",
+      "options": [
+        {
+          "id": "collision",
+          "label": "Several efforts touching one part at once",
+          "pros": [
+            "Warns before two branches collide at merge.",
+            "Tells you which part to merge first."
+          ],
+          "cons": [
+            "Common on the app shell, which nearly every branch touches."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hidden-coupling",
+          "label": "Edited together with no code link",
+          "pros": [
+            "Shows one feature written in several places, like the desktop and phone bridges.",
+            "This is where duplication lives."
+          ],
+          "cons": [
+            "Also flags honest pairs, like a screen and its test data."
+          ]
+        },
+        {
+          "id": "no-tests",
+          "label": "No tests",
+          "pros": [
+            "A part with no tests is one an assistant can break silently."
+          ],
+          "cons": [
+            "Mostly the Android parts today, so the mark repeats."
+          ]
+        },
+        {
+          "id": "cycle",
+          "label": "Two parts depending on each other in a circle",
+          "pros": [
+            "A circle means neither can change alone."
+          ],
+          "cons": [
+            "Ten exist today and most are old; fixing them is not urgent."
+          ]
+        },
+        {
+          "id": "hot-seam",
+          "label": "A seam far busier than the others",
+          "pros": [
+            "Points at the joints that need a cleaner boundary."
+          ],
+          "cons": [
+            "Chat and agents is half the app, so its seams are always the busiest."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "YouCoded plan",
+      "path": "Which column a part is drawn in",
+      "headline": "Four parts had mixed evidence; I placed them. GitHub connection under Sync and devices, the rest stay put.",
+      "changed": "The GitHub sign-in is used more by sync than by the marketplace, so it moves to Sync and devices. Marketplace account and the skill library stay under Marketplace; document comments stay under Projects and files; the evaluator rig stays in Workshop because you count evaluations as workflow engineering. A wrong call only changes which column a box is drawn in.",
+      "notice": "You will see the GitHub connection beside sync spaces and remote access, not beside the skill library.",
+      "yes": "Holds",
+      "no": "Recut it"
+    }
+  ],
+  "crops": {
+    "grid-top": [
+      "map",
+      "grid",
+      "1600x900+0+0"
+    ],
+    "branches-top": [
+      "map",
+      "branches",
+      "1600x760+0+0"
+    ]
+  }
+}
