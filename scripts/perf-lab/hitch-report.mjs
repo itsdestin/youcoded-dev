@@ -152,6 +152,7 @@ export function analyse(rows) {
     mem.set(k, g);
   }
   const startups = rows.filter((r) => r.kind === 'startup').map((r) => ({
+    packaged: r.packaged,
     ts: r.ts, launch: r.launch, windowLoadedMs: r.loadedMs, appMountedMs: r.renderer?.marks?.['yc:app-mounted'] ?? null, firstPaintMs: r.renderer?.fcp ?? null,
     bootMarks: r.main,
   }));
@@ -175,6 +176,7 @@ export function analyse(rows) {
     perHour: [...hours.values()].sort((a, b) => a.hour.localeCompare(b.hour)),
     memory: [...mem.values()].sort((a, b) => a.hour.localeCompare(b.hour)),
     startups,
+    build: buildKind(startups),
   };
 }
 
@@ -216,6 +218,22 @@ export function renderSwitching(w) {
 }
 
 const mbs = (v) => (typeof v === 'number' ? `${Math.round(v)} MB` : '-');
+// WHY: a developer build switches sessions several times slower than the installed app (2026-10-05 realism lab), and
+// the first real recording came from a dev window. The startup line's `packaged` flag (absent in older files) lets the
+// report say which kind of build the numbers belong to instead of letting them be read as installed-app numbers.
+export function buildKind(startups) {
+  const dev = startups.filter((s) => s.packaged === false).length;
+  const installed = startups.filter((s) => s.packaged === true).length;
+  const unknown = startups.length - dev - installed;
+  return { dev, installed, unknown, launches: startups.length };
+}
+export function buildWarning(b) {
+  if (!b || (b.dev === 0 && b.unknown === 0 && b.installed > 0)) return null;
+  if (b.dev > 0) return `WARNING: ${b.dev} of ${b.launches} launch(es) in this file ran a developer build (packaged=false) - switch times run several times slower than the installed app; don't compare to installed numbers.`;
+  return b.launches === 0
+    ? 'WARNING: this file has no startup line, so it cannot say whether it came from a developer build or the installed app. Developer builds run switch times several times slower than the installed app; don\'t compare to installed numbers unless you know which this is.'
+    : `WARNING: ${b.unknown} of ${b.launches} launch(es) have no packaged flag (recorded before it existed), so this file may be from a developer build - those run switch times several times slower than the installed app; don't compare to installed numbers unless you know which this is.`;
+}
 export function render(a, bad) {
   const o = [];
   if (!a.window) return 'No recorded data in that range.\n';
@@ -223,6 +241,8 @@ export function render(a, bad) {
   o.push(`HITCH REPORT   ${localTs(a.window.from)}  to  ${localTs(a.window.to)}   (this computer's local time)`);
   o.push(`${t.launches} launch(es), ${t.minutes} minute(s) of records${bad ? `, ${bad} unreadable line(s) skipped` : ''}`);
   o.push('');
+  const bw = buildWarning(a.build);
+  if (bw) { o.push(bw); o.push(''); }
   o.push('THE SHORT VERSION');
   o.push('  (engine-stall lengths are accurate to about +/- 50 ms)');
   o.push(`  ${t.freezes} screen freezes of 0.1 s or longer, and ${t.stalls} time(s) the app's engine stopped answering. Together: ${sec(t.frozenMs)} frozen.`);
@@ -258,7 +278,7 @@ export function render(a, bad) {
   }
   if (a.startups.length) {
     o.push('STARTUP, PER LAUNCH');
-    for (const s of a.startups) o.push(`  ${localTs(s.ts)}  window loaded ${s.windowLoadedMs == null ? '?' : sec(s.windowLoadedMs)} after launch; app ready ${s.appMountedMs == null ? '?' : sec(s.appMountedMs)} after the page began; first paint ${s.firstPaintMs == null ? '?' : sec(s.firstPaintMs)}`);
+    for (const s of a.startups) o.push(`  ${localTs(s.ts)}  [${s.packaged === true ? 'installed build' : s.packaged === false ? 'DEVELOPER build' : 'build unknown'}]  window loaded ${s.windowLoadedMs == null ? '?' : sec(s.windowLoadedMs)} after launch; app ready ${s.appMountedMs == null ? '?' : sec(s.appMountedMs)} after the page began; first paint ${s.firstPaintMs == null ? '?' : sec(s.firstPaintMs)}`);
     o.push('');
   }
   return o.join('\n');

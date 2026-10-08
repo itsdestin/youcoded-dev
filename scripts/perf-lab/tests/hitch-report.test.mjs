@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, copyFileSync, rmSync, readFileSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyse, causeOfFrame, parseSince, readLines, render } from '../hitch-report.mjs';
+import { analyse, buildWarning, causeOfFrame, parseSince, readLines, render } from '../hitch-report.mjs';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const sample = join(here, 'fixtures', 'hitches-sample.jsonl');
@@ -177,4 +177,23 @@ test('switching: no switch lines, no section; with them, a plain-language sectio
     assert.equal(j.switching.total, 8);
     assert.equal(j.switching.splits.byView[0].switches, 6);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// A developer build switches several times slower than the installed app, so the report must say which it read.
+const startupRow = (packaged) => ({ v: '1', launch: 'l1', ts: '2026-10-05T09:00:00.000Z', kind: 'startup', main: {}, loadedMs: 1000, renderer: null, ...(packaged === undefined ? {} : { packaged }) });
+test('warns when the startup lines say developer build (packaged=false)', () => {
+  const a = analyse([startupRow(false)]);
+  assert.match(buildWarning(a.build), /developer build.*several times slower than the installed app; don't compare to installed numbers/);
+  assert.match(render(a, 0), /WARNING: .*developer build/);
+  assert.match(render(a, 0), /DEVELOPER build/);
+});
+test('warns when the packaged field is missing (older recorder files)', () => {
+  const a = analyse([startupRow(undefined)]);
+  assert.match(buildWarning(a.build), /no packaged flag/);
+  assert.match(render(analyse(readLines([sample], 0).rows), 0), /WARNING: .*no packaged flag/);
+});
+test('stays quiet for an installed build', () => {
+  const a = analyse([startupRow(true)]);
+  assert.equal(buildWarning(a.build), null);
+  assert.doesNotMatch(render(a, 0), /WARNING/);
 });

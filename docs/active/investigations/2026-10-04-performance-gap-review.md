@@ -2,7 +2,7 @@
 title: Performance review — what we fixed, what we missed, and the plan to zero hitches
 status: active
 date: 2026-10-04
-last_updated: 2026-10-04
+last_updated: 2026-10-07
 ---
 
 # Performance review, 2026-10-04
@@ -12,6 +12,46 @@ Written for Destin. Plain language throughout. The restart point for the *older*
 built and measured from it.
 
 ## Current state (read this first)
+
+### Update 2026-10-07 - resume from here
+
+**Where everything is.** All the performance work is ONE branch in BOTH repos:
+`session/perf-switch-marks-20261005` (app worktree `worktrees/sessions/perf-switch-marks-20261005/youcoded`, workspace
+worktree `worktrees/sessions/perf-switch-marks-20261005`). It contains the five fixes of 2026-10-04 (below), the hitch recorder,
+the session-switch marks and fix, the perf-lab realism work and the theme-GPU tools, and has `origin/master` merged in
+(2026-10-07). **Nothing is merged to master; ready for review only.** The older session branches
+(perf-zero-hitch, perf-hitch-recorder, perf-recorder-integration, perf-integration, performance-stream-attribution,
+reload-send-gate) are fully contained in it. The one deliberate exception: app branch `session/perf-reload-repaint-20261005`
+("send waits for a painted screen") is **superseded** by master's session-screens and was not brought in.
+
+**What shipped on the branch since 2026-10-04.**
+| Piece | Before | After |
+|---|---|---|
+| Hitch recorder (always-on, content-free file `<userData>/perf/hitches.jsonl`, reader `scripts/perf-lab/hitch-report.mjs`) | no way to see real stutters | freezes, slow keys, engine stalls, per-minute memory, launch times and a `switch` line per session switch; startup line now says `packaged` yes/no |
+| Session switching: closed Settings / command drawer / ~28 closed pop-ups / strip re-measuring no longer rebuilt per switch (`memoWhileClosed`) | 2 / 2+18 / 28 / 1 rebuilds per switch | 0 / 0 / 0 / 0 (counted) |
+| Message box takes focus after a mouse switch in chat view | typing after a switch went nowhere (16 of 16 lab tries) | lands in the box |
+| Click time in the dev-build, saturated-machine lab (4 sessions) | typical 200, worst 248, handler 190 ms | 168, 208, 140 ms (about 15-20% better); deep-scroll case 304/520/427 -> 272/448/372 |
+| Installed-style (packaged) build | typical 72 ms | 72 ms (already fast; no change) |
+
+**Realism result (lab-realism.md).** The lab reproduces the owner's slow clicks only with a **development build plus a heavily
+loaded machine** (machine load makes clicks 2-3x slower; a dev build adds 65-140 ms per click against 15-35 ms for the
+installed-style build). An installed-style build stays under 0.1 s with 4 sessions on a quiet machine. With 12-20 sessions open
+a loaded installed-style build is ~210 ms typical. The switching fix helps ~15-20% in the dev-plus-load setup. **Unexplained:**
+the delay between the click handler finishing and the screen changing (lab worst 136 ms, his 608 ms), and why the plain theme
+was slower than the glass theme in a dev build. **Next evidence:** the recorder's `switch` lines from an **installed-style
+build** (the report warns when a file came from a developer build or when it cannot tell), then 12+ sessions.
+
+**Open (all in `docs/roadmap/perf.md`).** Owner decisions: recorder on/off setting; attaching a redacted summary to bug reports;
+theme particle/glass defaults; session-pill resize and chat-arrival animation cost (governed by
+`.claude/rules/session-strip-motion.md`, his call). Unexplained presentation delay / try an installed-style test build.
+Windows, macOS and phone verification before release. Android: no recorder; the code-reading suspects are unmeasured.
+
+**Related 2026-10-05 investigations.** [theme-gpu-measurement](2026-10-05-theme-gpu-measurement.md) (GPU cost of themes, no
+visible window) - [session-switch-measurement](2026-10-05-session-switch-measurement.md) (what the lab saw per switch) -
+[session-switch-fix](2026-10-05-session-switch-fix.md) (what changed and the numbers) -
+[lab-realism](2026-10-05-lab-realism.md) (making the lab feel like his real use).
+
+### As of 2026-10-04 evening (history)
 
 **What exists.** Five performance fixes, each measured before and after. They are built, not
 shipped: they live on branch `session/perf-zero-hitch-20261004` in **both** repos (the app, at
