@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { scan, applyPrune, parseWorktreeList, groupKeyFor, repoDirFor } from './prune-worktrees.mjs';
+import { scan, applyPrune, sweep, formatSweep, parseWorktreeList, groupKeyFor, repoDirFor } from './prune-worktrees.mjs';
 
 // Only the FIXTURE's own commits need an author identity (the script under test never
 // runs `git commit`), so this env is passed explicitly to the fixture's own git() calls
@@ -268,4 +268,75 @@ test('applyPrune reports an unknown/already-gone target as refused, not a crash'
   const f = fixture(t);
   const results = applyPrune({ root: f.root, inventory: f.inventory, targets: ['never-existed'], invokingCwd: f.dir, fetch: false });
   assert.equal(results[0].status, 'refused');
+});
+
+// ---- automatic sweep (2026-10-08) ----
+const DAY = 24 * 60 * 60 * 1000;
+
+test('a branch whose changes reached master as a different commit (rebase/cherry-pick) counts as merged', t => {
+  const f = fixture(t);
+  const dest = path.join(f.root, 'worktrees', 'rebased');
+  f.addWorktree('workspace', dest, 'standalone/rebased');
+  f.makeUnmerged(dest);
+  // Land the same change on master under a new commit id, as a rebase-merge would.
+  const lander = path.join(f.dir, 'lander');
+  git(f.dir, 'clone', path.join(f.dir, 'workspace.git'), lander);
+  git(lander, 'fetch', path.join(dest), 'standalone/rebased');
+  git(lander, 'cherry-pick', 'FETCH_HEAD');
+  git(lander, 'push', 'origin', 'master');
+  git(f.root, 'fetch', 'origin');
+  const report = scan({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false });
+  assert.ok(report.candidates.some(x => x.dir === dest), JSON.stringify(report.notSafe.map(c => c.reasons)));
+});
+
+test('sweep removes an old merged clean session, keeps a recent one, never touches unmerged work', t => {
+  const f = fixture(t);
+  const oldDir = path.join(f.root, 'worktrees', 'sessions', 'old');
+  f.addWorktree('workspace', oldDir, 'session/old');
+  f.addWorktree('youcoded', path.join(oldDir, 'youcoded'), 'session/old');
+  const unmerged = path.join(f.root, 'worktrees', 'sessions', 'wip');
+  f.addWorktree('workspace', unmerged, 'session/wip');
+  f.makeUnmerged(unmerged);
+  // Too young at "now": nothing goes.
+  let s = sweep({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false, now: Date.now() });
+  assert.equal(s.results.length, 0);
+  assert.ok(fs.existsSync(oldDir));
+  // Four days later: the merged one goes, the unmerged one stays and is not yet "stale".
+  s = sweep({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false, now: Date.now() + 4 * DAY });
+  assert.deepEqual(s.results.map(r => r.status), ['removed']);
+  assert.ok(!fs.existsSync(oldDir));
+  assert.ok(fs.existsSync(unmerged));
+  assert.equal(s.stale.length, 0);
+  // Three weeks later the unmerged one is reported for a human — and still not deleted.
+  s = sweep({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false, now: Date.now() + 21 * DAY });
+  assert.deepEqual(s.stale.map(c => c.dir), [unmerged]);
+  assert.ok(fs.existsSync(unmerged));
+  assert.match(formatSweep(s), /tell Destin/);
+});
+
+test('sweep deletes verify logs and screenshots with a worktree, but keeps one holding other leftovers', t => {
+  const f = fixture(t);
+  const logsOnly = path.join(f.root, 'worktrees', 'sessions', 'logs-only');
+  f.addWorktree('workspace', logsOnly, 'session/logs-only');
+  fs.mkdirSync(path.join(logsOnly, 'scratch', 'verify-20261001-1'), { recursive: true });
+  fs.writeFileSync(path.join(logsOnly, 'scratch', 'verify-20261001-1', 'tests.log'), 'ok\n');
+  const notes = path.join(f.root, 'worktrees', 'sessions', 'notes');
+  f.addWorktree('workspace', notes, 'session/notes');
+  fs.mkdirSync(path.join(notes, 'scratch'));
+  fs.writeFileSync(path.join(notes, 'scratch', 'my-plan.md'), 'only copy\n');
+  const s = sweep({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false, now: Date.now() + 4 * DAY });
+  assert.ok(!fs.existsSync(logsOnly));
+  assert.ok(fs.existsSync(path.join(notes, 'scratch', 'my-plan.md')));
+  assert.deepEqual(s.keptForLeftovers.map(c => c.dir), [notes]);
+  assert.deepEqual(s.keptForLeftovers[0].leftovers, ['scratch/']);
+});
+
+test('sweep never removes the session named in excludeKeys (the one starting up)', t => {
+  const f = fixture(t);
+  const mine = path.join(f.root, 'worktrees', 'sessions', 'mine');
+  f.addWorktree('workspace', mine, 'session/mine');
+  const s = sweep({ root: f.root, inventory: f.inventory, excludeKeys: ['mine'], invokingCwd: f.dir, fetch: false, now: Date.now() + 30 * DAY });
+  assert.equal(s.results.length, 0);
+  assert.ok(fs.existsSync(mine));
+  assert.equal(s.stale.length, 0, 'an excluded live session is not "stale"');
 });
