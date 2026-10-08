@@ -78,8 +78,10 @@ has passed ~8 items — graduate it to its own file.
 - [ ] Revisit the "Submit a ticket" screen (Settings → Help & feedback → Report a bug). Destin, 2026-09-28,
       after its regrouping was approved: "i want to come back to this page specifically, i think some of the
       ux is still a bit odd" (earlier: "some of these should maybe be grouped/arranged/displayed differently.
-      it just looks off"). The review step after "Review ticket" was not regrouped yet
-      `settings/development` `all` `confirmed` `checked 2026-09-28`
+      it just looks off"). The review step after "Review ticket" was not regrouped yet.
+      2026-10-08: redesigned over six review rounds (submit-ticket-1…6, all approved) on branch
+      `session/ui-consistency-audit`; closes when that branch merges
+      `settings/development` `all` `in-flight` `checked 2026-10-08`
 
 - [ ] The dev log shows React's "Cannot update a component while rendering a different
       component" warning when sessions arrive (seen during the 2026-09-11 phone pass, when a
@@ -125,7 +127,10 @@ has passed ~8 items — graduate it to its own file.
       2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552, cbc793a6f); Destin tested a live
       dashboard and a keyed weather page end to end. Next: a home-network connection for a Home
       Assistant page, then Phases 3–4 in the plan.
-      `window-chrome` `all` `in-flight` `checked 2026-09-23` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+      2026-10-08, follow-up (Destin, after the Pages kit took the app's new slider): "we are going to
+      rebuild/rework the pages kit at some point to be directly tied to the real app ui, so page guidance
+      doesn't drift. i also want to provide more pre-built sets of buttons, menus, etc."
+      `window-chrome` `all` `in-flight` `checked 2026-10-08` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
 - [ ] Publish the page-builder skill's connections update once an app release carries Pages
       Phase 2. It is finished and held on wecoded-marketplace `session/youcoded-pages-phase2`
