@@ -1,3 +1,131 @@
+<!doctype html>
+<html lang="en" data-theme="creme">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YouCoded · the map</title>
+<link rel="stylesheet" href="cc.css">
+<style>
+/* Concept B: the map is the room. Layout only; every colour comes from cc.css variables. */
+html{scroll-behavior:smooth;scroll-padding-top:56px}
+.fold{display:flex;position:relative;height:clamp(780px,calc(100vh - 48px),960px);overflow:hidden}
+.mapPane{flex:1 1 70%;min-width:0;position:relative;padding:24px 24px 24px 76px;display:flex;flex-direction:column}
+.mapHead{display:flex;align-items:center;gap:16px;margin:0 0 4px -52px;min-height:24px}.mapNote{margin:0 0 14px -52px;font-size:12px;color:var(--fg-2)}
+.mapHead .legend{margin-left:auto;display:flex;gap:8px}
+#mapWrap{position:relative;flex:1;min-height:0}
+#lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:0}
+#lines .hit{stroke:transparent;fill:none;pointer-events:stroke;cursor:help}
+#lines .ln{fill:none;stroke:var(--fg-faint);stroke-linecap:round;transition:stroke var(--dur-hover) var(--ease)}
+#lines .ln.top{stroke:var(--fg-muted)}
+#lines g:hover .ln{stroke:var(--fg)}
+.chip{position:absolute;z-index:2;transform:translate(-50%,-50%);cursor:help;font:inherit;background:var(--panel);color:var(--fg-2);border:1px solid var(--edge)}
+.chip:hover,.chip:focus-visible{background:var(--inset);color:var(--fg)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#grid{position:relative;z-index:1;display:grid;height:100%;grid-template-columns:repeat(3,minmax(220px,1fr));grid-template-rows:auto auto auto;align-content:space-between;gap:48px 56px}
+.sys{position:relative;display:flex;flex-direction:column;gap:8px;padding:14px;min-width:0;text-align:left}
+.sys.card-interactive{background:var(--panel)}
+.sys[aria-expanded="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sys h2{margin:0;font-size:16px;font-weight:500}
+.sys .purpose{font-size:12px;color:var(--fg-2);line-height:1.4}
+.sys .foot{margin-top:auto;display:flex;flex-direction:column;gap:6px}
+.sys .badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.split{display:flex;height:8px;border-radius:var(--radius-full);overflow:hidden;background:var(--inset);border:1px solid var(--edge-dim)}
+.split i{display:block;height:100%}
+.split .s{background:var(--fg-muted);opacity:.65}
+.split .b{background:repeating-linear-gradient(45deg,var(--fg-muted) 0 2px,transparent 2px 5px);opacity:.8}
+.splitLab{display:flex;justify-content:space-between;font-size:11px;color:var(--fg-muted);gap:6px}
+.splitLab span{white-space:nowrap}
+.sys.workshop{border-style:dashed;background:var(--inset)}
+.sys.wide{flex-direction:row;align-items:center;gap:24px}
+.sys.wide .l{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.sys.wide .r{width:260px;display:flex;flex-direction:column;gap:6px;flex:none}
+.sys.wide .r .badges{justify-content:flex-start}
+.sys.chat{}
+/* right column */
+.today{flex:0 0 30%;max-width:460px;min-width:360px;border-left:1px solid var(--edge);background:var(--panel);overflow-y:auto;padding:14px 14px 16px;display:flex;flex-direction:column;gap:10px;font-size:12px}
+.today h3,.sec>.eyebrow{margin:0}
+.sec{display:flex;flex-direction:column;gap:4px}
+.eyebrow .n{color:var(--fg-muted);margin-left:4px;font-weight:400}
+.today .row{min-height:34px;padding:4px 10px;gap:10px;background:var(--well)}
+.today .row .title{font-size:12px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.today .row .ago{color:var(--fg-muted);flex:none}.today .row .tl{display:flex;gap:6px;min-width:0}.today .row .tl .title{flex:0 1 auto}
+.today .row .hint{display:flex;gap:6px;align-items:center;flex-wrap:nowrap;margin-top:3px}.today .row .line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today .row .line{font-size:12px}
+.recommend{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.recommend .why{font-size:12px;color:var(--fg-2);line-height:1.45}
+/* side sheet over the right column */
+.sheet{position:absolute;top:0;right:0;bottom:0;width:320px;background:var(--panel);border-left:1px solid var(--edge);box-shadow:-12px 0 32px rgba(0,0,0,.18);z-index:10;display:flex;flex-direction:column;transform:translateX(100%);visibility:hidden;transition:transform var(--dur-reveal) var(--ease),visibility 0s linear var(--dur-reveal)}
+.sheet.open{transform:none;visibility:visible;transition:transform var(--dur-reveal) var(--ease)}
+.sheet header{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--edge);min-height:48px}
+.sheet header .t{font-size:16px;font-weight:500;flex:1;min-width:0}
+.sheet .sbody{overflow-y:auto;padding:12px 14px 20px;display:flex;flex-direction:column;gap:6px}
+.sheet .sbody .eyebrow{margin-top:10px}
+.sheet .sbody .eyebrow:first-child{margin-top:0}
+.sheet .row{flex:none;background:var(--inset);min-height:44px;align-items:flex-start}
+.sheet .row .nm{font-size:13px}
+.sheet .row .hint{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-top:2px}
+.sheet .row .meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.x{width:28px;padding:0;justify-content:center;font-size:14px}
+/* screens */
+#screens{max-width:1440px;margin:0 auto;padding:28px 24px 48px}
+.shead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.shead .sp{flex:1}
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.shot{display:flex;flex-direction:column;gap:8px;padding:10px}
+.shot img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--edge-dim);display:block;background:var(--inset)}
+.shot .nm{font-size:14px;font-weight:500}
+.shot .by{font-size:11px;color:var(--fg-muted);line-height:1.4}
+/* floating tooltip: one element, clamped to the window, so scrolling columns never clip it */
+.tip::after{display:none!important}
+#tipbox{position:fixed;z-index:100;max-width:320px;padding:8px 10px;border-radius:var(--radius-md);background:var(--panel);color:var(--fg);border:1px solid var(--edge);box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:12px;line-height:1.4;pointer-events:none;opacity:0;transition:opacity var(--dur-hover) var(--ease)}
+#tipbox.on{opacity:1}
+@media (max-width:1100px){.fold{flex-direction:column;height:auto;overflow:visible}.mapPane{min-height:800px}.today{flex:none;max-width:none;border-left:0}}
+</style>
+</head>
+<body>
+<header class="cc-header">
+  <span class="title">YouCoded · the map</span>
+  <span class="muted t-xs num" id="date"></span>
+  <span class="spacer"></span>
+  <nav class="tabs" role="tablist" aria-label="Jump to a section">
+    <button role="tab" aria-selected="true" data-go="map">Map</button>
+    <button role="tab" aria-selected="false" data-go="today">Today</button>
+    <button role="tab" aria-selected="false" data-go="screens">Screens</button>
+  </nav>
+</header>
+
+<div class="fold" id="fold">
+  <section class="mapPane" id="map" aria-label="The map of the app">
+    <div class="mapHead">
+      <span class="eyebrow">Eight systems, and what connects them</span>
+      <span class="legend">
+        <span class="side screens tip" data-tip="Screens and things you can look at and touch in the app.">What you see</span>
+        <span class="side behind tip" data-tip="Work that happens out of sight: saving, syncing, talking to the assistant, the phone app.">Behind the scenes</span>
+      </span>
+    </div>
+    <p class="mapNote">Lines are connections between systems; the number is how many. Hover one for what kind.</p>
+    <div id="mapWrap"><svg id="lines" aria-hidden="false"></svg><div id="grid"></div></div>
+  </section>
+
+  <aside class="today" id="today" aria-label="Today's briefing"></aside>
+
+  <div class="sheet" id="sheet" role="dialog" aria-label="Parts of a system">
+    <header><span class="t" id="sheetTitle"></span><button class="btn ghost sm x" id="sheetX" aria-label="Close">✕</button></header>
+    <div class="sbody" id="sheetBody"></div>
+  </div>
+</div>
+
+<section id="screens" aria-label="Screens">
+  <div class="shead">
+    <span class="eyebrow">Screens</span>
+    <span class="muted t-xs num tip" id="shownCount"></span>
+    <span class="sp"></span>
+    <button class="btn">Browse all</button>
+  </div>
+  <div class="gal" id="gal"></div>
+</section>
+<div id="tipbox" role="tooltip"></div>
+
+<script type="application/json" id="data">
 {
  "generatedAt": "2026-10-08T21:40:10.790Z",
  "commit": "0bf355f9a4ea3e0c516f3e6537a9b85b27874ea8",
@@ -3556,3 +3684,212 @@
   "activeEfforts": 3
  }
 }
+</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = (s,r=document)=>r.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n=>n.toLocaleString('en-US');
+// theme from ?theme=
+const th = new URLSearchParams(location.search).get('theme')||'creme';
+document.documentElement.dataset.theme = th;
+
+const SYS = Object.fromEntries(D.systems.map(s=>[s.id,s]));
+// plain names for part ids (no jargon on screen)
+const WORD = {ipc:'window messaging',ui:'screens',mcp:'tool links',contract:'shared rules',harness:'assistant',android:'phone',askpass:'password prompts',backend:'server',doc:'document',eval:'checks',shoot:'screenshot',probes:'probes',pipeline:'flow',utils:'helpers',perm:'permission',telemetry:'usage stats',renderer:'screen'};
+const NAMES={'github-connection':'GitHub sign-in'};
+const partName = id=>{if(NAMES[id])return NAMES[id];const w=id.split('-').map(x=>WORD[x]||x).join(' ');return w[0].toUpperCase()+w.slice(1)};
+const ago = d=>d===0?'today':d===1?'yesterday':d+' days ago';
+const sideTag = (kind,n,extra='')=>kind==='screens'
+  ? `<span class="side screens tip" data-tip="${n} screen files touched. These change what you see.${extra}">What you see ${n}</span>`
+  : `<span class="side behind tip" data-tip="${n} files touched out of sight. These change how things work, not how they look.${extra}">Behind the scenes ${n}</span>`;
+
+// which active efforts touch which system
+const active = D.efforts.filter(e=>e.active&&!e.merged);
+const flight = {}; D.systems.forEach(s=>flight[s.id]=active.filter(e=>e.systems.some(x=>x.id===s.id&&x.files>0)));
+
+// parts, including the ones that also serve another system
+function partsFor(sid){
+  const own = SYS[sid].parts.map(p=>({...p,home:sid}));
+  const shared = [];
+  D.systems.forEach(s=>s.parts.forEach(p=>{ if(s.id!==sid && (p.alsoServes||[]).includes(sid)) shared.push({...p,home:s.id,borrowed:true}); }));
+  return own.concat(shared);
+}
+function alsoNote(sid){
+  const mine = partsFor(sid);
+  const out = mine.filter(p=>p.borrowed); const lent = SYS[sid].parts.filter(p=>(p.alsoServes||[]).some(x=>x!==sid));
+  return {out,lent};
+}
+
+// layout slots: row 1 / row 2 / row 3
+const SLOT = {'marketplace':[1,1],'pages':[1,2],'social':[1,3],'projects-files':[2,1],'chat-agents':[2,2],'sync-devices':[2,3]};
+
+function box(s){
+  const st = flight[s.id].length;
+  const names = flight[s.id].map(e=>'“'+e.title+'”').join(', ');
+  const statusHtml = st
+    ? `<span class="status warn tip" data-tip="${st} effort${st>1?'s':''} touching this system right now: ${esc(names)}. Click the box to see its parts."><span class="dot"></span>${st} effort${st>1?'s':''} in flight</span>`
+    : `<span class="status ok tip" data-tip="Nothing is being changed here right now."><span class="dot"></span>Steady</span>`;
+  const sc = s.screensFiles, bh = s.behindFiles, tot = sc+bh||1;
+  const bar = `<div class="split tip" data-tip="${esc(s.name)}: ${fmt(sc)} files make up the screens you see, ${fmt(bh)} files work behind the scenes (${fmt(s.files)} in all)."><i class="s" style="width:${sc/tot*100}%"></i><i class="b" style="width:${bh/tot*100}%"></i></div>`;
+  const lab = `<div class="splitLab"><span>What you see</span><span>Behind the scenes</span></div>`;
+  const {out,lent} = alsoNote(s.id);
+  const inv = []; const seen = new Set();
+  [...out, ...lent.map(p=>({...p,home:s.id}))].forEach(p=>{ if(!seen.has(p.id)){seen.add(p.id);inv.push(p);} });
+  const also = inv.length ? `<span class="badge tip" data-tip="${esc(inv.map(p=>partName(p.id)+': '+(p.alsoWhy||'also powers another system')+' (listed under '+SYS[p.home].name+' and '+(p.alsoServes||[]).map(x=>SYS[x].name).join(', ')+').').join(' '))}">also serves · ${inv.length===1?esc(partName(inv[0].id)):inv.length+' parts'}</span>` : '';
+  const el = document.createElement('div');
+  el.className = 'sys card card-interactive tip-host';
+  el.setAttribute('role','button'); el.tabIndex = 0; el.dataset.sid = s.id; el.setAttribute('aria-expanded','false');
+  el.setAttribute('aria-label', `${s.name}. ${s.purpose} ${st?st+' efforts in flight':'Steady'}. Open its parts.`);
+  if(s.id==='foundations'){
+    el.classList.add('wide');
+    el.innerHTML = `<div class="l"><h2>${esc(s.name)}</h2><div class="purpose">${esc(s.purpose)} Everything above stands on it.</div><div class="badges">${statusHtml}${also}</div></div><div class="r">${bar}${lab}</div>`;
+  } else {
+    if(s.id==='workshop') el.classList.add('workshop');
+    el.innerHTML = `<h2>${esc(s.name)}</h2><div class="purpose">${esc(s.purpose)}</div><div class="foot">${bar}${lab}<div class="badges">${statusHtml}${also}</div></div>`;
+  }
+  const pos = SLOT[s.id];
+  if(pos){ el.style.gridRow=pos[0]; el.style.gridColumn=pos[1]; }
+  else if(s.id==='foundations'){ el.style.gridRow=3; el.style.gridColumn='1 / span 2'; }
+  else if(s.id==='workshop'){ el.style.gridRow=3; el.style.gridColumn=3; }
+  return el;
+}
+const grid = $('#grid');
+['marketplace','pages','social','projects-files','chat-agents','sync-devices','foundations','workshop'].forEach(id=>grid.appendChild(box(SYS[id])));
+
+// ---------- seams ----------
+const seams = D.seams.slice(0,8);
+const maxS = seams[0].strength;
+const W = s=>Math.max(1.5, Math.min(8, s.strength/maxS*8));   // first seam 8px = 4x the next (~2px); capped
+const svg = $('#lines'); const wrap = $('#mapWrap');
+const chips = [];
+function R(id){ const e=grid.querySelector(`[data-sid="${id}"]`); const w=wrap.getBoundingClientRect(), r=e.getBoundingClientRect(); return {l:r.left-w.left,r:r.right-w.left,t:r.top-w.top,b:r.bottom-w.top,cx:(r.left+r.right)/2-w.left,cy:(r.top+r.bottom)/2-w.top}; }
+const pt=(p0,p1,p2,p3,t)=>{const u=1-t;return {x:u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],y:u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]}};
+// how each seam leaves and arrives. v = vertical (bottom -> top), h = horizontal (right -> left)
+function route(sm){
+  const a=R(sm.a), b=R(sm.b); const k=[sm.a,sm.b].sort().join('|');
+  let p0,p1,p2,p3,t=.5;
+  const V=(x0,y0,x1,y1)=>{const m=(y1-y0)/2;return [[x0,y0],[x0,y0+m],[x1,y1-m],[x1,y1]]};
+  if(k==='chat-agents|foundations'){ [p0,p1,p2,p3]=V(R('chat-agents').cx,a.b,R('chat-agents').cx,R('foundations').t); }
+  else if(k==='foundations|projects-files'){ const pr=R('projects-files'),f=R('foundations'); [p0,p1,p2,p3]=V(pr.cx,pr.b,pr.cx,f.t); }
+  else if(k==='foundations|sync-devices'){ const s=R('sync-devices'),f=R('foundations'); [p0,p1,p2,p3]=V(s.l+90,s.b,f.r-92,f.t); t=.12; }
+  else if(k==='foundations|workshop'){ const f=R('foundations'),w=R('workshop'); const y=(f.cy+w.cy)/2; p0=[f.r,y];p3=[w.l,y];p1=[f.r+20,y];p2=[w.l-20,y]; }
+  else if(k==='chat-agents|workshop'){ const c=R('chat-agents'),w=R('workshop'); [p0,p1,p2,p3]=V(c.r-30,c.b,w.l+80,w.t); t=.2; }
+  else if(k==='chat-agents|projects-files'||k==='chat-agents|sync-devices'){ const c=R('chat-agents'),o=R(k.includes('projects')?'projects-files':'sync-devices'); const left=o.cx<c.cx; const x0=left?o.r:c.r,x1=left?c.l:o.l; const y=c.cy; p0=[x0,y];p3=[x1,y];p1=[x0+(x1-x0)/3,y];p2=[x0+2*(x1-x0)/3,y]; }
+  else if(k==='foundations|marketplace'){ const m=R('marketplace'),f=R('foundations'); p0=[m.l,m.cy];p3=[f.l,f.cy];p1=[m.l-58,m.cy];p2=[f.l-58,f.cy]; }
+  else { p0=[a.cx,a.b];p3=[b.cx,b.t];p1=[a.cx,a.b+30];p2=[b.cx,b.t-30]; }
+  return {p0,p1,p2,p3,t};
+}
+function drawLines(){
+  svg.innerHTML=''; chips.forEach(c=>c.remove()); chips.length=0;
+  const w=wrap.getBoundingClientRect(); svg.setAttribute('viewBox',`0 0 ${w.width} ${w.height}`);
+  seams.forEach((sm,i)=>{
+    const {p0,p1,p2,p3,t}=route(sm);
+    const d=`M${p0} C${p1} ${p2} ${p3}`;
+    const tip=`${SYS[sm.a].name} ↔ ${SYS[sm.b].name}: ${fmt(sm.strength)} connections, mostly ${sm.words}.`;
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.dataset.tip=tip;
+    g.innerHTML=`<path class="ln${i===0?' top':''}" d="${d}" stroke-width="${W(sm)}"/><path class="hit" d="${d}" stroke-width="16"/>`;
+    svg.appendChild(g);
+    const c=pt(p0,p1,p2,p3,t);
+    const b=document.createElement('button'); b.className='badge chip num tip'; b.dataset.tip=tip; b.textContent=fmt(sm.strength);
+    b.style.left=c.x+'px'; b.style.top=c.y+'px'; b.setAttribute('aria-label',tip);
+    wrap.appendChild(b); chips.push(b);
+  });
+}
+
+// ---------- today ----------
+const B=D.briefing, T=$('#today');
+const rowMerge = m=>`<div class="row"><div class="body"><div class="title tip" data-tip="${esc(m.title)} — ${esc(m.note)}">${esc(m.title)}</div></div><button class="btn sm tip" data-tip="Merge this change into the app now.">Merge</button></div>`;
+const rowBug = b=>`<div class="row"><div class="body"><div class="title tip" data-tip="${esc(b.area)}${b.tags.length?' ('+esc(b.tags.join(', '))+')':''}: ${esc(b.title)}">${esc(b.title)}</div></div><button class="btn sm tip" data-tip="Open the details of this problem.">Open</button></div>`;
+const rowEff = e=>{
+  const sides = (e.uiFiles||e.behindFiles)
+    ? (e.uiFiles?sideTag('screens',e.uiFiles):'')+(e.behindFiles?sideTag('behind',e.behindFiles):'')
+    : `<span class="muted tip" data-tip="No files changed yet, so there is no side to show.">no files changed yet</span>`;
+  return `<div class="row"><div class="body"><div class="tl"><span class="title tip" data-tip="${esc(e.purpose||e.title)} ${e.commits} saved steps so far.">${esc(e.title)}</span><span class="ago t-2xs tip" data-tip="Last touched ${e.lastTouched}.">${ago(e.daysAgo)}</span></div><div class="hint">${sides}</div></div><button class="btn sm tip" data-tip="Open this effort and pick up where it stopped.">Resume</button></div>`;
+};
+const R_=B.recommendation;
+T.innerHTML = `
+<div class="sec"><div class="eyebrow">Ready to merge <span class="n num tip" data-tip="Changes that were reviewed and can go in now.">${B.mergeable.length}</span></div>${B.mergeable.map(rowMerge).join('')}</div>
+<div class="sec"><div class="eyebrow">Clean up <span class="n num tip" data-tip="Finished efforts that are still lying around.">${B.cleanup.localBranchesMerged}</span></div>
+  <div class="row"><div class="body line tip" data-tip="${esc(B.cleanup.examples.join('; '))}">${B.cleanup.localBranchesMerged} finished efforts, ${B.cleanup.worktreesIdle} unused work areas</div><button class="btn sm tip" data-tip="Remove the finished and unused ones. Nothing unfinished is touched.">Clean up</button></div></div>
+<div class="sec"><div class="eyebrow">Major bugs <span class="n num tip" data-tip="Known problems that matter most.">${B.bugs.length}</span></div>${B.bugs.map(rowBug).join('')}</div>
+<div class="sec"><div class="eyebrow">Since release ${B.release.version}</div>
+  <div class="row"><div class="body line tip" data-tip="Released ${B.release.date}. ${B.mergedToday} changes went in today, ${B.mergedYesterday} yesterday.">${B.mergedSinceRelease} changes since ${B.release.date.slice(5).replace('-','/')}</div><button class="btn sm tip" data-tip="See the list of changes made since the last release.">Show</button></div></div>
+<div class="sec"><div class="eyebrow">In flight <span class="n num tip" data-tip="Efforts touched in the last 7 days.">${active.length}</span></div>${active.map(rowEff).join('')}</div>
+<div class="sec"><div class="eyebrow">Pick up next</div>
+  <div class="card inset recommend"><div class="t-sm tip" data-tip="${esc(R_.links+' '+R_.seams)}">${esc(R_.title)}</div><div class="why">${esc(R_.why)}</div><div><button class="btn primary sm tip" data-tip="Start working on this effort now.">Start</button></div></div></div>`;
+$('#date').textContent = new Date(B.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+// ---------- side sheet ----------
+const sheet=$('#sheet'); let openId=null; let lastFocus=null;
+function openSheet(id){
+  const s=SYS[id]; const parts=partsFor(id);
+  const sc=parts.filter(p=>p.side==='screens'), bh=parts.filter(p=>p.side==='behind');
+  const prow=p=>{
+    const sd=p.side==='screens'
+      ? `<span class="side screens tip" data-tip="A screen: part of what you see.">What you see</span>`
+      : `<span class="side behind tip" data-tip="${p.phone?'Runs inside the phone app, out of sight.':'Works out of sight, behind the screens.'}">Behind the scenes</span>`;
+    const others=(p.alsoServes||[]).map(x=>SYS[x].name).filter(n=>n!==s.name||p.borrowed);
+    const also = (p.borrowed||(p.alsoServes||[]).some(x=>x!==id)) ? `<span class="badge tip" data-tip="${esc(p.alsoWhy||('Belongs to '+SYS[p.home].name+' and also powers '+(p.alsoServes||[]).map(x=>SYS[x].name).join(', ')+'.'))}">also serves ${esc(p.borrowed?s.name:(p.alsoServes||[]).filter(x=>x!==id).map(x=>SYS[x].name).join(', '))}</span>` : '';
+    return `<div class="row tip" data-tip="${esc(p.purpose)} ${p.files} files, ${fmt(p.lines)} lines${p.phone?', on the phone app':''}."><div class="body"><div class="nm">${esc(partName(p.id))}</div><div class="hint">${esc(p.purpose)}</div><div class="hint" style="margin-top:4px">${sd}${p.phone?'<span class="badge tip" data-tip="Runs inside the phone app.">phone</span>':''}${also}</div></div><div class="meta num">${p.files} files</div></div>`;
+  };
+  $('#sheetTitle').textContent=s.name;
+  $('#sheetBody').innerHTML = `<div class="eyebrow">What you see <span class="n num">${sc.length}</span></div>${sc.map(prow).join('')||'<div class="empty">Nothing here is a screen. This system works only behind the scenes.</div>'}<div class="eyebrow">Behind the scenes <span class="n num">${bh.length}</span></div>${bh.map(prow).join('')}`;
+  $('#sheetBody').scrollTop=0;
+  sheet.classList.add('open'); openId=id;
+  grid.querySelectorAll('.sys').forEach(e=>e.setAttribute('aria-expanded',e.dataset.sid===id));
+}
+function closeSheet(){ sheet.classList.remove('open'); openId=null; grid.querySelectorAll('.sys').forEach(e=>e.setAttribute('aria-expanded','false')); if(lastFocus) lastFocus.focus(); }
+grid.addEventListener('click',e=>{const b=e.target.closest('.sys'); if(!b)return; lastFocus=b; openId===b.dataset.sid?closeSheet():openSheet(b.dataset.sid);});
+grid.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('sys')){e.preventDefault();e.target.click();}});
+$('#sheetX').addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&openId) closeSheet(); });
+
+// ---------- screens ----------
+const G=D.gallery;
+function gal(){
+  $('#gal').innerHTML = G.shown.map(n=>{
+    const by=(G.changedBy[n]||[]);
+    const cap = by.length ? 'Changed by '+by.map(c=>esc(c.title)).join('; ') : 'No recent changes';
+    return `<div class="card card-interactive shot" tabindex="0" role="button"><img src="gallery/${n}-${th==='midnight'?'midnight':'creme'}.webp" alt="${esc(G.names[n])} screen" loading="lazy"><div class="nm">${esc(G.names[n])}</div><div class="by tip" data-tip="${by.length?esc(by.map(c=>c.title+' ('+c.date+')').join('; ')):'Nothing merged has touched this screen lately.'}">${cap}</div></div>`;
+  }).join('');
+}
+gal();
+$('#shownCount').textContent=`${G.total} screens · ${G.shown.length} shown`;
+$('#shownCount').dataset.tip=`The app has ${G.total} screens in all. We have pictures of ${G.shown.length} so far.`;
+
+// ---------- tabs ----------
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  const g=b.dataset.go;
+  if(g==='map'){ window.scrollTo({top:0}); }
+  else if(g==='today'){ window.scrollTo({top:0}); $('#today').scrollTo({top:0}); $('#today').setAttribute('tabindex','-1'); $('#today').focus({preventScroll:true}); }
+  else { $('#screens').scrollIntoView(); }
+}));
+
+// ---------- tooltip ----------
+const tb=$('#tipbox'); let cur=null;
+function show(el){
+  const txt=el.dataset.tip; if(!txt) return; cur=el; tb.textContent=txt; tb.classList.add('on');
+  const r=el.getBoundingClientRect(); const w=tb.offsetWidth,h=tb.offsetHeight;
+  let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8);
+  let y=r.top-h-8; if(y<8) y=r.bottom+8;
+  tb.style.left=x+'px'; tb.style.top=y+'px';
+}
+function hide(){ cur=null; tb.classList.remove('on'); }
+document.addEventListener('mouseover',e=>{const el=e.target.closest('[data-tip]'); if(!el){hide();return;} if(el===cur) return;
+  // SVG lines: follow the cursor point since their box is huge
+  if(el.namespaceURI.includes('svg')){ cur=el; tb.textContent=el.dataset.tip; tb.classList.add('on'); const w=tb.offsetWidth,h=tb.offsetHeight; tb.style.left=Math.min(Math.max(8,e.clientX-w/2),innerWidth-w-8)+'px'; tb.style.top=Math.max(8,e.clientY-h-14)+'px'; return; }
+  show(el);});
+document.addEventListener('mouseout',e=>{ if(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest('[data-tip]')) hide(); });
+document.addEventListener('focusin',e=>{const el=e.target.closest('[data-tip]'); if(el) show(el);});
+document.addEventListener('focusout',hide);
+window.__showTip = id=>{const el=document.querySelector(id); show(el);};
+
+drawLines(); addEventListener('resize',drawLines);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawLines);
+})();
+</script>
+</body>
+</html>

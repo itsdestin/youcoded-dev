@@ -1,3 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="creme">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YouCoded today</title>
+<link rel="stylesheet" href="cc.css">
+<style>
+/* WHY: layout only; every colour comes from cc.css variables. */
+html{scroll-behavior:smooth;scroll-padding-top:60px}
+.cc-main{display:flex;flex-direction:column;gap:18px;padding:10px 20px 40px}
+section{display:flex;flex-direction:column;gap:8px}
+.sec-head{display:flex;align-items:baseline;gap:12px}
+.sec-head .eyebrow{font-size:12px}
+.asof{font-size:12px;color:var(--fg-muted)}
+button.card,button.row{font:inherit;color:inherit;text-align:left;width:100%}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:'e e e' 'n p b';gap:4px 12px;align-items:center;padding:10px 14px}.stat .eyebrow{grid-area:e}.stat .big{grid-area:n}.stat p{grid-area:p}.stat .btn{grid-area:b}
+.stat .big{font-size:26px;font-weight:600;line-height:1}
+.stat p{margin:0;font-size:11px;color:var(--fg-2);line-height:1.3}
+.rec{padding:10px 14px;display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:start}
+.rec h3,.eff h3,.sys h3{margin:0}
+.rec dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px}
+.rec dt{color:var(--fg-muted)} .rec dd{margin:0;color:var(--fg-2)}
+.rows{display:flex;flex-direction:column;gap:6px}
+.row .title{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row.eff{min-height:38px;padding:4px 12px}.row.eff .body{display:flex;align-items:baseline;gap:12px}.row.eff .hint{flex:none}.row.eff .title{flex:0 1 auto}#idleRows[hidden]{display:none!important}
+.row .sides{display:flex;gap:6px;align-items:center}
+.row .sys-badges{display:flex;gap:4px}
+.fold{justify-content:space-between;cursor:pointer;background:transparent}
+.systems{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sys{display:flex;flex-direction:column;gap:8px;min-height:190px;cursor:pointer}
+.sys .purpose{font-size:12px;color:var(--fg-2);margin:0}
+.bar{display:flex;height:6px;border-radius:var(--radius-full);overflow:hidden;background:var(--inset)}
+.bar i{display:block;height:100%}
+.bar .a{background:var(--fg-2)} .bar .b{background:var(--fg-faint)}
+.barlabel{display:flex;justify-content:space-between;font-size:11px;color:var(--fg-muted);gap:4px;white-space:nowrap}.barlabel .side{font-size:11px}
+.conn{font-size:11px;color:var(--fg-muted);margin-top:auto}
+.conn b{font-weight:400;color:var(--fg-2);border-bottom:1px dotted var(--fg-muted);cursor:help}
+.sys[aria-expanded="true"]{border-color:var(--accent);background:var(--inset)}
+.parts{display:none;flex-direction:column;gap:14px}
+.parts.open{display:flex}
+.parts .grp{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.parts-head{display:flex;justify-content:space-between;align-items:center}
+.badge.part{padding:3px 8px;font-size:12px;gap:6px}
+.badge .n{color:var(--fg-muted)}
+.also{color:var(--fg-muted);font-style:italic}
+.strip{display:grid;grid-template-columns:repeat(8,minmax(150px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.shot{display:flex;flex-direction:column;gap:6px}
+.shot img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;border-radius:var(--radius-md);border:1px solid var(--edge);display:block;background:var(--inset)}
+.shot .name{font-size:14px}
+.shot .by{font-size:11px;color:var(--fg-muted)}
+.screens-foot{display:flex;align-items:center;justify-content:space-between}
+.tip.right::after{left:auto;right:0;transform:translateY(4px)}
+.tip.right:hover::after{transform:none}
+.tip.left::after{left:0;transform:translateY(4px)}
+.tip.left:hover::after{transform:none}
+</style>
+</head>
+<body>
+<header class="cc-header">
+  <span class="title" id="hdrTitle">YouCoded today</span>
+  <span class="asof tip below" tabindex="0" data-tip="Everything on this page is read from the code as it stood this morning. It does not update while you look.">as of this morning's code</span>
+  <span class="spacer"></span>
+  <a class="btn ghost" href="#today">Today</a><a class="btn ghost" href="#map">Map</a><a class="btn ghost" href="#screens">Screens</a>
+</header>
+<main class="cc-main" id="app"></main>
+<script id="data" type="application/json">
 {
  "generatedAt": "2026-10-08T21:40:10.790Z",
  "commit": "0bf355f9a4ea3e0c516f3e6537a9b85b27874ea8",
@@ -3556,3 +3623,95 @@
   "activeEfforts": 3
  }
 }
+</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const q=new URLSearchParams(location.search).get('theme');
+if(['creme','midnight','dark','light'].includes(q))document.documentElement.dataset.theme=q;
+const theme=document.documentElement.dataset.theme==='midnight'||document.documentElement.dataset.theme==='dark'?'midnight':'creme';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sysName=id=>D.systems.find(s=>s.id===id).name;
+const B=D.briefing;
+const dt=new Date(B.date+'T12:00:00');document.getElementById('hdrTitle').textContent='YouCoded today · '+B.weekday.slice(0,3)+' '+dt.getDate()+' '+dt.toLocaleString('en',{month:'short'});
+const ago=n=>n===0?'today':n===1?'yesterday':n+' days ago';
+const SCR='The part of the app you look at and click: screens, menus, buttons.';
+const BEH='The part you never see: it stores, sends and computes so the screens can work.';
+const sides=(u,b)=>`<span class="side screens tip" tabindex="0" data-tip="${SCR} ${u} files here.">What you see ${u}</span><span class="side behind tip" tabindex="0" data-tip="${BEH} ${b} files here.">Behind the scenes ${b}</span>`;
+const act=D.efforts.filter(e=>e.active), idle=D.efforts.filter(e=>!e.active);
+const effRow=e=>{
+  const top=e.systems.filter(s=>s.files>=5).slice(0,3);
+  const extra=e.pr&&e.pr.state==='merged'?` · its change ${e.pr.note}`:'';
+  return `<div class="row eff"><div class="body"><div class="title">${esc(e.title)}</div>
+  <div class="hint tip left" tabindex="0" data-tip="${e.commits} saved commit(s) so far. Last one: ${esc(e.lastTouched)}.">touched ${ago(e.daysAgo)} · ${e.commits} commit${e.commits==1?'':'s'}${extra}</div></div>
+  <div class="sides">${sides(e.uiFiles,e.behindFiles)}</div>
+  <div class="sys-badges">${top.map(s=>`<span class="badge tip" tabindex="0" data-tip="This effort edits ${s.files} files in ${esc(sysName(s.id))}.">${esc(sysName(s.id))}</span>`).join('')}${top.length===0?'<span class="badge tip" tabindex="0" data-tip="Too small to touch any system in a big way.">Small</span>':''}</div>
+  <button class="btn sm tip" data-tip="Pick this effort back up in a new conversation.">Resume</button></div>`};
+const stat=(n,label,line,btn,tip)=>`<div class="card stat"><span class="eyebrow tip left" tabindex="0" data-tip="${esc(tip)}">${label}</span><span class="big num">${n}</span><p>${line}</p><button class="btn sm">${btn}</button></div>`;
+const R=B.recommendation;
+const rec=D.efforts.find(e=>e.branch===R.effort);
+const today=`<section id="today"><div class="sec-head"><span class="eyebrow">Today</span></div>
+<div class="stats">
+${stat(B.mergeable.length,'Ready to merge','Reviewed, waiting for your word.','Review them','Each is a finished change that has passed its checks and waits for you to say go.')}
+${stat(B.cleanup.localBranchesMerged,'Cleanup','Leftover efforts and '+B.cleanup.worktreesIdle+' idle workspaces.','Clean up','Efforts already merged, plus workspace copies nobody is using. Clearing them frees disk space and removes clutter.')}
+${stat(B.bugs.length,'Major bugs','Confirmed problems that matter.','See bugs','Problems already confirmed. Not the small ones.')}
+${stat(B.mergedSinceRelease,'Since release '+B.release.version,'Merged since the last public version.','See them','Every change that has been merged since version '+B.release.version+' went out to everyone.')}
+</div>
+<div class="card rec"><div><span class="eyebrow">Pick up next</span>
+<h3 class="t-base" style="margin-top:4px">${esc(R.title||(rec?rec.title:R.effort))}</h3>
+<dl><dt>Why</dt><dd>${esc(R.why)}</dd><dt>Links</dt><dd>${esc(R.links)}</dd><dt>Seams</dt><dd>${esc(R.seams)}</dd></dl></div>
+<button class="btn primary">Resume</button></div>
+<div><div class="eyebrow" style="margin-bottom:4px">In flight · ${act.length}</div><div class="rows">${act.map(effRow).join('')}
+<div class="row fold card-interactive" role="button" tabindex="0" id="idleFold" aria-expanded="false"><span class="body">${idle.length} more, idle for over a week</span><span class="chev" id="idleChev">▸</span></div>
+<div class="rows" id="idleRows" hidden style="margin-top:6px">${idle.map(effRow).join('')}</div></div></div></section>`;
+// seams: strongest 3 neighbours per system
+const nb=id=>D.seams.filter(s=>s.a===id||s.b===id).sort((x,y)=>y.strength-x.strength).slice(0,3);
+const inflight=id=>act.filter(e=>e.systems.some(s=>s.id===id&&s.files>=5)).length;
+const map=`<section id="map"><div class="sec-head"><span class="eyebrow">Map</span><span class="asof">Click a system to see its parts. Numbers are how many connections two systems share; hover one for what kind.</span></div>
+<div class="systems">${D.systems.map(s=>{
+  const tot=s.screensFiles+s.behindFiles, pct=Math.round(s.screensFiles/tot*100), n=inflight(s.id);
+  return `<button class="card card-interactive sys" data-id="${s.id}" data-system="${s.id}" aria-expanded="false">
+  <h3 class="t-base">${esc(s.name)}</h3><p class="purpose">${esc(s.purpose)}</p>
+  <div><div class="bar tip" tabindex="0" data-tip="Of ${tot} files in ${esc(s.name)}, ${s.screensFiles} are screens and ${s.behindFiles} are behind the scenes."><i class="a" style="width:${pct}%"></i><i class="b" style="width:${100-pct}%"></i></div>
+  <div class="barlabel"><span><span class="side screens" style="padding:0 5px">What you see</span> ${s.screensFiles}</span><span><span class="side behind" style="padding:0 5px">Behind the scenes</span> ${s.behindFiles}</span></div></div>
+  <span class="status ${n?'warn':'ok'} tip left" tabindex="0" style="align-self:flex-start" data-tip="${n?n+' active effort'+(n>1?'s are':' is')+' editing a lot of files here right now.':'Nobody has been working here in the last week.'}"><span class="dot"></span>${n?n+' effort'+(n>1?'s':'')+' in flight':'Steady'}</span>
+  <div class="conn">Connected to ${nb(s.id).map(x=>{const o=x.a===s.id?x.b:x.a;return `<b class="tip" tabindex="0" data-tip="${esc(sysName(o))}: ${x.strength.toLocaleString()} connections, mostly ${esc(x.words)}.">${esc(sysName(o))} ${x.strength.toLocaleString()}</b>`}).join(' · ')}</div></button>`}).join('')}</div>
+<div class="card parts" id="parts"></div></section>`;
+const shots=D.gallery.shown.map(n=>{const ch=D.gallery.changedBy[n]||[];
+  return `<div class="shot"><img src="gallery/${n}-${theme}.webp" alt="${esc(D.gallery.names[n])} screen" loading="lazy"><span class="name">${esc(D.gallery.names[n])}</span>
+  <span class="by tip left" tabindex="0" data-tip="${ch.length?esc(ch.map(c=>c.title+' ('+c.date+')').join('; ')):'No merged change has touched this screen recently.'}">${ch.length?'changed by '+esc(ch[0].title.split(':')[0])+(ch.length>1?' +'+(ch.length-1):''):'no recent changes'}</span></div>`}).join('');
+const screens=`<section id="screens"><div class="sec-head"><span class="eyebrow">Screens</span></div><div class="strip">${shots}</div>
+<div class="screens-foot"><span class="asof">${D.gallery.total} screens · ${D.gallery.shown.length} shown here</span><button class="btn">Browse all</button></div></section>`;
+document.getElementById('app').innerHTML=today+map+screens;
+// fold idle
+const f=document.getElementById('idleFold');
+const toggleIdle=()=>{const o=f.getAttribute('aria-expanded')==='true';f.setAttribute('aria-expanded',!o);document.getElementById('idleRows').hidden=o;document.getElementById('idleChev').textContent=o?'▸':'▾'};
+f.onclick=toggleIdle;f.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleIdle()}};
+
+// parts
+const P=document.getElementById('parts');let cur=null;
+const partBadge=(p,sysId)=>{const also=p.alsoServes&&p.alsoServes.length;
+  const tip=`${esc(p.purpose)} ${p.files} files. ${p.phone?'Also on the phone. ':''}${also?'Also serves '+p.alsoServes.map(sysName).join(', ')+'. '+esc(p.alsoWhy||'Other systems rely on it.'):''}`;
+  return `<span class="badge part tip" tabindex="0" data-tip="${tip}"><span class="side ${p.side}" style="border:0;background:none;padding:0"></span>${esc(p.id.replace(/-/g,' '))} <span class="n">${p.files}</span></span>`};
+function show(id){
+  document.querySelectorAll('.sys').forEach(b=>b.setAttribute('aria-expanded',b.dataset.id===id&&cur!==id));
+  if(cur===id){cur=null;P.classList.remove('open');return}
+  cur=id;const s=D.systems.find(x=>x.id===id);
+  const mine=s.parts.map(p=>[p,s.id]);
+  // parts of other systems that also serve this one
+  D.systems.forEach(o=>o.id!==id&&o.parts.forEach(p=>p.alsoServes&&p.alsoServes.includes(id)&&mine.push([p,o.id])));
+  const grp=side=>mine.filter(([p])=>p.side===side).map(([p,o])=>partBadge(p,o)+'').join('')
+    .replace(/<\/span><\/span>$/,'$&');
+  const alsoTag=(side)=>mine.filter(([p])=>p.side===side).map(([p,o])=>{
+    let h=partBadge(p,o);
+    if(o!==id)h=h.replace('</span>$$','').replace(/<\/span>$/,` <span class="also">also serves ${esc(s.name)}</span></span>`);
+    else if(p.alsoServes)h=h.replace(/<\/span>$/,` <span class="also">also serves ${p.alsoServes.map(sysName).map(esc).join(', ')}</span></span>`);
+    return h}).join('');
+  P.innerHTML=`<div class="parts-head"><h3 class="t-base" style="margin:0">${esc(s.name)} · parts</h3><button class="btn sm ghost" id="close">Close</button></div>
+  <div><span class="eyebrow">What you see</span><div class="grp">${alsoTag('screens')||'<span class="muted t-xs">Nothing here: this system has no screens of its own.</span>'}</div></div>
+  <div><span class="eyebrow">Behind the scenes</span><div class="grp">${alsoTag('behind')||'<span class="muted t-xs">Nothing here.</span>'}</div></div>`;
+  P.classList.add('open');document.getElementById('close').onclick=()=>show(id);
+}
+document.querySelectorAll('.sys').forEach(b=>b.onclick=()=>show(b.dataset.id));
+</script>
+</body>
+</html>

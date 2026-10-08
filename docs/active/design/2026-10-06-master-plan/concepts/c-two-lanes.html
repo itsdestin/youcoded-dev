@@ -1,3 +1,100 @@
+<!doctype html>
+<html lang="en" data-theme="creme">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YouCoded command center, two lanes</title>
+<link rel="stylesheet" href="cc.css">
+<style>
+/* WHY: layout only; every colour comes from cc.css variables so both themes work. */
+.cc-header .tabs{margin-left:8px}
+.cc-header .date{font-size:12px;color:var(--fg-muted)}
+.view[hidden]{display:none}
+.legend{display:flex;align-items:center;gap:12px;padding:10px 0 12px;font-size:12px;color:var(--fg-muted)}
+.legend .sp{flex:1}
+
+/* ---- MAP: the two lanes ---- */
+.lanes{display:grid;grid-template-columns:28px repeat(8,minmax(0,1fr));column-gap:12px;row-gap:8px;align-items:stretch}
+.lane-label{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--edge-dim);padding-left:6px}
+.colhead{display:flex;flex-direction:column;gap:4px;padding:0 2px;min-width:0}
+.colhead .name{font-size:16px;font-weight:600;line-height:1.2}
+.colhead .why{font-size:11px;color:var(--fg-2);font-style:italic;min-height:14px}
+.colhead .purpose{font-size:12px;color:var(--fg-2);line-height:1.4}
+.colhead .status{align-self:flex-start;margin-top:auto}
+.box{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:150px;cursor:pointer;transition:background var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease)}
+@media (hover:hover){.box:hover{background:var(--inset);border-color:var(--fg-muted)}}
+.box:active{background:var(--edge)}
+.box:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.box.empty-box{background:transparent;border-style:dashed;cursor:default;justify-content:center;align-items:center;text-align:center}
+.box.empty-box:hover{background:transparent;border-color:var(--edge)}
+.box .counts{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--fg-2)}
+.box .counts b{font-weight:500;color:var(--fg)}
+.box .fold{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg-muted)}
+.box .fold .chev{display:inline-block;transition:transform var(--dur-hover) var(--ease)}
+.box[aria-expanded="true"] .fold .chev{transform:rotate(90deg)}
+.parts{display:none;flex-direction:row;flex-wrap:wrap;gap:6px 4px}
+.box[aria-expanded="true"] .parts{display:flex}
+.parts .badge{max-width:100%;white-space:normal;text-align:left;line-height:1.3}
+.parts .badge .n{color:var(--fg-muted)}
+.parts .badge.also{background:transparent;border-style:dashed;color:var(--fg-2)}
+.efforts{margin-top:auto;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.chipeff{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:1px 8px;border-radius:var(--radius-full);background:var(--inset);border:1px solid var(--edge);font-size:11px;color:var(--fg)}
+.box:hover .chipeff{background:var(--panel)}
+.chipeff .dot{width:6px;height:6px;border-radius:50%;background:var(--status-warn);flex:none}
+.chipeff span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.summary{margin-top:28px;padding:12px 16px 12px 40px;border-top:1px solid var(--edge-dim);display:flex;gap:12px;align-items:center;font-size:13px;color:var(--fg-muted)}
+.summary a{color:var(--fg-2);text-decoration:none;border-radius:var(--radius-sm);padding:2px 4px}
+.summary a b{font-weight:500;color:var(--fg)}
+@media (hover:hover){.summary a:hover{background:var(--inset)}}
+.summary a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.conn{display:flex;flex-direction:column;gap:4px;padding:0 2px;font-size:11px;min-width:0}
+.conn .badge{justify-content:space-between;width:100%;cursor:help}
+.conn .badge .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conn .badge .ct{color:var(--fg-muted);font-variant-numeric:tabular-nums}
+
+/* ---- TODAY ---- */
+.today{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.today .card{display:flex;flex-direction:column;gap:10px}
+.today h2{margin:0;font-size:16px;font-weight:500}
+.today h2 .count{color:var(--fg-muted);font-weight:400;font-size:14px;margin-left:4px}
+.today .row .title{font-size:14px}
+.today .row .hint{white-space:normal}
+.row .sides{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13px;color:var(--fg-2)}
+.kv .k{color:var(--fg-muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding-top:2px}
+.sticky-note{font-size:12px;color:var(--fg-muted)}
+
+/* ---- SCREENS ---- */
+.gal-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.gal-bar .sp{flex:1}
+button.pill{font:inherit;font-size:14px;cursor:pointer;transition:background var(--dur-hover) var(--ease)}
+@media (hover:hover){button.pill:not(.on):hover{background:var(--edge)}}
+button.pill:active{background:var(--edge)}
+button.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.pill .count{font-size:11px;opacity:.75}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.shot{padding:10px;display:flex;flex-direction:column;gap:8px}
+.shot img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--edge-dim);display:block;background:var(--well)}
+.shot .cap{font-size:14px;font-weight:500}
+.shot .by{font-size:11px;color:var(--fg-muted);line-height:1.4}
+.shot .by b{font-weight:400;color:var(--fg-2)}
+@media (max-width:1100px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="cc-header">
+  <span class="title">YouCoded command center</span>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <span class="spacer"></span>
+  <span class="date num" id="date"></span>
+</header>
+<main class="cc-main">
+  <section class="view" id="v-map" role="tabpanel"></section>
+  <section class="view" id="v-today" role="tabpanel" hidden></section>
+  <section class="view" id="v-screens" role="tabpanel" hidden></section>
+</main>
+
+<script type="application/json" id="data">
 {
  "generatedAt": "2026-10-08T21:40:10.790Z",
  "commit": "0bf355f9a4ea3e0c516f3e6537a9b85b27874ea8",
@@ -3556,3 +3653,161 @@
   "activeEfforts": 3
  }
 }
+</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = (s,r=document)=>r.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n=>Number(n).toLocaleString('en-US');
+
+// theme from URL, default creme (the owner's theme)
+const qs = new URLSearchParams(location.search);
+document.documentElement.dataset.theme = qs.get('theme') || 'creme';
+
+const sysById = Object.fromEntries(D.systems.map(s=>[s.id,s]));
+const partHome = {}; D.systems.forEach(s=>s.parts.forEach(p=>partHome[p.id]=s.id));
+const partById = {}; D.systems.forEach(s=>s.parts.forEach(p=>partById[p.id]=p));
+const NAMES={'buddy-ui':'Buddy window','chat-state':'Conversation memory'};
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dmy=iso=>{const [y,m,d]=iso.split('-').map(Number);return d+' '+MON[m-1]};
+const human = id=>{if(NAMES[id])return NAMES[id];const t=id.replace(/-/g,' ');return t[0].toUpperCase()+t.slice(1)};
+const ago = d=>d===0?'today':d===1?'yesterday':d+' days ago';
+const SIDE = {screens:'What you see', behind:'Behind the scenes'};
+const sideTag = (k,n)=>`<span class="side ${k} tip" tabindex="0" data-tip="${k==='screens'?'Parts of the app you can look at and click.':'Parts that work out of sight: storage, connections, the phone app.'}">${SIDE[k]}${n!=null?' '+n:''}</span>`;
+
+// in flight = touched in the last 7 days and not already merged (merged ones are cleanup, not work)
+const SHORT = {'session/ui-consistency-audit':'UI audit','session/perf-recorder-integration-20261005':'Perf recorder'};
+const inflight = D.efforts.filter(e=>e.active && !e.merged && !(e.pr && e.pr.state==='merged'));
+const shortTitle = e=>SHORT[e.branch] || (e.title.split(':')[0].replace(/ for the performance program/,'').slice(0,28));
+// which lane(s) of which system an effort touches, from its parts
+function effortLanes(e){const m={};(e.parts||[]).forEach(p=>{const sid=partHome[p.id];if(!sid)return;(m[sid+'|'+p.side]=m[sid+'|'+p.side]||0);m[sid+'|'+p.side]+=p.files});return m}
+const EL = inflight.map(e=>({e,lanes:effortLanes(e)}));
+
+// ---------------- tabs ----------------
+const TABS = [['today','Today',6],['map','Map',D.systems.length],['screens','Screens',D.gallery.total]];
+const tabsEl = $('#tabs');
+tabsEl.innerHTML = TABS.map(([k,l,n])=>`<button role="tab" data-k="${k}" class="tip below" data-tip="${{today:'The morning briefing: what to merge, clean up and look at.',map:'The eight parts of the app and how they connect.',screens:'Pictures of the app’s screens and what changed each one.'}[k]}">${l} <span class="count num">${n}</span></button>`).join('');
+$('#date').textContent = new Date(D.briefing.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+function show(k){
+  if(!TABS.some(t=>t[0]===k)) k='map';
+  TABS.forEach(([t])=>{$('#v-'+t).hidden = t!==k});
+  tabsEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b.dataset.k===k));
+  const h = '#'+k; if(location.hash!==h) history.replaceState(null,'',location.pathname+location.search+h);
+}
+tabsEl.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.k)});
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+
+// ---------------- MAP ----------------
+function neighbours(id){
+  return D.seams.filter(s=>s.a===id||s.b===id).sort((x,y)=>y.strength-x.strength).slice(0,2)
+    .map(s=>({other:sysById[s.a===id?s.b:s.a],s}));
+}
+const WHY = {foundations:'everything stands on this',workshop:'tools we build with'};
+function box(sys,side){
+  const parts = sys.parts.filter(p=>p.side===side);
+  const visitors = side==='behind' ? [] : [];
+  // parts homed elsewhere that also serve this system
+  const guests = D.systems.filter(o=>o.id!==sys.id).flatMap(o=>o.parts.filter(p=>p.side===side && (p.alsoServes||[]).includes(sys.id)));
+  const lane = side==='screens'?'screens':'behind the scenes';
+  if(!parts.length && !guests.length){
+    return `<div class="box empty-box"><div class="muted t-xs">Nothing here yet</div><div class="muted t-2xs" style="margin-top:4px">${sys.name} has no ${lane} parts.</div></div>`;
+  }
+  const files = side==='screens'?sys.screensFiles:sys.behindFiles;
+  const phone = parts.filter(p=>p.phone).length;
+  const counts = `<div class="counts num">
+    <span class="tip" tabindex="0" data-tip="${parts.length} separate parts of ${esc(sys.name)} ${side==='screens'?'that you can see':'that work behind the scenes'}. Click the box to list them."><b>Parts</b> ${parts.length}</span>
+    <span class="tip" tabindex="0" data-tip="${files} files hold these parts' code."><b>Files</b> ${fmt(files)}</span>
+    ${phone?`<span class="tip" tabindex="0" data-tip="${phone} of these parts are the Android phone version.">incl. phone ${phone}</span>`:''}</div>`;
+  const badge = (p,guest)=>{
+    const also = p.alsoServes&&p.alsoServes.filter(x=>x!==partHome[p.id]).map(x=>sysById[x].name);
+    const tip = `${p.purpose} ${fmt(p.files)} files.${p.phone?' This is the phone version.':''}${p.alsoWhy?' '+p.alsoWhy:''}${guest?` Lives in ${sysById[partHome[p.id]].name} but also serves ${sys.name}, so it is listed in both.`:''}`;
+    return `<span class="badge tip${guest?' also':''}" tabindex="0" data-tip="${esc(tip)}">${human(p.id)} <span class="n num">${p.files}</span>${p.phone?' · phone':''}${guest?' · shared with '+esc(sysById[partHome[p.id]].name):''}${!guest&&also&&also.length?' · also serves '+esc(also.join(', ')):''}</span>`;
+  };
+  // effort chips that live in this box (max 3)
+  const hits = EL.filter(x=>x.lanes[sys.id+'|'+side]).sort((a,b)=>a.e.daysAgo-b.e.daysAgo);
+  const chips = hits.slice(0,3).map(({e})=>`<span class="chipeff tip" tabindex="0" data-tip="${esc(e.title)}. Last touched ${ago(e.daysAgo)}. Work in progress on ${side==='screens'?'screens':'parts behind the scenes'} here."><span class="dot"></span><span class="t">${esc(shortTitle(e))}</span></span>`).join('')
+    + (hits.length>3?`<span class="muted t-2xs">+${hits.length-3} more</span>`:'');
+  return `<div class="box" role="button" tabindex="0" aria-expanded="false" aria-label="${esc(sys.name)}, ${lane}">
+    ${counts}
+    <div class="fold"><span class="chev">›</span><span class="f-open">Click to see parts</span></div>
+    <div class="parts">${parts.map(p=>badge(p,false)).join('')}${guests.map(p=>badge(p,true)).join('')}</div>
+    ${chips?`<div class="efforts">${chips}</div>`:''}
+  </div>`;
+}
+function renderMap(){
+  const cols = D.systems;
+  const head = cols.map(sys=>{
+    const n = new Set(EL.filter(x=>Object.keys(x.lanes).some(k=>k.startsWith(sys.id+'|'))).map(x=>x.e.branch)).size;
+    const st = n? `<span class="status warn tip" tabindex="0" data-tip="${n} ${n===1?'effort is':'efforts are'} being worked on in ${esc(sys.name)} right now. An effort is one piece of work in progress."><span class="dot"></span>${n} in flight</span>`
+                : `<span class="status ok tip" tabindex="0" data-tip="Nobody is changing ${esc(sys.name)} right now."><span class="dot"></span>Steady</span>`;
+    return `<div class="colhead"><div class="name">${esc(sys.name)}</div><div class="why">${WHY[sys.id]||''}</div><div class="purpose">${esc(sys.purpose)}</div>${st}</div>`;
+  }).join('');
+  const conn = cols.map(sys=>`<div class="conn"><span class="eyebrow">Connected to</span>${neighbours(sys.id).map(({other,s})=>`<span class="badge tip" tabindex="0" data-tip="${esc(sys.name)} and ${esc(other.name)}: ${fmt(s.strength)} links, mostly ${esc(s.words)}. The bigger the number, the more tightly they are tied together."><span class="nm">${esc(other.name)}</span><span class="ct">${fmt(s.strength)}</span></span>`).join('')}</div>`).join('');
+  $('#v-map').innerHTML = `
+    <div class="legend"><span>Eight systems. Each has what you see on top and what works behind the scenes below.</span><span class="sp"></span>${sideTag('screens')}${sideTag('behind')}<span class="muted">Click a box to open its parts.</span></div>
+    <div class="lanes">
+      <div></div>${head}
+      <div class="lane-label eyebrow" style="grid-row:2">What you see</div>${cols.map(s=>box(s,'screens')).join('')}
+      <div class="lane-label eyebrow" style="grid-row:3">Behind the scenes</div>${cols.map(s=>box(s,'behind')).join('')}
+      <div></div>${conn}
+    </div>
+    <div class="summary"><a href="#today" class="tip" tabindex="0" data-tip="Efforts being worked on right now. Open Today to resume one."><b>In flight</b> ${inflight.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Changes reviewed and waiting for you to merge."><b>Ready to merge</b> ${B.mergeable.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Known problems that need a decision."><b>Major bugs</b> ${B.bugs.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Changes merged since the ${esc(B.release.version)} release on ${dmy(B.release.date)}."><b>${B.mergedSinceRelease}</b> changes since release ${esc(B.release.version)}</a></div>`;
+  const toggle = el=>{const o=el.getAttribute('aria-expanded')==='true';el.setAttribute('aria-expanded',!o);$('.f-open',el).textContent=o?'Click to see parts':'Click to fold'};
+  $('#v-map').addEventListener('click',e=>{const b=e.target.closest('.box[role=button]');if(b)toggle(b)});
+  $('#v-map').addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('.box[role=button]');if(b&&e.target===b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggle(b)}});
+}
+
+// ---------------- TODAY ----------------
+const B = D.briefing;
+const row = (title,hint,btn,extra='')=>`<div class="row"><div class="body"><div class="title">${title}</div><div class="hint">${hint}</div>${extra}</div>${btn}</div>`;
+const btn = (t,tip,primary)=>`<button class="btn sm tip${primary?' primary':''}" data-tip="${esc(tip)}">${t}</button>`;
+const card = (eyebrow,label,n,body)=>`<div class="card"><div><div class="eyebrow">${eyebrow}</div><h2>${label}<span class="count num">${n}</span></h2></div>${body}</div>`;
+function renderToday(){
+  const effByBranch = Object.fromEntries(D.efforts.map(e=>[e.branch,e]));
+  const rec = B.recommendation, recM = B.mergeable.find(m=>m.branch===rec.effort);
+  const c = B.cleanup;
+  const html = [
+    card('1 · Ready to merge','Ready to merge',B.mergeable.length, B.mergeable.map(m=>row(esc(m.title),`${esc(m.note)} Since ${dmy(m.since)}.`,btn('Merge','Merge this change into the app.'))).join('')),
+    card('2 · Cleanup','Cleanup',3,
+      row(`Finished efforts on this computer`,`${c.localBranchesMerged} are merged and can go, including two finished today.`,btn('Clean up','Remove the finished efforts from this computer.'))+
+      row(`Work folders`,`${c.worktrees} exist, ${c.worktreesIdle} are idle. Includes ${esc(c.examples[3])}.`,btn('Clean up','Remove the idle work folders.'))+
+      row(`Finished efforts online`,`${c.remoteBranchesMerged} merged effort is still kept online.`,btn('Clean up','Remove it from the online copy.'))),
+    card('3 · Major bugs','Major bugs',B.bugs.length, B.bugs.map(b=>row(esc(b.title),`${esc(b.area)} · ${b.tags.map(esc).join(' · ')}`,btn('Open','Open the notes on this problem.'))).join('')),
+    card('4 · Changed since release','Changed since release',B.mergedSinceRelease,
+      row(`Merged today`,B.mergedToday.map(x=>esc(x.title)).join(' · '),btn('See screens','See which screens these changed.'))+
+      row(`Merged yesterday`,B.mergedYesterday.map(x=>esc(x.title)).join(' · '),btn('See screens','See which screens these changed.'))+
+      row(`Since version ${B.release.version}`,`Released ${dmy(B.release.date)}. ${B.mergedSinceRelease} changes merged since then, ${B.mergedSincePrerelease} since the latest test version.`,btn('See all','See every change since the release.'))),
+    card('5 · Active work','Active work',inflight.length, inflight.map(e=>row(esc(e.title),`Last touched ${ago(e.daysAgo)} · ${e.commits} saves`,btn('Resume','Pick this effort back up.'),`<div class="sides">${e.uiFiles?sideTag('screens',e.uiFiles):''}${e.behindFiles?sideTag('behind',e.behindFiles):''}</div>`)).join('')),
+    card('6 · Recommendation','Do this next',1,
+      row(esc(rec.title||rec.effort),'A small change with a finished review.',btn('Open','Open this change.',true))+
+      `<div class="kv"><div class="k">Why</div><div>${esc(rec.why)}</div><div class="k">Links</div><div>${esc(rec.links)}</div><div class="k">Seams</div><div>${esc(rec.seams)}</div></div>`)
+  ];
+  $('#v-today').innerHTML = `<div class="today">${html.join('')}</div>`;
+  $('#v-today').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&/See screens/.test(b.textContent))show('screens')});
+}
+
+// ---------------- SCREENS ----------------
+let filter='all';
+function renderScreens(){
+  const g=D.gallery, theme = /midnight|dark/.test(document.documentElement.dataset.theme)?'midnight':'creme';
+  const today=B.date;
+  const all=g.shown, ch=all.filter(n=>g.changedBy[n].length), td=all.filter(n=>g.changedBy[n].some(c=>c.date===today));
+  const lists={all,since:ch,today:td};
+  const shown = lists[filter];
+  const pills=[['all','All',all.length,'Every screen we have a picture of.'],['since','Changed since release',ch.length,'Screens that a merged or waiting change has touched since the last release.'],['today','Changed today',td.length,'Screens a change touched today.']]
+    .map(([k,l,n,t])=>`<button class="pill tip below${filter===k?' on':''}" data-f="${k}" data-tip="${t}">${l} <span class="count num">${n}</span></button>`).join('');
+  const cards = shown.map(n=>{const c=g.changedBy[n];
+    return `<div class="card inset shot"><img loading="lazy" alt="${esc(g.names[n])} screen" src="gallery/${n}-${theme}.webp"><div class="cap">${esc(g.names[n])}</div>
+    <div class="by">${c.length?'<b>changed by</b> '+c.map(x=>`<span class="tip" tabindex="0" data-tip="Change #${x.pr}, ${x.date}">${esc(x.title)}</span>`).join(' · '):'No changes since the release'}</div></div>`}).join('');
+  $('#v-screens').innerHTML = `<div class="gal-bar">${pills}<span class="sp"></span><span class="muted t-xs num tip below" tabindex="0" data-tip="The app has ${g.total} screens. We have pictures of ${all.length} so far.">${g.total} screens · ${shown.length} shown</span><button class="btn sm tip below" data-tip="Open the full list of every screen.">Browse all</button></div>
+    ${shown.length?`<div class="grid4">${cards}</div>`:`<div class="empty">No screens changed today.<br><button class="btn sm" data-f="all" style="margin-top:10px">Show all screens</button></div>`}`;
+}
+$('#v-screens').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){filter=b.dataset.f;renderScreens()}});
+
+renderMap();renderToday();renderScreens();
+show((qs.get('tab')||location.hash.slice(1)||'map'));
+})();
+</script>
+</body>
+</html>
