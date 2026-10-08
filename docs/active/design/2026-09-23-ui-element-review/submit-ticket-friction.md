@@ -136,6 +136,59 @@ version always sent (ST-Q1 "show").
 5. **The pointer stays where the last open step clicked**, so the clicked fold header shows its
    hover tint in the picture — reads like a selected state.
 
+## Round 3 (2026-10-07) — after Destin's submit-ticket-2 answers
+
+Deck `submit-ticket-3.json` (ticket: Round 2 `runs/st2-after` vs `runs/st3-after`; folds: `runs/fold-before`
+/ `runs/fold-sync-before` vs `runs/st3-after` / `runs/fold-sync-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R3-1 | Switches only (the `?ticketTicks=` switch and the two losing looks deleted). | ST2-C1 "switches". |
+| R3-2 | Sending: only a "Sending your ticket…" box under the "Your ticket" label; replaced by the tagged ticket when done. | ST2-10 note. |
+| R3-3 | "Open in browser". Destin wrote "Open in Browser"; decisions "Sentence case everywhere" makes it a small b — said on the slide. | ST2-6. |
+| R3-4 | **The shared `FoldRow` now opens inside its own box** (the box wraps a box-less header row + content); `FoldCard` deleted; new `tests/FoldRow.test.tsx`, seen red against the old FoldRow. | ST2-Q1 "all". |
+| R3-5 | The "Submitted" tag: checked — it is the guide's status pill (green tint and border, words in the normal text colour), same as Installed/Online. On light lavender the 15% green tint reads nearly grey; left as the shared pill (a Pill-wide question, not this screen's). | Coordinator check. |
+| R3-6 | The code download, answered from the code (below) and asked as ST3-Q1 with both pictures. | ST2-7 "when would a user encounter this screen?", ST2-9. |
+
+### When the "Downloading YouCoded's code" screen appears (evidence)
+- Only path: Review ticket → Optional AI help → "Let your assistant try to fix it" → Start
+  (`ReportDesign.tsx` `handOver`). Contribute's "Set up development workspace" runs the same download.
+- It downloads unless the app is holding a "ready" answer from earlier: `handOver` asks
+  `setupStatus()`, which is `setupStatusState` — a variable in the main process's memory
+  (`dev-tools.ts` `workspaceSetupStatus`). Nothing records it on disk.
+- So it downloads again after **every app restart**, and after Contribute's screen clears the
+  status (`clearWorkspaceSetupStatus`). Each run clones into a NEW folder — `freeWorkspacePath`
+  "Never reuses one" (`~/YouCoded/Development/youcoded-workspace`, `-2`, … up to 100) — then runs
+  `setup.sh`, which the code itself sizes at about 1 GB with five nested repositories.
+- The screen's "This can take a few minutes the first time" is therefore wrong after a restart.
+
+### Repo-wide search for folds (the "every affected place" list)
+- `rg -n "<FoldRow"` → 9 call sites in 4 files, all changed by the root fix: AboutPopup ×6
+  (Your account, Friends & presence, Anonymous usage stats, Remote access and games / Setup
+  downloads on Android, Open-source libraries), PerformancePopup ×1 (mapped over 3 sections),
+  SyncPanel ×1 (Sync log), StatusBar ×1 (Theme cycle). All on submit-ticket-3 except Friends &
+  presence, Remote access and Setup downloads (same look as the two Privacy rows shown).
+- `FirstRunView.tsx` imports FoldRow but never renders it.
+- **Hand-built folds NOT using FoldRow** (a `SettingRow expanded` header with content opening
+  below — likely the same mistake; not inspected one by one, not changed): ContributionWalkthrough
+  ("How contributing works"), SessionContextPopup ×2, LookSettings ×2 (Fine-tune, Additional
+  customizations), EngineCard (advanced), LocalModelsSection ×3, LocalModelSetup (first run),
+  GitReviewView ×2, SubagentTimeline, RuntimeBinding (memory detail). Found by
+  `rg -n "expanded=\{"` over `src/renderer`; tool cards and chat bubbles with their own chevrons
+  are outside the guide.
+
+### Tooling friction this round
+1. **A zsh variable holding several screen names is ONE argument** — `shoot $F` silently shot
+   nothing and printed nothing (no "unknown screen", no count). shoot should refuse an argument
+   containing a space, or print "0 pictures".
+2. **"Before" for a primitive change needs the old primitive**: I swapped the file to HEAD, shot,
+   and swapped back. `shoot --before` wants a whole worktree; a `--before-file <path>@<ref>`
+   override would make one-file before/afters cheap.
+3. **Open-first steps that must reach the bottom of a dialog** need scroll, click, scroll again
+   (Sync log opened off-screen the first time).
+4. **A decide slide accepts today/problem/proposal** — not in AUTHORING.md's decide table.
+5. A practice log stamped with the clock makes every before/after of it "changed" (Sync log).
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Guide: "a review before sending" recipe** — the item as read text in a top card (with its
@@ -167,3 +220,16 @@ Added after round 2 (ranked into the list above by value):
 - **shoot: move the pointer off the page before the picture** when the last open step clicked.
 - **TSX: an ast-grep rule (or wrapper type) flagging `aria-*` on a component whose props don't
   accept it.**
+
+Added after round 3:
+- **(#2) Hand-built folds follow the same rule** — move the 14 `SettingRow expanded` folds listed in
+  round 3 onto `FoldRow` (or its shape), screen by screen with before/afters.
+- **(#5) The code download remembers itself** — whatever ST3-Q1 decides, `workspaceSetupStatus`
+  should find an existing `~/YouCoded/Development/youcoded-workspace*` instead of cloning again
+  after every restart (also hits Contribute).
+- **(#8) Pill: the ok tint is near-invisible on light themes** — measure contrast of every Pill
+  tone on every theme (the "Submitted" tag reads grey on YouCoded).
+- **shoot: refuse an argument with a space in it** (round 3 friction 1).
+- **shoot: `--before-file <path>@<ref>`** for one-file before/afters (friction 2).
+- **deck AUTHORING: list today/problem/proposal on decide slides** (friction 4).
+- **workbench: a fixed clock for practice logs** (friction 5).

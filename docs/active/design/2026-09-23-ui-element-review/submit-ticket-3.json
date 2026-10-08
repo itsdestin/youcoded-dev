@@ -1,0 +1,217 @@
+{
+  "title": "Submit a ticket — round 3: switches, the sending box, every fold opening inside itself, and the code download",
+  "key": "submit-ticket-3",
+  "out": "submit-ticket-3.review.html",
+  "images": "images/submit-ticket-3",
+  "runs": {
+    "r2": "runs/st2-after",
+    "before": "runs/fold-before",
+    "after": "runs/st3-after",
+    "syncb": "runs/fold-sync-before",
+    "synca": "runs/fold-sync-after"
+  },
+  "labels": {
+    "r2": "Round 2",
+    "before": "Today",
+    "after": "Proposed",
+    "syncb": "Today",
+    "synca": "Proposed"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "ST3-1",
+      "surface": "Submit a ticket",
+      "path": "Report a bug, opened from an error",
+      "runs": [
+        "r2",
+        "after"
+      ],
+      "crop": "settings/development/bug-report#from-error@620x730+410+85",
+      "headline": "The three choices now use the app's on/off switch, at the right of each row, as you picked.",
+      "changed": "Tick boxes became the same switch Settings uses, vertically centred beside each choice's title and line.",
+      "notice": "Same choices, same words."
+    },
+    {
+      "id": "ST3-2",
+      "surface": "Submit a ticket",
+      "path": "Submit public ticket, while it sends",
+      "runs": [
+        "r2",
+        "after"
+      ],
+      "crop": "settings/development/bug-report#sending@620x300+410+300",
+      "headline": "While sending, \"Your ticket\" shows only the \"Sending your ticket…\" box; it turns into the summary when done.",
+      "changed": "Round 2 kept the whole ticket card and added a sending card under it. Now there is just the one box.",
+      "notice": "When it finishes, the box is replaced by your ticket with its \"Submitted\" tag (approved last round)."
+    },
+    {
+      "id": "ST3-3",
+      "surface": "Submit a ticket",
+      "path": "Tick Screenshots or files → Continue in GitHub",
+      "runs": [
+        "r2",
+        "after"
+      ],
+      "crop": "settings/development/bug-report#browser@620x280+410+310",
+      "headline": "The button now reads \"Open in browser\".",
+      "changed": "Was \"Open it again\". Your wording, in the app's sentence case (small \"b\").",
+      "notice": "Same button, same place."
+    },
+    {
+      "id": "ST3-4",
+      "surface": "About",
+      "path": "About → Privacy → Your account (optional)",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/about#account-open@440x600+500+150",
+      "headline": "About → Privacy: an opened row's text now sits inside its own box.",
+      "changed": "The same applies to all four Privacy rows: Your account, Friends & presence, Anonymous usage stats, Remote access and games (Setup downloads on Android).",
+      "notice": "Closed, the row looks exactly as before. Opened, the text now sits inside the row's box instead of below it."
+    },
+    {
+      "id": "ST3-5",
+      "surface": "About",
+      "path": "About → Privacy → Anonymous usage stats",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/about#stats-open@440x600+500+150",
+      "headline": "About → Anonymous usage stats, opened: the list and its notes stay inside the row's box.",
+      "changed": "Its two paragraphs and the bullet list used to run on under the row.",
+      "notice": "Closed, the row looks exactly as before. Opened, the text now sits inside the row's box instead of below it."
+    },
+    {
+      "id": "ST3-6",
+      "surface": "About",
+      "path": "About → Licenses → Open-source libraries",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/about#licenses-open@440x600+500+150",
+      "headline": "About → Licenses: \"Open-source libraries\" opens inside its box.",
+      "changed": "The library list used to start below the row's box.",
+      "notice": "Closed, the row looks exactly as before. Opened, the text now sits inside the row's box instead of below it."
+    },
+    {
+      "id": "ST3-7",
+      "surface": "Settings",
+      "path": "Settings → Performance → How GPU choice works",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/performance#fold-open@440x600+500+150",
+      "headline": "Performance: each \"How GPU choice works\" row opens inside its box.",
+      "changed": "Same for all three rows (Why YouCoded uses the discrete GPU, Other places to look for power savings, Why a restart is needed).",
+      "notice": "Closed, the row looks exactly as before. Opened, the text now sits inside the row's box instead of below it."
+    },
+    {
+      "id": "ST3-8",
+      "surface": "Settings",
+      "path": "Settings → Backup & sync → History → Sync log",
+      "runs": [
+        "syncb",
+        "synca"
+      ],
+      "crop": "settings/sync#log-open@440x600+500+150",
+      "headline": "Backup & sync: the Sync log opens inside its box, with Refresh at its foot.",
+      "changed": "The log lines and Refresh used to sit under the row. (The times differ between the two pictures only because the practice log uses the clock.)",
+      "notice": "Closed, the row looks exactly as before. Opened, the text now sits inside the row's box instead of below it."
+    },
+    {
+      "id": "ST3-9",
+      "surface": "Status bar",
+      "path": "Status bar → widgets menu → Theme → Theme cycle",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/status-bar/themes@440x600+500+150",
+      "headline": "Status bar widgets: the Theme cycle list opens inside its box.",
+      "changed": "The list of themes used to hang below the row.",
+      "notice": "Closed, the row looks exactly as before. Opened, the text now sits inside the row's box instead of below it."
+    },
+    {
+      "id": "ST3-Q1",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Optional AI help → Let your assistant try to fix it → Start",
+      "runs": [
+        "after"
+      ],
+      "crop": [
+        {
+          "crop": "settings/development/bug-report#review-ai@620x610+410+145",
+          "label": "Where you start it"
+        },
+        {
+          "crop": "settings/development/bug-report#handing-over@620x310+410+295",
+          "label": "What you see next"
+        }
+      ],
+      "highlight": {
+        "box": [
+          1,
+          79,
+          49,
+          13
+        ]
+      },
+      "headline": "When does \"Downloading YouCoded's code\" happen, and should the ticket screen offer it at all?",
+      "options": [
+        {
+          "id": "remove",
+          "label": "Remove from tickets",
+          "recommended": true,
+          "pros": [
+            "The ticket screen is only about reporting — nothing surprising for everyday users",
+            "No hidden download of about 1 GB, and no pile of copies",
+            "Help & feedback → Contribute still offers working on YouCoded's code, with its own explanation"
+          ],
+          "cons": [
+            "Someone who wants the assistant to fix a bug takes one more step (Contribute)"
+          ],
+          "cost": "Small: the row and its two waiting/failed screens go."
+        },
+        {
+          "id": "once",
+          "label": "Keep, download once",
+          "pros": [
+            "Keeps the shortcut",
+            "The row says up front it downloads about 1 GB the first time",
+            "Later uses start straight away, reusing the copy on your computer"
+          ],
+          "cons": [
+            "Still a developer action on a screen everyone uses",
+            "The 1 GB download still surprises people the first time"
+          ],
+          "cost": "A change to how the app finds its earlier download, plus new wording."
+        },
+        {
+          "id": "contribute",
+          "label": "Hand over to Contribute",
+          "pros": [
+            "One place explains and sets up the download (Contribute)",
+            "Your ticket's words are carried over, so you don't retype them"
+          ],
+          "cons": [
+            "Opens a second popup",
+            "Contribute itself also downloads a fresh copy each time today, so that needs the same fix"
+          ],
+          "cost": "Medium: a new hand-off between the two popups."
+        }
+      ],
+      "today": "You reach this only by choosing Review ticket → Optional AI help → \"Let your assistant try to fix it\" → Start. It downloads YouCoded's own code (about 1 GB, by the app's own note) into a folder on your computer, then opens a new conversation that works on a fix. Nothing is sent to GitHub.",
+      "problem": "It happens again after every restart of the app: the app forgets the earlier download and makes a new copy each time (youcoded-workspace, -2, -3…). The screen says \"a few minutes the first time\", which isn't true. And on a screen for reporting a problem, a code download makes little sense to someone who isn't a developer.",
+      "proposal": "Pick what this screen should do with it. Nothing has changed yet. Round 2's failed-download screen (ST2-9) goes with whatever you pick."
+    }
+  ]
+}

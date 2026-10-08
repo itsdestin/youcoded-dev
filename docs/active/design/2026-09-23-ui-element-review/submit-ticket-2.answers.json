@@ -1,0 +1,98 @@
+{
+ "deck": "submit-ticket-2",
+ "started": "2026-10-07T23:56:53.484Z",
+ "submitted": "2026-10-08T00:00:32Z",
+ "cur": 11,
+ "answers": {
+  "ST2-1": {
+   "v": "yes",
+   "t": 1791417425209,
+   "seconds": 12,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-C1": {
+   "v": "pick",
+   "t": 1791417442519,
+   "pick": "switches",
+   "seconds": 17,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-2": {
+   "v": "yes",
+   "t": 1791417462649,
+   "seconds": 20,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-3": {
+   "v": "yes",
+   "t": 1791417469072,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-4": {
+   "v": "yes",
+   "t": 1791417484825,
+   "seconds": 16,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-5": {
+   "v": "yes",
+   "t": 1791417508339,
+   "seconds": 24,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-6": {
+   "v": "yes",
+   "t": 1791417526540,
+   "note": "change to \"Open in Browser\"",
+   "seconds": 18,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-7": {
+   "v": "other",
+   "t": 1791417556941,
+   "note": "this is still odd. when would a user encounter this screen?",
+   "seconds": 30,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-8": {
+   "v": "yes",
+   "t": 1791417564093,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-9": {
+   "v": "other",
+   "t": 1791417575275,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-10": {
+   "v": "other",
+   "t": 1791417615842,
+   "note": "bare sending your ticket box under your ticket header, gets replaced with the submission summary when done",
+   "seconds": 41,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST2-Q1": {
+   "v": "pick",
+   "t": 1791417631586,
+   "note": "want to see these first just to make sure.",
+   "pick": "all",
+   "seconds": 16,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
