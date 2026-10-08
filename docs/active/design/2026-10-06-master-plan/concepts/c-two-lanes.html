@@ -20,7 +20,7 @@
 .colhead .name{font-size:16px;font-weight:600;line-height:1.2}
 .colhead .why{font-size:11px;color:var(--fg-2);font-style:italic;min-height:14px}
 .colhead .purpose{font-size:12px;color:var(--fg-2);line-height:1.4}
-.colhead .status{align-self:flex-start;margin-top:auto}
+.colhead .status{align-self:flex-start;margin-top:auto;white-space:nowrap;padding:2px 6px;gap:4px;letter-spacing:-.02em}
 .box{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:150px;cursor:pointer;transition:background var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease)}
 @media (hover:hover){.box:hover{background:var(--inset);border-color:var(--fg-muted)}}
 .box:active{background:var(--edge)}
@@ -43,7 +43,7 @@
 .chipeff .dot{width:6px;height:6px;border-radius:50%;background:var(--status-warn);flex:none}
 .chipeff span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .summary{margin-top:28px;padding:12px 16px 12px 40px;border-top:1px solid var(--edge-dim);display:flex;gap:12px;align-items:center;font-size:13px;color:var(--fg-muted)}
-.summary a{color:var(--fg-2);text-decoration:none;border-radius:var(--radius-sm);padding:2px 4px}
+.summary .sp{flex:1}.summary .pick b{font-weight:500;color:var(--fg)}.summary a{color:var(--fg-2);text-decoration:none;border-radius:var(--radius-sm);padding:2px 4px}
 .summary a b{font-weight:500;color:var(--fg)}
 @media (hover:hover){.summary a:hover{background:var(--inset)}}
 .summary a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -1297,7 +1297,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 583
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1310,7 +1310,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 74
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1323,7 +1323,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "event": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1335,7 +1335,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "event": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1348,7 +1348,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 11
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1361,7 +1361,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 67
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1374,7 +1374,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 77
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1386,7 +1386,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 61
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1399,7 +1399,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 10
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "projects-files",
@@ -1411,7 +1411,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 6
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "pages",
@@ -1422,7 +1422,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "import": 7
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1446,7 +1446,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "pages",
@@ -1458,7 +1458,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "event": 6
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1483,7 +1483,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "event": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1517,7 +1517,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "import": 5
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1529,7 +1529,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "pages",
@@ -1539,7 +1539,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "cochange": 28
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1551,7 +1551,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "social",
@@ -1563,7 +1563,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "channel": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "social",
@@ -1574,7 +1574,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "import": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1585,7 +1585,7 @@ button.pill .count{font-size:11px;opacity:.75}
     "import": 3
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -3536,6 +3536,7 @@ button.pill .count{font-size:11px;opacity:.75}
    "worktrees": 16,
    "worktreesIdle": 9,
    "remoteBranchesMerged": 1,
+   "line": "11 finished branches you can delete, and 9 idle work folders",
    "examples": [
     "Zero-hitch performance (merged today)",
     "Money page (merged today)",
@@ -3671,6 +3672,7 @@ const partById = {}; D.systems.forEach(s=>s.parts.forEach(p=>partById[p.id]=p));
 const NAMES={'buddy-ui':'Buddy window','chat-state':'Conversation memory'};
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const dmy=iso=>{const [y,m,d]=iso.split('-').map(Number);return d+' '+MON[m-1]};
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const human = id=>{if(NAMES[id])return NAMES[id];const t=id.replace(/-/g,' ');return t[0].toUpperCase()+t.slice(1)};
 const ago = d=>d===0?'today':d===1?'yesterday':d+' days ago';
 const SIDE = {screens:'What you see', behind:'Behind the scenes'};
@@ -3685,10 +3687,10 @@ function effortLanes(e){const m={};(e.parts||[]).forEach(p=>{const sid=partHome[
 const EL = inflight.map(e=>({e,lanes:effortLanes(e)}));
 
 // ---------------- tabs ----------------
-const TABS = [['today','Today',6],['map','Map',D.systems.length],['screens','Screens',D.gallery.total]];
+const TABS = [['today','Today',null],['map','Map',D.systems.length],['screens','Screens',D.gallery.total]];
 const tabsEl = $('#tabs');
-tabsEl.innerHTML = TABS.map(([k,l,n])=>`<button role="tab" data-k="${k}" class="tip below" data-tip="${{today:'The morning briefing: what to merge, clean up and look at.',map:'The eight parts of the app and how they connect.',screens:'Pictures of the app’s screens and what changed each one.'}[k]}">${l} <span class="count num">${n}</span></button>`).join('');
-$('#date').textContent = new Date(D.briefing.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+tabsEl.innerHTML = TABS.map(([k,l,n])=>`<button role="tab" data-k="${k}" class="tip below" data-tip="${{today:'The morning briefing: what to merge, clean up and look at.',map:'The eight parts of the app and how they connect.',screens:'Pictures of the app’s screens and what changed each one.'}[k]}">${l}${n!=null?` <span class="count num">${n}</span>`:''}</button>`).join('');
+$('#date').textContent = DOW[new Date(D.briefing.date+'T12:00:00').getDay()]+' '+dmy(D.briefing.date);
 function show(k){
   if(!TABS.some(t=>t[0]===k)) k='map';
   TABS.forEach(([t])=>{$('#v-'+t).hidden = t!==k});
@@ -3711,7 +3713,7 @@ function box(sys,side){
   const guests = D.systems.filter(o=>o.id!==sys.id).flatMap(o=>o.parts.filter(p=>p.side===side && (p.alsoServes||[]).includes(sys.id)));
   const lane = side==='screens'?'screens':'behind the scenes';
   if(!parts.length && !guests.length){
-    return `<div class="box empty-box"><div class="muted t-xs">Nothing here yet</div><div class="muted t-2xs" style="margin-top:4px">${sys.name} has no ${lane} parts.</div></div>`;
+    return `<div class="box empty-box"><div class="muted t-xs">Nothing here yet. ${esc(sys.name)} has no ${side==='screens'?'screens':'parts behind the scenes'}.</div></div>`;
   }
   const files = side==='screens'?sys.screensFiles:sys.behindFiles;
   const phone = parts.filter(p=>p.phone).length;
@@ -3739,11 +3741,11 @@ function renderMap(){
   const cols = D.systems;
   const head = cols.map(sys=>{
     const n = new Set(EL.filter(x=>Object.keys(x.lanes).some(k=>k.startsWith(sys.id+'|'))).map(x=>x.e.branch)).size;
-    const st = n? `<span class="status warn tip" tabindex="0" data-tip="${n} ${n===1?'effort is':'efforts are'} being worked on in ${esc(sys.name)} right now. An effort is one piece of work in progress."><span class="dot"></span>${n} in flight</span>`
+    const st = n? `<span class="status warn tip" tabindex="0" data-tip="${n} ${n===1?'branch is':'branches are'} being worked on in ${esc(sys.name)} right now. A branch is one piece of work in progress."><span class="dot"></span>${n} ${n===1?'branch':'branches'} in flight</span>`
                 : `<span class="status ok tip" tabindex="0" data-tip="Nobody is changing ${esc(sys.name)} right now."><span class="dot"></span>Steady</span>`;
     return `<div class="colhead"><div class="name">${esc(sys.name)}</div><div class="why">${WHY[sys.id]||''}</div><div class="purpose">${esc(sys.purpose)}</div>${st}</div>`;
   }).join('');
-  const conn = cols.map(sys=>`<div class="conn"><span class="eyebrow">Connected to</span>${neighbours(sys.id).map(({other,s})=>`<span class="badge tip" tabindex="0" data-tip="${esc(sys.name)} and ${esc(other.name)}: ${fmt(s.strength)} links, mostly ${esc(s.words)}. The bigger the number, the more tightly they are tied together."><span class="nm">${esc(other.name)}</span><span class="ct">${fmt(s.strength)}</span></span>`).join('')}</div>`).join('');
+  const conn = cols.map(sys=>`<div class="conn"><span class="eyebrow">Connected to</span>${neighbours(sys.id).map(({other,s})=>`<span class="badge tip" tabindex="0" data-tip="${esc(sys.name)} and ${esc(other.name)}: ${fmt(s.strength)} connections, mostly ${esc(s.words)}. The bigger the number, the more tightly they are tied together."><span class="nm">${esc(other.name)}</span><span class="ct">${fmt(s.strength)}</span></span>`).join('')}</div>`).join('');
   $('#v-map').innerHTML = `
     <div class="legend"><span>Eight systems. Each has what you see on top and what works behind the scenes below.</span><span class="sp"></span>${sideTag('screens')}${sideTag('behind')}<span class="muted">Click a box to open its parts.</span></div>
     <div class="lanes">
@@ -3752,7 +3754,7 @@ function renderMap(){
       <div class="lane-label eyebrow" style="grid-row:3">Behind the scenes</div>${cols.map(s=>box(s,'behind')).join('')}
       <div></div>${conn}
     </div>
-    <div class="summary"><a href="#today" class="tip" tabindex="0" data-tip="Efforts being worked on right now. Open Today to resume one."><b>In flight</b> ${inflight.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Changes reviewed and waiting for you to merge."><b>Ready to merge</b> ${B.mergeable.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Known problems that need a decision."><b>Major bugs</b> ${B.bugs.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Changes merged since the ${esc(B.release.version)} release on ${dmy(B.release.date)}."><b>${B.mergedSinceRelease}</b> changes since release ${esc(B.release.version)}</a></div>`;
+    <div class="summary"><a href="#today" class="tip" tabindex="0" data-tip="Branches being worked on right now. Open Today to resume one."><b>In flight</b> ${inflight.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Changes reviewed and waiting for you to merge."><b>Ready to merge</b> ${B.mergeable.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Known problems that need a decision."><b>Major bugs</b> ${B.bugs.length}</a><span>·</span><a href="#today" class="tip" tabindex="0" data-tip="Changes merged since the ${esc(B.release.version)} release since ${dmy(B.release.date)}."><b>${B.mergedSinceRelease}</b> changes since release ${esc(B.release.version)}</a><span class="sp"></span><span class="pick">Pick up next: <b>${esc(B.recommendation.title||B.recommendation.effort)}</b></span><button class="btn sm primary tip" data-tip="Start working on this change.">Start</button></div>`;
   const toggle = el=>{const o=el.getAttribute('aria-expanded')==='true';el.setAttribute('aria-expanded',!o);$('.f-open',el).textContent=o?'Click to see parts':'Click to fold'};
   $('#v-map').addEventListener('click',e=>{const b=e.target.closest('.box[role=button]');if(b)toggle(b)});
   $('#v-map').addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('.box[role=button]');if(b&&e.target===b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggle(b)}});
@@ -3768,17 +3770,14 @@ function renderToday(){
   const rec = B.recommendation, recM = B.mergeable.find(m=>m.branch===rec.effort);
   const c = B.cleanup;
   const html = [
-    card('1 · Ready to merge','Ready to merge',B.mergeable.length, B.mergeable.map(m=>row(esc(m.title),`${esc(m.note)} Since ${dmy(m.since)}.`,btn('Merge','Merge this change into the app.'))).join('')),
-    card('2 · Cleanup','Cleanup',3,
-      row(`Finished efforts on this computer`,`${c.localBranchesMerged} are merged and can go, including two finished today.`,btn('Clean up','Remove the finished efforts from this computer.'))+
-      row(`Work folders`,`${c.worktrees} exist, ${c.worktreesIdle} are idle. Includes ${esc(c.examples[3])}.`,btn('Clean up','Remove the idle work folders.'))+
-      row(`Finished efforts online`,`${c.remoteBranchesMerged} merged effort is still kept online.`,btn('Clean up','Remove it from the online copy.'))),
+    card('1 · Ready to merge','Ready to merge',B.mergeable.length, B.mergeable.map(m=>row(esc(m.title),`${esc(m.note)} Waiting since ${dmy(m.since)}.`,btn('Merge','Merge this change into the app.'))).join('')),
+    card('2 · Cleanup','Cleanup',1,row(esc(c.line),'Finished work still taking up room on this computer.',btn('Clean up','Remove the finished branches and idle work folders.'))),
     card('3 · Major bugs','Major bugs',B.bugs.length, B.bugs.map(b=>row(esc(b.title),`${esc(b.area)} · ${b.tags.map(esc).join(' · ')}`,btn('Open','Open the notes on this problem.'))).join('')),
     card('4 · Changed since release','Changed since release',B.mergedSinceRelease,
       row(`Merged today`,B.mergedToday.map(x=>esc(x.title)).join(' · '),btn('See screens','See which screens these changed.'))+
       row(`Merged yesterday`,B.mergedYesterday.map(x=>esc(x.title)).join(' · '),btn('See screens','See which screens these changed.'))+
-      row(`Since version ${B.release.version}`,`Released ${dmy(B.release.date)}. ${B.mergedSinceRelease} changes merged since then, ${B.mergedSincePrerelease} since the latest test version.`,btn('See all','See every change since the release.'))),
-    card('5 · Active work','Active work',inflight.length, inflight.map(e=>row(esc(e.title),`Last touched ${ago(e.daysAgo)} · ${e.commits} saves`,btn('Resume','Pick this effort back up.'),`<div class="sides">${e.uiFiles?sideTag('screens',e.uiFiles):''}${e.behindFiles?sideTag('behind',e.behindFiles):''}</div>`)).join('')),
+      row(`${B.mergedSinceRelease} changes since ${B.release.version} (${dmy(B.release.date)})`,`Released ${dmy(B.release.date)}.`,btn('See changes','See every change since the release.'))),
+    card('5 · Active work','Active work',inflight.length, inflight.map(e=>row(esc(e.title),`Last touched ${ago(e.daysAgo)} · ${e.commits} saves`,btn('Resume','Pick this branch back up.'),`<div class="sides">${e.uiFiles?sideTag('screens',e.uiFiles):''}${e.behindFiles?sideTag('behind',e.behindFiles):''}</div>`)).join('')),
     card('6 · Recommendation','Do this next',1,
       row(esc(rec.title||rec.effort),'A small change with a finished review.',btn('Open','Open this change.',true))+
       `<div class="kv"><div class="k">Why</div><div>${esc(rec.why)}</div><div class="k">Links</div><div>${esc(rec.links)}</div><div class="k">Seams</div><div>${esc(rec.seams)}</div></div>`)
@@ -3796,11 +3795,11 @@ function renderScreens(){
   const lists={all,since:ch,today:td};
   const shown = lists[filter];
   const pills=[['all','All',all.length,'Every screen we have a picture of.'],['since','Changed since release',ch.length,'Screens that a merged or waiting change has touched since the last release.'],['today','Changed today',td.length,'Screens a change touched today.']]
-    .map(([k,l,n,t])=>`<button class="pill tip below${filter===k?' on':''}" data-f="${k}" data-tip="${t}">${l} <span class="count num">${n}</span></button>`).join('');
+    .map(([k,l,n,t])=>`<button class="pill tip below${filter===k?' on':''}" data-f="${k}" data-tip="${t}">${l}${n!=null?` <span class="count num">${n}</span>`:''}</button>`).join('');
   const cards = shown.map(n=>{const c=g.changedBy[n];
     return `<div class="card inset shot"><img loading="lazy" alt="${esc(g.names[n])} screen" src="gallery/${n}-${theme}.webp"><div class="cap">${esc(g.names[n])}</div>
-    <div class="by">${c.length?'<b>changed by</b> '+c.map(x=>`<span class="tip" tabindex="0" data-tip="Change #${x.pr}, ${x.date}">${esc(x.title)}</span>`).join(' · '):'No changes since the release'}</div></div>`}).join('');
-  $('#v-screens').innerHTML = `<div class="gal-bar">${pills}<span class="sp"></span><span class="muted t-xs num tip below" tabindex="0" data-tip="The app has ${g.total} screens. We have pictures of ${all.length} so far.">${g.total} screens · ${shown.length} shown</span><button class="btn sm tip below" data-tip="Open the full list of every screen.">Browse all</button></div>
+    <div class="by">${c.length?'<b>Changed in:</b> '+c.map(x=>`<span class="tip" tabindex="0" data-tip="Change #${x.pr}, ${x.date}">${esc(x.title)}</span>`).join(' · '):'No changes since the release'}</div></div>`}).join('');
+  $('#v-screens').innerHTML = `<div class="gal-bar">${pills}<span class="sp"></span><span class="muted t-xs num tip below" tabindex="0" data-tip="The app has ${g.total} screens. We have pictures of ${all.length} so far.">${all.length} of ${g.total} screens have pictures here; the real page shows all</span><button class="btn sm tip below" data-tip="Open the full list of every screen.">Browse all</button></div>
     ${shown.length?`<div class="grid4">${cards}</div>`:`<div class="empty">No screens changed today.<br><button class="btn sm" data-f="all" style="margin-top:10px">Show all screens</button></div>`}`;
 }
 $('#v-screens').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){filter=b.dataset.f;renderScreens()}});

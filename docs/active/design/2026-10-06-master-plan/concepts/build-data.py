@@ -52,7 +52,7 @@ for e in g['cellEdges']:
     k = tuple(sorted((a, b))); seam[k] += e['total']
     for t, n in e['byType'].items(): seamBy[k][t] += n
 TYPE_WORDS = {'import': 'code that calls the other side', 'channel': 'requests the screen sends behind the scenes',
-              'cochange': 'files edited together in the same changes', 'event': 'messages one side announces and the other listens for',
+              'cochange': 'files often changed together', 'event': 'messages one side announces and the other listens for',
               'test': 'tests that cover both', 'doc': 'docs that describe both'}
 seams = [{'a': k[0], 'b': k[1], 'strength': v, 'byType': dict(seamBy[k]), 'mostly': seamBy[k].most_common(1)[0][0],
           'words': TYPE_WORDS[seamBy[k].most_common(1)[0][0]]} for k, v in seam.most_common()]
@@ -123,7 +123,7 @@ briefing = {
  'mergeable': [{'number': 444, 'branch': 'session/sync-retry-feedback', 'title': 'Sync: say when a retry is happening', 'since': '2026-09-08', 'note': 'Open for a month. Small: 2 parts, 1 commit.'},
                {'number': 614, 'branch': 'dependabot', 'title': '31 small library updates for the desktop app', 'since': '2026-10-08', 'note': 'Automatic. Tests pass.'},
                {'number': 466, 'branch': 'dependabot', 'title': 'Test runner update (vitest 4 → 5)', 'since': '2026-10-05', 'note': 'Automatic. Tests pass.'}],
- 'cleanup': {'localBranchesMerged': 11, 'worktrees': 16, 'worktreesIdle': 9, 'remoteBranchesMerged': 1,
+ 'cleanup': {'localBranchesMerged': 11, 'worktrees': 16, 'worktreesIdle': 9, 'remoteBranchesMerged': 1, 'line': '11 finished branches you can delete, and 9 idle work folders',
              'examples': ['Zero-hitch performance (merged today)', 'Money page (merged today)', 'Home-device connection (merged yesterday)', 'two before/after comparison copies']},
  'bugs': [{'title': 'The settings screen exists twice, once for desktop and once for phone, so changes are made twice and can disagree.', 'area': 'Foundations', 'tags': ['release blocker', 'on hold since 18 Sep']},
           {'title': 'Error messages still guess at causes in many places; batch 1 of 7 shipped.', 'area': 'Foundations', 'tags': ['confirmed']},

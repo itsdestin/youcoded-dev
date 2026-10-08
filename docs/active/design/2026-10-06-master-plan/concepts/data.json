@@ -1200,7 +1200,7 @@
     "channel": 583
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1213,7 +1213,7 @@
     "channel": 74
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1226,7 +1226,7 @@
     "event": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1238,7 +1238,7 @@
     "event": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1251,7 +1251,7 @@
     "channel": 11
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1264,7 +1264,7 @@
     "channel": 67
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1277,7 +1277,7 @@
     "channel": 77
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1289,7 +1289,7 @@
     "channel": 61
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1302,7 +1302,7 @@
     "channel": 10
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "projects-files",
@@ -1314,7 +1314,7 @@
     "channel": 6
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "pages",
@@ -1325,7 +1325,7 @@
     "import": 7
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "chat-agents",
@@ -1349,7 +1349,7 @@
     "channel": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "pages",
@@ -1361,7 +1361,7 @@
     "event": 6
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "foundations",
@@ -1386,7 +1386,7 @@
     "event": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1420,7 +1420,7 @@
     "import": 5
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1432,7 +1432,7 @@
     "channel": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "pages",
@@ -1442,7 +1442,7 @@
     "cochange": 28
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1454,7 +1454,7 @@
     "channel": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "social",
@@ -1466,7 +1466,7 @@
     "channel": 1
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "social",
@@ -1477,7 +1477,7 @@
     "import": 2
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -1488,7 +1488,7 @@
     "import": 3
    },
    "mostly": "cochange",
-   "words": "files edited together in the same changes"
+   "words": "files often changed together"
   },
   {
    "a": "marketplace",
@@ -3439,6 +3439,7 @@
    "worktrees": 16,
    "worktreesIdle": 9,
    "remoteBranchesMerged": 1,
+   "line": "11 finished branches you can delete, and 9 idle work folders",
    "examples": [
     "Zero-hitch performance (merged today)",
     "Money page (merged today)",
