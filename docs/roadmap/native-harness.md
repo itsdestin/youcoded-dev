@@ -127,7 +127,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       after sending a huge picture the desktop shows nothing for up to ~30 s — wanted: a "preparing"
       state; ChatGPT's exact rejection was never captured, so its wording is matched from a
       screenshot, and OpenAI's longest-edge limit (8192 px) is a guess — wanted: capture a real
-      rejection for each.
+      rejection for each; no host-level test covers the checkpoint's `image-oversized` fallback —
+      wanted: seed a pre-gate history on a lax profile, publish, reopen with the real profile; a
+      prepared picture the provider still rejects ends up with both a "downscaled" note and an
+      "oversized" note in one message.
       `desktop` `confirmed` `P3` `checked 2026-08-12`
 
 - [ ] Parked ideas: tools, secrets and sandboxing — 9 things.
