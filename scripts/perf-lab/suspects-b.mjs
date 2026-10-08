@@ -1,5 +1,5 @@
 // scripts/perf-lab/suspects-b.mjs — second batch of suspect measurements
-// (docs/active/investigations/2026-10-04-performance-gap-review.md, section 4c).
+// (docs/archive/investigations/2026-10-04-performance-gap-review.md, section 4c).
 //
 //   sessions — D9: many Claude Code sessions at once. Each mounts an xterm with a WebGL
 //              context; Chromium keeps ~16 per page and silently kills the oldest.

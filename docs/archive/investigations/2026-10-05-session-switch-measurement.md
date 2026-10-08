@@ -1,7 +1,10 @@
 ---
-status: active
+status: shipped
 date: 2026-10-05
+shipped_ref: youcoded#616, youcoded-dev#250
 ---
+
+> **Shipped in youcoded#616 and youcoded-dev#250 on 2026-10-08.** Everything below describes work that is now on master; wording like "on the branch" or "not merged" is how it read before the merge. Open items live in [`docs/roadmap/perf.md`](../../roadmap/perf.md).
 
 # Session switching, measured the way a person does it (2026-10-05)
 

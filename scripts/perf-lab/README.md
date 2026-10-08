@@ -614,9 +614,9 @@ or never reached the page, is DROPPED and counted (`dropped` in each summary), n
 - *Settle is never before first paint*, and is not reported (null, `n/a-streaming`) for a destination that is streaming (it never goes quiet).
 
 **Limits.** Software GL on Xvfb; frames are not the physical panel; fake Claude Code producer; fixture sizes (50 / 2,500 / 3,500 turns) not the owner's histories;
-the leg runs the PACKAGED build (React production mode) while owner hand tests ran a Vite dev build. Results: `docs/active/investigations/2026-10-05-session-switch-measurement.md`.
+the leg runs the PACKAGED build (React production mode) while owner hand tests ran a Vite dev build. Results: `docs/archive/investigations/2026-10-05-session-switch-measurement.md`.
 
-### `realism.mjs` — the "real-use" lab: does the lab feel what Destin feels? *(added 2026-10-07; findings in `docs/active/investigations/2026-10-05-lab-realism.md`)*
+### `realism.mjs` — the "real-use" lab: does the lab feel what Destin feels? *(added 2026-10-07; findings in `docs/archive/investigations/2026-10-05-lab-realism.md`)*
 
 ```
 # the standard configuration, one line (packaged build, his real conversations copied by size, his glass+particle theme, the real GPU at 2560x1600 / 1.5, 4 sessions, a machine-wide CPU storm):
@@ -1058,7 +1058,7 @@ contaminate. It REFUSES to report if Chromium is not on the Radeon with GPU comp
 Suites: `--suite control` (known-cost positive control + noise floor) and `--suite themes --cells
 'midnight,cotton-candy-sky+noparticles,...' --scene welcome|chat|stream`. Toggles: `+reduced +noparticles
 +smallwall +noblur`. Pure parsing is unit-tested in `tests/gpu-cost-parse.test.mjs`. Method, limits and first
-readings: `docs/active/investigations/2026-10-05-theme-gpu-measurement.md`. Run it with no other rig or dev app
+readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`. Run it with no other rig or dev app
 holding ports 10000/10020/9558 (it checks), and compare megacycles/second as well as percent because the GPU
 clock moves with load.
 

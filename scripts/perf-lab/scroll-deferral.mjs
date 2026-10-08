@@ -1,5 +1,5 @@
 // scripts/perf-lab/scroll-deferral.mjs — does a scroll wait for the page's main thread?
-// (docs/active/investigations/2026-10-04-performance-gap-review.md, section 4d, Fix 3.)
+// (docs/archive/investigations/2026-10-04-performance-gap-review.md, section 4d, Fix 3.)
 //
 // The earlier wheel measure only read how long a wheel event sat before a LISTENER saw it. That cannot
 // change when the listener is made passive. What a person feels is different: while the page is busy,

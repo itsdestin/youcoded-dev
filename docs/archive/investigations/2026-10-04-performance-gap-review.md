@@ -1,9 +1,12 @@
 ---
 title: Performance review — what we fixed, what we missed, and the plan to zero hitches
-status: active
+status: shipped
 date: 2026-10-04
 last_updated: 2026-10-07
+shipped_ref: youcoded#616, youcoded-dev#250
 ---
+
+> **Shipped in youcoded#616 and youcoded-dev#250 on 2026-10-08.** Everything below describes work that is now on master; wording like "on the branch" or "not merged" is how it read before the merge. Open items live in [`docs/roadmap/perf.md`](../../roadmap/perf.md). Start from the "Current state" section.
 
 # Performance review, 2026-10-04
 
@@ -19,10 +22,13 @@ built and measured from it.
 `session/perf-switch-marks-20261005` (app worktree `worktrees/sessions/perf-switch-marks-20261005/youcoded`, workspace
 worktree `worktrees/sessions/perf-switch-marks-20261005`). It contains the five fixes of 2026-10-04 (below), the hitch recorder,
 the session-switch marks and fix, the perf-lab realism work and the theme-GPU tools, and has `origin/master` merged in
-(2026-10-07). **Nothing is merged to master; ready for review only.** The older session branches
-(perf-zero-hitch, perf-hitch-recorder, perf-recorder-integration, perf-integration, performance-stream-attribution,
-reload-send-gate) are fully contained in it. The one deliberate exception: app branch `session/perf-reload-repaint-20261005`
-("send waits for a painted screen") is **superseded** by master's session-screens and was not brought in.
+(2026-10-07). **Merged to master 2026-10-08 (youcoded#616, youcoded-dev#250); the branches and worktrees are deleted.** The older
+session branches (perf-zero-hitch, perf-hitch-recorder, perf-recorder-integration, perf-integration, performance-stream-attribution,
+reload-send-gate) were fully contained in it. The one deliberate exception: app branch `session/perf-reload-repaint-20261005`
+("send waits for a painted screen") was **superseded** by master's session-screens and was not brought in; its three commits are
+kept only as the git tag `archive/perf-reload-repaint-send-gate` in the app repo (see `docs/roadmap/perf.md`). The uncommitted
+experiments of the `performance-stream-attribution` worktree were not in master either; they are preserved on branch
+`backup/performance-stream-attribution-wip` in both repos (see `docs/roadmap/perf.md`).
 
 **What shipped on the branch since 2026-10-04.**
 | Piece | Before | After |
@@ -41,7 +47,7 @@ the delay between the click handler finishing and the screen changing (lab worst
 was slower than the glass theme in a dev build. **Next evidence:** the recorder's `switch` lines from an **installed-style
 build** (the report warns when a file came from a developer build or when it cannot tell), then 12+ sessions.
 
-**Open (all in `docs/roadmap/perf.md`).** Owner decisions: recorder on/off setting; attaching a redacted summary to bug reports;
+**Open (all in `docs/roadmap/perf.md`, and nowhere else - do not trust a list in this archived page).** Owner decisions: recorder on/off setting; attaching a redacted summary to bug reports;
 theme particle/glass defaults; session-pill resize and chat-arrival animation cost (governed by
 `.claude/rules/session-strip-motion.md`, his call). Unexplained presentation delay / try an installed-style test build.
 Windows, macOS and phone verification before release. Android: no recorder; the code-reading suspects are unmeasured.
@@ -54,9 +60,8 @@ visible window) - [session-switch-measurement](2026-10-05-session-switch-measure
 ### As of 2026-10-04 evening (history)
 
 **What exists.** Five performance fixes, each measured before and after. They are built, not
-shipped: they live on branch `session/perf-zero-hitch-20261004` in **both** repos (the app, at
-`633d8ff00`, and this workspace, for the notes and measuring tools). **Nothing is merged.** Your
-running app has none of it.
+shipped *at that time*: they lived on branch `session/perf-zero-hitch-20261004` in **both** repos (the app, at
+`633d8ff00`, and this workspace, for the notes and measuring tools); all of it has since merged (see the banner at the top).
 
 | # | Fix (where measured) | Before | After |
 |---|---|---|---|
@@ -820,7 +825,7 @@ Ordered by value. This is the "catch it in future" half.
 
 ## 5a. Where things stand (end of 2026-10-04)
 
-All five fixes are on branch `session/perf-zero-hitch-20261004` (app HEAD `633d8ff00`), nothing merged. Headline figures
+All five fixes were on branch `session/perf-zero-hitch-20261004` (app HEAD `633d8ff00`) when this was written; they have since merged. Headline figures
 below come from the one final regression sweep of the combined tree (app `e9ba76e38`, one run each, load 6-8, raw files
 `scratch/perf-lab/suspects/f5-sw-*`, local only); the section named in each row has the repeated runs and the final
 builds. Everything was measured on one private build on an invisible, software-drawn screen (no graphics card).
@@ -943,7 +948,7 @@ on (roadmap, user-interface). The rig now works around it by re-selecting.
 
 **What the plan said, and what happened instead.** The first plan (below, kept for the record of what each stage was) put
 the hitch recorder first (stage 0). You chose to measure the suspects first and fix in order of what is actually felt, so the
-recorder was **deferred, not built**. The order actually followed:
+recorder was **deferred** at that point (it was built afterwards, on 2026-10-05; see "Current state"). The order actually followed:
 
 1. **Measured** the top suspects (4b, 4c). Two were demoted: D6 (message box, not felt) and D3 (the replay path has no caller).
 2. **Fixed in order of cost felt:** fix 1 long code blocks (D7), fix 2 big spreadsheets (D14), fix 3 scroll wait (D2),
@@ -951,16 +956,15 @@ recorder was **deferred, not built**. The order actually followed:
 3. **Reviewed independently and fixed again:** spreadsheets (4d), the terminal brake over several rounds (4f), streaming (4g).
 4. **Decided by you** on 2026-10-04 evening (Current state, top).
 
-**Not built, and why.** M1-M4 (recorder, background recorder, counters, bundle limit): deferred by your choice, still the
-largest missing instrument. D4/D5 (launch) measured as modest (4c). D8, D9, D13, themes T1-T4 and phone P1-P5: filed in
+**Not built, and why.** M1-M3 (the recorder) were deferred by your choice on 2026-10-04 and built afterwards (the hitch recorder, now on master). M4 (bundle size limit) is still not built. D4/D5 (launch) measured as modest (4c). D8, D9, D13, themes T1-T4 and phone P1-P5: filed in
 `docs/roadmap/perf.md`; none fixed. P-items and T-items were found by reading only and need a real graphics card or a phone.
 Phone memory (D8) and the 16-session limit (D9) are measured or read, not fixed.
 
 **What is next, in order.**
-1. **Your call:** whether the branch is ready to merge. Before that, Windows, macOS and a real phone are unverified, and
-   `verify.sh` needs one more run on the final tree.
-2. **Stage 0 (still open): the hitch recorder (M1-M3).** After a few days of normal use it would name which of the remaining
-   items you actually feel.
+1. **Done 2026-10-08:** the branch merged (youcoded#616, youcoded-dev#250) after a full `verify.sh` run. Windows, macOS and a real
+   phone are still unverified (open in `docs/roadmap/perf.md`).
+2. **Stage 0 is built:** the hitch recorder (M1-M3) is on master. Once it has run in the installed app for a few days, its
+   `hitches.jsonl` names which of the remaining items you actually feel.
 3. Stage 2, the known three (typing stalls from background chats, switch/resize pauses, first Find). One run on current
    master did not reproduce the typing stall; repeat before closing it.
 4. Stage 3 launch and size (D4/D5), stage 4 themes (needs your decisions), stage 5 phone, stage 6 guards and trend.

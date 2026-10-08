@@ -28,11 +28,11 @@ Both PRs and their postmerge CI passed. The original performance session's app/w
 
 Exact final Find evidence and test limitations: `docs/archive/investigations/2026-10-03-find-expiry-closeout.md`. Failed originals were retained, not replaced by successful runs. The earlier mixed status and diagnostic chronology now lives in `docs/archive/investigations/2026-10-04-performance-closeout-status-snapshot.md`, not as instructions on this page.
 
-## Unmerged work from 2026-10-04 (not shipped)
+## Work from 2026-10-04 and 2026-10-05 (shipped 2026-10-08)
 
-A separate performance session built **five fixes**, all on branch `session/perf-zero-hitch-20261004` in both the app and this workspace, **not merged**: long code blocks while a reply streams, big spreadsheets (CSV/Excel), scrolling that waited for a busy page, terminal floods (a speed brake so output is not lost and Ctrl+C answers at once), and ordinary reply-streaming cost. Each has a before/after measurement; Destin approved the spreadsheet deck and kept the two tunable settings as built, and found a hand trial of the combined build fine on Linux. Windows, macOS, a real phone and the Android build are unverified. Start at `docs/active/investigations/2026-10-04-performance-gap-review.md` → "Current state".
+A separate performance session built **five fixes**, then a hitch recorder and a session-switching fix. All of it merged to master on 2026-10-08 (youcoded#616, youcoded-dev#250): long code blocks while a reply streams, big spreadsheets (CSV/Excel), scrolling that waited for a busy page, terminal floods (a speed brake so output is not lost and Ctrl+C answers at once), ordinary reply-streaming cost, the always-on hitch recorder, and cheaper session switches. Records: `docs/archive/investigations/2026-10-04-performance-gap-review.md` and the four 2026-10-05 investigations beside it. **Every still-open question from that work is in `docs/roadmap/perf.md`** (owner decisions, the unexplained click-to-screen delay, Windows/macOS/phone checks).
 
-The three items under "Next performance work" below were **not** that session's focus. One of them, hidden-history typing stalls, did not reproduce in a single run on current master (zero freezes over 50 ms; September's runs showed 122–145 ms): one run, so it stays open until repeated.
+The three items under "Next performance work" below were **not** that session's focus. One of them, hidden-history typing stalls, did not reproduce in a single run on current master (zero freezes over 50 ms; September's runs showed 122-145 ms): one run, so it stays open until repeated. The uncommitted experiments of the old stream-attribution session are on branch `backup/performance-stream-attribution-wip` (app and workspace repos): reference only, never apply over master.
 
 ## Next performance work
 

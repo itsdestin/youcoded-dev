@@ -1,5 +1,5 @@
 // scripts/perf-lab/suspects.mjs — one private packaged-app boot that puts a NUMBER on
-// suspects found by reading code (docs/active/investigations/2026-10-04-performance-gap-review.md),
+// suspects found by reading code (docs/archive/investigations/2026-10-04-performance-gap-review.md),
 // so fixes can be ordered by measured cost instead of by how alarming the code looks.
 //
 // Legs, all in one boot, serial:
