@@ -1,0 +1,1175 @@
+diff --git a/desktop/src/renderer/components/AssistantTurnBubble.tsx b/desktop/src/renderer/components/AssistantTurnBubble.tsx
+index bc6056f63..7b401e736 100644
+--- a/desktop/src/renderer/components/AssistantTurnBubble.tsx
++++ b/desktop/src/renderer/components/AssistantTurnBubble.tsx
+@@ -270,7 +270,7 @@ export interface VisualBubble {
+   /** Every reasoning segment of the bubble, joined by a blank line, keyed by
+    *  the first one's messageId. */
+   reasoning?: { content: string; messageId: string };
+-  text?: { content: string; messageId: string };
++  text?: { content: string; messageId: string; findIndex: number };
+   plan?: { content: string; messageId: string; planFilePath?: string; allowedPrompts?: unknown };
+   /** Every tool group in the bubble, in call order. Rendered as ONE group. */
+   toolGroupIds: string[];
+@@ -284,6 +284,7 @@ export interface VisualBubble {
+ export function splitIntoBubbles(turn: Pick<AssistantTurn, 'segments'>): VisualBubble[] {
+   const bubbles: VisualBubble[] = [];
+   let current: VisualBubble | null = null;
++  let textIndex = 0;
+   const spoken = () => !!(current && (current.text || current.plan));
+   const open = (key: string): VisualBubble => {
+     current = { key, toolGroupIds: [] };
+@@ -304,7 +305,7 @@ export function splitIntoBubbles(turn: Pick<AssistantTurn, 'segments'>): VisualB
+       // text / tool / text shape keeps one bubble per text block).
+       if (spoken()) { bubbles.push(current!); current = null; }
+       const bubble = current ?? open(seg.messageId);
+-      bubble.text = { content: seg.content, messageId: seg.messageId };
++      bubble.text = { content: seg.content, messageId: seg.messageId, findIndex: textIndex++ };
+     } else if (seg.type === 'plan') {
+       // A plan counts as speech; the following ExitPlanMode group attaches below.
+       if (spoken()) { bubbles.push(current!); current = null; }
+@@ -544,7 +545,10 @@ export default React.memo(function AssistantTurnBubble({ turn, toolGroups, toolC
+                 <SessionRefsEnabled.Provider value={true}>
+                   {/* incremental: this text grows while the reply streams, so finished
+                       blocks are drawn once instead of re-parsed per word (sweep A5). */}
+-                  <MarkdownContent content={bubble.text.content} sessionId={sessionId} incremental />
++                  {/* WHY: message-only Find must never walk adjacent reasoning, tool controls or plan cards. */}
++                  <span data-message-find-body={bubble.text.findIndex} className="contents">
++                    <MarkdownContent content={bubble.text.content} sessionId={sessionId} incremental />
++                  </span>
+                 </SessionRefsEnabled.Provider>
+               )}
+               {bubble.plan && (
+diff --git a/desktop/src/renderer/components/ChatView.tsx b/desktop/src/renderer/components/ChatView.tsx
+index 970280fb2..6672a2bb9 100644
+--- a/desktop/src/renderer/components/ChatView.tsx
++++ b/desktop/src/renderer/components/ChatView.tsx
+@@ -24,6 +24,7 @@ import { SessionDrawer } from './SessionDrawer';
+ import { useActiveProject } from '../hooks/useActiveProject';
+ import { assistantName } from '../utils/assistant-name';
+ import { ContentFindBar } from './ContentFindBar';
++import { useChatMessageFind } from '../hooks/use-chat-message-find';
+ import { isTypingTarget } from '../utils/is-typing-target';
+ import { CardKeysLiveContext } from '../state/card-keys-context';
+ import { OnScreenContext } from '../state/on-screen-context';
+@@ -281,11 +282,17 @@ function ChatView({ sessionId, visible, sessionActive, cwd, gamePane, provider,
+ 
+   // Scroll to bottom on tab switch / mount. The follow-up ResizeObserver below
+   // handles the chrome-height race (input bar can differ per session).
++  const wasVisibleRef = useRef(visible);
+   useEffect(() => {
++    const returned = visible && !wasVisibleRef.current;
++    wasVisibleRef.current = visible;
+     if (!visible) return;
+-    const raf = requestAnimationFrame(stickToBottom);
++    if (returned) stickToBottom();
++    // WHY: a mount/switch RAF can outlive the Find selection that released
++    // bottom-stick. Re-arm on an actual tab return, not from that stale RAF.
++    const raf = requestAnimationFrame(() => { if (stickRef.current) scrollToBottom(); });
+     return () => cancelAnimationFrame(raf);
+-  }, [visible, stickToBottom]);
++  }, [visible, stickToBottom, scrollToBottom, stickRef]);
+ 
+   // Fix: input bar height can differ between sessions (drafts, multi-line),
+   // so --bottom-chrome-height changes right after tab switch. App's ResizeObserver
+@@ -571,15 +578,14 @@ function ChatView({ sessionId, visible, sessionActive, cwd, gamePane, provider,
+   // height they last occupied, instead of their full body. Nothing leaves the
+   // reducer — see use-entry-folding.ts for why eviction was rejected on review.
+   //
+-  // Suspended while the find bar is open: ContentFindBar finds text by walking
+-  // the DOM, so a folded entry would be unfindable and the user would be told
+-  // "0 results" for text that is in their conversation.
++  // WHY: source-backed Find keeps the ordinary fold budget; only the selected
++  // row is revealed and pinned while its message-body Range is in use.
+   //
+   // `sessionActive` (2026-09-18): a background pane is content-visibility:hidden,
+   // which reads to the folding observer as "everything scrolled away". Telling
+   // it the pane is merely in the background is what stops a tab you left a
+   // moment ago from being blank when you come back — see INACTIVE_FOLD_MS.
+-  const folding = useEntryFolding(!findOpen, scrollContainerRef, sessionActive);
++  const folding = useEntryFolding(true, scrollContainerRef, sessionActive);
+ 
+   // Scroll, unfold and re-frost BEFORE the first painted frame of a switch —
+   // the three reasons messages popped in. WHY per step: the hook's header.
+@@ -613,6 +619,8 @@ function ChatView({ sessionId, visible, sessionActive, cwd, gamePane, provider,
+     };
+   }, [observeEntry, registerFold]);
+ 
++  const chatFind = useChatMessageFind(state, findOpen, contentRef, getEntryEl, folding.revealAndPin, folding.unfoldNearViewport, releaseStick);
++
+   // Arrow key scrolling with acceleration when not typing
+   const scrollSpeed = useRef(0);
+   useEffect(() => {
+@@ -1100,6 +1108,7 @@ function ChatView({ sessionId, visible, sessionActive, cwd, gamePane, provider,
+               containerRef={contentRef}
+               scrollRef={scrollContainerRef}
+               highlightName="chat-find"
++              chatFind={chatFind}
+               placeholder="Find in chat"
+               resetKey={sessionId}
+               onClose={() => setFindOpen(false)}
+diff --git a/desktop/src/renderer/components/ContentFindBar.tsx b/desktop/src/renderer/components/ContentFindBar.tsx
+index 73aa1200c..3acce05c8 100644
+--- a/desktop/src/renderer/components/ContentFindBar.tsx
++++ b/desktop/src/renderer/components/ContentFindBar.tsx
+@@ -7,8 +7,20 @@
+ // overlay) — otherwise its own text (the match counter) would be walked and
+ // matched by the search.
+ import React, { useCallback, useEffect, useRef, useState } from 'react';
++import { flushSync } from 'react-dom';
+ import { ChevronDown, TextInput, Tooltip } from './ui';
+ import { ScreenMark } from '../shoot-mode';
++import { resolveBodyRanges, type MessageFindHit } from './chat-message-find';
++
++/** Chat-only source search. Artifact documents keep the unmodified live DOM path. */
++export interface ChatFindAdapter {
++  search: (query: string, signal: AbortSignal) => Promise<{ hits: readonly MessageFindHit[]; pending: boolean } | null> | { hits: readonly MessageFindHit[]; pending: boolean };
++  beforeReveal?: () => void;
++  pin: (hit: MessageFindHit) => () => void;
++  resolve: (hit: MessageFindHit, query: string, signal: AbortSignal) => Promise<Range | null>;
++  subscribe?: (listener: (phase: 'pending' | 'refresh') => void) => () => void;
++  afterScroll?: () => void;
++}
+ 
+ function highlightsSupported(): boolean {
+   return typeof CSS !== 'undefined' && 'highlights' in CSS && typeof (window as any).Highlight === 'function';
+@@ -47,7 +59,7 @@ function computeRanges(root: HTMLElement, query: string): Range[] {
+   return ranges;
+ }
+ 
+-export function ContentFindBar({ containerRef, onClose, resetKey, highlightName = 'artifact-find', placeholder = 'Find in document', positionClassName = 'top-2 right-2', scrollRef, layout = 'floating' }: {
++export function ContentFindBar({ containerRef, onClose, resetKey, highlightName = 'artifact-find', placeholder = 'Find in document', positionClassName = 'top-2 right-2', scrollRef, layout = 'floating', chatFind }: {
+   containerRef: React.RefObject<HTMLElement | null>;
+   onClose: () => void;
+   resetKey: string; // changes when the active artifact changes → reset the search
+@@ -75,6 +87,7 @@ export function ContentFindBar({ containerRef, onClose, resetKey, highlightName
+   // while it is open instead. The caller owns the strip's top offset (chat
+   // sits under an overlaid header) via CSS on `.find-row`.
+   layout?: 'floating' | 'row';
++  chatFind?: ChatFindAdapter;
+ }) {
+   const HL = highlightName;
+   const HL_CURRENT = `${highlightName}-current`;
+@@ -93,6 +106,20 @@ export function ContentFindBar({ containerRef, onClose, resetKey, highlightName
+   const mutationsRef = useRef(0);
+   const walkedAtRef = useRef(0);
+   const [walkKey, setWalkKey] = useState(0);
++  const [pending, setPending] = useState(false);
++  const chatHitsRef = useRef<readonly MessageFindHit[]>([]);
++  const searchAbortRef = useRef<AbortController | null>(null);
++  const chatFindRef = useRef(chatFind);
++  chatFindRef.current = chatFind;
++  const pendingRef = useRef(pending);
++  pendingRef.current = pending;
++  const queryRef = useRef(query);
++  queryRef.current = query;
++  const searchedQueryRef = useRef('');
++  const recoveryUsedRef = useRef(false);
++  const recoveryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
++  useEffect(() => { recoveryUsedRef.current = false; }, [query, resetKey]);
++  useEffect(() => () => { if (recoveryTimerRef.current != null) clearTimeout(recoveryTimerRef.current); }, []);
+ 
+   useEffect(() => { inputRef.current?.focus(); }, []);
+   // New artifact → clear the search.
+@@ -103,11 +130,50 @@ export function ContentFindBar({ containerRef, onClose, resetKey, highlightName
+   useEffect(() => {
+     const root = containerRef.current;
+     if (!root || typeof MutationObserver === 'undefined') return;
+-    const obs = new MutationObserver(() => { mutationsRef.current++; });
++    let recovery: ReturnType<typeof setTimeout> | null = null;
++    const obs = new MutationObserver((records) => {
++      mutationsRef.current++;
++      if (!chatFindRef.current || !pendingRef.current || !queryRef.current) return;
++      // WHY: a pending projection can become valid after Markdown's own commit.
++      // Ignore unrelated row/chrome changes; one coalesced recheck per body edit,
++      // never a polling loop that recurses on its own highlights.
++      if (!records.some((record) => (record.target as Element).parentElement?.closest?.('[data-message-find-body]')
++          || (record.target as Element).closest?.('[data-message-find-body]'))) return;
++      if (recovery != null) clearTimeout(recovery);
++      recovery = setTimeout(() => { recovery = null; recoveryUsedRef.current = false; setWalkKey((k) => k + 1); }, 80);
++    });
+     obs.observe(root, { childList: true, characterData: true, subtree: true });
+-    return () => obs.disconnect();
++    return () => { obs.disconnect(); if (recovery != null) clearTimeout(recovery); };
+   }, [containerRef, resetKey]);
+ 
++  useEffect(() => {
++    if (!chatFind || !containerRef.current || typeof MutationObserver === 'undefined') return;
++    let timer: ReturnType<typeof setTimeout> | null = null;
++    const root = containerRef.current;
++    const observer = new MutationObserver((records) => {
++      if (!records.some((record) => record.type === 'childList' &&
++          [...record.addedNodes, ...record.removedNodes].some((node) => node instanceof Element &&
++            (node.matches('[data-message-find-body]') || !!node.querySelector('[data-message-find-body]'))))) return;
++      if (timer != null) clearTimeout(timer);
++      // WHY: afterScroll may mount neighboring folded rows in a later React
++      // commit. Refresh ONLY mounted highlights, never the source corpus/pin.
++      timer = setTimeout(() => {
++        timer = null;
++        if (!queryRef.current || pendingRef.current || !highlightsSupported() || !(CSS as any).highlights.has(HL_CURRENT)) return;
++        const bodies = root.querySelectorAll<HTMLElement>('[data-message-find-body]');
++        const ranges = Array.from(bodies, (body) => resolveBodyRanges(body, queryRef.current)).flat();
++        (CSS as any).highlights.set(HL, new (window as any).Highlight(...ranges));
++      }, 0);
++    });
++    observer.observe(root, { childList: true, subtree: true });
++    return () => { observer.disconnect(); if (timer != null) clearTimeout(timer); };
++  }, [!!chatFind, containerRef, HL, HL_CURRENT]);
++
++  useEffect(() => chatFind?.subscribe?.((phase) => {
++    if (phase === 'pending') { searchAbortRef.current?.abort(); recoveryUsedRef.current = false; pendingRef.current = true; setPending(true); clearHighlights(HL, HL_CURRENT); }
++    else setWalkKey((k) => k + 1);
++  }), [chatFind, HL, HL_CURRENT]);
++
+   // WHY two effects (2026-09-16 audit W22): one effect used to walk every text
+   // node in the container on every keystroke AND on every next/previous match,
+   // so moving the highlight by one rebuilt every range — on a fully read
+@@ -116,6 +182,32 @@ export function ContentFindBar({ containerRef, onClose, resetKey, highlightName
+   // content changed since the last walk (walkKey); moving the current match
+   // otherwise reuses the ranges from the ref.
+   useEffect(() => {
++    if (chatFindRef.current) {
++      const abort = new AbortController();
++      searchAbortRef.current = abort;
++      const apply = (result: { hits: readonly MessageFindHit[]; pending: boolean } | null) => {
++        if (abort.signal.aborted || !result) return;
++        chatHitsRef.current = result.hits;
++        walkedAtRef.current = mutationsRef.current;
++        pendingRef.current = result.pending;
++        setPending(result.pending);
++        setCount(result.hits.length);
++        setRangesVersion((v) => v + 1);
++      };
++      // WHY: an earlier query/source revision cannot publish when its yielded
++      // slices finish after a newer input or after close. Hold navigation blank.
++      const changedQuery = searchedQueryRef.current !== query;
++      searchedQueryRef.current = query;
++      if (changedQuery) {
++        pendingRef.current = !!query;
++        setPending(!!query);
++        clearHighlights(HL, HL_CURRENT);
++      }
++      const result = chatFindRef.current.search(query, abort.signal);
++      if (result instanceof Promise) void result.then(apply);
++      else apply(result);
++      return () => { abort.abort(); if (searchAbortRef.current === abort) searchAbortRef.current = null; };
++    }
+     const root = containerRef.current;
+     if (!root || !highlightsSupported()) { rangesRef.current = []; setCount(0); return; }
+     const ranges = computeRanges(root, query);
+@@ -128,8 +220,112 @@ export function ContentFindBar({ containerRef, onClose, resetKey, highlightName
+     (CSS as any).highlights.set(HL, new HighlightCtor(...ranges));
+   }, [query, resetKey, walkKey, containerRef, HL, HL_CURRENT]);
+ 
++  // WHY: the source hit may be folded. Hold exactly one pin until navigation or
++  // unmount, then validate the committed body before painting a real DOM Range.
++  useEffect(() => {
++    const adapter = chatFindRef.current;
++    if (!adapter || pending || !query || chatHitsRef.current.length === 0 || !highlightsSupported()) return;
++    const hit = chatHitsRef.current[((current % chatHitsRef.current.length) + chatHitsRef.current.length) % chatHitsRef.current.length];
++    const abort = new AbortController();
++    let settleCleanup: (() => void) | undefined;
++    // WHY: programmatic Find navigation is scroll intent. Release auto-stick
++    // before the selected body mounts or any resize observer can repin the tail.
++    adapter.beforeReveal?.();
++    const release = adapter.pin(hit);
++    void adapter.resolve(hit, query, abort.signal).then((range) => {
++      if (abort.signal.aborted) return;
++      if (!range || range.toString().toLowerCase() !== query.toLowerCase()) {
++        // A stale source coordinate cannot be reported as a completed count.
++        pendingRef.current = true;
++        setPending(true);
++        clearHighlights(HL, HL_CURRENT);
++        // WHY: a selected folded row can commit its shell before Markdown's
++        // content. One bounded second look catches it; no perpetual polling.
++        if (!recoveryUsedRef.current) {
++          recoveryUsedRef.current = true;
++          recoveryTimerRef.current = setTimeout(() => {
++            recoveryTimerRef.current = null;
++            setWalkKey((k) => k + 1);
++          }, 80);
++        }
++        return;
++      }
++      recoveryUsedRef.current = false;
++      const HighlightCtor = (window as any).Highlight;
++      // WHY: highlight every mounted message match, not just the selected one,
++      // without rebuilding folded rows or including reasoning/tool/card text.
++      const mountedBodies = containerRef.current?.querySelectorAll<HTMLElement>('[data-message-find-body]') ?? [];
++      const mountedRanges = Array.from(mountedBodies, (body) => resolveBodyRanges(body, query)).flat();
++      (CSS as any).highlights.set(HL, new HighlightCtor(...mountedRanges));
++      (CSS as any).highlights.set(HL_CURRENT, new HighlightCtor(range));
++      let jumped = false;
++      try {
++        const viewport = scrollRef?.current ?? containerRef.current;
++        const rect = range.getBoundingClientRect();
++        const vp = viewport?.getBoundingClientRect();
++        if (vp && (rect.top < vp.top || rect.bottom > vp.bottom)) {
++          (range.startContainer.parentElement as HTMLElement | null)?.scrollIntoView({ block: 'center' });
++          jumped = true;
++        }
++      } catch { /* range geometry unavailable on detached nodes */ }
++      // WHY: nearby rows can change height when mounted, shifting the match to
++      // the covered edge of the viewport. Commit this bounded band, then centre
++      // the match again before paint; never rebuild the rest of the conversation.
++      flushSync(() => adapter.afterScroll?.());
++      if (jumped && !abort.signal.aborted && range.startContainer.isConnected) {
++        (range.startContainer.parentElement as HTMLElement | null)?.scrollIntoView({ block: 'center' });
++      }
++      // A private 1020-entry hardware trace measured the target correctly
++      // centered at y=531 after both scrollIntoView calls, then content height
++      // expanded by 4747px in the NEXT layout frame. Scroll anchoring moved its
++      // Range to y=909, underneath bottom chrome (elementFromPoint hit a chip).
++      // ResizeObserver reports that layout change; one bounded post-layout
++      // correction keeps Find's target readable without fighting later user scroll.
++      const root = containerRef.current;
++      if (!root || typeof ResizeObserver === 'undefined') return;
++      let frame: number | null = null;
++      let corrections = 0;
++      let stopped = false;
++      const vpEl = scrollRef?.current ?? root;
++      const events = ['wheel', 'touchstart', 'pointerdown', 'keydown'];
++      const stop = () => {
++        if (stopped) return;
++        stopped = true;
++        clearTimeout(expiry);
++        if (frame !== null) cancelAnimationFrame(frame);
++        observer.disconnect();
++        for (const event of events) vpEl.removeEventListener(event, stopIntent);
++      };
++      const settle = () => {
++        frame = null;
++        if (stopped || abort.signal.aborted || !range.startContainer.isConnected) return;
++        const viewport = scrollRef?.current ?? root;
++        const vp = viewport.getBoundingClientRect();
++        const rect = range.getBoundingClientRect();
++        const overlay = document.querySelector('.chrome-wrapper--bottom')?.getBoundingClientRect();
++        const bottom = overlay && overlay.top > vp.top && overlay.top < vp.bottom ? overlay.top : vp.bottom;
++        const center = (vp.top + bottom) / 2;
++        // Ignore harmless sub-pixel drift; correct only a displaced/covered hit.
++        if (Math.abs((rect.top + rect.bottom) / 2 - center) > (bottom - vp.top) / 4) {
++          (range.startContainer.parentElement as HTMLElement | null)?.scrollIntoView({ block: 'center' });
++          if (++corrections >= 4) stop();
++        }
++      };
++      const observer = new ResizeObserver(() => {
++        if (!stopped && frame === null) frame = requestAnimationFrame(settle);
++      });
++      observer.observe(root);
++      const expiry = setTimeout(stop, 800);
++      const stopIntent = () => stop();
++      for (const event of events) vpEl.addEventListener(event, stopIntent, { once: true, passive: true });
++      settleCleanup = stop;
++    });
++    return () => { abort.abort(); settleCleanup?.(); release(); clearHighlights(HL, HL_CURRENT); };
++  }, [current, query, rangesVersion, pending, HL, HL_CURRENT, containerRef, scrollRef]);
++
+   // Paint the current match and scroll it into view if it's off-screen.
+   useEffect(() => {
++    if (chatFindRef.current) return;
+     const ranges = rangesRef.current;
+     if (ranges.length === 0 || !highlightsSupported()) return;
+     // Never paint from ranges the content has outgrown. In practice the walk
+@@ -158,15 +354,23 @@ export function ContentFindBar({ containerRef, onClose, resetKey, highlightName
+   useEffect(() => () => clearHighlights(HL, HL_CURRENT), [HL, HL_CURRENT]);
+ 
+   const go = useCallback((dir: number) => {
++    if (chatFindRef.current) {
++      // WHY: cached coordinates make ordinary Next/Previous constant-time.
++      // A source-change push refreshes separately; a DOM mutation can also
++      // arrive before its push, so navigation rechecks only in that case.
++      if (pending || mutationsRef.current !== walkedAtRef.current) setWalkKey((k) => k + 1);
++      if (!pending) setCurrent((c) => c + dir);
++      return;
++    }
+     // Text arrived since the last walk (a streaming reply): re-walk first so a
+     // match in the new text is found and the count is right. The index is left
+     // unnormalised here — the current-match effect and the counter both take
+     // it modulo the fresh count.
+     if (mutationsRef.current !== walkedAtRef.current) setWalkKey((k) => k + 1);
+     setCurrent((c) => c + dir);
+-  }, []);
++  }, [pending]);
+ 
+-  const shown = count > 0 ? `${((current % count) + count) % count + 1}/${count}` : (query ? '0/0' : '');
++  const shown = pending ? '' : count > 0 ? `${((current % count) + count) % count + 1}/${count}` : (query ? '0/0' : '');
+ 
+   // One set of controls, two wrappers — the input/counter/prev/next/close and
+   // their key handling are identical in both layouts by construction.
+diff --git a/desktop/src/renderer/components/MarkdownContent.tsx b/desktop/src/renderer/components/MarkdownContent.tsx
+index ba354fa12..2f1531b80 100644
+--- a/desktop/src/renderer/components/MarkdownContent.tsx
++++ b/desktop/src/renderer/components/MarkdownContent.tsx
+@@ -292,6 +292,8 @@ function CopyButton({ text }: { text: string }) {
+       variant="ghost"
+       size="sm"
+       onClick={handleCopy}
++      data-message-find-ignore
++      // WHY: Copy/Copied is code chrome, not a word of the assistant's message.
+       // Floating overlay control in the code block's corner, so opacity-0 at rest
+       // is correct and stays (spec decision 74). focus-visible:opacity-100 is new:
+       // at opacity-0 the button was invisible to keyboard users who tabbed to it.
+@@ -345,6 +347,7 @@ function ChatImage({ src, alt, ...props }: any) {
+       onClick={() => setShown(true)}
+       className="my-2 inline-flex items-center gap-2 rounded border border-edge bg-inset px-3 py-2 text-sm text-fg-2 hover:bg-panel"
+       title={`Load image from ${host}`}
++      data-message-find-ignore
+     >
+       <span aria-hidden>🖼</span>
+       <span>Image from {host}</span>
+@@ -500,7 +503,9 @@ function ConversationsFence({ body }: { body: string }) {
+   // Not enabled here: fall back to what the text says on its own, rather than
+   // silently swallowing the block.
+   if (!enabled) return <pre className="yc-code rounded-md bg-canvas border border-edge p-3 overflow-x-auto text-sm text-fg">{body}</pre>;
+-  return <ChatsearchRefBlock shortIds={ids} />;
++  // WHY: the fenced IDs become a live reference CARD with asynchronously
++  // resolved titles, not message words. Those labels cannot be source-indexed.
++  return <span data-message-find-ignore className="contents"><ChatsearchRefBlock shortIds={ids} /></span>;
+ }
+ // Preview mode: the same renderer with NOTHING interactive in it. WHY: a file tile is itself a
+ // <button> (FilesTab, Deliverables), and the code-block Copy button / links inside a rendered
+diff --git a/desktop/src/renderer/components/UserMessage.tsx b/desktop/src/renderer/components/UserMessage.tsx
+index c40c2b0c6..b960665fc 100644
+--- a/desktop/src/renderer/components/UserMessage.tsx
++++ b/desktop/src/renderer/components/UserMessage.tsx
+@@ -70,7 +70,8 @@ export default React.memo(function UserMessage({ message, sessionId, showTimesta
+   return (
+     <div className="flex justify-end px-4 py-2">
+       <div className="user-bubble max-w-[80%] break-words rounded-2xl rounded-br-sm bg-accent px-5 py-3 text-sm text-on-accent whitespace-pre-wrap">
+-        {body}
++        {/* WHY: Find indexes authored text, not the optional timestamp beside it. */}
++        <span data-message-find-body="0" data-message-find-plain>{body}</span>
+         {showTimestamps && (
+           <div className="bubble-timestamp text-4xs text-on-accent/50 text-right mt-1 -mb-0.5 select-none leading-none">
+             {formatBubbleTime(message.timestamp)}
+diff --git a/desktop/src/renderer/hooks/use-entry-folding.test.ts b/desktop/src/renderer/hooks/use-entry-folding.test.ts
+index 32020a00f..1877b7f41 100644
+--- a/desktop/src/renderer/hooks/use-entry-folding.test.ts
++++ b/desktop/src/renderer/hooks/use-entry-folding.test.ts
+@@ -41,6 +41,78 @@ function entry(key: string, height: number) {
+ }
+ 
+ describe('useEntryFolding', () => {
++  it('reveals just the requested row and pins it until release, then folds normally', () => {
++    const { result } = renderHook(() => useEntryFolding(true, rootRef));
++    const a = entry('a', 90), b = entry('b', 100);
++    act(() => { result.current.registerEntry(a); result.current.registerEntry(b); fire([
++      { target: a, isIntersecting: false }, { target: b, isIntersecting: false },
++    ]); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(result.current.isFolded('a')).toBe(true);
++    let release!: () => void;
++    let secondRelease!: () => void;
++    act(() => { release = result.current.revealAndPin('a'); secondRelease = result.current.revealAndPin('a'); });
++    expect(result.current.isFolded('a')).toBe(false);
++    expect(result.current.isFolded('b')).toBe(true);
++    act(() => { fire([{ target: a, isIntersecting: false }]); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(result.current.isFolded('a')).toBe(false);
++    act(() => { release(); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(result.current.isFolded('a')).toBe(false);
++    act(() => { secondRelease(); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(result.current.isFolded('a')).toBe(true);
++  });
++
++  it('drops published spacer state before a removed row key is reused', async () => {
++    const { result } = renderHook(() => useEntryFolding(true, rootRef));
++    const old = entry('reuse', 240);
++    let detach!: () => void;
++    act(() => { detach = result.current.registerEntry(old); fire([{ target: old, isIntersecting: false }]); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(result.current.isFolded('reuse')).toBe(true);
++    await act(async () => { detach(); await Promise.resolve(); });
++    expect(result.current.isFolded('reuse')).toBe(false);
++    expect(result.current.heightOf('reuse')).toBeUndefined();
++    act(() => { result.current.registerEntry(entry('reuse', 50)); });
++    expect(result.current.isFolded('reuse')).toBe(false);
++  });
++
++  it('keeps a revealed body and its Range mounted until the selection releases', () => {
++    let api!: EntryFolding;
++    function Row() {
++      api = useEntryFolding(true, rootRef);
++      return React.createElement('div', { 'data-entry-key': 'selected', ref: api.registerEntry },
++        api.isFolded('selected') ? null : React.createElement('span', null, 'selected match'));
++    }
++    const view = render(React.createElement(Row));
++    const el = view.container.firstElementChild as HTMLElement;
++    Object.defineProperty(el, 'offsetHeight', { value: 120 });
++    act(() => { fire([{ target: el, isIntersecting: false }]); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(el.childElementCount).toBe(0);
++    let release!: () => void;
++    act(() => { release = api.revealAndPin('selected'); });
++    const text = el.querySelector('span')!.firstChild!;
++    const range = document.createRange();
++    range.selectNodeContents(text);
++    act(() => { fire([{ target: el, isIntersecting: false }]); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(text.isConnected).toBe(true);
++    expect(range.toString()).toBe('selected match');
++    act(() => { release(); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    expect(text.isConnected).toBe(false);
++    expect(el.childElementCount).toBe(0);
++  });
++
++  it('releases registered records and pins at root unmount', () => {
++    const { result, unmount } = renderHook(() => useEntryFolding(true, rootRef));
++    const el = entry('a', 80);
++    let detach!: () => void;
++    act(() => { detach = result.current.registerEntry(el); result.current.revealAndPin('a'); });
++    act(() => { detach(); });
++    unmount();
++    expect(observed).toEqual([]);
++    // A stale selection cannot keep a removed key pinned on reuse.
++    const { result: next } = renderHook(() => useEntryFolding(true, rootRef));
++    act(() => { next.current.registerEntry(entry('a', 80)); });
++    expect(next.current.isFolded('a')).toBe(false);
++  });
++
+   it('folds an entry that scrolled away, at the height it last occupied', () => {
+     const { result } = renderHook(() => useEntryFolding(true, rootRef));
+     const el = entry('a', 240);
+@@ -304,6 +376,25 @@ describe('useEntryFolding', () => {
+     expect(result.current.isFolded('far')).toBe(true);
+   });
+ 
++  it('a search jump to the middle inspects a viewport band, not every newer spacer', () => {
++    const { result } = renderHook(() => useEntryFolding(true, rootRef));
++    rootRef.current!.getBoundingClientRect = () => ({ top: 0, bottom: 800 } as DOMRect);
++    let reads = 0;
++    const els = Array.from({ length: 3000 }, (_, i) => {
++      const el = entry(`row-${i}`, 100);
++      el.getBoundingClientRect = () => { reads++; const top = (i - 1500) * 120; return { top, bottom: top + 100 } as DOMRect; };
++      return el;
++    });
++    rootRef.current!.append(...els);
++    act(() => { for (const el of els) result.current.registerEntry(el); });
++    act(() => { fire(els.map((target) => ({ target, isIntersecting: false }))); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    reads = 0;
++    act(() => { result.current.unfoldNearViewport(); });
++    expect(result.current.isFolded('row-1500')).toBe(false);
++    expect(result.current.isFolded('row-2900')).toBe(true);
++    expect(reads).toBeLessThan(100); // not 1500 getBoundingClientRect calls
++  });
++
+   it('unfoldNearViewport stops measuring at the first entry above the band', () => {
+     // It runs inside the click, ahead of the switch's first frame. A conversation
+     // read to its top holds thousands of folded entries far above; measuring all
+@@ -328,7 +419,7 @@ describe('useEntryFolding', () => {
+     reads = 0;
+     act(() => { result.current.unfoldNearViewport(); });
+     expect(result.current.isFolded('near')).toBe(false);
+-    expect(reads).toBe(2);   // the one near the screen, and the first one above the band
++    expect(reads).toBeLessThan(20); // binary seek + band, never every older entry
+   });
+ 
+   it('returns a cleanup even with no element or no observer', () => {
+diff --git a/desktop/src/renderer/hooks/use-entry-folding.ts b/desktop/src/renderer/hooks/use-entry-folding.ts
+index c4f68d8ef..a57db9d12 100644
+--- a/desktop/src/renderer/hooks/use-entry-folding.ts
++++ b/desktop/src/renderer/hooks/use-entry-folding.ts
+@@ -97,15 +97,13 @@ export interface EntryFolding {
+    * the rects read here are where the entries will actually be.
+    */
+   unfoldNearViewport: () => void;
++  /** Reveal only this registered row and keep its body mounted until release. */
++  revealAndPin: (key: string) => () => void;
+ }
+ 
+ /**
+- * @param enabled  false suspends folding AND unfolds everything — used while the
+- *   find bar is open, because `ContentFindBar` finds text by walking the DOM
+- *   (`document.createTreeWalker`), so a folded entry is unfindable. Find is a
+- *   deliberate user action on a bounded conversation, so paying the full DOM back
+- *   for its duration is the right trade; the alternative is telling the user
+- *   "0 results" for text that is in their conversation.
++ * @param enabled false suspends folding and unfolds everything. Chat Find stays
++ *   enabled and uses a targeted reveal/pin instead of this whole-list switch.
+  * @param active  false while this conversation's pane is in the background —
+  *   see INACTIVE_FOLD_MS.
+  */
+@@ -143,6 +141,7 @@ export function useEntryFolding(
+   // across three conversations, uniformly ~6%, in three different builds.
+   // At fold time the element is in the DOM and has a real height; just read it.
+   const elements = useRef(new Map<string, HTMLElement>());
++  const pins = useRef(new Map<string, number>());
+   const observer = useRef<IntersectionObserver | null>(null);
+   const unfoldTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const foldTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+@@ -154,6 +153,17 @@ export function useEntryFolding(
+   const publish = useCallback(() => {
+     setState({ folded: new Set(folded.current), heights: new Map(heights.current) });
+   }, []);
++  const removalPublishPending = useRef(false);
++  const publishRemovals = useCallback(() => {
++    if (removalPublishPending.current) return;
++    removalPublishPending.current = true;
++    // WHY: detached keys must leave the published spacer snapshot too, but
++    // clearing a page must not copy all history once per removed row.
++    queueMicrotask(() => {
++      removalPublishPending.current = false;
++      publish();
++    });
++  }, [publish]);
+ 
+   const flushUnfold = useCallback(() => {
+     unfoldTimer.current = null;
+@@ -169,7 +179,7 @@ export function useEntryFolding(
+     if (!enabledRef.current) return;
+     let changed = false;
+     for (const key of outOfView.current) {
+-      if (folded.current.has(key)) continue;
++      if (folded.current.has(key) || pins.current.has(key)) continue;
+       // Measure NOW, from the element itself. Falls back to a height captured
+       // while the entry was visible, which is what makes an inactive session
+       // foldable: its pane is `content-visibility: hidden`, so its children lay
+@@ -247,6 +257,16 @@ export function useEntryFolding(
+     };
+   }, [flushFold, flushUnfold, rootRef]);
+ 
++  // Root teardown releases held nodes and pins even if React detaches refs after
++  // the observer effect. Per-row detach handles ordinary history removal.
++  useEffect(() => () => {
++    elements.current.clear();
++    pins.current.clear();
++    folded.current.clear();
++    heights.current.clear();
++    outOfView.current.clear();
++  }, []);
++
+   // The pane changed sides. Either way the pending fold is re-timed for the side
+   // it is now on, and membership is untouched:
+   //  • to the background — a fold armed moments before the switch would
+@@ -270,19 +290,20 @@ export function useEntryFolding(
+     const top = r.top - FOLD_MARGIN_PX;
+     const bottom = r.bottom + FOLD_MARGIN_PX;
+     let changed = false;
+-    // Walked in DOCUMENT order from the END, and abandoned at the first entry
+-    // above the band. WHY not `for (key of folded)`: a long conversation read to
+-    // its top has thousands of folded entries, nearly all of them far above, and
+-    // the first version measured every one of them on every switch — inside the
+-    // click, ahead of the first frame (Destin, 2026-09-18: "the switch still lags
+-    // a second behind me clicking"). A switch lands at the bottom, so this reads
+-    // a band's worth however long the conversation is. Nothing is written between
+-    // reads, so it is still one layout.
++    // WHY: switching arrives at the end, but Find jumps into the MIDDLE of
++    // loaded history. A reverse scan measured hundreds of newer spacers before
++    // finding the viewport. Timeline rows are in document/layout order; binary
++    // seek the first entry below the band, then inspect only neighboring rows.
+     const entries = root.querySelectorAll<HTMLElement>('[data-entry-key]');
+-    for (let i = entries.length - 1; i >= 0; i--) {
++    let lo = 0, hi = entries.length;
++    while (lo < hi) {
++      const mid = (lo + hi) >>> 1;
++      if (entries[mid].getBoundingClientRect().top > bottom) hi = mid;
++      else lo = mid + 1;
++    }
++    for (let i = lo - 1; i >= 0; i--) {
+       const el = entries[i];
+       const b = el.getBoundingClientRect();
+-      if (b.top > bottom) continue;
+       if (b.bottom < top) break;
+       const key = el.dataset.entryKey;
+       if (!key || !folded.current.has(key)) continue;
+@@ -306,6 +327,29 @@ export function useEntryFolding(
+     publish();
+   }, [enabled, publish]);
+ 
++  const revealAndPin = useCallback((key: string) => {
++    const owner = elements.current.get(key);
++    if (!owner) return NOOP;
++    pins.current.set(key, (pins.current.get(key) ?? 0) + 1);
++    if (folded.current.delete(key)) publish();
++    let released = false;
++    return () => {
++      if (released) return;
++      released = true;
++      // A removed key can later be reused; an old selection cannot unpin it.
++      if (elements.current.get(key) !== owner) return;
++      const count = pins.current.get(key);
++      if (count === 1) pins.current.delete(key);
++      else if (count) pins.current.set(key, count - 1);
++      // WHY: a selected Range cannot survive folding, but after the last
++      // release ordinary idle folding resumes without unfolding other rows.
++      if (count === 1 && outOfView.current.has(key) && enabledRef.current) {
++        if (foldTimer.current != null) clearTimeout(foldTimer.current);
++        foldTimer.current = setTimeout(flushFold, activeRef.current ? FOLD_IDLE_MS : INACTIVE_FOLD_MS);
++      }
++    };
++  }, [flushFold, publish]);
++
+   // Same contract as useObservedRef: ALWAYS return a cleanup, so React never
+   // falls back to calling the ref with null (see that hook for the regression).
+   const registerEntry = useCallback((el: HTMLElement | null) => {
+@@ -313,20 +357,27 @@ export function useEntryFolding(
+     const key = el.dataset.entryKey;
+     if (key) elements.current.set(key, el);
+     const io = observer.current;
+-    if (!io) return () => { if (key) elements.current.delete(key); };
+-    io.observe(el);
+-    return () => {
+-      io.unobserve(el);
++    const cleanup = () => {
+       // Only drop the mapping if it still points at THIS element: a re-render
+       // that swaps the node registers the new one before releasing the old.
+-      if (key && elements.current.get(key) === el) elements.current.delete(key);
++      if (key && elements.current.get(key) === el) {
++        elements.current.delete(key);
++        outOfView.current.delete(key);
++        const wasFolded = folded.current.delete(key);
++        const hadHeight = heights.current.delete(key);
++        pins.current.delete(key);
++        if (wasFolded || hadHeight) publishRemovals();
++      }
+     };
+-  }, []);
++    if (!io) return cleanup;
++    io.observe(el);
++    return () => { io.unobserve(el); cleanup(); };
++  }, [publishRemovals]);
+ 
+   const isFolded = useCallback((key: string) => state.folded.has(key), [state]);
+   const heightOf = useCallback((key: string) => state.heights.get(key), [state]);
+ 
+-  return { registerEntry, isFolded, heightOf, unfoldNearViewport };
++  return { registerEntry, isFolded, heightOf, unfoldNearViewport, revealAndPin };
+ }
+ 
+ const NOOP = () => {};
+diff --git a/desktop/tests/ChatView-render-cost.test.tsx b/desktop/tests/ChatView-render-cost.test.tsx
+index 45f8be463..314fe2fb1 100644
+--- a/desktop/tests/ChatView-render-cost.test.tsx
++++ b/desktop/tests/ChatView-render-cost.test.tsx
+@@ -13,7 +13,9 @@
+ // the call count is observed.
+ import React from 'react';
+ import { describe, it, expect, vi } from 'vitest';
+-import { render } from '@testing-library/react';
++import { render, fireEvent, screen, act } from '@testing-library/react';
++import { FOLD_IDLE_MS, FOLD_ROOT_MARGIN } from '../src/renderer/hooks/use-entry-folding';
++import { ChatMessageFindIndex } from '../src/renderer/components/chat-message-find';
+ // The unmemoised view: this harness delivers new state by re-rendering with the
+ // SAME props, which the memoised default export skips by design (see ChatView.tsx).
+ import { UnmemoizedChatView as ChatView } from '../src/renderer/components/ChatView';
+@@ -156,6 +158,224 @@ function sessionState(overrides: Record<string, unknown>) {
+ const view = () => <ChatView sessionId="s1" visible={true} sessionActive={true} />;
+ 
+ describe('ChatView — the archive-boundary scan runs per appended entry, not per streamed delta', () => {
++  it('a source and mounted Markdown mismatch leaves the Find counter pending instead of a wrong count', () => {
++    // This suite's MarkdownContent mock shows literal syntax; the real renderer
++    // strips it. The adapter must notice that mismatch before reporting a hit.
++    mocks.state = sessionState({ timeline: [{ kind: 'assistant-turn', turnId: 'a' }], assistantTurns: new Map([['a', textTurn('a', '**bold**')]]) });
++    const view = render(<ChatView sessionId="s1" visible sessionActive />);
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'bold' } });
++    const counter = view.container.querySelector('.find-row .tabular-nums');
++    expect(counter?.textContent).toBe('');
++    view.unmount();
++  });
++
++  it('refreshes active Find after streamed text, appended page and removal without Enter', async () => {
++    (globalThis as any).CSS = { highlights: new Map() };
++    (window as any).Highlight = class { constructor(public range: Range) {} };
++    const timeline = [{ kind: 'assistant-turn', turnId: 'a' }];
++    mocks.state = sessionState({ timeline, assistantTurns: new Map([['a', textTurn('a', 'hello')]]) });
++    const spy = vi.spyOn(ChatMessageFindIndex.prototype, 'prepareSearch');
++    const r = render(view());
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    expect(spy).not.toHaveBeenCalled(); // opening an empty Find never parses history
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'hello' } });
++    await vi.waitFor(() => expect(screen.getByText('1/1')).toBeTruthy());
++    spy.mockClear();
++    mocks.state = { ...mocks.state, assistantTurns: new Map([['a', textTurn('a', 'hello hello')]]) };
++    r.rerender(view());
++    expect(spy).not.toHaveBeenCalled(); // never reconcile synchronously per streamed word
++    await vi.waitFor(() => expect(screen.getByText('1/2')).toBeTruthy());
++    mocks.state = { ...mocks.state, timeline: [...timeline, { kind: 'assistant-turn', turnId: 'b' }], assistantTurns: new Map([['a', textTurn('a', 'hello hello')], ['b', textTurn('b', 'hello')]]) };
++    r.rerender(view());
++    await vi.waitFor(() => expect(screen.getByText('1/3')).toBeTruthy());
++    mocks.state = { ...mocks.state, timeline: [{ kind: 'assistant-turn', turnId: 'b' }] };
++    r.rerender(view());
++    await vi.waitFor(() => expect(screen.getByText('1/1')).toBeTruthy());
++    r.unmount(); spy.mockRestore(); delete (globalThis as any).CSS; delete (window as any).Highlight;
++  });
++
++  it('continuous sub-80ms source updates still publish a completed Find count', async () => {
++    const timeline = [{ kind: 'assistant-turn', turnId: 'a' }];
++    mocks.state = sessionState({ timeline, assistantTurns: new Map([['a', textTurn('a', 'hello')]]) });
++    const r = render(view());
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'hello' } });
++    await vi.waitFor(() => expect(screen.getByText('1/1')).toBeTruthy());
++    vi.useFakeTimers();
++    for (let i = 0; i < 12; i++) {
++      mocks.state = { ...mocks.state, assistantTurns: new Map([['a', textTurn('a', `hello ${i}`)]]) };
++      r.rerender(view());
++      await act(async () => { await vi.advanceTimersByTimeAsync(40); });
++      expect(r.container.querySelector('.find-row .tabular-nums')?.textContent).not.toBe('');
++    }
++    vi.useRealTimers();
++    r.unmount();
++  });
++
++  it('recovers pending count after a transient rendered-body mismatch without Enter', async () => {
++    mocks.state = sessionState({ timeline: [{ kind: 'assistant-turn', turnId: 'a' }], assistantTurns: new Map([['a', textTurn('a', '**bold**')]]) });
++    const r = render(view());
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'bold' } });
++    expect(r.container.querySelector('.find-row .tabular-nums')?.textContent).toBe('');
++    // The mocked markdown catches up with the source projection on its own.
++    const body = r.container.querySelector('[data-message-find-body]')!;
++    await act(async () => { body.querySelector('[data-testid="md"]')!.textContent = 'bold'; await Promise.resolve(); });
++    await vi.waitFor(() => expect(screen.getByText('1/1')).toBeTruthy());
++    r.unmount();
++  });
++
++  it('a streamed word refreshes only on Find navigation, not on every history render', async () => {
++    const highlights = new Map();
++    (globalThis as any).CSS = { highlights };
++    (window as any).Highlight = class { constructor(public range: Range) {} };
++    mocks.state = sessionState({ timeline: [{ kind: 'assistant-turn', turnId: 'a' }], assistantTurns: new Map([['a', textTurn('a', 'hello')]]) });
++    const spy = vi.spyOn(ChatMessageFindIndex.prototype, 'prepareSearch');
++    const view = render(<ChatView sessionId="s1" visible sessionActive />);
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'hello' } });
++    await vi.waitFor(() => expect(screen.getByText('1/1')).toBeTruthy());
++    spy.mockClear();
++    mocks.state = { ...mocks.state, assistantTurns: new Map([['a', textTurn('a', 'hello hello')]]) };
++    view.rerender(<ChatView sessionId="s1" visible sessionActive />);
++    expect(spy).not.toHaveBeenCalled();
++    fireEvent.click(screen.getByLabelText('Next (Enter)'));
++    await vi.waitFor(() => expect(spy).toHaveBeenCalled());
++    await vi.waitFor(() => expect(screen.getByText('2/2')).toBeTruthy());
++    expect(spy.mock.calls.length).toBeLessThanOrEqual(2); // navigation and the coalesced source push
++    view.unmount();
++    spy.mockRestore();
++    delete (globalThis as any).CSS;
++    delete (window as any).Highlight;
++  });
++
++  it('Find selection releases bottom-stick before scrolling and growth cannot repin it', async () => {
++    const originalResize = globalThis.ResizeObserver;
++    const originalIO = globalThis.IntersectionObserver;
++    let foldReport!: (entries: IntersectionObserverEntry[]) => void;
++    (globalThis as any).IntersectionObserver = class {
++      constructor(cb: (entries: IntersectionObserverEntry[]) => void, opts?: IntersectionObserverInit) {
++        if (opts?.rootMargin === FOLD_ROOT_MARGIN) foldReport = cb;
++      }
++      observe() {} unobserve() {} disconnect() {} takeRecords() { return []; }
++    };
++    const originalHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
++    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, get() { return this.hasAttribute('data-entry-key') ? 120 : 0; } });
++    const originalRect = Range.prototype.getBoundingClientRect;
++    const originalScroll = HTMLElement.prototype.scrollIntoView;
++    const resizeCallbacks: Array<() => void> = [];
++    (globalThis as any).ResizeObserver = class {
++      constructor(cb: () => void) { resizeCallbacks.push(cb); }
++      observe() {} disconnect() {} unobserve() {}
++    };
++    (globalThis as any).CSS = { highlights: new Map() };
++    (window as any).Highlight = class { constructor(public range: Range) {} };
++    let scroller: HTMLElement;
++    Range.prototype.getBoundingClientRect = () => ({ top: scroller?.scrollTop === 250 ? 200 : -500, bottom: scroller?.scrollTop === 250 ? 220 : -480 } as DOMRect);
++    const scroll = vi.fn(function (this: HTMLElement) { this.closest('.chat-scroll')!.scrollTop = 250; });
++    HTMLElement.prototype.scrollIntoView = scroll;
++    mocks.state = sessionState({ timeline: [
++      { kind: 'assistant-turn', turnId: 'older' }, { kind: 'assistant-turn', turnId: 'latest' },
++    ], assistantTurns: new Map([['older', textTurn('older', 'needle')], ['latest', textTurn('latest', 'latest')]]) });
++    const r = render(view());
++    scroller = r.container.querySelector('.chat-scroll') as HTMLElement;
++    scroller.getBoundingClientRect = () => ({ top: 0, bottom: 800 } as DOMRect);
++    let height = 2000;
++    Object.defineProperty(scroller, 'scrollHeight', { configurable: true, get: () => height });
++    const older = r.container.querySelector<HTMLElement>('[data-entry-key="older"]')!;
++    vi.useFakeTimers();
++    act(() => {
++      foldReport([{ target: older, isIntersecting: false } as unknown as IntersectionObserverEntry]);
++      vi.advanceTimersByTime(FOLD_IDLE_MS);
++    });
++    vi.useRealTimers();
++    expect(older.querySelector('[data-message-find-body]')).toBeNull();
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    expect(older.querySelector('[data-message-find-body]')).toBeNull();
++    expect(screen.queryByText('Jump to bottom')).toBeNull(); // opening Find is not navigation
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'needle' } });
++    await vi.waitFor(() => expect(scroll).toHaveBeenCalled());
++    expect(older.querySelector('[data-message-find-body]')).toBeTruthy();
++    expect(scroller.scrollTop).toBe(250);
++    expect(Range.prototype.getBoundingClientRect().top).toBeGreaterThan(scroller.getBoundingClientRect().top);
++    expect(screen.getByText('Jump to bottom')).toBeTruthy();
++    height = 2500; // content growth after search navigation
++    act(() => { resizeCallbacks.forEach((cb) => cb()); });
++    expect(scroller.scrollTop).toBe(250);
++    expect(Range.prototype.getBoundingClientRect().bottom).toBeLessThan(scroller.getBoundingClientRect().bottom);
++    r.unmount(); vi.restoreAllMocks();
++    Range.prototype.getBoundingClientRect = originalRect;
++    if (originalScroll) HTMLElement.prototype.scrollIntoView = originalScroll;
++    else delete (HTMLElement.prototype as any).scrollIntoView;
++    globalThis.ResizeObserver = originalResize;
++    globalThis.IntersectionObserver = originalIO;
++    if (originalHeight) Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalHeight);
++    else delete (HTMLElement.prototype as any).offsetHeight;
++    delete (globalThis as any).CSS; delete (window as any).Highlight;
++  });
++
++  it('Find leaves offscreen loaded rows folded and reveals only the selected message', async () => {
++    const previousIO = globalThis.IntersectionObserver;
++    const previousHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
++    let report!: (entries: IntersectionObserverEntry[]) => void;
++    (globalThis as any).IntersectionObserver = class {
++      constructor(cb: (entries: IntersectionObserverEntry[]) => void) { report = cb; }
++      observe() {} unobserve() {} disconnect() {} takeRecords() { return []; }
++    };
++    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, get() { return this.hasAttribute('data-entry-key') ? 120 : 0; } });
++    const highlights = new Map();
++    (globalThis as any).CSS = { highlights };
++    (window as any).Highlight = class { constructor(public range: Range) {} };
++    const timeline = ['a', 'b', 'c'].map((id) => ({ kind: 'assistant-turn', turnId: id }));
++    mocks.state = sessionState({ timeline, assistantTurns: new Map(timeline.map(({ turnId }) => [turnId, textTurn(turnId, `message ${turnId}`)])) });
++    const view = render(<ChatView sessionId="s1" visible sessionActive />);
++    const entries = [...view.container.querySelectorAll<HTMLElement>('[data-entry-key]')];
++    // Geometry makes a/c distant while b is the viewport's sole neighbor.
++    entries.forEach((el, i) => { el.getBoundingClientRect = () => ({ top: (i - 1) * 5000, bottom: (i - 1) * 5000 + 120 } as DOMRect); });
++    vi.useFakeTimers();
++    act(() => { report(entries.map((target) => ({ target, isIntersecting: false }) as unknown as IntersectionObserverEntry)); vi.advanceTimersByTime(FOLD_IDLE_MS); });
++    vi.useRealTimers();
++    expect(entries.every((el) => !el.querySelector('[data-message-find-body]'))).toBe(true);
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    expect(entries.every((el) => !el.querySelector('[data-message-find-body]'))).toBe(true);
++    fireEvent.change(screen.getByLabelText('Find in chat'), { target: { value: 'message b' } });
++    await vi.waitFor(() => expect(entries[1].querySelector('[data-message-find-body]')).toBeTruthy());
++    expect(entries[0].querySelector('[data-message-find-body]')).toBeNull();
++    expect(entries[2].querySelector('[data-message-find-body]')).toBeNull();
++    expect(screen.getByText('1/1')).toBeTruthy();
++    view.unmount();
++    if (previousHeight) Object.defineProperty(HTMLElement.prototype, 'offsetHeight', previousHeight);
++    else delete (HTMLElement.prototype as any).offsetHeight;
++    globalThis.IntersectionObserver = previousIO;
++    delete (globalThis as any).CSS;
++    delete (window as any).Highlight;
++  });
++
++  it('Find uses message-only source rather than reasoning and metadata on the real timeline', async () => {
++    const highlights = new Map();
++    (globalThis as any).CSS = { highlights };
++    (window as any).Highlight = class { constructor(public range: Range) {} };
++    mocks.state = sessionState({ timeline: [
++      { kind: 'user', message: { id: 'u', content: 'Hello user', timestamp: 1000 } },
++      { kind: 'assistant-turn', turnId: 'a' },
++      { kind: 'prompt', prompt: { promptId: 'p', title: 'Secret card', buttons: [] } },
++    ], assistantTurns: new Map([['a', { ...textTurn('a', 'Hello assistant'), segments: [
++      { type: 'reasoning', content: 'Secret thoughts', messageId: 'reasoning' },
++      { type: 'text', content: 'Hello assistant', messageId: 'reply' },
++    ] }]]) });
++    const r = render(view());
++    fireEvent.keyDown(window, { key: 'f', ctrlKey: true });
++    const input = screen.getByLabelText('Find in chat');
++    fireEvent.change(input, { target: { value: 'Secret' } });
++    await vi.waitFor(() => expect(screen.getByText('0/0')).toBeTruthy());
++    fireEvent.change(input, { target: { value: 'Hello' } });
++    await vi.waitFor(() => expect(screen.getByText('1/2')).toBeTruthy());
++    expect(r.container.querySelectorAll('[data-message-find-body]')).toHaveLength(2);
++    r.unmount();
++    delete (globalThis as any).CSS;
++    delete (window as any).Highlight;
++  });
+   it('a delta (same timeline reference, new turn object, new timestamps) does not rescan', () => {
+     const timeline = [{ kind: 'assistant-turn', turnId: 'turn_1' }];
+     mocks.state = sessionState({
+diff --git a/desktop/tests/bubble-grouping-scenarios.test.tsx b/desktop/tests/bubble-grouping-scenarios.test.tsx
+index 267905525..63072d65c 100644
+--- a/desktop/tests/bubble-grouping-scenarios.test.tsx
++++ b/desktop/tests/bubble-grouping-scenarios.test.tsx
+@@ -115,7 +115,10 @@ function signature(events: Ev[]): string[] {
+       const tokens: string[] = [];
+       for (const child of b.children) {
+         if (child.matches('.mb-2') && /(Show|Hide) reasoning/.test(child.textContent ?? '')) { tokens.push('R'); continue; }
+-        if (child.matches('[data-md]')) { tokens.push((child.textContent ?? '').trim() ? 'T' : 'T∅'); continue; }
++        // Message-only Find's display:contents marker wraps markdown without changing its visual place.
++        if (child.matches('[data-md]') || child.matches('[data-message-find-body]') && child.querySelector('[data-md]')) {
++          tokens.push((child.textContent ?? '').trim() ? 'T' : 'T∅'); continue;
++        }
+         // ToolGroupInline's root is `.my-0\.5`; the trailing skill row is `.mt-1.space-y-0.5`.
+         if (child.matches('.my-0\\.5')) {
+           const names = [...child.querySelectorAll('[data-tool]')].map((el) => el.getAttribute('data-tool'));
+diff --git a/desktop/tests/content-find-bar-rewalk.test.tsx b/desktop/tests/content-find-bar-rewalk.test.tsx
+index bea039acf..d4331f20f 100644
+--- a/desktop/tests/content-find-bar-rewalk.test.tsx
++++ b/desktop/tests/content-find-bar-rewalk.test.tsx
+@@ -3,7 +3,8 @@
+ // user steps to the next match (2026-09-16 audit W22). On a fully read
+ // conversation the walk is ~1.4M nodes, so a next-match that re-walked cost as
+ // much as retyping the search.
+-import React, { useRef } from 'react';
++import React, { useRef, useState } from 'react';
++import { resolveBodyRanges } from '../src/renderer/components/chat-message-find';
+ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+ import { render, fireEvent, cleanup, screen, act } from '@testing-library/react';
+ import { ContentFindBar } from '../src/renderer/components/ContentFindBar';
+@@ -45,6 +46,170 @@ describe('ContentFindBar and the text-node walk', () => {
+     delete (window as any).Highlight;
+   });
+ 
++  it('recentres a jumped-to match after neighboring rows change its geometry', async () => {
++    const ref = React.createRef<HTMLDivElement>();
++    let top = 2000;
++    const scroll = vi.fn(() => { top = 400; });
++    Range.prototype.getBoundingClientRect = () => ({ top, bottom: top + 20, left: 0, right: 100, width: 100, height: 20 } as DOMRect);
++    render(<><div ref={ref}><span data-message-find-body="0">needle</span></div>
++      <ContentFindBar containerRef={ref} onClose={() => {}} resetKey="chat" chatFind={{
++        search: () => ({ hits: [{ id: 'a', body: 0, ordinal: 0 }], pending: false }),
++        pin: () => () => {},
++        resolve: async (_hit, query) => resolveBodyRanges(ref.current!.firstElementChild as HTMLElement, query)[0],
++        afterScroll: () => { top = 950; },
++      }} /></>);
++    ref.current!.getBoundingClientRect = () => ({ top: 100, bottom: 1000 } as DOMRect);
++    ref.current!.firstElementChild!.scrollIntoView = scroll;
++    fireEvent.change(screen.getByLabelText('Find in document'), { target: { value: 'needle' } });
++    await vi.waitFor(() => expect(scroll).toHaveBeenCalledTimes(2));
++    expect(top).toBe(400);
++  });
++
++  it('re-centres after a later content resize shifts the selected Range beneath the input chrome', async () => {
++    const original = globalThis.ResizeObserver;
++    const callbacks: Array<() => void> = [];
++    (globalThis as any).ResizeObserver = class {
++      constructor(cb: () => void) { callbacks.push(cb); }
++      observe() {} disconnect() {} unobserve() {}
++    };
++    const ref = React.createRef<HTMLDivElement>();
++    let top = 2000;
++    const scroll = vi.fn(() => { top = 450; });
++    Range.prototype.getBoundingClientRect = () => ({ top, bottom: top + 20, left: 0, right: 100, width: 100, height: 20 } as DOMRect);
++    const view = render(<><div ref={ref}><span data-message-find-body="0">needle</span></div>
++      <ContentFindBar containerRef={ref} onClose={() => {}} resetKey="chat" chatFind={{
++        search: () => ({ hits: [{ id: 'a', body: 0, ordinal: 0 }], pending: false }),
++        pin: () => () => {},
++        resolve: async (_hit, query) => resolveBodyRanges(ref.current!.firstElementChild as HTMLElement, query)[0],
++      }} /></>);
++    ref.current!.getBoundingClientRect = () => ({ top: 100, bottom: 1000 } as DOMRect);
++    ref.current!.firstElementChild!.scrollIntoView = scroll;
++    fireEvent.change(screen.getByLabelText('Find in document'), { target: { value: 'needle' } });
++    await vi.waitFor(() => expect(scroll).toHaveBeenCalledTimes(2));
++    top = 950; // browser scroll anchoring AFTER both synchronous recenter calls
++    await act(async () => { callbacks.forEach((cb) => cb()); await Promise.resolve(); });
++    await vi.waitFor(() => expect(scroll).toHaveBeenCalledTimes(3));
++    expect(top).toBe(450);
++    view.unmount(); globalThis.ResizeObserver = original;
++  });
++
++  it('chat adapter leaves other folded rows alone, pins only the chosen row and releases on close', async () => {
++    const releases = vi.fn();
++    const revealNearby = vi.fn();
++    function ChatHarness() {
++      const ref = useRef<HTMLDivElement>(null);
++      const [folded, setFolded] = useState(true);
++      return <div>
++        <div ref={ref}><div data-entry-key="other" data-testid="other" />
++          <div data-entry-key="target" data-testid="target">{!folded && <span data-message-find-body="0">hello <b>world</b></span>}</div></div>
++        <ContentFindBar containerRef={ref} onClose={() => setFolded(true)} resetKey="chat" highlightName="chat-find" chatFind={{
++          search: () => ({ hits: [{ id: 'target', body: 0, ordinal: 0 }], pending: false }),
++          pin: () => { setFolded(false); return releases; },
++          afterScroll: revealNearby,
++          resolve: async (_hit, query) => {
++            await vi.waitFor(() => expect(ref.current?.querySelector('[data-message-find-body]')).toBeTruthy());
++            return resolveBodyRanges(ref.current!.querySelector('[data-message-find-body]')!, query)[0] ?? null;
++          },
++        }} />
++      </div>;
++    }
++    render(<ChatHarness />);
++    fireEvent.change(screen.getByLabelText('Find in document'), { target: { value: 'hello world' } });
++    await vi.waitFor(() => expect(highlights.get('chat-find-current')?.ranges[0].toString()).toBe('hello world'));
++    expect(screen.getByText('1/1')).toBeTruthy();
++    expect(revealNearby).toHaveBeenCalled(); // no 100ms intersection debounce after search scroll
++    expect(screen.getByTestId('other').querySelector('[data-message-find-body]')).toBeNull();
++    cleanup();
++    expect(releases).toHaveBeenCalled();
++  });
++
++  it('highlights a newly revealed neighboring message without restarting source search', async () => {
++    const ref = React.createRef<HTMLDivElement>();
++    const sourceSearch = vi.fn(() => ({ hits: [{ id: 'a', body: 0, ordinal: 0 }, { id: 'b', body: 0, ordinal: 0 }], pending: false }));
++    function Box() {
++      const [near, setNear] = useState(false);
++      return <><div ref={ref}><div data-entry-key="a"><span data-message-find-body="0">hello</span></div>
++        <div data-entry-key="b">{near && <span data-message-find-body="0">hello</span>}</div></div>
++        <ContentFindBar containerRef={ref} onClose={() => {}} resetKey="chat" highlightName="chat-find" chatFind={{
++          search: sourceSearch, pin: () => () => {},
++          resolve: async (_hit, query) => resolveBodyRanges(ref.current!.querySelector('[data-entry-key="a"] [data-message-find-body]')!, query)[0],
++          afterScroll: () => setNear(true),
++        }} />
++      </>;
++    }
++    render(<Box />);
++    fireEvent.change(screen.getByLabelText('Find in document'), { target: { value: 'hello' } });
++    await vi.waitFor(() => expect(highlights.get('chat-find')?.ranges).toHaveLength(2));
++    expect(sourceSearch).toHaveBeenCalledTimes(2); // initial empty query and active query only
++    expect(highlights.get('chat-find-current')?.ranges).toHaveLength(1);
++  });
++
++  it('a selected hit resolving after the first commit retries once without a keypress', async () => {
++    const ref = React.createRef<HTMLDivElement>();
++    let calls = 0;
++    render(<><div ref={ref}><div data-entry-key="a"><span data-message-find-body="0">hello</span></div></div>
++      <ContentFindBar containerRef={ref} onClose={() => {}} resetKey="chat" highlightName="chat-find" chatFind={{
++        search: () => ({ hits: [{ id: 'a', body: 0, ordinal: 0 }], pending: false }),
++        pin: () => () => {},
++        resolve: async (_hit, query) => ++calls === 1 ? null : resolveBodyRanges(ref.current!.querySelector('[data-message-find-body]')!, query)[0],
++      }} /></>);
++    fireEvent.change(screen.getByLabelText('Find in document'), { target: { value: 'hello' } });
++    await vi.waitFor(() => expect(calls).toBeGreaterThanOrEqual(2));
++    await vi.waitFor(() => expect(highlights.get('chat-find-current')?.ranges[0].toString()).toBe('hello'));
++    expect(screen.getByText('1/1')).toBeTruthy();
++  });
++
++  it('keeps counter blank through async search and discards an older query after close', async () => {
++    const ref = React.createRef<HTMLDivElement>();
++    const pendingSearch: Array<{ query: string; signal: AbortSignal; done: (hits: { hits: { id: string; body: number; ordinal: number }[]; pending: boolean }) => void }> = [];
++    const adapter = {
++      search: (query: string, signal: AbortSignal) => query ? new Promise<{ hits: { id: string; body: number; ordinal: number }[]; pending: boolean }>((done) => pendingSearch.push({ query, signal, done })) : { hits: [], pending: false },
++      pin: vi.fn(() => () => {}), resolve: async () => null,
++    };
++    function Box() { const [open, setOpen] = useState(true); return <><div ref={ref} />{open && <ContentFindBar containerRef={ref} onClose={() => setOpen(false)} resetKey="chat" chatFind={adapter} />}</>; }
++    render(<Box />);
++    const input = screen.getByLabelText('Find in document');
++    fireEvent.change(input, { target: { value: 'old' } });
++    expect(screen.queryByText('0/0')).toBeNull();
++    fireEvent.change(input, { target: { value: 'new' } });
++    expect(pendingSearch[0].signal.aborted).toBe(true);
++    await act(async () => { pendingSearch[0].done({ hits: [{ id: 'a', body: 0, ordinal: 0 }], pending: false }); });
++    expect(screen.queryByText('1/1')).toBeNull();
++    fireEvent.click(screen.getByLabelText('Close (Esc)'));
++    expect(pendingSearch[1].signal.aborted).toBe(true);
++    await act(async () => { pendingSearch[1].done({ hits: [{ id: 'b', body: 0, ordinal: 0 }], pending: false }); });
++    expect(adapter.pin).not.toHaveBeenCalled();
++  });
++
++  it('chat navigation wraps across message bodies and refreshes after streaming/removal', async () => {
++    const ref = React.createRef<HTMLDivElement>();
++    const source = { hits: [{ id: 'first', body: 0, ordinal: 0 }, { id: 'second', body: 0, ordinal: 0 }] };
++    const adapter = {
++      search: vi.fn(() => ({ hits: source.hits, pending: false })),
++      pin: vi.fn(() => () => {}),
++      resolve: async (hit: { id: string }, query: string) => resolveBodyRanges(ref.current!.querySelector(`[data-entry-key="${hit.id}"] [data-message-find-body]`)!, query)[0] ?? null,
++    };
++    render(<><div ref={ref}>
++      <div data-entry-key="first"><span data-message-find-body="0">beta</span></div>
++      <div data-entry-key="second"><span data-message-find-body="0">beta</span></div>
++    </div><ContentFindBar containerRef={ref} onClose={() => {}} resetKey="chat" highlightName="chat-find" chatFind={adapter} /></>);
++    fireEvent.change(screen.getByLabelText('Find in document'), { target: { value: 'beta' } });
++    await vi.waitFor(() => expect(screen.getByText('1/2')).toBeTruthy());
++    await vi.waitFor(() => expect(highlights.get('chat-find')?.ranges).toHaveLength(2));
++    expect(highlights.get('chat-find-current')?.ranges).toHaveLength(1);
++    const searchesBeforeNext = adapter.search.mock.calls.length;
++    fireEvent.click(screen.getByLabelText('Next (Enter)'));
++    await vi.waitFor(() => expect(screen.getByText('2/2')).toBeTruthy());
++    expect(adapter.search).toHaveBeenCalledTimes(searchesBeforeNext);
++    fireEvent.click(screen.getByLabelText('Next (Enter)'));
++    await vi.waitFor(() => expect(screen.getByText('1/2')).toBeTruthy());
++    source.hits = [{ id: 'second', body: 0, ordinal: 0 }];
++    await act(async () => { ref.current!.querySelector('[data-entry-key="first"]')!.remove(); await Promise.resolve(); });
++    fireEvent.click(screen.getByLabelText('Next (Enter)'));
++    await vi.waitFor(() => expect(screen.getByText('1/1')).toBeTruthy());
++    expect(adapter.search).toHaveBeenCalled();
++  });
++
+   it('walks once per query and not at all when stepping to the next match', async () => {
+     render(<Harness />);
+     // Resolve every element first: Testing Library's own queries walk the DOM
