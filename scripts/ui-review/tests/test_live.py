@@ -83,6 +83,19 @@ class AddressTests(unittest.TestCase):
     def test_a_named_view_is_a_screen_too(self):
         self.assertIn('view=tools', pane_url(self.spec, {}, {'view': 'tools'}, 'midnight'))
 
+    def test_app_pane_carries_its_params(self):
+        # A Pages design option opens straight on the page under its own switches.
+        u = pane_url(self.spec, {}, {'app': 'default', 'params': {'openPage': 'page-home', 'pagesHome': 'v-edit-a'}}, 'midnight')
+        self.assertIn('scenario=default', u)
+        self.assertIn('openPage=page-home', u)
+        self.assertIn('pagesHome=v-edit-a', u)
+
+    def test_step_and_pane_params_add_up(self):
+        # Review F8: the pane's params used to replace the step's wholesale.
+        u = pane_url(self.spec, {'params': {'openPage': 'page-home'}}, {'app': 'default', 'params': {'pagesHome': 'x'}}, 'midnight')
+        self.assertIn('openPage=page-home', u)
+        self.assertIn('pagesHome=x', u)
+
     def test_round_is_always_in_the_address(self):
         # Candidate ids are unique only WITHIN a round (close-prompt-body reuses 'labelled'
         # and 'one-line' across its ten), so an address without one shows the wrong design.
@@ -229,6 +242,24 @@ class ValidationTests(unittest.TestCase):
     def test_a_pane_shows_a_screen_or_a_design_but_not_both(self):
         spec = spec_with(self.tmp, lambda r: r['steps'][0]['variants'][0].update({'app': 'default'}))
         self.assertTrue(any('not both' in e for e in errs(spec)), errs(spec))
+
+    def _app_variant(self, params):
+        def m(r):
+            v = r['steps'][0]['variants'][0]
+            v.pop('candidate'); v.update({'app': 'default', 'params': params})
+        return spec_with(self.tmp, m)
+
+    def test_params_must_be_an_object_of_text(self):
+        # Review F8: a list used to crash the build with an AttributeError instead of a spec error.
+        for bad in (['a'], {'k': 1}, 'x'):
+            self.assertTrue(any('params must be an object' in e for e in errs(self._app_variant(bad))), bad)
+
+    def test_params_may_not_override_what_the_pane_sets(self):
+        for key in ('theme', 'child', 'latency', 'scenario'):
+            self.assertTrue(any('may not set "%s"' % key in e for e in errs(self._app_variant({key: 'x'}))), key)
+
+    def test_good_params_pass(self):
+        self.assertEqual(errs(self._app_variant({'pagesHome': 'connected'})), [])
 
     def test_a_variant_may_not_carry_a_crop(self):
         spec = spec_with(self.tmp, lambda r: r['steps'][0]['variants'][0].update({'crop': 'c'}))

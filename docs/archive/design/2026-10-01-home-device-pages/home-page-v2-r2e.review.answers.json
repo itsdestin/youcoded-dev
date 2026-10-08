@@ -1,0 +1,30 @@
+{
+ "deck": "home-page-v2-r2e",
+ "started": "2026-10-02T00:20:03.024Z",
+ "submitted": "2026-10-02T00:30:42Z",
+ "cur": 2,
+ "answers": {
+  "S-np-controls": {
+   "v": "yes",
+   "t": 1790900422066,
+   "seconds": 19,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-remote-bar": {
+   "v": "yes",
+   "t": 1790900433991,
+   "seconds": 12,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-soundbar-vol": {
+   "note": "volume should be above pause/fastforward with plus/minus buttons to the left/right of the slider. we also dont need the \"playing\" line under the device name if it has a \"now playing\" box. the hide remote button/container should be the same container as the remote. like and expandable card/header. change the remote icon for somthing more remote-y. speaker cards should also have the volume above play/pause/skip. and i want to make the volume sliders feel much smoother, and give the whole page better hover/touch/drag interactions. optimize and refine, baby. need to ensure we don't accidentally/mistakenly link tvs and sound device. should do this in the most smart/correct/simple/robust way.",
+   "t": 1790901040913,
+   "v": "yes",
+   "seconds": 607,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

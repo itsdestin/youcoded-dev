@@ -1,0 +1,24 @@
+{
+ "deck": "scenes-all",
+ "started": "2026-10-06T08:01:38.171Z",
+ "submitted": "2026-10-06T08:02:51Z",
+ "cur": 1,
+ "answers": {
+  "SC-1": {
+   "v": "other",
+   "t": 1791273758064,
+   "note": "lemme see more alternatives though. maybe two rows stacked among other things. remove last used chip",
+   "seconds": 60,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "SCL-1": {
+   "v": "pick",
+   "pick": "gradient",
+   "t": 1791273770443,
+   "seconds": 12,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

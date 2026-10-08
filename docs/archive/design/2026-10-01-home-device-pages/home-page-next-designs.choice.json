@@ -1,0 +1,111 @@
+{
+  "title": "The Home page, round 5 — device page, activity and cameras",
+  "key": "home-page-next-designs",
+  "out": "home-page-next-designs.choice.html",
+  "images": "images/home-page-next-designs.choice",
+  "runs": {
+    "after": "runs-next/after"
+  },
+  "labels": {
+    "after": "Drawn over the test app (pretend Home Assistant, pretend history)"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "steps": [
+    {
+      "id": "C-device",
+      "surface": "Pages",
+      "path": "Pages → Home, pressing a device's name",
+      "headline": "When you press a device, which way should its own page open?",
+      "notice": "All three hold the same things: its controls, what happened to it and who did it (a switch, Google Home, this page, an automation), and what it is (maker, model, how it connects). The history and details here are made up to show the shape.",
+      "risk": "Whichever you pick, Escape or the × closes it, and the page behind does not move.",
+      "variants": [
+        {
+          "id": "inplace",
+          "label": "Opens in place",
+          "crop": "pages/page/page-home#mock-device-inplace",
+          "summary": "The device's own card grows where it sits, with Controls · History · About tabs. Closest to your note \"replace in place\".",
+          "risk": "A long history makes that room's card tall, pushing the rooms below it down."
+        },
+        {
+          "id": "popup",
+          "label": "Pop-up",
+          "crop": "pages/page/page-home#mock-device-popup",
+          "summary": "A card over a dimmed page: controls on top, history and the device's details side by side, everything visible at once.",
+          "risk": "Covers the rooms, so you cannot press anything else until you close it."
+        },
+        {
+          "id": "panel",
+          "label": "Side panel",
+          "crop": "pages/page/page-home#mock-device-panel",
+          "summary": "A panel slides in on the right; the rooms stay usable on the left, with the device you opened outlined. Pressing another device swaps the panel.",
+          "risk": "The rooms get narrower while it is open; on a phone it would cover the page like the pop-up."
+        }
+      ]
+    },
+    {
+      "id": "C-activity",
+      "surface": "Pages",
+      "path": "Pages → Home",
+      "headline": "Where should the house's activity live?",
+      "notice": "Every version can filter by room and by kind (lights, media, climate, cameras, problems) and says who made each change. The events here are made up to show the shape.",
+      "risk": "Home Assistant keeps about 10 days of history by default, so the list goes back that far.",
+      "variants": [
+        {
+          "id": "tab",
+          "label": "Its own tab, a list",
+          "crop": "pages/page/page-home#mock-activity-tab",
+          "summary": "An Activity pill joins the row at the top. Its page is a list of changes, newest first, grouped by day, with the filters above.",
+          "risk": "One more pill in the row."
+        },
+        {
+          "id": "timeline",
+          "label": "Its own tab, a timeline",
+          "crop": "pages/page/page-home#mock-activity-timeline",
+          "summary": "The same tab, led by a 24-hour chart: one lane per device, coloured where it was on or playing, a line at now. The list of changes sits under it.",
+          "risk": "The chart needs width; on a phone it would scroll sideways."
+        },
+        {
+          "id": "feed",
+          "label": "A Recently card on Home",
+          "crop": "pages/page/page-home#mock-activity-feed",
+          "summary": "The last four changes sit at the top of the Home tab; See all opens the full, filterable list.",
+          "risk": "Takes room at the top of Home, above your favourites and rooms."
+        }
+      ]
+    },
+    {
+      "id": "C-camera",
+      "surface": "Pages",
+      "path": "Pages → Home, a room with a camera",
+      "headline": "Your Nest cameras only send live video. How should their cards show it?",
+      "notice": "Today they show a note instead of a picture, because Nest sends no still pictures. Live video in the page comes with the instant-updates work you approved. The pictures here are pretend.",
+      "risk": "Live video uses your home internet while it plays; every version stops it when the page is hidden.",
+      "variants": [
+        {
+          "id": "tap",
+          "label": "Tap to watch",
+          "crop": "pages/page/page-home#mock-camera-tap",
+          "summary": "A dimmed card with a play button and the last motion time (Living room). Pressing it plays live with sound off; it stops by itself after a minute (Doorbell).",
+          "risk": "No picture until you press play."
+        },
+        {
+          "id": "always",
+          "label": "Always live",
+          "crop": "pages/page/page-home#mock-camera-always",
+          "summary": "Every camera plays live, sound off, whenever the page is on screen.",
+          "risk": "Uses the most internet, and several cameras playing at once can make the page feel slower."
+        },
+        {
+          "id": "events",
+          "label": "Latest events",
+          "crop": "pages/page/page-home#mock-camera-events",
+          "summary": "The card lists what the camera saw (person, motion, doorbell rang, with times), and Watch live plays it.",
+          "risk": "Needs one more Google setting turned on: your Nest cameras are not sending these events to Home Assistant yet."
+        }
+      ]
+    }
+  ]
+}

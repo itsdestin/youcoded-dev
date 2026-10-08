@@ -1,0 +1,32 @@
+{
+ "deck": "home-page-next-designs",
+ "started": "2026-10-04T09:00:36.774Z",
+ "submitted": "2026-10-04T09:04:36Z",
+ "cur": 2,
+ "answers": {
+  "C-device": {
+   "v": "pick",
+   "pick": "popup",
+   "t": 1791104562810,
+   "seconds": 126,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-activity": {
+   "v": "pick",
+   "pick": "tab",
+   "t": 1791104623909,
+   "seconds": 61,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-camera": {
+   "v": "pick",
+   "pick": "events",
+   "t": 1791104675468,
+   "seconds": 52,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

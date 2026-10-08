@@ -88,14 +88,16 @@ seen-on is always n/a here.
       review rig (report: docs/active/investigations/2026-09-01-terminal-pty-column-count.md)
       `n/a` `confirmed` `P3` `checked 2026-09-02`
 
-- [ ] Workspace tooling friction: 6 things.
+- [ ] Workspace tooling friction: 7 things.
       (a) wanted: one-off scans with Fallow and React Doctor before anything is added; Destin: "optimize
       tf out of our workspace"; (b) the CI-red-vs-master script lists Windows-only failures as "NEW" on a
       Linux job; (c) a 526-line conversation-triage script sits on `chore/conversation-triage-script`:
       merge it or delete the branch; (d) committing a workspace doc takes six manual steps and leaves
       residue in the shared checkout; (e) the app's log is in Claude Code's folder, nobody finds it, and
-      it keeps only 500 lines; (f) the harness evaluator has no CI gate and hand-written eval cases
-      `n/a` `confirmed` `P3` `checked 2026-08-26`
+      it keeps only 500 lines; (f) the harness evaluator has no CI gate and hand-written eval cases;
+      (g) nothing refuses a commit that still holds merge-conflict markers: one landed in docs/wrap-ups.md
+      on 2026-10-07 (abdcb153) after a failed resolve script; the commit hooks could refuse `<<<<<<<` lines
+      `n/a` `confirmed` `P3` `checked 2026-10-07`
 
 - [ ] The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has
       never run end to end on a real feature. The first small UI feature Destin asks for is the trial;
@@ -116,7 +118,8 @@ seen-on is always n/a here.
       it recurred 2026-09-23 (report: docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md);
       (c) workspace-start will not resume after post-merge cleanup removed a component worktree;
       (d) a fresh worktree came up missing a package its lockfile names (fifth time; cause unknown);
-      (e) close-out says "the work landed" and suggests deleting a worktree that holds uncommitted edits;
+      (e) close-out says "the work landed" and suggests deleting a worktree that holds uncommitted edits
+      (recurred 2026-10-06 on voice-custom-vocabulary; no cleanup performed);
       (f) work still lives on one disk only: a complete implementation sat uncommitted 14 hours, and a
       committed but unpushed branch was lost across machines
       `n/a` `confirmed` `P1` `checked 2026-09-13` `regression`

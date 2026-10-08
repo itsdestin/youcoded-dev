@@ -318,10 +318,12 @@ class AppServingTests(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
 
     def _live_spec_for_this_worktree(self):
-        # This worktree IS a real checkout with desktop/ — resolve_worktree finds it by its own
-        # session name, so build_app runs the REAL scripts/shoot/build.mjs (cached: near-instant
-        # when nothing changed, which is the case here).
-        return load_spec(live_spec(self.tmp, live={'worktree': 'ui-review-infra'}))
+        # The app checkout BESIDE these scripts, as a path, so build_app runs the REAL
+        # scripts/shoot/build.mjs (cached: near-instant when nothing changed). It used to name
+        # the worktree it was written in ('ui-review-infra'), so it failed in every other one
+        # (found 2026-10-01).
+        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        return load_spec(live_spec(self.tmp, live={'worktree': os.path.join(root, 'youcoded')}))
 
     def test_a_served_deck_answers_app_index_and_an_asset_with_the_right_type(self):
         spec = self._live_spec_for_this_worktree()

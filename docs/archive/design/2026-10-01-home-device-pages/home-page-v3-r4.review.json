@@ -1,0 +1,33 @@
+{
+  "title": "The Home page, round 4 — pills as tabs, and the Climate page swapped",
+  "key": "home-page-v3-r4",
+  "out": "home-page-v3-r4.review.html",
+  "images": "images/home-page-v3-r4.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-tabs",
+      "surface": "Pages",
+      "path": "Pages → Home, the pills at the top",
+      "crop": "pages/page/page-home#chips-pills",
+      "highlight": { "box": [21.6, 12.0, 43.0, 4.2] },
+      "headline": "The pills are now the page's tabs: Home comes first, and the open one is filled in solid.",
+      "changed": "Your notes: the back button is gone; Home is a pill; each pill is a page and shows clearly when it is the one open. Pressing the open pill keeps you there; Home returns to every room.",
+      "notice": "The Climate pill shows the real sky instead of a thermometer: a moon tonight, a sun, clouds, rain or snow by day. It comes from your Home Assistant's weather, which is set to your home's location.",
+      "risk": "Page settings (the gear) is still a separate button on the right, not a pill."
+    },
+    {
+      "id": "S-climate-swap",
+      "surface": "Pages",
+      "path": "Pages → Home → Climate",
+      "crop": "pages/page/page-home#climate",
+      "highlight": { "box": [21.6, 24.5, 74.2, 28.0] },
+      "headline": "On the Climate page the weather is now on the left and the thermostat on the right, larger.",
+      "changed": "Your note: swap their positions. The header no longer has a back button; it shows the page's icon and title.",
+      "notice": "On a narrow window they stack, weather on top.",
+      "risk": "None beyond the earlier ones."
+    }
+  ]
+}

@@ -8,7 +8,7 @@ import json
 import os
 import re
 
-from .live import APP_SCENARIOS, APP_VIEWS, PANE_WIDTH, is_app_pane, is_live, pane_width
+from .live import APP_SCENARIOS, APP_VIEWS, PANE_WIDTH, RESERVED_PARAMS, is_app_pane, is_live, pane_width
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 UI_REVIEW = os.path.dirname(HERE)
@@ -1022,6 +1022,16 @@ def _validate_app_target(d, sid, errors):
         errors.append(f'{sid}: a pane shows one screen — name "app" or "view", not both')
     if is_app_pane(d) and d.get('candidate'):
         errors.append(f'{sid}: a pane shows a screen of the app OR an authored design, not both')
+    # WHY (review F8): `params` adds workbench switches to an app pane; a non-object used to crash the build with an
+    # AttributeError, and a key the pane already sets (theme, scenario…) silently overrode it.
+    if 'params' in d:
+        ps = d['params']
+        if not isinstance(ps, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in ps.items()):
+            errors.append(f'{sid}: params must be an object of text to text, e.g. {{"pagesHome": "connected"}}')
+        else:
+            for k in ps:
+                if k in RESERVED_PARAMS:
+                    errors.append(f'{sid}: params may not set "{k}" — the pane already sets it ({", ".join(RESERVED_PARAMS)})')
 
 
 def _images_folder_warning(spec, warnings):

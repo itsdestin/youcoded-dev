@@ -1,0 +1,163 @@
+{
+  "title": "Home page look \u2014 three directions, pick one",
+  "key": "home-look-choice",
+  "out": "look.choice.html",
+  "images": "images/look.deck",
+  "runs": {
+    "after": "look-runs/after"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Home page",
+      "path": "Home > main page",
+      "headline": "Which overall look should the Home page have?",
+      "notice": "Whichever you pick sets the feel of every card, button and tab.",
+      "risk": "Each one changes how everything looks, but nothing moves or works differently.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pages/page/page-home#connected",
+          "summary": "The page as it looks now, for comparison."
+        },
+        {
+          "id": "a",
+          "label": "Calm and flat",
+          "crop": "pages/page/page-home#v-look-a",
+          "summary": "Room boxes disappear; devices are soft tinted tiles with a thin brightness line and round handle. Lots of air, quiet headings.",
+          "risk": "Less contrast between sections, so a busy house can feel a little plain."
+        },
+        {
+          "id": "b",
+          "label": "Glass and glow",
+          "crop": "pages/page/page-home#v-look-b",
+          "summary": "Raised glass cards with soft shadows; anything that is on glows in its own colour; the open tab is filled with the theme's accent.",
+          "risk": "Richer but busier; glow and shadows are the most decorated of the three."
+        },
+        {
+          "id": "c",
+          "label": "Clean list",
+          "crop": "pages/page/page-home#v-look-c",
+          "summary": "No cards: rooms are titled sections with thin dividers, devices are rows, tabs are underlined. Fits the most on screen.",
+          "risk": "Plainer and more document-like; devices look less tappable."
+        }
+      ]
+    },
+    {
+      "id": "L-2",
+      "surface": "Home page",
+      "path": "Home > hold a device",
+      "headline": "Which look should the device pop-up have?",
+      "notice": "This is what opens when you press and hold or right-click a card.",
+      "risk": "You can mix: this does not have to match the page look you pick.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pages/page/page-home#device",
+          "summary": "The page as it looks now, for comparison."
+        },
+        {
+          "id": "a",
+          "label": "Calm and flat",
+          "crop": "pages/page/page-home#v-look-a-device",
+          "summary": "Room boxes disappear; devices are soft tinted tiles with a thin brightness line and round handle. Lots of air, quiet headings.",
+          "risk": "Less contrast between sections, so a busy house can feel a little plain."
+        },
+        {
+          "id": "b",
+          "label": "Glass and glow",
+          "crop": "pages/page/page-home#v-look-b-device",
+          "summary": "Raised glass cards with soft shadows; anything that is on glows in its own colour; the open tab is filled with the theme's accent.",
+          "risk": "Richer but busier; glow and shadows are the most decorated of the three."
+        },
+        {
+          "id": "c",
+          "label": "Clean list",
+          "crop": "pages/page/page-home#v-look-c-device",
+          "summary": "No cards: rooms are titled sections with thin dividers, devices are rows, tabs are underlined. Fits the most on screen.",
+          "risk": "Plainer and more document-like; devices look less tappable."
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "surface": "Home page",
+      "path": "Home > Activity",
+      "headline": "Which look should the Activity list have?",
+      "notice": "The list of what changed in the house today.",
+      "risk": "Rows differ in how much they stand out from each other.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pages/page/page-home#activity",
+          "summary": "The page as it looks now, for comparison."
+        },
+        {
+          "id": "a",
+          "label": "Calm and flat",
+          "crop": "pages/page/page-home#v-look-a-activity",
+          "summary": "Flat rows with thin dividers instead of boxes.",
+          "risk": "Less contrast between sections, so a busy house can feel a little plain."
+        },
+        {
+          "id": "b",
+          "label": "Glass and glow",
+          "crop": "pages/page/page-home#v-look-b-activity",
+          "summary": "Each row is a raised card with a coloured edge for the kind of event.",
+          "risk": "Richer but busier; glow and shadows are the most decorated of the three."
+        },
+        {
+          "id": "c",
+          "label": "Clean list",
+          "crop": "pages/page/page-home#v-look-c-activity",
+          "summary": "Compact rows with thin lines, like a log.",
+          "risk": "Plainer and more document-like; devices look less tappable."
+        }
+      ]
+    },
+    {
+      "id": "L-4",
+      "surface": "Home page",
+      "path": "Home > Climate",
+      "headline": "Which look should the Climate page have?",
+      "notice": "The thermostat dial and the weather card.",
+      "risk": "The weather card is the same in all three; only the surroundings change.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pages/page/page-home#climate",
+          "summary": "The page as it looks now, for comparison."
+        },
+        {
+          "id": "a",
+          "label": "Calm and flat",
+          "crop": "pages/page/page-home#v-look-a-climate",
+          "summary": "Thermostat sits on a soft tinted surface, no outline.",
+          "risk": "Less contrast between sections, so a busy house can feel a little plain."
+        },
+        {
+          "id": "b",
+          "label": "Glass and glow",
+          "crop": "pages/page/page-home#v-look-b-climate",
+          "summary": "Thermostat and weather get raised shadows.",
+          "risk": "Richer but busier; glow and shadows are the most decorated of the three."
+        },
+        {
+          "id": "c",
+          "label": "Clean list",
+          "crop": "pages/page/page-home#v-look-c-climate",
+          "summary": "Thermostat is outlined only, no fill.",
+          "risk": "Plainer and more document-like; devices look less tappable."
+        }
+      ]
+    }
+  ]
+}

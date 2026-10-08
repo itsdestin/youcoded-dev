@@ -1,0 +1,37 @@
+{
+ "deck": "home-page-v2-r2f",
+ "started": "2026-10-02T01:06:22.445Z",
+ "submitted": "2026-10-02T01:08:34Z",
+ "cur": 3,
+ "answers": {
+  "S-vol-in-np": {
+   "note": "make volume slider slightly bigger and +/- slightly smaller, so they both come closer to meeting in the middle. add a transparent volume icon thing in the left of the slider that either has an x or 1/2/3 lines depending on volume slider level. want a little playing animation near the name/nowplaying thing, stops when paused.",
+   "t": 1790903272296,
+   "v": "other",
+   "seconds": 90,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-remote-card": {
+   "v": "yes",
+   "t": 1790903300557,
+   "seconds": 28,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-sound-link": {
+   "v": "yes",
+   "t": 1790903307877,
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-feel": {
+   "v": "yes",
+   "t": 1790903313646,
+   "seconds": 6,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "deck": "home-redesign-r2",
+ "started": "2026-10-05T05:32:18.785Z",
+ "submitted": "2026-10-05T05:52:18Z",
+ "cur": 12,
+ "answers": {
+  "TV-1": {
+   "note": "home/back should only appear when remote is open. when off, it should just be play/pause, skip, back. if possible, i want to add a +/-10s button between the play/pause and skip/rewind buttons if supported when remote is closed. these disappear, and back/home appear when remote clicked",
+   "t": 1791178569559,
+   "v": "pick",
+   "pick": "c",
+   "seconds": 231,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "TV-2": {
+   "note": "these are all terrible. a/b especially, they look kinda goofy and dont match app styling. try again pls",
+   "t": 1791178626153,
+   "v": "other",
+   "seconds": 57,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "TV-3": {
+   "note": "don't like the spinning animation tho",
+   "t": 1791178703625,
+   "v": "pick",
+   "pick": "b",
+   "seconds": 77,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT-1": {
+   "note": "no separate all off button. the current all button is good. let me see a few more like a/b of different styles",
+   "t": 1791178866498,
+   "v": "other",
+   "seconds": 163,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT-2": {
+   "v": "other",
+   "t": 1791178877413,
+   "seconds": 11,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT-3": {
+   "note": "a/b are the same but both",
+   "t": 1791178922633,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 45,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT-4": {
+   "note": "confused as to what im picking here? this is a weird deck. the options aren't really laid out in a way that makes them seem exclusive",
+   "t": 1791178976611,
+   "v": "other",
+   "seconds": 54,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT-5": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1791179037581,
+   "note": "we can also consider different color picker styles, like a popup or something, for the other tile styles.",
+   "seconds": 61,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LV-1": {
+   "v": "other",
+   "t": 1791179091236,
+   "note": "a/b? i guess",
+   "seconds": 54,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LV-2": {
+   "note": "fine",
+   "t": 1791179112430,
+   "v": "other",
+   "seconds": 21,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "MT-1": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791179377240,
+   "note": "don't love this tho. need to make device/room name more prominent. so i can quickly find the right device. if soundbar/tv are same, need to reuse existing logic to prioritize tv control with media. don't love the grouping ui here for speaker. replace on the shelf with just \"Not Playing\".",
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "MT-2": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1791179423716,
+   "seconds": 46,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "MT-3": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791179537067,
+   "seconds": 113,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

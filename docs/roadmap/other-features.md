@@ -67,23 +67,29 @@ has passed ~8 items — graduate it to its own file.
       (live themes, personal and project pages, marketplace pages, controlled outside access);
       desktop and paired remote first. Phase 1 (shell, page view, pins, creator skill, page data,
       floating themes) and Phase 2 (connections and refresh) are on master; Destin tested a live
-      dashboard and a keyed weather page. Next: Phases 3–4 (model tasks, files, marketplace); later,
+      dashboard and a keyed weather page. 2026-10-07: a page's home-device connection (approval with
+      address + key), a live connection for pages, camera video played by the app, see-through page
+      glass and the hand-installed Home Assistant Home page merged (youcoded#611, youcoded-dev#244)
+      (record: docs/archive/handoffs/2026-10-05-home-page-state.md). Next: Phases 3–4 (model tasks, files, marketplace); later,
       chat-alongside visual editing and durable automation.
       Destin 2026-10-05 triage (roadmap-triage-2026-10-05#16): next phases postponed — "finsih in 1.3.2/1.3.3"
       `window-chrome` `all` `in-flight` `P2` `checked 2026-09-23` `v1.3.2` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
 - [ ] YouCoded Pages follow-ups: 6 decisions and sightings.
       (a) The page-builder skill's connections update (plugin 0.2.0) is finished and held until an
-      app release carries Pages Phase 2; merge it in the same step. (b) A home-network page: "an
-      explicit home assistant integration/management page" — pages are blocked from every home
-      address today; needs a per-device connection kind allowed past the block for that device only.
+      app release carries Pages Phase 2; merge it in the same step. It must also learn the home-device
+      connection, the live connection, camera video and the see-through background (merged 2026-10-07)
+      before that release. (b) Home page (Home Assistant) follow-ups deferred at the 2026-10-07 merge,
+      never designed: search across devices; selecting several devices at once in Edit; a scenes button
+      on rooms with a single light; see-through glass for Framed-layout themes such as Golden Sunbreak
+      ("i want it to peek through to the real theme background"; only Floating/Minimalist frost today).
       (c) A page allowed "any website" can rarely still reach a home-network device through a hostile
       name server; the fix adds a package, so it waits for Destin's OK. (d) A web browser as a page:
       most big sites refuse to show inside another page, so the app would need a website view.
       (e) Pages on a phone: nobody designed the narrow layout, and connected pages were never tried
       over remote access. (f) Pages once turned accent-coloured (Golden Sunbreak, Halftone: "a weird
       yellow shade") and "its fine now. idk what happened"; not reproduced.
-      `window-chrome` `all` `needs-verify` `P2` `checked 2026-09-17` `needs-repro`
+      `window-chrome` `all` `needs-verify` `P2` `checked 2026-10-07` `needs-repro`
 
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal as a YouCoded session,
       no assistant attached. The local engine's "Run in terminal" button already opens exactly that
