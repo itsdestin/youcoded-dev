@@ -1029,3 +1029,42 @@ test('a save that fails says so and retries, and a restart or a stale page loses
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
 });
+
+// WHY (submit-ticket friction, proposal 10): a tall popup's before/after (a 620×750 close-up
+// shot at 1.5×) scored under the 50% floor side by side, so the page fell back to COMPACT and
+// stacked the two pictures at full size — only the top of "Today" was on screen until you
+// scrolled, on every ticket slide. Two tall pictures now stay side by side, shrunk to fit.
+test('two tall pictures sit side by side and fit the screen instead of stacking', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-tall-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  const mk = spawnSync('python3', ['-c', `import sys, os; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import shoot_run
+for run, rect in (('before', None), ('after', (500, 300, 100, 40))):
+    shoot_run(os.path.join(${JSON.stringify(tmp)}, 'sruns', run), [{'name': 'settings/sound', 'theme': t, 'rect': rect, 'scale': 1.5} for t in ('midnight', 'light')])`], { encoding: 'utf8' });
+  assert.equal(mk.status, 0, mk.stderr);
+  const s = JSON.parse(readFileSync(spec, 'utf8'));
+  s.runs = { before: join(tmp, 'sruns', 'before'), after: join(tmp, 'sruns', 'after') };
+  s.steps = [{ id: 'T-1', surface: 'Submit a ticket', path: 'Settings', crop: 'settings/sound@620x750+410+75', headline: 'A tall popup changed.', changed: 'A block was painted.', notice: 'You see it.' }];
+  writeFileSync(spec, JSON.stringify(s));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    for (const size of ['1440x900', '1512x860']) {
+      const [w, h] = size.split('x').map(Number); const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+        for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+        await sleep(300);
+        const m = JSON.parse(await c.evaluate(`JSON.stringify({ layout: document.body.dataset.layout, ih: innerHeight,
+          imgs: [...document.querySelectorAll('#inner img')].map((i) => { const r = i.getBoundingClientRect(); return { top: Math.round(r.top), left: Math.round(r.left), bottom: Math.round(r.bottom) }; }) })`));
+        assert.notEqual(m.layout, 'compact', size);
+        assert.equal(m.imgs.length, 2);
+        assert.equal(m.imgs[0].top, m.imgs[1].top, `${size}: side by side, not stacked ${JSON.stringify(m.imgs)}`);
+        assert.ok(m.imgs.every((i) => i.bottom <= m.ih), `${size}: both pictures whole on screen ${JSON.stringify(m)}`);
+        assert.deepEqual(c.errors, [], size);
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});

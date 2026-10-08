@@ -113,6 +113,21 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(sorted(d['images']['light']), ['after', 'before'])   # a picture per run, like a normal step
         self.assertEqual(d['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
 
+    def test_a_decide_step_with_a_picture_keeps_today_problem_and_proposal(self):
+        # WHY (submit-ticket friction, proposal 20): validate accepted these on a picture decide
+        # step, page.js draws their cards, but the build dropped them — submit-ticket-3#ST3-Q1
+        # reached Destin without its Today / Problem / Proposal, silently.
+        self.spec['steps'].append({'id': 'S-4', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+            'highlight': {'selector': '#send'}, 'headline': 'Where should the block go?',
+            'today': 'It sits on top.', 'problem': 'It hides the box.', 'proposal': 'Move it.',
+            'options': [{'id': 'a', 'label': 'Leave it', 'summary': 'Nothing moves.'},
+                        {'id': 'b', 'label': 'Move it down', 'summary': 'It drops below.'}]})
+        from deck.spec import validate
+        self.assertEqual(validate(self.spec)[0], [])
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        d = deck_data(self.spec, boxes)['steps'][3]
+        self.assertEqual((d['today'], d['problem'], d['proposal']), ('It sits on top.', 'It hides the box.', 'Move it.'))
+
 
 class TemplateTests(unittest.TestCase):
     """`templates/` is the answer to "what does a spec of this kind look like?" — one worked

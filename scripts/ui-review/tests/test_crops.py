@@ -217,6 +217,33 @@ class ShootDensityAndRegionTests(unittest.TestCase):
         self.assertEqual(r['boxes']['S-1']['midnight']['before'], PANEL_PCT)
         self.assertEqual(r['boxes']['S-1']['midnight']['after'], PANEL_PCT)
 
+    def test_panel_highlight_on_a_close_up_boxes_the_panel_inside_it(self):
+        # WHY (submit-ticket friction, proposal 11): a close-up of one popup warned "whole-surface
+        # change, name an element" while "panel" — the very element — was refused on a close-up.
+        # The panel is drawn in the close-up's own coordinates, cut to its edges.
+        crop = f'settings/sound@{PANEL["w"] + 40}x{PANEL["h"] + 40}+{PANEL["x"] - 20}+{PANEL["y"] - 20}'
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'crop': crop, 'highlight': 'panel'}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], []); self.assertEqual(r['warnings'], [])
+        b = r['boxes']['S-1']['midnight']['after']
+        w, h = PANEL['w'] + 40, PANEL['h'] + 40
+        self.assertAlmostEqual(b[0], 20 / w * 100, delta=0.5); self.assertAlmostEqual(b[1], 20 / h * 100, delta=0.5)
+        self.assertAlmostEqual(b[2], PANEL['w'] / w * 100, delta=0.5); self.assertAlmostEqual(b[3], PANEL['h'] / h * 100, delta=0.5)
+
+    def test_a_close_up_outside_the_panel_says_so(self):
+        crop = 'settings/sound@50x50+0+0'
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'crop': crop, 'highlight': 'panel'}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertTrue(any('outside the close-up' in m for m in r['missing']), r['missing'])
+
+    def test_a_whole_surface_close_up_points_at_panel(self):
+        crop = 'settings/sound@130x50+555+255'   # the changed block fills ~74% of it
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'crop': crop}))
+        r = crop_images(spec, log=lambda *a: None)
+        whole = [w for w in r['warnings'] if 'whole-surface' in w]
+        self.assertTrue(whole, r['warnings'])
+        self.assertTrue(all('"panel"' in w for w in whole), whole)
+
     def test_any_short_run_name_may_be_used(self):
         spec = load_spec(_shoot_spec(self.tmp, runs={'round3': os.path.join(self.tmp, 'runs', 'before'),
                                                      'after': os.path.join(self.tmp, 'runs', 'after')}))

@@ -48,6 +48,8 @@ export function openSteps(open) {
   return open.map((s, i) => {
     if (typeof s === 'string') {
       if (!s.trim()) throw new Error(`open step ${i + 1} is an empty label`);
+      // `'Recent logs…'` (ending in "…") = the button whose name STARTS with that.
+      if (s.endsWith('…') && s.length > 1) return { do: 'click', target: { role: 'button', labelStarts: s.slice(0, -1), nth: 1 } };
       return { do: 'click', target: { role: 'button', label: s, nth: 1 } };
     }
     if (!s || typeof s !== 'object' || typeof s.do !== 'string') throw new Error(`open step ${i + 1} needs "do" (or is a button label)`);
@@ -56,7 +58,33 @@ export function openSteps(open) {
   });
 }
 
-export const describe = (t) => `${t.role} "${t.label}"${t.nth > 1 ? ` (#${t.nth})` : ''}`;
+export const describe = (t) => `${t.role} ${t.labelStarts !== undefined ? `"${t.labelStarts}…"` : `"${t.label}"`}${t.nth > 1 ? ` (#${t.nth})` : ''}`;
+
+/** Does control `c` (from listControls) match a step's target? `label` is the whole accessible
+ *  name; `labelStarts` its beginning. WHY the prefix (submit-ticket friction, proposal 15): a
+ *  row's name is its title AND its hint, so giving a fold header a hint renamed it ("Optional AI
+ *  help Your assistant can…") and broke every test and open step that clicked it by name. */
+export function labelMatches(c, t) {
+  if (c.role !== t.role) return false;
+  return t.labelStarts !== undefined ? typeof c.label === 'string' && c.label.startsWith(t.labelStarts) : c.label === t.label;
+}
+
+/** The screen mark a screen entry is checked by: its own `mark` when it names one, else its
+ *  plain name (a `#state` is marked as its plain screen). WHY `mark` (submit-ticket friction,
+ *  proposal 18): a dialog that hands over to another (the ticket → Contribute) ends on the
+ *  OTHER dialog's mark, which the state could only be photographed under by borrowing a prop. */
+export function markOf(screen) {
+  return screen.mark || screen.name.split('#')[0];
+}
+
+const POINTER_STEPS = new Set(['click', 'double-click', 'right-click', 'hover', 'drag', 'scroll', 'type']);
+/** After these open steps, is the pointer resting on something it did not mean to hover?
+ *  True when the last step that moved the pointer was anything but a `hover`. WHY (proposal 14):
+ *  the clicked fold header kept its hover tint in the picture, which read as a selected row. */
+export function pointerRestsOnClick(steps) {
+  const last = [...steps].reverse().find((s) => POINTER_STEPS.has(s.do) && (s.do !== 'type' || s.target));
+  return !!last && last.do !== 'hover';
+}
 
 /** One step, in words — for step lines and failure reports. */
 export function stepText(s) {
@@ -160,7 +188,7 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
       await settle();
       await tab.evaluate(inPage(listLayers));
       ({ controls } = await tab.evaluate(inPage(listControls, { all: true })));
-      const same = controls.filter((c) => c.role === target.role && c.label === target.label);
+      const same = controls.filter((c) => labelMatches(c, target));
       const hit = same[(target.nth ?? 1) - 1] ?? same[0];
       if (hit) { const p = await tab.evaluate(inPage(locate, hit.n)); if (p && await tab.evaluate(inPage(hits, hit.n, p.x, p.y))) return p; }
       if (Date.now() - t0 > 5000) break;
@@ -178,7 +206,7 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
       for (const t0 = Date.now(); Date.now() - t0 < EXPECT_MS; await sleep(200)) {
         await tab.evaluate(inPage(listLayers));
         const { controls } = await tab.evaluate(inPage(listControls, {}));
-        const there = controls.some((c) => c.role === step.control.role && c.label === step.control.label);
+        const there = controls.some((c) => labelMatches(c, step.control));
         if (there !== Boolean(step.not)) return;
       }
       throw new Error(`${step.not ? 'still showing' : 'not showing'} after ${EXPECT_MS / 1000} s: ${describe(step.control)}`);
@@ -230,5 +258,11 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
     await tab.still(3000);
   }
 
-  return { perform, settle, where };
+  /** Moves the pointer off the page, so nothing keeps a hover look in the next picture. */
+  async function pointerAway() {
+    await mouse('mouseMoved', -1, -1);
+    pointer = { x: -1, y: -1 };
+  }
+
+  return { perform, settle, where, pointerAway };
 }

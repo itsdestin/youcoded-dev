@@ -126,6 +126,23 @@ test('a listbox in a dialog\'s flow is part of the dialog; a floating one is a l
   } finally { b.close(); }
 });
 
+// Proposal 14 (submit-ticket friction): after the last open step clicked, the pointer is moved
+// off the page so the clicked row does not keep its hover tint in the picture.
+test('pointerAway leaves nothing hovered', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    await tab.navigate(`data:text/html,${encodeURIComponent('<!doctype html><body style="margin:0"><button id=b style="width:200px;height:60px">Recent logs 4 lines</button>')}`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) await new Promise((r) => setTimeout(r, 50));
+    const driver = makeDriver(tab, { width: 800, height: 600 });
+    await driver.perform({ do: 'click', target: { role: 'button', labelStarts: 'Recent logs' } });
+    assert.equal(await tab.evaluate("!!document.querySelector('#b:hover')"), true, 'the click left the pointer on the button');
+    await driver.pointerAway();
+    assert.equal(await tab.evaluate("!!document.querySelector('#b:hover')"), false);
+  } finally { b.close(); }
+});
+
 test('a click re-aims after pointer arrival moves its target instead of hitting the old-position decoy', { skip: !hasChrome && 'needs Chrome' }, async () => {
   const b = await openBrowser({ width: 800, height: 600 });
   try {

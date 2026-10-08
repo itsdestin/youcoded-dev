@@ -242,6 +242,25 @@ def scaled_panel(entry):
     return {key: panel[key] * k for key in ('x', 'y', 'w', 'h')}
 
 
+def panel_in_region(entry, region):
+    """A shoot entry's panel in the PIXELS of a close-up cut at `region` (WxH+X+Y, CSS pixels),
+    clipped to the close-up; 'outside' when they do not overlap; None with no panel recorded.
+    WHY (submit-ticket friction, proposal 11): a close-up of one popup is exactly where "the
+    panel" is the element, yet it was refused there while "auto" warned "whole-surface"."""
+    import re
+    p = entry.get('panel')
+    m = re.fullmatch(r'(\d+)x(\d+)\+(\d+)\+(\d+)', region or '')
+    if not p or not m:
+        return None
+    w, h, x, y = (int(v) for v in m.groups())
+    left, top = max(p['x'], x), max(p['y'], y)
+    right, bottom = min(p['x'] + p['w'], x + w), min(p['y'] + p['h'], y + h)
+    if right <= left or bottom <= top:
+        return 'outside'
+    k = entry.get('scale') or 1
+    return {'x': (left - x) * k, 'y': (top - y) * k, 'w': (right - left) * k, 'h': (bottom - top) * k}
+
+
 def copy_shoot_picture(entry, dst, region):
     """Copy a shoot picture into the deck's images, or cut the named region out of it."""
     if not region:
@@ -300,6 +319,7 @@ def crop_images(spec, log=print):
             for run in runs:
                 dst = os.path.join(out_dir, image_name(st['crop'], theme, run))
                 panel = None   # a shoot screen's own panel box, in PIXELS of the whole picture
+                region_panel = None   # on a close-up: that panel in the close-up's own pixels, or 'outside'
                 if composite:
                     # Several pictures side by side: no single panel to box; the picture is the focus.
                     if dst not in cut:
@@ -333,8 +353,10 @@ def crop_images(spec, log=print):
                     if dst not in cut:   # steps sharing a crop share the file — copy it once
                         copy_shoot_picture(entry, dst, region)
                         cut.add(dst)
-                    # A region is already the focus: no default panel box drawn over it.
+                    # A region is already the focus: no default panel box drawn over it — but
+                    # "panel" asked for on a close-up boxes the panel inside it (below).
                     panel = None if region else scaled_panel(entry)
+                    region_panel = panel_in_region(entry, region) if region else None
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
                 elif isinstance(hl, dict):
@@ -368,6 +390,10 @@ def crop_images(spec, log=print):
                     # The screen's own panel in every run — a whole-page change, said plainly.
                     if panel and os.path.exists(dst):
                         per_run[run] = px_to_pct(panel, image_size(dst))
+                    elif region_panel == 'outside':
+                        missing.append(f'{st["id"]}: {theme}/{run} — the screen\'s panel lies outside the close-up "{st["crop"]}"')
+                    elif region_panel and os.path.exists(dst):
+                        per_run[run] = px_to_pct(region_panel, image_size(dst))
                     else:
                         missing.append(f'{st["id"]}: {theme}/{run} has no panel box to draw (a region crop, or an old picture)')
                 elif hl is None and panel and os.path.exists(dst):
@@ -384,7 +410,8 @@ def crop_images(spec, log=print):
                     size = image_size(paths[0])
                     share = box['w'] * box['h'] / (size[0] * size[1])
                     if share > AUTO_WARN_FRACTION:
-                        warnings.append(f'{st["id"]}: the change covers {round(share * 100)}% of the crop in {theme} — whole-surface change, name an element instead')
+                        warnings.append(f'{st["id"]}: the change covers {round(share * 100)}% of the crop in {theme} — whole-surface change: '
+                                        f'use "highlight": "panel" (boxes the screen\'s own panel, on a close-up too) or a hand-placed "box"')
                     pct = px_to_pct(box, size)
                     per_run = {r: pct for r in runs}
             boxes[st['id']][theme] = per_run

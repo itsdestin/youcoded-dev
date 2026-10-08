@@ -5,6 +5,8 @@ node scripts/shoot/shoot.mjs 'settings/*'                every Settings screen, 
 node scripts/shoot/shoot.mjs 'chat/menu/*' --themes all   any names, every theme
 node scripts/shoot/shoot.mjs --tag error-state            by tag
 node scripts/shoot/shoot.mjs 'settings/*' --before <base> --after .   side by side
+node scripts/shoot/shoot.mjs settings/about --before-file desktop/src/renderer/components/ui/FoldRow.tsx@HEAD
+                                                         before = this checkout with just that file from HEAD
 node scripts/shoot/shoot.mjs --list                       every screen name and its tags
 node scripts/shoot/shoot.mjs --all                        everything
 node scripts/shoot/shoot.mjs --check                      open every screen once (light); exit 1 on a miss
@@ -15,6 +17,14 @@ a branch that has a worktree, or a folder — a checkout, or a workspace worktre
 root). `master` means the shared checkout exactly as it sits on disk (it may be behind, or not
 build); for a clean base, make a worktree of it first (`workspace-start`). Each side is built
 on its own; `--before` also needs the base to have the screen list (merged 2026-09).
+
+**`--before-file <path>@<ref>`** (repeatable; path from the app checkout) makes the before side
+itself: a copy of the after checkout (default: this one) with only those files from `<ref>`, kept in
+`scratch/shoot-before-file/` and reused, so its build is cached. For a one-file change it replaces
+swapping the file by hand; `--before` rewinds every other change on the branch too.
+
+A screen name never has a space: an argument with one is refused (a zsh variable holding several
+names arrives as ONE argument — pass each separately, `${=VAR}`).
 
 Options: `--worktree <name|branch|path>` (default: the checkout next to this script) ·
 `--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24) ·
@@ -53,9 +63,19 @@ To start a folder over, delete it first.
   person sees, like a journey) once the screen shows, then checks the screen is still showing and takes
   the picture. Use it for an OPENED state (a menu, an unfolded card) instead of a workbench switch in the
   app's code; a step may also be any journey step (`{ do: 'key', key: 'ArrowDown' }`). `expect` is
-  refused there — that belongs in a journey. Examples: `chat/games#status-menu`,
+  refused there — that belongs in a journey. A label ending in "…" (`'Recent logs…'`), or a
+  target's `labelStarts`, matches the START of a name — a row's name is its title and its hint
+  together, so a new hint no longer breaks every step that clicks it. When the last pointer step
+  was a click, the pointer is then moved off the page, so the clicked row keeps no hover tint; a
+  closing `hover` step is kept (it is the point). Examples: `chat/games#status-menu`,
   `marketplace/skills#account-menu`. It cannot reach what only exists once another part is open (the
   friend details popup's opener lives inside the opened card, so that screen still uses `friendsOpen`).
+- **A state that ends on another dialog's mark** (the ticket handing over to Contribute) names it:
+  `mark: 'settings/help/contribute'`; shoot checks that mark instead of the state's plain name.
+- **`waitMs`**: the screen is checked and its panel measured AFTER the wait, so the manifest's box is
+  the state photographed, not the spinner before it.
+- **Hover pictures need no `SHOOT_SCALE=1`** since 2026-10-06 (below): a hover at 1.5× lands on the
+  row pointed at.
 - **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes), serves
   it on a free port, and runs a few headless Chromes with private tabs sized from the core
   count. It waits for the screen to be still — no fetch in flight, animations done, images

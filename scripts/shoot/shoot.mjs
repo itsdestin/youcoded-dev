@@ -8,6 +8,7 @@
 //   shoot settings/sound settings/about --themes all  any names, every theme
 //   shoot --tag dialog --width 390                    by tag, at phone width
 //   shoot settings/* --before master --after <wt>     side by side, each side from its own checkout
+//   shoot settings/about --before-file desktop/src/renderer/components/ui/FoldRow.tsx@HEAD   before = this checkout with that one file from HEAD
 //   shoot --list                                      every screen name, with tags
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
@@ -24,10 +25,11 @@ import { fileURLToPath } from 'node:url';
 import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve, setShotScale, shotScale } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
-import { makeDriver, openSteps, stepText } from './driver.mjs';
+import { makeDriver, markOf, openSteps, pointerRestsOnClick, stepText } from './driver.mjs';
 import { ensureOfficeEditor } from './office-editor.mjs';
 import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
+import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -43,7 +45,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -56,15 +58,19 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--worktree') opt.worktree = next();
   else if (a === '--before') opt.before = next();
   else if (a === '--after') opt.after = next();
+  else if (a === '--before-file') opt.beforeFiles.push(parseBeforeFile(next()));
   else if (a === '--list') opt.list = true;
   else if (a === '--all') opt.all = true;
   else if (a === '--check') opt.check = true;
   else if (a === '-h' || a === '--help') { console.log(readHelp()); process.exit(0); }
   else if (a.startsWith('--')) die(`unknown option ${a} (see shoot --help)`);
+  // WHY (submit-ticket friction, proposal 17): a zsh variable holding several names arrives as
+  // ONE argument ("a/b c/d"); no screen name has a space, so say so instead of shooting nothing.
+  else if (/\s/.test(a)) die(`"${a}" has a space in it — no screen name does. Several names in one argument? Pass each as its own argument (in zsh: \${=VAR} or an array).`);
   else opt.names.push(a);
 }
 function die(msg) { console.error(`shoot: ${msg}`); process.exit(2); }
-function readHelp() { return spawnSync('sed', ['-n', '2,17p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, ''); }
+function readHelp() { return spawnSync('sed', ['-n', '2,18p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, ''); }
 
 // WHY 1.5× by default for review pictures (marketplace-detail friction, proposal 1): Destin
 // works at 1.5×, and a clipped chip border (M5-3) was invisible in every 1× picture read for
@@ -193,7 +199,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
       for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
         await tab.still(1500);
-        why = await tab.evaluate(MARK_CHECK(screen.name.split('#')[0]), 5000);   // a #state is marked as its plain screen
+        why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);   // a #state is marked as its plain screen, unless it names its own `mark`
         if (why?.panel) break;
       }
     }
@@ -207,13 +213,24 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       for (const s of steps) {
         try { await driver.perform(s); } catch (e) { throw new Error(`open step ${stepText(s)} failed: ${e.message}`); }
       }
-      why = await tab.evaluate(MARK_CHECK(screen.name.split('#')[0]), 5000);
+      // The pointer would rest on the last thing clicked and paint its hover look into the
+      // picture (submit-ticket friction, proposal 14) — move it off the page. A `hover` step
+      // ending the list is kept: that hover is what the picture is for.
+      if (pointerRestsOnClick(steps)) { await driver.pointerAway(); await tab.still(1000); }
+      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
       if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
     }
-    r.panel = why.panel;
     // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
-    // e.g. proving a failed-install notice is still there after its old 6-second timer.
-    if (screen.waitMs) await new Promise((res) => setTimeout(res, screen.waitMs));
+    // e.g. proving a failed-install notice is still there after its old 6-second timer. The mark
+    // is checked and the panel measured AFTER the wait (submit-ticket friction, proposal 16): the
+    // manifest held the pre-wait spinner's box, and the deck boxed the wrong size.
+    if (screen.waitMs) {
+      await new Promise((res) => setTimeout(res, screen.waitMs));
+      await tab.still(1500);
+      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
+    }
+    r.panel = why.panel;
     // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
     // back with the theme's font on one side and the fallback on the other, at random. A
     // theme font (meadow-mist's Nunito) is a Google Fonts stylesheet fetched over the network,
@@ -383,6 +400,15 @@ const outDir = opt.out ?? join(WORKSPACE, 'scratch', 'shoot', stamp);
 if (!opt.list && !opt.all && !opt.check && !opt.names.length && !opt.tags.length) die('name some screens (shoot --list), or pass --all / --check');
 
 const t0 = Date.now();
+// --before-file <path>@<ref> (repeatable): the before side is the after checkout (default:
+// this one) with only those files from <ref> — before-file.mjs says why.
+if (opt.beforeFiles.length) {
+  if (opt.before) die('--before-file makes its own before side; leave out --before');
+  const afterCheckout = opt.after ? resolveCheckout(opt.after) : defaultCheckout();
+  try { opt.before = prepareBeforeCopy(afterCheckout, opt.beforeFiles, join(WORKSPACE, 'scratch', 'shoot-before-file')); } catch (e) { die(e.message); }
+  opt.after = afterCheckout;
+  log(`before = ${afterCheckout} with ${opt.beforeFiles.map((f) => `${f.path}@${f.ref}`).join(', ')} (copy at ${opt.before})`);
+}
 if (opt.before || opt.after) {
   if (!opt.before || !opt.after) die('--before and --after go together');
   const results = {};
@@ -391,6 +417,7 @@ if (opt.before || opt.after) {
     const out = join(outDir, which); mkdirSync(out, { recursive: true });
     const r = await side(checkout, out, picker);
     if (r.missingList) die(`the ${which} side (${checkout}) has no screen list yet — until phase 1 of shoot is merged there, compare with scripts/ui-review/record-pair.sh / montage-ab.sh`);
+    if (r.empty) die(`nothing matched on the ${which} side — no pictures taken`);
     results[which] = r;
   }
   summarize('before: ', results.before, join(outDir, 'before'));

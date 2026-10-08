@@ -56,6 +56,9 @@ Fields on every step: `id` (unique, never reused), `surface` (the part of the ap
 words), `path` (how he would get there), `headline` (one sentence, 25 words max, no code
 words). A step may carry its own `themes` when its picture exists in one palette only.
 
+**Two tall pictures stay side by side** (2026-10-08): a before/after of a tall popup is shrunk to fit
+the screen beside each other rather than stacked full size — Destin can zoom with + for detail.
+
 **A crop's SHAPE decides the page layout, and a tall one hides your Risk card.** The page
 tries every arrangement and keeps whichever shows the pictures largest: a wide crop puts
 What changed / You'll notice / Risk in a row UNDER the pictures, all three readable; a tall
@@ -104,7 +107,7 @@ Two runs; the rig boxes the pixels that differ.
 | `notice` | yes | the *You'll notice* card — what is different for him while using it |
 | `risk` | no | the *Risk* card. Keep it to one sentence |
 | `measured` | no | a number that proves it (must contain a digit) |
-| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `"panel"` (the screen's own panel in every run — for a whole-page change, where `"auto"` would warn "whole-surface"), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
+| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `"panel"` (the screen's own panel in every run — for a whole-page change, where `"auto"` would warn "whole-surface"; on a close-up `screen@WxH+X+Y` it boxes the part of the panel inside the close-up), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
 
 He answers **Yes keep it / No revert it / Other**.
 
@@ -156,7 +159,9 @@ same size, or the before/after diff cannot box the change.
 
 `crop` + `highlight` (required — one picture, nothing to diff) + `options[]` (at least two on a
 picture deck). Option fields are the question option fields below, plus `cost` (what taking it
-costs). He **picks one**, or Other.
+costs). Optional `today` / `problem` / `proposal` draw the question's three cards above the
+options, as on a words-only question (before 2026-10-08 a picture decide dropped them silently).
+He **picks one**, or Other.
 
 ### Clip — motion, hover, a transition (`clip.json`)
 

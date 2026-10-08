@@ -105,6 +105,10 @@ def _decide_step(spec, st, boxes, runs):
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
         **({'runs': runs} if st.get('runs') else {}),
         **({'labels': st['labels']} if st.get('labels') else {}),
+        # Today / The problem / Proposal ride along exactly as on a words-only decide.
+        # WHY (submit-ticket friction, proposal 20): validate accepted them and page.js draws
+        # them, but this step dropped them — a picture decide reached Destin without them.
+        **{k: st[k] for k in QUESTION_FIELDS if st.get(k)},
     }
 
 
