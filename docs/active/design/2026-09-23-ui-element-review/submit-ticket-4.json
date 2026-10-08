@@ -1,0 +1,164 @@
+{
+  "title": "Submit a ticket — round 4: the fold highlight, the hand-over to Contribute, Contribute in plain words",
+  "key": "submit-ticket-4",
+  "out": "submit-ticket-4.review.html",
+  "images": "images/submit-ticket-4",
+  "runs": {
+    "hb": "runs/hover-before",
+    "ha": "runs/hover-after",
+    "cb": "runs/contribute-before",
+    "after": "runs/st4-after"
+  },
+  "labels": {
+    "hb": "Today",
+    "ha": "Proposed",
+    "cb": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "ST4-1",
+      "surface": "Every folded row",
+      "path": "Settings → About → Privacy, pointer on \"Your account\"",
+      "runs": [
+        "hb",
+        "ha"
+      ],
+      "crop": "settings/about#fold-hover@440x300+500+330",
+      "headline": "Pointing at a folded row now lights the whole rounded box, not a square strip inside it.",
+      "changed": "The highlight used to be a square-cornered band inset from the box's edges. It now fills the box and follows its rounded corners.",
+      "notice": "Same in every place with folded rows: About, Performance, Backup & sync's Sync log, the status bar's Theme cycle, the ticket, and Contribute."
+    },
+    {
+      "id": "ST4-2",
+      "surface": "Every folded row",
+      "path": "Settings → Performance → opened row, pointer on its header",
+      "runs": [
+        "hb",
+        "ha"
+      ],
+      "crop": "settings/performance#fold-open-hover@440x300+500+430",
+      "headline": "On an opened row, the highlight fills the header to the box's edges, with rounded top corners.",
+      "changed": "Was a square band inset from the box; now edge to edge, rounded at the top.",
+      "notice": "The opened text below the header is unchanged."
+    },
+    {
+      "id": "ST4-3",
+      "new": true,
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Optional AI help → Let your assistant try to fix it → Start",
+      "runs": [
+        "after"
+      ],
+      "crop": [
+        {
+          "crop": "settings/development/bug-report#review-ai@620x610+410+145",
+          "label": "Where you start it"
+        },
+        {
+          "crop": "settings/development/bug-report#handover@440x400+500+250",
+          "label": "What you see"
+        }
+      ],
+      "headline": "\"Let your assistant try to fix it\" now opens the Contribute screen, worded for your ticket.",
+      "changed": "It says your assistant will work on your ticket in its own copy of YouCoded's code, that the first time downloads about 1 GB, that your app and files don't change, and that a new conversation opens with your ticket in it.",
+      "notice": "Your ticket isn't sent. \"Back to ticket\" returns you to it with everything as you left it."
+    },
+    {
+      "id": "ST4-4",
+      "new": true,
+      "surface": "Submit a ticket",
+      "path": "… → when YouCoded's code is already on this computer",
+      "runs": [
+        "after"
+      ],
+      "crop": "settings/development/bug-report#handover-ready@440x300+500+300",
+      "headline": "If the code is already on this computer, there is no download: one Start button.",
+      "changed": "The app now finds the copy it made before, even after a restart, and reuses it.",
+      "notice": "Before, every restart downloaded it again into a new folder."
+    },
+    {
+      "id": "ST4-5",
+      "new": true,
+      "surface": "Submit a ticket",
+      "path": "… → Download and start (first time)",
+      "runs": [
+        "after"
+      ],
+      "crop": "settings/development/bug-report#handover-downloading@440x240+500+330",
+      "headline": "The first time, it shows the download and says you can go back to your ticket while it runs.",
+      "changed": "One card: \"Downloading YouCoded's code…\", about 1 GB, and Back to ticket.",
+      "notice": "When it finishes, the conversation starts by itself — you pressed \"Download and start\"."
+    },
+    {
+      "id": "ST4-6",
+      "new": true,
+      "surface": "Submit a ticket",
+      "path": "… → after the conversation starts",
+      "runs": [
+        "after"
+      ],
+      "crop": "settings/development/bug-report#handed-over@620x300+410+300",
+      "headline": "Back on the ticket: tagged \"Not sent\", with Done and Submit public ticket.",
+      "changed": "The approved screen from round 2, now reached through Contribute.",
+      "notice": "The download and download-failed screens are gone from the ticket popup."
+    },
+    {
+      "id": "ST4-7",
+      "surface": "Contribute to YouCoded",
+      "path": "Settings → Help & feedback → Contribute",
+      "runs": [
+        "cb",
+        "after"
+      ],
+      "crop": "settings/development/contribute@440x420+500+250",
+      "headline": "Contribute in plain words: what it does, the 1 GB first-time download, that nothing else changes, and what comes next.",
+      "changed": "\"Set up development workspace\" and \"a separate project\" are gone. The button is \"Download YouCoded's code\".",
+      "notice": "\"How contributing works\" is the same five steps; step 3 no longer says \"working copy\"."
+    },
+    {
+      "id": "ST4-8",
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute, with YouCoded's code already on this computer",
+      "runs": [
+        "cb",
+        "after"
+      ],
+      "crop": "settings/development/contribute#ready@440x320+500+290",
+      "headline": "When the code is already there, Contribute says \"YouCoded's code is ready on this computer\".",
+      "changed": "Was \"Your development workspace is ready\" — and only until the app restarted. Now it finds the copy on disk every time.",
+      "notice": "Open it and Not now are unchanged."
+    },
+    {
+      "id": "ST4-9",
+      "new": true,
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute → Download YouCoded's code",
+      "runs": [
+        "after"
+      ],
+      "crop": "settings/development/contribute#downloading@440x200+500+350",
+      "headline": "Downloading, in one card: \"Downloading YouCoded's code…\", about 1 GB, and that you can close it.",
+      "changed": "Was a centred spinner and a loose line under it.",
+      "notice": "Closing it doesn't stop the download; reopening shows where it got to."
+    },
+    {
+      "id": "ST4-10",
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute → How contributing works",
+      "runs": [
+        "cb",
+        "after"
+      ],
+      "crop": "settings/development/contribute#walkthrough@440x600+500+150",
+      "headline": "\"How contributing works\" now opens inside its own box, like every other folded row.",
+      "changed": "It was a hand-built fold whose steps opened below it; it now uses the shared one.",
+      "notice": "Same five steps."
+    }
+  ]
+}

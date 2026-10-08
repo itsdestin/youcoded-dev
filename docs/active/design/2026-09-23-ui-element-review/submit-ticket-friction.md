@@ -189,6 +189,30 @@ Deck `submit-ticket-3.json` (ticket: Round 2 `runs/st2-after` vs `runs/st3-after
 4. **A decide slide accepts today/problem/proposal** — not in AUTHORING.md's decide table.
 5. A practice log stamped with the clock makes every before/after of it "changed" (Sync log).
 
+## Round 4 (2026-10-08) — after Destin's submit-ticket-3 answers
+
+Deck `submit-ticket-4.json` (hover: `runs/hover-before` vs `runs/hover-after`, shot at 1×;
+Contribute: `runs/contribute-before` vs `runs/st4-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R4-1 | FoldRow: the header row carries the padding and the box's corners (rounded all round closed, top when open), so its pointer highlight fills the box. Pinned in `tests/FoldRow.test.tsx` (seen red on round 3's FoldRow). Every FoldRow user changes with it. | ST3-5 note. |
+| R4-2 | The ticket's "Let your assistant try to fix it" opens Contribute (its own popup, the ticket steps aside), titled "Let your assistant try to fix it", the ticket's words and error details carried in the conversation's first message; "Back to ticket" returns. The ticket's waiting/failed download screens are deleted. | ST3-Q1 "contribute". |
+| R4-3 | Contribute reworded for both arrivals: what it does, "about 1 GB, the first time", "your app and files don't change", what opens next. "Development workspace", "set up", "separate project" and "working copy" are gone. From a ticket, "Download and start" starts the conversation when the download finishes. "How contributing works" moved onto the shared FoldRow. | ST3-Q1 note. **Guide silent** on a short bullet list of facts inside a card — I used one. |
+| R4-4 | The repeat download fixed in `dev-tools.ts`: `findManagedWorkspace` looks for the first FINISHED copy (`.git`, `setup.sh`, `youcoded/desktop/package.json`) under `~/YouCoded/Development`, async; setup reuses it and the status reports it ready after a restart. Never moves, deletes or edits a copy; a half-made copy is skipped and left alone; a reused copy is not re-added to the project list. 3 tests, seen red without the fix. | ST3-Q1. **Android:** no managed setup there (`dev:setup-workspace` is refused over the bridge; the legacy Android `dev:install-workspace` uses one fixed `$HOME/youcoded-dev` and has no screen calling it), so no repeat-download path. |
+
+### Tooling friction this round
+1. **A one-file "before" again needed swapping three files by hand** (FoldRow, ContributionDesign,
+   ContributionWalkthrough) and putting them back — round 3 proposal "`--before-file`" would have
+   covered it.
+2. **Hover pictures need `SHOOT_SCALE=1`** (the 1.5× pointer is still off, project-switcher round
+   3); the screen list can only say so in a comment.
+3. **A dialog that hands over to another dialog can't keep its own screen mark**: Contribute
+   opened from the ticket had to carry the ticket's mark (`screen` prop) to be photographed as a
+   ticket state.
+4. **The highlight change is subtle at 15% tint** — the before/after differ by a thin strip of
+   pixels; a pointer-state slide would read better as a zoomed close-up.
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Guide: "a review before sending" recipe** — the item as read text in a top card (with its
@@ -233,3 +257,8 @@ Added after round 3:
 - **shoot: `--before-file <path>@<ref>`** for one-file before/afters (friction 2).
 - **deck AUTHORING: list today/problem/proposal on decide slides** (friction 4).
 - **workbench: a fixed clock for practice logs** (friction 5).
+
+Added after round 4:
+- **shoot: a screen entry can carry its own scale** (`scale: 1` for hover states).
+- **shoot: a screen state may name the mark it expects** when one dialog hands over to another.
+- **Guide: a short list of facts inside a card** — allowed or not (Contribute uses three bullets).

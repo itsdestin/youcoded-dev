@@ -1,0 +1,155 @@
+[
+  {
+    "name": "settings/development/contribute",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute/midnight.png",
+    "ms": 1506,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 304,
+      "w": 420,
+      "h": 291
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#walkthrough",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute#walkthrough/midnight.png",
+    "ms": 2393,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute/youcoded-night.png",
+    "ms": 3800,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 314,
+      "w": 420,
+      "h": 272
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#ready",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute#ready/midnight.png",
+    "ms": 3933,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 314,
+      "w": 420,
+      "h": 272
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#ready",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute#ready/youcoded-night.png",
+    "ms": 4111,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 314,
+      "w": 420,
+      "h": 272
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#ready",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute#ready/youcoded.png",
+    "ms": 4121,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 314,
+      "w": 420,
+      "h": 272
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute/youcoded.png",
+    "ms": 4187,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 314,
+      "w": 420,
+      "h": 272
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#walkthrough",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute#walkthrough/youcoded-night.png",
+    "ms": 7632,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#walkthrough",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/contribute-before/settings/development/contribute#walkthrough/youcoded.png",
+    "ms": 8055,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]
