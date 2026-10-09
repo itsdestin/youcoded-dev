@@ -71,3 +71,14 @@ so a finding that renames his vocabulary is rejected, with the reason.
 - U23 accepted — C's map foot line gains "Pick up next: … → Start".
 - U24 rejected — Midnight is monochrome by decision (design guide G-8); the pale primary is the theme.
 - U25 accepted in part — one header title on all three ("YouCoded command center") so the pick is about feel; B and C still open on the Map, which is the thing being judged.
+
+## Destin's verdict on the three concepts (deck `master-plan-feel`, 2026-10-08, picked B, not submitted)
+
+"b probably most interesting? but this still kinda just feels like ai slop and i cant see how
+it would carry over to the real/useful review surfaces. a ton of text, numbers, etc on this
+screen that are just completely meaningless without a LOT of additional external context, and
+the graphics/map still feel more contrived that genuinely useful"
+
+Read as a direction verdict, not a polish note: all three are dashboards, and a dashboard
+assumes the reader carries the context. The surfaces he already finds useful are the review
+decks (one item, a picture, a sentence, a yes/no). Next round must grow out of those.
