@@ -105,6 +105,42 @@ No IPC change, so nothing to mirror on Android (the shared React UI ships there 
   (the top entry closes it), pre-existing, left alone.
 - No UX-tester / code-reviewer run (short route; ask Destin).
 
+## Round 2 (2026-10-09) — after Destin's close-session-1 answers
+
+Deck `close-session-2.json` (before = round 1's code via `shoot --before-file` on
+`CloseSessionPrompt.tsx`, `SessionDetails.tsx`, `close-prompt-practice.ts` @HEAD; `runs/cs2`).
+Recorded in decisions.md: "Close prompt: Session details' cards", "Close prompt: Tags card".
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | "+ Add a note" full width inside the card, the card's own 16px margins both sides (was a small button hung 8px into the left margin). Shared card, so Session details changes too — asked on CS2-4. | CS-1 note. |
+| R2-2 | Pin to top and Mark complete out from under "Tags": shipped as one card labelled "In your lists" (both change how this session shows in your lists); "a card each" (Session lists / Resume list) and "inside the session's own card" behind `?closeFlags=`, on choice CS2-2. A test pins that neither switch sits in the Tags group. | CS-1 note; guide "A label comes first" (an unlabelled card under a labelled one reads as filed under it). |
+| R2-3 | Session details checked: it has Pin to top alone, in the same unlabelled card under Tags (the same problem); Mark complete is deliberately not there. Not changed — asked as CS2-5 (follow the pick / leave it). | Coordinator: "stay consistent, or say why". |
+| R2-4 | The note box is the app's plain text box (the ticket description's and a quick chip's): standard size, full width, upright words, three lines to start, growing as you write. Was a one-line italic pill hung 10px left, so its right edge stopped short. | CS-3 note; compared with `ReportDesign` description, `QuickChips` message, `ProjectHero` description (the source of the hang). |
+| R2-5 | The folded Tags variant, its practice switch value and its states deleted. | CS-2 "open". |
+
+### Friction this round
+1. **The guide has no rule for the margins of a full-width control inside a card**, and the
+   "hang into the margin so the words line up" trick (ProjectHero, copied into Session details)
+   is exactly what read as odd: unequal margins on the button and the box.
+2. **The guide's input rule is about a box with its own action** (Set, send); nothing says what a
+   plain multi-line field looks like (size, italics, starting height). I matched the ticket's.
+3. **A shared card means a "close prompt" change is a Session details change** — four surfaces
+   at once. Nothing on the deck tooling marks a slide as "this also changes X"; I added a slide.
+4. **A three-way choice of tall popups renders each picture about 180px wide** at 1440×900; the
+   text is readable only with the deck's zoom.
+5. **`--before-file` again saved a hand swap** — three files from HEAD for the before side.
+6. **Six full verifies to get one green, after the restart** (load average 36–49, other
+   sessions' browsers running). Each run failed a DIFFERENT load-sensitive test; every one
+   passed alone. Fixed nine at their cause — fixed waits that a busy machine outruns:
+   Welcome back (4 s wait), WebFetch (1 s CPU bound), doc-comments MCP (four 1 s polls),
+   office recovery ×2 (a 30 ms sleep before reading the journal), the stall watchdog (250 ms
+   and 400 ms windows), tokens-per-second (a 120 ms tool), shell still-running marks (assumed
+   `echo` beats 60 ms), and the photo build's 3 s opener wait (`settings/android/tier`).
+   **One left unexplained:** `pending-mutation-queue` "a docx move…" got no answer in 5 s once,
+   then passed 24 targeted runs (16 concurrent, 8 under 40 busy processes) and the next two
+   full runs; no file-watch limit was near. Not changed — no cause to fix.
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Dialog: a `footer` slot** that stays put under the scrolling body and keeps the shared
@@ -130,3 +166,15 @@ No IPC change, so nothing to mirror on Android (the shared React UI ships there 
     most of it, instead of warning (friction 5).
 11. **deck preview: one contact sheet per theme** (friction 9).
 12. **shoot: `--themes all` means every theme the workbench has** (repeat; friction 10).
+
+Added after round 2:
+13. **Guide: a full-width control inside a card keeps the card's margins** — never hung into
+    the margin to line up words (round 2 friction 1); ProjectHero's description box does it too.
+14. **Guide: the plain multi-line field** — the shared text box at its standard size, full width,
+    upright text, a few lines to start (round 2 friction 2).
+15. **deck: a slide can say which other screens a shared change reaches** (round 2 friction 3).
+16. **deck: three tall choice pictures get more room** — two rows, or the zoom opened (friction 4).
+17. **Tests: a lint for fixed sleeps before an assertion** (`setTimeout(r, <100)` then `expect`)
+    and for counted poll loops (`i < 40`) — every flake this round was one (round 2 friction 6).
+18. **verify: say the machine's load in its summary** and rerun only the failed files alone, so
+    a load flake reads as one at once instead of after a manual rerun.

@@ -1,0 +1,130 @@
+{
+  "title": "Close session prompt — round 2: a full-width note button, the switches out from under Tags, a plain note box",
+  "key": "close-session-2",
+  "out": "close-session-2.review.html",
+  "images": "images/close-session-2",
+  "runs": {
+    "before": "runs/cs2/before",
+    "after": "runs/cs2/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Proposed"
+  },
+  "themes": [
+    "creme",
+    "youcoded",
+    "youcoded-night",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "CS2-1",
+      "surface": "Close session prompt",
+      "path": "Close a session",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/close-session@460x620+490+140",
+      "highlight": "auto",
+      "headline": "\"+ Add a note\" now spans the card with equal margins, and the two switches sit under their own label, \"In your lists\".",
+      "changed": "\"+ Add a note\" was a small button pushed into the card's left margin; now it is full width, the card's margins on both sides. Pin to top and Mark complete were an unlabelled card under \"Tags\"; now the card has its own label. Tags open, as you picked.",
+      "notice": "\"In your lists\" because both switches change how this session shows in your lists: pinned first, or hidden from Resume. The next slide offers two other places for them.",
+      "risk": "One more label line makes the prompt about 20 points taller."
+    },
+    {
+      "id": "CS2-2",
+      "surface": "Close session prompt",
+      "path": "Close a session → Pin to top, Mark complete",
+      "runs": [
+        "after"
+      ],
+      "headline": "Where should Pin to top and Mark complete sit, now that they are out from under Tags?",
+      "variants": [
+        {
+          "id": "lists",
+          "label": "One labelled card",
+          "crop": "chat/close-session@460x620+490+140",
+          "summary": "\"In your lists\" over ONE card holding both: they are one idea, how this session shows in your lists, and the guide keeps one idea in one card. Shown on the previous slide."
+        },
+        {
+          "id": "split",
+          "label": "A card each",
+          "crop": "chat/close-session#flags-split@460x620+490+140",
+          "summary": "\"Session lists\" over Pin to top, \"Resume list\" over Mark complete: two cards, because they act on different lists. Tallest — on a 900-point screen Mark complete sits under the fade until you scroll."
+        },
+        {
+          "id": "subject",
+          "label": "In the session's card",
+          "crop": "chat/close-session#flags-subject@460x620+490+140",
+          "summary": "Both switches inside the session's own card, under its name and note, no label: facts about this session sit with it, like a detail page's top card. Shortest; Tags moves down."
+        }
+      ]
+    },
+    {
+      "id": "CS2-3",
+      "surface": "Close session prompt",
+      "path": "Close a session → + Add a note",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/close-session#note-typing@460x620+490+140",
+      "highlight": "auto",
+      "headline": "The note box is now the app's plain text box: full width with even margins, upright words, three lines to start.",
+      "changed": "Was a one-line rounded box shifted into the card's left margin (so its right edge stopped short), in italics. Now it is the same box as the ticket's description and a quick chip's message, and it grows as you write.",
+      "notice": "The saved note still shows in quotes and italics under the name, as in Session details; only the box you type in changed."
+    },
+    {
+      "id": "CS2-4",
+      "surface": "Session details",
+      "path": "Status bar → tags element → + Add a note (also Resume, the side panel and a project's conversation)",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/tags#note-typing@460x560+490+180",
+      "highlight": "panel",
+      "headline": "Session details uses the same card, so it gets the full-width \"+ Add a note\" and the new note box too.",
+      "changed": "The name-and-note card is shared by the close prompt and Session details (status bar, Resume, the side panel, a project's conversation), so both changes appear in every one of them.",
+      "notice": "Nothing else in Session details changed. Say No if you want them only on the close prompt."
+    },
+    {
+      "id": "CS2-5",
+      "surface": "Session details",
+      "path": "Status bar → tags element → Pin to top",
+      "words": true,
+      "headline": "Session details has the same unlabelled Pin to top card under \"Tags\". Should it follow your pick for the close prompt?",
+      "today": "Session details (status bar, Resume, the side panel, a project's conversation) shows the Tags card with its \"Tags\" label, then Pin to top in a card with no label. Mark complete is not there — a session you are sitting in is not finished, so only the close prompt asks it.",
+      "problem": "The same thing you saw on the close prompt: an unlabelled card right under \"Tags\" reads as part of Tags.",
+      "proposal": "Use whatever you pick on the previous slide for Session details too, with Pin to top alone in it.",
+      "options": [
+        {
+          "id": "follow",
+          "label": "Follow the pick",
+          "pros": [
+            "Both popups place Pin to top the same way",
+            "Pin no longer reads as a tag"
+          ],
+          "cons": [
+            "Session details changes again after you approved it"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave it",
+          "pros": [
+            "Session details stays exactly as approved"
+          ],
+          "cons": [
+            "The two popups place Pin to top differently",
+            "Pin still sits under Tags there"
+          ]
+        }
+      ]
+    }
+  ]
+}
