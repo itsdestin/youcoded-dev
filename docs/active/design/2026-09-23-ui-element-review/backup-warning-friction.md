@@ -106,6 +106,10 @@ the phone. The tour does not run there.
 
 - Android was not built here. The change is shared React with no IPC.
 - No UX tester or code reviewer was run (short route; that is Destin's call).
+- Full verify (2026-10-12):
+  - Passed: types, knip, lint, design lint, ast-grep and journeys.
+  - 7 tests failed, not mine. They were broken by the ErrorState round's "Try again" rename (`9dea997fe`): files-tab-list-view, session-naming-settings and two office files. That helper is fixing them.
+  - The screen check failed once on a shared photo-build race (ENOENT `/tmp/youcoded-shoot/builds/…/dist/index.html`). Rerun alone, all 317 screens passed.
 - The Write card's "New file" chip shows even when Write overwrites a file (seen while surveying). Reported,
   not changed.
 - Backup & sync's ⓘ explainer says it backs up "projects, and files", but only opted-in project folders sync.
