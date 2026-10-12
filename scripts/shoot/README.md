@@ -27,7 +27,7 @@ A screen name never has a space: an argument with one is refused (a zsh variable
 names arrives as ONE argument — pass each separately, `${=VAR}`).
 
 Options: `--worktree <name|branch|path>` (default: the checkout next to this script) ·
-`--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24) ·
+`--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24; `all` = every theme the practice app has, read from it: the built-in ones plus the community ones, 14 on 2026-10-12) ·
 `--width N [--height N]` · `--contrast` · `--out <dir>` (default `scratch/shoot/<time>`).
 
 **Pictures are 1.5× by default** (Destin's screen density; a clipped chip border showed only there,
@@ -65,13 +65,16 @@ To start a folder over, delete it first.
   app's code; a step may also be any journey step (`{ do: 'key', key: 'ArrowDown' }`). `expect` is
   refused there — that belongs in a journey. A label ending in "…" (`'Recent logs…'`), or a
   target's `labelStarts`, matches the START of a name — a row's name is its title and its hint
-  together, so a new hint no longer breaks every step that clicks it. When the last pointer step
+  together, so a new hint no longer breaks every step that clicks it. A step may also use the name
+  the browser gives (text inside `aria-hidden` parts left out: `'Add a note'` finds "+ Add a note"). When the last pointer step
   was a click, the pointer is then moved off the page, so the clicked row keeps no hover tint; a
   closing `hover` step is kept (it is the point). Examples: `chat/games#status-menu`,
   `marketplace/skills#account-menu`. It cannot reach what only exists once another part is open (the
   friend details popup's opener lives inside the opened card, so that screen still uses `friendsOpen`).
 - **A state that ends on another dialog's mark** (the ticket handing over to Contribute) names it:
   `mark: 'settings/help/contribute'`; shoot checks that mark instead of the state's plain name.
+- **A state only the new code has** (`newIn: 'after'`) is skipped on the before side of a
+  `--before/--after` (or `--before-file`) run, said in the log, instead of failing there.
 - **`waitMs`**: the screen is checked and its panel measured AFTER the wait, so the manifest's box is
   the state photographed, not the spinner before it.
 - **Hover pictures need no `SHOOT_SCALE=1`** since 2026-10-06 (below): a hover at 1.5× lands on the

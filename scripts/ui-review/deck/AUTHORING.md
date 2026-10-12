@@ -58,6 +58,15 @@ words). A step may carry its own `themes` when its picture exists in one palette
 
 **Two tall pictures stay side by side** (2026-10-08): a before/after of a tall popup is shrunk to fit
 the screen beside each other rather than stacked full size — Destin can zoom with + for detail.
+The same holds for every **choice**: its designs are never stacked (composite designs too), and three
+or more tall designs open at the width that fills the row, the stage scrolling for the rest (2026-10-12).
+
+**`"crop": "<screen>@panel"`** cuts a close-up around that screen's panel in EVERY run and theme, plus
+16px — a popup that changed size gets one box covering both without measuring manifests. With no
+`highlight` written, a close-up whose change covers most of it boxes each run's own panel (no warning).
+
+**`"alsoChanges": ["Session details", "Resume → Organize"]`** on any slide lists the other screens a
+shared change reaches, in an "Also changes" card beside You'll notice — a yes is a yes to all of them.
 
 **A crop's SHAPE decides the page layout, and a tall one hides your Risk card.** The page
 tries every arrangement and keeps whichever shows the pictures largest: a wide crop puts
@@ -413,7 +422,7 @@ on a yes/no question.
 | Command | What it is for |
 |---|---|
 | `build <spec> [--theme SLUG]` | cut the crops, resolve every highlight, write the page. Refuses (no page) on any rule above |
-| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme (every theme the deck carries, unless `--themes`) plus `contact.png`, in `<spec dir>/preview/<spec name>/` (emptied first, so no other deck's pages sit beside them). **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
+| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme (every theme the deck carries, unless `--themes`) plus `contact.png`, in `<spec dir>/preview/<spec name>/` (emptied first, so no other deck's pages sit beside them), plus `contact-<theme>.png` per theme when the deck has several — far easier to read. **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
 | `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit when he submits. Prints `[deck] http://…` and **opens nothing** — put that line in chat as the last line of your turn. Run it in the background |
 | `wait <spec> [--timeout MIN]` | block on the answers file alone, for a session that no longer holds the `serve` process |
 | `record <spec> '<pasted summary>'` | write the submitted answers file from the page's copy box, for a deck he answered as a plain file |
