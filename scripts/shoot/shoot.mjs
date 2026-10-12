@@ -295,8 +295,16 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
         const after = label(afterLs);
         // Same layers by IDENTITY (explore-page.mjs `uid`), not by name: a layer still loading
         // may rename itself during the 2 s wait without being a different layer.
-        const same = afterLs.length === beforeLs.length - 1 && afterLs.every((l, i) => l.uid === beforeLs[i + 1].uid);
-        if (!same) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        // `escapeStepsBack` (small-fixes-1): a step INSIDE a popup that owns Escape and its own ✕ —
+        // the add-a-backup wizard inside Backup & sync — goes back to the popup's main view, so
+        // every layer stays open. Checked as exactly that, not skipped.
+        if (screen.escapeStepsBack) {
+          const kept = afterLs.length === beforeLs.length && afterLs.every((l, i) => l.uid === beforeLs[i].uid);
+          if (!kept) throw new Error(`Escape should step back inside ${before[0]} and leave every layer open (${screen.escapeStepsBack}); open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        } else {
+          const same = afterLs.length === beforeLs.length - 1 && afterLs.every((l, i) => l.uid === beforeLs[i + 1].uid);
+          if (!same) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        }
       }
     }
     r.ok = true;
