@@ -212,6 +212,15 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
         if (why?.panel) break;
       }
     }
+    // WHY keep looking, without opening again, up to 20 s from the first open (2026-10-12):
+    // the Office screens mark themselves only once the editor has drawn the file, and under a
+    // full `--check` at load ~20-60 the ~8 s the three presses above allow ran out — six
+    // Office screens failed "not showing" in verify and all opened in under 5 s alone. A
+    // screen that is truly missing still fails, just later; one that shows is unaffected.
+    for (const t2 = Date.now(); !why?.panel && Date.now() - t2 < 12_000;) {
+      await tab.still(1500);
+      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+    }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
     // shows — a menu opened, a card unfolded — then the mark is checked again, so a step that
