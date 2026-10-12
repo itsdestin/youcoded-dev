@@ -198,6 +198,7 @@ with `explore` (start where a user starts, not with `--screen`), end with `expec
 then run `journeys.mjs <name>` three times.
 
 `shoot --check` also presses Escape once on every screen with something open and fails unless
-exactly the top layer closed.
+exactly the top layer closed — or, for a screen whose entry sets `escapeStepsBack: '<why>'` (a step
+inside a popup that owns its own ✕ and Escape, like the add-a-backup wizard), unless every layer stayed open.
 
 Spec: `docs/archive/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.
