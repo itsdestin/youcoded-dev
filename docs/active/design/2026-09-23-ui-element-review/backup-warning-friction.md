@@ -138,3 +138,32 @@ the phone. The tour does not run there.
     (friction 10).
 11. **Guide: a lone notice button at phone width** follows the lone-button rule (full width), or the rule
     exempts notices (friction 9).
+
+## Round 2 (2026-10-12): after Destin's backup-warning-1 answers
+
+Deck `backup-warning-2.json`. Pictures in `runs/bw2`; the before side is round 1's
+`PermissionsSection.tsx` and `backup-note-practice.ts` taken from HEAD with `--before-file`. Themes: Halftone,
+YouCoded, Crème. Recorded in decisions.md: "Backup warning: where it lives" and "Tour: Escape".
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | The backup stop is a real tour stop: stop 6 of 9, right after Files, in `GUIDE_STOPS`. | BW-1 "tour", BW-2 yes |
+| R2-2 | The notice always shows, at the **top** of the Permission modes card, above Ask first. It has no button and uses the card's text size. | BW-1 note "plus a persistent warning at the top of the permission modes card"; BW-4 "top of card" |
+| R2-3 | One shared file holds the sentence (`backup-warning-copy.ts`), used by both homes. A test pins the exact words and the tour's use of them. | BW-5 "keep"; two places must not drift apart |
+| R2-4 | Deleted the chat-card notice, its test, its practice conversation, the `?backupNote=` switch and its screens. The tour screens stay, as `screens/tour.ts`. | BW-3 not picked |
+| R2-5 | Tests updated: the stop order now has nine stops, and a new test pins the notice before the first mode (seen red without it). | — |
+
+### Friction this round
+1. **`highlight: {"text": …}` is refused on shoot pictures** ("a shoot picture names a screen, not an
+   element"). I wanted to box only the new notice and had to box the whole panel. AUTHORING lists `{"text"}` as
+   a highlight without saying it only works on old-style plan captures.
+2. **A tall before/after crop stacks, and the after picture runs off the screen.** Cutting the crop to 200px
+   high fixed it; the deck gave no warning.
+3. **A screen that exists only behind a practice switch can't be compared with HEAD** without
+   `--before-file`-ing the deleted practice file back in. It worked, but only because I knew the file's name.
+
+Proposals added:
+12. **deck: `highlight: {"text"}` on shoot pictures**, measured in the picture's own page at shoot time, or
+    refused in AUTHORING's field table instead of at build time (round 2 friction 1).
+13. **deck: warn when a stacked before/after pair is taller than the screen**, the way it warns about a
+    choice that is too wide (round 2 friction 2).
