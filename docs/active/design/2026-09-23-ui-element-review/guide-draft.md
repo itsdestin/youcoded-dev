@@ -84,6 +84,21 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 - When the body scrolls, the content fades at the hidden edge; never a solid strip.
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide**
   popups are larger.
+- **A popup's own buttons that must stay in view** (a long body above them) go in the shared popup's
+  **footer**: pinned under the body, which scrolls and fades see-through where it meets them — no line
+  between them. Never a hand-made scroll area with its buttons under it (close-session-friction
+  proposal 1; Close session, Close window, Update available, unsaved changes before quit).
+- **Enter does the popup's main action** only through the shared popup (`onEnter`): it never fires while
+  the keyboard is on a button, switch, tag or text box (those keep their own Enter), nor while another
+  popup sits on top. A destructive main action (Close window, Discard) takes a click, not Enter.
+  (Close session closed the session from a focused tag before this; close-session-1.)
+- **A popup whose job is an action but that also edits** (Close session; the same for send or resume):
+  its editing cards are **open** when it opens — the same cards as where you edit it elsewhere, never a
+  summary that swaps into a second form — and **nothing it edits is saved until the action**; the ✕
+  leaves everything as it was. (close-session-1#CS-2 "open"; decisions "Close prompt" rows.)
+- **"Don't ask again"** on a popup that asks every time: a switch with its words, **bottom-left on the
+  footer line**, balanced by the main button at the right (principle 6). The same choice lives in
+  Settings so it can be turned back on (Close session: Settings → Assistant → General → "Close-session prompt").
 
 ### Headings
 | Level | Use | Style |
@@ -118,7 +133,8 @@ underline under its words. Labels over short settings groups stay plain.
   controls and text. Reference: Remote Access.
 - **A label comes first.** A popup never opens straight into a card: a small label sits above the first
   card, and once one card has a label, every card on that page does (otherwise the next card reads as
-  filed under the one above). A label never repeats the popup's title. Exceptions: a small popup holding
+  filed under the one above) — a card of switches too: Pin to top and Mark complete under Tags read as
+  tags until they got their own label, "In your lists" (close-session-2#CS2-2, #CS2-5). A label never repeats the popup's title. Exceptions: a small popup holding
   a single card (Buddy), short yes/no confirmations, popups that open on a warning, **the card about the
   popup's own subject** at its top (Session details' name card, a detail page's top card), and **a
   picture of the item** (a theme's preview) — no label could say more than the title or the picture
@@ -149,6 +165,10 @@ underline under its words. Labels over short settings groups stay plain.
 - Close is always the ✕ button, never a letter or the word.
 - **A text box with its own action** (a password's Set, a search's filter, send) keeps that
   action **inside the box, at the right, as a small filled button** — like the message box.
+- **A plain multi-line field** (a note, a description, a ticket's text) is the shared text box at its
+  standard size: full width, upright words, **three lines to start**, growing as you write. What you
+  saved may show differently (a note in quotes and italics); the box you type in never does
+  (close-session-2#CS2-3; Submit a ticket's description is the reference).
 - **A follow-up action under a group** ("Back up all now") is a **full-width outlined
   button**. Never underlined text as a button; underlined text is only a link inside a
   sentence.
@@ -206,6 +226,10 @@ Settings → Backup & Sync, Assistant → General, Account.
 - **A card's own header row** (its title, hint and switch) sits in the card with no box of its
   own — a boxed header inside a card reads as a card in a card.
 - **Text that describes a card lives inside it.** No loose lines between cards.
+- **A control inside a card keeps the card's margins.** A full-width button or text box spans the card
+  edge to edge inside its padding, the same space left and right — never pulled into the margin to line
+  its words up with text above (Session details' "+ Add a note" and note box, the Projects description
+  box; close-session-1#CS-1, #CS-3). Only read-only text may hang to line its words up.
 - **A short list of separate facts may sit in a card** as plain bullet points — three or four
   short lines, each one fact, no buttons in them (Contribute's "what happens" list). Longer
   reading stays paragraphs; anything you act on stays rows (submit-ticket-5#ST5-Q1 "allow").

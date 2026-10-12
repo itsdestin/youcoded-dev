@@ -165,7 +165,19 @@ Pin to top and Mark complete".
 3. **A "before" state can't open what didn't exist** — `chat/tags#complete` clicks Mark complete,
    so the before side failed 4 pictures by design; shoot reports them as NOT TAKEN either way.
 
-## Proposed guide and tooling changes (most valuable first — not implemented)
+## Proposals implemented (2026-10-13, deck close-session-4)
+
+| # | Proposal | Done as |
+|---|---|---|
+| 1 | Dialog footer slot | `<Dialog footer>`: pinned under the shared body, which fades into it, no line. Moved: Close session, Close window, Update available (its full-width line gone), Unsaved changes before quit (its painted list fade gone). Not moved, with the reason: takeover confirm, pick a model to resume, Pick a handle, Support YouCoded, Share, Switch model, Import project, Connect GitHub, Publish theme, OpenRouter key, Remove backup — one short block that never scrolls, so a pinned footer changes nothing for the user; Assistant settings, Settings, the model picker, Backup & sync — own their whole layout (two panes, a wizard). |
+| 2 | One Enter-to-confirm | `<Dialog onEnter>` + `hooks/use-enter-to-confirm.ts`; `useEscClose` answers "am I on top?". Moved: the close prompt (and Enter now honours "Don't show again"). Guard `tests/enter-to-confirm-authority.test.ts`, seen red on the old prompt; listed with reasons: ToolCard ×2 and PromptCard (chat cards' roving buttons, outside the guide), InputBar (sends a message). **Found, not changed:** while a popup is open, a waiting chat card still answers Enter on the window (cards are exempt from the guide; they need their own "no popup open" gate — ask). |
+| 3, 4 | Guide: an action popup that edits; "don't ask again" | Guide → Popups and side panels. |
+| 5 | Guide: label rule for a switch card | Guide → Spacing ("a card of switches too", the "In your lists" example). |
+| 6 | MAP row | "Session details, tags and the close-session prompt". |
+| 13 | Guide + ProjectHero: controls keep the card's margins | Guide → Card levels; ProjectHero's description box and "+ Add a description" no longer hang into the margin. |
+| 14 | Guide: the plain multi-line field | Guide → Buttons (beside "a text box with its own action"). |
+
+## Proposed guide and tooling changes (most valuable first — 1–6, 13, 14 now implemented, above; 7–12, 15–20 with the tooling helper)
 
 1. **Dialog: a `footer` slot** that stays put under the scrolling body and keeps the shared
    fade, so no popup wires its own scroll band (friction 7; the close prompt, and every other
