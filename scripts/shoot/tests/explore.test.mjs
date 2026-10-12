@@ -128,6 +128,26 @@ test('a listbox in a dialog\'s flow is part of the dialog; a floating one is a l
 
 // Proposal 14 (submit-ticket friction): after the last open step clicked, the pointer is moved
 // off the page so the clicked row does not keep its hover tint in the picture.
+// Close-session friction, proposal 7: "+ Add a note" draws its "+" in an aria-hidden span, so
+// the browser (and a screen reader) calls the button "Add a note" — a step written that way
+// must find it, and the old full text keeps working.
+test('a control is found by the name the browser gives it, aria-hidden text left out', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    await tab.navigate(`data:text/html,${encodeURIComponent('<!doctype html><body style="margin:0"><button id=b onclick="window.hit=(window.hit||0)+1"><span aria-hidden="true">+</span> Add a note</button>')}`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) await new Promise((r) => setTimeout(r, 50));
+    await tab.evaluate(inPage(listLayers));
+    const { controls } = await tab.evaluate(inPage(listControls, {}));
+    assert.deepEqual(controls.map((c) => [c.label, c.spoken]), [['+ Add a note', 'Add a note']]);
+    const driver = makeDriver(tab, { width: 800, height: 600 });
+    await driver.perform({ do: 'click', target: { role: 'button', label: 'Add a note' } });
+    await driver.perform({ do: 'click', target: { role: 'button', label: '+ Add a note' } });
+    assert.equal(await tab.evaluate('window.hit'), 2);
+  } finally { b.close(); }
+});
+
 test('pointerAway leaves nothing hovered', { skip: !hasChrome && 'needs Chrome' }, async () => {
   const b = await openBrowser({ width: 800, height: 600 });
   try {

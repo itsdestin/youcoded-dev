@@ -294,6 +294,8 @@ def deck_data(spec, boxes):
              for st in spec['steps'] if not is_page(st)]
     for st, out in zip([x for x in spec['steps'] if not is_page(x)], steps):
         out.update(_answer_shape(st))
+        if st.get('alsoChanges'):
+            out['alsoChanges'] = list(st['alsoChanges'])   # every kind: page.js draws "Also changes" 
     every = all_themes(spec)
     tree = (spec.get('live') or {}).get('worktree', '')
     base = live_base(spec)

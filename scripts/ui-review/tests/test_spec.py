@@ -80,6 +80,18 @@ class SpecTests(unittest.TestCase):
             self.assertFalse(any('needs a highlight' in e for e in errors), (crop, errors))
         s['steps'][0]['crop'] = 'projectz'   # a typo of it is still refused
         self.assertTrue(any('unknown crop' in e for e in validate(s)[0]))
+    def test_also_changes_names_other_screens_in_short_words(self):
+        # Close-session friction, proposal 15: a change to a SHARED card ("In your lists") is a
+        # change to Session details too, and nothing on a slide could say so.
+        s = load_spec(write_spec(self.d)); s['steps'][0]['alsoChanges'] = ['Session details', 'Resume → Organize']
+        self.assertEqual(validate(s)[0], [])
+        s['steps'][0]['alsoChanges'] = 'Session details'
+        self.assertTrue(any('alsoChanges' in e and 'list' in e for e in validate(s)[0]))
+        s['steps'][0]['alsoChanges'] = ['a screen whose name runs on far too long for a list']
+        self.assertTrue(any('alsoChanges' in e and 'words' in e for e in validate(s)[0]))
+        s['steps'][0]['alsoChanges'] = ['The tags component']
+        self.assertTrue(any('banned word "component"' in e for e in validate(s)[0]))
+
     def test_a_single_run_shoot_screen_needs_no_highlight(self):
         # A shoot picture defaults to its own panel as the highlight, so — unlike a legacy crop
         # — one picture and no highlight is not an error.

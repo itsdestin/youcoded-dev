@@ -45,6 +45,19 @@ def page_count(spec):
     return sum(1 for st in spec['steps'] if not is_page(st))
 
 
+def group_by_theme(files, themes):
+    """The rendered pages of each theme, in page order: {theme: [file, …]}. A page file is named
+    `p<page>-<theme>-<W>x<H>.png`; the theme is matched whole (`youcoded` never takes
+    `youcoded-night`'s pages)."""
+    import re
+    out = {t: [] for t in themes}
+    for f in files:
+        for t in themes:
+            if re.fullmatch(rf'p\d+-{re.escape(t)}-\d+x\d+\.png', os.path.basename(f)):
+                out[t].append(f)
+    return out
+
+
 def preview(spec, sizes=None, themes=None, out=None, log=print):
     """Write one PNG per page x size x theme plus contact.png. Returns 0, 1 if the page logged
     an error while being shot (they are printed), or 2 if this machine has no Chrome.
@@ -120,6 +133,18 @@ def preview(spec, sizes=None, themes=None, out=None, log=print):
         log('could not build the contact sheet: ' + (m.stderr.strip() or f'magick exit {m.returncode}'))
         return 1
     log('contact: ' + sheet)
+    # One sheet per theme as well, the sizes across. WHY (close-session friction, proposal 11):
+    # 24 pages × 4 themes on one sheet came out 773px wide — unreadable, so every check needed
+    # single pages. A theme's own sheet is a quarter as wide for the same pages.
+    if len(themes) > 1:
+        for theme, files in group_by_theme(result['files'], themes).items():
+            if not files:
+                continue
+            one = os.path.join(out, f'contact-{theme}.png')
+            m = subprocess.run(['magick', 'montage', *files, '-tile', f'{len(sizes)}x',
+                                '-geometry', '+6+6', '-background', '#111', one], capture_output=True, text=True)
+            if m.returncode == 0:
+                log(f'contact ({theme}): ' + one)
     if result['errors']:
         log('the page logged an error while being shot:')
         for e in result['errors']:

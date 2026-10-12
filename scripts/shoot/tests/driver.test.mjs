@@ -92,3 +92,15 @@ test('the pointer is moved away after open steps unless the last pointer step wa
   assert.equal(pointerRestsOnClick([{ do: 'key', key: 'Escape' }]), false);
   assert.equal(pointerRestsOnClick([]), false);
 });
+
+// Close-session friction, proposal 20: a state that opens something only the new code has
+// (`chat/tags#complete` clicks Mark complete) failed on the before side by design, reported as
+// NOT TAKEN like a real failure. Marked `newIn: 'after'`, the before side skips it, saying so.
+import { splitForSide } from '../driver.mjs';
+
+test('a state new in the after side is skipped on the before side, and only there', () => {
+  const screens = [{ name: 'chat/tags' }, { name: 'chat/tags#complete', newIn: 'after' }];
+  assert.deepEqual(splitForSide(screens, 'before'), { take: [screens[0]], skip: [screens[1]] });
+  assert.deepEqual(splitForSide(screens, 'after'), { take: screens, skip: [] });
+  assert.deepEqual(splitForSide(screens, null), { take: screens, skip: [] });
+});

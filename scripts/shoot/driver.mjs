@@ -66,7 +66,9 @@ export const describe = (t) => `${t.role} ${t.labelStarts !== undefined ? `"${t.
  *  help Your assistant can…") and broke every test and open step that clicked it by name. */
 export function labelMatches(c, t) {
   if (c.role !== t.role) return false;
-  return t.labelStarts !== undefined ? typeof c.label === 'string' && c.label.startsWith(t.labelStarts) : c.label === t.label;
+  // `spoken` (explore-page.mjs): the name without aria-hidden text — the browser's own name.
+  const names = [c.label, c.spoken].filter((n) => typeof n === 'string');
+  return t.labelStarts !== undefined ? names.some((n) => n.startsWith(t.labelStarts)) : names.includes(t.label);
 }
 
 /** The screen mark a screen entry is checked by: its own `mark` when it names one, else its
@@ -75,6 +77,14 @@ export function labelMatches(c, t) {
  *  OTHER dialog's mark, which the state could only be photographed under by borrowing a prop. */
 export function markOf(screen) {
   return screen.mark || screen.name.split('#')[0];
+}
+
+/** The screens one side of a before/after takes, and the ones it skips: a state marked
+ *  `newIn: 'after'` opens something only the new code has, so the before side cannot show it
+ *  (close-session friction, proposal 20). `side` is 'before', 'after' or null (one run). */
+export function splitForSide(screens, side) {
+  if (side !== 'before') return { take: screens, skip: [] };
+  return { take: screens.filter((s) => s.newIn !== 'after'), skip: screens.filter((s) => s.newIn === 'after') };
 }
 
 const POINTER_STEPS = new Set(['click', 'double-click', 'right-click', 'hover', 'drag', 'scroll', 'type']);

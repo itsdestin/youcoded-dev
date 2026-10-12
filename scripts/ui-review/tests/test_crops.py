@@ -236,13 +236,51 @@ class ShootDensityAndRegionTests(unittest.TestCase):
         r = crop_images(spec, log=lambda *a: None)
         self.assertTrue(any('outside the close-up' in m for m in r['missing']), r['missing'])
 
-    def test_a_whole_surface_close_up_points_at_panel(self):
-        crop = 'settings/sound@130x50+555+255'   # the changed block fills ~74% of it
-        spec = load_spec(_shoot_spec(self.tmp, step_over={'crop': crop}))
+    def test_a_whole_surface_close_up_boxes_its_panel_instead_of_warning(self):
+        # Close-session friction, proposal 10: with no highlight written, a close-up of one
+        # screen whose change covers most of it boxes each run's own panel — no warning.
+        d = tempfile.mkdtemp()
+        for run, rect in (('before', None), ('after', (560, 260, 300, 160))):
+            shoot_run(os.path.join(d, 'runs', run), [{'name': 'settings/sound', 'theme': t, 'panel': PANEL, 'rect': rect} for t in ('midnight', 'light')])
+        crop = f'settings/sound@{PANEL["w"]}x{PANEL["h"]}+{PANEL["x"]}+{PANEL["y"]}'
+        spec = load_spec(_shoot_spec(d, step_over={'crop': crop}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['warnings'], [])
+        self.assertEqual(r['boxes']['S-1']['midnight']['after'], [0.0, 0.0, 100.0, 100.0])
+
+    def test_a_whole_surface_close_up_off_the_panel_still_points_at_panel(self):
+        d = tempfile.mkdtemp()
+        for run, rect in (('before', None), ('after', (20, 20, 100, 40))):
+            shoot_run(os.path.join(d, 'runs', run), [{'name': 'settings/sound', 'theme': t, 'panel': PANEL, 'rect': rect} for t in ('midnight', 'light')])
+        spec = load_spec(_shoot_spec(d, step_over={'crop': 'settings/sound@110x50+15+15'}))
         r = crop_images(spec, log=lambda *a: None)
         whole = [w for w in r['warnings'] if 'whole-surface' in w]
-        self.assertTrue(whole, r['warnings'])
-        self.assertTrue(all('"panel"' in w for w in whole), whole)
+        self.assertTrue(whole and all('"panel"' in w for w in whole), r['warnings'])
+
+    def test_a_panel_close_up_covers_the_panel_in_every_run_and_theme(self):
+        # WHY (close-session friction, proposal 9): a popup that changed size needed a close-up
+        # box worked out by hand from two manifests per theme. "<screen>@panel" is the union of
+        # that screen's panel in every run and theme, plus a 16px margin.
+        from deck.boxes import image_size
+        d = tempfile.mkdtemp()
+        for run, panel in (('before', {'x': 500, 'y': 312, 'w': 340, 'h': 277}), ('after', {'x': 460, 'y': 196, 'w': 420, 'h': 508})):
+            shoot_run(os.path.join(d, 'runs', run), [{'name': 'chat/close', 'theme': t, 'panel': dict(panel, x=panel['x'] + (9 if t == 'light' else 0)), 'scale': 1.5} for t in ('midnight', 'light')])
+        spec = load_spec(_shoot_spec(d, step_over={'crop': 'chat/close@panel', 'highlight': 'panel'}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        # x 460-16 .. max(840, 880)+9+16 ; y 196-16 .. 704+16
+        w, h = 905 - 444, 720 - 180
+        self.assertEqual(spec['steps'][0]['crop'], f'chat/close@{w}x{h}+444+180')
+        dst = os.path.join(spec['_base'], 'images', 'shoot', image_name(spec['steps'][0]['crop'], 'light', 'after'))
+        self.assertEqual(image_size(dst), (round(w * 1.5), round(h * 1.5)))
+
+    def test_a_panel_close_up_without_any_panel_is_missing_not_a_crash(self):
+        d = tempfile.mkdtemp()
+        shoot_run(os.path.join(d, 'runs', 'before'), [{'name': 'settings/sound', 'theme': 'midnight', 'ok': False, 'reason': 'not showing'}])
+        shoot_run(os.path.join(d, 'runs', 'after'), [{'name': 'settings/sound', 'theme': 'midnight', 'ok': False, 'reason': 'not showing'}])
+        spec = load_spec(_shoot_spec(d, step_over={'crop': 'settings/sound@panel'}, themes=['midnight']))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertTrue(any('no panel' in m for m in r['missing']), r['missing'])
 
     def test_any_short_run_name_may_be_used(self):
         spec = load_spec(_shoot_spec(self.tmp, runs={'round3': os.path.join(self.tmp, 'runs', 'before'),

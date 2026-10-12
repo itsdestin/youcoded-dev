@@ -64,6 +64,17 @@ export function listControls({ all = false } = {}) {
       || e.querySelector?.('img[alt]')?.getAttribute('alt') || e.querySelector?.('svg title')?.textContent;
     return t(v);
   };
+  // The name a screen reader hears: the same, but text inside `aria-hidden` parts left out
+  // (a "+" drawn in a hidden span before "Add a note"). WHY (close-session friction, proposal
+  // 7): a step written with the browser's own name, "Add a note", was "not on screen" because
+  // this tool's name was "+ Add a note". Controls carry both; a step may use either.
+  const spoken = (e) => {
+    if (!e.querySelector || !e.querySelector('[aria-hidden="true"]') || e.getAttribute('aria-label') || e.getAttribute('aria-labelledby')) return null;
+    const c = e.cloneNode(true);
+    for (const h of c.querySelectorAll('[aria-hidden="true"]')) h.remove();
+    const v = t(c.textContent).slice(0, 70);
+    return v || null;
+  };
   const state = (e) => {
     const s = [];
     if (e.disabled || e.getAttribute('aria-disabled') === 'true') s.push('disabled');
@@ -122,7 +133,8 @@ export function listControls({ all = false } = {}) {
         if (!(hit && hit.tagName === 'LABEL' && hit.control === e)) { covered++; continue; }
       }
     } else off = true;
-    rows.push({ e, role: role(e), label: name(e), state: state(e), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: Math.round(r.width), h: Math.round(r.height), off });
+    const label = name(e); const heard = spoken(e);
+    rows.push({ e, role: role(e), label, ...(heard && heard !== label ? { spoken: heard } : {}), state: state(e), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: Math.round(r.width), h: Math.round(r.height), off });
   }
   // The top layer's controls first (a menu's items are what a person looks at), each layer
   // in reading order: rows of 12 px, then left to right. Layers come from listLayers.
@@ -134,7 +146,7 @@ export function listControls({ all = false } = {}) {
   const seen = {};
   const controls = rows.map((r, i) => {
     const key = `${r.role}|${r.label}`; seen[key] = (seen[key] || 0) + 1;
-    return { n: i + 1, role: r.role, label: r.label, nth: seen[key], state: r.state, x: r.x, y: r.y, w: r.w, h: r.h, off: r.off, layer: r.layer };
+    return { n: i + 1, role: r.role, label: r.label, ...(r.spoken ? { spoken: r.spoken } : {}), nth: seen[key], state: r.state, x: r.x, y: r.y, w: r.w, h: r.h, off: r.off, layer: r.layer };
   });
   return { controls, covered, offscreen: all ? 0 : offscreen };
 }

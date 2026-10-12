@@ -42,6 +42,16 @@ class CliTests(unittest.TestCase):
         code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 0, err)
         page = open(os.path.join(self.d, 'fixture.html')).read()
         self.assertIn('<html lang="en" data-theme="light">', page)
+    def test_preview_groups_pages_by_theme_for_one_sheet_each(self):
+        # Close-session friction, proposal 11: one sheet of every page in every theme was
+        # unreadable; each theme gets its own. The theme is matched whole.
+        from deck.preview import group_by_theme
+        files = ['/o/p1-youcoded-1440x900.png', '/o/p1-youcoded-night-1440x900.png', '/o/p2-youcoded-1024x768.png', '/o/p2-midnight-1440x900.png']
+        self.assertEqual(group_by_theme(files, ['youcoded', 'youcoded-night', 'midnight']), {
+            'youcoded': ['/o/p1-youcoded-1440x900.png', '/o/p2-youcoded-1024x768.png'],
+            'youcoded-night': ['/o/p1-youcoded-night-1440x900.png'],
+            'midnight': ['/o/p2-midnight-1440x900.png']})
+
     def test_preview_without_chrome_refuses(self):
         # WHY this case lives in test_cli and not the render suite: CI must be able to run it
         # on a machine with no browser at all. PATH is emptied for the call, so `preview` sees

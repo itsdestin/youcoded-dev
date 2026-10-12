@@ -229,6 +229,12 @@ fi
 # so they run concurrently into separate logs and are reported in a fixed order
 # afterwards. Interleaving their stdout would make the output unreadable.
 LOGDIR="$(mktemp -d)"
+# The machine's load when the checks start and when they end, said in the summary.
+# WHY (close-session friction, proposal 18): a load failure read as a code failure until someone
+# thought to check how busy the machine was (load 36–49 on 32 threads in that round).
+load_now() { awk '{print $1}' /proc/loadavg 2>/dev/null || echo '?'; }
+THREADS="$(nproc 2>/dev/null || echo '?')"
+LOAD_START="$(load_now)"
 # Kept ONLY on a green run. A failing run moves its logs somewhere durable
 # below, because the transcript tail is 25 lines and a flake is unreportable
 # without the rest — on 2026-09-02 two tests failed here, passed on a re-run,
@@ -382,6 +388,17 @@ for key in types testtypes tests knip lint design invariants screens journeys; d
     # without dumping a full suite run into the transcript.
     sed 's/^/      /' "$LOGDIR/$key.log" | tail -25
     FAILED_KEYS+=("$key")
+    # A failed test run: rerun just its failed files, alone, and say what that showed
+    # (scripts/lib/verify-rerun.mjs). The check stays FAILED either way.
+    if [[ $key == tests ]]; then
+      mapfile -t RERUN < <(node "$ROOT/scripts/lib/verify-rerun.mjs" files "$LOGDIR/tests.log" 2>/dev/null)
+      if [[ ${#RERUN[@]} -gt 0 && ${#RERUN[@]} -le 20 ]]; then
+        echo "      rerunning the ${#RERUN[@]} failed file(s) alone (load now $(load_now) on $THREADS threads)…"
+        ( cd "$DESKTOP" && npx vitest run "${RERUN[@]}" ) >"$LOGDIR/tests-alone.log" 2>&1
+        [[ -n "$KEEP" ]] && cp "$LOGDIR/tests-alone.log" "$KEEP/tests-alone.log" 2>/dev/null
+        node "$ROOT/scripts/lib/verify-rerun.mjs" verdict "$LOGDIR/tests.log" "$LOGDIR/tests-alone.log" | sed 's/^/      /'
+      fi
+    fi
   fi
 done
 
@@ -393,6 +410,7 @@ if [[ -n "$KEEP" ]]; then
 fi
 
 echo ""
+echo "machine load: $LOAD_START at the start, $(load_now) at the end, on $THREADS threads (1-minute load average)"
 if [[ $FAILED -eq 0 ]]; then
   echo "OK — all checks passed."
   [[ $RUN_FULL -eq 0 && ${#REL[@]} -eq 0 ]] && echo "   NOTE: no test ran. Nothing changed under desktop/."

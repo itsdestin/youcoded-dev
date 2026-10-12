@@ -223,6 +223,9 @@
   const changedCard = st => !st.changed && !st.measured ? ''
     : `<section class="card"><h3>${ICON.change}What changed</h3>${st.changed ? `<p>${esc(st.changed)}</p>` : ''}${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
   const noticeCard = st => st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '';
+  // "Also changes" (close-session friction, proposal 15): the other screens a shared change
+  // reaches, listed with the notice so a yes here is a yes to all of them.
+  const alsoCard = st => st.alsoChanges && st.alsoChanges.length ? `<section class="card also"><h3>${ICON.eye}Also changes</h3><ul>${st.alsoChanges.map(x => `<li>${esc(x)}</li>`).join('')}</ul></section>` : '';
   const riskCard = st => st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '';
   // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
   // adds a Verdict column instead of always reserving one nobody has filled in yet.
@@ -261,12 +264,12 @@
     + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
     + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
   // The body of one step, in the order the cards are read.
-  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
-    : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + riskCard(st)
-    : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + riskCard(st)
-    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
-    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
-    : changedCard(st) + noticeCard(st) + riskCard(st);
+  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st);
 
   // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
   // does not exist. Decided per slide, because a deck may hold both kinds.
@@ -668,7 +671,11 @@
     const opts = { A: 'row-below', B: 'col-right stacked', C: 'col-right', D: 'row-below stacked' }; const score = {};
     step.classList.remove('compact-step');
     for (const k in opts) {
-      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant PICTURES need the full row (a decide step has only one picture, so it keeps the column)
+      // A side column needs real width; variant PICTURES need the full row (a decide step has only
+      // one picture, so it keeps the column) — except three or more TALL designs, which the row's
+      // cards below squeeze to ~180px each (close-session friction, proposal 16): beside a side
+      // column they get the stage's whole height, so the column is scored for them too.
+      if (opts[k].includes('col-right') && (c.clientWidth < 820 || (DECK.steps[cur].kind === 'choice' && !(n >= 3 && natH > natW)))) { score[k] = 0; continue; }
       if (n === 1 && opts[k].includes('stacked')) { score[k] = 0; continue; }                 // one picture: stacking means nothing
       if (DECK.steps[cur].kind === 'clip' && opts[k].includes('stacked')) { score[k] = 0; continue; }   // clips: side by side, or the two recordings can't be watched together
       c.className = 'content ' + opts[k]; const SW = stage.clientWidth - PAD, SH = stage.clientHeight - PAD; const stacked = opts[k].includes('stacked');
@@ -682,12 +689,21 @@
     // brings detail back). WHY (submit-ticket friction, proposal 10): every slide of a ~740px
     // popup shot at 1.5× scored ~40% side by side and stacked. Stacked layouts are not offered
     // to them, for the same reason.
-    const tall = n >= 2 && natH > natW;
+    // A CHOICE likewise (close-session friction, proposal 8): its designs are only compared side
+    // by side — stacked, a composite design (folded + opened) filled the width, the second sat
+    // under the answer bar, and only one could be seen.
+    const tall = n >= 2 && (natH > natW || DECK.steps[cur].kind === 'choice');
     if (tall) for (const k in opts) if (opts[k].includes('stacked')) score[k] = 0;
     if (tall) { best = 'A'; for (const k of ['C']) if (score[k] > score[best] * 1.05) best = k; }
     const floor = DECK.steps[cur].kind === 'clip' || tall ? 0.3 : 0.5;
     if (score[best] < floor) { c.className = 'content compact'; step.classList.add('compact-step'); s = Math.min((c.clientWidth - PAD) / w, 1); }
     else { c.className = 'content ' + opts[best]; s = Math.min(score[best], 1.5); }
+    // Three or more TALL designs open at the width that fills the row, not the height: fitted
+    // to the height they came out ~180-250px wide, readable only through the zoom (close-session
+    // friction, proposal 16). Side by side, their tops line up; the stage scrolls for the rest.
+    const wide3 = DECK.steps[cur].kind === 'choice' && n >= 3 && natH > natW && score[best] >= floor;
+    if (wide3) { const SW = stage.clientWidth - PAD; s = Math.min(Math.max(s, (SW - GAP * (n - 1)) / n / w), 1.5); }
+    document.body.dataset.fit = wide3 ? 'width' : '';
     $$('#inner img, #inner video').forEach(i => i.style.width = ((i.naturalWidth || i.videoWidth) * s * zoom) + 'px');
     $('#lvl').textContent = Math.round(zoom * 100) + '%';
     // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).

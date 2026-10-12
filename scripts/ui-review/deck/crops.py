@@ -279,14 +279,69 @@ def shoot_entry(run_dir, name, theme):
     return None
 
 
+PANEL_MARGIN = 16   # CSS px around the panel in a "<screen>@panel" close-up
+
+
+def panel_region(spec, screen):
+    """'WxH+X+Y' (CSS px) covering `screen`'s panel in EVERY run and theme of the deck, plus
+    PANEL_MARGIN, kept inside the picture; None when no run recorded a panel for it.
+    WHY (close-session friction, proposal 9): a popup that changed size between before and
+    after needed one close-up box covering both, worked out by hand from two manifests per
+    theme (Crème's panel sat 9px off the others)."""
+    boxes, limits = [], []
+    for run_dir in spec['runs'].values():
+        if not run_dir or not is_shoot_run(run_dir):
+            continue
+        for e in shoot_manifest(run_dir):
+            if e.get('name') == screen and e.get('ok') and e.get('panel'):
+                boxes.append(e['panel'])
+                if e.get('file') and os.path.exists(e['file']):
+                    w, h = image_size(e['file']); k = e.get('scale') or 1
+                    limits.append((w / k, h / k))
+    if not boxes:
+        return None
+    x0 = max(0, min(b['x'] for b in boxes) - PANEL_MARGIN)
+    y0 = max(0, min(b['y'] for b in boxes) - PANEL_MARGIN)
+    x1 = max(b['x'] + b['w'] for b in boxes) + PANEL_MARGIN
+    y1 = max(b['y'] + b['h'] for b in boxes) + PANEL_MARGIN
+    if limits:
+        x1 = min(x1, min(l[0] for l in limits)); y1 = min(y1, min(l[1] for l in limits))
+    return f'{int(x1 - x0)}x{int(y1 - y0)}+{int(x0)}+{int(y0)}'
+
+
+def _resolve_panel_crops(spec, missing):
+    """Rewrites every "<screen>@panel" crop in the deck (steps, choice variants, composite
+    pieces) to the region panel_region() finds, before anything is cut, so the picture names,
+    the boxes and the page all speak of one concrete region."""
+    def fix(crop, where):
+        if isinstance(crop, str) and crop.endswith('@panel'):
+            screen = crop[:-len('@panel')]
+            geo = panel_region(spec, screen)
+            if geo is None:
+                missing.append(f'{where}: "{crop}" — no panel recorded for {screen} in any run')
+                return crop
+            return f'{screen}@{geo}'
+        if isinstance(crop, list):
+            return [dict(p, crop=fix(p['crop'], where)) if isinstance(p, dict) else fix(p, where) for p in crop]
+        return crop
+    for st in spec['steps']:
+        if 'crop' in st:
+            st['crop'] = fix(st['crop'], st.get('id', '?'))
+        for v in st.get('variants') or []:
+            if 'crop' in v:
+                v['crop'] = fix(v['crop'], f'{st.get("id", "?")}/{v.get("id", "?")}')
+
+
 def crop_images(spec, log=print):
     # A deck whose every step is LIVE or WORDS-ONLY has no stills and names no `images` folder
     # — the very next line would KeyError on it before the loop below ever gets a chance to skip anything.
     if no_pictures(spec):
         return {'boxes': {}, 'missing': [], 'warnings': [], 'count': 0}
+    panel_missing = []
+    _resolve_panel_crops(spec, panel_missing)
     out_dir = os.path.join(spec['_base'], spec['images'])
     os.makedirs(out_dir, exist_ok=True)
-    boxes, missing, warnings, cut = {}, [], [], set()
+    boxes, missing, warnings, cut = {}, list(panel_missing), [], set()
     for st in spec['steps']:
         # Per slide, not per deck: one deck may hold a one-picture slide and a before/after one.
         runs = step_runs(spec, st)
@@ -316,6 +371,7 @@ def crop_images(spec, log=print):
         boxes[st['id']] = {}
         for theme in step_themes(spec, st):
             per_run = {}
+            panel_pct = {}   # each run's own panel inside a close-up — the default when "auto" covers it all
             for run in runs:
                 dst = os.path.join(out_dir, image_name(st['crop'], theme, run))
                 panel = None   # a shoot screen's own panel box, in PIXELS of the whole picture
@@ -357,6 +413,8 @@ def crop_images(spec, log=print):
                     # "panel" asked for on a close-up boxes the panel inside it (below).
                     panel = None if region else scaled_panel(entry)
                     region_panel = panel_in_region(entry, region) if region else None
+                    if isinstance(region_panel, dict) and os.path.exists(dst):
+                        panel_pct[run] = px_to_pct(region_panel, image_size(dst))
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
                 elif isinstance(hl, dict):
@@ -409,6 +467,13 @@ def crop_images(spec, log=print):
                 else:
                     size = image_size(paths[0])
                     share = box['w'] * box['h'] / (size[0] * size[1])
+                    if share > AUTO_WARN_FRACTION and 'highlight' not in st and len(panel_pct) == len(runs):
+                        # WHY (close-session friction, proposal 10): on a close-up of one screen a
+                        # change covering most of it is a redesign of that popup — every such slide
+                        # warned, then got "highlight": "panel" by hand (sixteen warnings in one
+                        # deck). With no highlight written, box each run's own panel quietly.
+                        boxes[st['id']][theme] = dict(panel_pct)
+                        continue
                     if share > AUTO_WARN_FRACTION:
                         warnings.append(f'{st["id"]}: the change covers {round(share * 100)}% of the crop in {theme} — whole-surface change: '
                                         f'use "highlight": "panel" (boxes the screen\'s own panel, on a close-up too) or a hand-placed "box"')

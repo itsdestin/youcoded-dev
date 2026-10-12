@@ -113,6 +113,11 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(sorted(d['images']['light']), ['after', 'before'])   # a picture per run, like a normal step
         self.assertEqual(d['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
 
+    def test_also_changes_reaches_the_page(self):
+        self.spec['steps'][0]['alsoChanges'] = ['Session details', 'Resume → Organize']
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        self.assertEqual(deck_data(self.spec, boxes)['steps'][0]['alsoChanges'], ['Session details', 'Resume → Organize'])
+
     def test_a_decide_step_with_a_picture_keeps_today_problem_and_proposal(self):
         # WHY (submit-ticket friction, proposal 20): validate accepted these on a picture decide
         # step, page.js draws their cards, but the build dropped them — submit-ticket-3#ST3-Q1

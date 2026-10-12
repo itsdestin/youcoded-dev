@@ -543,6 +543,9 @@ def banned_in(text):
     return [w for w in BANNED if re.search(r'(?<![\w-])' + re.escape(w) + r'(?![\w-])', low)]
 
 
+ALSO_WORDS_MAX = 6   # one screen name per entry, the way a person names it
+
+
 def _headline_and_words(st, sid, errors):
     """The two checks every step kind performs identically, verbatim, today.
 
@@ -555,6 +558,19 @@ def _headline_and_words(st, sid, errors):
     for k in TEXT_FIELDS:
         for w in banned_in(st.get(k)):
             errors.append(f'{sid}: {k} uses banned word "{w}"')
+    # `alsoChanges`: the other screens a SHARED change reaches, by the names a person knows them
+    # by. WHY (close-session friction, proposal 15): changing the close prompt's shared card
+    # changed Session details on four surfaces, and no slide could say "this also changes X".
+    also = st.get('alsoChanges')
+    if also is not None:
+        if not isinstance(also, list) or not also or not all(isinstance(x, str) and x.strip() for x in also):
+            errors.append(f'{sid}: alsoChanges is a list of screen names, e.g. ["Session details", "Resume → Organize"]')
+        else:
+            for x in also:
+                if word_count(x) > ALSO_WORDS_MAX:
+                    errors.append(f'{sid}: alsoChanges "{x}" is {word_count(x)} words — a screen name, {ALSO_WORDS_MAX} at most')
+                for w in banned_in(x):
+                    errors.append(f'{sid}: alsoChanges uses banned word "{w}"')
 
 
 def box_errors(box, sid):

@@ -25,17 +25,17 @@ import { fileURLToPath } from 'node:url';
 import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve, setShotScale, shotScale } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
-import { makeDriver, markOf, openSteps, pointerRestsOnClick, stepText } from './driver.mjs';
+import { makeDriver, markOf, openSteps, pointerRestsOnClick, splitForSide, stepText } from './driver.mjs';
 import { ensureOfficeEditor } from './office-editor.mjs';
 import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
+import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
 // Destin, 2026-09-24: the two hardest themes (wallpaper, glass) are the default.
 const DEFAULT_THEMES = ['meadow-mist', 'halftone-dimension'];
-const ALL_THEMES = ['midnight', 'light', 'halftone-dimension', 'meadow-mist', 'creme', 'dark'];
 const CHECK_THEME = 'light';
 // Two pictures are "the same" when a 480-px-wide grey copy differs by under 0.01% on average (dim text on dark themes moves little).
 // WHY this fine: states that differ by one line of text (OpenRouter's 'key expired' vs
@@ -79,7 +79,8 @@ function readHelp() { return spawnSync('sed', ['-n', '2,18p', fileURLToPath(impo
 // and --contrast (its report measures element boxes). SHOOT_SCALE in the environment wins.
 setShotScale(process.env.SHOOT_SCALE ? Number(process.env.SHOOT_SCALE) : (opt.check || opt.collect || opt.contrast) ? 1 : 1.5);
 
-const themes = opt.check ? [CHECK_THEME] : opt.themes === 'all' ? ALL_THEMES : opt.themes ? opt.themes.split(',') : DEFAULT_THEMES;
+// `--themes all` is filled in from the app itself once its first tab is open (themes.mjs).
+let themes = opt.check ? [CHECK_THEME] : opt.themes === 'all' ? null : opt.themes ? opt.themes.split(',') : DEFAULT_THEMES;
 const width = opt.width; const height = opt.height ?? (width < 640 ? 844 : 900);
 const log = (m) => console.error(`[shoot] ${m}`);
 // Where this run's Office editor listens (office-editor.mjs) — told to the app as ?officePort=.
@@ -92,7 +93,7 @@ function defaultCheckout() {
 }
 
 // ─── One side: build, serve, list, shoot ─────────────────────────────────────
-async function side(checkout, outDir, pick) {
+async function side(checkout, outDir, pick, which = null) {
   const dist = await ensureBuild(checkout, log);
   const server = await serve(dist);
   const base = `http://127.0.0.1:${server.port}/index.html`;
@@ -106,11 +107,19 @@ async function side(checkout, outDir, pick) {
       await t.prepare({ theme: 'light', width: 1440, height: 900 });
       await t.navigate(`${base}?mode=workbench&child=1&latency=0`);
       screens = await waitFor(t, 'window.__youcodedScreens && window.__youcodedScreens.list()', 20_000);
+      // Every theme this app can show: its built-in themes + the practice backend's community ones.
+      if (!themes) {
+        themes = allThemes(builtinThemeSlugs(checkout), await t.evaluate(COMMUNITY_THEMES, 10_000).catch(() => []));
+        log(`--themes all: ${themes.length} themes (${themes.join(', ')})`);
+      }
     } finally { probe.close(); }
     if (!screens) return { missingList: true, results: [], server };
-    const chosen = pick(screens);
+    const picked = pick(screens);
+    // A state marked `newIn: 'after'` is skipped on the before side (driver.mjs splitForSide).
+    const { take: chosen, skip } = splitForSide(picked, which);
+    for (const s of skip) log(`skipped on the ${which} side: ${s.name} (new in the after side)`);
     if (opt.list) return { screens, results: [], server };
-    if (!chosen.length) return { screens, results: [], server, empty: true };
+    if (!chosen.length) return { screens, results: [], server, empty: !skip.length };
     const jobs = chosen.flatMap((s) => themes.map((theme) => ({ screen: s, theme })));
     // The Office editor, for the screens that show one (office-editor.mjs says why shoot owns it).
     if (chosen.some((s) => s.tags.includes('office'))) {
@@ -415,7 +424,7 @@ if (opt.before || opt.after) {
   for (const which of ['before', 'after']) {
     const checkout = resolveCheckout(opt[which]);
     const out = join(outDir, which); mkdirSync(out, { recursive: true });
-    const r = await side(checkout, out, picker);
+    const r = await side(checkout, out, picker, which);
     if (r.missingList) die(`the ${which} side (${checkout}) has no screen list yet — until phase 1 of shoot is merged there, compare with scripts/ui-review/record-pair.sh / montage-ab.sh`);
     if (r.empty) die(`nothing matched on the ${which} side — no pictures taken`);
     results[which] = r;

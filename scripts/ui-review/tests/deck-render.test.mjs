@@ -1068,3 +1068,74 @@ for run, rect in (('before', None), ('after', (500, 300, 100, 40))):
     }
   } finally { srv.kill(); }
 });
+
+// Close-session friction, proposals 8 and 16: a choice's designs are compared side by side.
+// Composite designs (folded + opened) used to stack full width with the second under the answer
+// bar; three tall designs were fitted to the height and came out ~250px wide.
+async function choiceDeck(mode) {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-choice-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  const mk = spawnSync('python3', ['-c', `import sys, os; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import shoot_run
+shoot_run(os.path.join(${JSON.stringify(tmp)}, 'sruns', 'after'), [{'name': n, 'theme': t, 'rect': (500, 300, 100, 40), 'scale': 1.5} for n in ('a/x', 'a/y', 'a/z') for t in ('midnight', 'light')])`], { encoding: 'utf8' });
+  assert.equal(mk.status, 0, mk.stderr);
+  const s = JSON.parse(readFileSync(spec, 'utf8'));
+  s.runs = { after: join(tmp, 'sruns', 'after') };
+  const ids = mode === 'composite' ? ['x', 'y'] : ['x', 'y', 'z'];
+  s.steps = [{ id: 'C-1', surface: 'Popup', path: 'Settings', headline: 'Which design?', variants: ids.map((id) => ({ id, label: `Design ${id}`, summary: 'A short summary of this design.',
+    crop: mode === 'composite' ? [{ crop: `a/${id}@420x500+500+100`, label: 'Folded' }, { crop: `a/${id}@420x500+500+100`, label: 'Open' }] : `a/${id}@420x740+500+100` })) }];
+  writeFileSync(spec, JSON.stringify(s));
+  const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr + r.stdout);
+  return spec;
+}
+async function measureChoice(spec, w, h) {
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), w, h);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    await sleep(300);
+    assert.deepEqual(c.errors, []);
+    return JSON.parse(await c.evaluate(`JSON.stringify({ layout: document.body.dataset.layout, imgs: [...document.querySelectorAll('#inner img')].map((i) => { const r = i.getBoundingClientRect(); return { top: Math.round(r.top), width: Math.round(r.width) }; }) })`));
+  } finally { c.close(); srv.kill(); }
+}
+
+test('two composite designs on a choice sit side by side, not stacked', async () => {
+  const spec = await choiceDeck('composite');
+  for (const [w, h] of [[1440, 900], [1024, 768]]) {
+    const m = await measureChoice(spec, w, h);
+    assert.notEqual(m.layout, 'compact', `${w}x${h}`);
+    assert.equal(m.imgs.length, 2);
+    assert.equal(m.imgs[0].top, m.imgs[1].top, `${w}x${h}: side by side ${JSON.stringify(m.imgs)}`);
+  }
+});
+
+test('three tall designs on a choice open at the width that fills the row', async () => {
+  const spec = await choiceDeck('tall');
+  const m = await measureChoice(spec, 1440, 900);
+  assert.equal(m.imgs.length, 3);
+  assert.ok(m.imgs.every((i) => i.top === m.imgs[0].top), JSON.stringify(m.imgs));
+  assert.ok(m.imgs.every((i) => i.width >= 330), `each design at least 330px wide: ${JSON.stringify(m.imgs)}`);
+});
+
+// Close-session friction, proposal 15: a slide names the other screens a shared change reaches.
+test('a slide lists the other screens its change also reaches', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-also-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim();
+  const s = JSON.parse(readFileSync(spec, 'utf8')); s.steps[0].alsoChanges = ['Session details', 'Resume → Organize']; writeFileSync(spec, JSON.stringify(s));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    const got = JSON.parse(await c.evaluate(`JSON.stringify({ head: document.querySelector('.card.also h3')?.textContent, items: [...document.querySelectorAll('.card.also li')].map((l) => l.textContent) })`));
+    assert.deepEqual(got, { head: 'Also changes', items: ['Session details', 'Resume → Organize'] });
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});
