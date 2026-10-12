@@ -372,6 +372,12 @@ friend rows and list", "Games: managing a friend".)
   at the right**.
 - A **short error line** under a field or on an item is the notice box in miniature: one line
   of normal grey text in a small red-tinted box with a red border. Never red text.
+- **An error with a button is built with `<ErrorState>`** — it IS this notice box (red tint,
+  red border), with its buttons inside at the right; never hand-draw one. The retry button
+  reads **"Try again"**. "We don't know why" errors keep a bold title (normal colour) and put
+  Report bug / Diagnose on their own line at the bottom right. The box lines up with the
+  content it sits in, and a failed list spans that list's width. (Decisions "Error notices:
+  …", error-notices-1.)
 - Errors follow `docs/error-message-standards.md`.
 
 ### Empty states
