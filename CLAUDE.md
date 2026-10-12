@@ -67,7 +67,7 @@ Commands, cleanup recipes and recovery: `docs/workspace-workflows.md` → Git, w
 
 Annotate non-trivial code edits with a **WHY** comment. Check cross-cutting consequences and desktop/Android parity after IPC changes.
 
-Never invent an error cause. Use `<ErrorState>`: specific accurate detail + Retry for recoverable failures; general non-committal errors with Report bug and Diagnose with Claude for unknown causes. See `docs/error-message-standards.md`.
+Never invent an error cause. Use `<ErrorState>` (`components/ui/states.tsx`), which draws the design guide's red-tinted notice box with its buttons inside at the right: specific accurate detail + Try again for recoverable failures; general non-committal errors with Report bug and Diagnose for unknown causes. See `docs/error-message-standards.md`.
 
 ## Workspace Setup
 
