@@ -591,6 +591,16 @@ seen-on is always n/a here.
       looks exactly like finished work to a pruner
       `n/a` `needs-verify` `checked 2026-09-20`
 
+- [ ] Tooling that gets sessions to actually use the design guide and meet its standards — a
+      conventions list per part of a screen before building, a design-lint rule for hand-built rows
+      and problem lines, a check that popup titles name the popup, live deck panes that take
+      practice settings, and shoot sizing its browsers by the machine's load (proposals 21–25 in
+      the UI element review's close-session friction notes). Deferred by Destin, 2026-10-12: "we
+      will revisit tooling to actually get sessions to use the guide and meet standards later. for
+      now, we should just continue to focus on current app design and the ui guide."
+      → docs/active/design/2026-09-23-ui-element-review/close-session-friction.md
+      `n/a` `parked` `checked 2026-10-12`
+
 ## knowledge
 
 - [ ] Nine roadmap items point at reports whose proof no longer matches the code, so each may be

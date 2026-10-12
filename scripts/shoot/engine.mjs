@@ -217,7 +217,12 @@ async function launchBrowser(width, height, record) {
   // only: an attached dev window (attachPage) is a real app and keeps its windows.
   conn.onEvent((m) => {
     const t = m.method === 'Target.targetCreated' ? m.params.targetInfo : null;
-    if (t && t.type === 'page' && t.openerId) conn.send('Target.closeTarget', { targetId: t.targetId }).catch(() => {});
+    if (t && t.type === 'page' && t.openerId) {
+      // Say so (small-fixes-1): a screen that opens a page is a bug at its source — the practice
+      // app should never open one — and a silent close hid which screen did it.
+      console.error(`[shoot] closed a page a screen opened: ${t.url || '(no address yet)'}`);
+      conn.send('Target.closeTarget', { targetId: t.targetId }).catch(() => {});
+    }
   });
   await conn.send('Target.setDiscoverTargets', { discover: true });
   // WHY the catch: Chrome's helper processes outlive the SIGKILL by a beat and

@@ -258,7 +258,12 @@ Added after round 3:
 20. **shoot: a state can be marked after-only** (`newIn: 'after'`) so a before run skips it
     instead of reporting failures (round 3 friction 3).
 
-Added after the follow-up rounds (4–6):
+Added after the follow-up rounds (4–6) — **deferred, 2026-10-12.** Destin: "we will revisit
+tooling to actually get sessions to use the guide and meet standards later. for now, we should
+just continue to focus on current app design and the ui guide." Proposals 21–25, and any similar
+"make sessions follow the guide" tooling, wait for that revisit; filed as one parked item in
+`docs/roadmap/dev-workspace.md` (rigs).
+
 21. **Brief: a conventions list per part, before building** — for every piece of a screen (title,
     container, row, row actions, problems, scrolling, footer) name its guide section or decisions row
     and a real surface; anything left uncovered is a deck question, never a new style. Put the list

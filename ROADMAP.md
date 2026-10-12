@@ -71,7 +71,7 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 32 | 4 | 11 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 32 | 4 | 12 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 42 | 19 | 3 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |

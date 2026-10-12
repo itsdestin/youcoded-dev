@@ -103,8 +103,9 @@ To start a folder over, delete it first.
   its status pill, a button beside two lines of text): every part on the first part's line shares one
   centre line (within 1px). Words directly in the row count as a part; a wrapper holding one element is
   looked through to it. Mark the row `data-centres-agree="<name>"` (the Games name + pill, friend rows,
-  your name + status, a detail page's name + status, Specialists' label + warnings). Prints `PARTS`.
-  Settings → Local models' "Local engine" + pill is left unmarked: it is 1.4px off at 1.5× (2026-10-05).
+  your name + status, a detail page's name + status, Specialists' label + warnings, Settings → Local
+  models' "Local engine" + pill — 1.4px off at 1.5× until 2026-10-12, when the pill moved out of the
+  title's line of text onto a flex row). Prints `PARTS`.
 - **The Office editor** — Office screens need its server. Port 4717 is used when free or already this
   checkout's; when another worktree holds it, shoot starts this checkout's own on a free port and tells
   the app with `?officePort=` (it never stops someone else's).
