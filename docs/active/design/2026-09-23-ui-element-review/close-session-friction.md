@@ -174,9 +174,12 @@ Pin to top and Mark complete".
    ast-grep rule flagging a raw window `keydown` Enter that calls a confirm (friction 8).
 3. **Guide: an action popup that also edits** (close, send, resume): whether its editing cards
    start open or folded, and that edits are pending until the action — from CS-2's answer.
+   **Answered:** open (close-session-1#CS-2) — now only the guide wording is left.
 4. **Guide: a "don't ask again" control** — where it sits and its shape (friction 11).
 5. **Guide: the label rule's switch-card exception** — say whether a card of yes/no rows under a
    labelled card needs its own label (Session details and this prompt have none).
+   **Answered:** it does — "In your lists" (close-session-2#CS2-2, #CS2-5); no exception to
+   write, only the example to add.
 6. **MAP: a "Session details, tags and the close prompt" row** — `tags/SessionDetails.tsx`,
    `CloseSessionPrompt.tsx`, `useTagRegistry`, `useSessionMeta`, their tests and screens
    (friction 1).
