@@ -1,0 +1,82 @@
+{
+  "title": "Error notices — round 2: spacing, the Tags label, full width, \"Try again\"",
+  "key": "error-notices-2",
+  "out": "error-notices-2.review.html",
+  "images": "images/error-notices-2",
+  "runs": {
+    "before": "runs/error-notices-2/before",
+    "after": "runs/error-notices-2/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": ["meadow-mist", "halftone-dimension", "light", "midnight"],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "EN2-1",
+      "surface": "Skills drawer",
+      "path": "Chat → type / → the skills list fails to load",
+      "crop": "chat/skills#load-failed@1440x150+0+320",
+      "headline": "The skills error now leaves a gap under the filters, lines up with them, and centres its words beside Try again.",
+      "changed": "Round 1's box touched the line under the filter chips, sat further in than the chips, and its sentence hung at the top while the button sat lower. Now it starts where the skill cards would (same edges, same gap under the chips), and the words sit level with the button.",
+      "notice": "The centring is made in the shared notice box, so every one-sentence notice in the app gets it (the next slides show some). The button reads \"Try again\" everywhere, as you picked.",
+      "risk": "A notice with a title AND a sentence still keeps its buttons level with the title, as approved before."
+    },
+    {
+      "id": "EN2-2",
+      "surface": "Resume session",
+      "path": "Resume session → the conversation list fails to load",
+      "crop": "chat/resume#load-failed@1000x260+220+108",
+      "headline": "Resume's error now has the same left and right margins as the search box and filters above it.",
+      "changed": "The box ran edge to edge of the list column; it now lines up with the search box.",
+      "notice": "Only this list needed it: most other places already sit inside padded cards or rows."
+    },
+    {
+      "id": "EN2-3",
+      "surface": "Session details",
+      "path": "Status bar → tags → your tags fail to load",
+      "crop": "chat/tags#load-failed@440x340+500+230",
+      "headline": "Session details keeps the \"Tags\" label; only the card under it becomes the notice.",
+      "changed": "Round 1 dropped the label along with the card. The label now stays and the notice takes the card's place, as your guide says for a failed card.",
+      "notice": "The close prompt shows the same Tags card, so it gets this too."
+    },
+    {
+      "id": "EN2-4",
+      "surface": "Projects → Files",
+      "path": "Projects → a project → Files → a folder the computer won't open",
+      "crop": "projects/files/folder/Locked@1100x200+170+380",
+      "headline": "A folder that can't be opened shows its notice across the whole file list.",
+      "changed": "The narrow centred card is now full width, the width of the file list it replaces.",
+      "notice": "The same applies when the whole project's file search fails."
+    },
+    {
+      "id": "EN2-5",
+      "surface": "Games → Friends while offline",
+      "path": "Games → no internet connection",
+      "crop": "chat/games#offline@420x160+1010+120",
+      "headline": "The centring reaches notices you approved before: Games' offline box now has its Try again level with the words.",
+      "changed": "Before, Try again sat at the top right while the three-line sentence ran down beside it; now it sits in the middle of the box's height.",
+      "notice": "Every notice in the app with a sentence and a button but no title does the same (for example a failed Marketplace install)."
+    },
+    {
+      "id": "EN2-6",
+      "surface": "Your library",
+      "path": "Marketplace → Your library → your plugins fail to load",
+      "crop": "library#load-failed@1440x200+0+0",
+      "headline": "A full-screen error with the new \"Try again\" wording and the centred words.",
+      "changed": "\"Retry\" now reads \"Try again\", and the sentence is level with the button.",
+      "notice": "Same in about 60 other places. Also changed to \"Try again\": the first-run \"Setup stopped\" card, the crash screen, the \"may be stuck\" banner and Model providers' load error, which now uses the shared box."
+    },
+    {
+      "id": "EN2-7",
+      "surface": "Settings → Specialists",
+      "path": "Settings → Assistant settings → Specialists → the tiers fail to load",
+      "crop": "settings/assistant/specialists#load-failed@820x300+310+100",
+      "headline": "Errors inside a setting's card change only their button word; their slim box was already centred.",
+      "changed": "\"Retry\" → \"Try again\".",
+      "notice": "Nothing else moves here, which is why it is shown: the spacing fix leaves already-approved layouts alone."
+    }
+  ]
+}
