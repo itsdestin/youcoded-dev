@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -132,4 +132,39 @@ test('a page a tab opens is closed, and the tab stays visible with frames runnin
     const frames = await tab.evaluate('new Promise((r) => { let f = 0; const go = () => { f++; requestAnimationFrame(go); }; requestAnimationFrame(go); setTimeout(() => r(document.visibilityState + ":" + (f > 2)), 500); })', 5000);
     assert.equal(frames, 'visible:true');
   } finally { pool.close(); }
+});
+
+// WHY (2026-10-12, verify under load): several sessions shoot from ONE checkout. When one of them
+// rebuilt the photo-only copy (its source had changed), `--emptyOutDir` emptied the folder the
+// others were serving: their next page load got index.html instead of a script, screens missed
+// their mark ("its mark is not on the page"), and a run crashed on ENOENT reading index.html.
+// Each build now lands in a folder of its own that nothing empties while a run may use it, and
+// the server answers a vanished file with an error instead of crashing.
+import { sweepOldBuilds } from '../engine.mjs';
+
+test('a file that vanishes under the server is an error answer, not a crash', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'youcoded-shoot-serve-'));
+  writeFileSync(join(dir, 'index.html'), '<p>x');
+  const server = await serve(dir);
+  try {
+    rmSync(join(dir, 'index.html'));
+    const r = await fetch(`http://127.0.0.1:${server.port}/index.html`);
+    assert.ok(r.status >= 400, `status ${r.status}`);
+    writeFileSync(join(dir, 'index.html'), '<p>back');
+    assert.equal(await (await fetch(`http://127.0.0.1:${server.port}/index.html`)).text(), '<p>back', 'the server is still up');
+  } finally { server.close(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('old builds are swept; the current one and any recently used are kept', () => {
+  const home = mkdtempSync(join(tmpdir(), 'youcoded-shoot-builds-'));
+  try {
+    for (const d of ['dist-old', 'dist-recent', 'dist-current', 'dist']) mkdirSync(join(home, d));
+    const hoursAgo = (h) => new Date(Date.now() - h * 3_600_000);
+    utimesSync(join(home, 'dist-old'), hoursAgo(9), hoursAgo(9));
+    utimesSync(join(home, 'dist'), hoursAgo(9), hoursAgo(9));
+    utimesSync(join(home, 'dist-recent'), hoursAgo(1), hoursAgo(1));
+    utimesSync(join(home, 'dist-current'), hoursAgo(9), hoursAgo(9));
+    sweepOldBuilds(home, join(home, 'dist-current'));
+    assert.deepEqual(['dist-old', 'dist-recent', 'dist-current', 'dist'].filter((d) => existsSync(join(home, d))), ['dist-recent', 'dist-current']);
+  } finally { rmSync(home, { recursive: true, force: true }); }
 });

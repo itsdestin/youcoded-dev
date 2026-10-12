@@ -7,7 +7,7 @@
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { cpus, loadavg, tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -65,28 +65,50 @@ function fingerprint(desktop) {
   return h.digest('hex');
 }
 
-/** Builds (or reuses) the photo-only copy for a checkout. Returns its folder. */
+// How long a finished build may sit unused before a later build sweeps it. Far longer than any
+// run (a full `shoot --check` under load is ~4 minutes); a run touches its build when it starts.
+const BUILD_KEEP_MS = 6 * 3_600_000;
+
+/** Removes old photo-only builds in `home` (and the pre-2026-10-12 single `dist` folder), never
+ *  `current` and never one used within BUILD_KEEP_MS. Never throws. */
+export function sweepOldBuilds(home, current) {
+  for (const name of readdirSync(home)) {
+    const p = join(home, name);
+    if (p === current || !(name === 'dist' || name.startsWith('dist-'))) continue;
+    try { if (Date.now() - statSync(p).mtimeMs > BUILD_KEEP_MS) rmSync(p, { recursive: true, force: true }); } catch { /* in use or gone */ }
+  }
+}
+
+/** Builds (or reuses) the photo-only copy for a checkout. Returns its folder.
+ *
+ *  WHY a folder per build, never emptied (2026-10-12): several sessions shoot from ONE checkout.
+ *  The build used to be one `dist` folder rebuilt in place with `--emptyOutDir`, so when one
+ *  session's source edit triggered a rebuild, every other run serving that folder lost its files
+ *  mid-run — under load its screens missed their marks ("its mark is not on the page") and one
+ *  run crashed reading index.html. A build now goes to `dist-<fingerprint>`, written to a temporary
+ *  name and renamed into place when complete, and is only swept hours after its last use. */
 export async function ensureBuild(checkout, log = () => {}) {
   const desktop = join(checkout, 'desktop');
   const key = createHash('sha1').update(desktop).digest('hex').slice(0, 12);
   const home = join(CACHE, 'builds', key); mkdirSync(home, { recursive: true });
-  const dist = join(home, 'dist'); const stampFile = join(home, 'stamp');
   const want = fingerprint(desktop);
-  if (existsSync(join(dist, 'index.html')) && existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want) return dist;
+  const dist = join(home, `dist-${createHash('sha1').update(want).digest('hex').slice(0, 12)}`);
+  const ready = () => existsSync(join(dist, 'index.html'));
+  const use = () => { try { const now = new Date(); utimesSync(dist, now, now); } catch { /* fine */ } return dist; };
+  if (ready()) return use();
 
-  // One build at a time per checkout: a second `shoot` waits instead of racing the same folder.
+  // One build at a time per checkout: a second `shoot` waits instead of building the same thing twice.
   const lock = join(home, 'lock');
   for (let t0 = Date.now(); ; await sleep(200)) {
     try { mkdirSync(lock); break; } catch {
       if (Date.now() - t0 > 120_000) { rmSync(lock, { recursive: true, force: true }); continue; } // a crashed builder's lock
-      if (existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want && existsSync(join(dist, 'index.html'))) return dist;
+      if (ready()) return use();
     }
   }
   try {
-    // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start
-    // together in verify.sh; the second waited for the first's build, then rebuilt anyway —
-    // and --emptyOutDir wiped the folder the first was already serving (ENOENT index.html).
-    if (existsSync(join(dist, 'index.html')) && existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want) return dist;
+    // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start together
+    // in verify.sh; the second waited for the first's build, then built again for nothing.
+    if (ready()) return use();
     log(`building the photo-only copy of ${checkout}`);
     const t0 = Date.now();
     const vite = join(desktop, 'node_modules', 'vite', 'bin', 'vite.js');
@@ -94,15 +116,18 @@ export async function ensureBuild(checkout, log = () => {}) {
     // NODE_ENV and any VITE_* from the caller's shell are dropped: vitest's NODE_ENV=test
     // turns a build into a development build, and a stray VITE_ flag changes what ships.
     const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('VITE_') && k !== 'NODE_ENV'));
+    const tmp = `${dist}.tmp-${process.pid}`;
+    rmSync(tmp, { recursive: true, force: true });
     await new Promise((res, rej) => {
-      const p = spawn(process.execPath, [vite, 'build', '--outDir', dist, '--emptyOutDir', '--logLevel', 'error'], { cwd: desktop, env: { ...env, VITE_WORKBENCH: '1', VITE_SHOOT: '1' }, stdio: ['ignore', 'ignore', 'pipe'] });
+      const p = spawn(process.execPath, [vite, 'build', '--outDir', tmp, '--emptyOutDir', '--logLevel', 'error'], { cwd: desktop, env: { ...env, VITE_WORKBENCH: '1', VITE_SHOOT: '1' }, stdio: ['ignore', 'ignore', 'pipe'] });
       let err = ''; p.stderr.on('data', (d) => { err += d; });
       const timer = setTimeout(() => { p.kill(); rej(new Error('build took over 3 minutes')); }, 180_000);
       p.on('close', (code) => { clearTimeout(timer); code === 0 ? res() : rej(new Error(`build failed:\n${err.slice(-2000)}`)); });
     });
-    writeFileSync(stampFile, want);
+    renameSync(tmp, dist);   // complete or absent — a reader never sees a half-written build
     log(`built in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-    return dist;
+    sweepOldBuilds(home, dist);
+    return use();
   } finally { rmSync(lock, { recursive: true, force: true }); }
 }
 
@@ -113,11 +138,19 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
 /** Serves a folder on a port the computer picks. WHY: fixed ports collided between sessions. */
 export function serve(dist) {
   const server = createServer((req, res) => {
-    const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    let file = resolve(dist, '.' + (path === '/' ? '/index.html' : path));
-    if (!file.startsWith(dist) || !existsSync(file) || statSync(file).isDirectory()) file = join(dist, 'index.html');
-    res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'max-age=3600' });
-    res.end(readFileSync(file));
+    // WHY the catch: a file that vanished under the server (a build swept or rebuilt by another
+    // session) threw out of this handler and took the whole run down. It is an error answer now.
+    try {
+      const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+      let file = resolve(dist, '.' + (path === '/' ? '/index.html' : path));
+      if (!file.startsWith(dist) || !existsSync(file) || statSync(file).isDirectory()) file = join(dist, 'index.html');
+      const body = readFileSync(file);
+      res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'max-age=3600' });
+      res.end(body);
+    } catch (e) {
+      res.writeHead(500, { 'content-type': 'text/plain' });
+      res.end(`shoot could not read the file: ${e.message}`);
+    }
   });
   return new Promise((res) => server.listen(0, '127.0.0.1', () => res({ port: server.address().port, close: () => server.close() })));
 }

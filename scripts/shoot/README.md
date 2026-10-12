@@ -79,7 +79,9 @@ To start a folder over, delete it first.
   the state photographed, not the spinner before it.
 - **Hover pictures need no `SHOOT_SCALE=1`** since 2026-10-06 (below): a hover at 1.5× lands on the
   row pointed at.
-- **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes), serves
+- **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes; each build in a
+  folder of its own, renamed into place when complete and never emptied while a run may serve it — several
+  sessions shoot from one checkout, and an in-place rebuild once pulled the files from under the others), serves
   it on a free port, and runs a few headless Chromes with private tabs sized from the core
   count. It waits for the screen to be still — no fetch in flight, animations done, images
   loaded — never a fixed time; every browser call has a time limit; a crashed run's browsers are
