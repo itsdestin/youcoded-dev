@@ -177,6 +177,40 @@ Pin to top and Mark complete".
 | 13 | Guide + ProjectHero: controls keep the card's margins | Guide → Card levels; ProjectHero's description box and "+ Add a description" no longer hang into the margin. |
 | 14 | Guide: the plain multi-line field | Guide → Buttons (beside "a text box with its own action"). |
 
+## Follow-ups rounds 4–6 (2026-10-12/13) — why round 5 invented styling
+
+Destin on close-session-5#CS5-2: "you're doing a bunch of unique styling here again instead of
+following the conventions we've already established. the fade is weird, the buttons for each file
+are weird, etc. the header is too long".
+
+**What happened.** Round 5 restyled "Unsaved changes" by composing card classes by hand — a nested
+box per file built from `CARD_LEVEL_2` plus my own flex row, a loose grey note under the name, the
+file's buttons as a separate cluster, the old sentence-title kept — instead of starting from the
+shared pieces that already do each job: the setting row (`SettingRow`) for "a name, a line, a
+control", the slim notice box (`Callout compact`) for "a problem on an item, with its buttons", and
+the one-line title rule. The guide names all three; I opened Games' friends card as a reference for
+the *container* and then built the *rows* freehand. The fade complaint was the same root: a body
+cut mid-box in a too-short (340-point) popup, not a new fade — but it looked like one.
+
+**Why the tools didn't stop it.**
+1. The brief named references for the screen, not for each *part* of it; I satisfied "two or three
+   references" at the popup level and invented below it.
+2. Nothing flags a hand-built row: `design lint` catches raw colours and arbitrary sizes, not "a
+   `<li>` with a name, a hint and buttons that is not a `SettingRow`".
+3. A title written as a sentence ("6 files have unsaved changes.") passes every check.
+
+**Round 6 did it the other way:** a conventions list first (each with its guide section or
+decisions row and a real surface), the popup rebuilt from exactly those, the list put on the deck
+(CS6-1), and the one gap (the "OK" label) asked as a question (CS6-4).
+
+**Also measured, not guessed (CS5-1):** the beta card → Update now gap is 16 points; Submit a ticket
+(card → Review ticket) 16; Close session (card → its button) 16 — a pixel column scan of 1×
+pictures (`scratch/gap`). Unchanged.
+
+**Live slides can't stage a waiting card.** CS5-4 (Enter behind a popup) had to be a words slide: a
+live pane takes a scenario name only, and no scenario has a waiting permission card without a
+practice setting (`reply=inbox`, `seed=…`).
+
 ## Proposed guide and tooling changes (most valuable first — 1–6, 13, 14 now implemented, above; 7–12, 15–20 with the tooling helper)
 
 1. **Dialog: a `footer` slot** that stays put under the scrolling body and keeps the shared
@@ -223,3 +257,18 @@ Added after round 3:
     only at run time (round 3 friction 1).
 20. **shoot: a state can be marked after-only** (`newIn: 'after'`) so a before run skips it
     instead of reporting failures (round 3 friction 3).
+
+Added after the follow-up rounds (4–6):
+21. **Brief: a conventions list per part, before building** — for every piece of a screen (title,
+    container, row, row actions, problems, scrolling, footer) name its guide section or decisions row
+    and a real surface; anything left uncovered is a deck question, never a new style. Put the list
+    on the first deck.
+22. **Design lint: a row that should be the setting row** — flag a list item holding a title, a
+    hint and buttons that is not `SettingRow`/`FoldRow` (an ast-grep rule over JSX `<li>`/`<div>`
+    with that shape), and a hand-built problem line next to buttons that is not `Callout`.
+23. **Guide + lint: popup titles name the popup** — no sentence titles, no counts or full stops in
+    a title; a test over `<Dialog title=…>` literals.
+24. **deck: a live pane can pass practice settings** (`params`), so a waiting card or a seeded chat
+    can be tried live (round 5 friction).
+25. **shoot: a crowded machine needs fewer browsers** — at load average 70–107 pictures timed out in
+    bulk; shooting one theme at a time got all 40. shoot could size its tab pool by load, not cores.
