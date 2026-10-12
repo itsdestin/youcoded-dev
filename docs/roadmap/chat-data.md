@@ -53,6 +53,13 @@ produced and the panel that shows them (files).
       session-file repair work, all safe-direction: a repair record can keep a dead key forever.
       `desktop` `needs-verify` `P3` `checked 2026-08-12` `needs-repro`
 
+- [ ] Manage a past conversation straight from its card in chat (Destin, 2026-10-12).
+      When Claude searches chat history, each conversation it names appears as a card with only Preview and
+      Resume. Add a way to rename it, add or remove tags, edit its note, and mark it complete or priority right
+      on that card, without opening the Resume browser. Came up while sorting 55 unfinished Sept/Oct
+      conversations: every change had to go through Claude.
+      `chat` `all` `confirmed` `P3` `checked 2026-10-12`
+
 - [ ] Parked ideas: conversation lists (two things).
       (a) Enter in the Resume browser's search box opens the top result. (b) Conversation organizing: user-made
       folders, multi-select for bulk tag / hide / complete, and sort or filter beyond project · tag ·
