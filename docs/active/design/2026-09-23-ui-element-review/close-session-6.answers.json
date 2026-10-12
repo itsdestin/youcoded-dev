@@ -1,0 +1,44 @@
+{
+ "deck": "close-session-6",
+ "started": "2026-10-12T16:59:54.881Z",
+ "submitted": "2026-10-12T17:01:18Z",
+ "cur": 4,
+ "answers": {
+  "CS6-1": {
+   "v": "yes",
+   "t": 1791824403906,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS6-2": {
+   "v": "yes",
+   "t": 1791824416910,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS6-3": {
+   "v": "yes",
+   "t": 1791824435408,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS6-4": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1791824465401,
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS6-5": {
+   "v": "yes",
+   "t": 1791824476814,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}
