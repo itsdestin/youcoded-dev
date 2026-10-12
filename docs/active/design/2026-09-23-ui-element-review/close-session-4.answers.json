@@ -1,0 +1,52 @@
+{
+ "deck": "close-session-4",
+ "started": "2026-10-12T13:47:14.845Z",
+ "submitted": "2026-10-12T13:49:47Z",
+ "cur": 5,
+ "answers": {
+  "CS4-1": {
+   "note": "the button should be full width as well, and i want to worka bit on making the spacing/styling of the button and \"get beta builds\" toggle match the rest of our ui styling",
+   "t": 1791812887301,
+   "v": "other",
+   "seconds": 52,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS4-2": {
+   "v": "other",
+   "t": 1791812941872,
+   "note": "what is this popup? i like the fade, but i think this popup needs a more comprehensive restyling. look at other similar lists. we don't use bare lines on the modal like this, there should be some kind of cards/container",
+   "seconds": 55,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS4-3": {
+   "v": "yes",
+   "t": 1791812949651,
+   "seconds": 8,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS4-4": {
+   "v": "yes",
+   "t": 1791812954811,
+   "seconds": 5,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS4-5": {
+   "v": "yes",
+   "t": 1791812970106,
+   "seconds": 15,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS4-6": {
+   "v": "yes",
+   "t": 1791812986894,
+   "seconds": 17,
+   "theme": "youcoded-night",
+   "zoom": 1
+  }
+ }
+}
