@@ -1,0 +1,115 @@
+
+/* page.css — layout for the management surface itself. Shared shapes (buttons, tabs, cards) live
+   in cc.css; this file only arranges them. WHY split out (2026-10-12): the page styles were a
+   300-character-per-line block inside build.py that nobody could read or review. */
+
+.cc-main{max-width:1120px;padding:24px 20px 64px}
+.cc-header .draft{cursor:help}
+.cc-header .tabs{margin-left:8px;flex:none} .cc-header .tabs button,.cc-header .draft{white-space:nowrap}
+/* WHY: .web and other grids set display, which would beat the hidden attribute */
+[hidden]{display:none!important}
+html,body{overflow-x:clip}
+.view{display:none} .view.on{display:block}
+.spacer{flex:1}
+.fw{font-weight:500}
+.cnt{color:var(--fg-muted);font-weight:400;margin-left:2px}           /* G-19: label + space + muted numeral */
+.eyebrow .cnt{letter-spacing:0}
+.note{margin-top:8px}
+
+/* sections: an eyebrow is the only section header (G-7) */
+.sec{margin:0 0 28px}
+.sechead{display:flex;align-items:center;gap:12px;margin:0 0 10px;flex-wrap:wrap;min-height:28px}
+.sub{margin-top:20px}
+
+/* rows (SettingRow-shaped): title + hint left, actions right (G-28) */
+.row{align-items:flex-start;margin-bottom:8px;background:var(--panel);border-color:var(--edge-dim)}
+.row.slim{min-height:36px;padding:6px 10px}
+.row .hint.wrap{white-space:normal;margin-top:2px}
+.row .shot{width:104px;height:65px;object-fit:cover;object-position:top;border-radius:var(--radius-sm);border:1px solid var(--edge-dim);background:var(--well);flex:none}
+.acts{display:flex;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.acts.right{margin-top:12px}
+.metaline{margin-top:6px}
+.side{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:none;font-size:11px;color:var(--fg-muted)}
+.missing{color:var(--fg-muted);font-style:italic}
+
+/* the one recommended next step: the only filled button on Today (G-4) */
+.hero{padding:20px;margin-bottom:28px}
+.herobody{display:flex;gap:20px;align-items:flex-start;margin-top:6px}
+.herotext{flex:1;min-width:0}
+.herotext p{margin:8px 0;max-width:640px}
+.hero .shot{width:220px;height:138px;object-fit:cover;object-position:top;border-radius:var(--radius-md);border:1px solid var(--edge-dim);background:var(--well);flex:none}
+.heroacts{margin-top:14px}
+.herofolds{margin-top:14px;border-top:1px solid var(--edge-dim);padding-top:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:4px 0 8px}
+.two ul,.relgrid ul{margin:6px 0 0;padding-left:16px} .relgrid li,.two li{margin:3px 0}
+
+/* G-29 expandable rows: chevron on the right, turns down when open; no native triangle */
+.fold > summary{list-style:none} .fold > summary::-webkit-details-marker{display:none}
+.foldrow{display:flex;align-items:center;gap:12px;cursor:pointer;padding:8px 4px;border-radius:var(--radius-md);color:var(--fg-2);transition:background var(--dur-hover) var(--ease)}
+.foldrow > :first-child{flex:1}
+.foldrow .chev{transition:transform var(--dur-hover) var(--ease)}
+.fold[open] > .foldrow .chev{transform:rotate(90deg)}
+@media (hover:hover){.foldrow:hover{background:var(--inset);color:var(--fg)}}
+.foldrow:focus-visible{outline:2px solid var(--accent)}
+.foldrow.big{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:12px 16px;min-height:56px;color:var(--fg)}
+@media (hover:hover){.foldrow.big:hover{background:var(--inset)}}
+.foldrow.big .fbody{display:flex;flex-direction:column;gap:2px}
+.fold.sec[open] > .foldrow.big{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-color:var(--edge-dim)}
+.foldbody{padding:12px 0 0}
+.fold.sec[open] > .foldbody{border:1px solid var(--edge);border-top:0;border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:12px;background:var(--canvas)}
+.relgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+
+/* filter pills (G-14): rounded-full, text-sm, inset + edge at rest, accent when on */
+.fchips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{font:inherit;font-size:13px;padding:4px 12px;border-radius:var(--radius-full);background:var(--inset);border:1px solid var(--edge);color:var(--fg);cursor:pointer;white-space:nowrap;transition:background var(--dur-hover) var(--ease)}
+@media (hover:hover){.fchip:not([aria-pressed="true"]):hover{background:var(--edge)}}
+.fchip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.fchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Screens: a wall per place, six pictures until "Show all" */
+.lensbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 20px;position:sticky;top:48px;background:var(--canvas);padding:8px 0;z-index:2}
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+.tile.extra{display:none} .place.expanded .tile.extra{display:block}
+body.asking .tile{display:none} body.asking .tile.lit{display:block} body.asking .showall{display:none}
+.tile{margin:0;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:background var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease)}
+@media (hover:hover){.tile:hover{background:var(--inset);border-color:var(--fg-muted)}}
+.tile img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;display:block;background:var(--well);border-bottom:1px solid var(--edge-dim)}
+.tile figcaption{padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tbadges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px} .tbadges:empty{display:none}
+.dot.work{background:var(--fg-2)}
+.tile:focus-visible{outline:2px solid var(--accent)}
+.tablewrap{overflow-x:auto}
+.blocks{border-collapse:collapse;width:100%} .blocks th,.blocks td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--edge-dim);vertical-align:middle}
+.blocks thead th{font-size:11px;color:var(--fg-muted);font-weight:500} .blocks tbody th{font-size:12px;font-weight:500;white-space:nowrap}
+.bdot{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid var(--fg-muted)} .bdot.d2{background:var(--fg);border-color:var(--fg)} .bdot.d1{background:transparent} .bdot.d0{opacity:.15}
+
+/* side pane (G-4.5): title row + close, scrolling body, actions on the right (G-28) */
+.panel{position:fixed;top:48px;right:0;bottom:0;width:400px;max-width:100vw;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--edge);transform:translateX(100%);transition:transform var(--dur-reveal) var(--ease);z-index:5;box-shadow:-8px 0 24px rgba(0,0,0,.08)}
+.panel.open{transform:none}
+.phd{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--edge-dim)}
+.phtext{flex:1;min-width:0;overflow-wrap:anywhere}
+.closebtn{font:inherit;width:32px;height:32px;flex:none;border-radius:var(--radius-md);border:0;background:transparent;color:var(--fg-2);cursor:pointer}
+@media (hover:hover){.closebtn:hover{background:var(--inset);color:var(--fg)}} .closebtn:active{background:var(--edge)} .closebtn:focus-visible{outline:2px solid var(--accent)}
+.pbody{flex:1;overflow:auto;padding:12px 16px;overflow-wrap:anywhere}
+.pfoot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--edge-dim)}
+.pe{margin-top:16px;margin-bottom:6px}
+.statusline{display:flex;align-items:center;gap:8px;margin:4px 0 8px;color:var(--fg-2)}
+.panel img.big{width:100%;border-radius:var(--radius-md);border:1px solid var(--edge-dim)}
+.panel .strip{display:flex;gap:6px;overflow:auto;padding:4px 0} .panel .strip img{height:54px;border-radius:var(--radius-sm);border:1px solid var(--edge-dim)}
+body:has(.panel.open) .cc-main{padding-right:420px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--accent);color:var(--on-accent);padding:10px 14px;border-radius:var(--radius-md);font-size:12px;max-width:560px;opacity:0;transition:opacity var(--dur-hover);z-index:9;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.toast.show{opacity:1}
+select{font:inherit;font-size:12px;height:32px;background:var(--inset);color:var(--fg);border:1px solid var(--edge);border-radius:var(--radius-md);padding:0 8px}
+
+/* phone width (§4.8): one column, chip rows scroll sideways instead of wrapping */
+@media (max-width:760px){
+  .cc-header{gap:8px;padding:0 12px;overflow-x:auto} .cc-header .asof{display:none}
+  .cc-main{padding:16px}
+  .row{flex-wrap:wrap} .row .acts{width:100%;justify-content:flex-end}
+  .herobody{flex-direction:column} .hero .shot{display:none}
+  .cc-header .title{font-size:16px}
+  .two{grid-template-columns:1fr}
+  .fchips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}
+  body:has(.panel.open) .cc-main{padding-right:16px}
+}

@@ -207,167 +207,165 @@ for q, pats in QUESTIONS:
     light[q] = [n for n in names if matches(n, pats)]
 
 E = html.escape
-def chips(touches, side):
-    s = {'screens':'what you see','behind':'behind the scenes','both':'what you see + behind the scenes'}[side]
-    return ''.join(f'<span class="badge tip" data-tip="Worked out from the files this branch changed">{E(t)}</span>' for t in touches) + f'<span class="side {E(side)} tip" data-tip="{E(s)}">{E(s)}</span>'
-def btn(label, does, primary=False):
-    return f'<button class="btn sm{" primary" if primary else ""}" data-does="{E(does)}">{E(label)}</button>'
+# WHY the rebuild (2026-10-12 review, Destin: "throws a fuckton at me at once"): Today now opens
+# first and leads with ONE recommended next step; the long lists (waiting, bugs, release) are
+# folded rows with a count, and each view has a single filled button (design guide G-4).
+SIDE_WORD = {'screens':'what you see','behind':'behind the scenes','both':'what you see and behind the scenes'}
+def meta(touches, side):
+    """One quiet line instead of five badges: where it lands, then which side of the app."""
+    return f'<div class="t-2xs muted metaline"><span class="tip" data-tip="Worked out from the files this branch changed">{E(" · ".join(touches))}</span> · <span class="side {E(side)}">{E(SIDE_WORD[side])}</span></div>'
+def btn(label, does, kind=''):
+    return f'<button class="btn sm {kind}" data-does="{E(does)}">{E(label)}</button>'
 def ago(d): return 'today' if d == 0 else ('yesterday' if d == 1 else f'{d} days ago')
+def fold(title, count, hint, body, open_=False):
+    """G-29 expandable row: title + muted count (G-19) + one-line hint, chevron on the right."""
+    c = f' <span class="cnt">{count}</span>' if count is not None else ''
+    return f'<details class="fold sec"{" open" if open_ else ""}><summary class="foldrow big"><span class="fbody"><span class="t-sm fw">{E(title)}{c}</span><span class="t-xs muted">{E(hint)}</span></span><span class="chev" aria-hidden="true">›</span></summary><div class="foldbody">{body}</div></details>'
+def sechead(title, count, hint=''):
+    c = f' <span class="cnt">{count}</span>' if count is not None else ''
+    return f'<div class="sechead"><span class="eyebrow">{E(title)}{c}</span>{f"<span class=\'t-xs muted\'>{E(hint)}</span>" if hint else ""}</div>'
 
 # ----------------------------------------------------------------------------- TODAY
 active = [e for e in EFFORTS if e['days'] <= 7]
 IN_NEEDS = {'plugin-project-controls','sync-retry-feedback','sync-safety-audit-20260908'}
 waiting = [e for e in EFFORTS if e['days'] > 7 and e['id'] not in IN_NEEDS]
-needs = []
-needs.append(('ready', 'Sync safety: backup-target selection fix', 'Reviewed and green on Sept 9. Never merged. Untouched 31 days.',
-              [btn('See what changed','opens the before/after screens for settings/sync'), btn('Merge it','opens its conversation with "Destin approves merging" already typed', True), btn('Not yet','asks why; the answer becomes its waiting-on note')]))
-needs.append(('review', 'Project skills & tools: per-project control of what the assistant uses', 'Draft pull requests open since Sept 24, checks pass. The title says "UI review pending", so it is waiting on you.',
-              [btn('Review the screens','opens the review deck that was prepared for it', True), btn('Resume','opens its conversation'), btn('Park it','records why and moves it to Waiting')]))
-needs.append(('failing', 'Sync: acknowledge retry attempts', 'Pull request #444 has been open since Sept 8 with failing checks. Nobody has looked.',
-              [btn('Fix the checks','starts a session on that branch with the failing checks pasted in', True), btn('Close it','closes the PR and records why')]))
-needs.append(('bots', '7 automatic dependency updates, all failing checks', 'Five Android bumps from Sept 3, two desktop bumps from Oct 5 and 8.',
-              [btn('Try them together','starts one session that applies all seven and runs the checks', True), btn('Close them','closes the seven PRs')]))
-needs.append(('stale', '10 worktrees with unsaved changes nobody has opened in 2+ weeks', 'They cannot be cleaned up automatically because the changes are not saved anywhere. ' + ', '.join(LEFTOVERS['worktrees'][:4]) + ' and 6 more.',
-              [btn('Save all as backup branches','commits each one to a backup branch, pushes, then removes the worktree', True), btn('Show me','lists each with what is unsaved')]))
-
+# WHY "Project skills & tools" is gone from this list: it is the suggested next step at the top,
+# and the old page showed it twice (Destin's rule: nothing repeated twice in one view).
+needs = [
+  ('Sync safety: backup-target selection fix', 'Reviewed and green on Sept 9. Never merged. Untouched 31 days.',
+   [btn('Merge it','opens its conversation with "Destin approves merging" already typed'), btn('See what changed','opens the before/after screens for settings/sync','ghost'), btn('Not yet','asks why; the answer becomes its waiting-on note','ghost')]),
+  ('Sync: acknowledge retry attempts', 'Pull request #444 has been open since Sept 8 with failing checks. Nobody has looked.',
+   [btn('Fix the checks','starts a session on that branch with the failing checks pasted in'), btn('Close it','closes the PR and records why','ghost')]),
+  ('7 automatic dependency updates, all failing checks', 'Five Android bumps from Sept 3, two desktop bumps from Oct 5 and 8.',
+   [btn('Try them together','starts one session that applies all seven and runs the checks'), btn('Close them','closes the seven PRs','ghost')]),
+  ('10 worktrees with unsaved changes nobody has opened in 2+ weeks', 'They cannot be cleaned up automatically because the changes are not saved anywhere. ' + ', '.join(LEFTOVERS['worktrees'][:4]) + ' and 6 more.',
+   [btn('Save all as backup branches','commits each one to a backup branch, pushes, then removes the worktree'), btn('Show me','lists each with what is unsaved','ghost')]),
+]
 today = []
-today.append('<section class="sec"><div class="sechead"><span class="t-base">Needs you</span><span class="muted t-xs">Things only you can decide. Nothing here repeats below.</span></div>')
-for kind, t, hint, bs in needs:
-    today.append(f'<div class="row"><div class="body"><div class="t-sm">{E(t)}</div><div class="hint wrap">{E(hint)}</div></div><div class="acts">{"".join(bs)}</div></div>')
-today.append('<div class="callout muted t-xs">From other people: no open reports on GitHub. The last one was from tjmorin03 on Sept 15, closed.</div></section>')
+S = SUGGEST
+today.append(f'''<section class="card hero"><div class="eyebrow">Start here · suggested next</div>
+<div class="herobody"><div class="herotext"><div class="t-lg">{E(S['title'])}</div><p class="t-sm dim">{E(S['why'])}</p>
+<div class="t-xs muted">Lands in {E(" · ".join(S['touches']))} · <span class="tip" data-tip="Which promise of the app this serves">{E(S['promise'])}</span></div></div>
+{pic(['projects','marketplace'])}</div>
+<div class="acts heroacts"><button class="btn ghost sm" data-does="records why and moves it to Waiting">Park it</button>{btn('Resume its conversation','opens its conversation with this reasoning pasted in')}<button class="btn primary" data-does="opens the review deck that was prepared for it">Review the screens</button></div>
+<div class="herofolds">
+<details class="fold"><summary class="foldrow"><span class="t-xs">Why this one: how it connects, what should be configurable</span><span class="chev">›</span></summary>
+<div class="two"><div><div class="eyebrow">How it connects</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['connects'])}</ul></div>
+<div><div class="eyebrow">What should be configurable</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['config'])}</ul></div></div></details>
+<details class="fold"><summary class="foldrow"><span class="t-xs">Other options <span class="cnt">{len(S['alternatives'])}</span></span><span class="chev">›</span></summary>{''.join(f'<div class="row slim"><div class="body"><div class="t-sm">{E(a)}</div><div class="hint wrap">{E(b)}</div></div><div class="acts">{btn("Start this instead","opens its conversation")}</div></div>' for a,b in S['alternatives'])}</details>
+</div></section>''')
 
-today.append('<section class="sec"><div class="sechead"><span class="t-base">In progress</span><span class="muted t-xs">Touched in the last 7 days.</span></div>')
+today.append('<section class="sec">' + sechead('Needs you', len(needs), 'Only you can decide these.'))
+for t, hint, bs in needs:
+    today.append(f'<div class="row"><div class="body"><div class="t-sm">{E(t)}</div><div class="hint wrap">{E(hint)}</div></div><div class="acts">{"".join(bs)}</div></div>')
+today.append('<div class="t-xs muted note">From other people: no open reports on GitHub. The last one was from tjmorin03 on Sept 15, closed.</div></section>')
+
+today.append('<section class="sec">' + sechead('In progress', len(active), 'Touched in the last 7 days. Neither has a merge goal written down yet.'))
 for e in active:
     today.append(f'''<div class="row">{pic(e['screens'])}<div class="body"><div class="t-sm">{E(e['title'])}</div>
-      <div class="hint wrap">Last worked on {ago(e['days'])}. {E(e['note'])}</div>
-      <div class="goal missing">No merge goal recorded. <button class="btn ghost sm" data-does="asks you for 1–3 sentences; every big piece of work would get this at its start">Set one</button></div>
-      <div class="chips">{chips(e['touches'], e['side'])}</div></div>
-      <div class="acts">{btn('Resume','opens its conversation', True)}{btn('Park','records why and moves it to Waiting')}</div></div>''')
+      <div class="hint wrap">Last worked on {ago(e['days'])}. {E(e['note'])}</div>{meta(e['touches'], e['side'])}</div>
+      <div class="acts">{btn('Resume','opens its conversation')}{btn('Set a goal','asks you for 1–3 sentences; every big piece of work would get this at its start','ghost')}{btn('Park','records why and moves it to Waiting','ghost')}</div></div>''')
 today.append('</section>')
 
-today.append('<section class="sec"><div class="sechead"><span class="t-base">Waiting</span><span class="muted t-xs">Not touched in over a week. Oldest at the bottom.</span></div>')
+w = []
 for e in waiting:
-    why = e.get('paused') or 'No reason recorded'
     pr = f' · {E(e["pr"])}' if e.get('pr') else ''
-    today.append(f'''<div class="row"><div class="body"><div class="t-sm">{E(e['title'])}</div>
-      <div class="hint wrap">Last worked on {ago(e['days'])}{pr}. {E(e['note'])}</div>
-      <div class="hint wrap">Waiting on: <span class="{'missing' if not e.get('paused') else ''}">{E(why)}</span></div>
-      <div class="chips">{chips(e['touches'], e['side'])}</div></div>
-      <div class="acts">{btn('Resume','opens its conversation', True)}{btn('Close out','runs the close-out checklist and removes the worktree and branch if nothing is lost')}</div></div>''')
-today.append('<details class="more"><summary class="muted t-xs">4 branches hold only notes and research</summary>' + ''.join(f'<div class="row slim"><div class="body"><div class="t-xs">{E(d["title"])}</div><div class="hint">Last touched {ago(d["days"])}</div></div><div class="acts">{btn("Open","opens the notes")}{btn("Archive","moves the notes to the archive and removes the branch")}</div></div>' for d in DEV_ONLY) + '</details>')
-today.append(f'<div class="callout muted t-xs">Cleaned up automatically at session start, nothing to do: {E(LEFTOVERS["backups"])}; {E(LEFTOVERS["diag"])}.</div></section>')
+    paused = f'<div class="hint wrap">Waiting on: {E(e["paused"])}</div>' if e.get('paused') else ''
+    w.append(f'''<div class="row"><div class="body"><div class="t-sm">{E(e['title'])}</div>
+      <div class="hint wrap">{ago(e['days']).capitalize()}{pr}. {E(e['note'])}</div>{paused}{meta(e['touches'], e['side'])}</div>
+      <div class="acts">{btn('Resume','opens its conversation')}{btn('Close out','runs the close-out checklist and removes the worktree and branch if nothing is lost','ghost')}</div></div>''')
+w.append('<div class="sub">' + sechead('Notes and research only', len(DEV_ONLY)) + ''.join(f'<div class="row slim"><div class="body"><div class="t-sm">{E(d["title"])}</div><div class="hint">Last touched {ago(d["days"])}</div></div><div class="acts">{btn("Open","opens the notes")}{btn("Archive","moves the notes to the archive and removes the branch","ghost")}</div></div>' for d in DEV_ONLY) + '</div>')
+w.append(f'<div class="t-xs muted note">Cleaned up automatically at session start, nothing to do: {E(LEFTOVERS["backups"])}; {E(LEFTOVERS["diag"])}.</div>')
+oldest = max(e['days'] for e in waiting)
+today.append(fold('Waiting', len(waiting), f'Not touched in over a week, the oldest {oldest} days. Only one has a reason written down.', ''.join(w)))
 
-today.append('<section class="sec"><div class="sechead"><span class="t-base">Bugs hurting users</span><span class="muted t-xs">From the roadmap. It does not record who reported them, so these are all "you". That gap closes when reports become work units.</span></div>')
-for b in BUGS:
-    today.append(f'''<div class="row">{pic(b['screens'])}<div class="body"><div class="t-sm">{E(b['title'])}</div><div class="hint wrap">Where: {E(b['place'])} · Source: {E(b['src'])}</div></div>
-      <div class="acts">{btn('Start a fix','starts a session with the roadmap entry and the screen pasted in', True)}{btn('Not a bug anymore','closes it with a note')}</div></div>''')
-today.append('</section>')
+b = []
+for x in BUGS:
+    b.append(f'''<div class="row">{pic(x['screens'])}<div class="body"><div class="t-sm">{E(x['title'])}</div><div class="hint wrap">In {E(x['place'])} · {E(x['src'])}</div></div>
+      <div class="acts">{btn('Start a fix','starts a session with the roadmap entry and the screen pasted in')}{btn('Not a bug anymore','closes it with a note','ghost')}</div></div>''')
+today.append(fold('Bugs users hit', len(BUGS), 'From the roadmap, which does not record who reported them.', ''.join(b)))
 
-today.append(f'<section class="sec"><div class="sechead"><span class="t-base">Since the last release</span><span class="muted t-xs">{E(RELEASE["version"])} on {E(RELEASE["date"])}; the last pre-release was {E(RELEASE["beta"])}. {RELEASE["merges"]} merges since. What users will notice:</span></div><div class="relgrid">')
+r = ['<div class="relgrid">']
 for g, items, scr in RELEASE['groups']:
-    today.append(f'<div class="card inset"><div class="eyebrow">{E(g)}</div><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>')
-today.append(f'</div><div class="acts right">{btn("See every merge","opens the full list of 67 with each one\'s before/after")}{btn("Start a pre-release","runs the release skill for 1.3.1-beta.88; nothing in progress blocks it", True)}</div></section>')
+    r.append(f'<div class="card inset"><div class="eyebrow">{E(g)}</div><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>')
+r.append(f'</div><div class="t-xs muted note">The last pre-release was {E(RELEASE["beta"])}.</div><div class="acts right">{btn("See every merge","opens the full list of 67 with each one\'s before/after","ghost")}{btn("Start a pre-release","runs the release skill for 1.3.1-beta.88; nothing in progress blocks it")}</div>')
+today.append(fold('Since the last release', None, f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.', ''.join(r)))
 
-today.append(f'''<section class="sec"><div class="sechead"><span class="t-base">Suggested next</span><span class="muted t-xs">One recommendation. Most value for effort.</span></div>
-<div class="card"><div class="t-base">{E(SUGGEST['title'])}</div><p class="t-sm">{E(SUGGEST['why'])}</p>
-<div class="chips">{''.join(f'<span class="badge">{E(t)}</span>' for t in SUGGEST['touches'])}<span class="badge tip" data-tip="Which promise of the app this serves">{E(SUGGEST['promise'])}</span></div>
-<div class="two"><div><div class="eyebrow">How it connects</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in SUGGEST['connects'])}</ul></div>
-<div><div class="eyebrow">What should be configurable</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in SUGGEST['config'])}</ul></div></div>
-<div class="acts">{btn('Start it','opens its conversation with the review deck link and this reasoning pasted in', True)}{btn('Other options','shows the two below')}</div>
-<details class="more"><summary class="muted t-xs">Other options</summary>{''.join(f'<div class="row slim"><div class="body"><div class="t-xs">{E(a)}</div><div class="hint wrap">{E(b)}</div></div><div class="acts">{btn("Start this instead","opens its conversation")}</div></div>' for a,b in SUGGEST['alternatives'])}</details></div></section>''')
-
-# ----------------------------------------------------------------------------- THE APP
+# ----------------------------------------------------------------------------- SCREENS
+# WHY short labels: seven full questions wrapped to three rows of pills; the full question shows on hover and in the note.
+SHORTQ = {'Where does the app talk to the AI?':'Talks to the AI','What changes how the assistant behaves?':'Changes how it behaves','Where do marketplace add-ons show up?':'Add-ons appear',
+  'Where are permissions set or asked?':'Permissions','What is being worked on right now?':'Being changed now','What changed since the last release?':'Changed since release','Which screens have a phone version?':'Has a phone version'}
+SHOW = 6  # WHY: six pictures per place is enough to recognise it; "Show all" opens the rest.
+def pretty(seg): return seg.replace('-', ' ').replace('_', ' ').capitalize()
 app = []
-app.append('<div class="askbar"><span class="t-sm">Show me…</span><div class="tabs qtabs">' + ''.join(f'<button data-q="{E(q)}">{E(q)}</button>' for q,_ in QUESTIONS) + '<button data-q="">Everything</button></div><span class="muted t-xs qnote"></span></div>')
+app.append('<div class="lensbar"><div class="fchips qtabs" role="group" aria-label="Show me"><button class="fchip" data-q="" aria-pressed="true">Every place</button>' + ''.join(f'<button class="fchip" data-q="{E(q)}" title="{E(q)}">{E(SHORTQ.get(q,q))}</button>' for q,_ in QUESTIONS) + '</div><span class="muted t-xs qnote"></span></div>')
 for p, _ in PLACES:
     lst = by_place.get(p, [])
     if not lst: continue
-    app.append(f'<section class="sec place" data-place="{E(p)}"><div class="sechead"><span class="t-base">{E(p)}</span><span class="muted t-xs">{len(lst)} screens</span></div><div class="wall">')
-    for n in lst:
+    more = f'<button class="btn ghost sm showall">Show all {len(lst)}</button>' if len(lst) > SHOW else ''
+    app.append(f'<section class="sec place" data-place="{E(p)}"><div class="sechead"><span class="eyebrow">{E(p)} <span class="cnt">{len(lst)}</span></span><span class="spacer"></span>{more}</div><div class="wall">')
+    for i, n in enumerate(lst):
         v = variants.get(n, [])
-        w = work_on(n)
-        app.append(f'''<figure class="tile" data-name="{E(n)}" data-variants="{E(json.dumps(v))}" tabindex="0">
-          <img src="{thumb(n)}" loading="lazy" alt=""><figcaption><span class="t-xs">{E(n.split('/')[-1] if n.count('/')>0 else n)}</span><span class="t-2xs muted">{E(n)}</span>
-          {('<span class="badge">' + str(len(v)) + ' states</span>') if v else ''}{('<span class="status idle"><span class="dot"></span>in progress</span>') if w else ''}</figcaption></figure>''')
+        wk = work_on(n)
+        segs = n.split('/')
+        sub = DESC.get(n) or (' › '.join(pretty(s) for s in segs[1:-1]) if len(segs) > 2 else '')
+        app.append(f'''<figure class="tile{" extra" if i >= SHOW else ""}" data-name="{E(n)}" data-variants="{E(json.dumps(v))}" tabindex="0">
+          <img src="{thumb(n)}" loading="lazy" alt=""><figcaption><span class="t-xs fw">{E(pretty(segs[-1]))}</span>{f'<span class="t-2xs muted clamp">{E(sub)}</span>' if sub else ''}
+          <span class="tbadges">{('<span class="badge">' + str(len(v)) + (' variation' if len(v)==1 else ' variations') + '</span>') if v else ''}{('<span class="badge"><span class="dot work"></span>being changed</span>') if wk else ''}</span></figcaption></figure>''')
     app.append('</div></section>')
-# building blocks
 cols = ['Chat','Projects','Pages','Marketplace','Settings','Devices & sync']
-app.append('<section class="sec"><div class="sechead"><span class="t-base">Building blocks</span><span class="muted t-xs">What every place is assembled from. Filled dot: set here. Hollow: used here. First draft from the repo check; built properly after the eight questions are answered.</span></div><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th>{E(c)}</th>' for c in cols) + '<th></th></tr></thead><tbody>')
-for b, cells, note in BLOCKS:
+bt = ['<p class="t-xs muted">Filled dot: set here. Hollow: used here. First draft from the repo check; built properly after the eight questions are answered.</p><div class="tablewrap"><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th>{E(c)}</th>' for c in cols) + '<th></th></tr></thead><tbody>']
+for bname, cells, note in BLOCKS:
     dup = sum(1 for c in cols if cells.get(c)==2)
-    app.append(f'<tr><th>{E(b)}</th>' + ''.join(f'<td><span class="bdot d{cells.get(c,0)}"></span></td>' for c in cols) + f'<td class="t-2xs muted">{E(note)}{" <span class=\"badge warn\">set in "+str(dup)+" places</span>" if dup>=3 else ""}</td></tr>')
-app.append('</tbody></table></section>')
+    bt.append(f'<tr><th>{E(bname)}</th>' + ''.join(f'<td><span class="bdot d{cells.get(c,0)}"></span></td>' for c in cols) + f'<td class="t-2xs muted">{E(note)}{" <span class=\"badge\"><span class=\"dot warn\"></span>set in "+str(dup)+" places</span>" if dup>=3 else ""}</td></tr>')
+bt.append('</tbody></table></div>')
+app.append(fold('Building blocks', None, 'What each place is assembled from, and where the same thing is set up in several places.', ''.join(bt)))
 
-# side panel data
 panel = {n: dict(desc=DESC.get(n), variants=variants.get(n, []), work=[dict(title=e['title'], days=e['days']) for e in work_on(n)], place=place_of(n)) for n in base}
 
 # ----------------------------------------------------------------------------- PAGE
 vision_html, vision_nodes, vision_tot = vrender(HERE)
-CSS = open(os.path.join(HERE, 'cc.css')).read()
-page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><title>YouCoded — Today</title>
-<style>{CSS}
-.cc-main{{max-width:1240px}}
-.sec{{margin:0 0 28px}} .sechead{{display:flex;align-items:baseline;gap:12px;margin:0 0 10px;flex-wrap:wrap}}
-.row{{align-items:flex-start;margin-bottom:8px}} .row.slim{{min-height:36px;padding:6px 10px}} .row .hint.wrap{{white-space:normal}}
-.row .shot{{width:112px;height:70px;object-fit:cover;object-position:top;border-radius:var(--radius-sm);border:1px solid var(--edge-dim);background:var(--well);flex:none}}
-.acts{{display:flex;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end}} .acts.right{{margin-top:10px}}
-.chips{{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}}
-.goal{{font-size:11px;margin-top:6px;display:flex;align-items:center;gap:6px}} .missing{{color:var(--status-warn)}}
-.relgrid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}} .relgrid ul,.two ul{{margin:6px 0 0;padding-left:16px}} .relgrid li{{margin:2px 0}}
-.two{{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:10px 0}}
-.more{{margin-top:8px}} .more summary{{cursor:pointer}}
-.callout{{margin-top:8px}}
-.banner{{background:var(--well);border:1px dashed var(--edge);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;color:var(--fg-2);margin-bottom:16px}}
-.askbar{{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:48px;background:var(--canvas);padding:10px 0;z-index:2}}
-.qtabs{{flex-wrap:wrap;border-radius:var(--radius-lg)}} .qtabs button{{border-radius:var(--radius-md);font-size:12px}}
-.wall{{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}}
-.tile{{margin:0;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-md);overflow:hidden;cursor:pointer;transition:opacity var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease)}}
-.tile img{{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;display:block;background:var(--well)}}
-.tile figcaption{{padding:6px 8px;display:flex;flex-direction:column;gap:2px}} .tile figcaption .badge,.tile figcaption .status{{align-self:flex-start;margin-top:2px}}
-.tile.dim{{opacity:.22}} .tile.lit{{border-color:var(--status-ok);box-shadow:0 0 0 2px color-mix(in srgb,var(--status-ok) 35%,transparent)}}
-.tile:focus-visible{{outline:2px solid var(--accent)}}
-.blocks{{border-collapse:collapse;width:100%}} .blocks th,.blocks td{{padding:6px 8px;text-align:left;border-bottom:1px solid var(--edge-dim);vertical-align:middle}} .blocks thead th{{font-size:11px;color:var(--fg-muted);font-weight:500}} .blocks tbody th{{font-size:12px;font-weight:500;white-space:nowrap}}
-.bdot{{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid var(--fg-muted)}} .bdot.d2{{background:var(--fg);border-color:var(--fg)}} .bdot.d1{{background:transparent}} .bdot.d0{{opacity:.15}}
-.badge.warn{{border-color:var(--status-warn);color:var(--status-warn)}}
-.panel{{position:fixed;top:48px;right:0;bottom:0;width:380px;max-width:45vw;overflow-wrap:anywhere;background:var(--panel);border-left:1px solid var(--edge);padding:16px;overflow:auto;transform:translateX(100%);transition:transform var(--dur-reveal) var(--ease);z-index:5}} .panel.open{{transform:none}}
-.panel img.big{{width:100%;border-radius:var(--radius-sm);border:1px solid var(--edge-dim)}} .panel .strip{{display:flex;gap:6px;overflow:auto;padding:4px 0}} .panel .strip img{{height:54px;border-radius:3px;border:1px solid var(--edge-dim)}}
-.toast{{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--accent);color:var(--on-accent);padding:10px 14px;border-radius:var(--radius-md);font-size:12px;max-width:560px;opacity:0;transition:opacity var(--dur-hover);z-index:9;pointer-events:none}} .toast.show{{opacity:1}}
-.view{{display:none}} .view.on{{display:block}}
-body:has(.panel.open) .cc-main{{padding-right:400px}}
-{VCSS}{SVG_CSS}
-select{{font:inherit;font-size:12px;background:var(--inset);color:var(--fg);border:1px solid var(--edge);border-radius:var(--radius-md);padding:4px 8px}}
-</style></head><body>
-<header class="cc-header"><span class="title">YouCoded</span>
-<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-view="vision">The big picture <span class="count">{vision_tot['total']} things</span></button><button role="tab" aria-selected="false" data-view="today">Today</button><button role="tab" aria-selected="false" data-view="app">The app <span class="count">{len(base)} screens</span></button></div>
-<span class="spacer"></span><span class="muted t-2xs">as of Oct 12, 2026 · latest main</span>
-<select id="theme"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></header>
+CSS = open(os.path.join(HERE, 'cc.css')).read() + open(os.path.join(HERE, 'page.css')).read()
+DRAFT = ("A draft to react to, not a working tool. Every row is real as of Oct 12: branches, pull requests, merges, the roadmap, and today's screenshot run. "
+         "Screenshots come from the screen-restyle branch, not yet from main. Buttons only say what they would do. The one-sentence screen descriptions were "
+         "written for this draft; the real version has an agent write them when a screen's code changes.")
+page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
+<style>{CSS}{VCSS}{SVG_CSS}</style></head><body>
+<header class="cc-header"><span class="title">YouCoded</span><span class="badge tip below draft" tabindex="0" data-tip="{E(DRAFT)}">Draft ⓘ</span>
+<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-view="today">Today</button><button role="tab" aria-selected="false" data-view="app">Screens <span class="count">{len(base)}</span></button><button role="tab" aria-selected="false" data-view="vision">Big picture</button></div>
+<span class="spacer"></span><span class="muted t-2xs asof">As of Oct 12 · latest main</span>
+<select id="theme" aria-label="Theme"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></header>
 <main class="cc-main">
-<div class="banner">A draft to react to, not a working tool. Every row is real as of Oct 12: branches, pull requests, merges, the roadmap, and today's screenshot run. Screenshots come from the screen-restyle branch, not yet from main. Buttons only say what they would do. The one-sentence screen descriptions were written for this draft; the real version has an agent write them when a screen's code changes.</div>
-<div id="vision" class="view on">{vision_html}</div>
-<div id="today" class="view">{''.join(today)}</div>
+<div id="today" class="view on">{''.join(today)}</div>
 <div id="app" class="view">{''.join(app)}</div>
+<div id="vision" class="view">{vision_html}</div>
 </main>
-<aside class="panel" id="panel"></aside>
+<aside class="panel" id="panel" aria-label="Details"><div class="phd"><div class="phtext"><div class="eyebrow" id="peb"></div><div class="t-base" id="pti"></div></div><button class="closebtn" aria-label="Close" id="pclose">✕</button></div><div class="pbody" id="pbody"></div><div class="pfoot" id="pfoot"></div></aside>
 <div class="toast" id="toast"></div>
 <script>
 const PANEL={json.dumps(panel)}; const LIGHT={json.dumps(light)}; const THUMB=n=>'thumbs/'+n.replaceAll('/','__')+'.jpg';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let tt; function toast(m){{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}}
 document.addEventListener('click',e=>{{const b=e.target.closest('[data-does]');if(b){{toast('In the real version this '+b.dataset.does+'.');e.preventDefault();}}}});
+// WHY one side pane for everything: G-4.5 anatomy (title row + close, body, actions on the right per G-28).
+function openPanel(eb,title,body,acts){{$('#peb').textContent=eb;$('#pti').textContent=title;$('#pbody').innerHTML=body;$('#pfoot').innerHTML=acts;$('#panel').classList.add('open');$('#pbody').scrollTop=0}}
+function closePanel(){{$('#panel').classList.remove('open');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));const s=$('#lines');if(s&&typeof vApply==='function')vApply()}}
+$('#pclose').onclick=closePanel;document.addEventListener('keydown',e=>{{if(e.key==='Escape')closePanel()}});
 $$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));$('#panel').classList.remove('open');window.scrollTo(0,0)}});
 $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
-$$('.qtabs button').forEach(b=>b.onclick=()=>{{$$('.qtabs button').forEach(x=>x.setAttribute('aria-selected',x===b));const q=b.dataset.q;const lit=new Set(q?LIGHT[q]:[]);
-  $$('.tile').forEach(t=>{{const n=t.dataset.name;const vs=JSON.parse(t.dataset.variants);const on=lit.has(n)||vs.some(v=>lit.has(v));t.classList.toggle('lit',!!q&&on);t.classList.toggle('dim',!!q&&!on)}});
+$$('.showall').forEach(b=>b.onclick=()=>{{const s=b.closest('.place');const on=s.classList.toggle('expanded');b.textContent=on?'Show fewer':'Show all '+s.querySelectorAll('.tile').length}});
+$$('.qtabs .fchip').forEach(b=>b.onclick=()=>{{$$('.qtabs .fchip').forEach(x=>x.setAttribute('aria-pressed',x===b));const q=b.dataset.q;const lit=new Set(q?LIGHT[q]:[]);
+  document.body.classList.toggle('asking',!!q);
+  $$('.tile').forEach(t=>{{const n=t.dataset.name;const vs=JSON.parse(t.dataset.variants);const on=lit.has(n)||vs.some(v=>lit.has(v));t.classList.toggle('lit',!!q&&on)}});
   $$('.place').forEach(s=>{{s.style.display=(!q||s.querySelector('.tile.lit'))?'':'none'}});
-  $('.qnote').textContent=q?(lit.size+' screens. Worked out from the screen list and the branches; the real version reads the code.'):''}});
-$$('.tile').forEach(t=>{{const open=()=>{{const n=t.dataset.name,d=PANEL[n];const p=$('#panel');
-  p.innerHTML=`<div class="eyebrow">${{d.place}}</div><div class="t-base">${{n}}</div><p class="t-sm">${{d.desc||'<span class="missing">No description yet. The real version has an agent write one sentence when this screen\\'s code changes, and marks it stale when the code changes again.</span>'}}</p>
+  $('.qnote').textContent=q?(q+' '+lit.size+' screens. Worked out from the screen list and the branches; the real version reads the code.'):''}});
+$$('.tile').forEach(t=>{{const open=()=>{{const n=t.dataset.name,d=PANEL[n];
+  openPanel(d.place+' · '+n,t.querySelector('figcaption .fw').textContent,`<p class="t-sm">${{d.desc||'<span class="missing">No description yet. The real version has an agent write one sentence when this screen\\'s code changes, and marks it stale when the code changes again.</span>'}}</p>
   <img class="big" src="${{THUMB(n)}}" alt="">
-  ${{d.variants.length?`<div class="eyebrow" style="margin-top:12px">${{d.variants.length}} states</div><div class="strip">${{d.variants.map(v=>`<img src="${{THUMB(v)}}" title="${{v}}" alt="">`).join('')}}</div>`:''}}
-  <div class="eyebrow" style="margin-top:12px">Work touching it</div>${{d.work.length?d.work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${{w.title}}</div><div class="hint">last worked on ${{w.days===0?'today':w.days+' days ago'}}</div></div></div>`).join(''):'<div class="muted t-xs">Nothing open.</div>'}}
-  <div class="eyebrow" style="margin-top:12px">History</div><div class="muted t-xs">One picture per merge, newest first, with the change highlighted. Starts collecting once this runs on every merge.</div>
-  <div class="acts" style="margin-top:14px;justify-content:flex-start"><button class="btn sm primary" data-does="saves your comment as a work unit with you as the source, and shows it in Today">Comment</button><button class="btn sm" data-does="opens a chat already pointed at this screen\\'s code">Ask about this</button><button class="btn sm" data-does="opens the before/after for the last merge that touched it">What changed</button><button class="btn ghost sm" onclick="document.getElementById('panel').classList.remove('open')">Close</button></div>`;
-  p.classList.add('open')}};t.onclick=open;t.onkeydown=e=>{{if(e.key==='Enter')open()}}}});
+  ${{d.variants.length?`<div class="eyebrow pe">Variations <span class="cnt">${{d.variants.length}}</span></div><div class="strip">${{d.variants.map(v=>`<img src="${{THUMB(v)}}" title="${{v}}" alt="">`).join('')}}</div>`:''}}
+  <div class="eyebrow pe">Work changing it</div>${{d.work.length?d.work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${{w.title}}</div><div class="hint">last worked on ${{w.days===0?'today':w.days+' days ago'}}</div></div></div>`).join(''):'<div class="muted t-xs">Nothing open.</div>'}}
+  <div class="eyebrow pe">History</div><div class="muted t-xs">One picture per merge, newest first, with the change highlighted. Starts collecting once this runs on every merge.</div>`,
+  `<button class="btn" data-does="opens the before/after for the last merge that touched it">What changed</button><button class="btn" data-does="opens a chat already pointed at this screen\\'s code">Ask about this</button><button class="btn primary" data-does="saves your comment as a work unit with you as the source, and shows it in Today">Comment</button>`)}};t.onclick=open;t.onkeydown=e=>{{if(e.key==='Enter')open()}}}});
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 </script></body></html>'''
