@@ -6,7 +6,9 @@ WHY a builder and not a hand-written page: every row below is a fact from the re
 version replaces the DATA block with a collector; the rendering stays. Thumbnails come from
 thumbs/ (made from the ui-consistency-audit worktree's shoot run 20261012-141521, light theme).
 """
-import json, os, re, html
+import json, os, re, html, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD
 HERE = os.path.dirname(os.path.abspath(__file__))
 THUMBS = os.path.join(HERE, 'thumbs')
 
@@ -300,6 +302,7 @@ app.append('</tbody></table></section>')
 panel = {n: dict(desc=DESC.get(n), variants=variants.get(n, []), work=[dict(title=e['title'], days=e['days']) for e in work_on(n)], place=place_of(n)) for n in base}
 
 # ----------------------------------------------------------------------------- PAGE
+vision_html, vision_nodes, vision_tot = vrender(HERE)
 CSS = open(os.path.join(HERE, 'cc.css')).read()
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><title>YouCoded — Today</title>
 <style>{CSS}
@@ -326,19 +329,22 @@ page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset
 .blocks{{border-collapse:collapse;width:100%}} .blocks th,.blocks td{{padding:6px 8px;text-align:left;border-bottom:1px solid var(--edge-dim);vertical-align:middle}} .blocks thead th{{font-size:11px;color:var(--fg-muted);font-weight:500}} .blocks tbody th{{font-size:12px;font-weight:500;white-space:nowrap}}
 .bdot{{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid var(--fg-muted)}} .bdot.d2{{background:var(--fg);border-color:var(--fg)}} .bdot.d1{{background:transparent}} .bdot.d0{{opacity:.15}}
 .badge.warn{{border-color:var(--status-warn);color:var(--status-warn)}}
-.panel{{position:fixed;top:48px;right:0;bottom:0;width:380px;background:var(--panel);border-left:1px solid var(--edge);padding:16px;overflow:auto;transform:translateX(100%);transition:transform var(--dur-reveal) var(--ease);z-index:5}} .panel.open{{transform:none}}
+.panel{{position:fixed;top:48px;right:0;bottom:0;width:380px;max-width:45vw;overflow-wrap:anywhere;background:var(--panel);border-left:1px solid var(--edge);padding:16px;overflow:auto;transform:translateX(100%);transition:transform var(--dur-reveal) var(--ease);z-index:5}} .panel.open{{transform:none}}
 .panel img.big{{width:100%;border-radius:var(--radius-sm);border:1px solid var(--edge-dim)}} .panel .strip{{display:flex;gap:6px;overflow:auto;padding:4px 0}} .panel .strip img{{height:54px;border-radius:3px;border:1px solid var(--edge-dim)}}
 .toast{{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--accent);color:var(--on-accent);padding:10px 14px;border-radius:var(--radius-md);font-size:12px;max-width:560px;opacity:0;transition:opacity var(--dur-hover);z-index:9;pointer-events:none}} .toast.show{{opacity:1}}
 .view{{display:none}} .view.on{{display:block}}
+body:has(.panel.open) .cc-main{{padding-right:400px}}
+{VCSS}{SVG_CSS}
 select{{font:inherit;font-size:12px;background:var(--inset);color:var(--fg);border:1px solid var(--edge);border-radius:var(--radius-md);padding:4px 8px}}
 </style></head><body>
 <header class="cc-header"><span class="title">YouCoded</span>
-<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-view="today">Today</button><button role="tab" aria-selected="false" data-view="app">The app <span class="count">{len(base)} screens</span></button></div>
+<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-view="vision">The big picture <span class="count">{vision_tot['total']} things</span></button><button role="tab" aria-selected="false" data-view="today">Today</button><button role="tab" aria-selected="false" data-view="app">The app <span class="count">{len(base)} screens</span></button></div>
 <span class="spacer"></span><span class="muted t-2xs">as of Oct 12, 2026 · latest main</span>
 <select id="theme"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></header>
 <main class="cc-main">
 <div class="banner">A draft to react to, not a working tool. Every row is real as of Oct 12: branches, pull requests, merges, the roadmap, and today's screenshot run. Screenshots come from the screen-restyle branch, not yet from main. Buttons only say what they would do. The one-sentence screen descriptions were written for this draft; the real version has an agent write them when a screen's code changes.</div>
-<div id="today" class="view on">{''.join(today)}</div>
+<div id="vision" class="view on">{vision_html}</div>
+<div id="today" class="view">{''.join(today)}</div>
 <div id="app" class="view">{''.join(app)}</div>
 </main>
 <aside class="panel" id="panel"></aside>
@@ -362,6 +368,8 @@ $$('.tile').forEach(t=>{{const open=()=>{{const n=t.dataset.name,d=PANEL[n];cons
   <div class="eyebrow" style="margin-top:12px">History</div><div class="muted t-xs">One picture per merge, newest first, with the change highlighted. Starts collecting once this runs on every merge.</div>
   <div class="acts" style="margin-top:14px;justify-content:flex-start"><button class="btn sm primary" data-does="saves your comment as a work unit with you as the source, and shows it in Today">Comment</button><button class="btn sm" data-does="opens a chat already pointed at this screen\\'s code">Ask about this</button><button class="btn sm" data-does="opens the before/after for the last merge that touched it">What changed</button><button class="btn ghost sm" onclick="document.getElementById('panel').classList.remove('open')">Close</button></div>`;
   p.classList.add('open')}};t.onclick=open;t.onkeydown=e=>{{if(e.key==='Enter')open()}}}});
+</script><script>
+{(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 </script></body></html>'''
 open(os.path.join(HERE, 'mockup.html'), 'w').write(page)
 print('screens', len(names), 'base', len(base), 'places', {p: len(v) for p, v in by_place.items()})

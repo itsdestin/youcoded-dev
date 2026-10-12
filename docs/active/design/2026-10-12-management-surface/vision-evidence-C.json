@@ -1,0 +1,1422 @@
+{
+ "nodes": {
+  "sync.follow": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Backup and sync",
+     "date": "2026-09-20",
+     "note": "Sync through your own GitHub account shipped in 1.3.0 with a devices list and snapshots."
+    },
+    {
+     "kind": "code",
+     "ref": "docs/MAP.md row 'Sync spaces & GitHub' (desktop/src/main/sync-spaces/)",
+     "date": null,
+     "note": "The sync engine, GitHub transport and project list exist in the app."
+    }
+   ],
+   "why": "Your chats and projects keep in step between your computers through your own GitHub account.",
+   "needs": [],
+   "shares": []
+  },
+  "sync.follow.chats": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Sessions: Conversations that sync between devices",
+     "date": "2026-09-20",
+     "note": "Resumable on another machine with a clean takeover prompt."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: 'three-platform sync verified' note (Gate 2 closed)",
+     "date": "2026-07-30",
+     "note": "Destin confirmed sync across Linux, Mac and Windows on a beta."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: 'Same conversation on two computers: four gaps' and 'over 50 MB stop updating'",
+     "date": "2026-10-05",
+     "note": "Open gaps remain: very long chats stop syncing and takeover has holes. Phones are not covered by this sync (phones reach the computer instead)."
+    }
+   ],
+   "why": "You can start a chat on one computer and resume it on another, with a prompt if it is open elsewhere.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "sync.follow.remote",
+     "because": "Both are about picking up the same chat from another device, by two different routes (copy vs. live link)."
+    }
+   ]
+  },
+  "sync.follow.projects": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Backup and sync",
+     "date": "2026-09-20",
+     "note": "Projects and conversations kept in step across machines."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: 'Per-project description - synced'",
+     "date": "2026-08-26",
+     "note": "The project list and descriptions sync (youcoded PR #330)."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: 'Personal sync history only grows'",
+     "date": "2026-10-05",
+     "note": "History grows without limit (8 GB on one machine), so a new device must download it all."
+    }
+   ],
+   "why": "Your project folders and their files are copied between your computers.",
+   "needs": [],
+   "shares": []
+  },
+  "sync.follow.safety": {
+   "status": "building",
+   "since": "2026-09-11",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: 'Two devices editing the same file: no way in the app to see or resolve the conflict'",
+     "date": "2026-09-23",
+     "note": "Open and postponed to 1.3.3; design not settled."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/sync-safety-audit-20260908 (youcoded-dev)",
+     "date": "2026-09-11",
+     "note": "Holds the sync safety spec, plans and an approved conflict-copy design deck, but no app code."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md",
+     "date": null,
+     "note": "Investigation behind the resolver."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Backup and sync: Honest status",
+     "date": "2026-09-20",
+     "note": "Shipped part: status turns green only on proof, stale warnings clear themselves."
+    }
+   ],
+   "why": "Sync is meant never to lose or duplicate your work; today a clash between two devices is only a warning you cannot act on.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "sync.mesh.handoff",
+     "because": "Both depend on the same lease (who is writing a chat right now) logic."
+    }
+   ]
+  },
+  "sync.follow.remote": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Remote access",
+     "date": "2026-09-20",
+     "note": "Use the app from a phone or another browser, over Tailscale, with paired devices."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: 'one-core' remote entries (itsdestin/youcoded#604)",
+     "date": "2026-10-05",
+     "note": "182 hand-written duplicate features collapsed into one list shared by phone and computer."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/remote-access.md (9 open entries)",
+     "date": "2026-10-04",
+     "note": "Open: sign in without Tailscale, browser encryption (no code), setup clarity, no mic on phone browsers."
+    }
+   ],
+   "why": "From your phone or any browser you can use the assistant that is running on your computer.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "everywhere.platforms.web",
+     "because": "Same feature: the browser client is how remote access reaches a phone."
+    },
+    {
+     "id": "everywhere.platforms.onecore",
+     "because": "Remote access was rebuilt on the one-core work."
+    }
+   ]
+  },
+  "sync.mesh": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Your devices act as one pool that work can move across.",
+   "needs": [
+    {
+     "id": "sync.follow.chats",
+     "because": "Mesh builds on conversations that already follow you."
+    },
+    {
+     "id": "agents.background.scheduled",
+     "because": "Handing off needs something to hand off."
+    }
+   ],
+   "shares": []
+  },
+  "sync.mesh.handoff": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: 'Parked ideas: YouCoded Mesh and Cloud' (a)",
+     "date": "2026-09-08",
+     "note": "Mesh named by Destin 2026-09-08, parked for v1.4; needs suitability, permissions and no-duplicate-runs designed."
+    }
+   ],
+   "why": "A running job moves to whichever of your devices is on, without you choosing.",
+   "needs": [
+    {
+     "id": "agents.background.scheduled",
+     "because": "Mesh has nothing to move until scheduled work exists."
+    },
+    {
+     "id": "sync.follow.projects",
+     "because": "The chosen device needs the project files."
+    },
+    {
+     "id": "sync.follow.safety",
+     "because": "Two devices must not run or write the same thing twice."
+    }
+   ],
+   "shares": [
+    {
+     "id": "agents.background.device",
+     "because": "Same item described from the agents side."
+    }
+   ]
+  },
+  "sync.mesh.backup": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: 'Parked ideas: sync' (b) restore-from-backup and (c) YouCoded Cloud",
+     "date": "2026-07-03",
+     "note": "Only parked ideas. Computers already copy projects; phones do not take part in project sync, and the old phone restore flow was removed."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Android: Removed the phone-only restore-from-backup flow",
+     "date": "2026-09-20",
+     "note": "Restore was removed pending redesign."
+    }
+   ],
+   "why": "Every project is stored on all your devices, phone included.",
+   "needs": [
+    {
+     "id": "sync.follow.projects",
+     "because": "Computer-to-computer project copying is the base."
+    },
+    {
+     "id": "everywhere.platforms.onecore",
+     "because": "Phone needs the shared core before it can run sync."
+    }
+   ],
+   "shares": []
+  },
+  "sync.mesh.anydevice": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "You hand a request to any one device and it coordinates the others.",
+   "needs": [
+    {
+     "id": "sync.mesh.handoff",
+     "because": "Coordination across devices requires hand-off."
+    },
+    {
+     "id": "sync.follow.remote",
+     "because": "The request reaches a device through the same live link."
+    }
+   ],
+   "shares": []
+  },
+  "sync.mesh.cloud": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: Mesh and Cloud (b); docs/roadmap/sync.md parked (c) YouCoded Cloud sync",
+     "date": "2026-09-08",
+     "note": "Parked ideas for v1.4: consent, spending limits and privacy not designed."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/remote-access.md: 'sign in to a YouCoded account and reach your computer without Tailscale'",
+     "date": "2026-09-08",
+     "note": "Related long-horizon idea."
+    }
+   ],
+   "why": "A paid optional fallback that runs your jobs when none of your devices are on.",
+   "needs": [
+    {
+     "id": "sync.mesh.handoff",
+     "because": "Cloud is the last stop after device hand-off."
+    }
+   ],
+   "shares": [
+    {
+     "id": "sync.follow.remote",
+     "because": "Cloud sign-in would also replace Tailscale for remote access."
+    }
+   ]
+  },
+  "agents.background": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: 'Agents & Automations - a third top-level view'",
+     "date": "2026-10-05",
+     "note": "Blocked on Destin's 'Assistants made of Duties' ruling, cost accounting and a helper journal; Destin postponed it to 1.3.2/1.3.3."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-01-agent-platform-vision-and-state.md",
+     "date": "2026-09-01",
+     "note": "Verified: no scheduling code exists in either app."
+    }
+   ],
+   "why": "Work that runs by itself while you are away, with an inbox of results.",
+   "needs": [],
+   "shares": []
+  },
+  "agents.background.scheduled": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: Agents & Automations (cron / 'run now', budgets as hard stops)",
+     "date": "2026-09-01",
+     "note": "Planned and blocked; verified no scheduling code exists."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-01-agent-platform-vision-and-state.md",
+     "date": "2026-09-01",
+     "note": "Layer 3 'nothing built'; unit of organization under question."
+    }
+   ],
+   "why": "An agent that runs on a timer, like checking email at 5 p.m.",
+   "needs": [
+    {
+     "id": "agents.unit.recipe",
+     "because": "A schedule needs a saved agent definition to run."
+    },
+    {
+     "id": "agents.background.personal",
+     "because": "Needs a home that is not tied to a project (the 'Your Assistant' item)."
+    }
+   ],
+   "shares": [
+    {
+     "id": "agents.background.device",
+     "because": "Where it runs is decided by Mesh."
+    }
+   ]
+  },
+  "agents.background.personal": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: 'Every install should come with a built-in project, Your Assistant'",
+     "date": "2026-09-19",
+     "note": "Decision pending; marked a 1.3.1 blocker. Also the 'No folder' choice exists but was never tested."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Sessions without a folder",
+     "date": "2026-09-20",
+     "note": "Shipped partial: a 'No folder' session in an empty app-owned folder."
+    }
+   ],
+   "why": "A standing assistant not tied to any project, for odd requests.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "projects.units.agent",
+     "because": "Likely the same 'attached to nothing' agent as project agents."
+    },
+    {
+     "id": "agents.unit.recipe",
+     "because": "Needs the same saved definition."
+    }
+   ]
+  },
+  "agents.background.view": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "ROADMAP.md: 'the Agents & Automations view has no design'",
+     "date": "2026-10-05",
+     "note": "Planned only; no design exists."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: Agents & Automations",
+     "date": "2026-10-05",
+     "note": "Same entry as the scheduler; this is its inbox half. Today only a helpers popup inside one chat exists."
+    }
+   ],
+   "why": "One screen listing every agent and what it is doing.",
+   "needs": [
+    {
+     "id": "agents.background.scheduled",
+     "because": "Nothing to list until agents run unattended."
+    },
+    {
+     "id": "agents.unit.recipe",
+     "because": "Needs a record of each agent."
+    }
+   ],
+   "shares": [
+    {
+     "id": "together.workflow.surface",
+     "because": "Both are 'one place to see everything running'."
+    }
+   ]
+  },
+  "agents.background.device": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: Mesh and Cloud (a): 'scheduled duties without you managing which one'",
+     "date": "2026-09-08",
+     "note": "Parked idea for v1.4."
+    }
+   ],
+   "why": "A scheduled agent runs on whichever device is suitable.",
+   "needs": [
+    {
+     "id": "sync.mesh.handoff",
+     "because": "This is Mesh hand-off applied to agents."
+    },
+    {
+     "id": "agents.background.scheduled",
+     "because": "Needs scheduled agents first."
+    }
+   ],
+   "shares": [
+    {
+     "id": "sync.mesh.handoff",
+     "because": "Same item from the other side."
+    }
+   ]
+  },
+  "agents.unit": {
+   "status": "building",
+   "since": "2026-08-26",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Helpers (specialists)",
+     "date": "2026-09-20",
+     "note": "Helper sessions shipped: own tools and permissions, background, steerable, defined by your own files."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: 'Specialists stage two - plans'",
+     "date": "2026-09-04",
+     "note": "Multi-step plans decided in spec, gated on Destin's decisions."
+    },
+    {
+     "kind": "branch",
+     "ref": "feat/specialists-plans-ui and feat/specialists-plans-5b (youcoded)",
+     "date": "2026-09-24",
+     "note": "Unmerged branches with plan-screen and spending work."
+    }
+   ],
+   "why": "The agent as a reusable thing: helpers exist today, saved recipes and workflows do not.",
+   "needs": [],
+   "shares": []
+  },
+  "agents.unit.recipe": {
+   "status": "building",
+   "since": "2026-08-26",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "youcoded/desktop/src/main/harness/specialists/",
+     "date": "2026-08-26",
+     "note": "Specialist = name, instructions, allowed tools, read/write rule, model preference; from built-ins, ~/.youcoded/specialists or .claude/agents."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Helpers can be defined by your own files",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: parked (l) 'Assistants made of Duties'",
+     "date": "2026-08-16",
+     "note": "The intended unit for automations is undecided; Destin's ruling owed."
+    }
+   ],
+   "why": "A saved agent definition (model, instructions, tools, limits). The nearest thing today is a Specialist file.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.steer.specialists",
+     "because": "Same thing: Specialists are the reusable agent unit as seen from inside a chat."
+    },
+    {
+     "id": "projects.units.agent",
+     "because": "Project agents are Specialist files in <project>/.claude/agents; same file format."
+    },
+    {
+     "id": "agents.background.personal",
+     "because": "A personal agent is a recipe with no project."
+    }
+   ]
+  },
+  "agents.unit.workflows": {
+   "status": "building",
+   "since": "2026-09-04",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: 'Specialists stage two - plans'",
+     "date": "2026-09-04",
+     "note": "Probes ran 2026-09-04 (4 at once is the ceiling); gated on decisions."
+    },
+    {
+     "kind": "branch",
+     "ref": "feat/specialists-plans-ui",
+     "date": "2026-09-24",
+     "note": "Unmerged plan UI and spending-math fixes."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Helpers each use a cheaper or stronger model",
+     "date": "2026-09-20",
+     "note": "Shipped base: parallel helpers with their own model choice."
+    }
+   ],
+   "why": "Several agents work on one job, each with its own context and model.",
+   "needs": [
+    {
+     "id": "agents.unit.recipe",
+     "because": "Plans reference saved agents."
+    }
+   ],
+   "shares": [
+    {
+     "id": "chat.steer.specialists",
+     "because": "Plans are launched from chat and use helpers."
+    }
+   ]
+  },
+  "agents.unit.inpages": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "A Page can contain a live agent.",
+   "needs": [
+    {
+     "id": "agents.unit.recipe",
+     "because": "A page needs a packaged agent to embed."
+    }
+   ],
+   "shares": [
+    {
+     "id": "projects.units.page",
+     "because": "Pages are sandboxed from the assistant today; putting an agent inside one is the missing bridge (id assumed from the projects pillar)."
+    }
+   ]
+  },
+  "everywhere.platforms": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Installer and updates, Android, Remote access",
+     "date": "2026-09-20",
+     "note": "Real Linux installers, Mac and Windows builds, Android app, phone browser."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/other-features.md: 'Explore bringing YouCoded to iOS'",
+     "date": null,
+     "note": "iPhone only works through Safari to a computer; no app."
+    }
+   ],
+   "why": "The app installs on Windows, Mac, Linux and Android and opens in a phone browser.",
+   "needs": [],
+   "shares": []
+  },
+  "everywhere.platforms.desktop": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Real Linux installers (.deb .rpm .pacman AppImage), macOS signature restored",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: 'Cross-platform first-run testing: 5 open pieces'",
+     "date": "2026-10-05",
+     "note": "Linux installers and Windows first run still untested in parts; AppImage needs libfuse2."
+    }
+   ],
+   "why": "Windows, Mac and Linux installs all exist (Mac and Linux less polished).",
+   "needs": [],
+   "shares": []
+  },
+  "everywhere.platforms.android": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Android",
+     "date": "2026-09-20",
+     "note": "Honest builds, notifications, parity fixes."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/android-only.md: 'Rebuild the Android app'",
+     "date": "2026-10-04",
+     "note": "Rebuild planned as phases A0-A6; Destin postponed to 1.3.2+, tied to Play/iPhone listings."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: 'No Google Play listing'",
+     "date": "2026-10-05",
+     "note": "No store listing; 'not a current priority'."
+    }
+   ],
+   "why": "An Android app exists, installed from a downloaded file; a rebuilt, store-ready version is planned.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "everywhere.platforms.onecore",
+     "because": "The rebuild is exactly the move onto the shared core."
+    }
+   ]
+  },
+  "everywhere.platforms.web": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Remote access",
+     "date": "2026-09-20",
+     "note": "Use the app from a phone or another browser."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/remote-access.md 'standalone' section",
+     "date": "2026-10-04",
+     "note": "Runs only against your own computer over Tailscale; no hosted web version, no encryption, no mic yet."
+    }
+   ],
+   "why": "Open the app in any browser, including a phone, by pairing with your computer.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "sync.follow.remote",
+     "because": "Same feature."
+    }
+   ]
+  },
+  "everywhere.platforms.onecore": {
+   "status": "done",
+   "since": "2026-10-05",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: 182 features hand-written twice (itsdestin/youcoded#604)",
+     "date": "2026-10-05",
+     "note": "Merged 2026-10-05 as the one-core refactor."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/plans/2026-09-24-android-rebuild-plan.md",
+     "date": "2026-09-24",
+     "note": "Phases A0-A6 move Android onto the same core; A0/A1 'can start now', none merged."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/remote-access.md: 'Phone and computer parity: what is still missing after one-core'",
+     "date": "2026-09-11",
+     "note": "Android joining the same protocol (A2-A4) remains."
+    }
+   ],
+   "why": "Phone browser and computer now share one feature list; the Android app does not yet.",
+   "needs": [
+    {
+     "id": "everywhere.platforms.android",
+     "because": "The Android half is the unfinished part."
+    }
+   ],
+   "shares": []
+  },
+  "everywhere.platforms.signed": {
+   "status": "building",
+   "since": "2026-10-01",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "youcoded commit 'ci(desktop): sign Windows installers with Azure Artifact Signing'",
+     "date": "2026-10-01",
+     "note": "Windows signed as 'Destin Moss'."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: 'Mac installers: nothing is signed or notarized'",
+     "date": "2026-10-01",
+     "note": "Blocked; P1 for 1.3.1; Apple refused the LLC account 2026-10-01."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Signed updates",
+     "date": "2026-09-20",
+     "note": "The app verifies a signed update; installers themselves not yet signed on Mac."
+    }
+   ],
+   "why": "Windows installers are signed; Mac is blocked because Apple refused the company's account.",
+   "needs": [],
+   "shares": []
+  },
+  "everywhere.firstrun": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - A first-run tour; Windows first-run install made resilient",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    }
+   ],
+   "why": "A first-run setup and tour get new users going.",
+   "needs": [],
+   "shares": []
+  },
+  "everywhere.firstrun.setup": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Windows first-run install made resilient; connecting GitHub without the terminal",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: 'Cross-platform first-run testing'",
+     "date": "2026-10-05",
+     "note": "Not yet tested end to end on every system."
+    }
+   ],
+   "why": "On first launch the app installs what it needs and signs you in.",
+   "needs": [],
+   "shares": []
+  },
+  "everywhere.firstrun.offline": {
+   "status": "building",
+   "since": "2026-09-14",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Local models... chat fully offline",
+     "date": "2026-09-20",
+     "note": "Shipped for local models."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/offline-auth-bypass (youcoded-dev)",
+     "date": "2026-09-14",
+     "note": "One commit: an answered design deck for offline and sign-in expiry; no app code."
+    }
+   ],
+   "why": "Local models chat offline today; working with an expired sign-in is designed but not built.",
+   "needs": [],
+   "shares": []
+  },
+  "together.contribute": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Relicensed from GPLv3 to MIT; bug reports",
+     "date": "2026-09-20",
+     "note": "Whole repository is MIT."
+    }
+   ],
+   "why": "The app is open source and users can report problems and see the plan.",
+   "needs": [],
+   "shares": []
+  },
+  "together.contribute.source": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Relicensed ... MIT",
+     "date": "2026-09-20",
+     "note": "Public MIT repository."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: public repo hygiene entry",
+     "date": "2026-10-02",
+     "note": "Open: an old personal memo remains reachable by address in the public office add-on repo."
+    },
+    {
+     "kind": "code",
+     "ref": "docs/active/specs/2026-09-08-repository-public-truth-audit-design.md",
+     "date": null,
+     "note": "Audit of what the public repo says."
+    }
+   ],
+   "why": "The app's source is public under MIT; the assistant can change its own copy.",
+   "needs": [],
+   "shares": []
+  },
+  "together.contribute.bugs": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Bug reports start from the error you hit",
+     "date": "2026-09-20",
+     "note": "Works with no AI; shows all evidence first."
+    },
+    {
+     "kind": "code",
+     "ref": "docs/roadmap/... Settings > Development > Known issues",
+     "date": "2026-09-20",
+     "note": "Opens GitHub Issues; recon notes 54 issues, 0 open."
+    }
+   ],
+   "why": "Report a bug from inside the app, with evidence shown before it is sent.",
+   "needs": [],
+   "shares": []
+  },
+  "together.contribute.roadmap": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "Settings > Development 'Roadmap' row (recon.md section 7)",
+     "date": null,
+     "note": "Opens youcoded-dev/ROADMAP.md on GitHub."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "ROADMAP.md",
+     "date": null,
+     "note": "Hand-written; area files hold the detail; most entries bundle several items."
+    }
+   ],
+   "why": "A Roadmap row in Settings opens the public ROADMAP.md on GitHub.",
+   "needs": [],
+   "shares": []
+  },
+  "together.workflow": {
+   "status": "done",
+   "since": "2026-09-04",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/shipped.md: review deck one tool with one look",
+     "date": "2026-09-07",
+     "note": "Shipped tooling."
+    }
+   ],
+   "why": "How the app is built: review decks, reviewers, measurements and checks.",
+   "needs": [],
+   "shares": []
+  },
+  "together.workflow.decks": {
+   "status": "done",
+   "since": "2026-08-26",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: 'The review deck is one tool with one look'",
+     "date": "2026-09-07",
+     "note": "Shipped."
+    },
+    {
+     "kind": "code",
+     "ref": "scripts/ui-review/review-cards.py",
+     "date": "2026-08-26",
+     "note": "435 saved answer files exist under docs/."
+    }
+   ],
+   "why": "Destin reviews each design as a deck of pictures and answers saved to files.",
+   "needs": [],
+   "shares": []
+  },
+  "together.workflow.uiagents": {
+   "status": "done",
+   "since": "2026-09-04",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "scripts/ui-review/ux-tester.md, code-reviewer.md, grader.md, contract-agent.md",
+     "date": "2026-09-04",
+     "note": "Briefs for the context-free tester, reviewer and grader."
+    },
+    {
+     "kind": "code",
+     "ref": "docs/active/plans/2026-09-01-feature-flow-plan.md",
+     "date": "2026-09-01",
+     "note": "The feature-flow route that requires them."
+    }
+   ],
+   "why": "Fresh reviewer agents check every new interface before Destin sees it.",
+   "needs": [],
+   "shares": []
+  },
+  "together.workflow.surface": {
+   "status": "building",
+   "since": "2026-10-12",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/management-surface-20261012 (this branch)",
+     "date": "2026-10-12",
+     "note": "Commit 'management surface: first draft with real data'."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/master-plan-20261006",
+     "date": "2026-10-08",
+     "note": "The earlier attempt; its data pipeline scripts/command-center is reusable."
+    }
+   ],
+   "why": "This management surface; a first draft with real data exists.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "agents.background.view",
+     "because": "Both aim to show everything in flight in one place."
+    }
+   ]
+  },
+  "together.workflow.perf": {
+   "status": "done",
+   "since": "2026-08-26",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "scripts/perf-lab/run.mjs",
+     "date": "2026-08-26",
+     "note": "Orchestrator and report writer; 157 reports in perf-reports/."
+    },
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Speed",
+     "date": "2026-09-20",
+     "note": "Measured wins shipped in 1.3.0."
+    },
+    {
+     "kind": "code",
+     "ref": "docs/active/specs/2026-08-23-perf-lab-and-optimization-loop-design.md",
+     "date": "2026-08-23",
+     "note": "Design."
+    }
+   ],
+   "why": "A repeatable speed lab measures the app and writes a report each run.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "together.workflow.verify",
+     "because": "Both are automatic checks that run on changes."
+    }
+   ]
+  },
+  "together.workflow.verify": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "scripts/verify.sh",
+     "date": null,
+     "note": "Combined check: types, related tests, knip, lint, ast-grep; could not confirm any all-orderings test tool."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: 'Waiting on CI runs eats whole sessions'",
+     "date": "2026-09-20",
+     "note": "Faster check loops wanted, not built."
+    }
+   ],
+   "why": "Automatic checks cover types, tests, dead code and style; testing every ordering of risky timing is not confirmed.",
+   "needs": [],
+   "shares": []
+  }
+ },
+ "added": [
+  {
+   "parent": "sync.follow",
+   "id": "sync.added.takeover",
+   "title": "Take over a chat that is open on another computer",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - clean takeover prompt",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: 'Same conversation on two computers: four gaps'",
+     "date": "2026-09-01",
+     "note": "Four gaps when the hub is down or a computer slept."
+    }
+   ],
+   "why": "Opening a chat that another of your computers is using asks you before taking it over."
+  },
+  {
+   "parent": "sync.follow.safety",
+   "id": "sync.added.conflictcopy",
+   "title": "Conflict copies when two devices edit one file",
+   "status": "building",
+   "since": "2026-09-11",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: Two devices editing the same file",
+     "date": "2026-09-23",
+     "note": "No screen to find or pick a copy."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/sync-safety-audit-20260908",
+     "date": "2026-09-11",
+     "note": "Approved design deck only."
+    }
+   ],
+   "why": "Both versions are kept, but you cannot yet find or choose between them in the app."
+  },
+  {
+   "parent": "sync.follow",
+   "id": "sync.added.longchats",
+   "title": "Very long conversations sync in pieces",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: Very long conversations (over 50 MB)",
+     "date": "2026-09-16",
+     "note": "Six of Destin's chats stopped updating elsewhere."
+    }
+   ],
+   "why": "Chats over 50 MB currently stop updating on your other devices."
+  },
+  {
+   "parent": "sync.follow",
+   "id": "sync.added.history",
+   "title": "Choose how much sync history to keep",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: Personal sync history only grows",
+     "date": "2026-10-05",
+     "note": "8 GB on one machine vs 5.6 GB of real files."
+    }
+   ],
+   "why": "Old versions pile up forever and a new device must download all of it."
+  },
+  {
+   "parent": "sync.follow",
+   "id": "sync.added.securitygaps",
+   "title": "Close sync security gaps",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/sync.md: Sync security gaps",
+     "date": "2026-09-21",
+     "note": "Secrets in old history, phone backup copies keys, a device can pose as another."
+    }
+   ],
+   "why": "Three known ways sync could expose secrets are filed but not fixed."
+  },
+  {
+   "parent": "agents.unit",
+   "id": "agents.added.helpers",
+   "title": "Helpers hired by the assistant inside a chat",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Helpers (specialists)",
+     "date": "2026-09-20",
+     "note": "Background, steerable, own permissions and model."
+    }
+   ],
+   "why": "The assistant can already hand parts of a job to separate helper sessions."
+  },
+  {
+   "parent": "agents.unit",
+   "id": "agents.added.budget",
+   "title": "Approve more than 30 helpers in a session",
+   "status": "building",
+   "since": "2026-09-15",
+   "evidence": [
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-15-specialist-budget-permission-design.md",
+     "date": "2026-09-15",
+     "note": "In flight."
+    }
+   ],
+   "why": "After 30 helpers the assistant refuses more; this lets you allow the next one."
+  },
+  {
+   "parent": "agents.background",
+   "id": "agents.added.project-skills",
+   "title": "Choose skills and tools per project",
+   "status": "building",
+   "since": "2026-09-24",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/plugin-project-controls (youcoded draft #571)",
+     "date": "2026-09-24",
+     "note": "Built, waiting on Destin's review."
+    }
+   ],
+   "why": "Each project picks which skills and connections the assistant uses."
+  },
+  {
+   "parent": "agents.unit",
+   "id": "agents.added.mcp",
+   "title": "Add connected tools (MCP) from a settings screen",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/native-harness.md: MCP servers can only be set up by hand-editing",
+     "date": "2026-09-01",
+     "note": "Still unbuilt."
+    }
+   ],
+   "why": "Today connecting an outside tool means editing a config file."
+  },
+  {
+   "parent": "everywhere.platforms.desktop",
+   "id": "everywhere.added.linux",
+   "title": "Linux packages (.deb, .rpm, .pacman, AppImage)",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Real Linux installers",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    }
+   ],
+   "why": "Linux users install with their normal package manager."
+  },
+  {
+   "parent": "everywhere.platforms.signed",
+   "id": "everywhere.added.winsign",
+   "title": "Windows installers signed",
+   "status": "done",
+   "since": "2026-10-01",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "commit 'ci(desktop): sign Windows installers with Azure Artifact Signing'",
+     "date": "2026-10-01",
+     "note": "Merged via the one-core merge."
+    }
+   ],
+   "why": "Windows shows a named publisher instead of a scary warning."
+  },
+  {
+   "parent": "everywhere.platforms.signed",
+   "id": "everywhere.added.macsign",
+   "title": "Mac installers signed and notarized",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: Mac installers",
+     "date": "2026-10-01",
+     "note": "Blocked; Apple refused the company account."
+    }
+   ],
+   "why": "Mac downloads may open as 'broken' until this is done."
+  },
+  {
+   "parent": "everywhere.platforms.web",
+   "id": "everywhere.added.remoteoffline",
+   "title": "Helpful page when the phone cannot reach the computer",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/remote-access.md: Remote access just doesn't work sometimes",
+     "date": "2026-09-09",
+     "note": "Service-worker fix designed."
+    }
+   ],
+   "why": "Phone says what is wrong instead of the browser's blank error."
+  },
+  {
+   "parent": "everywhere.platforms.web",
+   "id": "everywhere.added.remoteenc",
+   "title": "Encrypted remote connection (HTTPS)",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/remote-access.md: Browser encryption",
+     "date": "2026-09-10",
+     "note": "Approved design; no code."
+    }
+   ],
+   "why": "Would give phones the microphone and remove 'Not secure'."
+  },
+  {
+   "parent": "everywhere.platforms.android",
+   "id": "everywhere.added.play",
+   "title": "Google Play listing",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/dev-workspace.md: No Google Play listing",
+     "date": "2026-10-05",
+     "note": "Parked; 1.3.2+."
+    }
+   ],
+   "why": "Android installs only from a downloaded file today."
+  },
+  {
+   "parent": "everywhere.platforms",
+   "id": "everywhere.added.ios",
+   "title": "iPhone app",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/other-features.md: Explore bringing YouCoded to iOS",
+     "date": "2026-10-05",
+     "note": "Exploration only."
+    }
+   ],
+   "why": "iPhones reach the app only through Safari."
+  },
+  {
+   "parent": "everywhere.platforms.desktop",
+   "id": "everywhere.added.update",
+   "title": "Signed in-app updates and beta channel",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "youcoded/CHANGELOG.md (origin/master) [1.3.0] - Signed updates; Get beta builds",
+     "date": "2026-09-20",
+     "note": "Shipped."
+    }
+   ],
+   "why": "The Update button verifies a download before installing."
+  },
+  {
+   "parent": "together.workflow",
+   "id": "together.added.shoot",
+   "title": "Screenshot every screen in every theme",
+   "status": "done",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "scripts/shoot/ (about 216 screens)",
+     "date": null,
+     "note": "shoot and explore tools."
+    }
+   ],
+   "why": "Pictures of every screen prove a change looks right."
+  },
+  {
+   "parent": "together.workflow",
+   "id": "together.added.workbench",
+   "title": "UI Workbench with a fake backend",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "scripts/run-workbench.sh",
+     "date": null,
+     "note": "Real renderer, fake backend."
+    }
+   ],
+   "why": "Interfaces can be designed and approved before the backend exists."
+  },
+  {
+   "parent": "together.workflow",
+   "id": "together.added.xray",
+   "title": "Developer X-ray tools",
+   "status": "building",
+   "since": "2026-10-04",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/dev-xray-tools",
+     "date": "2026-10-04",
+     "note": "Unmerged design decks."
+    }
+   ],
+   "why": "Developer-facing aid for seeing inside the running app."
+  },
+  {
+   "parent": "together.workflow",
+   "id": "together.added.devdash",
+   "title": "Dev dashboard",
+   "status": "building",
+   "since": "2026-09-05",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "feat/dev-dashboard and design/dev-dashboard",
+     "date": "2026-09-05",
+     "note": "Unmerged."
+    }
+   ],
+   "why": "An earlier attempt at an overview of work in flight."
+  },
+  {
+   "parent": "together.workflow",
+   "id": "together.added.closeout",
+   "title": "Close-out and wrap-up checks",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "scripts/close-out.sh; docs/wrap-ups.md",
+     "date": null,
+     "note": "End-of-session ledger of 99 sections."
+    }
+   ],
+   "why": "Branches and docs are tidied at the end of each session."
+  },
+  {
+   "parent": "together.contribute",
+   "id": "together.added.legal",
+   "title": "Company, privacy and terms pages",
+   "status": "building",
+   "since": "2026-09-03",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/operations.md: Public launch paperwork for 1.3.1",
+     "date": "2026-09-16",
+     "note": "LLC done; trademark in the mail."
+    }
+   ],
+   "why": "Needed for a public launch."
+  },
+  {
+   "parent": "together.contribute",
+   "id": "together.added.reddit",
+   "title": "r/youcoded community",
+   "status": "done",
+   "since": "2026-09-10",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "docs/roadmap/operations.md: Moderating r/youcoded",
+     "date": "2026-09-10",
+     "note": "Set up; moderation by hand."
+    }
+   ],
+   "why": "A place for users to post bugs and ideas."
+  }
+ ],
+ "insights": {
+  "sync": [
+   "Most of 'Sync' is done for computers: chats and projects follow you between Windows, Mac and Linux machines through your own GitHub account. The phone is the exception: it reaches your computer live rather than holding its own copy.",
+   "Mesh (hand-off, any-device, cloud) is all idea-stage: one parked roadmap entry marked v1.4. Nothing in the app picks a device for you.",
+   "Mesh cannot start before scheduled agents exist; there is nothing to hand off. The real blocker for Mesh is the Agents pillar, not Sync.",
+   "The weakest done item is 'never loses or duplicates your work': a clash between two devices is still just a vanishing warning, and the fix is postponed to 1.3.3.",
+   "Remote access and sync solve the same wish (continue anywhere) by different means, so they are two rows here but one idea for users."
+  ],
+  "agents": [
+   "Everything under 'run while you're away' is blocked on one decision: what an automation is made of (Destin's 'Assistants made of Duties'). No scheduling code exists in either app.",
+   "Helpers (Specialists), the saved recipe, project agents and a personal agent are largely one thing described several times; the Specialist file is the only real version today.",
+   "The agent view has no design at all; the nearest real thing is a helpers popup inside a single chat.",
+   "Workflows (several agents, different models) are furthest along: plans are specified, probed and have unmerged branches, waiting on Destin's decisions.",
+   "Putting an agent inside a Page is vision only; Pages are deliberately sandboxed from the assistant."
+  ],
+  "everywhere": [
+   "This pillar is mostly done: desktop on three systems, Android, and a phone browser all exist.",
+   "The big open piece is the Android rebuild onto the shared core. Phone browser and computer already share one feature list as of 2026-10-05, but the Android app does not.",
+   "Signing is half done: Windows is signed, Mac is blocked on Apple refusing the company account, and there is no Play Store or iPhone app.",
+   "Remote access works only through your own computer and Tailscale; a hosted web version or account sign-in is a v1.4 idea.",
+   "Offline sign-in expiry has a design deck but no code; offline use works today only with local models."
+  ],
+  "together": [
+   "Of the Together items, the first two groups are user-facing (source, bug reports, roadmap); all of the 'workflow' items are developer tooling that users never see.",
+   "Open source and reporting are done. The public roadmap is a link to a developer-style file, not a designed screen.",
+   "The workflow tools (decks, reviewer agents, perf lab, shoot) are shipped and in daily use; this surface is the one still being built.",
+   "'Checked logic for every ordering' could not be confirmed as an existing tool; verify.sh covers types, tests, dead code and style only.",
+   "Several developer-tool branches (dev-xray, dev-dashboard) are unmerged experiments that overlap this surface."
+  ]
+ }
+}
