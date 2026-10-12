@@ -141,6 +141,30 @@ Recorded in decisions.md: "Close prompt: Session details' cards", "Close prompt:
    then passed 24 targeted runs (16 concurrent, 8 under 40 busy processes) and the next two
    full runs; no file-watch limit was near. Not changed — no cause to fix.
 
+## Round 3 (2026-10-12) — after Destin's close-session-2 answers
+
+Deck `close-session-3.json` (before = round 2 via `--before-file` on the seven touched files;
+`runs/cs3`). Recorded in decisions.md: "Close prompt: note button and note box", "Close prompt:
+Pin to top and Mark complete".
+
+| # | What I did | Driven by |
+|---|---|---|
+| R3-1 | One shared `SessionListsCard` ("In your lists": Pin to top + Mark complete) in `SessionDetails.tsx`, used by Session details and the close prompt; the close prompt's own copies and the `?closeFlags=` switch, its states and `close-prompt-practice.ts` deleted. | CS2-2 "lists". |
+| R3-2 | Mark complete on every Session details surface (status bar, Resume → Organize, the side panel, a project's conversation), saving at once like the rest of it. | CS2-5 "follow" + "also add the complete toggle here". |
+| R3-3 | **What complete does to an open session — checked, nothing to break:** the only readers are Resume's list (which never lists a running session: `ipc-handlers` passes the running ids to `listPastSessions`, which skips them), Welcome back's ticks (a complete session starts unticked) and the search index's metadata. The tab, the session lists and the chat ignore it. Resume's organize sheet already keeps a newly-completed row in view (`stickyComplete`). Hint reworded once for both popups: "Leaves it out of the resume list once it's closed, unless you turn on Show complete." | Coordinator: "make sure that can't confuse or break the open session". |
+| R3-4 | `tests/SessionDetails.test.tsx` (label + both switches, outside Tags; Mark complete reports a change; the hint), seen red with Mark complete removed. | Guard. |
+
+### Friction this round
+1. **A required prop added to a shared card broke a test the type check skips**:
+   `tag-cloud-honest.test.tsx` is one of the 47 test files still left out of `tsgo`, so it
+   rendered Session details without `complete` and crashed at run time, not at type check.
+2. **The test-hygiene rule (read this round, after round 2's flake work) prefers waiting on a
+   signal to widening a budget**; round 2's fixes widened six waits. They return as soon as the
+   condition holds and none is a fixed sleep before an assertion, but "a budget raised twice is a
+   treadmill" — a second raise of any of them should become a signal wait instead.
+3. **A "before" state can't open what didn't exist** — `chat/tags#complete` clicks Mark complete,
+   so the before side failed 4 pictures by design; shoot reports them as NOT TAKEN either way.
+
 ## Proposed guide and tooling changes (most valuable first — not implemented)
 
 1. **Dialog: a `footer` slot** that stays put under the scrolling body and keeps the shared
@@ -178,3 +202,9 @@ Added after round 2:
     and for counted poll loops (`i < 40`) — every flake this round was one (round 2 friction 6).
 18. **verify: say the machine's load in its summary** and rerun only the failed files alone, so
     a load flake reads as one at once instead of after a manual rerun.
+
+Added after round 3:
+19. **Type-check the remaining 47 test files** — a prop added to a shared component broke one
+    only at run time (round 3 friction 1).
+20. **shoot: a state can be marked after-only** (`newIn: 'after'`) so a before run skips it
+    instead of reporting failures (round 3 friction 3).
