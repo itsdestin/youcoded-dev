@@ -371,6 +371,14 @@ fi
 # it is what you compare a later failure against.
 KEEP="$ROOT/scratch/verify-$(date +%Y%m%d-%H%M%S)-$$"
 mkdir -p "$KEEP" 2>/dev/null || KEEP=""
+# WHY pruned (final review F57): one folder per run, passing runs included, piled up in scratch/
+# forever. The newest 10 are kept — enough to compare a failure with the runs before it — and
+# this run's own folder is never among those removed (it is the newest, and skipped by name).
+if [[ -n "$KEEP" ]]; then
+  ls -1dt "$ROOT"/scratch/verify-*/ 2>/dev/null | tail -n +11 | while IFS= read -r old; do
+    [[ "${old%/}" == "$KEEP" ]] || rm -rf -- "${old%/}"
+  done
+fi
 
 FAILED=0
 FAILED_KEYS=()

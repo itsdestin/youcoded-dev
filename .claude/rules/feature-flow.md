@@ -73,7 +73,7 @@ wait; the answer amends the row's `source`.
 ## The gate is three facts, one command reports them
 **Invariant:** `review-cards.py contract-check` is the only reader: every source resolves and every
 `mechanical` guard exists on disk or on the contract's `branch` (exit 1 otherwise); the contract
-was signed (`.contract.answers.json`, step `yes`); the acceptance deck was submitted.
+signed (`.contract.answers.json`, step `yes`); the acceptance deck submitted.
 **Why:** a branch's guard is absent from the main checkout until merge; unsigned is not done.
 **Guard:** `test_contract.py` (ContractCheckTests); `close-out-contract.test.sh`.
 

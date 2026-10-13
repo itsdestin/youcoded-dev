@@ -396,7 +396,13 @@ named tip after boot; a leftover `tour` from an earlier load can bleed into a la
 clear it with a fresh profile or no flag), `?localApps=found` (first-run Local Models: two
 model apps already detected running, vs. the default empty),
 `?screenFrame=cards|sheet|rail|bleed` (how the page view's panel and frame sit on a wallpaper
-in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships).
+in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships),
+`?pagesHome=<view>` (the practice home-devices Page: `refused` puts a website in its device
+address box so the refusal shows; `connected`, `edit`, `remote`, `group`, `device`, `camera`,
+`camera-events`, `camera-limited`, `view-<tab>`, `chips-<style>`, `settings`… open that state —
+the list is the comments at `pagesHome` in `dev/workbench/mock-shim.ts`),
+`?vocabulary=empty|stress` (the voice vocabulary list: none, or 1 200 phrases; it otherwise
+follows `?scenario=`).
 
 States a screen entry already uses (documented 2026-10-06; each lives in `dev/workbench/mock-shim.ts`):
 `?sync=ok|auth-error|oversize|removed` (Backup & sync: every space synced, GitHub sign-in
