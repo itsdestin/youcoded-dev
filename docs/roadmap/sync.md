@@ -17,7 +17,10 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
 
 - [ ] The Android app's GitHub backup copies `mcp.json` (which can hold service keys) and settings into the
       backup repository, with only junk files excluded. The desktop app no longer has this backup.
-      `android` `needs-verify` `checked 2026-09-23` `security`
+      2026-10-13, Destin (small-fixes-2#SF2-7): "the phone and pc should eventually function identically.
+      we will replace github backup on phone with pc-parity cross device sync". Computers stopped offering
+      it on 2026-10-13 (an old one shows "No longer supported"); the phone keeps it until then
+      `android` `needs-verify` `checked 2026-10-13` `security`
 
 - [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
       them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's

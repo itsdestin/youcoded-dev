@@ -1,0 +1,270 @@
+{
+  "title": "Small fixes, round 3: the add-a-backup steps rebuilt, honest backup lists, and two rules to pick",
+  "key": "small-fixes-3",
+  "out": "small-fixes-3.review.html",
+  "images": "images/small-fixes-3",
+  "runs": {
+    "round1": "runs/sf1/after",
+    "round2": "runs/sf2/after",
+    "before": "runs/sf3/before",
+    "after": "runs/sf3/after"
+  },
+  "labels": {
+    "round1": "Round 1",
+    "round2": "Round 2",
+    "before": "Today",
+    "after": "Rebuilt"
+  },
+  "themes": [
+    "halftone-dimension",
+    "youcoded"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "SF3-0",
+      "surface": "Settings → Backup & sync → Add a backup",
+      "path": "Read this first",
+      "words": true,
+      "headline": "Every step of Add a backup is now built only from pieces you already approved. Here is the list.",
+      "changed": "1) The title and back arrow are the popup's own shared header — the 16px title, tapered line and ✕ every popup has — instead of a hand-made header with a full-width line (guide \"Popups\"; Backup & sync's own explainer and Edit views). 2) Each step is a small label then one card, 16px between groups, starting at the top (guide \"Nothing bare on the popup\", \"A label comes first\"; Remote access). 3) Choices are setting rows with the arrow, no emoji circles (guide \"Offering choices\"; Settings rows). 4) Requirements are rows in one card with Ready / Needed pills (decisions \"device list\"; the Local engine's Running pill). 5) Sign-in is Account's sign-in card: a line, any tip as a notice inside, one full-width button (decisions \"Games: signed-out card\"). 6) Text boxes take their title above (Remote access's password); the switch sits beside its words (setting row). 7) A finished backup keeps its card, tagged \"Added\" (Submit a ticket after sending). 8) Errors are the error box in the button's place.",
+      "notice": "The one thing no rule covers — whether these choices should carry Google Drive / iCloud logos — is a question below.",
+      "yes": "Yes, that's the list",
+      "no": "No, something's off"
+    },
+    {
+      "id": "SF3-1",
+      "surface": "Add a backup → choose where",
+      "path": "Backup & sync → ＋ Add a backup",
+      "runs": [
+        "round2",
+        "after"
+      ],
+      "crop": "settings/sync#add-picker@panel",
+      "headline": "Choosing where the copy goes: one labelled card of rows instead of separate cards with emoji circles.",
+      "changed": "Title \"Add a Backup Destination\" became \"Add a backup\" in the shared header. Each choice is a setting row with its arrow, inside one card under \"Where the copy goes\".",
+      "notice": "A choice you can't add twice still says so in its line, and can't be pressed."
+    },
+    {
+      "id": "SF3-2",
+      "surface": "Add a backup → checking setup",
+      "path": "Add a backup → Google Drive, when the helper tool is missing and its install fails",
+      "runs": [
+        "round1",
+        "after"
+      ],
+      "crop": "settings/sync#add-install-failed@panel",
+      "headline": "The setup check is one card: each requirement a row with a Ready or Needed pill, the install inside.",
+      "changed": "Each requirement was its own card with a green ✓ or red ✗ and lowercase words. Now rows in one card with status pills; the helper-tool line, its full-width Install now (or the error box) inside the same card.",
+      "notice": "\"Check again\" buttons for GitHub tools and iCloud are full width too."
+    },
+    {
+      "id": "SF3-3",
+      "surface": "Add a backup → sign in",
+      "path": "Add a backup → Google Drive → Connect to Google, when the sign-in fails",
+      "runs": [
+        "round2",
+        "after"
+      ],
+      "crop": "settings/sync#add-auth-failed@panel",
+      "headline": "The sign-in step is Account's sign-in card: no icon, no floating text, the tip and the error inside it.",
+      "changed": "The big emoji circle, the text floating mid-popup and the gaps are gone. A \"Google account\" label, one card: the line about the browser, the tip as a notice, then the button — or, after a failure, the error box with Try again in its place.",
+      "notice": "While you sign in, the button becomes the app's usual \"Waiting for…\" line with the small spinner.",
+      "alsoChanges": [
+        "The sign-in step without errors"
+      ]
+    },
+    {
+      "id": "SF3-4",
+      "surface": "Add a backup → settings",
+      "path": "Add a backup → Google Drive → Connect → the settings step, when saving fails",
+      "runs": [
+        "round2",
+        "after"
+      ],
+      "crop": "settings/sync#add-save-failed@panel",
+      "headline": "The settings step is one \"Your backup\" card: titled text boxes and the switch row, Start backup under it.",
+      "changed": "The name, folder and switch sat bare on the popup with their own spacing. Now each text box has its title and hint above it, the switch sits beside its words, a duplicate warning is a notice inside the card, and Start backup (or its error box) is full width under the card.",
+      "notice": "Wording is shorter: \"Name — just for you, to tell your backups apart.\""
+    },
+    {
+      "id": "SF3-5",
+      "surface": "Add a backup → done",
+      "path": "Add a backup → … → Start backup, when it works",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "crop": "settings/sync#add-done@panel",
+      "headline": "When the backup is added, its card stays, tagged \"Added\", with what happened and a full-width Done.",
+      "changed": "It was a big green check in a circle over centred text. Now the new backup's card, its name with an \"Added\" pill, the outcome in one line (or a notice if the first backup didn't finish), and Done.",
+      "notice": "The same shape as Submit a ticket after sending."
+    },
+    {
+      "id": "SF3-6",
+      "surface": "Add a backup → choose where",
+      "path": "Backup & sync → ＋ Add a backup",
+      "words": true,
+      "headline": "Should the Google Drive and iCloud choices carry their logos, like the sign-in choices do?",
+      "today": "The choices are plain rows now; the emoji circles you didn't like are gone.",
+      "problem": "Sign-in choices carry the company's logo (guide \"Sign-in and setup screens\"), but the app has no Google Drive or iCloud logo yet.",
+      "proposal": "Keep them plain, or add the two logos to the shared logo set and show them at the left of each row.",
+      "options": [
+        {
+          "id": "plain",
+          "label": "Keep plain",
+          "recommended": true,
+          "pros": [
+            "Matches every other settings list"
+          ],
+          "cons": [
+            "No picture to spot Drive vs iCloud"
+          ]
+        },
+        {
+          "id": "logos",
+          "label": "Add logos",
+          "pros": [
+            "Recognisable at a glance",
+            "Like the sign-in choices"
+          ],
+          "cons": [
+            "Two new marks to draw and keep accurate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SF3-7",
+      "surface": "Settings → Backup & sync",
+      "path": "Backup & sync, when everything is synced",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#ok@panel",
+      "headline": "Each card now lists what it really copies: GitHub sync and the extra backups no longer contradict the explainer.",
+      "changed": "The GitHub card said \"Includes Memory · Conversations · Encyclopedia · Skills · System Config\" — the extra backups' list, most of which GitHub sync never copies. Now: \"Includes Conversations · Personal folder · Projects\". The Drive / iCloud card says \"Also includes Memory · Encyclopedia · Skills · System Config\".",
+      "notice": "Hover a word to see what it covers, as before."
+    },
+    {
+      "id": "SF3-8",
+      "surface": "Choosing a model",
+      "path": "The model menu, when a local model may not fit in memory",
+      "words": true,
+      "headline": "The model menu's \"may not fit in memory\" warning is now an amber pill with normal words.",
+      "changed": "Its title was amber (red when too large) text. Now the same words sit in a warning (or danger) status pill — the fit-pill convention you approved. The practice app can't show this menu, so it is described here.",
+      "notice": "Its fold and the \"Warn me about this model\" switch are unchanged.",
+      "yes": "Yes, keep it",
+      "no": "No, change it"
+    },
+    {
+      "id": "SF3-9",
+      "surface": "Every card or row with buttons beside text",
+      "path": "Model providers, Local models, Permissions (real examples)",
+      "runs": [
+        "after"
+      ],
+      "crop": [
+        {
+          "crop": "settings/assistant/cloud@615x152+500+308",
+          "label": "Top: provider card"
+        },
+        {
+          "crop": "settings/assistant/local#download-failed@600x75+505+585",
+          "label": "Top: model to download"
+        },
+        {
+          "crop": "settings/assistant/local#download-failed@600x70+505+165",
+          "label": "Centre: installed model"
+        },
+        {
+          "crop": "settings/assistant/permissions@615x70+500+208",
+          "label": "Centre: switch row"
+        }
+      ],
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Buttons beside text are sometimes top-aligned and sometimes centred. Which one rule should every card and row follow?",
+      "today": "Setting rows, switches and one-line notices centre their buttons. Model providers' cards, the downloadable model rows and notices with a title put them at the top, level with the first line. Long errors put them on their own line at the bottom right.",
+      "problem": "Rows of the same kind disagree — a model to download is top-aligned, the installed model under it is centred — and one notice's buttons move down when its details open.",
+      "proposal": "Pick one rule; nothing changes until you do. The full list of where each is used is saved beside this deck.",
+      "options": [
+        {
+          "id": "by-lines",
+          "label": "Centre short, top long",
+          "recommended": true,
+          "pros": [
+            "One or two lines centre (what most rows do now)",
+            "Three or more lines, or text that can grow, keep buttons level with the title — they never jump"
+          ],
+          "cons": [
+            "Two cases to remember"
+          ],
+          "cost": "About six screens move: model rows, provider cards, Main backup, the sync error"
+        },
+        {
+          "id": "always-centre",
+          "label": "Always centre",
+          "pros": [
+            "One simple rule"
+          ],
+          "cons": [
+            "Buttons drift to the middle of tall cards and move when text grows"
+          ],
+          "cost": "Provider cards, notices with titles and a few others move"
+        },
+        {
+          "id": "always-top",
+          "label": "Always top",
+          "pros": [
+            "Buttons always on the first line, never move"
+          ],
+          "cons": [
+            "One-line rows look top-heavy beside taller buttons — you asked to centre those before"
+          ],
+          "cost": "Every setting row and switch moves"
+        }
+      ]
+    },
+    {
+      "id": "SF3-10",
+      "surface": "Across the app",
+      "path": "Status bar, chat, Projects, Marketplace, and more",
+      "words": true,
+      "headline": "About 63 places still colour words green, red or amber. Sweep them all next, using the fit-pill convention?",
+      "today": "The guide keeps status colours out of words. Two were fixed this week (Local models' fit labels, the model menu warning); the rest are listed, by screen, in a file beside this deck.",
+      "problem": "Coloured words are hard to read on pale themes and break the guide's one rule for status colour.",
+      "proposal": "Next round, change them screen by screen: a state becomes a tinted pill with normal words; numbers like \"+12 / −3\" and usage percentages get normal words with the colour in a small tint or dot. Tool cards and the permission buttons stay as they are (they are outside the guide for now).",
+      "options": [
+        {
+          "id": "sweep",
+          "label": "Sweep them next",
+          "recommended": true,
+          "pros": [
+            "Every screen follows the same rule"
+          ],
+          "cons": [
+            "Many screens to check — shown on a deck screen by screen"
+          ]
+        },
+        {
+          "id": "later",
+          "label": "Not yet",
+          "pros": [
+            "Nothing else moves for now"
+          ],
+          "cons": [
+            "Coloured words stay"
+          ]
+        }
+      ]
+    }
+  ]
+}

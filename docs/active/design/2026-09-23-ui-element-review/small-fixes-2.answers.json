@@ -1,0 +1,83 @@
+{
+ "deck": "small-fixes-2",
+ "started": "2026-10-13T18:06:48.707Z",
+ "submitted": "2026-10-13T18:10:28Z",
+ "cur": 9,
+ "answers": {
+  "SF2-1": {
+   "v": "yes",
+   "t": 1791914815300,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-2": {
+   "v": "yes",
+   "t": 1791914817704,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-3": {
+   "v": "yes",
+   "t": 1791914830259,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-4": {
+   "v": "yes",
+   "t": 1791914863202,
+   "note": "i think we've been somewhat inconsistent about whether these kinds of buttons in cards are top-aligned, centered, or bottom-aligned.",
+   "seconds": 33,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-5": {
+   "v": "yes",
+   "t": 1791914883645,
+   "seconds": 17,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-6": {
+   "v": "yes",
+   "seconds": 57,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1791914936849,
+   "note": ""
+  },
+  "SF2-7": {
+   "v": "other",
+   "t": 1791914978557,
+   "note": "the phone and pc should eventually function identically. we will replace github backup on phone with pc-parity cross device sync",
+   "seconds": 42,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-8": {
+   "note": "this page sucks. weird spacing at the top, spacing between cards is weird, i dont like the icon, etc",
+   "t": 1791915002393,
+   "v": "other",
+   "seconds": 24,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-9": {
+   "v": "yes",
+   "t": 1791915020594,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF2-10": {
+   "v": "pick",
+   "pick": "fix-next",
+   "t": 1791915027508,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}
