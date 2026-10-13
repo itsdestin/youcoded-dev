@@ -413,8 +413,9 @@ box for its opened list.
   sentence and its fix buttons on one line (decisions "Status words and provider cards").
 - **A state that is a warning about fit or size** ("This model may not fit in available memory") is a
   warning or danger status pill with normal words — never amber or red text.
-- **Numbers that carry a good/bad meaning** (usage percentages, "+12 / −3" lines changed) are normal
-  words; the colour, if any, goes in a small tint or dot beside them (small-fixes-3#SF3-10).
+- **A state shown as a number** (usage, context, cache reuse) keeps the number in the text colour, with
+  a small status dot before it, or a bar under it, in the status colour. **An added / removed count**
+  ("+12 / −3") is plain (decisions "Status colours out of words, app-wide"; small-fixes-3#SF3-10).
 - **Every warning, error or info notice is the one tinted box with a matching border** (`Callout`;
   reference: Backup & sync → "conversations too big to sync"). **Only the box — its tint and border —
   carries the colour.** Its title and text are the normal text colours: never a red or coloured title,
@@ -434,9 +435,12 @@ box for its opened list.
 - **"No internet" only when the computer reports no network** (amber); otherwise say the server could
   not be reached (red). Never guess the cause (`docs/error-message-standards.md`).
 - **When an action finishes, keep its subject.** The card the action was about stays on screen, tagged
-  with a status pill ("Submitted", "Not sent", "Added") and one line at its foot saying what happened;
-  the next buttons sit where the action's were. While it runs, a single box with the spinner sits under
-  the same label, and is replaced by that card. Reference: Submit a ticket after sending.
+  with a status pill ("Submitted", "Not sent") and one line at its foot saying what happened; the
+  next buttons sit where the action's were. While it runs, a single box with the spinner sits under the
+  same label, and is replaced by that card. Reference: Submit a ticket after sending.
+- **A setup flow that adds an item to a list ends on that list**, with the new item visible there (its
+  row, and an error box under it if something went wrong). It has no separate "done" page. Reference:
+  Add a backup closes onto Backup & sync (decisions "Add a backup: no Done page"; small-fixes-3#SF3-5).
 - A notice **about one thing sits inside that thing** — inside the setting's or the list item's own box
   — and **its buttons (Try again, Resume, Show details) go inside the notice, at the right**. Inside a
   menu, card or setting it is the slim one-line box (`Callout compact`). A request waiting on the user
@@ -472,8 +476,10 @@ Reference: the first-run screens (`components/FirstRunView.tsx`, `components/fir
 - **Ways in of equal standing are equal outlined choices, none filled** — on setup, three rows (A plan
   you already pay for / Pay as you go / Free, on this computer) that each open their facts and logo
   buttons, with "‹ All options" back.
-- **A choice between outside services carries the service's logo** (`ProviderIcon` for model providers;
-  the same for Add a backup's Google Drive and iCloud, small-fixes-3#SF3-6).
+- **A choice between outside services carries the service's logo** (`ProviderIcon` for model
+  providers). **A choice of where something goes** (backup destinations: Google Drive, iCloud) carries
+  the service's logo too, like provider choices do (decisions "Add a backup: choose where";
+  small-fixes-3#SF3-6).
 - A setup failure is one card: the red mark, "Setup stopped" and one plain sentence naming what failed,
   a full-width Try again, the raw message under "Show details". The progress bar hides while stopped.
 - Setup fits from 1920×1080 down to 800×600 without scrolling.
@@ -560,9 +566,7 @@ plugin's file); the shared body `artifact-views/ActiveArtifactView.tsx`, routed 
 Known deviations:
 - **None of the three hosts is the shared popup**: the pane has a full `border-b` line instead of the
   tapered line; the two overlays' titles are 16px medium, not semibold.
-- The "file changed on disk" banner uses amber text and background, the save-error banner red text
-  (`ActiveArtifactView.tsx` ~876, ~899) — not the notice box. Their actions ("Keep mine", "Use disk
-  version", "View diff", "Dismiss") are underlined text as buttons.
+
 - A spaced-capitals label ("What keeping yours changes", ~913).
 - Several failures are plain grey notes with nothing to press: Word, PDF, Excel, binary files, the
   plugin file overlay, a missing file (~843).
@@ -607,10 +611,9 @@ the Edit tool card (exempt) and the file viewer's conflict diff.
   filled "Commit N staged files".
 
 Known deviations:
-- **Coloured text:** the − / + marks (`UnifiedDiff.tsx` ~173–176), the "+N / −N" counts
-  (`GitReviewView.tsx` ~229, ~313; `SessionDrawer.tsx` ~1441) and an amber "Conflict" word
-  (`SessionDrawer.tsx` ~1434) — principle 2 and "numbers that carry a meaning". The line tints are
-  fine; the colours are fixed palette values, not theme tokens.
+- **Coloured text:** the diff's − / + marks (`UnifiedDiff.tsx` ~199–201) — principle 2. The line
+  tints are fine; the colours are fixed palette values, not theme tokens. (The +N / −N counts and the
+  Conflict pill follow the rules since the colour sweep.)
 - Bare text buttons: "Show N more lines", "Review changes →", and "Include in commit" (a hand-made tick
   box).
 - A failed commit diff is grey text; an operation error is a hand-drawn neutral box; neither has Try
@@ -645,8 +648,8 @@ Known deviations:
 - Fixed corners and colours throughout (`SessionPill.tsx`, `CompactToolStrip.tsx`, `AttentionStrip.tsx`,
   `buddy.css`), including grey hex dots.
 - Text at 10px (`SessionPill.tsx` ~93, ~166; `CompactToolStrip.tsx` ~23, ~33, ~119, ~327) — under 11px.
-- Amber text (`BuddyResumeList.tsx` ~281); plain error lines with nothing to press
-  (`BuddyResumeList.tsx` ~207, `BuddyNewSessionForm.tsx` ~222, `CompactToolStrip.tsx` ~327).
+- Plain error lines with nothing to press (`BuddyResumeList.tsx` ~207, ~283,
+  `BuddyNewSessionForm.tsx` ~222, `CompactToolStrip.tsx` ~327).
 - Hand-made Allow / Deny / Always buttons; "✕ Deny" uses the ✕ for something other than close.
 - A full-width line inside the session list (`SessionPill.tsx` ~174).
 
@@ -790,7 +793,7 @@ recipe and ask.
 | Q8 | **Popup titles name the popup** (no sentences, counts or full stops in a title). Proposed, then deferred with the guide tooling. | close-session-friction proposal 23; dev-workspace roadmap |
 | Q9 | **A filterable list in a popup** (search first, one card of plain rows that alone scrolls, follow-up action pinned below, height kept while filtering). Only the quick picker is ruled. | project-switcher-friction proposal 1 |
 | Q10 | **Red destructive items in menus.** The old guide's G-21 put destructive menu items in red text; principle 2 now keeps status colour out of text. | 2026-08-25 guide G-21 vs principle 2 |
-| Q11 | **Steps of a multi-step popup** (Add a backup): one label and one card per step was tried; the first step was "worse", and the finished step should be dropped ("just remove this page and dump them back on the main backup & sync page"). | small-fixes-3#SF3-1, #SF3-5 |
+| Q11 | **Steps of a multi-step popup** (Add a backup): one label and one card per step was tried; the choose-where step went back to one card per choice with logos, and the done page was dropped (both now decided). Still open: the shape of a step in general. | small-fixes-3#SF3-1, #SF3-5 |
 | Q12 | **The number on the header's Session Files button**: "decide with status/badges", never decided. | decisions "Counts beside a label or tab" |
 | Q13 | **Skills drawer, filters and tag notes as quick pickers**: Destin unsure, not ruled. | decisions "Quick pickers" (Q-2) |
 | Q14 | **Who-said-it colour in chat-like lists** (game chat sender names in accent): an identity marker, not a status — allowed or not. | Game boards, above |
