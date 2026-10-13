@@ -91,19 +91,76 @@ export async function ensureOfficeEditor(checkout, log = () => {}) {
     }
   }
   ensureMainBuild(desktop, log);
-  const child = spawn(process.execPath, ['scripts/office-workbench-server.mjs'], { cwd: desktop, stdio: ['ignore', 'ignore', 'pipe'], env: { ...process.env, YC_OFFICE_PORT: String(port) } });
-  let stderr = '';
-  child.stderr.on('data', (d) => { stderr += d; });
-  let exited = null;
-  child.on('exit', (code) => { exited = code; });
-  for (const t0 = Date.now(); Date.now() - t0 < START_MS; await sleep(200)) {
-    const now = await whoServes(port);
-    if (now?.desktop === desktop) {
-      log(`office editor: started on ${port} (pid ${child.pid})`);
-      return { port, stop() { if (exited === null) child.kill(); } };
-    }
-    if (exited !== null) break;
+  return startEditorServer({ desktop, port, log });
+}
+
+// ─── Starting our own server, and only ever using our own ───────────────────
+// WHY (final review F23, 2026-10-13): two runs that started at the same moment both saw 4717
+// free and both started a server there. The loser's child died on "address in use", but its
+// wait loop asked "who serves 4717?" before checking that, saw the WINNER's server for the same
+// checkout, and took it as its own (with a stop() that did nothing) — the very sharing the
+// never-reuse rule above exists to prevent. A server is now ours only when it reports OUR child's
+// pid (the server says its pid in /yc-workbench-info) while that child is alive; when our child
+// dies before answering, we try again on a port the OS has just handed us.
+const ATTEMPTS = 3;
+
+/** Whether the server's identity answer is our own child's. Exported for the tests. */
+export function isOurServer(info, { desktop, pid, alive }) {
+  if (!info || !alive || info.desktop !== desktop) return false;
+  // A server that predates the pid field (an older checkout on shoot's --before side) can't say;
+  // the caller then holds off and accepts it only if our child is still alive a moment later
+  // (a child that lost the port dies on "address in use" as soon as it tries to listen).
+  return info.pid === undefined ? 'unproven' : info.pid === pid;
+}
+
+/** The children this process started and has not stopped — killed on exit and on Ctrl-C. */
+const live = new Set();
+let handlersInstalled = false;
+// WHY (final review F24): every run starts its own editor on a fresh port, so a run killed by
+// Ctrl-C or by a stopped verify.sh (SIGTERM) used to leave its editor running for good, one more
+// per interrupted run. Node runs no `finally` and no 'exit' listener when a signal kills it by
+// default, so the signals are caught here, our own children killed by pid (never by name), and
+// the process then ends the way the signal would have ended it (exit code 128 + signal number).
+function installCleanup() {
+  if (handlersInstalled) return;
+  handlersInstalled = true;
+  const killAll = () => { for (const c of live) { try { process.kill(c.pid, 'SIGTERM'); } catch { /* already gone */ } } live.clear(); };
+  process.on('exit', killAll);
+  for (const [sig, code] of [['SIGINT', 130], ['SIGTERM', 143], ['SIGHUP', 129]]) {
+    process.once(sig, () => { killAll(); process.exit(code); });
   }
-  if (exited === null) child.kill();
-  throw new Error(`the office editor server did not start within ${START_MS / 1000}s${exited !== null ? ` (exit ${exited})` : ''}${stderr ? `:\n${stderr.trim()}` : ''}`);
+}
+
+/** Starts `server` (default: the checkout's office-workbench-server.mjs) and waits until it answers
+ *  as ours. Returns { port, pid, stop() }. `server`/`startMs` are for the tests. */
+export async function startEditorServer({ desktop, port, log = () => {}, server = 'scripts/office-workbench-server.mjs', startMs = START_MS }) {
+  installCleanup();
+  let lastErr = '';
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    const child = spawn(process.execPath, [server], { cwd: desktop, stdio: ['ignore', 'ignore', 'pipe'], env: { ...process.env, YC_OFFICE_PORT: String(port) } });
+    live.add(child);
+    let stderr = '';
+    child.stderr.on('data', (d) => { stderr += d; });
+    let exited = null;
+    child.on('exit', (code, signal) => { exited = code ?? signal ?? 'killed'; live.delete(child); });
+    const stop = () => { if (exited === null) child.kill(); live.delete(child); };
+    for (const t0 = Date.now(); Date.now() - t0 < startMs; await sleep(200)) {
+      // Our child's death is checked FIRST: once it is gone, whatever answers on the port is not ours.
+      if (exited !== null) break;
+      const now = await whoServes(port);
+      let ours = isOurServer(now, { desktop, pid: child.pid, alive: exited === null });
+      if (ours === 'unproven') { await sleep(1500); ours = exited === null; }
+      if (ours) {
+        log(`office editor: started on ${port} (pid ${child.pid})`);
+        return { port, pid: child.pid, stop };
+      }
+    }
+    stop();
+    lastErr = `the office editor server did not start within ${startMs / 1000}s${exited !== null ? ` (exit ${exited})` : ''}${stderr ? `:\n${stderr.trim()}` : ''}`;
+    if (exited === null) break; // it never answered while alive — a new port won't help
+    const next = await freePort();
+    log(`office editor: the server on ${port} was not ours (our child exited ${exited}) — trying again on ${next}`);
+    port = next;
+  }
+  throw new Error(lastErr);
 }
