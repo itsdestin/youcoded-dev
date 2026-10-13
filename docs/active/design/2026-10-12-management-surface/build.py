@@ -8,7 +8,7 @@ thumbs/ (made from the ui-consistency-audit worktree's shoot run 20261012-141521
 """
 import json, os, re, html, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD
+from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD  # noqa
 import screens_tab as stab
 HERE = os.path.dirname(os.path.abspath(__file__))
 THUMBS = os.path.join(HERE, 'thumbs')
@@ -182,7 +182,7 @@ def pic(cands):
     for s in cands:
         for n in [s] + [x for x in names if x.startswith(s + '#') or x.startswith(s + '/')]:
             # WHY a button: a picture on Today opens the same picture popup the Screens tab uses
-            if os.path.exists(os.path.join(HERE, thumb(n))): return f'<button class="shotbtn" data-shot="{E(n.split("#")[0])}" title="Open this screen"><img class="shot" src="{thumb(n).replace("#", "%23")}" alt=""></button>'
+            if os.path.exists(os.path.join(HERE, thumb(n))): return f'<button class="shotbtn" data-shot="{E(n.split("#")[0])}" data-tip="{T('today.pic')}"><img class="shot" src="{thumb(n).replace("#", "%23")}" alt=""></button>'
     return ''
 base = [n for n in names if '#' not in n]
 variants = {}
@@ -208,28 +208,33 @@ for q, pats in QUESTIONS:
     light[q] = [n for n in names if matches(n, pats)]
 
 E = html.escape
+from tooltips import TIP, TRACK_SHORT
+def T(k): return E(TIP[k])
 # WHY the rebuild (2026-10-12 review, Destin: "throws a fuckton at me at once"): Today now opens
 # first and leads with ONE recommended next step; the long lists (waiting, bugs, release) are
 # folded rows with a count, and each view has a single filled button (design guide G-4).
+# WHY every control carries data-tip (2026-10-13, Destin: "i want hover tooltips that elaborate on
+# various buttons/pages/popups etc in laymans terms"): the words live in tooltips.py; check_tips()
+# below refuses to write a page with an unexplained button, pill, badge, count or status mark.
 SIDE_WORD = {'screens':'changes what you see','behind':'changes how it works','both':'both'}
 def meta(touches, side):
     """One quiet line instead of five badges: where it lands, then which side of the app."""
-    return f'<div class="t-2xs muted metaline"><span class="tip" data-tip="Worked out from the files this work changed">Lands in {E(" · ".join(touches))}</span> · <span class="side {E(side)}">{E(SIDE_WORD[side])}</span></div>'
-def btn(label, does, kind='', tip=''):
+    return f'<div class="t-2xs muted metaline"><span data-tip="{T("today.lands")}">Lands in {E(" · ".join(touches))}</span> · <span class="side {E(side)}" data-tip="{T("side." + side)}">{E(SIDE_WORD[side])}</span></div>'
+def btn(label, key, kind=''):
     # WHY kind is ignored (2026-10-13, audit #13): Destin's F-2 rule makes every action beside a
     # main one an outlined button, never bare text; the one filled button per view is written inline.
-    t = f' title="{E(tip)}"' if tip else ''
-    return f'<button class="btn sm" data-does="{E(does)}"{t}>{E(label)}</button>'
+    # WHY data-does is bare: the click toast reads the same hint text, so the two always agree.
+    return f'<button class="btn sm" data-does data-tip="{T(key)}">{E(label)}</button>'
 def ago(d): return 'today' if d == 0 else ('yesterday' if d == 1 else f'{d} days ago')
-def fold(title, count, hint, body, open_=False, tip=''):
+def fold(title, count, hint, body, tip, ctip=None, open_=False):
     """G-29 expandable row: title + muted count (G-19) + one-line hint, chevron on the right."""
-    c = f' <span class="cnt">{count}</span>' if count is not None else ''
-    return f'<details class="fold sec"{" open" if open_ else ""}><summary class="foldrow big"{f' title="{E(tip)}"' if tip else ''}><span class="fbody"><span class="gh">{E(title)}{c}</span><span class="t-xs muted">{E(hint)}</span></span><span class="chev" aria-hidden="true">›</span></summary><div class="foldbody">{body}</div></details>'
-def sechead(title, count, hint=''):
-    c = f' <span class="cnt">{count}</span>' if count is not None else ''
+    c = f' <span class="cnt" data-tip="{T(ctip)}">{count}</span>' if count is not None else ''
+    return f'<details class="fold sec"{" open" if open_ else ""}><summary class="foldrow big" data-tip="{T(tip)}"><span class="fbody"><span class="gh">{E(title)}{c}</span><span class="t-xs muted">{E(hint)}</span></span><span class="chev" aria-hidden="true">›</span></summary><div class="foldbody">{body}</div></details>'
+def sechead(title, count, hint='', tip=None, ctip=None):
+    c = f' <span class="cnt" data-tip="{T(ctip)}">{count}</span>' if count is not None else ''
     # WHY h2 + description (audit #7): the app's full-screen group heading is 16px medium in normal
     # case with a muted line under it; spaced capitals were retired app-wide.
-    return f'<div class="sechead"><div class="gtext"><h2 class="gh">{E(title)}{c}</h2>{f"<p class=\'gdesc\'>{E(hint)}</p>" if hint else ""}</div></div>'
+    return f'<div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="{T(tip)}">{E(title)}</span>{c}</h2>{f"<p class=\'gdesc\'>{E(hint)}</p>" if hint else ""}</div></div>'
 
 # ----------------------------------------------------------------------------- TODAY
 active = [e for e in EFFORTS if e['days'] <= 7]
@@ -237,111 +242,162 @@ IN_NEEDS = {'plugin-project-controls','sync-retry-feedback','sync-safety-audit-2
 waiting = [e for e in EFFORTS if e['days'] > 7 and e['id'] not in IN_NEEDS]
 # WHY "Project skills & tools" is gone from this list: it is the suggested next step at the top,
 # and the old page showed it twice (Destin's rule: nothing repeated twice in one view).
+# WHY renamed (2026-10-13 cut): "library updates" and "tests" were developer words; they now say
+# "code the app borrows" and "automatic checks".
 needs = [
-  ('Sync safety: backup-target selection fix', 'Reviewed and passing on Sept 9, but never put in the app. Untouched 31 days.', '',
-   [btn('Put it in the app','opens its conversation with "Destin approves adding this to the app" already typed','','Adds this finished change to the app for everyone'), btn('See before and after','opens the before/after screens for settings/sync'), btn('Hold','asks why; the answer becomes its waiting-on note','','Keeps it as it is and records why')]),
-  ('Sync: acknowledge retry attempts', 'A change waiting for review since Sept 8; its tests fail. Nobody has looked.', 'Pull request #444',
-   [btn('Fix the failing tests','starts a session on that work with the failing tests pasted in'), btn('Drop it','gives up on this change and records why','','Gives up on this change; nothing is deleted from history')]),
-  ('7 automatic library updates, all with failing tests', 'Five for Android from Sept 3, two for desktop from Oct 5 and 8.', '',
-   [btn('Apply all seven and test','starts one session that applies all seven and runs the tests'), btn('Drop them','gives up on all seven updates','','Gives up on all seven; nothing is deleted from history')]),
-  ('10 working copies with unsaved changes, untouched for two weeks or more', 'They cannot be cleaned up automatically because the changes are not saved anywhere.', '',
-   [btn('Save them all','saves each one as a saved copy, then removes the working copy','','Keeps each one as a saved copy, then clears the working copy away'), btn('List them','lists each with what is unsaved: ' + ', '.join(LEFTOVERS['worktrees']))]),
+  ('Sync safety: backup-target selection fix', 'Reviewed and passing its checks on Sept 9, but never put in the app. Untouched 31 days.', None,
+   [btn('Put it in the app','today.putin'), btn('See before and after','today.beforeafter'), btn('Hold','today.hold')]),
+  ('Sync: acknowledge retry attempts', 'Waiting for review since Sept 8; its automatic checks fail. Nobody has looked.', 'Pull request #444',
+   [btn('Fix the failing checks','today.fixchecks'), btn('Drop it','today.drop')]),
+  ('7 automatic updates to code the app borrows, all failing their checks', 'Five for Android from Sept 3, two for desktop from Oct 5 and 8.', None,
+   [btn('Apply all seven and check them','today.applyall'), btn('Drop them','today.dropall')]),
+  ('10 unfinished copies with unsaved changes, untouched for two weeks or more', 'They cannot be cleaned up automatically because the changes are not saved anywhere.', None,
+   [btn('Save them all','today.saveall'), btn('List them','today.listthem')]),
 ]
 today = []
 S = SUGGEST
-today.append(f'''<section class="card hero"><div class="eyebrow">Start here · suggested next</div>
-<div class="herobody"><div class="herotext"><div class="t-lg">{E(S['title'])}</div><p class="t-sm dim" title="{E(S['whytip'])}">{E(S['why'])}</p>
-<div class="t-xs muted">Lands in {E(" · ".join(S['touches']))}<br><span class="tip" data-tip="Which promise of the app this serves">Serves: &ldquo;{E(S['promisename'])}&rdquo; &mdash; {E(S['promise'])}</span></div></div>
+today.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
+<div class="herobody"><div class="herotext"><div class="t-lg">{E(S['title'])}</div><p class="t-sm dim">{E(S['why'])}</p>
+<div class="t-xs muted"><span data-tip="{T('today.lands')}">Lands in {E(" · ".join(S['touches']))}</span><br><span data-tip="{T('today.serves')}">Serves: &ldquo;{E(S['promisename'])}&rdquo; &mdash; {E(S['promise'])}</span></div></div>
 {pic(['projects','marketplace'])}</div>
-<div class="acts heroacts"><button class="btn sm" data-does="records why and moves it to Waiting">Set aside</button>{btn('Open its conversation','opens its conversation with this reasoning pasted in')}<button class="btn sm primary" data-does="opens the review deck that was prepared for it">Open its review deck</button></div>
+<div class="acts heroacts">{btn('Set aside','today.setaside')}{btn('Open its conversation','today.openconv')}<button class="btn sm primary" data-does data-tip="{T('today.deck')}">Open its review deck</button></div>
 <div class="herofolds">
-<details class="fold"><summary class="foldrow"><span class="t-xs">Why this one</span><span class="chev">›</span></summary>
+<details class="fold"><summary class="foldrow" data-tip="{T('today.why')}"><span class="t-xs">Why this one</span><span class="chev">›</span></summary>
 <div class="two"><div><div class="eyebrow">How it connects</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['connects'])}</ul></div>
-<div><div class="eyebrow">What should be configurable</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['config'])}</ul></div></div></details>
+<div><div class="eyebrow">What should be adjustable</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['config'])}</ul></div></div></details>
 <div class="t-xs muted">Other options: the two in-progress items below, or anything in Waiting.</div>
 </div></section>''')
 
-today.append('<section class="sec">' + sechead('Needs you', len(needs), 'Only you can decide these.'))
+today.append('<section class="sec">' + sechead('Needs you', len(needs), 'Only you can decide these.', 'today.needs', 'today.needs.count'))
 for t, hint, htip, bs in needs:
-    today.append(f'<div class="row"><div class="body"><div class="t-sm">{E(t)}</div><div class="hint wrap"{f" title=\'{E(htip)}\'" if htip else ""}>{E(hint)}</div></div><div class="acts">{"".join(bs)}</div></div>')
-today.append('<div class="eyebrow othersh">Reports from other people</div><div class="t-xs muted">No open reports. The last one was from tjmorin03 on Sept 15, closed.</div></section>')
+    h = f'<span data-tip="{T("today.pr")} ({E(htip)})">{E(hint)}</span>' if htip else E(hint)
+    today.append(f'<div class="row"><div class="body"><div class="t-sm">{E(t)}</div><div class="hint wrap">{h}</div></div><div class="acts">{"".join(bs)}</div></div>')
+today.append(f'<div class="eyebrow othersh"><span data-tip="{T("today.reports")}">Reports from other people</span></div><div class="t-xs muted">No open reports. The last one was from tjmorin03 on Sept 15, closed.</div></section>')
 
-today.append('<section class="sec">' + sechead('In progress', len(active), 'Touched in the last 7 days. Neither has a finish line yet.'))
+def seescreens(e):
+    return f'<button class="btn sm" data-effscreens="{EFFORTS.index(e)}" data-tip="{T("today.seescreens")}">See its screens</button>' if e['screens'] else ''
+today.append('<section class="sec">' + sechead('In progress', len(active), 'Touched in the last 7 days. Neither has a finish line yet.', 'today.inprog', 'today.inprog.count'))
 for e in active:
     today.append(f'''<div class="row">{pic(e['screens'])}<div class="body"><div class="t-sm">{E(e['title'])}</div>
       <div class="hint wrap">Last worked on {ago(e['days'])}. {E(e['note'])}</div>{meta(e['touches'], e['side'])}</div>
-      <div class="acts">{f'<button class="btn sm" data-effscreens="{EFFORTS.index(e)}">See its screens</button>' if e['screens'] else ''}{btn('Open its conversation','opens its conversation')}{btn('Write its finish line','asks you for one to three sentences saying when this is done; every big piece of work would get one at its start','ghost','One to three sentences saying when this is done')}{btn('Set aside','records why and moves it to Waiting','ghost')}</div></div>''')
+      <div class="acts">{seescreens(e)}{btn('Open its conversation','today.openconv')}{btn('Write its finish line','today.finishline')}{btn('Set aside','today.setaside')}</div></div>''')
 today.append('</section>')
 
 w = []
 for e in waiting:
-    pr = f' · <span title="{E(e["prtip"])}">{E(e["pr"])}</span>' if e.get('pr') else ''
+    pr = f' · <span data-tip="{T("today.pr")} ({E(e["prtip"])})">{E(e["pr"].replace("tests", "checks"))}</span>' if e.get('pr') else ''
     paused = f'<div class="hint wrap">Waiting on: {E(e["paused"])}</div>' if e.get('paused') else ''
     w.append(f'''<div class="row"><div class="body"><div class="t-sm">{E(e['title'])}</div>
       <div class="hint wrap">{ago(e['days']).capitalize()}{pr}. {E(e['note'])}</div>{paused}{meta(e['touches'], e['side'])}</div>
-      <div class="acts">{f'<button class="btn sm" data-effscreens="{EFFORTS.index(e)}">See its screens</button>' if e['screens'] else ''}{btn('Open its conversation','opens its conversation')}{btn('Wrap up','runs the wrap-up checklist and removes the working copy if nothing is lost','ghost','Checks nothing is lost, then removes the working copy')}</div></div>''')
-w.append('<div class="sub">' + sechead('Notes and research only', len(DEV_ONLY)) + ''.join(f'<div class="row slim"><div class="body"><div class="t-sm">{E(d["title"])}</div><div class="hint">Last touched {ago(d["days"])}</div></div><div class="acts">{btn("Open","opens the notes")}{btn("Archive","files the notes away and removes the working copy","ghost")}</div></div>' for d in DEV_ONLY) + '</div>')
+      <div class="acts">{seescreens(e)}{btn('Open its conversation','today.openconv')}{btn('Wrap up','today.wrapup')}</div></div>''')
+w.append('<div class="sub">' + sechead('Notes and research only', len(DEV_ONLY), '', 'today.notes', 'today.notes.count') + ''.join(f'<div class="row slim"><div class="body"><div class="t-sm">{E(d["title"])}</div><div class="hint">Last touched {ago(d["days"])}</div></div><div class="acts">{btn("Open","today.opennotes")}{btn("Archive","today.archive")}</div></div>' for d in DEV_ONLY) + '</div>')
 w.append(f'<div class="t-xs muted note">Cleaned up automatically at session start, nothing to do: {E(LEFTOVERS["backups"])}; {E(LEFTOVERS["diag"])}.</div>')
-today.append(fold('Waiting', len(waiting), 'Untouched for a week or more. Only one says why.', ''.join(w)))
+today.append(fold('Waiting', len(waiting), 'Untouched for a week or more. Only one says why.', ''.join(w), 'today.waiting', 'today.waiting.count'))
 
 b = []
 for x in BUGS:
     b.append(f'''<div class="row">{pic(x['screens'])}<div class="body"><div class="t-sm">{E(x['title'])}</div><div class="hint wrap">In {E(x['place'])} · {E(x['src'])}</div></div>
-      <div class="acts">{btn('Start a fix','starts a session with the roadmap entry and the screen pasted in')}{btn('Not a bug anymore','closes it with a note','ghost')}</div></div>''')
-today.append(fold('Bugs users hit', len(BUGS), 'From the roadmap', ''.join(b), tip='The roadmap does not record who reported them.'))
+      <div class="acts">{btn('Start a fix','today.startfix')}{btn('Not a bug anymore','today.notbug')}</div></div>''')
+today.append(fold('Bugs users hit', len(BUGS), 'From the roadmap, which does not record who reported them.', ''.join(b), 'today.bugs', 'today.bugs.count'))
 
 r = ['<div class="relgrid">']
 for g, items, scr in RELEASE['groups']:
-    r.append(f'<div class="card inset"><div class="eyebrow">{E(g)}</div><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>')
-r.append(f'</div><div class="t-xs muted note">The most recent test release went out {E(RELEASE["beta"])}.</div><div class="acts right">{btn("See all 67 changes","opens the full list of 67 with each one\'s before/after","ghost")}{btn("Start a test release","runs the release skill for the next test release; nothing in progress blocks it")}</div>')
-today.append(fold('Since the last release', None, f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.', ''.join(r)))
+    r.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{T("today.relgroup")}">{E(g)}</span></div><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>')
+r.append(f'</div><div class="t-xs muted note">The most recent test version went out {E(RELEASE["beta"])}.</div><div class="acts right">{btn("See all 67 changes","today.allchanges")}{btn("Start a test release","today.testrelease")}</div>')
+today.append(fold('Since the last release', None, f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.', ''.join(r), 'today.release'))
 
 # ----------------------------------------------------------------------------- SCREENS
-# WHY rebuilt (2026-10-13, Destin: "sort/filter/group in more interesting/dynamic ways ... clearer
-# nesting and ways to trace/visualize click-paths ... i don't like the side panel for images"):
-# the facets, click paths and picture popup live in screens_tab.py; this only feeds it the page's data.
-SHORTQ = ['Talks to the AI','Changes its behaviour','Add-ons','Permissions']
+# WHY cut (2026-10-13, Destin: "just wayyy too many controls"): screens_tab.py now draws one
+# control row and the picture popup; this only feeds it the page's data.
 QPATS = [(q, pats) for q, pats in QUESTIONS if pats and not pats[0].startswith('#')]
 REL_PATS = sorted({s for g in RELEASE['groups'] for s in g[2]})
 SGROUPS = stab.build(HERE, names, place_of, DESC, EFFORTS, REL_PATS, QPATS, matches)
-GROUP_IDS = {g['id'] for g in SGROUPS}
-app = [stab.head_controls(list(zip([q for q,_ in QPATS], SHORTQ)), EFFORTS), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
+app = [stab.head_controls(TIP), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
 cols = ['Chat','Projects','Pages','Marketplace','Settings','Devices & sync']
-bt = ['<p class="t-xs muted">Filled dot: you set it here. Hollow: it is used here. A first draft; it will be built properly later.</p><div class="tablewrap"><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th>{E(c)}</th>' for c in cols) + '<th></th></tr></thead><tbody>']
+BDOT = {2: 'bdot.2', 1: 'bdot.1', 0: 'bdot.0'}
+bt = ['<p class="t-xs muted">Filled dot: you set it here. Hollow: it is used here. A first draft; it will be built properly later.</p><div class="tablewrap"><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th><span data-tip="{T("scr.blocks.col")}">{E(c)}</span></th>' for c in cols) + '<th></th></tr></thead><tbody>']
 for bname, cells, note in BLOCKS:
     dup = sum(1 for c in cols if cells.get(c)==2)
-    bt.append(f'<tr><th>{E(bname)}</th>' + ''.join(f'<td><span class="bdot d{cells.get(c,0)}"></span></td>' for c in cols) + f'<td class="t-2xs muted">{E(note)}{" <span class=\"spill warn\"><span class=\"dot\"></span>set in "+str(dup)+" places</span>" if dup>=3 else ""}</td></tr>')
+    bt.append(f'<tr><th><span data-tip="{T("part." + bname)}">{E(bname)}</span></th>' + ''.join(f'<td><span class="bdot d{cells.get(c,0)}" data-tip="{T(BDOT[cells.get(c,0)])}"></span></td>' for c in cols) + f'<td class="t-2xs muted">{E(note)}{f" <span class=\"spill warn\" data-tip=\"{T("scr.set3")}\"><span class=\"dot\"></span>set in {dup} places</span>" if dup>=3 else ""}</td></tr>')
 bt.append('</tbody></table></div>')
-app.append(fold('Which parts are set in more than one place', None, 'Each row is one part of the app; a filled dot is a place where you set it.', ''.join(bt)))
+app.append(fold('Which parts are set in more than one place', None, 'Each row is one part of the app; a filled dot is a place where you set it.', ''.join(bt), 'scr.blocks'))
 
+
+# ----------------------------------------------------------------------------- tooltips
+# WHY the app's Tooltip and not a CSS ::after (Tooltip.tsx on the UI-consistency branch): one
+# bubble on the layer surface ('px-2 py-1 text-2xs text-fg-2 leading-snug', max 20rem), 800ms
+# before the first one, 130ms for a neighbour within 400ms, a 110ms fade; below the control,
+# flipped above when there is no room, and kept 12px inside the window so it is never clipped.
+TIP_CSS = '''
+.tipbubble{position:fixed;left:0;top:0;z-index:60;pointer-events:none;padding:4px 8px;max-width:min(20rem,calc(100vw - 1.5rem));font-size:11px;line-height:1.375;color:var(--fg-2);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);white-space:normal;text-align:left}
+@keyframes tooltip-in{from{opacity:0}to{opacity:1}}
+.tooltip-in{animation:tooltip-in 110ms ease-out both}
+@media (prefers-reduced-motion:reduce){.tooltip-in{animation:none}}
+'''
+TIP_JS = r'''
+const TB=document.createElement('div');TB.className='tipbubble';TB.setAttribute('role','tooltip');TB.id='tipbubble';TB.hidden=true;document.body.appendChild(TB);
+let tipT=null,tipFor=null,tipWarm=0;
+function placeTip(el){const r=el.getBoundingClientRect(),w=TB.offsetWidth,h=TB.offsetHeight,G=6,M=12;
+  let top=r.bottom+G;if(top+h>innerHeight-M&&r.top-G-h>=M)top=r.top-G-h;
+  const left=Math.min(Math.max(M,r.left+r.width/2-w/2),innerWidth-M-w);TB.style.left=left+'px';TB.style.top=Math.max(M,top)+'px'}
+function showTip(el){if(!el||!el.isConnected||!el.dataset.tip)return;TB.textContent=el.dataset.tip;TB.hidden=false;TB.classList.remove('tooltip-in');void TB.offsetWidth;TB.classList.add('tooltip-in');placeTip(el);tipFor=el}
+function hideTip(){clearTimeout(tipT);if(tipFor)tipWarm=Date.now()+400;tipFor=null;TB.hidden=true}
+function armTip(el){clearTimeout(tipT);const warm=tipFor||Date.now()<tipWarm;if(tipFor){tipWarm=Date.now()+400;tipFor=null;TB.hidden=true}tipT=setTimeout(()=>showTip(el),warm?130:800)}
+function onOver(e){const el=e.target.closest&&e.target.closest('[data-tip]');if(el===tipFor)return;if(!el){hideTip();return}armTip(el)}
+document.addEventListener('mouseover',onOver);document.addEventListener('mouseenter',onOver,true);
+document.addEventListener('mouseleave',e=>{if(e.target===document.documentElement)hideTip()},true);
+// keyboard focus shows the same hint (the app's Tooltip does the same); a mouse click does not
+document.addEventListener('focusin',e=>{const el=e.target.closest('[data-tip]');if(el&&el.matches(':focus-visible'))armTip(el)});
+document.addEventListener('focusout',hideTip);
+document.addEventListener('mousedown',hideTip,true);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&tipFor){hideTip()}},true);
+addEventListener('scroll',hideTip,true);addEventListener('resize',hideTip);
+window.showTip=showTip;window.hideTip=hideTip;
+'''
+
+def check_tips(page):
+    """WHY (2026-10-13, Destin): nothing ships unexplained. Every <button>, <select>, <summary>,
+    search box, filter pill, badge, status pill, count and status mark in the page, including the
+    ones the page's scripts draw later, must carry data-tip. Marks hidden from screen readers
+    (aria-hidden) are decoration inside something that already explains itself. Also refuses any
+    title= attribute: the operating system draws those in its own grey box, on top of ours."""
+    bad = []
+    for m in re.finditer(r'<(button|select|summary|input|span|div|i|figure|h2|h3|dt)\b([^<>]*)>', page):
+        tag, attrs = m.group(1), m.group(2)
+        cls = re.search(r'class="([^"]*)"', attrs)
+        cls = cls.group(1).split() if cls else []
+        need = tag in ('button', 'select', 'summary', 'input') or any(c in ('fchip', 'badge', 'spill', 'cnt', 'count', 'sdot', 'statusline', 'status', 'pill', 'leg', 'bdot') for c in cls)
+        if need and 'data-tip' not in attrs and 'aria-hidden="true"' not in attrs:
+            bad.append(m.group(0)[:140])
+    titles = re.findall(r'<(?!title)[a-z]+\b[^<>]*\stitle="', page)
+    if bad or titles:
+        raise SystemExit('check_tips: these have no hover hint (add one to tooltips.py):\n  ' + '\n  '.join(bad[:40] + titles[:10]) + f'\n({len(bad)} missing, {len(titles)} title= attributes)')
 
 # ----------------------------------------------------------------------------- PAGE
-vision_html, vision_nodes, vision_tot = vrender(HERE)
+vision_html, vision_nodes, vision_tot = vrender(HERE, TIP, TRACK_SHORT)
 CSS = open(os.path.join(HERE, 'cc.css')).read() + open(os.path.join(HERE, 'page.css')).read()
-DRAFT = ("A draft to react to, not a working tool. Every row is real as of Oct 12: unfinished work, changes waiting for review, finished changes, the roadmap, and today's screenshot run. "
-         "Screenshots come from the screen-restyle work, not yet from the main copy. Buttons only say what they would do. The one-sentence screen descriptions were "
-         "written for this draft; the real version has an agent write them when a screen's code changes.")
 def _ic(d): return f'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">{d}</svg>'
 ICON_HOME=_ic('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>')
 ICON_TODAY=_ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')
 ICON_SCREENS=_ic('<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>')
 ICON_MAP=_ic('<path d="M9 4l-6 3v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v13"/>')
 CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>'
+# WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
+# other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{SVG_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{SVG_CSS}{TIP_CSS}</style></head><body>
 <div class="screen">
-<header class="band"><div class="bl"><span class="badge tip below draft" tabindex="0" data-tip="{E(DRAFT)}">Draft ⓘ</span></div>
+<header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
-<div class="br"><span class="muted t-2xs asof">As of Oct 12 · the main copy</span><div class="bandpill"><select id="theme" aria-label="Theme"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></div></div></header>
+<div class="br"><span class="muted t-2xs asof" data-tip="{T('asof')}">Facts as of Oct 12</span><div class="bandpill" data-tip="{T('theme')}"><select id="theme" aria-label="Theme" data-tip="{T('theme')}"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></div></div></header>
 <div class="screen-body"><div class="pane">
-<div class="panehead hline" id="panehead"><div class="tabs" role="tablist" aria-label="Views"><button role="tab" aria-selected="true" data-view="today">{ICON_TODAY}Today</button><button role="tab" aria-selected="false" data-view="app">{ICON_SCREENS}Screens <span class="count">{len(SGROUPS)}</span></button><button role="tab" aria-selected="false" data-view="vision">{ICON_MAP}Big picture</button></div></div>
+<div class="panehead hline" id="panehead"><div class="tabs" role="tablist" aria-label="Views"><button role="tab" aria-selected="true" data-view="today" data-tip="{T('tab.today')}">{ICON_TODAY}Today</button><button role="tab" aria-selected="false" data-view="app" data-tip="{T('tab.screens')}">{ICON_SCREENS}Screens <span class="count" data-tip="{T('tab.screens.count')}">{len(SGROUPS)}</span></button><button role="tab" aria-selected="false" data-view="vision" data-tip="{T('tab.vision')}">{ICON_MAP}Big picture</button></div></div>
 <div class="panescroll fadescroll" id="scroller"><main class="cc-main">
 <div id="today" class="view on">{''.join(today)}</div>
 <div id="app" class="view">{''.join(app)}</div>
 <div id="vision" class="view">{vision_html}</div>
 </main></div></div></div></div>
-<aside class="panel" id="panel" aria-label="Details"><div class="phd hline"><div class="t-base" id="pti"></div><button class="closebtn" aria-label="Close" id="pclose"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="pbody fadescroll" id="pbody"></div><div class="pfoot" id="pfoot"></div></aside>
-{stab.dialog_shell()}
+<aside class="panel" id="panel" aria-label="Details"><div class="phd hline"><div class="t-base" id="pti"></div><button class="closebtn" aria-label="Close" id="pclose" data-tip="{T('vis.panel.close')}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="pbody fadescroll" id="pbody"></div><div class="pfoot" id="pfoot"></div></aside>
+{stab.dialog_shell(TIP)}
 <div class="toast" id="toast"></div>
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -352,26 +408,30 @@ function fadeX(el){{el.dataset.fadeLeft=el.scrollLeft>1;el.dataset.fadeRight=el.
 // WHY (U12): at phone width the tab and filter rows scroll sideways; a fade shows which edge has more
 function fadesX(){{$$('.tabs,.fchips').forEach(el=>{{if(!el.dataset.fx){{el.dataset.fx=1;el.addEventListener('scroll',()=>fadeX(el),{{passive:true}})}}fadeX(el)}})}}
 function fades(){{requestAnimationFrame(()=>{{fade($('#scroller'));fade($('#pbody'));fadesX()}})}}
+{TIP_JS}
 addEventListener('DOMContentLoaded',()=>{{['#scroller','#pbody'].forEach(s=>$(s).addEventListener('scroll',e=>fade(e.target),{{passive:true}}));addEventListener('resize',fades);
-  // WHY: each view's filter strip lives in the fixed head (like Projects' tab row), not in the scroll body
+  // WHY: the Screens control row lives in the fixed head (like Projects' tab row), not in the scroll body
   $$('.view .lensbar').forEach(l=>{{l.dataset.view=l.closest('.view').id;l.hidden=!l.closest('.view').classList.contains('on');$('#panehead').appendChild(l)}});fades()}});
 let tt; function toast(m){{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}}
-document.addEventListener('click',e=>{{const b=e.target.closest('[data-does]');if(b){{toast('In the real version this '+b.dataset.does+'.');e.preventDefault();}}
+// WHY the toast reads the hint (2026-10-13): what a button says it will do on hover and what it says after a click can never disagree
+const lc=s=>s.charAt(0).toLowerCase()+s.slice(1);
+document.addEventListener('click',e=>{{const b=e.target.closest('[data-does]');if(b){{toast('Not built yet. In the real version, clicking it '+lc(b.dataset.tip));e.preventDefault();}}
   // WHY (cross-links): Today's pictures and "See its screens" lead into the Screens tab's popup and filters
   const sh=e.target.closest('[data-shot]');if(sh&&!sh.classList.contains('vshot')&&typeof openShot==='function'&&GI[sh.dataset.shot]){{openShot(sh.dataset.shot);return}}
   const es=e.target.closest('[data-effscreens]');if(es){{showScreensFor(+es.dataset.effscreens)}}}});
 // WHY one side pane for everything: G-4.5 anatomy (title row + close, body, actions on the right per G-28).
 function openPanel(eb,title,body,acts){{$('#pti').textContent=title;$('#pbody').innerHTML=(eb?`<div class="eyebrow">${{eb}}</div>`:'')+body;$('#pfoot').innerHTML=acts;$('#panel').classList.add('open');$('#pbody').scrollTop=0;fades()}}
-function closePanel(){{$('#panel').classList.remove('open');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));if(typeof vApply==='function'&&$('#vision').classList.contains('on'))vApply()}}
+function closePanel(){{$('#panel').classList.remove('open');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));$$('.web .lines').forEach(s=>s.innerHTML='')}}
 $('#pclose').onclick=closePanel;document.addEventListener('keydown',e=>{{if(e.key==='Escape')closePanel()}});
 $$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));$('#panel').classList.remove('open');$('#scroller').scrollTop=0;$$('#panehead .lensbar').forEach(l=>l.hidden=l.dataset.view!==b.dataset.view);fades()}});
 $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 </script><script>
-{stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps(SHORTQ), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']))}
+{stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP))}
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
+check_tips(page)
 open(os.path.join(HERE, 'mockup.html'), 'w').write(page)
 print('screens', len(names), 'base', len(base), 'places', {p: len(v) for p, v in by_place.items()})
-print('wrote mockup.html', len(page)//1024, 'KB')
+print('hints', len(TIP), '· wrote mockup.html', len(page)//1024, 'KB')
