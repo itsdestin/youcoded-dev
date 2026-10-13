@@ -1,0 +1,152 @@
+[
+ {
+  "name": "chat/browser",
+  "theme": "halftone-dimension",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat/browser/halftone-dimension.png",
+  "ms": 1381,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat/browser",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat/browser/meadow-mist.png",
+  "ms": 1791,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat#browser-site",
+  "theme": "halftone-dimension",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat#browser-site/halftone-dimension.png",
+  "ms": 1381,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat#browser-site",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat#browser-site/meadow-mist.png",
+  "ms": 1791,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat#browser-final",
+  "theme": "halftone-dimension",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat#browser-final/halftone-dimension.png",
+  "ms": 1381,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat#browser-final",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat#browser-final/meadow-mist.png",
+  "ms": 1791,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat#browser-handoff",
+  "theme": "halftone-dimension",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat#browser-handoff/halftone-dimension.png",
+  "ms": 1381,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "chat#browser-handoff",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/chat#browser-handoff/meadow-mist.png",
+  "ms": 1791,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "settings/browser",
+  "theme": "halftone-dimension",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/settings/browser/halftone-dimension.png",
+  "ms": 2022,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ },
+ {
+  "name": "settings/browser",
+  "theme": "meadow-mist",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/before/settings/browser/meadow-mist.png",
+  "ms": 2732,
+  "errors": [],
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900
+  }
+ }
+]
