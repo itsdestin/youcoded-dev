@@ -103,7 +103,6 @@ ignores:
   - "**/AssistantTurnBubble.tsx"
   - "**/SessionContextBanner.tsx"
   - "**/SettingsPanel.tsx"
-  - "**/SpecialistsChip.tsx"
 utils:
   tint-and-border:
     all:
