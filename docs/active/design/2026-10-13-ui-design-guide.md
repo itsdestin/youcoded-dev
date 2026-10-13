@@ -1,5 +1,6 @@
 ---
 status: draft
+approval: awaiting Destin's approval on the final deck — not yet the approved guide
 date: 2026-10-13
 owner: Destin (decisions) / Claude (writing)
 replaces: docs/active/design/2026-08-25-ui-design-guide.md (once Destin approves this guide)
@@ -7,6 +8,9 @@ source: docs/active/design/2026-09-23-ui-element-review/decisions.md (every rule
 ---
 
 # YouCoded design guide
+
+> **Awaiting Destin's approval** on the final deck. Until he approves it, the 2026-08-25 guide
+> stays active; this one is the proposed replacement.
 
 **Read this before you design any screen, popup, panel or Page.** It tells you how YouCoded
 looks and how it is arranged, so something new fits without Destin having to correct it. Every
@@ -162,7 +166,8 @@ under its words (`SectionLabel reading`). Labels over short settings groups stay
 
 ### Text and numbers
 - Body text: 14px, main text colour.
-- Hints, descriptions, dates and other secondary text: 12px in the one grey used for secondary text.
+- Hints, descriptions, dates and other secondary text: 12px in the one grey used for secondary text —
+  except a setting row's hint, which the shared `SettingRow` draws at 11px (both its sizes).
   The faintest grey is only for disabled things and decoration.
 - **Nothing a user has to read is smaller than 11px** — the status bar included.
 - **Sentence case everywhere**: every label, title, button, menu item, hint and screen-reader name
@@ -187,7 +192,9 @@ under its words (`SectionLabel reading`). Labels over short settings groups stay
 - One scale: **4 · 8 · 12 · 16 · 24 px.** 4 between an icon and its label; 8 between things inside a
   card; 12 inside a card's edge; 16 between groups; 24 for major breaks.
 - In popups: **16px between groups, 8px between neighbouring boxes or rows** (the Settings list's gap,
-  which is also the gap from the header line to its first row).
+  which is also the gap from the header line to its first row). Two first-level cards side by side
+  or one under another are two groups, so **16px wins between first-level cards**; 8px is for boxes
+  and rows inside one card or one list.
 - **Nothing sits bare on the popup background.** A group is a small label and then a card holding its
   controls and text. Reference: Remote Access.
 - **A label comes first.** A popup never opens straight into a card: a small label sits above the first
@@ -312,7 +319,7 @@ Backup & sync, Assistant → General, Account.
   the short facts about it (who made it, what kind, numbers) → the description (two lines at most).
 - The chip row **never wraps**: one line that **scrolls sideways** when it does not fit, fading only at
   the edge that has more, with no scrollbar. Leave room inside its scroll edge so a chip's border is
-  never cut. Every chip in a row is **the one fact chip** (`Chip`) — one size; never mix it with `Badge`
+  never cut. Every chip in a row is **the one fact chip** (`Chip`; the decisions call it MetaChip) — one size; never mix it with `Badge`
   or a hand-made chip.
 - **Quick actions on a card** (tag, note, favourite, pin) sit at its **top right**; a **date** goes at
   the **bottom right**, at the end of the details line. Example: conversation cards.

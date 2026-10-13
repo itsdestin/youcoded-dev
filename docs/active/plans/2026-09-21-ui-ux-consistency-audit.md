@@ -13,7 +13,8 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
 1. **A new design guide** that lets anyone building a new screen, popup or Page make it
    look like Destin designed it. General rules and build instructions, with real screens
    named only as examples — not a description of every existing screen. It completely
-   replaces the old AI-written guide (`2026-08-25-ui-design-guide.md`), which is archived.
+   replaces the old AI-written guide (`2026-08-25-ui-design-guide.md`) once Destin approves the
+   new one on the final deck; until then the old guide stays active and is not archived.
 2. **Every rule in it comes from Destin's own choices**, made by comparing real screens
    side by side (Today vs. proposals), never from word-only questions or from the old guide.
 3. **Nothing important left out:** every kind of element and every screen of the app is
@@ -62,7 +63,8 @@ before the final review.
   one card outline per layer, popup spacing (16 between groups, 8 between boxes), "nothing
   bare" and "a label first", status pills and notice boxes, short error boxes, card anatomy,
   frame outline, model picker, account, Projects view, and the tags rebuild.
-- Guide draft kept in step: `guide-draft.md` (not yet approved as a whole).
+- Guide finished from `guide-draft.md` as `docs/active/design/2026-10-13-ui-design-guide.md`
+  (`status: draft`, awaiting Destin's approval on the final deck).
 - App batches landed and approved: card levels, surface levels, popup spacing, nothing bare
   (Sound, About, Performance, Shortcuts), Help merged with Development, last Settings
   screens, labels batch (17 screens), quick fixes, sentence case (~150 screens), frame
@@ -119,8 +121,9 @@ review, Android, phone login).
 5. **Transfer test:** three fresh builders, guide only, build smart home / code review /
    messaging mock Pages; shown in light, dark and wallpaper themes and at phone width; Destin
    judges each. A miss changes the guide (approved), and a fresh builder retries.
-6. **Publish:** replace the old guide at its path, archive the old one, update pointers
-   (MAP, feature-flow rule, UI-review README, Pages builder).
+6. **Publish, only after Destin approves the new guide on the final deck:** mark it active,
+   archive the old one, update pointers (MAP, feature-flow rule, UI-review README, Pages
+   builder). The pointer edits are prepared but held uncommitted until then.
 7. **Merge current master into the branch again** (first merged 2026-10-04) and re-run
    everything.
 8. **Final review:** fresh code reviewer over the whole branch, full desktop suite, Android
