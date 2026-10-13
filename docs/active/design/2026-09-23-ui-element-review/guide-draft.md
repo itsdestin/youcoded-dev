@@ -1,11 +1,15 @@
 ---
-status: draft
+status: superseded
 date: 2026-09-24
+superseded_by: docs/active/design/2026-10-13-ui-design-guide.md
 replaces: docs/active/design/2026-08-25-ui-design-guide.md (on approval)
 source: docs/active/design/2026-09-23-ui-element-review/decisions.md
 ---
 
-# YouCoded design guide
+# YouCoded design guide (working draft — superseded)
+
+> **Superseded 2026-10-13** by `docs/active/design/2026-10-13-ui-design-guide.md`, which finishes this
+> draft. Kept as the record the friction logs beside it cite.
 
 **Read this before you design any screen, popup, panel or Page.** It tells you how
 YouCoded looks and how it is arranged, so something new fits without Destin having to
