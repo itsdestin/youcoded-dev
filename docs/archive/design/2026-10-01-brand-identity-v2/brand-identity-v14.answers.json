@@ -1,0 +1,46 @@
+{
+ "deck": "brand-identity-v14",
+ "started": "2026-10-02T10:22:11.667Z",
+ "submitted": "2026-10-02T10:26:37Z",
+ "cur": 4,
+ "answers": {
+  "FIN": {
+   "note": "can we try a few variants with mouths of diffeent shapes and such",
+   "t": 1790936572705,
+   "v": "other",
+   "seconds": 41,
+   "theme": "light",
+   "zoom": 1
+  },
+  "FINI": {
+   "v": "other",
+   "t": 1790936602268,
+   "note": "want to try inverting too like we did w app icon maybe",
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L1": {
+   "v": "other",
+   "t": 1790936639500,
+   "seconds": 37,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L2": {
+   "note": "may want to test a dark version of the icon?same mascot ish, but dark backgroubd?colors of text don't quite match mascot icon perfectly",
+   "t": 1790936779318,
+   "v": "other",
+   "seconds": 53,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L4": {
+   "v": "other",
+   "t": 1790936796267,
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

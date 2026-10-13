@@ -22,7 +22,8 @@ verify:
   - path: youcoded/desktop/src/main/pending-acquire.ts
     contains: "PendingAcquireQueue"
   - path: youcoded/desktop/src/main/window-registry.ts
-    contains: "markInheritedByTransfer"
+    contains: "transferSession"
+  - path: youcoded/desktop/src/main/session-open.ts
   - test: youcoded/desktop/tests/tearoff-handoff.test.ts
   - test: youcoded/desktop/tests/session-drag-model.test.ts
   - test: youcoded/desktop/tests/SessionStrip.test.tsx
@@ -90,14 +91,13 @@ one statement earlier, so the whole handoff silently did nothing. The renderer
 push and pull exclusive so a payload arrives exactly once. Guard:
 `tearoff-handoff.test.ts`.
 
-## A window that INHERITED a session reads its first page to EOF
+## A window that INHERITED a session is filled by `session:open`
 
-`TRANSCRIPT_PAGE` normally stops at the transcript watcher's `startOffset`,
-because everything after it already arrived over the live stream — true of a
-window that was listening, false of one that just inherited the session.
-`WindowRegistry.markInheritedByTransfer` is the one-shot exemption. Without it a
-torn-off window showed history frozen at the moment the session was resumed.
-Guard: `tearoff-handoff.test.ts`.
+A torn-off window missed the live stream, so its first page must read to the END of the
+transcript file. There is no "inherited" mark any more (one-core R5-2): every screen fills
+through `session:open` (`main/session-open.ts`), which always reads to the end and carries
+the record's recent past. Do not reintroduce a per-window exemption. Guard:
+`tearoff-handoff.test.ts`.
 
 Depth, including the full measurements:
 `docs/archive/investigations/2026-09-03-session-tearoff-history-and-wayland.md`

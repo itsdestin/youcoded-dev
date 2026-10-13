@@ -1,0 +1,225 @@
+{
+ "title": "YouCoded \u2014 round 16: more mouths, grey glass, lighter name colours, the installer",
+ "key": "brand-identity-v16",
+ "out": "brand-identity-v16.html",
+ "images": "images/brand-identity-v16",
+ "runs": {
+  "today": "runs/v16"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "fv2": [
+   "brand",
+   "fv2",
+   "1200x700+0+0"
+  ],
+  "ma2": [
+   "brand",
+   "mouths2",
+   "156x630+24+62"
+  ],
+  "mc2": [
+   "brand",
+   "mouths2",
+   "156x630+190+62"
+  ],
+  "mg": [
+   "brand",
+   "mouths2",
+   "156x630+356+62"
+  ],
+  "mh": [
+   "brand",
+   "mouths2",
+   "156x630+522+62"
+  ],
+  "mi": [
+   "brand",
+   "mouths2",
+   "156x630+688+62"
+  ],
+  "mj": [
+   "brand",
+   "mouths2",
+   "156x630+854+62"
+  ],
+  "mk": [
+   "brand",
+   "mouths2",
+   "156x630+1020+62"
+  ],
+  "gy1": [
+   "brand",
+   "greys",
+   "374x630+24+62"
+  ],
+  "gy2": [
+   "brand",
+   "greys",
+   "374x630+412+62"
+  ],
+  "gy3": [
+   "brand",
+   "greys",
+   "374x630+800+62"
+  ],
+  "c0": [
+   "brand",
+   "colours2",
+   "1152x144+24+58"
+  ],
+  "ca": [
+   "brand",
+   "colours2",
+   "1152x144+24+216"
+  ],
+  "cb": [
+   "brand",
+   "colours2",
+   "1152x144+24+374"
+  ],
+  "cc": [
+   "brand",
+   "colours2",
+   "1152x144+24+532"
+  ]
+ },
+ "steps": [
+  {
+   "id": "MOUTH",
+   "surface": "App icon",
+   "path": "The final icon's face",
+   "headline": "Which mouths do you like? Pick as many as you want.",
+   "notice": "Your smile and little \"o\", plus five more smiley / open ones, no tongues.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "ma2",
+     "label": "Smile (your pick)",
+     "crop": "ma2",
+     "summary": "Small curved smile."
+    },
+    {
+     "id": "mc2",
+     "label": "Little \"o\" (your pick)",
+     "crop": "mc2",
+     "summary": "Curious."
+    },
+    {
+     "id": "mg",
+     "label": "Wide smile",
+     "crop": "mg",
+     "summary": "A wider curve."
+    },
+    {
+     "id": "mh",
+     "label": "Open smile",
+     "crop": "mh",
+     "summary": "A small open \"D\"."
+    },
+    {
+     "id": "mi",
+     "label": "Soft open",
+     "crop": "mi",
+     "summary": "A rounded open \"u\"."
+    },
+    {
+     "id": "mj",
+     "label": "Open oval",
+     "crop": "mj",
+     "summary": "A small open oval."
+    },
+    {
+     "id": "mk",
+     "label": "Tiny open",
+     "crop": "mk",
+     "summary": "The smallest open smile."
+    }
+   ]
+  },
+  {
+   "id": "GREY",
+   "surface": "App icon",
+   "path": "A second, non-white version",
+   "headline": "Which grey glass version works, if any?",
+   "notice": "Same face; the tile is smoky glass instead of white. Choose \"None of these\" if none should exist.",
+   "variants": [
+    {
+     "id": "gy1",
+     "label": "Light grey",
+     "crop": "gy1",
+     "summary": "Barely tinted; closest to white."
+    },
+    {
+     "id": "gy2",
+     "label": "Mid grey",
+     "crop": "gy2",
+     "summary": "Clearly grey, still glassy."
+    },
+    {
+     "id": "gy3",
+     "label": "Deep grey",
+     "crop": "gy3",
+     "summary": "Graphite glass; the darkest."
+    }
+   ]
+  },
+  {
+   "id": "COLOUR",
+   "surface": "The logo set",
+   "path": "The name's colours",
+   "headline": "Which name colours work best with the icon?",
+   "notice": "Three lighter takes on the colours sampled from the icon, and your approved colours for comparison.",
+   "variants": [
+    {
+     "id": "c0",
+     "label": "Before (approved)",
+     "crop": "c0",
+     "summary": "Purple-to-pink and ink."
+    },
+    {
+     "id": "ca",
+     "label": "A Brighter gradient",
+     "crop": "ca",
+     "summary": "Periwinkle-to-orchid, eye-violet \"coded\"."
+    },
+    {
+     "id": "cb",
+     "label": "B Brighter, softer \"coded\"",
+     "crop": "cb",
+     "summary": "Same gradient, \"coded\" a softer violet."
+    },
+    {
+     "id": "cc",
+     "label": "C Lightest",
+     "crop": "cc",
+     "summary": "Lightest gradient and \"coded\"."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download",
+   "crop": "fv2",
+   "headline": "Is this the installer?",
+   "changed": "The face straightened and slightly smaller, now the app icon's face (theme picture inside, eyes, rim), on the original colourful background with the white glass box.",
+   "notice": "The installer's face now matches the app icon exactly.",
+   "risk": "On the colourful background the pale face has less contrast than on the white tile; its rim carries the outline.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  }
+ ]
+}

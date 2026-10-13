@@ -1,0 +1,259 @@
+{
+  "title": "A page that reaches a device at home — the questions before anything is drawn",
+  "key": "home-device-pages-questions",
+  "out": "home-device-pages.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-kind",
+      "words": true,
+      "surface": "Pages",
+      "path": "What a page is allowed to connect to",
+      "headline": "How should Pages get access to Home Assistant?",
+      "today": "A page can be allowed to reach websites and online services, one approval per address. Every address inside your home (the Pi, your router, Home Assistant) is blocked, with no way to allow one.",
+      "problem": "A Home Assistant page cannot exist while that block has no exception, and there are three quite different ways to make one.",
+      "proposal": "Pick the shape. The rest of this page is written for the first option; another pick changes those answers.",
+      "options": [
+        {
+          "id": "any-device",
+          "label": "One kind for any home device",
+          "summary": "A new connection type, \"a device on your home network\", approved one device at a time. Home Assistant is the first page that uses it.",
+          "pros": [
+            "Works later for other boxes too: the camera system on the Pi, a printer, a file server.",
+            "Fits the approval screens you already signed off, so it feels like the rest of Pages.",
+            "The block stays for every device you have not approved."
+          ],
+          "cons": [
+            "The app knows nothing special about Home Assistant, so the page does all the work of reading it.",
+            "Each page asks for its own approval of the same device."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ha-built-in",
+          "label": "Home Assistant built in",
+          "summary": "Settings gets a \"Connect Home Assistant\" row. Pages ask for \"your Home Assistant\" rather than an address.",
+          "pros": [
+            "Set it up once in Settings; every page that wants it just asks.",
+            "Approval wording can be specific: \"control your lights and devices\"."
+          ],
+          "cons": [
+            "Special treatment for one product; the next device (a printer, the cameras) needs its own built-in.",
+            "More to build before the first page works."
+          ]
+        },
+        {
+          "id": "via-assistant",
+          "label": "Ask the assistant",
+          "summary": "The page asks YouCoded's assistant to do it, and the assistant uses the Home Assistant connection Claude already has.",
+          "pros": [
+            "No new door into your home network at all."
+          ],
+          "cons": [
+            "Each tap waits for a model answer: seconds, not instant.",
+            "Costs model usage on every tap.",
+            "Needs Pages' later stage (asking the assistant), which is not built."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-address",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval card a page shows the first time it opens",
+      "headline": "Who decides which device address a page connects to?",
+      "today": "For websites, the page itself names the address (for example api.openweathermap.org) and you approve it as written.",
+      "problem": "Home devices have addresses that differ in every home. Yours is 100.99.234.114:8123; someone else's Home Assistant might be homeassistant.local:8123. A page written for one home is wrong in the next.",
+      "proposal": "The page suggests an address; the approval card shows it in a box you can change before allowing.",
+      "options": [
+        {
+          "id": "suggest-edit",
+          "label": "Page suggests, you can change it",
+          "pros": [
+            "One Home Assistant page works in any home, including one shared on the marketplace later.",
+            "You see exactly which device you are allowing, before allowing it."
+          ],
+          "cons": [
+            "One more box on the approval card.",
+            "Someone who does not know their device's address has to find it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page-fixed",
+          "label": "The page names it, no editing",
+          "pros": [
+            "Same card as websites; nothing new to understand."
+          ],
+          "cons": [
+            "A different address means asking the assistant to edit the page.",
+            "Pages could never be shared between homes."
+          ]
+        },
+        {
+          "id": "you-type",
+          "label": "You always type it",
+          "pros": [
+            "The page never guesses at your network."
+          ],
+          "cons": [
+            "An empty box to fill every time, even when the usual address would have been right."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-only-home",
+      "words": true,
+      "surface": "Pages",
+      "path": "What a home-device connection can reach",
+      "headline": "A home-device connection reaches only that one device, and only addresses inside your home or your Tailscale network.",
+      "changed": "Stated, not asked: the address must be a home or Tailscale one (like 192.168.x.x, 100.x.x.x or a name ending in .local), and may include a port number like :8123. A website address in that box is refused.",
+      "notice": "This kind can never be used to reach the internet, so the approval card can honestly say \"one device in your home, nothing else\".",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "S-plain-connection",
+      "words": true,
+      "surface": "Pages",
+      "path": "How the app talks to a home device",
+      "headline": "Home devices may be reached without encryption, and the approval card says so.",
+      "changed": "Stated, not asked: most home devices, Home Assistant included, only speak the unencrypted form of web traffic. Websites must use the encrypted form; home devices would be allowed either.",
+      "notice": "Over Tailscale it is encrypted anyway. Over your home wifi, someone already on that wifi could in principle read the Home Assistant key as it passes. The card would carry one line saying the connection is not encrypted.",
+      "yes": "Allow it",
+      "no": "Encrypted only"
+    },
+    {
+      "id": "S-key-and-control",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval card, the key box",
+      "headline": "Home Assistant's key is entered once on the approval card and kept like every other saved key.",
+      "changed": "Stated, not asked: the card shows short steps for making a key in Home Assistant (with a button that opens the right Home Assistant screen). The page never sees the key; the app attaches it to each request. The connection is the full kind, not look-up only, because switching a light is a change.",
+      "notice": "Same as the weather-key flow you approved. The key stays on this computer and is never synced. Removing the connection or the key cuts the page off at once.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "P-2",
+      "page": "The Home Assistant page itself",
+      "intro": "The first page built on the new connection. These decide what it shows and how it feels."
+    },
+    {
+      "id": "Q-scope",
+      "words": true,
+      "surface": "Pages",
+      "path": "The Home Assistant page",
+      "headline": "What should the first version of the Home Assistant page do?",
+      "today": "You control the house from Home Assistant's own dashboard or the phone app. Your notes put a full custom Home Assistant screen on hold until the device list settles.",
+      "problem": "Too little and it is a toy; too much and it becomes the full replacement dashboard your notes say to wait on.",
+      "proposal": "Pick everything the first version should have. Anything left out can come later.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "lights",
+          "label": "Lights by room",
+          "summary": "Rooms as cards (Destin's Room, Living Room, Kitchen…), each light with on/off and brightness, plus a whole-room switch.",
+          "pros": ["The thing you use most.", "Rooms come from Home Assistant, so they stay right as you add devices."],
+          "cons": ["Nothing beyond lights."],
+          "recommended": true
+        },
+        {
+          "id": "scenes",
+          "label": "Scenes and scripts",
+          "summary": "One-tap buttons for your saved moods and routines (including the \"reload Hue\" fix).",
+          "pros": ["Turns the Hue fix into a button you can find."],
+          "cons": ["A long list if you have many; would need a way to hide some."]
+        },
+        {
+          "id": "climate-media",
+          "label": "Thermostat and TV",
+          "summary": "Temperature up/down; TV and speakers on/off and volume.",
+          "pros": ["Covers most of the rest of the house."],
+          "cons": ["Your thermostat currently shows as unavailable, so that half could not be tested."]
+        },
+        {
+          "id": "cameras",
+          "label": "Camera snapshots",
+          "summary": "A still picture from each camera, refreshed every few seconds.",
+          "pros": ["See the doors without opening another app."],
+          "cons": ["Pictures need extra work in how pages receive data; this would push the first version back."]
+        }
+      ]
+    },
+    {
+      "id": "Q-which-devices",
+      "words": true,
+      "surface": "Pages",
+      "path": "The Home Assistant page",
+      "headline": "Which devices should the page list?",
+      "today": "Home Assistant knows about hundreds of things, many of them noise (\"unavailable\" lights, sensors you never look at). Claude only sees the ~25 you exposed to it.",
+      "problem": "Showing everything buries the useful controls; hiding things in the wrong place makes devices seem to disappear.",
+      "proposal": "Pick where the page's list comes from.",
+      "options": [
+        {
+          "id": "by-room",
+          "label": "Every device in a room",
+          "summary": "Anything Home Assistant has placed in a room, grouped by room. A device in no room is not shown. A hide button on the page tucks away what you never use.",
+          "pros": ["Matches how you think about the house.", "Hiding is done on the page itself, in one tap."],
+          "cons": ["Devices never put in a room in Home Assistant are missing until you put them in one."],
+          "recommended": true
+        },
+        {
+          "id": "assist-list",
+          "label": "Only what Claude can see",
+          "summary": "The same ~25 devices you already exposed to Claude.",
+          "pros": ["One list to manage for both."],
+          "cons": ["Hiding something from Claude would hide it from the page too."]
+        },
+        {
+          "id": "everything",
+          "label": "Everything",
+          "pros": ["Nothing missing."],
+          "cons": ["Hundreds of rows, most of them noise."]
+        }
+      ]
+    },
+    {
+      "id": "Q-live",
+      "words": true,
+      "surface": "Pages",
+      "path": "The Home Assistant page, while it is open",
+      "headline": "How fast should the page notice a light changed somewhere else (a wall switch, the phone)?",
+      "today": "Pages can only ask for information; they cannot be told when something changes. The band at the top shows when the page last updated.",
+      "problem": "A page that does not notice changes shows a light as off when someone just turned it on, and the switch you tap does the wrong thing.",
+      "proposal": "Pick how it keeps up.",
+      "options": [
+        {
+          "id": "poll-5s",
+          "label": "Checks every 5 seconds",
+          "summary": "While the page is open and on screen. Your own taps show instantly.",
+          "pros": ["Works with what Pages can already do; no new building.", "Never more than 5 seconds stale."],
+          "cons": ["A change from elsewhere takes up to 5 seconds to appear.", "Stops while the page is hidden, so it is a beat behind when you come back."],
+          "recommended": true
+        },
+        {
+          "id": "instant",
+          "label": "Instant, always",
+          "summary": "The app keeps a live line open to Home Assistant, which tells the page the moment anything changes.",
+          "pros": ["Exactly like Home Assistant's own dashboard."],
+          "cons": ["A new kind of connection for Pages, more to build and to approve; would follow the first version."]
+        }
+      ]
+    },
+    {
+      "id": "S-desktop-first",
+      "words": true,
+      "surface": "Pages",
+      "path": "Where the page works",
+      "headline": "The first version works on the desktop app only.",
+      "changed": "Stated, not asked: Pages has not been designed for phone screens yet; that is the next step after this. The approval and the key live on the computer that approved them.",
+      "notice": "On your phone you keep using the Home Assistant app for now. Once phone Pages are designed, this page would follow, still talking to Home Assistant through the computer.",
+      "yes": "Holds",
+      "no": "Need phone"
+    }
+  ]
+}

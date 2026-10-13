@@ -1,0 +1,58 @@
+{
+ "deck": "brand-identity-v10",
+ "started": "2026-10-02T08:45:46.462Z",
+ "submitted": "2026-10-02T08:58:16Z",
+ "cur": 5,
+ "answers": {
+  "L1": {
+   "note": "i also want some version of the icon that integrates both the mascot and the name or initiatls.",
+   "t": 1790930852447,
+   "v": "yes",
+   "seconds": 106,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L2": {
+   "note": "",
+   "t": 1790930922929,
+   "v": "yes",
+   "seconds": 70,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L3": {
+   "v": "yes",
+   "t": 1790930997311,
+   "seconds": 74,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L4": {
+   "note": "",
+   "t": 1790931067432,
+   "v": "yes",
+   "seconds": 70,
+   "theme": "light",
+   "zoom": 1
+  },
+  "ICON": {
+   "v": "picks",
+   "picks": [
+    "m4"
+   ],
+   "t": 1790931385760,
+   "note": "lets try m9, slightly higher up mascot, youcoded below it. then one just bigger mascot. a few different glass/blur settings on the mascot face, and different color/outline options for the eyes. make this POP. deeper shadow against the white/glassy background",
+   "seconds": 318,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "n3, bigger mascot, download icon on box instead of down arrow under mascot, sides of box open and pointing up on left/right. maybe some motion lines or something to make it look like mascot is leaving box or something>",
+   "t": 1790931495196,
+   "v": "other",
+   "seconds": 109,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

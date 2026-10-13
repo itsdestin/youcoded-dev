@@ -19,8 +19,10 @@ verify:
     contains: "NOT A CONTROL"
   - path: youcoded/desktop/src/renderer/components/permissions/describe-rule.ts
     contains: "describeRule"
-  - path: youcoded/desktop/src/shared/types.ts
+  - path: youcoded/desktop/src/shared/backend-contract.ts
     contains: "PERMISSIONS_REMOVE_PROJECT"
+  - path: youcoded/desktop/src/main/ipc/permissions.ts
+    contains: "revokeProject"
   - path: youcoded/desktop/src/shared/permission-types.ts
     contains: "specialist[?]: string"
   - path: youcoded/desktop/src/shared/permission-types.ts
@@ -49,7 +51,7 @@ them. Parity: `ipc-bridge.md`.
 ## Revocation must reach live sessions, not just disk
 **Invariant:** `NativeSessionHost.revokeRule` / `revokeProject` are the ONLY revocation
 entry points. `PermissionStore.remove` / `removeProject` are disk-only — never call from
-an IPC handler or WS case.
+a table entry (`main/ipc/permissions.ts`).
 **Why:** `buildDecide` unions disk with per-session `rememberedFor` on EVERY decision, so a
 disk-only delete leaves a session granting what was just revoked.
 **Guard:** `native-session-host.test.ts` → `revokeRule / revokeProject` describe.
@@ -99,8 +101,8 @@ which `nativeStoreSlug` never emits.
 **Guard:** `permission-store.test.ts`, `native-session-host.test.ts` (cross-project cases).
 
 ## Surfaces
-`permissions:list` / `:remove` / `:remove-project` ride FIVE surfaces (ipc-handlers,
-preload, remote-shim, remote-server WS, SessionService.kt). NOT gated on `native.supported`
+`permissions:list` / `:remove` / `:remove-project` are one table entry each (`main/ipc/permissions.ts`),
+plus `remote-shim` and SessionService.kt. NOT gated on `native.supported`
 (`remote-shim` hardcodes `false`, which would kill revoke from a phone).
 **Guard:** `ipc-channels.test.ts` → "permissions:* channel parity".
 

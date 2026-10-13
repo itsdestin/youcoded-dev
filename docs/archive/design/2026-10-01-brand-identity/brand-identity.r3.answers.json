@@ -1,0 +1,43 @@
+{
+ "deck": "brand-identity-r3",
+ "started": "2026-10-01T11:36:26.848Z",
+ "submitted": "2026-10-01T11:39:21Z",
+ "cur": 3,
+ "answers": {
+  "N-1": {
+   "note": "kinda liked w6/w11. maybe want to see a few more options",
+   "t": 1790854654029,
+   "v": "other",
+   "seconds": 67,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-2": {
+   "v": "picks",
+   "picks": [
+    "l3"
+   ],
+   "t": 1790854716580,
+   "note": "most of these were just pretty bad",
+   "seconds": 63,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-3": {
+   "note": "all terrible and lacking in vision/creativity",
+   "t": 1790854739975,
+   "v": "other",
+   "seconds": 23,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-4": {
+   "note": "bad",
+   "t": 1790854760049,
+   "v": "no",
+   "seconds": 20,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

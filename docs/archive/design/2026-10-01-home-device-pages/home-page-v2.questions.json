@@ -1,0 +1,430 @@
+{
+  "title": "The Home page, next version — the questions before anything is drawn",
+  "key": "home-page-v2-questions",
+  "out": "home-page-v2.questions.html",
+  "stage": "ask",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-card",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, one room",
+      "headline": "What goes inside the card that folds open and shut?",
+      "today": "Each room is one long card: a big tile for every light, then speakers, TV, thermostat and cameras. Every brightness bar is always showing.",
+      "problem": "A room with six lights fills the screen, so the room you want is a long scroll away.",
+      "proposal": "A folded card shows one line per room. Open it to see each light and its brightness bar.",
+      "options": [
+        {
+          "id": "lights-only",
+          "label": "Only the lights fold",
+          "summary": "Each room keeps its TV, speaker and thermostat in view; just the lights are grouped into a card that folds.",
+          "pros": [
+            "TV and thermostat stay one tap away.",
+            "The fold matches what the All button controls: lights."
+          ],
+          "cons": [
+            "A room with a TV and a speaker is still several tiles tall when folded."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "whole-room",
+          "label": "The whole room folds",
+          "summary": "Folded, a room is one line: its name, how many lights are on, the All button. Open it to see everything in it.",
+          "pros": [
+            "Shortest page: ten rooms fit on one screen.",
+            "Clearest overview of the house."
+          ],
+          "cons": [
+            "Turning the TV down takes two taps instead of one.",
+            "The All button would sit beside things it does not control."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-all",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, the top of a room's lights",
+      "headline": "What should the button that switches all of a room's lights look like?",
+      "today": "Each room has a text button reading All on or All off. It flips depending on whether any light is on, and it never touches TVs or speakers.",
+      "problem": "It looks different from the light tiles beside it, and it disappears when the room has only one light.",
+      "proposal": "Pick the look. Whichever you pick, it only ever controls lights.",
+      "options": [
+        {
+          "id": "bulb-all",
+          "label": "A bulb tile with \"All\" under it",
+          "summary": "The same glowing bulb as a single light, labelled All, lit when any light in the room is on. Press to flip.",
+          "pros": [
+            "Looks and works exactly like the lights it controls.",
+            "Glows from across the room: easy to see a room is on while folded."
+          ],
+          "cons": [
+            "Could be mistaken for a light named \"All\" at a glance."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "bulb-all-dim",
+          "label": "The bulb tile plus one brightness bar for the room",
+          "summary": "As above, plus a bar that dims every light in the room together.",
+          "pros": [
+            "Dim a whole room without opening it."
+          ],
+          "cons": [
+            "Lights at different brightness all jump to the same level when you drag it.",
+            "More to fit in a folded card."
+          ]
+        },
+        {
+          "id": "text",
+          "label": "Keep the All on / All off text button",
+          "pros": [
+            "Already built and approved.",
+            "The words say exactly what it does."
+          ],
+          "cons": [
+            "Does not match the tiles; you said it could look better."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-fold",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, opening the page",
+      "headline": "Which rooms are open when you open the page?",
+      "today": "Nothing folds yet, so everything is always open.",
+      "problem": "Folding is only useful if the page opens the way you want it most often.",
+      "proposal": "The page remembers which rooms you left open, on this computer.",
+      "options": [
+        {
+          "id": "remember",
+          "label": "As you left them",
+          "pros": [
+            "Your own room can stay open forever, the rest folded."
+          ],
+          "cons": [
+            "A room you opened once stays open until you close it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all-folded",
+          "label": "All folded, every time",
+          "pros": [
+            "Always the same short overview."
+          ],
+          "cons": [
+            "Adjusting a brightness always takes an extra tap."
+          ]
+        },
+        {
+          "id": "lit-open",
+          "label": "Rooms with something on are open",
+          "pros": [
+            "Shows what is running right now."
+          ],
+          "cons": [
+            "Rooms jump open and shut as others in the house switch things, which moves what you were about to press."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-tv",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, a Google TV tile",
+      "headline": "How much control should the Google TV tiles have?",
+      "today": "A TV tile switches the TV on and off and sets volume. Home Assistant reaches your Google TVs only as Chromecasts, which cannot press buttons on the TV.",
+      "problem": "No way to pause, go back, go home, or open YouTube or Netflix from the page.",
+      "proposal": "Add Home Assistant's Android TV Remote connection, which acts like the TV's real remote. I set it up; you read a short code off each TV screen once.",
+      "options": [
+        {
+          "id": "remote",
+          "label": "A full remote",
+          "summary": "Tap a TV to open a remote: arrows, OK, back, home, play/pause, volume, and buttons for your apps (YouTube, Netflix…).",
+          "pros": [
+            "Everything the physical remote does, from the computer.",
+            "Works for any app on the TV, not just ones that support casting."
+          ],
+          "cons": [
+            "One pairing per TV: walk to each TV and type the code it shows.",
+            "Typing on the TV with the keyboard is a later step, not this one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "playback",
+          "label": "Playback buttons only",
+          "summary": "Play/pause, skip and what's playing on the tile; no arrows or app buttons.",
+          "pros": [
+            "No pairing needed: works today through the Chromecast connection."
+          ],
+          "cons": [
+            "Only works while something is playing; can't open an app or navigate menus."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "Leave TVs as they are",
+          "pros": [
+            "Nothing to set up."
+          ],
+          "cons": [
+            "You still need the physical remote for everything but power and volume."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-settings",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, an Edit button",
+      "headline": "Which basic settings should be built into the page?",
+      "today": "To rename a light, move it to another room or hide one, you open Home Assistant's own screens.",
+      "problem": "The everyday tidying a smart home needs means leaving the page.",
+      "proposal": "An Edit button puts the page in edit mode: every tile shows its own small settings. Pick everything it should cover. I'd pick rename, move and reorder.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "rename",
+          "label": "Rename a device",
+          "pros": [
+            "Fixes names like \"Hue color lamp 3\"."
+          ],
+          "cons": [
+            "See the next question: whether names change only here or in Home Assistant too."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "move",
+          "label": "Move a device to another room, or make a new room",
+          "pros": [
+            "What you just asked me to do for the bathroom speaker, done yourself."
+          ],
+          "cons": [
+            "Changes Home Assistant, so it affects its app and voice assistants too."
+          ]
+        },
+        {
+          "id": "order",
+          "label": "Reorder rooms and devices",
+          "summary": "Drag rooms and tiles into the order you want.",
+          "pros": [
+            "Your room first, the guest room last."
+          ],
+          "cons": [
+            "Dragging is fiddly on a small screen; arrow buttons would be offered too."
+          ]
+        },
+        {
+          "id": "favourites",
+          "label": "Favourites row at the top",
+          "summary": "Star any device to put it in a row above the rooms.",
+          "pros": [
+            "The three things you touch daily, never folded away."
+          ],
+          "cons": [
+            "The same device then appears twice on the page."
+          ]
+        },
+        {
+          "id": "icons",
+          "label": "Change a device's icon",
+          "pros": [
+            "A lamp can look like a lamp, a strip like a strip."
+          ],
+          "cons": [
+            "A picker to build; the least useful of these."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-where",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, edit mode",
+      "headline": "When you rename or move a device, where does the change happen?",
+      "today": "The page can only read and switch devices. The connection it uses cannot change Home Assistant's settings.",
+      "problem": "Renaming in Home Assistant itself needs a second kind of connection to it, a live one, which pages do not have yet. That is new work in the app and new wording on the approval card.",
+      "proposal": "Order, favourites and hiding are saved by the page; names and rooms are changed in Home Assistant itself.",
+      "options": [
+        {
+          "id": "mixed",
+          "label": "Names and rooms in Home Assistant; order and favourites in the page",
+          "pros": [
+            "A rename shows everywhere: the page, Home Assistant's app, voice commands.",
+            "Layout choices stay personal to this page."
+          ],
+          "cons": [
+            "Needs the live connection built into the app first; the biggest piece of this round.",
+            "A page you approve could then change Home Assistant's settings, so the approval card must say so."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page-only",
+          "label": "Everything saved only in the page",
+          "pros": [
+            "No new app work: buildable right away.",
+            "Nothing the page does can change Home Assistant's setup."
+          ],
+          "cons": [
+            "Names differ between the page and Home Assistant's app, and voice commands use the old names.",
+            "A move is only a move on this page."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-advanced",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, anything the page does not cover",
+      "headline": "How should the page handle settings it does not have?",
+      "today": "There is an Open Home Assistant button on the key step only.",
+      "problem": "Automations, adding new devices and integrations will always live in Home Assistant. You asked whether its menus could appear inside the app, restyled.",
+      "proposal": "Every tile and room gets an Open in Home Assistant link to that exact device's page there.",
+      "options": [
+        {
+          "id": "deep-link",
+          "label": "Links to the exact screen in Home Assistant",
+          "summary": "Opens in your browser, already on that device's settings.",
+          "pros": [
+            "Small to build; never goes out of date when Home Assistant updates."
+          ],
+          "cons": [
+            "You leave the app and see Home Assistant's own look."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "embed",
+          "label": "Home Assistant's own screens inside the app",
+          "summary": "Its real menus shown in a panel, with our colours applied on top.",
+          "pros": [
+            "Every Home Assistant setting without leaving the app."
+          ],
+          "cons": [
+            "Pages are deliberately blocked from showing other sites; this needs its own new built-in viewer.",
+            "Restyling another app's screens breaks whenever Home Assistant updates, often weekly.",
+            "It still asks you to log in to Home Assistant inside it."
+          ]
+        },
+        {
+          "id": "rebuild",
+          "label": "Rebuild more menus in the page",
+          "summary": "Recreate chosen screens, such as automations on/off, in the page's own style.",
+          "pros": [
+            "Looks like the rest of the page."
+          ],
+          "cons": [
+            "Each menu is new work; only worth it for the few you use a lot."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-extras",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home",
+      "headline": "Which everyday features should the page add?",
+      "today": "Lights, thermostat, speakers, TVs and camera pictures, by room.",
+      "problem": "Smart home apps usually offer a few more conveniences that the page lacks.",
+      "proposal": "Pick everything you want in this round. Anything left out can come later. I'd pick Everything off and the status line.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "house-off",
+          "label": "Everything off",
+          "summary": "One button at the top that switches off every light in the house.",
+          "pros": [
+            "Bedtime or leaving, in one press."
+          ],
+          "cons": [
+            "Easy to press by accident; it would ask first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "summary",
+          "label": "A status line at the top",
+          "summary": "\"5 lights on · 72° inside · front door camera clear\".",
+          "pros": [
+            "The house at a glance with every room folded."
+          ],
+          "cons": [
+            "One more line of space."
+          ]
+        },
+        {
+          "id": "scenes",
+          "label": "Scenes and routines",
+          "summary": "One-tap buttons for your Hue scenes and Home Assistant scripts.",
+          "pros": [
+            "Movie mode or dinner lighting without touching each light."
+          ],
+          "cons": [
+            "Hue scenes you never use show up too, so they'd need hiding."
+          ]
+        },
+        {
+          "id": "sensors",
+          "label": "Sensors",
+          "summary": "Temperatures, motion, doors and batteries shown in their rooms.",
+          "pros": [
+            "See which sensor has a low battery."
+          ],
+          "cons": [
+            "Home Assistant lists many sensors nobody looks at; most would start hidden."
+          ]
+        },
+        {
+          "id": "automations",
+          "label": "Automations on/off",
+          "summary": "A list of your automations, each with a switch to pause it.",
+          "pros": [
+            "Stop the evening lights turning on while you're away, without opening Home Assistant."
+          ],
+          "cons": [
+            "Few automations exist yet."
+          ]
+        },
+        {
+          "id": "search",
+          "label": "Search",
+          "summary": "Type a device's name to jump to it.",
+          "pros": [
+            "Fast once there are many devices."
+          ],
+          "cons": [
+            "With folded rooms and favourites, rarely needed."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-rounds",
+      "words": true,
+      "surface": "Pages",
+      "path": "How this gets built",
+      "headline": "This is built in rounds: folding rooms first, then TV remotes, then edit mode, each shown to you before the next.",
+      "changed": "Stated, not asked: each round gets its own pictures to approve before code, like the last three rounds of the Home page.",
+      "notice": "You can keep using and testing the page between rounds; nothing half-built is installed.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}

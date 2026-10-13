@@ -1,0 +1,245 @@
+{
+ "title": "YouCoded's look \u2014 round 1: pick a direction for each piece",
+ "key": "brand-identity-explore",
+ "out": "brand-identity.explore.html",
+ "images": "images/brand-identity.explore",
+ "runs": {
+  "today": "runs/today"
+ },
+ "labels": {
+  "today": "Concept"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "s-costume": [
+   "brand",
+   "s-costume",
+   "1440x900+0+0"
+  ],
+  "s-badge": [
+   "brand",
+   "s-badge",
+   "1440x900+0+0"
+  ],
+  "s-wordmark": [
+   "brand",
+   "s-wordmark",
+   "1440x900+0+0"
+  ],
+  "k-cut": [
+   "brand",
+   "k-cut",
+   "1440x900+0+0"
+  ],
+  "k-dot": [
+   "brand",
+   "k-dot",
+   "1440x900+0+0"
+  ],
+  "k-gloss": [
+   "brand",
+   "k-gloss",
+   "1440x900+0+0"
+  ],
+  "t-dm": [
+   "brand",
+   "t-dm",
+   "1440x900+0+0"
+  ],
+  "t-brico": [
+   "brand",
+   "t-brico",
+   "1440x900+0+0"
+  ],
+  "t-round": [
+   "brand",
+   "t-round",
+   "1440x900+0+0"
+  ],
+  "r-current": [
+   "brand",
+   "r-current",
+   "1440x900+0+0"
+  ],
+  "r-mono": [
+   "brand",
+   "r-mono",
+   "1440x900+0+0"
+  ],
+  "r-color": [
+   "brand",
+   "r-color",
+   "1440x900+0+0"
+  ],
+  "a-current": [
+   "brand",
+   "a-current",
+   "1440x900+0+0"
+  ],
+  "a-bold": [
+   "brand",
+   "a-bold",
+   "1440x900+0+0"
+  ],
+  "a-ink": [
+   "brand",
+   "a-ink",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "C-1",
+   "surface": "The whole brand",
+   "path": "Website, app, technical pages",
+   "headline": "What should stay the same everywhere, while themes change everything else?",
+   "notice": "This is the big one. It decides how the other four picks get used: on the website, in the app, on privacy and help pages, and on social posts.",
+   "variants": [
+    {
+     "id": "s-costume",
+     "label": "One shape, any costume",
+     "crop": "s-costume",
+     "summary": "The mascot's outline (square head, two arms, two feet) is the logo. Themes can recolour it and dress it up, but the outline never changes, so it is still us. Matches what the app already does with theme mascots. My recommendation.",
+     "risk": "Needs a written rule for theme makers: keep the outline. A theme that changes the outline stops looking like YouCoded."
+    },
+    {
+     "id": "s-badge",
+     "label": "One fixed badge",
+     "crop": "s-badge",
+     "summary": "A purple square with a white mascot, identical everywhere, never themed. Theme mascots stay inside the app as characters.",
+     "risk": "The most recognisable option, but it quietly contradicts 'make it yours': the one thing you can't change is the logo."
+    },
+    {
+     "id": "s-wordmark",
+     "label": "The name is the logo",
+     "crop": "s-wordmark",
+     "summary": "The word YouCoded, with the mascot's head as the first 'o'. The full mascot becomes decoration you can take or leave.",
+     "risk": "Words don't shrink: the taskbar and phone home screen still need a picture, so this option still needs one of the others for icons."
+    }
+   ]
+  },
+  {
+   "id": "C-2",
+   "surface": "The mascot",
+   "path": "The logo drawing itself",
+   "headline": "Which drawing of the mascot should be the official one?",
+   "notice": "Today three drawings are in use: squint eyes on the website, a glossy waving one in the app icon, and theme versions. Whichever you pick becomes the master every other version is traced from.",
+   "variants": [
+    {
+     "id": "k-dot",
+     "label": "Flat, round eyes",
+     "crop": "k-dot",
+     "summary": "The app icon's friendly face, drawn flat with no shading, so it works as one colour, on a sticker, and at 16 pixels. My recommendation.",
+     "risk": "Loses the glossy, sticker-like depth you picked for the app icon in September."
+    },
+    {
+     "id": "k-cut",
+     "label": "Flat, squint eyes",
+     "crop": "k-cut",
+     "summary": "The website's mark today. Very clean at small sizes.",
+     "risk": "The squint reads as 'eyes shut' or 'annoyed' to some people, and it does not match the app icon's face."
+    },
+    {
+     "id": "k-gloss",
+     "label": "Glossy, waving",
+     "crop": "k-gloss",
+     "summary": "The app icon's mascot today, unchanged.",
+     "risk": "Turns to a purple blob at 16 pixels, and needs a separate flat copy for anything printed in one colour."
+    }
+   ]
+  },
+  {
+   "id": "C-3",
+   "surface": "Fonts",
+   "path": "Website, technical pages, marketing",
+   "headline": "Which pair of fonts should YouCoded use for headlines and reading text?",
+   "notice": "Applies to the website, help and privacy pages and marketing. The app keeps letting themes pick their own fonts.",
+   "variants": [
+    {
+     "id": "t-dm",
+     "label": "DM Sans",
+     "crop": "t-dm",
+     "summary": "Today's website font, used for everything instead of mixed with others. Plain, modern, very readable on technical pages. My recommendation: least change, nothing to relearn.",
+     "risk": "Common: many startup sites use it, so it gives little personality on its own; the mascot has to carry that."
+    },
+    {
+     "id": "t-brico",
+     "label": "Bricolage Grotesque",
+     "crop": "t-brico",
+     "summary": "Headlines with a bit of quirk (look at the 'a' and 't'), plain Instrument Sans for reading.",
+     "risk": "Two fonts to keep consistent instead of one."
+    },
+    {
+     "id": "t-round",
+     "label": "Fredoka + Nunito",
+     "crop": "t-round",
+     "summary": "Rounded letters that echo the mascot's rounded corners. The warmest of the three.",
+     "risk": "Can read as a children's product, which works against the privacy and technical pages being taken seriously."
+    }
+   ]
+  },
+  {
+   "id": "C-4",
+   "surface": "Tray icon",
+   "path": "Next to the clock (Windows), top bar (Mac), panel (Linux)",
+   "headline": "How should YouCoded look next to the clock?",
+   "notice": "Fact check: the app has no tray icon yet. Your screenshot shows its taskbar button. Picking one here also means building a tray icon, a separate decision on what it does when clicked.",
+   "variants": [
+    {
+     "id": "r-mono",
+     "label": "One-colour outline",
+     "crop": "r-mono",
+     "summary": "White on dark bars, black on light, like Wi-Fi and volume beside it. What Mac expects and what Windows 11 system icons do. My recommendation.",
+     "risk": "Not purple, so it stands out less among the other icons."
+    },
+    {
+     "id": "r-color",
+     "label": "Purple outline",
+     "crop": "r-color",
+     "summary": "The mascot's outline in purple, no square behind it. Easy to spot.",
+     "risk": "On a Mac it looks out of place: every other menu bar icon is one colour."
+    },
+    {
+     "id": "r-current",
+     "label": "Full app icon, shrunk",
+     "crop": "r-current",
+     "summary": "What the taskbar shows today, used as-is.",
+     "risk": "At this size the square, outline and shading turn to a lilac smudge, as in your screenshot."
+    }
+   ]
+  },
+  {
+   "id": "C-5",
+   "surface": "App and installer icon",
+   "path": "Taskbar, Mac Dock, Start menu, Downloads folder",
+   "headline": "Which app icon should YouCoded ship, and its installer with it?",
+   "notice": "The installer's icon is the app icon plus a small download badge in the corner, replacing today's purple strip. The mascot follows your pick on the second question.",
+   "variants": [
+    {
+     "id": "a-bold",
+     "label": "Bold purple",
+     "crop": "a-bold",
+     "summary": "Deep purple square, white mascot. Strongest contrast, readable at taskbar size on dark and light. My recommendation.",
+     "risk": "Replaces the pale lilac look you approved in September; the app will look noticeably different in your taskbar after the update."
+    },
+    {
+     "id": "a-ink",
+     "label": "Dark ink",
+     "crop": "a-ink",
+     "summary": "Near-black square, purple mascot. Calm, stands out among bright icons.",
+     "risk": "Blends into a dark taskbar or Dock, as the top strip shows."
+    },
+    {
+     "id": "a-current",
+     "label": "Today's icon",
+     "crop": "a-current",
+     "summary": "Pale lilac square, glossy mascot. No change.",
+     "risk": "Low contrast: the pale square is faint on a light taskbar, and the mascot blurs at small sizes."
+    }
+   ]
+  }
+ ]
+}

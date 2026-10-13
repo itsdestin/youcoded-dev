@@ -1,0 +1,79 @@
+{
+ "deck": "home-page-v2-questions",
+ "started": "2026-10-01T11:15:08.373Z",
+ "submitted": "2026-10-01T11:19:00Z",
+ "cur": 0,
+ "answers": {
+  "Q-card": {
+   "v": "pick",
+   "pick": "lights-only",
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-all": {
+   "v": "pick",
+   "pick": "bulb-all",
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-fold": {
+   "v": "pick",
+   "pick": "remember",
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-tv": {
+   "v": "pick",
+   "pick": "remote",
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-settings": {
+   "v": "picks",
+   "picks": [
+    "rename",
+    "move",
+    "order",
+    "favourites"
+   ],
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-where": {
+   "v": "pick",
+   "pick": "mixed",
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-advanced": {
+   "v": "pick",
+   "t": 1790853538582,
+   "note": "any way we could quickly/easily/programatically regenerate the ha pages in youcoded's page theme/styling?",
+   "pick": "deep-link",
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-extras": {
+   "v": "picks",
+   "picks": [
+    "house-off"
+   ],
+   "t": 1790853538582,
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  },
+  "S-rounds": {
+   "v": "other",
+   "t": 1790853538582,
+   "note": "u could probably parallelize some of this",
+   "seconds": 26,
+   "theme": "cotton-candy-sky"
+  }
+ }
+}

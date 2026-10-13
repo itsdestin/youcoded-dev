@@ -22,8 +22,15 @@ The findings below are the audit as written that morning. Since then:
 - **Fixed and merged the same day** (youcoded#468): §6 items 1, 2, 3, 4, 5, 6 and 7, plus the
   §3 "Junk" replies (they now refuse honestly; transcript paging and sync status are refused
   quietly). Appendix items 4 (restore half), 7 and 30 are done.
-- **Still open**: everything else, and the whole of §7. Next is §7a, the harness runtime on
-  the phone. Start at `docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md`.
+- **Still open**: everything else.
+
+**Update 2026-09-24 — the step list moved.** §7's plan is replaced by phases A0–A6 in
+`docs/active/plans/2026-09-24-android-rebuild-plan.md` (7a → A2, and it no longer copies the
+remote dispatcher because the phone runs the shared door; 7b/7c → A2 plus the remote plan's
+R4 capabilities object; 7e → A5; Play → A1 and A6). That plan also corrects §7's size: the
+Kotlin copying desktop logic is ~9,500–11,000 lines, not ~3,150. This report stays the record
+of findings (§1–6), decisions (§8) and the bug appendix. Start at
+`docs/active/handoffs/2026-09-24-one-core-START-HERE.md`.
 
 ## 1. The short version
 

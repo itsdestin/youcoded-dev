@@ -1,0 +1,54 @@
+{
+ "deck": "brand-website-v1",
+ "started": "2026-10-05T05:13:56.640Z",
+ "submitted": "2026-10-05T05:15:28Z",
+ "cur": 5,
+ "answers": {
+  "HEADER": {
+   "note": "we should use the version with the tagline",
+   "t": 1791177251652,
+   "v": "other",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "FOOTER": {
+   "note": "this can be version without tagline",
+   "t": 1791177262831,
+   "v": "other",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "FOOTDARK": {
+   "v": "yes",
+   "t": 1791177268446,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PHONE": {
+   "v": "yes",
+   "t": 1791177274850,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "TAB": {
+   "v": "other",
+   "t": 1791177292419,
+   "note": "can we make youcoded in the header bar lower case?",
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SHARE": {
+   "v": "yes",
+   "t": 1791177326269,
+   "note": "can we also make the about/features/faq buttons use brand font?",
+   "seconds": 34,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

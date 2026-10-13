@@ -1,0 +1,126 @@
+{
+ "title": "YouCoded brand \u2014 tagline beside the y, and the stacked gap",
+ "key": "brand-identity-v25",
+ "out": "brand-identity-v25.html",
+ "images": "images/brand-identity-v25",
+ "runs": {
+  "today": "runs/v22"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "ta": [
+   "brand",
+   "tuck",
+   "277x303+24+58"
+  ],
+  "tb": [
+   "brand",
+   "tuck",
+   "277x303+315+58"
+  ],
+  "tc": [
+   "brand",
+   "tuck",
+   "277x303+606+58"
+  ],
+  "td": [
+   "brand",
+   "tuck",
+   "277x303+897+58"
+  ],
+  "ga": [
+   "brand",
+   "tuck",
+   "277x303+24+375"
+  ],
+  "gb": [
+   "brand",
+   "tuck",
+   "277x303+315+375"
+  ],
+  "gc": [
+   "brand",
+   "tuck",
+   "277x303+606+375"
+  ],
+  "gd": [
+   "brand",
+   "tuck",
+   "277x303+897+375"
+  ]
+ },
+ "steps": [
+  {
+   "id": "HORIZ",
+   "surface": "Icon + name + tagline, side by side",
+   "path": "Headers, footer",
+   "headline": "Which side-by-side version?",
+   "notice": "Your pick B, then three with the tagline tucked up beside the \"y\"'s tail.",
+   "variants": [
+    {
+     "id": "ta",
+     "label": "A Your pick (B)",
+     "crop": "ta",
+     "summary": "Tagline under the whole name."
+    },
+    {
+     "id": "tb",
+     "label": "B Tucked beside the tail",
+     "crop": "tb",
+     "summary": "Starts just past the y's tail."
+    },
+    {
+     "id": "tc",
+     "label": "C Tucked higher",
+     "crop": "tc",
+     "summary": "Pulled up closer to the name."
+    },
+    {
+     "id": "td",
+     "label": "D Tucked, smaller",
+     "crop": "td",
+     "summary": "Smaller tagline, tucked."
+    }
+   ]
+  },
+  {
+   "id": "STACK",
+   "surface": "Stacked lockup",
+   "path": "Setup screen, store, social",
+   "headline": "Which gap between the icon and the name?",
+   "notice": "I read \"the vertical gap between the two\" as icon-to-name; if you meant name-to-tagline, say so in the note.",
+   "variants": [
+    {
+     "id": "ga",
+     "label": "A Before",
+     "crop": "ga",
+     "summary": "Today's gap."
+    },
+    {
+     "id": "gb",
+     "label": "B Tighter",
+     "crop": "gb",
+     "summary": "Tagline B, smaller gap."
+    },
+    {
+     "id": "gc",
+     "label": "C Tighter still",
+     "crop": "gc",
+     "summary": "C Tighter still"
+    },
+    {
+     "id": "gd",
+     "label": "D Tightest",
+     "crop": "gd",
+     "summary": "The name nearly touches the icon's shadow."
+    }
+   ]
+  }
+ ]
+}

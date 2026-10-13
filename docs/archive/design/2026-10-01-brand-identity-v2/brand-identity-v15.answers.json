@@ -1,0 +1,44 @@
+{
+ "deck": "brand-identity-v15",
+ "started": "2026-10-02T10:41:41.947Z",
+ "submitted": "2026-10-02T10:46:54Z",
+ "cur": 3,
+ "answers": {
+  "MOUTH": {
+   "note": "try a few more smiley/open-ish ones (no tongue or anything tho)",
+   "t": 1790937782570,
+   "v": "picks",
+   "picks": [
+    "ma",
+    "mc"
+   ],
+   "seconds": 81,
+   "theme": "light",
+   "zoom": 1
+  },
+  "DARK": {
+   "v": "no",
+   "t": 1790937797827,
+   "note": "wayyy too dark. need like a gray/glassy vibe",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "COLOUR": {
+   "note": "toto dahk",
+   "t": 1790937939270,
+   "v": "other",
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "v": "other",
+   "seconds": 198,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1790938013174,
+   "note": "straighten out mascot. make slightly smaller. use new/inverted mascot on old colorful backgroun. "
+  }
+ }
+}

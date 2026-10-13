@@ -1,0 +1,72 @@
+{
+ "deck": "home-device-pages-questions",
+ "started": "2026-10-01T08:35:37.263Z",
+ "submitted": "2026-10-01T08:38:07Z",
+ "cur": 1,
+ "answers": {
+  "Q-kind": {
+   "v": "pick",
+   "pick": "any-device",
+   "t": 1790843808177,
+   "note": "may eventually build ha in, but not now",
+   "seconds": 14,
+   "theme": "golden-sunbreak"
+  },
+  "Q-address": {
+   "v": "pick",
+   "pick": "suggest-edit",
+   "t": 1790843808177,
+   "seconds": 14,
+   "theme": "golden-sunbreak"
+  },
+  "S-only-home": {
+   "v": "yes",
+   "t": 1790843808177,
+   "seconds": 14,
+   "theme": "golden-sunbreak"
+  },
+  "S-plain-connection": {
+   "v": "yes",
+   "t": 1790843808177,
+   "seconds": 14,
+   "theme": "golden-sunbreak"
+  },
+  "S-key-and-control": {
+   "v": "yes",
+   "t": 1790843808177,
+   "seconds": 14,
+   "theme": "golden-sunbreak"
+  },
+  "Q-scope": {
+   "v": "picks",
+   "picks": [
+    "lights",
+    "climate-media",
+    "cameras"
+   ],
+   "t": 1790843886199,
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  },
+  "Q-which-devices": {
+   "v": "pick",
+   "pick": "by-room",
+   "t": 1790843886199,
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  },
+  "Q-live": {
+   "v": "pick",
+   "pick": "poll-5s",
+   "t": 1790843886199,
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  },
+  "S-desktop-first": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "golden-sunbreak",
+   "t": 1790843886199
+  }
+ }
+}

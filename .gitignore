@@ -148,3 +148,13 @@ scripts/promo/src/theme-art.generated.ts
 # an unrelated side project whose .env holds a key.
 Pages/analytics/
 jev-demo/
+
+# Home page design folders (2026-10-01 / 2026-10-04): the deck sources (*.json) and answers are the record;
+# the built decks (*.html) regenerate from them with `serve` (it rebuilds); `runs/`, `*-runs/` and the 2026-10-04
+# `images/` (~50 MB of PNG) are shoot output / deck pictures for decks already answered, so a session that needs to re-open
+# one re-shoots it. Left untracked on disk, never committed. (Files already tracked in these folders stay tracked.)
+docs/active/design/2026-10-01-home-device-pages/home-page-v*.html
+docs/active/design/2026-10-01-home-device-pages/runs/
+docs/active/design/2026-10-04-home-redesign/*.html
+docs/active/design/2026-10-04-home-redesign/*-runs/
+docs/active/design/2026-10-04-home-redesign/images/

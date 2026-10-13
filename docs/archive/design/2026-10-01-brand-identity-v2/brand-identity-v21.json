@@ -1,0 +1,126 @@
+{
+ "title": "YouCoded brand \u2014 round 21: the initials and the installer's box",
+ "key": "brand-identity-v21",
+ "out": "brand-identity-v21.html",
+ "images": "images/brand-identity-v21",
+ "runs": {
+  "today": "runs/v21"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "w1": [
+   "brand",
+   "initials2",
+   "220x616+24+62"
+  ],
+  "w2": [
+   "brand",
+   "initials2",
+   "220x616+256+62"
+  ],
+  "w3": [
+   "brand",
+   "initials2",
+   "220x616+488+62"
+  ],
+  "w4": [
+   "brand",
+   "initials2",
+   "220x616+720+62"
+  ],
+  "w5": [
+   "brand",
+   "initials2",
+   "220x616+952+62"
+  ],
+  "id": [
+   "brand",
+   "inst2",
+   "374x620+24+58"
+  ],
+  "if1": [
+   "brand",
+   "inst2",
+   "374x620+412+58"
+  ],
+  "if2": [
+   "brand",
+   "inst2",
+   "374x620+800+58"
+  ]
+ },
+ "steps": [
+  {
+   "id": "INITIALS",
+   "surface": "\"yc\"",
+   "path": "Favicon, profile pictures, small badges",
+   "headline": "Which initials style?",
+   "notice": "The plain white tile, no face outline, only the \"y\" coloured.",
+   "variants": [
+    {
+     "id": "w1",
+     "label": "A Gradient \"y\", ink \"c\"",
+     "crop": "w1",
+     "summary": "The name's purple-to-pink on the y."
+    },
+    {
+     "id": "w2",
+     "label": "B Solid purple \"y\"",
+     "crop": "w2",
+     "summary": "One flat purple."
+    },
+    {
+     "id": "w3",
+     "label": "C Gradient \"y\", grey \"c\"",
+     "crop": "w3",
+     "summary": "Softer, lower contrast."
+    },
+    {
+     "id": "w4",
+     "label": "D \"y\" in each theme's colour",
+     "crop": "w4",
+     "summary": "Follows the theme, like the icon."
+    },
+    {
+     "id": "w5",
+     "label": "E A, bigger",
+     "crop": "w5",
+     "summary": "Letters fill more of the tile."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The downloaded file, at small sizes",
+   "headline": "Which box stands out best when small?",
+   "notice": "Your pick D, then the same with a light outline + shadow, and with a firm outline + deeper shadow. Shown on grey, white and dark.",
+   "variants": [
+    {
+     "id": "id",
+     "label": "Your pick (D)",
+     "crop": "id",
+     "summary": "As picked."
+    },
+    {
+     "id": "if1",
+     "label": "A Light outline + shadow",
+     "crop": "if1",
+     "summary": "Subtle."
+    },
+    {
+     "id": "if2",
+     "label": "B Firm outline + deeper shadow",
+     "crop": "if2",
+     "summary": "Clearest at 16\u201332px."
+    }
+   ]
+  }
+ ]
+}

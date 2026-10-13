@@ -1,0 +1,204 @@
+{
+ "title": "YouCoded brand \u2014 the whole set as picked, for your sign-off",
+ "key": "brand-identity-v19",
+ "out": "brand-identity-v19.html",
+ "images": "images/brand-identity-v19",
+ "runs": {
+  "today": "runs/v19"
+ },
+ "labels": {
+  "today": "As picked"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "all": [
+   "brand",
+   "all",
+   "1200x700+0+0"
+  ],
+  "sm2": [
+   "brand",
+   "sm2",
+   "1200x700+0+0"
+  ],
+  "gyf": [
+   "brand",
+   "gyf",
+   "1200x700+0+0"
+  ],
+  "fvf": [
+   "brand",
+   "fvf",
+   "1200x700+0+0"
+  ],
+  "l1": [
+   "brand",
+   "l1",
+   "1200x700+0+0"
+  ],
+  "l2": [
+   "brand",
+   "l2",
+   "1200x700+0+0"
+  ],
+  "l3": [
+   "brand",
+   "l3",
+   "1200x700+0+0"
+  ],
+  "l4": [
+   "brand",
+   "l4",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "ALL",
+   "surface": "Everything",
+   "path": "Everywhere it appears",
+   "crop": "all",
+   "headline": "Seen together, is this the YouCoded brand?",
+   "changed": "Every piece you picked across rounds 5\u201318, on one page: app icon, grey version, installer, the icon in six themes, and the logo on light and dark.",
+   "notice": "This is the first time all of it appears together.",
+   "risk": "A \"no\" here with a note is fine \u2014 say what feels off and it goes back into a round.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "SM2",
+   "surface": "App icon",
+   "path": "Everywhere it appears",
+   "crop": "sm2",
+   "headline": "Is this the app icon?",
+   "changed": "White glass tile; the face shows your theme's picture at heavy blur, each theme's eye colour, a thin theme-coloured rim, shadow all round, and the medium soft smile.",
+   "notice": "It re-dresses itself in every theme.",
+   "risk": "At 16px the smile shrinks to a dot; the eyes carry it.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "GYF",
+   "surface": "Grey version",
+   "path": "Everywhere it appears",
+   "crop": "gyf",
+   "headline": "Is this the grey version?",
+   "changed": "The same face on mid-grey glass, with the smile added to match the app icon.",
+   "notice": "For dark taskbars and dark pages.",
+   "risk": "The smile on the grey version wasn't asked for \u2014 say no if it shouldn't have one.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "FVF",
+   "surface": "Installer icon",
+   "path": "Everywhere it appears",
+   "crop": "fvf",
+   "headline": "Is this the installer icon?",
+   "changed": "The app icon's face, straight and slightly smaller, rising out of an open glass box with wide flaps, a download symbol and three short streaks, on the colourful background. Smile added to match.",
+   "notice": "The installer and the app now share the same face.",
+   "risk": "The smile on the installer wasn't asked for \u2014 say no if it shouldn't have one.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L1",
+   "surface": "Logo set \u00b7 lockups",
+   "path": "Everywhere it appears",
+   "crop": "l1",
+   "headline": "Do the lockups work with this icon?",
+   "changed": "Your approved L1 redrawn with the final icon.",
+   "notice": "Nothing else changed.",
+   "risk": "The \"yc\" initials tile (bottom right) is still the older style and doesn't match the icon yet.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L2",
+   "surface": "Logo set \u00b7 colours",
+   "path": "Everywhere it appears",
+   "crop": "l2",
+   "headline": "Do the colour versions work with this icon?",
+   "changed": "Your approved L2 with the final icon, including its theme versions.",
+   "notice": "Name colours are your original purple-to-pink and ink.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L3",
+   "surface": "Logo set \u00b7 rules",
+   "path": "Everywhere it appears",
+   "crop": "l3",
+   "headline": "Are the rules still right?",
+   "changed": "Unchanged from what you approved, shown with the final icon.",
+   "notice": "Clear space, minimum sizes, colours, type, don'ts.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "L4",
+   "surface": "Logo set \u00b7 in use",
+   "path": "Everywhere it appears",
+   "crop": "l4",
+   "headline": "Does it all work in use?",
+   "changed": "Your approved L4 with the final icon on the site header and hero, app title bar, browser tab, help pages and footer.",
+   "notice": "Nothing else changed.",
+   "risk": "The title-bar icon is 18px, where the rim, eyes and smile are at their smallest.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  }
+ ]
+}

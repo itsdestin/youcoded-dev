@@ -58,6 +58,8 @@ Destin often reviews **several dev instances at once**, and every window's title
 
 **When launching a dev instance for Destin to look at, always pass `--label "<Feature Name>"`.** Use a short human-readable descriptor of what's being tested (`--label "UI Consistency"`, `--label "Buddy Mascot"`), not the raw branch name. The window then reads `YouCoded - UI Consistency`. Omitting `--label` falls back to the branch name, which is better than nothing but not as clear.
 
+**A window Destin is hand-testing runs from a worktree nothing else is editing, on a quiet machine.** Make a detached worktree of the commit under test and launch that. On 2026-10-05 a test window ran from a worktree a helper was still editing: a hot reload landed mid-test, the terminal came back blank, and the send gate refused his messages, which looked like an app bug. Pause lab runs and builds while he tests too. The 2026-10-07 realism lab measured a heavily loaded machine making a dev window's session switches about 3× slower, and that load (this session's own helpers) was part of the lag he reported.
+
 The title is **dev-only** — it comes from `YOUCODED_DEV_LABEL` / `YOUCODED_PROFILE`, both unset in the built app, so production keeps the plain "YouCoded" title. Cross-platform (one Electron path for Win/Mac/Linux). The app's own titlebar is hidden (custom chrome), but the OS still uses this title for the taskbar/switcher.
 
 ## Running a second concurrent instance
@@ -206,6 +208,14 @@ live-acceptance run):
    it to his other machines. On 2026-09-10 three throwaway "Reply with just the word ok."
    runtime checks did exactly that. For scripted checks that must create sessions, launch
    against a throwaway `HOME` the way `scripts/perf-lab/launch.mjs` does, or say so to Destin first.
+   A throwaway `HOME` does NOT hide the GitHub login (`gh` keeps it in the OS keyring), so a smoke could publish a theme or open a pull
+   request on his real account (it did, 2026-10-01). `run-dev.sh` handles this whenever `HOME` is not the real home (`scripts/dev-isolation.sh`):
+   XDG dirs and `GH_CONFIG_DIR` inside the HOME, the GitHub, SSH-agent, AWS, npm and API-key variables unset, a KWallet "create wallet" prompt
+   switched off, and a private empty D-Bus session (`--stop` ends it and the services it started, by exact pid; without a `dbus-daemon` it falls
+   back to a decoy token, so calls fail with a 401). `XDG_RUNTIME_DIR` stays because the window's display socket lives there; the bus is chosen
+   by its explicit address. A HOME that resolves to the real home (trailing slash, link) is NOT isolated, with a warning. This hides credentials;
+   it is not a sandbox. Any other launcher: `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`.
+   Check with `HOME=<throwaway> bash scripts/dev-isolation.sh gh auth status`, which must say not logged in.
 
 ## Testing on a phone
 

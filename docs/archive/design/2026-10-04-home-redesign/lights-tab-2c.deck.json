@@ -1,0 +1,66 @@
+{
+  "title": "Home page Lights tab: mix the rows' style with the tiles' shape (round 2c)",
+  "key": "home-lights-tab-2c",
+  "out": "lights-tab-2c.choice.html",
+  "images": "images/lights-tab-2c.deck",
+  "runs": {
+    "after": "lights-tab-2c-runs"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "crops": {
+    "lt2c-r1": [
+      "lights",
+      "r1",
+      "540x460+306+168"
+    ],
+    "lt2c-r2": [
+      "lights",
+      "r2",
+      "540x460+306+168"
+    ],
+    "lt2c-r3": [
+      "lights",
+      "r3",
+      "540x460+306+168"
+    ]
+  },
+  "steps": [
+    {
+      "id": "LT2C-1",
+      "surface": "Home page",
+      "path": "Home > Lights tab",
+      "headline": "Which mix should each room use?",
+      "notice": "Each keeps the rows' look (clear name and percent, thick bar, calm glass, colour dot) in the tiles' shape, in one card per room. Destin's Room is open here, with its unreachable TV backlight last. The colour panel floats next to the light; you can try it in the next step.",
+      "risk": "All three keep your earlier choices: the round All button, scenes button and fold arrow on top, cards starting closed, unreachable lights last.",
+      "variants": [
+        {
+          "id": "r1",
+          "label": "Tall cards",
+          "crop": "lt2c-r1",
+          "summary": "Portrait cards, about three per line, in the same calm glass as the rows: bulb, name, percent and a colour dot on top, and the thick bar along the bottom. Tap the card to switch the light; use the bar to dim it. The dot opens a floating colour panel.",
+          "risk": "Tallest card of the three, and the unreachable light gets a full-size card of its own. Names that are long wrap onto two lines. On a phone two cards fit per line."
+        },
+        {
+          "id": "r2",
+          "label": "Slide tiles",
+          "crop": "lt2c-r2",
+          "summary": "Wide tiles, two per line, with the rows' name and percent on a calm surface. The whole tile is the bar: a soft tint fills it to show how bright the light is, with a thin bright edge at the level. Tap to switch, drag sideways to dim.",
+          "risk": "Shortest card, but there is no bar to look at. Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. Long names wrap onto several lines."
+        },
+        {
+          "id": "r3",
+          "label": "Half rows",
+          "crop": "lt2c-r3",
+          "summary": "Exactly the roomy rows, at half the width, two lights per line: bulb, name, percent, colour dot and the thick bar. Tap the bulb or name to switch; the bar dims. The dot opens a floating colour panel.",
+          "risk": "Most like the rows you liked, but names squeeze, so long ones wrap onto two lines. On a phone the lights go back to one per line."
+        }
+      ],
+      "runs": [
+        "after"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "title": "Home page press feedback, built — try it at full size",
+  "key": "home-motion-state-built",
+  "out": "motion-state-built.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "MS-1",
+      "surface": "Home page",
+      "path": "Home > Destin's Room lights and TV",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Do lights and TVs switching on and off feel crisp and acknowledged, without delay?",
+      "notice": "In Destin's Room press a light's bulb on and off a few times quickly; press the room's All tile; press the TV's power button; drag a light's brightness bar slowly and watch its glow; open a light's colours and pick another.",
+      "risk": "Light spreads over a third of a second after the bulb already shows its new colour, so the switch itself is never late.",
+      "variants": [
+        {
+          "id": "built",
+          "label": "Built",
+          "summary": "Your chosen motion, calmer: light spreads from the corner of a card, bulbs give one small pop, play and pause just dip (no spin), numbers slide a little. Buttons answer on the very next frame.",
+          "risk": "Everything is small and quick, so some presses show almost nothing. A change made by someone else only gets one soft shine across the card.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-built"
+          }
+        },
+        {
+          "id": "slow",
+          "label": "Built, slow",
+          "summary": "The same at a quarter of the speed, to see exactly what each part does. Not how fast it will really be.",
+          "risk": "Looks sluggish on purpose; judge the shape, not the speed.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-slow"
+          }
+        },
+        {
+          "id": "before",
+          "label": "Before",
+          "summary": "The page with none of the new press feedback, as it was before this round.",
+          "risk": "Only shows the old behaviour, so you can feel what the new one adds or costs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-before"
+          }
+        }
+      ]
+    },
+    {
+      "id": "MS-2",
+      "surface": "Home page",
+      "path": "Home > the soundbar, music, thermostat",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Do the soundbar + and −, mute, play, next and the thermostat buttons now feel instant?",
+      "notice": "On the Destin's Room soundbar press + five times quickly, then − twice: the bar should move on every press and never jump back. Press mute twice. On the Living Room speaker press play, next, and its Group list (tick another speaker). On the Thermostat press + and − quickly. Press 'Slow device' first to test with a device that answers after 3 seconds.",
+      "risk": "A press is now sent as an exact volume level (5 percent a press), so the loudness after five presses is exactly five steps higher. The small 'Sending' note no longer catches your next press.",
+      "variants": [
+        {
+          "id": "built",
+          "label": "Built",
+          "summary": "Your chosen motion, calmer: light spreads from the corner of a card, bulbs give one small pop, play and pause just dip (no spin), numbers slide a little. Buttons answer on the very next frame.",
+          "risk": "Everything is small and quick, so some presses show almost nothing. A change made by someone else only gets one soft shine across the card.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-built"
+          }
+        },
+        {
+          "id": "slow",
+          "label": "Built, slow",
+          "summary": "The same at a quarter of the speed, to see exactly what each part does. Not how fast it will really be.",
+          "risk": "Looks sluggish on purpose; judge the shape, not the speed.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-slow"
+          }
+        },
+        {
+          "id": "before",
+          "label": "Before",
+          "summary": "The page with none of the new press feedback, as it was before this round.",
+          "risk": "Only shows the old behaviour, so you can feel what the new one adds or costs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-before"
+          }
+        }
+      ]
+    },
+    {
+      "id": "MS-3",
+      "surface": "Home page",
+      "path": "Home > loading, slow devices, changes from elsewhere",
+      "live": {
+        "app": "default"
+      },
+      "headline": "When something is slow or changes by itself, does the page tell you calmly what is going on?",
+      "notice": "Press 'Replay first load' and watch the bulbs wake, then the cards arrive one after another. Press 'Slow device' (it turns ON), press a light, and watch the small Sending note, then Done. Turn it off again. Press 'Flip a lamp from elsewhere': within a few seconds the lamps in Destin's Room change by themselves with one soft shine.",
+      "risk": "Changes that arrive by themselves never play the full motion, only the shine, so a page refresh never makes the screen jump around.",
+      "variants": [
+        {
+          "id": "built",
+          "label": "Built",
+          "summary": "Your chosen motion, calmer: light spreads from the corner of a card, bulbs give one small pop, play and pause just dip (no spin), numbers slide a little. Buttons answer on the very next frame.",
+          "risk": "Everything is small and quick, so some presses show almost nothing. A change made by someone else only gets one soft shine across the card.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-built"
+          }
+        },
+        {
+          "id": "slow",
+          "label": "Built, slow",
+          "summary": "The same at a quarter of the speed, to see exactly what each part does. Not how fast it will really be.",
+          "risk": "Looks sluggish on purpose; judge the shape, not the speed.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-slow"
+          }
+        },
+        {
+          "id": "before",
+          "label": "Before",
+          "summary": "The page with none of the new press feedback, as it was before this round.",
+          "risk": "Only shows the old behaviour, so you can feel what the new one adds or costs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-before"
+          }
+        }
+      ]
+    }
+  ]
+}

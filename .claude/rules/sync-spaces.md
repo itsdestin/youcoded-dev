@@ -74,7 +74,7 @@ verify:
 - **Convergent conflicts: REMOTE wins the canonical name, LOCAL becomes a visible conflict copy**; `--allow-unrelated-histories` is load-bearing; conflict-copy content rides Buffer `showStage()`, never string `git()`.
 - **`sync-transport-contract.ts` is the compatibility boundary; `repoNameForSpace` (slug + LOWERCASED-id hash) IS the sync identity.**
 - **Non-zero git exits are guilty until proven benign** (allowlist; corruption → coded `repo-corrupt`, else the REAL stderr) — never `{pushed:false}` on a failed commit.
-- **Zero-byte loose objects are POISON** — only `repair()` clears them, never writing outside `.youcoded/`.
+- **Zero-byte loose objects are POISON** — only `repair()` clears them, never writing outside `.youcoded/`; repair steps a damaged tip back and refetches the gap before ever re-initing. Every git call carries `DURABLE_WRITES` (fsync); fetches stop on silence (`fetchOrigin`), never a fixed clock.
 - **Never push an over-cap blob** (`dropOversizeFromOutgoing`); show them.
 - **Secrets enforced at staging (`stageAll`: `reset`, never `rm --cached`); a pull holds unmanaged files (`holdUnmanaged`); every conflict step is checked and aborts on failure.**
 

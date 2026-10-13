@@ -1,0 +1,59 @@
+{
+ "deck": "home-page-v3-questions",
+ "started": "2026-10-02T11:03:24.378Z",
+ "submitted": "2026-10-02T11:10:15Z",
+ "cur": 0,
+ "answers": {
+  "Q-chip-tap": {
+   "v": "pick",
+   "pick": "sheet",
+   "t": 1790939414434,
+   "note": "should be an organized page dedicated to optimal ux for managing the selected item. it should only be those chips, but they should all dynamically update to display different information. like lights chip could say 5 on in 3 roooms, or all off, or 4 disconnected, whateva.  ",
+   "seconds": 58,
+   "theme": "golden-sunbreak"
+  },
+  "Q-scenes": {
+   "v": "pick",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "t": 1790939414434,
+   "note": "collapse into a scenes expandable card in the lighting group per room for now",
+   "pick": "per-room"
+  },
+  "Q-settings": {
+   "v": "pick",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "t": 1790939414434,
+   "pick": "gear"
+  },
+  "Q-device-page": {
+   "v": "other",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "t": 1790939414434,
+   "note": "need to see. i dont think i like any of these. probably just a replace in place submenu/popup"
+  },
+  "Q-activity": {
+   "v": "other",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "t": 1790939414434,
+   "note": "need to see/envision this. maybe its own tab/page."
+  },
+  "Q-sonos": {
+   "v": "pick",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "t": 1790939414434,
+   "pick": "tick-list"
+  },
+  "S-included": {
+   "v": "yes",
+   "seconds": 58,
+   "theme": "golden-sunbreak",
+   "t": 1790939414434,
+   "note": "no room tempererateure."
+  }
+ }
+}

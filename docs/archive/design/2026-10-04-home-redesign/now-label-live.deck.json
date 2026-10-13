@@ -1,0 +1,60 @@
+{
+  "title": "Home page thermostat: try each current-temperature look",
+  "key": "home-now-label-live",
+  "out": "now-label.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "NLV-1",
+      "surface": "Home page",
+      "path": "Home > Thermostat",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Press minus and plus a few times and drag the handle. Which look stays clear of everything?",
+      "notice": "The label follows the line as the room temperature changes; it moves aside for the handle and buttons.",
+      "risk": "Practice data only; nothing reaches a real thermostat. The room stays at 74° here; use the Climate tab to see the larger dial.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Glass pill",
+          "summary": "A small rounded glass tag with a tiny thermometer and the number, like the page's other chips, hanging off the tip of the line.",
+          "risk": "It is the busiest of the three: a second little object on a ring that already has a handle. In a very small window it is the biggest label to fit.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-now-label-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Just the number",
+          "summary": "No tag and no word 'Now': only the number, a little bigger and quieter, at the end of the line. The line itself says 'this is now'.",
+          "risk": "Quietest and cleanest, but nothing says it is the room's temperature. The first time, someone may mistake it for the set point.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-now-label-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Flag on the line",
+          "summary": "The line reaches a little past the ring and ends in a small solid flag reading 'Now 74°', so line and label read as one thing.",
+          "risk": "Strongest and clearest, and the only one that keeps the word 'Now', but the longer line sticks out past the ring and the flag is the most eye-catching.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-now-label-c"
+          }
+        }
+      ]
+    }
+  ]
+}

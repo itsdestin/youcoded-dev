@@ -1,0 +1,62 @@
+[
+ {
+  "id": "n1",
+  "label": "Chunky gradient",
+  "note": "W6 and W11 together: the chunky rounded lowercase from W6, filled with the theme-colour-to-pink fade from W11."
+ },
+ {
+  "id": "n2",
+  "label": "Chunky + mascot \"o\"",
+  "note": "The W6 lowercase with the mascot standing in for the first \"o\", sized to the letters, feet hanging below the line."
+ },
+ {
+  "id": "n3",
+  "label": "Gradient + mascot \"o\"",
+  "note": "The same mascot \"o\", with every letter in the colour fade, so the mascot pops out as the only solid shape."
+ },
+ {
+  "id": "n4",
+  "label": "Glossy, like the mascot",
+  "note": "Rounded Fredoka letters with the mascot as the \"o\" and a shiny top highlight that matches the shine on the app icon's mascot."
+ },
+ {
+  "id": "n5",
+  "label": "Toy-block 3D",
+  "note": "Fat Lilita One letters with a deep 3D edge underneath, like a plastic toy or a game logo."
+ },
+ {
+  "id": "n6",
+  "label": "Sticker edge",
+  "note": "Chunky lowercase with a thick white sticker border and soft shadow, so it pops on any wallpaper."
+ },
+ {
+  "id": "n7",
+  "label": "Wallpaper inside the letters",
+  "note": "The letters are cut out of your theme's own wallpaper, so the name literally wears your theme."
+ },
+ {
+  "id": "n8",
+  "label": "Bouncy",
+  "note": "Grandstander letters that hop slightly up and down, playful like the mascot waving."
+ },
+ {
+  "id": "n9",
+  "label": "Clean + mascot \"o\"",
+  "note": "The closest to today's site: Nunito capitals, colour fade on \"You\", mascot as the \"o\". The grown-up version."
+ },
+ {
+  "id": "n10",
+  "label": "Soft two-tone",
+  "note": "Sniglet: the roundest, softest letters, \"you\" in the theme colour with a gentle shine, \"coded\" in the text colour."
+ },
+ {
+  "id": "n11",
+  "label": "Cartoon",
+  "note": "Chewy, a hand-drawn cartoon font, in the colour fade: the most playful option."
+ },
+ {
+  "id": "n12",
+  "label": "Two mascots",
+  "note": "Both \"o\"s are mascots, one in \"you\" and one in \"coded\". Fun, but busier and harder to read small."
+ }
+]

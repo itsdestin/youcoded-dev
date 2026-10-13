@@ -1,0 +1,60 @@
+{
+  "title": "Home page Lights tab: try each card style (round 2b)",
+  "key": "home-lights-tab-2b-live",
+  "out": "lights-tab-2b.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "LV2B-1",
+      "surface": "Home page",
+      "path": "Home > Lights tab",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Switch the room, dim one light, change a colour. Which card style feels simplest to use?",
+      "notice": "In Destin's Room press the round All button, then drag the room bar. Switch one light and dim it, change its colour, and press the palette for scenes. The TV backlight is unreachable; try it. Press the fold arrow to close the card.",
+      "risk": "Everything here is practice data; nothing reaches a real light.",
+      "variants": [
+        {
+          "id": "rows",
+          "label": "Roomy rows",
+          "summary": "One wide, roomy row per light: bulb, name and percent on top, a thick bar underneath, and a colour dot. The dot opens the colour menu inside the card, pushing the lights below it down.",
+          "risk": "Longest card: three working lights already fill a screen, and opening a colour menu makes it taller still. On a phone every bar stays easy to hit.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-rows-play"
+          }
+        },
+        {
+          "id": "tiles",
+          "label": "Big tiles",
+          "summary": "Two or three big tiles per row. A tile glows and fills to show how bright it is, with the percent in large type. Tap to switch, drag sideways to dim. The colour dot opens a small floating colour panel next to the tile.",
+          "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. The floating panel covers the lights beside it until you tap away or press Escape. On a phone two tiles fit per row.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-tiles-play"
+          }
+        },
+        {
+          "id": "chips",
+          "label": "Chips",
+          "summary": "Every light is one small chip you tap to switch, packed in a wrapped line so a whole room fits in a few lines. Press the little arrow on a chip and it opens into a full-width panel with its bar and a colour dot; the dot opens the floating colour panel.",
+          "risk": "Dimming or recolouring takes an extra press to open a chip first, and the open panel pushes the other chips down. Chips are the most compact, so names that are long get cut short on a phone.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-lights-tab-chips-play"
+          }
+        }
+      ]
+    }
+  ]
+}

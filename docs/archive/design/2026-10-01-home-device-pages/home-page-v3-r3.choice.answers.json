@@ -1,0 +1,33 @@
+{
+ "deck": "home-page-v3-r3-choice",
+ "started": "2026-10-04T05:46:14.623Z",
+ "submitted": "2026-10-04T05:51:19Z",
+ "cur": 2,
+ "answers": {
+  "C-chips2": {
+   "v": "pick",
+   "t": 1791092851433,
+   "pick": "pills",
+   "note": "for climate, can we pull in real weather info here? either from ha or an outside service? then replace the thermostat icon with sun/clouds/rain/snow/ etc based on real weather conditions in chosen home location? also the camera previews are broken",
+   "seconds": 75,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-thermo-hero": {
+   "v": "other",
+   "seconds": 65,
+   "theme": "golden-sunbreak",
+   "zoom": 1,
+   "t": 1791092914034,
+   "note": "swap positions of thermostat and outdoor climate card"
+  },
+  "S-headers": {
+   "note": "i think we should remove the back button, add a home button/tab thing first in the row of pills, then give all the pills a clear \"selected\" state so they serve as pages basically. separately, the remote for tv's is buggy when expanded and flickers open/closed a few times",
+   "t": 1791093073229,
+   "v": "other",
+   "seconds": 159,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

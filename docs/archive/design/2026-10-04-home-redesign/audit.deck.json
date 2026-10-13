@@ -1,0 +1,369 @@
+{
+  "title": "Home page audit: flickers, jumps and races, and how to fix them",
+  "key": "home-audit",
+  "out": "audit.deck.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "steps": [
+    {
+      "id": "A-1",
+      "words": true,
+      "surface": "Home page",
+      "path": "Any card, while you use it",
+      "headline": "When something changes in the house, how should the page update so it stops cutting off what you are doing?",
+      "today": "When any light, speaker or camera changes, the page throws away every card in that area and builds them all again from scratch.",
+      "problem": "You are dragging a slider and it lets go. You are typing a new name in Edit and it reverts and highlights the text. A keyboard user presses a switch and loses their place. Open dropdowns close. The little slide and fade animations never play, because every card is brand new. I reproduced the slider, the typing, the keyboard focus and the video restarts.",
+      "proposal": "Pick how the page should refresh. All three keep the same look; they differ in how much of the page can ever be interrupted.",
+      "options": [
+        {
+          "id": "guard",
+          "label": "Protect what you are touching",
+          "summary": "Keep rebuilding everything, but never while you are holding, typing or focused on something, and put your place back afterwards.",
+          "pros": [
+            "Smallest change; the look stays exactly as it is.",
+            "Fixes drags, typing and keyboard focus quickly."
+          ],
+          "cons": [
+            "Cards still blink when you are not touching them.",
+            "The slide and fade animations still never play.",
+            "Every new kind of control needs its own protection."
+          ]
+        },
+        {
+          "id": "inplace",
+          "label": "Change only what changed",
+          "summary": "Each card updates itself in place: a switch slides, a number changes, the card next to it is not touched.",
+          "pros": [
+            "Nothing is lost mid-use, ever: sliders, typing, focus, hover and open menus stay put.",
+            "The animations the design already has start working.",
+            "Video clips are never disturbed by an unrelated light."
+          ],
+          "cons": [
+            "The biggest piece of work: every card needs its own update step.",
+            "The most chance of new bugs while it is built."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "calm",
+          "label": "Wait for a calm moment",
+          "summary": "Collect changes and draw them all at once when you have stopped touching the page for about a second.",
+          "pros": [
+            "Fairly small change; no card is ever rebuilt under your finger.",
+            "Many quick changes become one redraw."
+          ],
+          "cons": [
+            "Changes can show up a second late, for example a wall switch.",
+            "Still rebuilds every card each time it does draw, so no animations and hover resets."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A-2",
+      "words": true,
+      "surface": "Home page",
+      "path": "All rooms, camera cards",
+      "headline": "The page redraws far more often than needed. How should it cut that down?",
+      "today": "A camera with a picture refreshes every 10 seconds. One press on a light redraws the page twice within a hundredth of a second. Pressing All lights in a room redraws three times. Opening the page draws camera cards three separate times.",
+      "problem": "In a house where nothing is changing, all cards blink about six times a minute because of the camera picture. At startup each camera card swaps from an empty grey box to a note or a list of recordings, so everything below it jumps down twice. I measured all of these.",
+      "proposal": "Pick how to cut the redraws.",
+      "options": [
+        {
+          "id": "narrow",
+          "label": "Fix the three causes",
+          "summary": "Keep the camera picture out of the page's text, draw once per press, and draw cameras once when they are ready.",
+          "pros": [
+            "Quick, safe, obvious wins.",
+            "Quiet house stops blinking."
+          ],
+          "cons": [
+            "Treats symptoms; the next feature can bring the same problem back.",
+            "Startup still shows an empty camera box first."
+          ]
+        },
+        {
+          "id": "once",
+          "label": "One drawing per moment",
+          "summary": "Every change, from presses, the house and the checks, lands in one shared queue and the page draws once for all of them.",
+          "pros": [
+            "A press is always one drawing, however many cards it touches.",
+            "Prevents this class of problem for later features."
+          ],
+          "cons": [
+            "Needs care so a press still feels instant.",
+            "A moderate rewrite of how the page decides to draw."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "reserve",
+          "label": "Reserve space and draw cameras last",
+          "summary": "Camera cards start at their final size with a quiet loading look, and are filled in without moving anything around them.",
+          "pros": [
+            "Nothing jumps at startup.",
+            "Looks calmer to someone watching it load."
+          ],
+          "cons": [
+            "Does not fix the repeated redraws while the page is open.",
+            "Needs a good loading look for cameras and recordings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A-3",
+      "words": true,
+      "surface": "Home page",
+      "path": "Any switch or card changed outside the page",
+      "headline": "When the page's own check and a live update disagree, which one should win?",
+      "today": "The house sends changes the instant they happen, and the page also asks for everything again every minute (every 5 seconds if the live connection drops).",
+      "problem": "If a check is in flight when you flip the wall switch, its older answer arrives after the change and puts the card back to ON. It then stays wrong until the next check, up to a minute. Separately, if something changed while you were dragging a slider, it is not shown when you let go; it waits up to a minute. I reproduced both.",
+      "proposal": "Pick the rule.",
+      "options": [
+        {
+          "id": "replay",
+          "label": "Re-apply the latest news after every check",
+          "summary": "After a check lands, lay the newest live updates back on top, and catch up the moment you let go of a slider.",
+          "pros": [
+            "Small change; fixes both cases.",
+            "Checks still find renames and new devices."
+          ],
+          "cons": [
+            "Two sources of truth still exist, so a new mix-up can appear later."
+          ]
+        },
+        {
+          "id": "stamp",
+          "label": "The newest one wins",
+          "summary": "Every piece of information carries when it happened, and the page keeps whichever is newer, check or live.",
+          "pros": [
+            "Correct no matter what order answers arrive in.",
+            "Also covers your own presses without special cases."
+          ],
+          "cons": [
+            "The check's answer carries timestamps only for some things; needs checking against the real house.",
+            "Medium-sized change."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "trust",
+          "label": "Trust live updates, check rarely",
+          "summary": "While the live connection works, ignore the check's device states and use it only to find renames and new devices.",
+          "pros": [
+            "Simplest rule to explain.",
+            "Less data to fetch."
+          ],
+          "cons": [
+            "If the live connection quietly misses an update, nothing corrects it for a long while.",
+            "Larger risk if live updates have a gap."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A-4",
+      "words": true,
+      "surface": "Home page",
+      "path": "Switches and sliders, when Home Assistant says no",
+      "headline": "When a press does not work, what should you see?",
+      "today": "The switch changes the instant you press it and is kept that way for 8 seconds while the house catches up. Sliders stay where you drag them.",
+      "problem": "If the house refuses, the switch still says ON, a red message appears and vanishes after about half a second, and 8 seconds later the switch flips back with no explanation. A slider that was refused just stays at the wrong value. I reproduced both.",
+      "proposal": "Pick what the page should do on a failure.",
+      "options": [
+        {
+          "id": "undo",
+          "label": "Undo straight away, keep the message",
+          "summary": "On failure the switch or slider goes back at once and the message stays for several seconds.",
+          "pros": [
+            "The page never shows something that is not true for long.",
+            "Small change."
+          ],
+          "cons": [
+            "A slow device that eventually works looks briefly like a failure."
+          ]
+        },
+        {
+          "id": "pending",
+          "label": "Show sending, done, failed",
+          "summary": "The card shows a small Sending state, then settles, or shows Did not work on that card with a Try again.",
+          "pros": [
+            "You always know what is happening, even for slow TVs.",
+            "The error sits on the card it is about."
+          ],
+          "cons": [
+            "New wording and a new small look on every card.",
+            "More to design and test."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "short",
+          "label": "Shorten the wait",
+          "summary": "Keep the instant switch but hold it for 3 seconds instead of 8, and keep the message longer.",
+          "pros": [
+            "Tiny change.",
+            "A real failure is corrected faster."
+          ],
+          "cons": [
+            "A slow TV may flip back and forth again, the problem the 8 seconds was added to fix."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A-5",
+      "words": true,
+      "surface": "Home page",
+      "path": "The device pop-up",
+      "headline": "How should the device pop-up behave while its information arrives and changes?",
+      "today": "Press and hold a card and a pop-up opens. A moment later its history arrives, and any change to that device updates it.",
+      "problem": "Each update rebuilds the whole pop-up. Keyboard focus drops to the page behind it, so Tab no longer stays inside; whatever you scrolled to jumps back to the top; and the pop-up grows when the history replaces Reading its history. I reproduced the focus and rebuild.",
+      "proposal": "Pick how the pop-up should update.",
+      "options": [
+        {
+          "id": "restore",
+          "label": "Rebuild, then put things back",
+          "summary": "Keep rebuilding, but remember your focus and scroll position and restore them.",
+          "pros": [
+            "Small change.",
+            "Fixes focus and scroll."
+          ],
+          "cons": [
+            "Still blinks; still jumps in height when history arrives."
+          ]
+        },
+        {
+          "id": "parts",
+          "label": "Draw it once, update the parts",
+          "summary": "The frame and header stay; only the controls and the history list change, and the history area reserves its space.",
+          "pros": [
+            "No jump, no lost focus or scroll.",
+            "Pairs naturally with A-1 Change only what changed."
+          ],
+          "cons": [
+            "More work than a quick fix.",
+            "Two code paths if A-1 goes another way."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "freeze",
+          "label": "Freeze while open",
+          "summary": "The pop-up shows what it had at opening and updates only when you press Refresh or reopen it.",
+          "pros": [
+            "Rock steady.",
+            "Simple."
+          ],
+          "cons": [
+            "Can show out-of-date values on a device you are actively controlling from it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A-6",
+      "words": true,
+      "surface": "Home page",
+      "path": "Speaker groups, renaming",
+      "headline": "Should speaker ticks and new names be held steady like switches are?",
+      "today": "A switch you press is held in its new position until the house agrees. Ticking a speaker into a group, and renaming a device, are shown at once but not held.",
+      "problem": "Tick a speaker; any other update for that speaker lands before the join finishes and the tick disappears, then comes back. Reproduced. A rename can briefly show the old name in the same way (reasoned).",
+      "proposal": "Pick the approach.",
+      "options": [
+        {
+          "id": "hold",
+          "label": "Hold them the same way",
+          "summary": "Give groups and names the same short hold that switches already have.",
+          "pros": [
+            "Small, consistent change.",
+            "Fixes the flip-back."
+          ],
+          "cons": [
+            "Another special case to maintain."
+          ]
+        },
+        {
+          "id": "ledger",
+          "label": "One list of pending changes",
+          "summary": "Every press, tick, slider and rename goes in one list; the page shows them on top of what the house says until each is confirmed or failed.",
+          "pros": [
+            "One rule for everything; pairs with A-3 and A-4.",
+            "Easy to show Sending or Failed per card."
+          ],
+          "cons": [
+            "The biggest change of the options.",
+            "Touches every kind of control."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "wait",
+          "label": "Do not guess ahead",
+          "summary": "Show a quiet Joining spinner until the house confirms.",
+          "pros": [
+            "Never shows a wrong tick.",
+            "Easy to understand."
+          ],
+          "cons": [
+            "Feels slower; a half-second to several seconds with nothing ticked."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A-7",
+      "words": true,
+      "surface": "Camera cards",
+      "path": "Recorded clips and Watch live",
+      "headline": "What should happen to a playing video when the rest of the page changes, or when you leave the page?",
+      "today": "A recorded clip or live camera view plays inside the card. The page is rebuilt whenever something changes, and the video is taken out and put back each time.",
+      "problem": "A browser pauses a video the moment it is removed, so an unrelated light changing is a short stutter in a playing clip. I reproduced the remove and restart. Separately, the live view keeps drawing pictures after you switch away from the page; I read this in the code but could not run it.",
+      "proposal": "Pick how to protect video.",
+      "options": [
+        {
+          "id": "stay",
+          "label": "Never move the video",
+          "summary": "The card holding a video is left alone while it plays, and other cards update around it.",
+          "pros": [
+            "No stutter at all.",
+            "Covered automatically if you pick Change only what changed in A-1."
+          ],
+          "cons": [
+            "Needs the card to be update-in-place, or a special exception for video cards."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "pause",
+          "label": "Pause live view when hidden",
+          "summary": "Stop the live picture when you leave the page and show Play again when you come back.",
+          "pros": [
+            "Saves battery and data.",
+            "Small change."
+          ],
+          "cons": [
+            "Does not touch the clip stutter.",
+            "Live view does not resume by itself."
+          ]
+        },
+        {
+          "id": "limit",
+          "label": "Stop live view after a while",
+          "summary": "Live view stops after a couple of minutes, or when the page is left, and the clip is allowed a stutter.",
+          "pros": [
+            "Simplest and cheapest.",
+            "Protects data use."
+          ],
+          "cons": [
+            "A stutter while watching remains.",
+            "You may lose a view you wanted to keep."
+          ]
+        }
+      ]
+    }
+  ]
+}

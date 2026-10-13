@@ -1,0 +1,548 @@
+{
+ "title": "Home page round 2 \u2014 TV remote, Lights tab, Media tab",
+ "key": "home-redesign-r2",
+ "out": "home-redesign-r2.html",
+ "images": "images/home-redesign-r2",
+ "runs": {
+  "after": "r2-runs",
+  "today": "lights-tab-runs/phone"
+ },
+ "themes": [
+  "golden-sunbreak",
+  "creme"
+ ],
+ "crops": {
+  "tvremote-a-closed": [
+   "tvremote",
+   "a-closed",
+   "380x610+0+0"
+  ],
+  "tvremote-a-open": [
+   "tvremote",
+   "a-open",
+   "380x610+0+0"
+  ],
+  "tvremote-b-closed": [
+   "tvremote",
+   "b-closed",
+   "380x610+0+0"
+  ],
+  "tvremote-b-open": [
+   "tvremote",
+   "b-open",
+   "380x610+0+0"
+  ],
+  "tvremote-c-closed": [
+   "tvremote",
+   "c-closed",
+   "380x610+0+0"
+  ],
+  "tvremote-c-open": [
+   "tvremote",
+   "c-open",
+   "380x610+0+0"
+  ]
+ },
+ "live": {
+  "worktree": "sessions/ha-pages-connection/youcoded"
+ },
+ "steps": [
+  {
+   "id": "TV-1",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card",
+   "headline": "With the remote closed, which TV card do you like best?",
+   "notice": "Both themes (Golden Sunbreak and Cr\u00e8me) are shown. Netflix is playing, so the app buttons show Prime Video where Netflix would be. The remote is now a small icon beside the power button.",
+   "risk": "Closed, all three look almost the same except the app buttons: option C hides them until the remote opens.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Machined dial",
+     "crop": "tvremote-a-closed",
+     "summary": "A dial that looks like brushed metal, with engraved arrows and a domed OK button.",
+     "risk": "Heaviest and most solid-looking; the metal can feel out of place beside the soft glass cards."
+    },
+    {
+     "id": "b",
+     "label": "Glass jog wheel",
+     "crop": "tvremote-b-closed",
+     "summary": "A frosted glass wheel in four quarters.",
+     "risk": "The lit quarter hides behind your thumb on a phone; the sweep is a little showy the first few times."
+    },
+    {
+     "id": "c",
+     "label": "Floating ring",
+     "crop": "tvremote-c-closed",
+     "summary": "Just a thin outline ring with small arrows, no filled disc.",
+     "risk": "Lightest and calmest, but with no fill the arrows are less obviously buttons; closed, the card has no app buttons at all."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "TV-2",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card > remote icon",
+   "headline": "With the remote open, which dial looks the most premium?",
+   "notice": "The dial sits above the volume bar, inside the Now playing panel. Back and Home flank the skip and play buttons.",
+   "risk": "The panel is taller when open, so cards below it move down.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Machined dial",
+     "crop": "tvremote-a-open",
+     "summary": "A dial that looks like brushed metal, with engraved arrows and a domed OK button.",
+     "risk": "Heaviest and most solid-looking; the metal can feel out of place beside the soft glass cards."
+    },
+    {
+     "id": "b",
+     "label": "Glass jog wheel",
+     "crop": "tvremote-b-open",
+     "summary": "A frosted glass wheel in four quarters.",
+     "risk": "The lit quarter hides behind your thumb on a phone; the sweep is a little showy the first few times."
+    },
+    {
+     "id": "c",
+     "label": "Floating ring",
+     "crop": "tvremote-c-open",
+     "summary": "Just a thin outline ring with small arrows, no filled disc.",
+     "risk": "Lightest and calmest, but with no fill the arrows are less obviously buttons; closed, the card has no app buttons at all."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "TV-3",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Press the remote icon, then an app button. Which reveal and app swap feels best?",
+   "notice": "Open and close the remote a few times, press the arrows and OK, then press HBO Max or Disney+: the app on the TV leaves the row and Prime Video slides into its place.",
+   "risk": "All three add short movement (about a third of a second) and all stop if the computer is set to reduce motion. The pretend TV answers app presses after a short delay, like a real one.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Machined dial",
+     "summary": "The dial grows out of the remote icon with a small spring. The app that leaves shrinks away and Prime drops in from above.",
+     "risk": "The dial travels the furthest, so it is the most movement on screen.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-a"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Glass jog wheel",
+     "summary": "The panel stretches down while the volume row slides lower and the wheel fades in with a sweep of light. The old app slides out left, Prime slides in from the right.",
+     "risk": "The panel's stretch moves everything beneath it for a moment.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-b"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Floating ring",
+     "summary": "The ring unfolds down from the header like a flap, then the app buttons fade up. The old app lifts away and Prime rises into place. Presses ripple.",
+     "risk": "The flap is a 3-D turn, which some people find flashy on a small card.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "LT-1",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "Which card layout makes switching, dimming and changing a room's lights simplest on the Lights tab?",
+   "notice": "Each room is now ONE card named like \"Destin's Room Lights\", with All off, the scenes button and a fold arrow in its header. Destin's Room is open; the unreachable TV backlight sits last.",
+   "risk": "All three keep what you decided: cards and colour menus start closed, scenes behind the palette button, the slider handle stays attached.",
+   "variants": [
+    {
+     "id": "today",
+     "label": "Today",
+     "crop": "pages/page/page-home#lights",
+     "summary": "The Lights tab as it is now: a room card with a Lights card nested inside it.",
+     "risk": "Two cards for one room; the room name and \"Lights\" are separate headings."
+    },
+    {
+     "id": "a",
+     "label": "Room strip",
+     "crop": "pages/page/page-home#v-lights-tab-a",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely."
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "crop": "pages/page/page-home#v-lights-tab-b",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried."
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "crop": "pages/page/page-home#v-lights-tab-c",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "LT-2",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "Does each layout still work at phone width?",
+   "notice": "The same open room on a 390 px wide screen.",
+   "risk": "The mixer wraps onto a second row; the title can take two lines.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Room strip",
+     "crop": "pages/page/page-home#v-lights-tab-a",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely."
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "crop": "pages/page/page-home#v-lights-tab-b",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried."
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "crop": "pages/page/page-home#v-lights-tab-c",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row."
+    }
+   ],
+   "runs": [
+    "today"
+   ],
+   "labels": {
+    "today": "Phone width"
+   }
+  },
+  {
+   "id": "LT-3",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "When you first open the Lights tab, which closed cards are the clearest?",
+   "notice": "Every card starts closed: its name, how many are on, All off, scenes and the room bar (the mixer shows no bar until opened).",
+   "risk": "A closed card hides the individual lights, so switching one light takes an extra press.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Room strip",
+     "crop": "pages/page/page-home#v-lights-tab-a-closed",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely."
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "crop": "pages/page/page-home#v-lights-tab-b-closed",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried."
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "crop": "pages/page/page-home#v-lights-tab-c-closed",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "LT-4",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "Where do unreachable lights and rooms end up?",
+   "notice": "Here the whole Living Room is unreachable: its card drops to the end of the tab, greyed, and its All on button is off. Inside Destin's Room the unreachable TV backlight is last.",
+   "risk": "A room that comes back on moves back up on the next refresh.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Room strip",
+     "crop": "pages/page/page-home#v-lights-tab-a-gone",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely."
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "crop": "pages/page/page-home#v-lights-tab-b-gone",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried."
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "crop": "pages/page/page-home#v-lights-tab-c-gone",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "LT-5",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "With scenes and a colour menu open, which stays easiest to read?",
+   "notice": "The paint palette opens the room's scenes; the colour dot under a light opens its colours.",
+   "risk": "Open menus make the card tall, so the room's other controls scroll away.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Room strip",
+     "crop": "pages/page/page-home#v-lights-tab-a-colour",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely."
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "crop": "pages/page/page-home#v-lights-tab-b-colour",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried."
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "crop": "pages/page/page-home#v-lights-tab-c-colour",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "LV-1",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Switch the whole room off, dim it, then change one light. Which feels the most obvious?",
+   "notice": "In Destin's Room press All off, then All on. Drag the room bar. Switch one light and dim it (tiles: tap, or drag sideways; mixer: pull a fader). Press the paint palette for scenes and a colour dot for colours. Press the arrow to fold the card.",
+   "risk": "Everything here is practice data; nothing reaches a real light.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Room strip",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-a"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-b"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "LV-2",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "live": {
+    "app": "default"
+   },
+   "headline": "With a whole room unreachable, is it clear what you can and cannot do?",
+   "notice": "Living Room's lights are unreachable, so its card sits last and greyed. Try its buttons, then Destin's Room's last light.",
+   "risk": "The unreachable state is set up just for this practice pane.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Room strip",
+     "summary": "One card per room, called \"Destin's Room Lights\". A big brightness bar for the whole room sits on top, with an All off button; open the card and each light is a slim row with its own thin bar and colour dot.",
+     "risk": "Slim rows are small to hit on a phone, and every light still needs its bar dragged precisely.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-a-gone"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Tile grid",
+     "summary": "One card per room. Under the room bar each light is a square tile: tap to switch it, drag it sideways to dim it, and its fill shows how bright it is. The coloured dot opens its colours.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it; drag is not discoverable until tried.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-b-gone"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Mixer",
+     "summary": "One card per room. Each light is a tall fader standing side by side like a sound desk, with the whole-room fader first. The bulb on top switches a light; the dot underneath opens its colours.",
+     "risk": "Looks the most different from the rest of the page; with many lights it wraps to a second row.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-c-gone"
+     }
+    }
+   ]
+  },
+  {
+   "id": "MT-1",
+   "surface": "Home page",
+   "path": "Home > Media tab",
+   "headline": "Which layout should the Media tab use, so what is playing is easy to see and control?",
+   "notice": "Room boxes are gone: every speaker and TV is its own card, named like 'Destin's Room TV'. Playing first, then paused, idle, off, and speakers that are not responding last, dimmed.",
+   "risk": "All three re-sort when something starts or stops: a card you just paused moves down the page.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Now playing hero",
+     "crop": "pages/page/page-home#v-media-tab-a",
+     "summary": "Big cards across the top for what is playing, with album-style colour, the title, large play, skip and volume. Paused ones sit under their own heading. Quiet devices become slim rows with one button: Play or Turn on.",
+     "risk": "The playing cards are tall, so a house with four things playing needs scrolling before you reach the idle devices."
+    },
+    {
+     "id": "b",
+     "label": "Stage and shelf",
+     "crop": "pages/page/page-home#v-media-tab-b",
+     "summary": "Playing and paused devices are wide cards with the controls on one line. Everything else sits on a shelf of small square tiles, each with one round button (play or power).",
+     "risk": "Tiles are small, so names and states wrap onto two lines; a long speaker name gets cut."
+    },
+    {
+     "id": "c",
+     "label": "One list, live rows",
+     "crop": "pages/page/page-home#v-media-tab-c",
+     "summary": "One simple column. A coloured bar on the left says the state: yellow playing, amber paused, grey idle, red not responding. Playing rows open up to show controls; the rest stay a single line.",
+     "risk": "The least dramatic: nothing is much bigger than anything else, so it is quieter to look at but less eye-catching."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "MT-2",
+   "surface": "Home page",
+   "path": "Home > Media tab, speakers grouped",
+   "headline": "When speakers play together, which layout makes them read as one thing?",
+   "notice": "Here Destin's Room and Roam 2 play one song. Each shows as ONE card or row, not two.",
+   "risk": "Grouped speakers share one title and one set of skip buttons; only volume can differ per speaker.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Hero with a Together box",
+     "crop": "pages/page/page-home#v-media-tab-a-group",
+     "summary": "One big card. A 'Playing together' box inside lists each speaker with its own volume bar.",
+     "risk": "The tallest of the three, since every speaker gets its own bar."
+    },
+    {
+     "id": "b",
+     "label": "Wide card with name chips",
+     "crop": "pages/page/page-home#v-media-tab-b-group",
+     "summary": "One wide card with a linked 'Playing together' strip of speaker chips, and one volume bar.",
+     "risk": "You cannot set one speaker louder than the other from the card; that needs the Group bar."
+    },
+    {
+     "id": "c",
+     "label": "Row with a linked line",
+     "crop": "pages/page/page-home#v-media-tab-c-group",
+     "summary": "One row whose second line reads 'Destin's Room + Roam 2 together' with a link mark.",
+     "risk": "The smallest hint that two speakers are involved; easy to miss."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "MT-3",
+   "surface": "Home page",
+   "path": "Home > Media tab",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Press play, pause, skip and volume in each. Which one feels easiest?",
+   "notice": "These are the working page with a pretend house. The TV's remote is only a small round icon for now; its own design is decided separately.",
+   "risk": "Pressing pause or play moves the card to a new place in the list, which may feel like a jump.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Now playing hero",
+     "summary": "Big cards for what is playing; slim rows for the rest.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-media-tab-a"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Stage and shelf",
+     "summary": "Wide cards on top, small square tiles below.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-media-tab-b"
+     }
+    },
+    {
+     "id": "c",
+     "label": "One list, live rows",
+     "summary": "One column; playing rows open up, the rest stay one line.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-media-tab-c"
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,318 @@
+<!doctype html>
+<!-- boards.html?b=<id> — round 6. Every mascot here is the shipped app-icon mascot from art.js
+     (gen.mjs → mascot.mjs): its real body/arm/leg proportions, posed only by rotating limbs at
+     the rig's own joints. WHY: round 5 squashed or dropped those proportions and Destin rejected
+     it for exactly that. The mascot now DOES something with the name or the letters Y/C, the way
+     it punches the Y in the site's intro. -->
+<meta charset="utf-8">
+<link href="fonts/fonts.css" rel="stylesheet">
+<script src="art.js"></script>
+<script src="../src/marks.js"></script>
+<style>
+  :root { --ink:#21152C; --mut:#6b5a78; --pur:#8B47B8; }
+  * { box-sizing:border-box; }
+  body { margin:0; width:1200px; height:700px; overflow:hidden; font-family:'DM Sans',sans-serif; color:var(--ink); background:#F4ECF8; }
+  .lab { font:500 11px/1 'JetBrains Mono',monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--mut); }
+  .tag { position:absolute; left:18px; top:16px; z-index:9; font:700 13px/1 'JetBrains Mono'; background:#21152Cdd; color:#fff; padding:7px 10px; border-radius:8px; }
+  .nm { position:relative; display:inline-block; white-space:nowrap; line-height:1; }
+  .nm .m { position:absolute; pointer-events:none; }
+  .nm .m svg { width:100%; height:100%; display:block; overflow:visible; }
+  .dm { font-family:'DM Sans'; font-weight:900; letter-spacing:-.05em; }
+  .bl { font-family:'Baloo 2'; font-weight:800; letter-spacing:-.035em; }
+  .stk { filter: drop-shadow(calc(var(--h)*.035) 0 0 #fff) drop-shadow(calc(var(--h)*-.035) 0 0 #fff) drop-shadow(0 calc(var(--h)*.035) 0 #fff) drop-shadow(0 calc(var(--h)*-.035) 0 #fff) drop-shadow(0 calc(var(--h)*.05) calc(var(--h)*.08) rgba(60,20,90,.25)); }
+  /* name boards */
+  .hero { position:absolute; inset:0 0 270px 0; background:url(walls/cotton-candy-sky.jpg) center 62%/cover; }
+  .hero::after { content:''; position:absolute; inset:0; background:linear-gradient(#fff0 40%, #f4ecf8 100%); }
+  .glass { position:absolute; left:50px; right:50px; top:44px; height:66px; border-radius:20px; background:rgba(245,236,250,.62); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.7); display:flex; align-items:center; padding:0 26px; z-index:2; }
+  .nav { margin-left:auto; display:flex; gap:26px; font-size:15px; color:#4a3a58; align-items:center; }
+  .pill { background:var(--pur); color:#fff; padding:8px 16px; border-radius:999px; font-weight:700; font-size:14px; }
+  .big { position:absolute; left:0; right:0; top:160px; height:220px; display:flex; align-items:center; justify-content:center; z-index:2; }
+  .row4 { position:absolute; left:24px; right:24px; bottom:22px; height:226px; display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .card { position:relative; border-radius:18px; overflow:hidden; background-size:cover; background-position:center; }
+  .card .hdr { position:absolute; left:12px; right:12px; top:12px; height:54px; border-radius:13px; display:flex; align-items:center; padding:0 14px; backdrop-filter:blur(10px); }
+  .card .hdr .nav { gap:12px; font-size:11px; }
+  .card .cap { position:absolute; left:14px; bottom:12px; }
+  .doc { background:#fff; border:1px solid #e4dcea; }
+  .doc .bar { height:54px; border-bottom:1px solid #eee7f2; display:flex; align-items:center; padding:0 14px; }
+  .doc .crumb { font:500 10.5px 'JetBrains Mono'; color:#8a7b96; margin:14px 16px 6px; letter-spacing:.04em; }
+  .doc h4 { margin:0 16px 10px; font:700 17px/1.2 'DM Sans'; }
+  .doc .ln { height:7px; border-radius:4px; background:#ece6f0; margin:0 16px 8px; max-width:calc(100% - 32px); }
+  .note { position:absolute; right:24px; top:398px; width:560px; text-align:right; font-size:13.5px; color:#4a3a58; z-index:3; }
+  /* icon boards */
+  .left { position:absolute; left:0; top:0; bottom:0; width:430px; background:radial-gradient(circle at 50% 40%, #fff, #E9DCF2 72%); display:flex; align-items:center; justify-content:center; }
+  .left .big-ic { filter: drop-shadow(0 18px 28px rgba(50,20,80,.28)); margin-top:-60px; }
+  .left .desc { position:absolute; left:26px; right:26px; bottom:22px; font-size:14.5px; line-height:1.42; color:#3c2d48; }
+  .right { position:absolute; left:458px; right:26px; top:22px; bottom:20px; display:flex; flex-direction:column; gap:15px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .tb { height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:14px; }
+  .tb.d { background:#1f1d24; } .tb.l { background:#ecebf0; border:1px solid #dcdae2; }
+  .tb .me { position:relative; width:24px; height:24px; }
+  .tb .me::after { content:''; position:absolute; left:6px; right:6px; bottom:-8px; height:3px; border-radius:2px; background:#8fb4ff; }
+  .dock { height:96px; border-radius:16px; background:url(walls/cotton-candy-sky.jpg) center 70%/cover; display:flex; align-items:center; justify-content:center; }
+  .dock .tray { display:flex; gap:12px; padding:10px 14px; border-radius:20px; background:rgba(255,255,255,.35); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.5); align-items:center; }
+  .tabs { height:40px; border-radius:10px; display:flex; align-items:flex-end; padding:0 8px; gap:4px; }
+  .tabs.l { background:#dee1e6; } .tabs.d { background:#202124; }
+  .tab { height:32px; width:168px; border-radius:9px 9px 0 0; display:flex; align-items:center; gap:8px; padding:0 11px; font-size:12.5px; }
+  .tabs.l .tab.on { background:#fff; color:#1f1f1f; } .tabs.d .tab.on { background:#35363a; color:#e8eaed; }
+  .tabs .tab.off { color:#5f6368; } .tabs.d .tab.off { color:#9aa0a6; }
+  .tab .fv { width:16px; height:16px; flex:none; display:flex; }
+  .themes { display:flex; gap:16px; align-items:flex-end; }
+  .themes figure { margin:0; display:flex; flex-direction:column; align-items:center; gap:5px; font:500 10px 'JetBrains Mono'; color:var(--mut); letter-spacing:.06em; }
+  .vs { display:flex; align-items:center; gap:10px; font:500 11px 'JetBrains Mono'; color:var(--mut); }
+  /* installer */
+  .win { border-radius:12px; background:#fff; border:1px solid #dcd6e2; box-shadow:0 10px 30px rgba(60,30,90,.12); overflow:hidden; }
+  .win .t { height:34px; background:#f3f1f6; border-bottom:1px solid #e6e1ea; display:flex; align-items:center; padding:0 14px; font-size:12.5px; color:#444; }
+  .grid { display:flex; gap:22px; padding:18px 22px; align-items:flex-start; }
+  .file { width:112px; display:flex; flex-direction:column; align-items:center; gap:8px; font-size:12px; text-align:center; color:#333; border-radius:8px; padding:8px 4px; }
+  .file.sel { background:#e6efff; outline:1px solid #b7cdf6; }
+  .gen { width:80px; height:96px; display:flex; align-items:center; justify-content:center; }
+  .li { display:flex; align-items:center; gap:10px; padding:5px 18px; font-size:12.5px; color:#333; }
+  .li .dim { color:#888; margin-left:auto; font-size:11.5px; }
+</style>
+<body><div id="root"></div>
+<script>
+const P = new URLSearchParams(location.search), B = P.get('b') || 'a1';
+const $ = (h) => document.getElementById('root').insertAdjacentHTML('beforeend', h);
+const PURPLE = { acc:'#8B47B8', deep:'#4A1F66', tile:['#F4EAF9','#DCC5EC'], ink:'#21152C' };
+
+// ---------- placing the real mascot ----------
+// Body (14 rig units wide, centre at rig 12,10) lands with its centre at (x,y), w px wide.
+// The svg's own centre IS the body centre, so rotation pivots there.
+const mHTML = (key, x, y, w, r = 0, pal = 'purple', extra = '') => {
+  const s = w / 14, size = 30 * s;
+  return `<div class="m" style="left:${x - size / 2}px;top:${y - size / 2}px;width:${size}px;height:${size}px;transform:rotate(${r}deg);${extra}">${ART[key + '.' + pal]}</div>`;
+};
+// Same thing inside an SVG (icons): a nested <svg> in the parent's units.
+const mSVG = (key, x, y, w, r = 0, pal = 'purple', clip = '') => {
+  const s = w / 14, size = 30 * s, inner = ART[key + '.' + pal].replace(/^<svg[^>]*>|<\/svg>$/g, '');
+  return `<g transform="rotate(${r} ${x} ${y})"${clip ? ` clip-path="url(#${clip})"` : ''}><svg x="${x - size / 2}" y="${y - size / 2}" width="${size}" height="${size}" viewBox="-3 -5 30 30" overflow="visible">${inner}</svg></g>`;
+};
+
+// ---------- measuring letters (so the mascot lands ON a letter, not near it) ----------
+// Ink box of one letter span: canvas measures the glyph's real ink; the span gives its position.
+const cv = document.createElement('canvas').getContext('2d');
+function ink(span, root) {
+  const cs = getComputedStyle(span); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const t = cv.measureText(span.textContent), r = span.getBoundingClientRect(), o = root.getBoundingClientRect();
+  const base = root.querySelector('.base').getBoundingClientRect().top - o.top;
+  return { l: r.left - o.left + t.actualBoundingBoxLeft * -1, r: r.left - o.left + t.actualBoundingBoxRight, top: base - t.actualBoundingBoxAscent, base, w: r.width };
+}
+const letters = (word, cls = '') => [...word].map((ch, i) => `<span class="L${cls}" data-i="${i}">${ch}</span>`).join('') + '<i class="base" style="display:inline-block;width:0;height:0;vertical-align:baseline"></i>';
+
+// ======================== NAME STYLES ========================
+// Each builds into an element `el` at text size h (px). c: colours for the place it's shown.
+// solo: true on the plain help page — the name alone, the mascot steps out.
+const NAMES6 = {
+  a1: { title: 'A1 · The punch',
+    note: 'Your intro animation, frozen as a logo: the mascot winds up and punches the "Y", knocking it back. The website\'s own headline lettering. On help pages the mascot steps out and the name stands alone.',
+    build(el, h, c, solo) {
+      el.innerHTML = `<span class="nm dm" style="font-size:${h}px;color:${c.ink}"><span style="color:${c.acc}">${letters('You')}</span>${letters('Coded')}</span>`;
+      const nm = el.firstChild; if (solo) return;
+      const Y = nm.querySelector('.L'), b = ink(Y, nm), w = h * .84, s = w / 14;
+      // Fist position for the right arm swung to -115° about its shoulder (21.5,9): rig (25.1,7.3).
+      const tx = b.l + (b.r - b.l) * .2, ty = b.top + (b.base - b.top) * .22;
+      const cx = tx - 13.1 * s + 1.3 * s, cy = ty + 2.7 * s;
+      Y.style.cssText = 'display:inline-block;transform:rotate(15deg);transform-origin:88% 94%';
+      nm.style.marginLeft = (w * 1.05) + 'px';
+      nm.insertAdjacentHTML('beforeend', mHTML(c.pal === 'purple' && h > 40 ? 'uppercut' : 'uppercut', cx, cy, w, 0, c.pal) +
+        `<svg class="m" style="left:${tx - 2.5 * s}px;top:${ty - 6 * s}px;width:${7 * s}px;height:${7 * s}px" viewBox="0 0 10 10"><path d="M2 1 L4 3.6 M5.6 0.4 L5.6 3.2 M8.6 1.4 L7 3.8" stroke="${c.burst}" stroke-width="1.1" stroke-linecap="round"/></svg>`);
+    } },
+  a2: { title: 'A2 · Peeking over',
+    note: 'The letters built from the mascot\'s body (your "barely okay" N1), with the mascot itself hiding behind them, mitts on the top of the "u" and "c", peeking out. The name works alone; the mascot just lives behind it.',
+    build(el, h, c, solo) {
+      const H = h * 1.35, k = H / 254, sw = squircleWord({ you: c.acc, coded: c.ink, grad: c.grad !== false, id: 'a2' + Math.random().toString(36).slice(2, 6) });
+      el.innerHTML = `<span class="nm" style="height:${H}px">${sw.svg(H)}</span>`; if (solo) return;
+      const nm = el.firstChild, xTop = 76 * k, x = (14 + 3 * 108 - 8) * k, w = 150 * k, s = w / 14;
+      // mitts (rig y 8.3–11.7) rest on the letters' top edge; everything below the mitts is behind the letters
+      const cy = xTop + 2 * k - 1.8 * s, clipB = (30 - (11.8 + 5)) * s;
+      nm.insertAdjacentHTML('afterbegin', mHTML('peek', x, cy, w, 0, c.pal, `clip-path:inset(0 0 ${clipB}px 0)`));
+      nm.querySelector('svg:not(.m svg)').style.position = 'relative';
+      nm.insertAdjacentHTML('beforeend', mHTML('peek', x, cy, w, 0, c.pal, `clip-path:polygon(0 ${(11.2 - 6.6 + 5) / 30 * 100}%,26% ${(11.2 - 6.6 + 5) / 30 * 100}%,26% 60%,0 60%,0 0,0 0, 100% 0,100% 0,100% 0, 100% 60%, 74% 60%, 74% ${(11.2 - 6.6 + 5) / 30 * 100}%, 100% ${(11.2 - 6.6 + 5) / 30 * 100}%)`));
+    } },
+  a3: { title: 'A3 · Sitting on the "d"',
+    note: 'The chunky sticker lettering (your "barely okay" N4, minus the face-in-the-o), with the mascot perched on top of the last "d", legs dangling, waving. Friendly and simple; on help pages it\'s just the word.',
+    build(el, h, c, solo) {
+      el.innerHTML = `<span class="nm bl ${c.flat ? '' : 'stk'}" style="--h:${h}px;font-size:${h * 1.12}px;color:${c.acc}">${letters('youcoded')}</span>`;
+      if (solo) return;
+      const nm = el.firstChild, d = ink(nm.querySelectorAll('.L')[7], nm), w = h * .5, s = w / 14;
+      const stemX = d.r - h * .085;
+      // body bottom (rig y16) sits on the stem's top; legs hang in front of the stem
+      nm.insertAdjacentHTML('beforeend', mHTML('sitwave', stemX - 0.2 * s, d.top - 6 * s + h * .02, w, 0, c.pal));
+      nm.style.marginRight = (w * .45) + 'px';
+    } },
+  a4: { title: 'A4 · Holding up the C',
+    note: 'The mascot stands in the word and lifts the "C" of Coded over its head, like a trophy. The site\'s headline lettering. Reads "YouCoded" with one proud letter — and the mascot is the one making it.',
+    build(el, h, c, solo) {
+      if (solo) { el.innerHTML = `<span class="nm dm" style="font-size:${h}px;color:${c.ink}"><span style="color:${c.acc}">You</span>Coded</span>`; return; }
+      const w = h * .6, s = w / 14, gap = 23 * s;
+      el.innerHTML = `<span class="nm dm" style="font-size:${h}px;color:${c.ink}"><span style="color:${c.acc}">${letters('You')}</span><span class="slot" style="display:inline-block;width:${gap}px"></span>${letters('oded')}</span>`;
+      const nm = el.firstChild, sl = nm.querySelector('.slot'), o = nm.getBoundingClientRect(), sr = sl.getBoundingClientRect();
+      const base = nm.querySelector('.base').getBoundingClientRect().top - o.top, cx = sr.left - o.left + gap / 2, cy = base - 11 * s;
+      const cb = cy + (5.6 - 10) * s, cs = h * .86;
+      nm.insertAdjacentHTML('beforeend', mHTML('cheer', cx, cy, w, 0, c.pal) +
+        `<svg class="m" style="left:${cx - cs * .6}px;top:${cb - cs}px;width:${cs * 1.2}px;height:${cs * 1.1}px;overflow:visible" viewBox="0 0 ${cs * 1.2} ${cs * 1.1}"><text x="${cs * .6}" y="${cs}" text-anchor="middle" font-family="DM Sans" font-weight="900" font-size="${cs}" letter-spacing="-1" fill="${c.ink}" transform="rotate(-7 ${cs * .6} ${cs * .7})">C</text></svg>`);
+    } },
+  a5: { title: 'A5 · Between "you" and "coded"',
+    note: 'The mascot stands in the gap and holds a hand out to each half — it\'s what connects you to the code. The letters built from its body (N1). The one with a meaning, not just a pose.',
+    build(el, h, c, solo) {
+      const H = h * 1.35, k = H / 254, idr = 'a5' + Math.random().toString(36).slice(2, 6);
+      const sw = squircleWord({ you: c.acc, coded: c.ink, grad: c.grad !== false, id: idr });
+      if (solo) { el.innerHTML = `<span class="nm" style="height:${H}px">${sw.svg(H)}</span>`; return; }
+      // split the word's svg into "you" and "coded" by drawing it twice with a clip
+      const W = (sw.w + 28) * k, cut = (14 + 3 * 108 - 8) * k, w = 138 * k, s = w / 14, gap = 24.5 * s;
+      el.innerHTML = `<span class="nm" style="height:${H}px;width:${W + gap}px">
+        <span style="position:absolute;left:0;top:0;clip-path:inset(0 ${W - cut}px 0 0)">${sw.svg(H)}</span>
+        <span style="position:absolute;left:${gap}px;top:0;clip-path:inset(0 0 0 ${cut}px)">${sw.svg(H)}</span></span>`;
+      const nm = el.firstChild;
+      // hands (rig y≈9) at the middle of the x-height; feet on the baseline
+      nm.insertAdjacentHTML('beforeend', mHTML('armsout', cut + gap / 2, (76 + 46) * k + 1 * s, w, 0, c.pal));
+    } },
+};
+const PLACES6 = [
+  { label: "Devil's Garden theme", wall: 'walls/devils-garden.jpg', hdr: 'rgba(20,8,16,.62)', ink: '#FBE9C9', acc: '#FFC627', pal: 'golden', burst: '#FFC627', dark: 1, navc: '#e8d6b4' },
+  { label: 'Meadow Mist theme', wall: 'walls/meadow-mist.jpg', hdr: 'rgba(246,250,245,.72)', ink: '#041008', acc: '#2F7D55', pal: 'meadow', burst: '#2F7D55', navc: '#2a3a2e' },
+  { label: 'Strawberry Kitty theme', wall: 'walls/strawberry-kitty.jpg', hdr: 'rgba(252,228,233,.75)', ink: '#3A1420', acc: '#CC4060', pal: 'strawberry', burst: '#CC4060', navc: '#5a2a38' },
+];
+function nameBoard(id) {
+  const N = NAMES6[id], site = { ink: '#21152C', acc: '#8B47B8', pal: 'purple', burst: '#E2679A' };
+  $(`<div class="tag">${N.title}</div><div class="hero"><div class="glass"><span id="hdr"></span><div class="nav"><span>About</span><span>Features</span><span>FAQ</span><span class="pill">Download</span></div></div><div class="big" id="big"></div></div>
+    <div class="note">${N.note}</div>
+    <div class="row4">${PLACES6.map((p, i) => `<div class="card" style="background-image:url(${p.wall})"><div class="hdr" style="background:${p.hdr}"><span id="c${i}"></span><div class="nav" style="color:${p.navc}"><span>About</span><span>FAQ</span></div></div>
+      <div class="cap lab" style="color:${p.dark ? '#f5e6c8' : '#3a2a3a'};background:${p.dark ? '#0008' : '#fff9'};padding:5px 8px;border-radius:6px">${p.label}</div></div>`).join('')}
+      <div class="card doc"><div class="bar"><span id="doc"></span><div class="nav" style="font-size:11px;gap:12px;color:#666"><span>Docs</span><span>Support</span></div></div>
+        <div class="crumb">HELP › PRIVACY &amp; DATA</div><h4>Where YouCoded keeps your files</h4><div class="ln" style="width:88%"></div><div class="ln"></div><div class="ln" style="width:70%"></div>
+        <div class="cap lab" style="color:#3a2a3a">Plain help page · name alone</div></div></div>`);
+  N.build(document.getElementById('big'), 96, site);
+  N.build(document.getElementById('hdr'), 26, site);
+  PLACES6.forEach((p, i) => N.build(document.getElementById('c' + i), 20, p));
+  N.build(document.getElementById('doc'), 19, { ink: '#21152C', acc: '#21152C', pal: 'purple', grad: false, flat: true }, true);
+}
+
+// ======================== APP ICONS ========================
+// Each draws on a 100×100 canvas. pal: the mascot's colours; t: the tile palette for that theme.
+const TSQ = 'M22 0 H78 C95 0 100 5 100 22 V78 C100 95 95 100 78 100 H22 C5 100 0 95 0 78 V22 C0 5 5 0 22 0 Z';
+const TILES = {
+  purple: { a: '#F6EDFA', b: '#DCC5EC', deep: '#4A1F66', acc: '#8B47B8', pop: '#E2679A', sky: ['#C8A4EA', '#F4C6DE'] },
+  golden: { a: '#FFF6E2', b: '#F6D99A', deep: '#5A3A08', acc: '#E9A21F', pop: '#E0632E', sky: ['#F7C873', '#FBE7B8'] },
+  meadow: { a: '#F1F8F1', b: '#CFE6D3', deep: '#163A26', acc: '#2F7D55', pop: '#7FB069', sky: ['#A9D7B6', '#E3F2DF'] },
+  strawberry: { a: '#FFF1F4', b: '#F8CDD8', deep: '#3A1420', acc: '#CC4060', pop: '#F08AA0', sky: ['#F6A9BB', '#FFE3EA'] },
+};
+let gid = 0;
+const tileF = (t, id, kind = 'soft') => kind === 'sky'
+  ? `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.sky[0]}"/><stop offset="1" stop-color="${t.sky[1]}"/></linearGradient></defs><path d="${TSQ}" fill="url(#${id})"/>`
+  : kind === 'deep'
+  ? `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.acc}"/><stop offset="1" stop-color="${t.deep}"/></linearGradient></defs><path d="${TSQ}" fill="url(#${id})"/>`
+  : `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.a}"/><stop offset="1" stop-color="${t.b}"/></linearGradient></defs><path d="${TSQ}" fill="url(#${id})"/>`;
+const rimL = `<path d="${TSQ}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1"/>`;
+const svgw = (px, body) => `<svg viewBox="0 0 100 100" width="${px}" height="${px}" xmlns="http://www.w3.org/2000/svg" overflow="visible">${body}</svg>`;
+const letterF = (ch, x, y, size, fill, r = 0, ox = x, oy = y) => `<text x="${x}" y="${y}" text-anchor="middle" font-family="DM Sans" font-weight="900" font-size="${size}" letter-spacing="-2" fill="${fill}" transform="rotate(${r} ${ox} ${oy})">${ch}</text>`;
+
+const ICON6 = {
+  b1: { title: 'B1 · Punching the Y',
+    desc: 'The intro animation\'s big moment as an icon: the mascot mid-punch, the "Y" knocked back. Uses YouCoded\'s first letter; the light tile you chose in September.',
+    draw: (px, p = 'purple') => { const t = TILES[p], g = 'b1' + (++gid);
+      return svgw(px, tileF(t, g) + letterF('Y', 68, 84, 74, t.deep, 12, 90, 84) +
+        `<path d="M44 33 L50 37 M42 45 L49 45 M44 57 L50 53" stroke="${t.pop}" stroke-width="3" stroke-linecap="round"/>` +
+        mSVG('punch', 31, 57, 30, 4, p) + rimL); } },
+  b2: { title: 'B2 · Peeking over the edge',
+    desc: 'The mascot pulls itself up over the bottom edge of the icon, mitts gripping the ledge, wide-eyed — the "peek" from the app and the intro. Same body, just most of it out of sight.',
+    draw: (px, p = 'purple') => { const t = TILES[p], g = 'b2' + (++gid), w = 60, s = w / 14, cy = 66 - 1.2 * s, ledge = 66;
+      const top = cy - 15 * s, cut = ledge + 1;
+      return svgw(px, tileF(t, g, 'sky') +
+        `<defs><clipPath id="${g}c"><rect x="0" y="0" width="100" height="${cut}"/></clipPath><clipPath id="${g}m"><rect x="0" y="${ledge - 10}" width="${50 - 7.6 * s}" height="20"/><rect x="${50 + 7.6 * s}" y="${ledge - 10}" width="40" height="20"/></clipPath><clipPath id="${g}t"><path d="${TSQ}"/></clipPath></defs>` +
+        `<g clip-path="url(#${g}t)">${mSVG('peek', 50, cy, w, 0, p, g + 'c')}<rect x="0" y="${ledge}" width="100" height="40" fill="${t.deep}"/><rect x="0" y="${ledge}" width="100" height="2.2" fill="#fff" opacity=".25"/>${mSVG('peek', 50, cy, w, 0, p, g + 'm')}</g>` + rimL); } },
+  b3: { title: 'B3 · Building with Y and C',
+    desc: 'Two toy blocks, "Y" and "C". The mascot has stacked one and is lifting the other into place. YouCoded is "build your own" — this is the mascot building it.',
+    draw: (px, p = 'purple') => { const t = TILES[p], g = 'b3' + (++gid);
+      const block = (x, y, sz, ch, fill, r = 0) => `<g transform="rotate(${r} ${x + sz / 2} ${y + sz / 2})"><rect x="${x}" y="${y + 3}" width="${sz}" height="${sz}" rx="6" fill="${t.deep}"/><rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="6" fill="${fill}"/><rect x="${x + 4}" y="${y + 4}" width="${sz - 8}" height="${sz - 8}" rx="4" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/>${letterF(ch, x + sz / 2, y + sz * .76, sz * .72, '#fff')}</g>`;
+      return svgw(px, tileF(t, g) + `<ellipse cx="50" cy="91" rx="40" ry="3.5" fill="${t.deep}" opacity=".12"/>` +
+        block(8, 56, 32, 'Y', t.acc) + mSVG('cheer', 68, 66, 24, 0, p) + block(53, 12, 30, 'C', t.pop, -10) + rimL); } },
+  b4: { title: 'B4 · Mid-hop',
+    desc: 'The mascot caught at the top of a happy hop, limbs flung out, its shadow far below — the bounce it does on the site. All character, no letters; the clearest when tiny.',
+    draw: (px, p = 'purple') => { const t = TILES[p], g = 'b4' + (++gid);
+      return svgw(px, tileF(t, g) + `<ellipse cx="50" cy="88" rx="18" ry="3.6" fill="${t.deep}" opacity=".16"/>` +
+        `<path d="M22 70 L22 80 M30 74 L30 84 M78 70 L78 80 M70 74 L70 84" stroke="${t.acc}" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>` +
+        mSVG('hop', 50, 40, 44, -7, p) + rimL); } },
+  b5: { title: 'B5 · Halfway through a costume change',
+    desc: 'Left half: the purple mascot. Right half: the same mascot already in its Strawberry Kitty outfit. The whole "make it yours" idea in one picture — same body, any look.',
+    draw: (px, p = 'purple') => { const t = TILES.purple, t2 = TILES.strawberry, g = 'b5' + (++gid);
+      return svgw(px, `<defs><clipPath id="${g}l"><rect x="0" y="-20" width="50" height="140"/></clipPath><clipPath id="${g}r"><rect x="50" y="-20" width="60" height="140"/></clipPath></defs>` +
+        `<g clip-path="url(#${g}l)">${tileF(t, g + 'a')}</g><g clip-path="url(#${g}r)">${tileF(t2, g + 'b')}</g>` +
+        `<g clip-path="url(#${g}l)">${mSVG('stand', 50, 50, 54, 0, 'purple')}</g><g clip-path="url(#${g}r)">${mSVG('stand', 50, 50, 54, 0, 'strawberry')}</g>` +
+        `<path d="M50 6 V94" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 3" opacity=".9"/>` + rimL); } },
+  b6: { title: 'B6 · Hanging off the Y',
+    desc: 'A big "Y" on a deep purple tile, the mascot hanging from its arm by one hand, legs swinging, grinning. YouCoded\'s first letter turned into a jungle gym.',
+    draw: (px, p = 'purple') => { const t = TILES[p], g = 'b6' + (++gid), w = 26, s = w / 14;
+      // The Y sits left; the mascot's raised LEFT hand (rig 2.5,5) grips the Y's right tip, so its
+      // body swings out into the open space on the right instead of covering the letter.
+      const w2 = 23, s2 = w2 / 14, hx = 63, hy = 31;
+      return svgw(px, tileF(t, g, 'deep') + letterF('Y', 37, 93, 92, '#fff') +
+        mSVG('hangL', hx + 9.5 * s2, hy + 5 * s2, w2, -6, p) + rimL); } },
+};
+const NEIGH6 = ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#6366f1', '#64748b'];
+const neighbourF = (c, s) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="${c}"/><rect x="7" y="7" width="10" height="10" rx="2" fill="#fff" opacity=".9"/></svg>`;
+function iconBoard(k) {
+  const I = ICON6[k], D = (px) => I.draw(px);
+  const tb = (cls) => `<div class="tb ${cls}">${NEIGH6.slice(0, 3).map(c => neighbourF(c, 24)).join('')}<span class="me">${D(24)}</span>${NEIGH6.slice(3).map(c => neighbourF(c, 24)).join('')}</div>`;
+  $(`<div class="tag">${I.title}</div>
+    <div class="left"><div class="big-ic">${D(300)}</div><div class="desc">${I.desc}</div></div>
+    <div class="right">
+      <div><div class="lab" style="margin-bottom:7px">Windows taskbar · real size (24px)</div><div class="two">${tb('d')}${tb('l')}</div></div>
+      <div><div class="lab" style="margin-bottom:7px">Mac dock · real size</div><div class="dock"><div class="tray">${NEIGH6.slice(0, 3).map(c => neighbourF(c, 56)).join('')}${D(56)}${NEIGH6.slice(3, 5).map(c => neighbourF(c, 56)).join('')}</div></div></div>
+      <div><div class="lab" style="margin-bottom:7px">Browser tab · 16px</div><div class="two">
+        <div class="tabs l"><div class="tab on"><span class="fv">${D(16)}</span>YouCoded — yours</div><div class="tab off">Inbox (3)</div></div>
+        <div class="tabs d"><div class="tab on"><span class="fv">${D(16)}</span>YouCoded — yours</div><div class="tab off">Inbox (3)</div></div></div></div>
+      <div class="two"><div><div class="lab" style="margin-bottom:9px">Today vs this · 48 / 32px</div>
+        <div class="vs">today <img src="today-icon.svg" width="48"><img src="today-icon.svg" width="32"> &nbsp; new ${D(48)}${D(32)}</div></div>
+        <div><div class="lab" style="margin-bottom:9px">Dressed in other themes</div><div class="themes">${['golden', 'meadow', 'strawberry'].map(p => `<figure>${I.draw(52, p)}<span>${p}</span></figure>`).join('')}</div></div></div>
+    </div>`);
+}
+
+// ======================== INSTALLER ICONS ========================
+// Same family as the app icon: today's light tile, the same mascot, and — for C3 — the purple
+// download strip you picked for the installer in September.
+const INST6 = {
+  c1: { title: 'C1 · Moving in',
+    desc: 'The mascot walks in carrying a box with a download arrow on it: "I\'m moving onto your computer." Same light tile as the app icon, so the installer and the app read as one family.',
+    draw: (px) => { const t = TILES.purple, g = 'c1' + (++gid);
+      return svgw(px, tileF(t, g) + `<ellipse cx="50" cy="90" rx="26" ry="3.4" fill="${t.deep}" opacity=".14"/>` + mSVG('carry', 50, 42, 44, 0) +
+        `<g><rect x="30" y="50" width="40" height="32" rx="4" fill="#D9B98E" stroke="${t.deep}" stroke-width="2"/><path d="M30 58 H70" stroke="${t.deep}" stroke-opacity=".35" stroke-width="1.6"/><rect x="45" y="50" width="10" height="8" fill="#C79F6E"/>
+          <path d="M50 62 V75 M44.5 70 L50 75.5 L55.5 70" fill="none" stroke="${t.acc}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g>` + rimL); } },
+  c2: { title: 'C2 · Riding the arrow down',
+    desc: 'A big download arrow, and the mascot riding it down like a slide, arms up. "Download" as the most fun thing that\'s happened today.',
+    draw: (px) => { const t = TILES.purple, g = 'c2' + (++gid);
+      return svgw(px, tileF(t, g) + `<path d="M50 14 V70 M30 54 L50 76 L70 54" fill="none" stroke="${t.pop}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path d="M22 22 V34 M78 18 V30 M28 46 V56" stroke="${t.acc}" stroke-opacity=".3" stroke-width="2.6" stroke-linecap="round"/>` +
+        mSVG('ride', 50, 28, 30, 0) + rimL); } },
+  c3: { title: 'C3 · Jumping into the download strip',
+    desc: 'Today\'s installer (the purple strip with the arrow, your September pick) with the mascot leaping down into it, arms up. The smallest change from today: same parts, now with life.',
+    draw: (px) => { const t = TILES.purple, g = 'c3' + (++gid);
+      return svgw(px, `<defs><clipPath id="${g}t"><path d="${TSQ}"/></clipPath></defs>` + tileF(t, g + 'a') +
+        `<g clip-path="url(#${g}t)"><rect x="0" y="70" width="100" height="30" fill="${t.acc}"/><path d="M50 76 V93 M43 86.5 L50 93.5 L57 86.5" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></g>` +
+        `<path d="M36 8 V18 M50 4 V14 M64 8 V18" stroke="${t.acc}" stroke-opacity=".35" stroke-width="2.6" stroke-linecap="round"/>` +
+        mSVG('dive', 50, 40, 36, 0) + rimL); } },
+};
+const fileIconF = (label, color) => `<svg width="64" height="80" viewBox="0 0 64 80"><path d="M6 2 H42 L60 20 V76 Q60 78 58 78 H6 Q4 78 4 76 V4 Q4 2 6 2 Z" fill="#fff" stroke="#c9c4cf" stroke-width="2"/><path d="M42 2 V20 H60" fill="#eee" stroke="#c9c4cf" stroke-width="2"/><rect x="10" y="50" width="34" height="14" rx="3" fill="${color}"/><text x="27" y="61" font-size="10" font-family="DM Sans" font-weight="700" fill="#fff" text-anchor="middle">${label}</text></svg>`;
+function installerBoard(k) {
+  const I = INST6[k], D = (px) => I.draw(px);
+  $(`<div class="tag">${I.title}</div><div class="left"><div class="big-ic">${D(300)}</div><div class="desc">${I.desc}</div></div>
+    <div class="right"><div class="lab">Your Downloads folder, right after clicking Download</div>
+      <div class="win"><div class="t">📁 Downloads</div><div class="grid">
+        <div class="file"><div class="gen">${fileIconF('PDF', '#d64545')}</div>Q3 report.pdf</div><div class="file"><div class="gen">${fileIconF('ZIP', '#c99a2e')}</div>photos.zip</div>
+        <div class="file sel"><div class="gen">${D(92)}</div>YouCoded-Setup-1.3.1.exe</div><div class="file"><div class="gen">${fileIconF('MP3', '#3b82f6')}</div>song.mp3</div></div>
+        <div style="border-top:1px solid #eee;padding:6px 0 10px"><div class="li">${D(16)}YouCoded-Setup-1.3.1.exe<span class="dim">Application · 142 MB</span></div></div></div>
+      <div class="two" style="margin-top:6px">
+        <div><div class="lab" style="margin-bottom:10px">Today's installer icon</div><div class="vs"><img src="today-installer.svg" width="96"><img src="today-installer.svg" width="32"><img src="today-installer.svg" width="16"></div></div>
+        <div><div class="lab" style="margin-bottom:10px">This one · 96 · 32 · 16px</div><div class="vs">${D(96)}${D(32)}${D(16)}</div></div></div>
+      <div><div class="lab" style="margin-bottom:10px">Next to the app icon it installs (B4 shown)</div><div class="vs">${D(72)} → ${ICON6.b4.draw(72)}</div></div>
+    </div>`);
+}
+
+// WHY explicit loads: fonts.ready resolves before an unused font is fetched, and the letter
+// measurements above need the real glyphs.
+Promise.all(['900 20px "DM Sans"', '700 20px "DM Sans"', '800 20px "Baloo 2"', '700 20px "JetBrains Mono"', '500 20px "JetBrains Mono"'].map(f => document.fonts.load(f))).then(() => {
+  if (NAMES6[B]) nameBoard(B); else if (ICON6[B]) iconBoard(B); else if (INST6[B]) installerBoard(B);
+  document.body.dataset.ready = 1;
+});
+</script>
+</body>

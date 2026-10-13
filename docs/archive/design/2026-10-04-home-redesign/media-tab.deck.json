@@ -1,0 +1,87 @@
+{
+  "title": "Media tab: one card per speaker or TV, playing ones first",
+  "key": "home-media-tab",
+  "out": "media-tab.choice.html",
+  "images": "images/media-tab.deck",
+  "runs": { "after": "media-tab-runs/after" },
+  "themes": ["golden-sunbreak", "creme"],
+  "live": { "worktree": "sessions/ha-pages-connection/youcoded" },
+  "steps": [
+    {
+      "id": "MT-1",
+      "surface": "Home page",
+      "path": "Home > Media tab",
+      "headline": "Which layout should the Media tab use, so what is playing is easy to see and control?",
+      "notice": "Room boxes are gone: every speaker and TV is its own card, named like 'Destin's Room TV'. Playing first, then paused, idle, off, and speakers that are not responding last, dimmed.",
+      "risk": "All three re-sort when something starts or stops: a card you just paused moves down the page.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Now playing hero",
+          "crop": "pages/page/page-home#v-media-tab-a",
+          "summary": "Big cards across the top for what is playing, with album-style colour, the title, large play, skip and volume. Paused ones sit under their own heading. Quiet devices become slim rows with one button: Play or Turn on.",
+          "risk": "The playing cards are tall, so a house with four things playing needs scrolling before you reach the idle devices."
+        },
+        {
+          "id": "b",
+          "label": "Stage and shelf",
+          "crop": "pages/page/page-home#v-media-tab-b",
+          "summary": "Playing and paused devices are wide cards with the controls on one line. Everything else sits on a shelf of small square tiles, each with one round button (play or power).",
+          "risk": "Tiles are small, so names and states wrap onto two lines; a long speaker name gets cut."
+        },
+        {
+          "id": "c",
+          "label": "One list, live rows",
+          "crop": "pages/page/page-home#v-media-tab-c",
+          "summary": "One simple column. A coloured bar on the left says the state: yellow playing, amber paused, grey idle, red not responding. Playing rows open up to show controls; the rest stay a single line.",
+          "risk": "The least dramatic: nothing is much bigger than anything else, so it is quieter to look at but less eye-catching."
+        }
+      ]
+    },
+    {
+      "id": "MT-2",
+      "surface": "Home page",
+      "path": "Home > Media tab, speakers grouped",
+      "headline": "When speakers play together, which layout makes them read as one thing?",
+      "notice": "Here Destin's Room and Roam 2 play one song. Each shows as ONE card or row, not two.",
+      "risk": "Grouped speakers share one title and one set of skip buttons; only volume can differ per speaker.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Hero with a Together box",
+          "crop": "pages/page/page-home#v-media-tab-a-group",
+          "summary": "One big card. A 'Playing together' box inside lists each speaker with its own volume bar.",
+          "risk": "The tallest of the three, since every speaker gets its own bar."
+        },
+        {
+          "id": "b",
+          "label": "Wide card with name chips",
+          "crop": "pages/page/page-home#v-media-tab-b-group",
+          "summary": "One wide card with a linked 'Playing together' strip of speaker chips, and one volume bar.",
+          "risk": "You cannot set one speaker louder than the other from the card; that needs the Group bar."
+        },
+        {
+          "id": "c",
+          "label": "Row with a linked line",
+          "crop": "pages/page/page-home#v-media-tab-c-group",
+          "summary": "One row whose second line reads 'Destin's Room + Roam 2 together' with a link mark.",
+          "risk": "The smallest hint that two speakers are involved; easy to miss."
+        }
+      ]
+    },
+    {
+      "id": "MT-3",
+      "surface": "Home page",
+      "path": "Home > Media tab",
+      "live": { "app": "default" },
+      "headline": "Press play, pause, skip and volume in each. Which one feels easiest?",
+      "notice": "These are the working page with a pretend house. The TV's remote is only a small round icon for now; its own design is decided separately.",
+      "risk": "Pressing pause or play moves the card to a new place in the list, which may feel like a jump.",
+      "variants": [
+        { "id": "a", "label": "Now playing hero", "summary": "Big cards for what is playing; slim rows for the rest.", "app": "default", "params": { "openPage": "page-home", "pagesHome": "v-media-tab-a" } },
+        { "id": "b", "label": "Stage and shelf", "summary": "Wide cards on top, small square tiles below.", "app": "default", "params": { "openPage": "page-home", "pagesHome": "v-media-tab-b" } },
+        { "id": "c", "label": "One list, live rows", "summary": "One column; playing rows open up, the rest stay one line.", "app": "default", "params": { "openPage": "page-home", "pagesHome": "v-media-tab-c" } }
+      ]
+    }
+  ]
+}

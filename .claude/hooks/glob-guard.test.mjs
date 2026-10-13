@@ -459,3 +459,47 @@ for (const cmd of [
     assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
   });
 }
+
+// ---------------------------------------------------------------------------
+// Guard 8: package install/remove inside a hardlinked worktree (3rd occurrence 2026-10-07).
+// ---------------------------------------------------------------------------
+function runIn(command, cwd) {
+  const r = spawnSync('python3', [HOOK], {
+    input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd }),
+    encoding: 'utf8', env: { ...process.env, GLOB_GUARD_PROC: NO_PROC },
+  });
+  return { blocked: r.status === 2, message: (r.stderr || '').trim() };
+}
+const WT = '/home/destin/youcoded-dev/worktrees/sessions/x/youcoded/desktop';
+const SHARED = '/home/destin/youcoded-dev/youcoded/desktop';
+
+for (const cmd of [
+  'npm install pngjs', 'npm i pngjs', 'npm add pngjs', 'npm ci', 'npm uninstall pngjs',
+  'npm rm pngjs', 'npm update', 'pnpm add pngjs', 'pnpm install', 'yarn add pngjs',
+  'yarn install', 'cd /tmp && npm install pngjs',
+]) {
+  test(`guard 8 blocks by cwd: ${cmd}`, () => {
+    const { blocked, message } = runIn(cmd, WT);
+    assert.equal(blocked, true, cmd);
+    assert.match(message, /PITFALLS/);
+    assert.match(message, /fill-missing-deps/);
+    assert.match(message, /npm pack/);
+  });
+}
+test('guard 8 blocks when the command names a worktree path', () => {
+  assert.ok(runIn('npm install --prefix /home/destin/youcoded-dev/worktrees/sessions/x/youcoded/desktop pngjs', SHARED).blocked);
+});
+test('guard 8 blocks when the command cds into a worktree', () => {
+  assert.ok(runIn('cd worktrees/sessions/x/youcoded/desktop && npm install pngjs', '/home/destin/youcoded-dev').blocked);
+});
+for (const cmd of [
+  'npm run build', 'npm test', 'npx vitest', 'npm pack pngjs', 'npm install --dry-run pngjs',
+  'npm install --package-lock-only', 'echo npm install', 'git log --oneline',
+]) {
+  test(`guard 8 allows in a worktree: ${cmd}`, () => {
+    assert.equal(runIn(cmd, WT).blocked, false, cmd);
+  });
+}
+test('guard 8 allows npm install in the shared checkout', () => {
+  assert.equal(runIn('npm install pngjs', SHARED).blocked, false);
+});

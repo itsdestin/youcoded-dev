@@ -1,0 +1,37 @@
+{
+  "title": "The Home page, next version — round 2, eighth look",
+  "key": "home-page-v2-r2h",
+  "out": "home-page-v2-r2h.review.html",
+  "images": "images/home-page-v2-r2h.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built (test app, pretend Home Assistant)"
+  },
+  "themes": [
+    "midnight",
+    "golden-sunbreak",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "S-vol-tall",
+      "surface": "Pages",
+      "path": "Pages → Home, Now playing",
+      "crop": "pages/page/page-home#remote",
+      "highlight": {
+        "box": [
+          23.6,
+          62.0,
+          20.2,
+          18.8
+        ]
+      },
+      "headline": "The volume bar is now about twice as tall, with a bigger speaker icon inside it.",
+      "changed": "Your note on the last look: it was meant to be taller and was not — an older height setting further down the page was winning. Now the bar is 30 pixels tall with rounded ends, the − and + are smaller beside it, and the speaker shows the level.",
+      "notice": "Dragging works the same; the whole bar is easier to grab.",
+      "risk": "Brightness bars on lights keep their thinner size; say if you want them to match."
+    }
+  ]
+}

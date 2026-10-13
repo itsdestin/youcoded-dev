@@ -289,7 +289,7 @@ is hand-edited, so these are not a build step.
 |---|---|
 | `gen-hero-mascots.py` | the picker's four `<button class="mascot">` blocks — paste over the two `.mrow` divs |
 | `gen-og-image.mjs` | `og-image.png`, photographed from the live page (needs a static server on `docs/`) |
-| — | `docs/favicon.svg` is the nav mark; `applyTheme()` re-tints it per theme as a data URL |
+| `youcoded/scripts/build-icons.mjs --site docs/brand` | `docs/brand/`: the app icon per site theme (header, footer, browser tab); `applyTheme()` → `setBrand()` swaps them and the name's colours |
 
 **Bump `?v=` on `og:image` and `twitter:image` whenever the image is regenerated.** Slack,
 iMessage, Discord, Facebook and X all cache a preview image BY URL for days; replacing the

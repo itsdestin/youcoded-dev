@@ -1,0 +1,25 @@
+{
+ "deck": "brand-identity-v13",
+ "started": "2026-10-02T09:56:44.319Z",
+ "submitted": "2026-10-02T09:58:23Z",
+ "cur": 1,
+ "answers": {
+  "CONTRAST": {
+   "v": "pick",
+   "pick": "cc",
+   "t": 1790935058759,
+   "seconds": 54,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "move mascot down a bit, spread lines a bit further, shorten a tad.",
+   "t": 1790935102268,
+   "v": "pick",
+   "pick": "u1",
+   "seconds": 44,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

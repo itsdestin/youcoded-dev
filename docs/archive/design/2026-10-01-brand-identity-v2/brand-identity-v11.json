@@ -1,0 +1,235 @@
+{
+ "title": "YouCoded \u2014 round 11: M9 refined, glass and eye options, N3 refined",
+ "key": "brand-identity-v11",
+ "out": "brand-identity-v11.html",
+ "images": "images/brand-identity-v11",
+ "runs": {
+  "today": "runs/v11"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "p1": [
+   "brand",
+   "p1",
+   "1200x700+0+0"
+  ],
+  "p2": [
+   "brand",
+   "p2",
+   "1200x700+0+0"
+  ],
+  "p3": [
+   "brand",
+   "p3",
+   "1200x700+0+0"
+  ],
+  "p4": [
+   "brand",
+   "p4",
+   "1200x700+0+0"
+  ],
+  "q1": [
+   "brand",
+   "q1",
+   "1200x700+0+0"
+  ],
+  "q2": [
+   "brand",
+   "q2",
+   "1200x700+0+0"
+  ],
+  "q3": [
+   "brand",
+   "q3",
+   "1200x700+0+0"
+  ],
+  "gs1": [
+   "brand",
+   "gs",
+   "279x620+24+58"
+  ],
+  "gs2": [
+   "brand",
+   "gs",
+   "279x620+315+58"
+  ],
+  "gs3": [
+   "brand",
+   "gs",
+   "279x620+606+58"
+  ],
+  "gs4": [
+   "brand",
+   "gs",
+   "279x620+897+58"
+  ],
+  "es1": [
+   "brand",
+   "es",
+   "220x620+24+58"
+  ],
+  "es2": [
+   "brand",
+   "es",
+   "220x620+256+58"
+  ],
+  "es3": [
+   "brand",
+   "es",
+   "220x620+488+58"
+  ],
+  "es4": [
+   "brand",
+   "es",
+   "220x620+720+58"
+  ],
+  "es5": [
+   "brand",
+   "es",
+   "220x620+952+58"
+  ]
+ },
+ "steps": [
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, dock, browser tab, the lockups",
+   "headline": "Which of these icons do you like? Pick as many as you want.",
+   "notice": "M9 with the name or initials, M9 bigger, and your M4 \u2014 all with the deeper shadow and bright rim.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "p1",
+     "label": "P1 M9 + \"youcoded\" below",
+     "crop": "p1",
+     "summary": "Mascot and name together; the name can't be read below ~48px."
+    },
+    {
+     "id": "p2",
+     "label": "P2 M9 + \"yc\" below",
+     "crop": "p2",
+     "summary": "Initials instead; readable to ~32px."
+    },
+    {
+     "id": "p3",
+     "label": "P3 M9, bigger",
+     "crop": "p3",
+     "summary": "Just the face, as big as the tile allows."
+    },
+    {
+     "id": "p4",
+     "label": "P4 M4, deeper shadow",
+     "crop": "p4",
+     "summary": "Your pick, popped off the theme's colour."
+    }
+   ]
+  },
+  {
+   "id": "GLASS",
+   "surface": "App icon",
+   "path": "The picture inside M9's face",
+   "headline": "How blurred should the picture inside the face be?",
+   "notice": "Same icon four times; only the blur changes. Small sizes underneath each.",
+   "variants": [
+    {
+     "id": "gs1",
+     "label": "Sharp",
+     "crop": "gs1",
+     "summary": "The scene is visible."
+    },
+    {
+     "id": "gs2",
+     "label": "Soft blur",
+     "crop": "gs2",
+     "summary": "Colour and shape (round 10's M9)."
+    },
+    {
+     "id": "gs3",
+     "label": "Heavy blur",
+     "crop": "gs3",
+     "summary": "Pure colour, like the site's backgrounds."
+    },
+    {
+     "id": "gs4",
+     "label": "Frosted haze",
+     "crop": "gs4",
+     "summary": "Soft blur under white frost."
+    }
+   ]
+  },
+  {
+   "id": "EYES",
+   "surface": "App icon",
+   "path": "The mascot's eyes",
+   "headline": "Which eye style makes it pop? Pick as many as you want.",
+   "notice": "Same icon five times; only the eyes change. Small sizes underneath each.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "es1",
+     "label": "Ink",
+     "crop": "es1",
+     "summary": "Today's dark eyes, one sparkle."
+    },
+    {
+     "id": "es2",
+     "label": "Ink + white ring",
+     "crop": "es2",
+     "summary": "A white ring lifts them off any colour."
+    },
+    {
+     "id": "es3",
+     "label": "White, dark pupils",
+     "crop": "es3",
+     "summary": "Cartoon eyes with an outline."
+    },
+    {
+     "id": "es4",
+     "label": "Purple glass",
+     "crop": "es4",
+     "summary": "Deep purple with a pink inner light."
+    },
+    {
+     "id": "es5",
+     "label": "Glow",
+     "crop": "es5",
+     "summary": "Dark eyes with a violet glow."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which version of the box installer do you like? Pick as many as you want.",
+   "notice": "Your N3 with a bigger face, the flaps standing up on both sides, a download symbol on the box, and motion lines.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "q1",
+     "label": "Q1 Rising out",
+     "crop": "q1",
+     "summary": "Just above the box, trails below."
+    },
+    {
+     "id": "q2",
+     "label": "Q2 Further up, tipping",
+     "crop": "q2",
+     "summary": "A beat later, tilted, longer trails."
+    },
+    {
+     "id": "q3",
+     "label": "Q3 Halfway out",
+     "crop": "q3",
+     "summary": "Still half in the box, lines at its sides."
+    }
+   ]
+  }
+ ]
+}

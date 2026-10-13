@@ -1,0 +1,51 @@
+{
+ "deck": "brand-identity-v20",
+ "started": "2026-10-04T03:34:21.173Z",
+ "submitted": "2026-10-04T03:38:06Z",
+ "cur": 4,
+ "answers": {
+  "TAGLINE": {
+   "v": "pick",
+   "seconds": 33,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1791084896384,
+   "pick": "tc"
+  },
+  "SPACING": {
+   "v": "pick",
+   "seconds": 49,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1791084942696,
+   "pick": "sd"
+  },
+  "INITIALS": {
+   "note": "none of these. all bad. i don't want the mascots face outline for our initals marketing. just the white square backgroun. i think we need to try a few with just the y colored",
+   "t": 1791084995746,
+   "v": "other",
+   "seconds": 53,
+   "theme": "light",
+   "zoom": 1
+  },
+  "THEMECOL": {
+   "v": "pick",
+   "pick": "cc",
+   "t": 1791085023289,
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "v": "picks",
+   "picks": [
+    "id"
+   ],
+   "t": 1791085084628,
+   "note": "can we try improving the contrast of the boxt against the backgroun at the smaller zoom levels. maybe better outline/shadow or something?",
+   "seconds": 61,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

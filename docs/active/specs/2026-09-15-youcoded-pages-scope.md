@@ -1,6 +1,7 @@
 ---
 status: active
 date: 2026-09-15
+stage: home-device connection, live socket and camera video on master since 2026-10-07 — see the phasing plan
 ---
 
 # YouCoded Pages — approved product scope

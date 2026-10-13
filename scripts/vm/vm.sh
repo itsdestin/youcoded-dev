@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vm.sh — fast hands-on install testing in the quickemu guests. See docs/vm-testing.md → "Quick loop".
 #
-#   vm.sh <win|ubuntu|mac> start [--headless]   restore the saved "ready" desktop (seconds) and open
+#   vm.sh <win|ubuntu|mac|tahoe> start [--headless]   restore the saved "ready" desktop (seconds) and open
 #                                               a window for Destin; cold-boots `clean` if no ready state
 #   vm.sh <vm> load <what>                      put an installer in the guest user's Downloads, marked
 #                                               as downloaded from the internet. <what> is one of:
@@ -31,7 +31,9 @@ mkdir -p "$SHOTS" "$SERVE"
 case "${1:-}" in
   win|windows) NAME=windows-11; OS=win ;;
   ubuntu|linux) NAME=ubuntu-24.04; OS=linux ;;
-  mac|macos) NAME=macos-sonoma; OS=mac ;;
+  # WHY Tahoe is the only Mac: macOS 26 has Liquid Glass and the icon looks (Default/Dark/Clear/
+  # Tinted) the app ships for; the Sonoma (14) VM was deleted 2026-10-04 to free 46 GB.
+  mac|macos|tahoe|mac26) NAME=macos-tahoe; OS=mac ;;
   *) sed -n '2,15p' "$0"; exit 2 ;;
 esac
 shift
@@ -51,10 +53,10 @@ has_snapshot() { qemu-img snapshot -l "$DIR/disk.qcow2" | awk '{print $2}' | gre
 # The guest SSH port quickemu forwards (22220 on Windows/mac, 22221 Ubuntu).
 # WHY fixed ports: quickemu hands Windows and macOS the same 22220, so the second guest to start
 # dies with "Could not set up host forwarding rule". make_launch rewrites the forward to match.
-case $OS in win) SSH_PORT=22220 ;; linux) SSH_PORT=22221 ;; mac) SSH_PORT=22222 ;; esac
+case $OS in win) SSH_PORT=22220 ;; linux) SSH_PORT=22221 ;; mac) SSH_PORT=22223 ;; esac
 gssh() { ssh -q -p "$SSH_PORT" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 \
            -i "$VMS/vm-key" "$GUEST_USER@127.0.0.1" "$@"; }
-case $OS in win) GUEST_USER=Quickemu ;; linux) GUEST_USER=youcoded-testin ;; mac) GUEST_USER=${VM_MAC_USER:-destinmoss} ;; esac
+case $OS in win) GUEST_USER=Quickemu ;; linux) GUEST_USER=youcoded-testin ;; mac) GUEST_USER=${VM_MAC_USER:-yctesting} ;; esac
 
 # Build our own launch script from the one quickemu last generated.
 # WHY: a RAM snapshot needs a migratable CPU model and a stable command line. quickemu's
@@ -70,6 +72,9 @@ make_launch() {
   # without a window and get a SPICE viewer, which can be closed and reopened freely.
   local display_sed='s/^\(\s*-display \)[^ ]*/\1none/'
   [ "$OS" = mac ] && [ -z "${HEADLESS:-}" ] && display_sed='s/^\(\s*-display \)[^ ]*/\1gtk,grab-on-hover=on,zoom-to-fit=on,gl=on/'
+  # WHY: a guest quickemu generated with a GTK window (Ubuntu's .conf has no SPICE server, so its
+  # .ports file names no spice port) keeps that window — with display none it was unviewable.
+  [ "$OS" != mac ] && [ -z "$SPICE_PORT" ] && [ -z "${HEADLESS:-}" ] && display_sed='s/^\(\s*-display \)[^ ]*/\1gtk,grab-on-hover=on,zoom-to-fit=on,gl=off/'
 
   [ -f "$src" ] || { echo "no $src — run quickemu once for $NAME first" >&2; exit 1; }
   sed -e 's/,+invtsc//; s/,migratable=no//' \
@@ -87,7 +92,7 @@ make_launch() {
 open_view() {
   [ -n "${HEADLESS:-}" ] && return 0
   [ "$OS" = mac ] && return 0   # its GTK window opened with the guest
-  [ -n "$SPICE_PORT" ] || { echo "no spice port for $NAME"; return 0; }
+  [ -n "$SPICE_PORT" ] || return 0   # its GTK window opened with the guest (make_launch)
   # WHY setsid/nohup: the window must outlive this command, and closing it must not stop the guest.
   setsid nohup spicy -h 127.0.0.1 -p "$SPICE_PORT" --title "Test machine: $NAME" >/dev/null 2>&1 < /dev/null &
 }

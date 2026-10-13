@@ -1,0 +1,152 @@
+{
+  "title": "Home page: how it moves when things change",
+  "key": "home-motion-state-live",
+  "out": "motion-state.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Home page",
+      "path": "Home > a room's lights and TV",
+      "live": {
+        "app": "default"
+      },
+      "headline": "When you switch lights and TVs on and off, which one feels the most acknowledged and alive?",
+      "notice": "In Destin's Room press a light's round bulb to turn it off and on. Press the room's All tile. Press the TV's power button. Drag a brightness bar slowly, then pick another colour under a light. The small \"Try\" strip at the bottom of each pane is only for this test and will not be in the real page.",
+      "risk": "Motion plays only on the card you pressed. If the page redraws while it plays, it carries on from where it was instead of restarting.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Settle",
+          "summary": "Every change eases in quietly: the glow fades up and the bulb gives one small pop, the playing block rises into place, a thermostat number slides, and a change from elsewhere gets one soft outline that fades.",
+          "risk": "Quietest: on and off may feel almost too subtle if you want the page to feel dramatic.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Acknowledge and wait",
+          "summary": "Built for slow devices: a ripple appears under your finger at once, a thin bar runs along the card until the device answers, then a green tick shows. A change from elsewhere gets a small \"Just changed\" label. Dragging shows the number above the handle.",
+          "risk": "Switching itself is plain; the feel comes from the ripple and the waiting bar, which only show up while the device is slow.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Spread and spring",
+          "summary": "The most lively: light spreads out from the bulb across the card, the bulb springs, and a room's All makes its lights switch one after another. The playing block unfolds, the play button spins in, and a change from elsewhere gets a passing shine.",
+          "risk": "Switching a whole room plays several effects at once, which some people find busy. Needs a small extra step to keep the effects from being cut off.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-c"
+          }
+        }
+      ]
+    },
+    {
+      "id": "M-2",
+      "surface": "Home page",
+      "path": "Home > Media, Climate and cameras",
+      "live": {
+        "app": "default"
+      },
+      "headline": "When music, speakers, the thermostat or a camera change, which one shows it best without getting in your way?",
+      "notice": "On the Living Room speaker press play, then next, then mute. Open its Group list and tick another speaker. On the Thermostat press the + and - buttons. On a camera press Watch live if it offers it. The small \"Try\" strip at the bottom of each pane is only for this test and will not be in the real page.",
+      "risk": "The playing block appears by a layout jump in all three; the options only change how it looks arriving, not where things sit.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Settle",
+          "summary": "Every change eases in quietly: the glow fades up and the bulb gives one small pop, the playing block rises into place, a thermostat number slides, and a change from elsewhere gets one soft outline that fades.",
+          "risk": "The thermostat number slides a little; nothing else reacts to a temperature change.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Acknowledge and wait",
+          "summary": "Built for slow devices: a ripple appears under your finger at once, a thin bar runs along the card until the device answers, then a green tick shows. A change from elsewhere gets a small \"Just changed\" label. Dragging shows the number above the handle.",
+          "risk": "Controls give a ripple at once but the playing block simply appears.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Spread and spring",
+          "summary": "The most lively: light spreads out from the bulb across the card, the bulb springs, and a room's All makes its lights switch one after another. The playing block unfolds, the play button spins in, and a change from elsewhere gets a passing shine.",
+          "risk": "Springs and spins on small buttons can feel playful; on a phone they add to what is happening on a small screen.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-c"
+          }
+        }
+      ]
+    },
+    {
+      "id": "M-3",
+      "surface": "Home page",
+      "path": "Home, slow devices and changes made elsewhere",
+      "live": {
+        "app": "default"
+      },
+      "headline": "When a device is slow, or someone changes something elsewhere, which one tells you best what is going on?",
+      "notice": "Press Slow device so it says ON, then press a light: see what the card does for three seconds. Turn it off. Press Flip a lamp from elsewhere and watch the Destin's Room lights (it can take up to five seconds to arrive). Press Replay first load to see loading. The small \"Try\" strip at the bottom of each pane is only for this test and will not be in the real page.",
+      "risk": "The waiting bar and tick are shown only while a press is waiting for the device; a device that never answers shows the bar for up to nine seconds, then nothing.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Settle",
+          "summary": "Every change eases in quietly: the glow fades up and the bulb gives one small pop, the playing block rises into place, a thermostat number slides, and a change from elsewhere gets one soft outline that fades.",
+          "risk": "While waiting, nothing shows that the device has not answered yet; the card just looks done.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Acknowledge and wait",
+          "summary": "Built for slow devices: a ripple appears under your finger at once, a thin bar runs along the card until the device answers, then a green tick shows. A change from elsewhere gets a small \"Just changed\" label. Dragging shows the number above the handle.",
+          "risk": "More to look at on every press when devices are slow; a tick and a bar on each card can feel busy in a big room.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Spread and spring",
+          "summary": "The most lively: light spreads out from the bulb across the card, the bulb springs, and a room's All makes its lights switch one after another. The playing block unfolds, the play button spins in, and a change from elsewhere gets a passing shine.",
+          "risk": "While waiting, nothing shows that the device has not answered yet; the card just looks done.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-motion-state-c"
+          }
+        }
+      ]
+    }
+  ]
+}

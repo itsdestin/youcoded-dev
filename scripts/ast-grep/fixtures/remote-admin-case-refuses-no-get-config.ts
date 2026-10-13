@@ -1,25 +1,13 @@
-// Violation fixture for remote-admin-case-refuses, presence branch: the
-// 'remote:get-config' case is gone (fires once, on the whole file).
+// Violation fixture for remote-admin-case-refuses, presence branch: the entry for
+// IPC.REMOTE_GET_CONFIG is gone (fires once, on the whole file).
+declare const defineChannel: any, IPC: any;
 const HOST_ADMIN_REFUSAL = 'Change this on the computer itself.';
-declare function respond(v: unknown): void;
-export function handle(type: string) {
-  switch (type) {
-    // case 'remote:get-config': is only a comment now
-    case 'remote:set-password': {
-      respond({ ok: false, error: HOST_ADMIN_REFUSAL });
-      break;
-    }
-    case 'remote:set-config': {
-      respond({ ok: false, error: HOST_ADMIN_REFUSAL });
-      break;
-    }
-    case 'remote:devices:rename': {
-      respond({ ok: false, error: HOST_ADMIN_REFUSAL });
-      break;
-    }
-    case 'remote:devices:unpair': {
-      respond({ ok: false, error: HOST_ADMIN_REFUSAL });
-      break;
-    }
-  }
-}
+const hostAdminRefusal = { kind: 'reply', payload: { ok: false, error: HOST_ADMIN_REFUSAL } };
+export const entries = [
+  defineChannel({ name: IPC.REMOTE_SET_PASSWORD, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
+  defineChannel({ name: IPC.REMOTE_SET_CONFIG, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
+  defineChannel({ name: IPC.REMOTE_DEVICES_RENAME, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
+  defineChannel({ name: IPC.REMOTE_DEVICES_UNPAIR, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
+  // defineChannel({ name: IPC.REMOTE_GET_CONFIG }) is only a comment now
+];
+declare function renameDevice(id: string, name: string): boolean;

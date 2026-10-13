@@ -1,0 +1,109 @@
+{
+  "title": "Home page thermostat: how the current temperature looks",
+  "key": "home-now-label",
+  "out": "now-label.choice.html",
+  "images": "images/now-label.deck",
+  "runs": {
+    "after": "now-label-runs"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "crops": {
+    "home-a": [
+      "dial",
+      "home-a",
+      "1296x380+0+0"
+    ],
+    "climate-a": [
+      "dial",
+      "climate-a",
+      "1484x490+0+0"
+    ],
+    "home-b": [
+      "dial",
+      "home-b",
+      "1296x380+0+0"
+    ],
+    "climate-b": [
+      "dial",
+      "climate-b",
+      "1484x490+0+0"
+    ],
+    "home-c": [
+      "dial",
+      "home-c",
+      "1296x380+0+0"
+    ],
+    "climate-c": [
+      "dial",
+      "climate-c",
+      "1484x490+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "NL-1",
+      "surface": "Home page",
+      "path": "Home > Thermostat",
+      "headline": "How should the current temperature look on the thermostat ring?",
+      "notice": "Left: the room at 74°, close to where the handle is. Right: the room at 90°, at the very end of the dial. Check that nothing touches the minus/plus buttons, the handle or the big number.",
+      "risk": "Whichever you pick, the label can never sit on the minus or plus buttons, the round handles or the big number; if there is no room beside the line it moves to the middle of the dial.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Glass pill",
+          "crop": "home-a",
+          "summary": "A small rounded glass tag with a tiny thermometer and the number, like the page's other chips, hanging off the tip of the line.",
+          "risk": "It is the busiest of the three: a second little object on a ring that already has a handle. In a very small window it is the biggest label to fit."
+        },
+        {
+          "id": "b",
+          "label": "Just the number",
+          "crop": "home-b",
+          "summary": "No tag and no word 'Now': only the number, a little bigger and quieter, at the end of the line. The line itself says 'this is now'.",
+          "risk": "Quietest and cleanest, but nothing says it is the room's temperature. The first time, someone may mistake it for the set point."
+        },
+        {
+          "id": "c",
+          "label": "Flag on the line",
+          "crop": "home-c",
+          "summary": "The line reaches a little past the ring and ends in a small solid flag reading 'Now 74°', so line and label read as one thing.",
+          "risk": "Strongest and clearest, and the only one that keeps the word 'Now', but the longer line sticks out past the ring and the flag is the most eye-catching."
+        }
+      ]
+    },
+    {
+      "id": "NL-2",
+      "surface": "Home page",
+      "path": "Home > Thermostat",
+      "headline": "And on the big Climate-tab dial, which should the current temperature use?",
+      "notice": "Same three on the larger dial. Left: room at 74°. Right: room at 90°.",
+      "risk": "Whichever you pick, the label can never sit on the minus or plus buttons, the round handles or the big number; if there is no room beside the line it moves to the middle of the dial.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Glass pill",
+          "crop": "climate-a",
+          "summary": "A small rounded glass tag with a tiny thermometer and the number, like the page's other chips, hanging off the tip of the line.",
+          "risk": "It is the busiest of the three: a second little object on a ring that already has a handle. In a very small window it is the biggest label to fit."
+        },
+        {
+          "id": "b",
+          "label": "Just the number",
+          "crop": "climate-b",
+          "summary": "No tag and no word 'Now': only the number, a little bigger and quieter, at the end of the line. The line itself says 'this is now'.",
+          "risk": "Quietest and cleanest, but nothing says it is the room's temperature. The first time, someone may mistake it for the set point."
+        },
+        {
+          "id": "c",
+          "label": "Flag on the line",
+          "crop": "climate-c",
+          "summary": "The line reaches a little past the ring and ends in a small solid flag reading 'Now 74°', so line and label read as one thing.",
+          "risk": "Strongest and clearest, and the only one that keeps the word 'Now', but the longer line sticks out past the ring and the flag is the most eye-catching."
+        }
+      ]
+    }
+  ]
+}

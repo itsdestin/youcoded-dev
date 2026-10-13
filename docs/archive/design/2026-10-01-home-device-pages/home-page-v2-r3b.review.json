@@ -1,0 +1,22 @@
+{
+  "title": "The Home page, next version — round 3, the Now playing mark on the right",
+  "key": "home-page-v2-r3b",
+  "out": "home-page-v2-r3b.review.html",
+  "images": "images/home-page-v2-r3b.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-art-right",
+      "surface": "Pages",
+      "path": "Pages → Home, Now playing",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 27.5, 21.8, 52.0] },
+      "headline": "Your test: the app or music mark in Now playing sits on the right, so the text lines up flush left under the name.",
+      "changed": "Only the mark moved; everything else in Now playing is where it was.",
+      "notice": "Yes keeps it on the right; No puts it back on the left.",
+      "risk": "None: it is a two-line change either way."
+    }
+  ]
+}

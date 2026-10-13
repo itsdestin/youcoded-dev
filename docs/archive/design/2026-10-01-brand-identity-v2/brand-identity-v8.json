@@ -1,0 +1,259 @@
+{
+ "title": "YouCoded name and icons \u2014 round 8: clean lettering, the mascot lifted off the glass",
+ "key": "brand-identity-v8",
+ "out": "brand-identity-v8.html",
+ "images": "images/brand-identity-v8",
+ "runs": {
+  "today": "runs/v8"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "t1": [
+   "brand",
+   "t1",
+   "1200x700+0+0"
+  ],
+  "t2": [
+   "brand",
+   "t2",
+   "1200x700+0+0"
+  ],
+  "t3": [
+   "brand",
+   "t3",
+   "1200x700+0+0"
+  ],
+  "t4": [
+   "brand",
+   "t4",
+   "1200x700+0+0"
+  ],
+  "t5": [
+   "brand",
+   "t5",
+   "1200x700+0+0"
+  ],
+  "t6": [
+   "brand",
+   "t6",
+   "1200x700+0+0"
+  ],
+  "k1": [
+   "brand",
+   "k1",
+   "1200x700+0+0"
+  ],
+  "k2": [
+   "brand",
+   "k2",
+   "1200x700+0+0"
+  ],
+  "k3": [
+   "brand",
+   "k3",
+   "1200x700+0+0"
+  ],
+  "k4": [
+   "brand",
+   "k4",
+   "1200x700+0+0"
+  ],
+  "k5": [
+   "brand",
+   "k5",
+   "1200x700+0+0"
+  ],
+  "k6": [
+   "brand",
+   "k6",
+   "1200x700+0+0"
+  ],
+  "k7": [
+   "brand",
+   "k7",
+   "1200x700+0+0"
+  ],
+  "k8": [
+   "brand",
+   "k8",
+   "1200x700+0+0"
+  ],
+  "j1": [
+   "brand",
+   "j1",
+   "1200x700+0+0"
+  ],
+  "j2": [
+   "brand",
+   "j2",
+   "1200x700+0+0"
+  ],
+  "j3": [
+   "brand",
+   "j3",
+   "1200x700+0+0"
+  ],
+  "j4": [
+   "brand",
+   "j4",
+   "1200x700+0+0"
+  ],
+  "j5": [
+   "brand",
+   "j5",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "NAME",
+   "surface": "The name",
+   "path": "Website header (beside the icon), marketing, help pages",
+   "headline": "Which ways of writing \"youcoded\" do you like? Pick as many as you want.",
+   "notice": "Pure lettering this time \u2014 four rounds of mascot-inside-the-word didn't work, so the icon carries the mascot and sits beside the name in every header shown.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "t1",
+     "label": "T1 Site lettering, \"you\" in mascot colour",
+     "crop": "t1",
+     "summary": "DM Sans, tight lowercase, \"you\" in the purple-to-pink glass colour."
+    },
+    {
+     "id": "t2",
+     "label": "T2 Rounded, all in mascot colour",
+     "crop": "t2",
+     "summary": "Nunito Black with the whole word in the gradient and a faint glass sheen."
+    },
+    {
+     "id": "t3",
+     "label": "T3 Light and geometric",
+     "crop": "t3",
+     "summary": "Outfit SemiBold: airier, more \"modern product\"."
+    },
+    {
+     "id": "t4",
+     "label": "T4 Soft rounded",
+     "crop": "t4",
+     "summary": "M PLUS Rounded: soft round stroke ends, like the mascot's limbs."
+    },
+    {
+     "id": "t5",
+     "label": "T5 Tight and confident",
+     "crop": "t5",
+     "summary": "Plus Jakarta Sans, all one colour; the icon carries the personality."
+    },
+    {
+     "id": "t6",
+     "label": "T6 Glass letters",
+     "crop": "t6",
+     "summary": "The word in the site's frosted glass, for heroes; plain in headers and help pages."
+    }
+   ]
+  },
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, Mac dock, browser tab",
+   "headline": "Which app icons do you like? Pick as many as you want.",
+   "notice": "Variants of your G2, G6 and G5 picks, with the mascot lifted clearly off the background. True sizes, today's icon beside it, and three other themes.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "k1",
+     "label": "K1 Milk-glass mascot (G2)",
+     "crop": "k1",
+     "summary": "Near-opaque glass silhouette with eyes, bright rim and shadow."
+    },
+    {
+     "id": "k2",
+     "label": "K2 Layered glass (G2)",
+     "crop": "k2",
+     "summary": "Colour-glass mascot on a frosted pane; muddy below 32px."
+    },
+    {
+     "id": "k3",
+     "label": "K3 Night (G2)",
+     "crop": "k3",
+     "summary": "Wallpaper dimmed to night, the milk-glass mascot glowing in front."
+    },
+    {
+     "id": "k4",
+     "label": "K4 Just the face, milk-glass (G6)",
+     "crop": "k4",
+     "summary": "Body-shaped milk-glass panel and two eyes."
+    },
+    {
+     "id": "k5",
+     "label": "K5 Just the face, colour-glass (G6)",
+     "crop": "k5",
+     "summary": "Purple glass face on the site's frosted white tile."
+    },
+    {
+     "id": "k6",
+     "label": "K6 Stands up, with a face (G5)",
+     "crop": "k6",
+     "summary": "The tile is the body on glass legs; eyes instead of \"yc\"."
+    },
+    {
+     "id": "k7",
+     "label": "K7 Stands up, milk-glass \"yc\" (G5)",
+     "crop": "k7",
+     "summary": "White glass body, \"yc\" in the gradient, colour-glass legs."
+    },
+    {
+     "id": "k8",
+     "label": "K8 Standing mascot on a tile (G5)",
+     "crop": "k8",
+     "summary": "The standing tile-body on a frosted square, for square-only places."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which installer icons do you like? Pick as many as you want.",
+   "notice": "All in your H3's family: theme colour, a frosted glass band, the arrow, the mascot.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "j1",
+     "label": "J1 Standing on the band",
+     "crop": "j1",
+     "summary": "H3 refined, the mascot in rimmed colour-glass."
+    },
+    {
+     "id": "j2",
+     "label": "J2 Sinking into the glass",
+     "crop": "j2",
+     "summary": "Halfway down through the band, lower half softened by the glass."
+    },
+    {
+     "id": "j3",
+     "label": "J3 Peeking up from behind",
+     "crop": "j3",
+     "summary": "Only the top of the body and the eyes clear the band."
+    },
+    {
+     "id": "j4",
+     "label": "J4 The band is the arrow",
+     "crop": "j4",
+     "summary": "A frosted glass chevron, the mascot riding on top."
+    },
+    {
+     "id": "j5",
+     "label": "J5 Hanging from the glass",
+     "crop": "j5",
+     "summary": "The band at the top, the mascot hanging from it, about to drop in."
+    }
+   ]
+  }
+ ]
+}

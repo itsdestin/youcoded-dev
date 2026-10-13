@@ -1,0 +1,31 @@
+{
+ "deck": "finance-dashboard-review",
+ "started": "2026-10-06T00:14:00.713Z",
+ "submitted": "2026-10-06T00:17:21Z",
+ "cur": 2,
+ "answers": {
+  "B-page": {
+   "note": "we should use accounting format/() for negative numbers. i think we can make this feel much more polished/premium. look at the current homeassistant draft for a polished feeling example.",
+   "t": 1791245730751,
+   "v": "other",
+   "seconds": 90,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "L-try": {
+   "v": "yes",
+   "t": 1791245777113,
+   "seconds": 46,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-icon": {
+   "v": "yes",
+   "t": 1791245840211,
+   "note": "new icon. page builder skill needs better instructions to build a unique icon for each page that matches its purpose at-a-glance. users utilize these to tell pages apart. also, this page should have outlinks to relevant provider's payment portal or account sites and such where useful/relevant",
+   "seconds": 63,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

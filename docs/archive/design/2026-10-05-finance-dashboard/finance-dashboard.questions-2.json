@@ -1,0 +1,123 @@
+{
+  "title": "Money page, round 3 — the bigger choices",
+  "key": "finance-dashboard-questions-2",
+  "out": "finance-dashboard.questions-2.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-purchases",
+      "words": true,
+      "surface": "Money page",
+      "path": "Behind the charts, bills and payment links",
+      "headline": "Should the page start reading your purchases, and where should they be kept?",
+      "today": "The page only reads balances. You chose \"balances only\" in round 1, so nothing about individual purchases is fetched or saved.",
+      "problem": "Spending over time, finding your subscriptions, and linking every Netflix payment across accounts all need the list of purchases. Without it those features cannot exist.",
+      "proposal": "The app fetches your purchases through Plaid (already included in the free tier) and keeps them. Pick where.",
+      "options": [
+        {
+          "id": "computer-only",
+          "label": "On this computer only",
+          "summary": "Purchases stay in the app's own storage on this laptop, like your bank sign-ins. The page asks the app for totals and lists when it needs them.",
+          "pros": ["Purchases never sync to GitHub or anywhere else.", "No size limit, so years of history fit."],
+          "cons": ["Your other computer shows balances but not spending charts or payment history.", "A bit more building."],
+          "recommended": true
+        },
+        {
+          "id": "with-page",
+          "label": "With the page (syncs)",
+          "summary": "Purchases are saved in the page's data, next to your balances.",
+          "pros": ["Both computers see everything."],
+          "cons": ["Every purchase lands in your sync repo's history forever.", "Pages are capped at 1 MB, so only a few months fit."]
+        },
+        {
+          "id": "no-purchases",
+          "label": "Keep balances only",
+          "pros": ["Nothing new is stored."],
+          "cons": ["No spending charts, no subscription finding, no payment linking."]
+        }
+      ]
+    },
+    {
+      "id": "Q-charts",
+      "words": true,
+      "surface": "Money page",
+      "path": "The big chart at the top, with buttons to switch what it shows",
+      "headline": "Which charts should the top chart switch between?",
+      "today": "There is one chart: net worth over time.",
+      "problem": "Net worth alone hides what is actually moving: one account, your spending, or your debt going down.",
+      "proposal": "A row of buttons above the chart switches what it draws. Pick every chart you want; each keeps the same time buttons (1W, 1M, 3M, 6M, 1Y, All).",
+      "pick": "several",
+      "options": [
+        { "id": "net-worth", "label": "Net worth", "summary": "What you have minus what you owe.", "pros": ["The big picture."], "recommended": true },
+        { "id": "account", "label": "One account", "summary": "Pick any account and see its balance over time.", "pros": ["See a card climb or a loan shrink."] },
+        { "id": "spending", "label": "Monthly spending", "summary": "Each month's spending as bars, split by category (food, shopping, bills...).", "pros": ["Where the money goes, month to month."], "cons": ["Needs purchases (question above)."] },
+        { "id": "bills-subs", "label": "Bills & subscriptions", "summary": "What your repeating bills and subscriptions cost each month, and how that total changes.", "pros": ["Catches creeping subscription costs."], "cons": ["Needs purchases to be complete."] },
+        { "id": "debt", "label": "Debt paydown", "summary": "Total owed over time, with each card and loan as a band.", "pros": ["Progress on paying things off."] },
+        { "id": "cashflow", "label": "Money in vs out", "summary": "Each month: what came in (paychecks) and what went out.", "pros": ["Whether you are ahead each month."], "cons": ["Needs purchases."] }
+      ]
+    },
+    {
+      "id": "Q-types",
+      "words": true,
+      "surface": "Money page",
+      "path": "Add an account by hand, and every account card",
+      "headline": "Should each kind of account get its own fields and its own card layout?",
+      "today": "Every hand-added account uses the same form: balance, limit, interest, payment. An Affirm plan looks like a checking account.",
+      "problem": "An Affirm plan cares about payments left and the last payment date; a checking account cares about none of that. One form fits nothing well.",
+      "proposal": "Each kind asks only for what matters and its card shows only that: Checking/Savings (balance), Credit card (limit, interest, due date, minimum), Loan (rate, payment, payoff), Pay-later plan like Affirm or layaway (total, payments left, how often, last payment), Investment (value), and Something you own like a car (value, updated by hand). Yes builds it; No keeps one form."
+    },
+    {
+      "id": "Q-categories",
+      "words": true,
+      "surface": "Money page",
+      "path": "Bills, and the spending chart",
+      "headline": "Use this list of categories for bills and spending?",
+      "today": "Bills have no category; they are only a name and a company.",
+      "problem": "Without categories the page cannot total \"what do my subscriptions cost\" or split spending into meaningful slices.",
+      "proposal": "Every bill and payment gets one category, picked from: Housing, Utilities, Phone & internet, Insurance, Subscriptions, Transportation (car payment, gas), Loans, Credit cards, Pay-later plans, Health, Other. Yes uses this list; Don't know if you'd change it — say how in the note."
+    },
+    {
+      "id": "Q-link",
+      "words": true,
+      "surface": "Money page",
+      "path": "Opening a bill such as Netflix",
+      "headline": "How should a bill find its past payments across your accounts?",
+      "today": "A bill you add (Netflix) knows nothing about the payments your banks have seen.",
+      "problem": "You want to open Netflix and see every payment you've made for it, whichever card or account paid it.",
+      "proposal": "Once purchases are read, an opened bill lists every matching payment, with totals for the last month, year, and all time. Pick how matches are found.",
+      "options": [
+        {
+          "id": "auto-confirm",
+          "label": "Suggest, you confirm",
+          "summary": "The page finds payments whose name looks like the bill (\"NETFLIX.COM\") and shows them as suggestions; you tick the right ones once, and later ones that look the same link automatically.",
+          "pros": ["Nothing wrong slips in silently.", "Learns from your first yes."],
+          "cons": ["A minute of ticking the first time per bill."],
+          "recommended": true
+        },
+        {
+          "id": "auto",
+          "label": "Fully automatic",
+          "pros": ["Zero effort."],
+          "cons": ["Can mislink look-alikes (Apple Music vs App Store)."]
+        },
+        {
+          "id": "manual",
+          "label": "By hand only",
+          "pros": ["Exactly what you choose."],
+          "cons": ["Tedious for monthly bills."]
+        }
+      ]
+    },
+    {
+      "id": "Q-card",
+      "words": true,
+      "surface": "Money page",
+      "path": "Every account card, closed",
+      "headline": "Trim a closed account card to bank, name, balance and one useful line?",
+      "today": "A closed card shows the bank under the name, a \"Connected\" label, a link button, an arrow, and for cards a bar with \"% used · $ left\".",
+      "problem": "\"Connected\" repeats on every card and the link button and arrow crowd the row, so the useful part is harder to see.",
+      "proposal": "Closed card: bank name small on top, account name, balance, and one line that changes by kind — card: % used and next due; loan: next payment and payoff month; checking: change this month. \"Connected\" only appears when something is wrong, and the link moves inside the opened card. Yes trims it; No keeps today's card."
+    }
+  ]
+}

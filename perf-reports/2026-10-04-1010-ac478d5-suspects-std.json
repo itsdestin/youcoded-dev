@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "label": "suspects-std",
+  "sha": "ac478d5de9718690eedc0165fcc2202ad8b34de1",
+  "branch": "session/perf-zero-hitch-20261004",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-10-04T10:10:52.684Z",
+  "machine": {
+    "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "ramGb": 121,
+    "kernel": "7.1.3-2-cachyos",
+    "node": "v26.4.0",
+    "renderer": {
+      "source": "SystemInfo",
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+      "softwareRendering": true,
+      "accelerated": false,
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "unavailable_off",
+        "vulkan": "disabled_off",
+        "webgl": "unavailable_off",
+        "video_decode": "unavailable_off"
+      },
+      "devices": [
+        {
+          "vendorId": 4098,
+          "deviceId": 5510,
+          "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+          "active": null
+        }
+      ],
+      "error": null,
+      "attempts": []
+    }
+  },
+  "noise": {
+    "loadAvgBefore": 2.74,
+    "machineBusyPctBefore": 8.6,
+    "maxLoadAvgAccepted": 2.74,
+    "maxBusyPctAccepted": 8.6,
+    "discardedRuns": 36
+  },
+  "startup": {
+    "runs": [
+      {
+        "whenReady": 844,
+        "chores": {
+          "rotateLog": 6,
+          "prelude": 12,
+          "installHooks": 16,
+          "hookRelay": 1,
+          "legacyCleanup": 1,
+          "hookReconcile": 3,
+          "promptSuggestion": 0,
+          "retentionDefault": 0,
+          "symlinkCleanup": null,
+          "staleDownloads": 1,
+          "reconcileMcp": 0,
+          "announcements": 2,
+          "remoteServer": 21,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 3
+        },
+        "createWindow": 62,
+        "createWindowAt": 914,
+        "didFinishLoad": 1276,
+        "postWindowDone": 1036,
+        "documentStart": 955,
+        "modulesEvaluated": 1273,
+        "rootRender": 1274,
+        "firstPaint": 1091,
+        "firstContentfulPaint": 1375,
+        "appMounted": 1303,
+        "sessionsListed": 1305,
+        "blankWindowMs": 461,
+        "idlePssMb": 509.8,
+        "idleCpuPct": 0,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 2259886,
+            "type": "main",
+            "mb": 283.2
+          },
+          {
+            "pid": 2259888,
+            "type": "zygote",
+            "mb": 12.6
+          },
+          {
+            "pid": 2259889,
+            "type": "zygote",
+            "mb": 12.6
+          },
+          {
+            "pid": 2259913,
+            "type": "other",
+            "mb": 1.4
+          },
+          {
+            "pid": 2259952,
+            "type": "zygote",
+            "mb": 70.5
+          },
+          {
+            "pid": 2259957,
+            "type": "utility",
+            "mb": 30.3
+          },
+          {
+            "pid": 2260065,
+            "type": "zygote",
+            "mb": 99.3
+          }
+        ]
+      },
+      {
+        "whenReady": 829,
+        "chores": {
+          "rotateLog": 7,
+          "prelude": 21,
+          "installHooks": 15,
+          "hookRelay": 1,
+          "legacyCleanup": 1,
+          "hookReconcile": 3,
+          "promptSuggestion": 0,
+          "retentionDefault": 0,
+          "symlinkCleanup": null,
+          "staleDownloads": 0,
+          "reconcileMcp": 0,
+          "announcements": 2,
+          "remoteServer": 20,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 6
+        },
+        "createWindow": 61,
+        "createWindowAt": 908,
+        "didFinishLoad": 1265,
+        "postWindowDone": 1024,
+        "documentStart": 949,
+        "modulesEvaluated": 1261,
+        "rootRender": 1263,
+        "firstPaint": 1073,
+        "firstContentfulPaint": 1353,
+        "appMounted": 1290,
+        "sessionsListed": 1292,
+        "blankWindowMs": 445,
+        "idlePssMb": 505.1,
+        "idleCpuPct": 0.1,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 2262741,
+            "type": "main",
+            "mb": 282.5
+          },
+          {
+            "pid": 2262743,
+            "type": "zygote",
+            "mb": 12.8
+          },
+          {
+            "pid": 2262744,
+            "type": "zygote",
+            "mb": 12.8
+          },
+          {
+            "pid": 2262766,
+            "type": "other",
+            "mb": 1.4
+          },
+          {
+            "pid": 2262782,
+            "type": "zygote",
+            "mb": 70.2
+          },
+          {
+            "pid": 2262786,
+            "type": "utility",
+            "mb": 29.5
+          },
+          {
+            "pid": 2262895,
+            "type": "zygote",
+            "mb": 95.9
+          }
+        ]
+      },
+      {
+        "whenReady": 829,
+        "chores": {
+          "rotateLog": 6,
+          "prelude": 20,
+          "installHooks": 15,
+          "hookRelay": 2,
+          "legacyCleanup": 0,
+          "hookReconcile": 3,
+          "promptSuggestion": 0,
+          "retentionDefault": 0,
+          "symlinkCleanup": null,
+          "staleDownloads": 0,
+          "reconcileMcp": 1,
+          "announcements": 1,
+          "remoteServer": 21,
+          "ipcPrefs": 0,
+          "themeProtocol": 3,
+          "accounts": 5
+        },
+        "createWindow": 63,
+        "createWindowAt": 906,
+        "didFinishLoad": 1260,
+        "postWindowDone": 1033,
+        "documentStart": 947,
+        "modulesEvaluated": 1257,
+        "rootRender": 1259,
+        "firstPaint": 1087,
+        "firstContentfulPaint": 1355,
+        "appMounted": 1285,
+        "sessionsListed": 1287,
+        "blankWindowMs": 449,
+        "idlePssMb": 506,
+        "idleCpuPct": 0.1,
+        "errorLines": 0,
+        "breakdown": [
+          {
+            "pid": 2264329,
+            "type": "main",
+            "mb": 282.1
+          },
+          {
+            "pid": 2264341,
+            "type": "zygote",
+            "mb": 13.3
+          },
+          {
+            "pid": 2264342,
+            "type": "zygote",
+            "mb": 13.1
+          },
+          {
+            "pid": 2264357,
+            "type": "other",
+            "mb": 1.4
+          },
+          {
+            "pid": 2264374,
+            "type": "zygote",
+            "mb": 70.8
+          },
+          {
+            "pid": 2264378,
+            "type": "utility",
+            "mb": 29.9
+          },
+          {
+            "pid": 2264491,
+            "type": "zygote",
+            "mb": 95.4
+          }
+        ]
+      }
+    ],
+    "median": {
+      "whenReady": 829,
+      "chores": {
+        "rotateLog": 6,
+        "prelude": 20,
+        "installHooks": 15,
+        "hookRelay": 1,
+        "legacyCleanup": 1,
+        "hookReconcile": 3,
+        "promptSuggestion": 0,
+        "retentionDefault": 0,
+        "symlinkCleanup": null,
+        "staleDownloads": 0,
+        "reconcileMcp": 0,
+        "announcements": 2,
+        "remoteServer": 21,
+        "ipcPrefs": 0,
+        "themeProtocol": 3,
+        "accounts": 5
+      },
+      "createWindow": 62,
+      "createWindowAt": 908,
+      "didFinishLoad": 1265,
+      "postWindowDone": 1033,
+      "documentStart": 949,
+      "modulesEvaluated": 1261,
+      "rootRender": 1263,
+      "firstPaint": 1087,
+      "firstContentfulPaint": 1355,
+      "appMounted": 1290,
+      "sessionsListed": 1292,
+      "blankWindowMs": 449,
+      "idlePssMb": 506,
+      "idleCpuPct": 0.1,
+      "errorLines": 0
+    }
+  },
+  "idle": {
+    "pssMb": {
+      "median": 506,
+      "runs": [
+        509.8,
+        505.1,
+        506
+      ]
+    },
+    "cpuPct": {
+      "median": 0.1,
+      "runs": [
+        0,
+        0.1,
+        0.1
+      ]
+    },
+    "breakdownMedianRun": [
+      {
+        "pid": 2264329,
+        "type": "main",
+        "mb": 282.1
+      },
+      {
+        "pid": 2264341,
+        "type": "zygote",
+        "mb": 13.3
+      },
+      {
+        "pid": 2264342,
+        "type": "zygote",
+        "mb": 13.1
+      },
+      {
+        "pid": 2264357,
+        "type": "other",
+        "mb": 1.4
+      },
+      {
+        "pid": 2264374,
+        "type": "zygote",
+        "mb": 70.8
+      },
+      {
+        "pid": 2264378,
+        "type": "utility",
+        "mb": 29.9
+      },
+      {
+        "pid": 2264491,
+        "type": "zygote",
+        "mb": 95.4
+      }
+    ]
+  },
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "projects": null,
+  "terminal": null,
+  "nativeStream": null,
+  "nativeResume": null,
+  "scrollback": null,
+  "measures": {
+    "nativeResume": {
+      "scenario": "native-resume",
+      "question": "How long is the whole app unresponsive while a user opens the Resume list over a hundred native sessions, resumes a long one, pages it, finishes a reply and tears the tab into its own window?",
+      "configuration": [
+        "the fixture seeds 100 native session files under ~/.youcoded/sessions (fixture.mjs `nativeSessions`): 99 of three turns and one of 400 turns of realistic markdown, all bound to the perf-lab fake endpoint; the 600 decoy Claude Code transcripts are on disk as always",
+        "the Resume list opened first, with no session open, from the welcome screen's own Resume button, then scrolled to its end until it stops revealing rows",
+        "one fresh Claude Code session created before the tear-off, so the window survives it",
+        "the 400-turn native session resumed through the app's own youcoded:resume-session event with its binding (the model picker never opens)",
+        "each reply is 300 deltas at 150/s from fake-provider.mjs",
+        "the tear-off through window.claude.detach.openDetached, the app's own context-menu route",
+        "every repeat is its OWN boot with a freshly built fixture"
+      ],
+      "clocks": {
+        "browse.openMs": "the Resume button clicked -> the list heading and its first rows on screen",
+        "resume.paintedMs": "the resume event dispatched -> the resumed conversation's entries on screen and holding still for three frames",
+        "pageUp.ms": "the pane scrolled to its top -> the entry count grew (one more history page)",
+        "turn.turnMs": "native.send -> the Stop button gone",
+        "tearoff.ms": "detach.openDetached -> the session's pill gone from this window's strip",
+        "ipcSumOfSteps.totalStallMs": "the IPC ping probe (every 50 ms) summed over every step: time the main process was unavailable beyond the ping interval; pings proves it replied, readErrors says how many steps the sum is missing"
+      },
+      "blindTo": [
+        "the detached window's own rendering — the rig drives one CDP target, and reads the second window only as \"it exists\"",
+        "the Resume list's preview pane (rows are revealed, never previewed) and its search box",
+        "Claude Code resumes (scenario-history covers those), wallpaper themes, GPU paint (llvmpipe under Xvfb)",
+        "a native session over the 256 KB head-read window with its title-bearing message past it"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [
+      0,
+      0,
+      0
+    ],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "projectsBoot": null,
+    "terminalBoots": [],
+    "nativeStreamBoots": [],
+    "nativeResumeBoots": [],
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": "perf-lab: the machine never went idle (load < 4 and CPU < 10% over 3s) in 1195s of waiting — last reading load 6.52, 22.1% cpu; refusing to take official numbers on a busy machine.",
+  "incomplete": [
+    "native-resume: no runs were recorded",
+    "compare.mjs PRIMARY path \"nativeResume.median.ipcSumOfSteps.totalStallMs\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"nativeResume.median.browse.openMs\" is undefined — the keep/reject gate would be BLIND to this metric",
+    "compare.mjs PRIMARY path \"nativeResume.median.resume.paintedMs\" is undefined — the keep/reject gate would be BLIND to this metric"
+  ]
+}

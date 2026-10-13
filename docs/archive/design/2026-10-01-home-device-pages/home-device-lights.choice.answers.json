@@ -1,0 +1,24 @@
+{
+ "deck": "home-device-lights-choice",
+ "started": "2026-10-01T09:37:15.013Z",
+ "submitted": "2026-10-01T09:39:21Z",
+ "cur": 1,
+ "answers": {
+  "C-lights": {
+   "v": "pick",
+   "pick": "tile",
+   "t": 1790847549479,
+   "note": "still room for improvement. room-wirde light control should become an all on/all off button. colour button/selection. also want to update sound slider for the speaker in the same way. ",
+   "seconds": 114,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-key-button": {
+   "v": "yes",
+   "t": 1790847560972,
+   "seconds": 11,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

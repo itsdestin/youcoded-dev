@@ -1,0 +1,67 @@
+{
+ "deck": "one-core-merge-questions",
+ "started": "2026-10-05T01:21:43.772Z",
+ "submitted": "2026-10-05T01:24:01Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "skip",
+   "t": 1791163372566,
+   "note": "not enough users rn for this to matter. wasted effort",
+   "seconds": 23,
+   "theme": "golden-sunbreak"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1791163372566,
+   "seconds": 23,
+   "theme": "golden-sunbreak"
+  },
+  "Q-3": {
+   "v": "yes",
+   "t": 1791163372566,
+   "seconds": 23,
+   "theme": "golden-sunbreak"
+  },
+  "Q-4": {
+   "v": "picks",
+   "picks": [
+    "themes",
+    "theme-publish",
+    "marketplace",
+    "plugin-update"
+   ],
+   "t": 1791163394880,
+   "seconds": 22,
+   "theme": "golden-sunbreak"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "measure",
+   "t": 1791163440525,
+   "note": "are there any improvements/simplification that we know would make this better? ",
+   "seconds": 12,
+   "theme": "golden-sunbreak"
+  },
+  "Q-6": {
+   "v": "yes",
+   "t": 1791163440525,
+   "seconds": 12,
+   "theme": "golden-sunbreak"
+  },
+  "Q-7": {
+   "v": "yes",
+   "t": 1791163440525,
+   "seconds": 12,
+   "theme": "golden-sunbreak"
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1791163440525,
+   "seconds": 12,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

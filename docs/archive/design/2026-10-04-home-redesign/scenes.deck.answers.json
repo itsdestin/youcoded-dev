@@ -1,0 +1,24 @@
+{
+ "deck": "home-scenes-2",
+ "started": "2026-10-07T23:00:20.987Z",
+ "submitted": "2026-10-07T23:01:15Z",
+ "cur": 1,
+ "answers": {
+  "SC-1": {
+   "v": "pick",
+   "pick": "rows2",
+   "t": 1791414045045,
+   "seconds": 24,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SCL-1": {
+   "v": "pick",
+   "pick": "rows2",
+   "t": 1791414074962,
+   "seconds": 30,
+   "theme": "creme",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,49 @@
+id: remote-server-no-address-check-or-disconnect
+language: typescript
+severity: error
+message: >-
+  remote-server.ts and main/ipc/remote-admin.ts must not bring back the old
+  address check (`client.ip === '127.0.0.1'`) or the old disconnect handler
+  (`this.disconnectClient(payload.clientId…`), and remote-server.ts has no
+  `case 'remote:disconnect-client'`: that channel deliberately falls to the
+  `default:` answer, `{unsupported:true}`, which EVERY shim version rejects.
+  Behind a loopback bind every remote device arrives as 127.0.0.1, so an address
+  check passed for all of them and any paired phone could change the host
+  password.
+note: |
+  Split out of remote-admin-case-refuses on 2026-10-01 (one-core R3-8), whose
+  refusal checks moved to the channel-table entries in main/ipc/remote-admin.ts.
+  These two retired idioms (and the disconnect-client case) can come back in either
+  file, so they are banned in both.
+  The retired checks read the RAW file text; here, the two banned texts fire on the
+  innermost node holding them — comment, string or template piece, regex, or code
+  (a binary, call or member expression) — and, so no node kind is missed, the whole
+  file fires when the raw text holds one that no such node reports (e.g. inside a
+  `new`). A `case 'remote:disconnect-client'` fires on its own switch case.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/src/main/ipc/remote-admin.ts"
+  - "**/fixtures/remote-server-no-address-check-or-disconnect*.ts"
+utils:
+  retired-idiom-hit:
+    any:
+      - kind: string_fragment
+      - kind: template_string
+      - kind: string
+      - kind: comment
+      - kind: regex_pattern
+      - kind: binary_expression
+      - kind: call_expression
+      - kind: member_expression
+    regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
+    not:
+      has:
+        regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
+rule:
+  any:
+    - matches: retired-idiom-hit
+    - kind: program
+      regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
+      not: { has: { stopBy: end, matches: retired-idiom-hit } }
+    - kind: switch_case
+      has: { field: value, kind: string, regex: "^['\"]remote:disconnect-client['\"]$" }

@@ -59,3 +59,5 @@ If `run-dev.sh` doesn't fit (e.g., testing a built artifact), use `assembleRelea
 ## What to ask for
 
 If a verification genuinely requires live-app state (e.g., reproducing a bug only reproducible with Destin's exact session), ask Destin to capture the relevant artifact (screenshot, log, exported state) and work from that. Do not say "open DevTools and run X" against his live app.
+
+This session may itself run inside the live app (`ps` ancestry shows `/opt/YouCoded/youcoded`): asking Destin to quit it ends the session. For a change that needs the app closed, stage it to run after exit (a `systemd-run --user` script that waits for the process to go) and let him quit when convenient.

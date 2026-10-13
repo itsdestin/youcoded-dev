@@ -61,7 +61,7 @@ const transcript = path.join(dir, `${sessionId}.jsonl`);
 if (!fs.existsSync(transcript)) fs.writeFileSync(transcript, '');
 
 // The payload shape the app's HookRelay parses (hook-relay.ts:29-37) and its
-// SessionStart consumer reads (ipc-handlers.ts:2821-2905): session_id, the
+// SessionStart consumer reads (ipc-handlers.ts, the hookRelay SessionStart handler): session_id, the
 // hook_event_name that gates a remap, `source` (startup|resume|clear|compact —
 // resolveMappingAction in session-id-mapping.ts refuses a `startup` that would
 // repoint an already-mapped session), plus transcript_path and cwd, which are
@@ -122,6 +122,21 @@ function glyphFill(n) {
   return `\r\n${lines.join('\r\n')}\r\n[perf-lab] glyph fill complete: ${n} lines\r\n> `;
 }
 let lineBuf = '';
+let activeFlood = null;
+let inkFinal = null;      // set once the Ink-style animation finished (perf-lab-flood-modes)
+// WHY (2026-10-05, reload leg): `perf-lab-screen` makes this process behave like Claude Code at rest: a full screen of text with a
+// message box (column-0 rules, a "❯" row) that it REDRAWS whenever the terminal size changes, as Ink does. Every size change is
+// logged (time, columns, rows) so the rig can count how many repaint nudges the app asked for after a page reload, and every typed
+// line is logged so the rig can see whether a chat send reached the message box. Off until the command is typed: no other leg changes.
+let screenMode = false;
+const paintScreen = () => {
+  const rows = Array.from({ length: 18 }, (_, i) => `SCREEN LINE ${String(i + 1).padStart(2, '0')} reload-probe ${'.'.repeat(40)}`);
+  const rule = '─'.repeat(40);
+  try { fs.writeSync(1, Buffer.from('\x1b[2J\x1b[H' + rows.join('\r\n') + `\r\n${rule}\r\n❯ \r\n${rule}\r\n  ? for shortcuts`)); } catch { /* pty full */ }
+};
+const logEv = (o) => { try { fs.appendFileSync(path.join(home, '.claude', 'perf-terminal-emissions.jsonl'), JSON.stringify({ t: Date.now(), ...o }) + '\n'); } catch { /* fixture gone */ } };
+process.on('SIGWINCH', () => { if (screenMode) { logEv({ event: 'winch', cols: process.stdout.columns, rows: process.stdout.rows }); paintScreen(); } });
+process.on('SIGWINCH', () => { if (inkFinal) { try { fs.writeSync(1, Buffer.from('\x1b[5A\x1b[0J' + inkFinal(-1))); } catch { /* pty full */ } } });
 
 process.stdin.resume();
 process.stdin.on('data', (buf) => {
@@ -129,9 +144,11 @@ process.stdin.on('data', (buf) => {
   try { process.stdout.write(text); } catch { /* pipe closed */ }
   // The PTY runs in canonical mode, so a submitted line arrives ending in \n
   // (the tty maps the typed \r); split on either so raw mode would work too.
+  if (screenMode) logEv({ event: 'stdin', text });
   lineBuf += text;
   const parts = lineBuf.split(/\r\n|\r|\n/);
   lineBuf = parts.pop();
+  for (const line of parts) { if (line.trim() === 'perf-lab-screen') { screenMode = true; paintScreen(); logEv({ event: 'screen-painted', cols: process.stdout.columns, rows: process.stdout.rows }); } }
   for (const line of parts) {
     const m = GLYPH_CMD.exec(line.trim());
     if (m) {
@@ -150,8 +167,106 @@ process.stdin.on('data', (buf) => {
       } catch { /* pipe closed */ }
     }
   }
+  // WHY (2026-10-04): the glyph fill is one bounded write (<= ~1.8 MB). A noisy
+  // build log or `yes` is a SUSTAINED producer that only pauses when the pipe is
+  // full, which is the case the app has no brake for. `perf-lab-flood <mb>` emits
+  // that: 64 KB chunks, honouring stdout backpressure like a real program does.
+  for (const line of parts) {
+    const f = /^perf-lab-flood(-modes)? (\d{1,3})(?: (\d{1,3}))?$/.exec(line.trim());
+    if (!f) continue;
+    const modesRun = !!f[1];
+    const mb = Number(f[2]);
+    // Optional 2nd number = pace in MB/s (omitted = as fast as the pty accepts, the original behaviour).
+    const rate = f[3] ? Number(f[3]) : 0;
+    const row = `\x1b[32mbuild:\x1b[0m compiling module ${'x'.repeat(72)} ok\r\n`;
+    const chunk = row.repeat(Math.ceil(65536 / row.length));
+    // WHY writeSync and not stdout.write + 'drain': the first version stopped at
+    // 17.8 of 40 MB with the app idle — a 'drain' that never came, i.e. the
+    // producer stalled itself and the run blamed the app. A blocking write is also
+    // what `yes` or a compiler does. EAGAIN (non-blocking tty) retries a tick later.
+    let left = mb * 1024 * 1024, off = 0;
+    const buf = Buffer.from(chunk), tail = Buffer.from(`\r\n[perf-lab] flood complete: ${mb} MB\r\n> `);
+    let tailOff = 0;
+    // WHY producer-side log (2026-10-04): a 200 MB flood once stopped arriving at ~48 MB and
+    // the rig could not tell "the app stopped reading" from "this producer died silently"
+    // (the catch below used to swallow every non-EAGAIN error). Now every ~250 ms the
+    // producer appends how many bytes it has WRITTEN, how many EAGAIN retries it needed and
+    // any other error code, to the same fixture-only file the glyph command uses. A line
+    // that stops appearing while the process is alive = it is blocked in write().
+    const total = mb * 1024 * 1024;
+    const marker = path.join(home, '.claude', 'perf-terminal-emissions.jsonl');
+    const t0 = Date.now(); let lastLog = 0, eagain = 0, otherErr = null;
+    const log = (extra) => {
+      try { fs.appendFileSync(marker, JSON.stringify({ flood: mb, t: Date.now(), sinceStartMs: Date.now() - t0, written: total - left, eagain, ...extra }) + '\n'); } catch { /* fixture may be gone */ }
+    };
+    log({ event: 'start' });
+    // WHY (2026-10-04, terminal flow control): Ctrl+C during a flood must stop THIS producer the way it
+    // stops `yes` or a build, and leave the session alive, so the rig can time "Ctrl+C to the prompt".
+    // Everywhere else SIGINT still exits (below). `activeFlood` is read by the SIGINT handler.
+    // `perf-lab-flood-modes`: the terminal starts with bracketed paste OFF and the cursor VISIBLE, and a quarter of the way
+    // through the flood the program turns paste ON and hides the cursor — a state set once and never repeated, deep inside
+    // the part of a backlog that a cut throws away. The perf rig then checks the terminal still has those modes.
+    let modesInjected = !modesRun;
+    if (modesRun) { try { fs.writeSync(1, Buffer.from('\x1b[?2004l\x1b[?25h')); } catch { /* pty full: the rig reads the result either way */ } }
+    const state = { aborted: false, finished: false };
+    activeFlood = state;
+    // WHY time-sliced (2026-10-04, review round 3): a blocking write to a full pty waits for the app to drain it, and 64 blocking
+    // 64 KB writes in one turn of the event loop took ~8 s while a hidden terminal drained at 0.5 MB/s — stdin was not
+    // read for that long, so "type a command into the flooding terminal" looked like a stalled reply. It was this producer,
+    // not the app. A turn now ends after ~40 ms of writing, so stdin is read between slices (like a real interactive program).
+    const pump = () => {
+      if (state.aborted) return;
+      const sliceStart = Date.now();
+      try {
+        for (let i = 0; i < 64 && left > 0 && Date.now() - sliceStart < 40; i++) {
+          if (!modesInjected && (total - left) >= total / 4) { fs.writeSync(1, Buffer.from('\x1b[?2004h\x1b[?25l')); modesInjected = true; }
+          if (rate > 0 && (total - left) > rate * 1048576 * ((Date.now() - t0) / 1000 + 0.02)) return void setTimeout(pump, 5);
+          const w = fs.writeSync(1, buf, off, Math.min(buf.length - off, left));
+          off = (off + w) % buf.length; left -= w;
+          if (Date.now() - lastLog >= 250) { lastLog = Date.now(); log({ event: 'progress' }); }
+        }
+        if (left > 0) return void setImmediate(pump);
+        if (modesRun) {
+          // An Ink-style animation as the LAST output: a 5-line frame redrawn in place with RELATIVE cursor moves
+          // (up 5, erase to end of screen), ~5 MB of frames, so the part of the backlog a cut keeps begins in the middle
+          // of it. The final frame is redrawn on SIGWINCH (the app's repaint nudge) the way Ink does.
+          const frame = n => Array.from({ length: 5 }, (_, k) => `\x1b[36m| FRAME ${n === -1 ? 'FINAL' : n} line ${k + 1} ${'-'.repeat(30)}\x1b[0m\r\n`).join('');
+          let out = `\r\n[perf-lab] flood complete: ${mb} MB\r\n` + frame(0);
+          const flushOut = () => { const b = Buffer.from(out); let o = 0; while (o < b.length) o += fs.writeSync(1, b, o, b.length - o); out = ''; };
+          for (let n = 1; n <= 20000; n++) { out += '\x1b[5A\x1b[0J' + frame(n); if (out.length > 60000) flushOut(); }
+          out += '\x1b[5A\x1b[0J' + frame(-1); flushOut();
+          inkFinal = frame;
+        } else {
+          while (tailOff < tail.length) tailOff += fs.writeSync(1, tail, tailOff, tail.length - tailOff);
+        }
+        state.finished = true;
+        log({ event: 'done' });
+      } catch (e) {
+        if (e && e.code === 'EAGAIN') {
+          eagain++;
+          if (Date.now() - lastLog >= 250) { lastLog = Date.now(); log({ event: 'progress' }); }
+          return void setTimeout(pump, 1);
+        }
+        // Behaviour unchanged (the pump still stops), but it is no longer silent.
+        otherErr = e && (e.code || String(e));
+        log({ event: 'error', code: otherErr, message: String(e && e.message) });
+      }
+    };
+    pump();
+  }
   // A line that never ends must not grow without bound.
   if (lineBuf.length > 4096) lineBuf = lineBuf.slice(-256);
 });
-for (const sig of ['SIGTERM', 'SIGHUP', 'SIGINT']) process.on(sig, () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
+process.on('SIGHUP', () => process.exit(0));
+process.on('SIGINT', () => {
+  if (activeFlood && !activeFlood.finished && !activeFlood.aborted) {
+    activeFlood.aborted = true;
+    // Queued write: if the pty is full of the flood just stopped it waits its turn instead of spinning.
+    try { process.stdout.write('^C\r\n[perf-lab] flood interrupted\r\n> '); } catch { /* pipe closed */ }
+    try { fs.appendFileSync(path.join(home, '.claude', 'perf-terminal-emissions.jsonl'), JSON.stringify({ event: 'interrupted', t: Date.now() }) + '\n'); } catch { /* fixture gone */ }
+    return;
+  }
+  process.exit(0);
+});
 setInterval(() => {}, 1 << 30);   // stay alive until killed

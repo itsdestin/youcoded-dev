@@ -1,0 +1,65 @@
+{
+ "deck": "home-redesign-r2b",
+ "started": "2026-10-05T06:05:08.465Z",
+ "submitted": "2026-10-05T06:12:03Z",
+ "cur": 6,
+ "answers": {
+  "TV2-1": {
+   "note": "i want round. but these are still not right. i just want the text/arrows to look a bit nicer/themed, and hover animations to feel a bit better. this shouldn't be too hard.",
+   "t": 1791180364712,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 56,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "TV2-2": {
+   "v": "yes",
+   "t": 1791180369972,
+   "seconds": 5,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "TV2-3": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1791180414086,
+   "seconds": 44,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT2B-1": {
+   "note": "torn between the style of a and shape of b. try a few more recombinations.",
+   "t": 1791180482418,
+   "v": "other",
+   "seconds": 68,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LV2B-1": {
+   "v": "pick",
+   "t": 1791180531746,
+   "pick": "tiles",
+   "seconds": 49,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "M2-1": {
+   "note": "try putting the play/pause/skip/rewind buttons in the right side of the youtube/spotify media card, so the volume sliders can be full width. make the slider under the soundbar in a glass card with destins room soundabr above it, kinda how the grouped sliders look",
+   "t": 1791180700984,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 169,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "M2-2": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1791180722237,
+   "seconds": 21,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

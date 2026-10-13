@@ -1,0 +1,373 @@
+{
+ "title": "YouCoded brand \u2014 round 20: tagline, spacing, initials, theme colours, installer",
+ "key": "brand-identity-v20",
+ "out": "brand-identity-v20.html",
+ "images": "images/brand-identity-v20",
+ "runs": {
+  "today": "runs/v20"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "taglines": [
+   "brand",
+   "taglines",
+   "1200x700+0+0"
+  ],
+  "spacing": [
+   "brand",
+   "spacing",
+   "1200x700+0+0"
+  ],
+  "initials": [
+   "brand",
+   "initials",
+   "1200x700+0+0"
+  ],
+  "tcol": [
+   "brand",
+   "tcol",
+   "1200x700+0+0"
+  ],
+  "inst": [
+   "brand",
+   "inst",
+   "1200x700+0+0"
+  ],
+  "ta": [
+   "brand",
+   "taglines",
+   "374x303+24+58"
+  ],
+  "tb": [
+   "brand",
+   "taglines",
+   "374x303+412+58"
+  ],
+  "tc": [
+   "brand",
+   "taglines",
+   "374x303+800+58"
+  ],
+  "td": [
+   "brand",
+   "taglines",
+   "374x303+24+375"
+  ],
+  "te": [
+   "brand",
+   "taglines",
+   "374x303+412+375"
+  ],
+  "tf": [
+   "brand",
+   "taglines",
+   "374x303+800+375"
+  ],
+  "sa": [
+   "brand",
+   "spacing",
+   "374x303+24+58"
+  ],
+  "sb": [
+   "brand",
+   "spacing",
+   "374x303+412+58"
+  ],
+  "sc": [
+   "brand",
+   "spacing",
+   "374x303+800+58"
+  ],
+  "sd": [
+   "brand",
+   "spacing",
+   "374x303+24+375"
+  ],
+  "se": [
+   "brand",
+   "spacing",
+   "374x303+412+375"
+  ],
+  "sf": [
+   "brand",
+   "spacing",
+   "374x303+800+375"
+  ],
+  "y1": [
+   "brand",
+   "initials",
+   "277x616+24+62"
+  ],
+  "y2": [
+   "brand",
+   "initials",
+   "277x616+315+62"
+  ],
+  "y3": [
+   "brand",
+   "initials",
+   "277x616+606+62"
+  ],
+  "y4": [
+   "brand",
+   "initials",
+   "277x616+897+62"
+  ],
+  "i0": [
+   "brand",
+   "inst",
+   "182x616+24+62"
+  ],
+  "ia": [
+   "brand",
+   "inst",
+   "182x616+218+62"
+  ],
+  "ib": [
+   "brand",
+   "inst",
+   "182x616+412+62"
+  ],
+  "ic": [
+   "brand",
+   "inst",
+   "182x616+606+62"
+  ],
+  "id": [
+   "brand",
+   "inst",
+   "182x616+800+62"
+  ],
+  "ie": [
+   "brand",
+   "inst",
+   "182x616+994+62"
+  ]
+ },
+ "steps": [
+  {
+   "id": "TAGLINE",
+   "surface": "The tagline",
+   "path": "Stacked lockup, footer, setup screen",
+   "headline": "Which tagline style?",
+   "notice": "Six styles of \"agents for everyone\" under the stacked lockup.",
+   "variants": [
+    {
+     "id": "ta",
+     "label": "A Today",
+     "crop": "ta",
+     "summary": "Mono capitals, very wide spacing."
+    },
+    {
+     "id": "tb",
+     "label": "B Mono, tighter",
+     "crop": "tb",
+     "summary": "Smaller, much less spacing."
+    },
+    {
+     "id": "tc",
+     "label": "C Outfit, lowercase",
+     "crop": "tc",
+     "summary": "The name's font, soft grey."
+    },
+    {
+     "id": "td",
+     "label": "D Outfit, sentence case",
+     "crop": "td",
+     "summary": "\"Agents for everyone\"."
+    },
+    {
+     "id": "te",
+     "label": "E In the name's colours",
+     "crop": "te",
+     "summary": "Purple-to-pink."
+    },
+    {
+     "id": "tf",
+     "label": "F Spaced lowercase, light",
+     "crop": "tf",
+     "summary": "Thin, gently spaced."
+    }
+   ]
+  },
+  {
+   "id": "SPACING",
+   "surface": "Icon + name",
+   "path": "Every side-by-side lockup, the site header",
+   "headline": "Which spacing between icon and name looks right?",
+   "notice": "Three gaps; bottom row raises the name slightly to sit on the icon's optical centre. Each shown big and at header size.",
+   "variants": [
+    {
+     "id": "sa",
+     "label": "A Today",
+     "crop": "sa",
+     "summary": "Gap a quarter of the icon."
+    },
+    {
+     "id": "sb",
+     "label": "B Narrower",
+     "crop": "sb",
+     "summary": "B Narrower"
+    },
+    {
+     "id": "sc",
+     "label": "C Narrowest",
+     "crop": "sc",
+     "summary": "C Narrowest"
+    },
+    {
+     "id": "sd",
+     "label": "D Today, raised",
+     "crop": "sd",
+     "summary": "D Today, raised"
+    },
+    {
+     "id": "se",
+     "label": "E Narrower, raised",
+     "crop": "se",
+     "summary": "E Narrower, raised"
+    },
+    {
+     "id": "sf",
+     "label": "F Narrowest, raised",
+     "crop": "sf",
+     "summary": "F Narrowest, raised"
+    }
+   ]
+  },
+  {
+   "id": "INITIALS",
+   "surface": "\"yc\"",
+   "path": "Favicon, profile pictures, small badges",
+   "headline": "Which initials style?",
+   "notice": "A, B and D reuse the app icon's tile and face panel; C is today's style for comparison.",
+   "variants": [
+    {
+     "id": "y1",
+     "label": "A White \"yc\" on the panel",
+     "crop": "y1",
+     "summary": "A White \"yc\" on the panel"
+    },
+    {
+     "id": "y2",
+     "label": "B \"yc\" in the eyes' colour",
+     "crop": "y2",
+     "summary": "B \"yc\" in the eyes' colour"
+    },
+    {
+     "id": "y3",
+     "label": "C Today's (no panel)",
+     "crop": "y3",
+     "summary": "C Today's (no panel)"
+    },
+    {
+     "id": "y4",
+     "label": "D B on grey",
+     "crop": "y4",
+     "summary": "D B on grey"
+    }
+   ]
+  },
+  {
+   "id": "THEMECOL",
+   "surface": "The name in other themes",
+   "path": "Header and logo when a theme is on",
+   "headline": "Which way should the name take each theme's colours?",
+   "notice": "Shown beside each theme's icon. B uses the mascot's own rim and eye colours; C the face's colours, toned down.",
+   "crop": "tcol",
+   "options": [
+    {
+     "id": "ca",
+     "label": "A Today (theme accent)",
+     "pros": [
+      "Brightest; matches each theme's buttons."
+     ],
+     "cons": [
+      "Clashes with some mascots (Golden, Devil's Garden)."
+     ]
+    },
+    {
+     "id": "cb",
+     "label": "B From the mascot's rim and eyes",
+     "pros": [
+      "Same colour as the icon's outline, so they read as one.",
+      "Strong enough to read as text."
+     ],
+     "cons": [
+      "Darker and quieter than today."
+     ]
+    },
+    {
+     "id": "cc",
+     "label": "C From the face, toned down",
+     "pros": [
+      "Echoes the icon's inner colours."
+     ],
+     "cons": [
+      "Some themes go muddy (Golden's olive, Meadow's teal)."
+     ]
+    }
+   ],
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The downloaded file",
+   "headline": "Which installer feels right next to the rest?",
+   "notice": "Same face (with its smile) and box idea; calmer backgrounds and boxes.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "i0",
+     "label": "Today (as picked)",
+     "crop": "i0",
+     "summary": "Colourful background."
+    },
+    {
+     "id": "ia",
+     "label": "A White, lavender box",
+     "crop": "ia",
+     "summary": "A White, lavender box"
+    },
+    {
+     "id": "ib",
+     "label": "B Grey glass",
+     "crop": "ib",
+     "summary": "B Grey glass"
+    },
+    {
+     "id": "ic",
+     "label": "C Softened picture",
+     "crop": "ic",
+     "summary": "C Softened picture"
+    },
+    {
+     "id": "id",
+     "label": "D White, pale colour fade",
+     "crop": "id",
+     "summary": "D White, pale colour fade"
+    },
+    {
+     "id": "ie",
+     "label": "E White, milk-glass box",
+     "crop": "ie",
+     "summary": "E White, milk-glass box"
+    }
+   ]
+  }
+ ]
+}

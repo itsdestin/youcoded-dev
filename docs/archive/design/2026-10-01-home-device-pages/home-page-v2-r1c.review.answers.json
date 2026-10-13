@@ -1,0 +1,16 @@
+{
+ "deck": "home-page-v2-r1c",
+ "started": "2026-10-01T11:54:27.353Z",
+ "submitted": "2026-10-01T11:55:05Z",
+ "cur": 0,
+ "answers": {
+  "S-inside": {
+   "note": "looks janky still. harsh line separating the top part of the container from the rest",
+   "t": 1790855704666,
+   "v": "other",
+   "seconds": 37,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

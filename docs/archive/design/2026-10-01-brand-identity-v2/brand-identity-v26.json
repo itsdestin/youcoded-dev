@@ -1,0 +1,126 @@
+{
+ "title": "YouCoded brand \u2014 the last two spacing calls",
+ "key": "brand-identity-v26",
+ "out": "brand-identity-v26.html",
+ "images": "images/brand-identity-v26",
+ "runs": {
+  "today": "runs/v22"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "ha": [
+   "brand",
+   "r26",
+   "277x303+24+58"
+  ],
+  "hb": [
+   "brand",
+   "r26",
+   "277x303+315+58"
+  ],
+  "hc": [
+   "brand",
+   "r26",
+   "277x303+606+58"
+  ],
+  "hd": [
+   "brand",
+   "r26",
+   "277x303+897+58"
+  ],
+  "sa": [
+   "brand",
+   "r26",
+   "277x303+24+375"
+  ],
+  "sb": [
+   "brand",
+   "r26",
+   "277x303+315+375"
+  ],
+  "sc": [
+   "brand",
+   "r26",
+   "277x303+606+375"
+  ],
+  "sd": [
+   "brand",
+   "r26",
+   "277x303+897+375"
+  ]
+ },
+ "steps": [
+  {
+   "id": "HORIZ",
+   "surface": "Icon + name + tagline, side by side",
+   "path": "Headers, footer",
+   "headline": "How low should the text sit next to the icon?",
+   "notice": "Tagline tucked between last round's B and C (closer to C). Only the whole text block's height changes.",
+   "variants": [
+    {
+     "id": "ha",
+     "label": "A Level as before",
+     "crop": "ha",
+     "summary": "Same height as last round."
+    },
+    {
+     "id": "hb",
+     "label": "B 2px lower",
+     "crop": "hb",
+     "summary": "A little lower."
+    },
+    {
+     "id": "hc",
+     "label": "C 4px lower",
+     "crop": "hc",
+     "summary": "Lower."
+    },
+    {
+     "id": "hd",
+     "label": "D 6px lower",
+     "crop": "hd",
+     "summary": "Lowest."
+    }
+   ]
+  },
+  {
+   "id": "STACK",
+   "surface": "Stacked lockup",
+   "path": "Setup screen, store, social",
+   "headline": "How close should the tagline sit under the name?",
+   "notice": "Icon-to-name gap kept as A. Only the gap between the name and the tagline changes.",
+   "variants": [
+    {
+     "id": "sa",
+     "label": "A Before",
+     "crop": "sa",
+     "summary": "Last round's gap."
+    },
+    {
+     "id": "sb",
+     "label": "B Tighter",
+     "crop": "sb",
+     "summary": "A little closer."
+    },
+    {
+     "id": "sc",
+     "label": "C Tighter still",
+     "crop": "sc",
+     "summary": "Closer."
+    },
+    {
+     "id": "sd",
+     "label": "D Tightest",
+     "crop": "sd",
+     "summary": "Just under the name."
+    }
+   ]
+  }
+ ]
+}

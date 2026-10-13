@@ -1,0 +1,419 @@
+{
+ "title": "YouCoded's look, round 2: four complete directions",
+ "key": "brand-identity-r2",
+ "out": "brand-identity.r2.html",
+ "images": "images/brand-identity.r2",
+ "runs": {
+  "today": "runs/r2"
+ },
+ "labels": {
+  "today": "Concept"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "built-poster": [
+   "brand",
+   "built-poster",
+   "1440x900+0+0"
+  ],
+  "bubble-poster": [
+   "brand",
+   "bubble-poster",
+   "1440x900+0+0"
+  ],
+  "sticker-poster": [
+   "brand",
+   "sticker-poster",
+   "1440x900+0+0"
+  ],
+  "pixel-poster": [
+   "brand",
+   "pixel-poster",
+   "1440x900+0+0"
+  ],
+  "built-icon": [
+   "brand",
+   "built-icon",
+   "1440x900+0+0"
+  ],
+  "bubble-icon": [
+   "brand",
+   "bubble-icon",
+   "1440x900+0+0"
+  ],
+  "sticker-icon": [
+   "brand",
+   "sticker-icon",
+   "1440x900+0+0"
+  ],
+  "pixel-icon": [
+   "brand",
+   "pixel-icon",
+   "1440x900+0+0"
+  ],
+  "built-tray": [
+   "brand",
+   "built-tray",
+   "1440x900+0+0"
+  ],
+  "bubble-tray": [
+   "brand",
+   "bubble-tray",
+   "1440x900+0+0"
+  ],
+  "sticker-tray": [
+   "brand",
+   "sticker-tray",
+   "1440x900+0+0"
+  ],
+  "pixel-tray": [
+   "brand",
+   "pixel-tray",
+   "1440x900+0+0"
+  ],
+  "built-hero": [
+   "brand",
+   "built-hero",
+   "1440x900+0+0"
+  ],
+  "bubble-hero": [
+   "brand",
+   "bubble-hero",
+   "1440x900+0+0"
+  ],
+  "sticker-hero": [
+   "brand",
+   "sticker-hero",
+   "1440x900+0+0"
+  ],
+  "pixel-hero": [
+   "brand",
+   "pixel-hero",
+   "1440x900+0+0"
+  ],
+  "built-docs": [
+   "brand",
+   "built-docs",
+   "1440x900+0+0"
+  ],
+  "bubble-docs": [
+   "brand",
+   "bubble-docs",
+   "1440x900+0+0"
+  ],
+  "sticker-docs": [
+   "brand",
+   "sticker-docs",
+   "1440x900+0+0"
+  ],
+  "pixel-docs": [
+   "brand",
+   "pixel-docs",
+   "1440x900+0+0"
+  ],
+  "built-themes": [
+   "brand",
+   "built-themes",
+   "1440x900+0+0"
+  ],
+  "bubble-themes": [
+   "brand",
+   "bubble-themes",
+   "1440x900+0+0"
+  ],
+  "sticker-themes": [
+   "brand",
+   "sticker-themes",
+   "1440x900+0+0"
+  ],
+  "pixel-themes": [
+   "brand",
+   "pixel-themes",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R2-1",
+   "surface": "The whole brand",
+   "path": "Each direction on one page",
+   "headline": "Which directions are worth taking further? Pick any that excite you.",
+   "notice": "This is the shortlist. Everything after this compares the same piece across all four, so you can also mix: one direction's tray icon with another's website, for example.",
+   "variants": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "crop": "built-poster",
+     "summary": "Everything is made from one rounded block. Five blocks make the mascot, and each block stands for part of the product: head = the AI model, arms = skills, feet = where it runs, colour = your theme. The same blocks spell the name.",
+     "risk": "The block lettering is techy; a few letters (y, d) look unusual and some people will find it cold."
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "crop": "bubble-poster",
+     "summary": "You build YouCoded by talking to it, so its head is a speech bubble. Its face shows what it's doing: eyes when listening, dots when working, a tick when done. Warm serif headlines.",
+     "risk": "Speech bubbles are everywhere (Messenger, Discord), so at a glance it can read as a chat app."
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "crop": "sticker-poster",
+     "summary": "Yours like the stickers on your laptop. The logo is a die-cut sticker of the waving mascot you picked in September; every theme is another sticker to collect.",
+     "risk": "Young and loud. Next to serious tools some people will read it as a kids' app."
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "crop": "pixel-poster",
+     "summary": "Your assistant is a character you pick, like a game's character select. Themes are skins. Drawn on a pixel grid, so it's sharp at every size.",
+     "risk": "Reads as gaming or retro, which works against 'for everyone'."
+    }
+   ],
+   "pick": "several"
+  },
+  {
+   "id": "R2-2",
+   "surface": "App and installer icon",
+   "path": "Taskbar, Mac Dock, Downloads folder",
+   "headline": "Which app icon and installer would you want on your taskbar?",
+   "notice": "The installer is the file people download first, so it's their first look at the brand.",
+   "variants": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "crop": "built-icon",
+     "risk": "At 16 and 24 pixels it's a separate simplified drawing, so the taskbar icon differs slightly from the Dock's.",
+     "summary": "Cream mascot with tangerine arms and feet on a purple tile. Installer: a flat-pack cardboard box."
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "crop": "bubble-icon",
+     "risk": "In a busy taskbar it may read as 'a messaging app' before 'an assistant'.",
+     "summary": "White speech-bubble face on a purple tile. Installer: the same icon with a small mint download bubble."
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "crop": "sticker-icon",
+     "risk": "Yellow, not purple: your first-glance colour changes. The peeling corner may look odd among the Mac's flat icons.",
+     "summary": "Purple waving mascot stuck on a yellow sticker with a peeling corner. Installer: the sticker half-peeled off its sheet."
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "crop": "pixel-icon",
+     "risk": "The dark tile fades into a dark taskbar or Dock; only the purple mascot stands out.",
+     "summary": "Pixel-art mascot on a dark pixel tile. Installer: a game cartridge with the mascot on its label."
+    }
+   ]
+  },
+  {
+   "id": "R2-3",
+   "surface": "Tray icon",
+   "path": "Next to the clock",
+   "headline": "Which tray icon works best next to the clock?",
+   "notice": "The app has no tray icon today; your earlier screenshot was its taskbar button. Whichever wins gets built as a new feature.",
+   "variants": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "crop": "built-tray",
+     "risk": "The coloured 'needs you' dot can't be shown on a Mac, where tray icons must be one colour.",
+     "summary": "Just the head, white or black to match the bar. Eyes glance left and right while working."
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "crop": "bubble-tray",
+     "risk": "The 'done' tick face is rough at 16 pixels.",
+     "summary": "The bubble face, white or black. Eyes when idle, dots while working, a tick when done."
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "crop": "sticker-tray",
+     "risk": "Boxy at this size: reads as 'little robot waving' more than 'sticker'.",
+     "summary": "The waving mascot as a one-colour silhouette. A coral dot means it needs you."
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "crop": "pixel-tray",
+     "summary": "The full mascot drawn pixel by pixel, white or black. It blinks and bobs while working."
+    }
+   ]
+  },
+  {
+   "id": "R2-4",
+   "surface": "Website",
+   "path": "The first screen of the website",
+   "headline": "Which website first screen makes you want to download it?",
+   "notice": "Shown with today's headline and sub-line wherever the direction didn't write its own.",
+   "variants": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "crop": "built-hero",
+     "risk": "'Parts' and 'assembly' talk can feel aimed at engineers or toy collectors.",
+     "summary": "'Built by you.' beside a pulled-apart mascot diagram that labels each part as a feature."
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "crop": "bubble-hero",
+     "summary": "Soft serif headline beside a short chat: planning a week around exams."
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "crop": "sticker-hero",
+     "risk": "The busiest of the four: lots competing for your eye.",
+     "summary": "'yours.' as a coral sticker, beside a laptop lid covered in theme stickers."
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "crop": "pixel-hero",
+     "risk": "Dark and game-like: office users may not see a work tool.",
+     "summary": "A game's character-select screen: pick your mascot and skin."
+    }
+   ]
+  },
+  {
+   "id": "R2-5",
+   "surface": "Help and privacy pages",
+   "path": "Help \u203a Privacy & Data",
+   "headline": "Which help page feels most trustworthy while still being us?",
+   "notice": "These are the 'clinical' pages: privacy, setup and technical help. They must calm down without looking like a different company.",
+   "variants": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "crop": "built-docs",
+     "summary": "Plain page with a short at-a-glance table at the top."
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "crop": "bubble-docs",
+     "summary": "Serif headings, an 'In short' box and a two-step diagram of where messages go."
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "crop": "sticker-docs",
+     "risk": "The calm page and the loud homepage can feel like two different companies.",
+     "summary": "Calm page with a 'short version' note and one small sticker in the margin."
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "crop": "pixel-docs",
+     "risk": "The pixel name in the header is harder to read than normal type.",
+     "summary": "Paper-white page; pixel touches only in the logo and small labels."
+    }
+   ]
+  },
+  {
+   "id": "R2-6",
+   "surface": "Themes",
+   "path": "How the logo changes with a theme",
+   "headline": "Which one keeps 'make it yours' while still being clearly YouCoded?",
+   "notice": "Every direction writes one rule for theme makers: what must stay, what's free to change.",
+   "variants": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "crop": "built-themes",
+     "summary": "Themes as toy packs. Always the same: five blocks, the gaps, the name. Free: colour, face, finish, one extra."
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "crop": "bubble-themes",
+     "risk": "Bubble shape is simple, so themes lean on colour and texture more than costume.",
+     "summary": "Six outfits. Always the same: the bubble, its tail-foot, a face up top. Free: everything else."
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "crop": "sticker-themes",
+     "summary": "A sheet of theme stickers. Always the same: square head, two feet, the wave, the white edge."
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "crop": "pixel-themes",
+     "risk": "Every theme has to be drawn as pixel art, a skill fewer theme makers have.",
+     "summary": "A collection screen of skins. Always the same: the outline and where the eyes sit."
+    }
+   ]
+  },
+  {
+   "id": "R2-7",
+   "words": true,
+   "surface": "The whole brand",
+   "path": "Website, app, help pages",
+   "headline": "Which direction should round 3 develop into the finished brand?",
+   "today": "YouCoded uses three different mascot drawings, several ways of writing its name, and a blurry, low-contrast app icon.",
+   "problem": "Without one direction, every new page, icon and post invents its own look, and people can't recognise YouCoded from one place to the next.",
+   "proposal": "Round 3 takes one direction (or a mix you name) and finishes it: final logo files, icon sets for Windows, Mac, Linux and Android, website and help-page styles, and a one-page rulebook for theme makers.",
+   "options": [
+    {
+     "id": "built",
+     "label": "Built by you",
+     "recommended": true,
+     "pros": [
+      "The mascot's parts explain the product: you pick the model, skills, look",
+      "'Swap any part, still YouCoded' is exactly the rule themes need",
+      "Keeps the purple and the mascot you already have"
+     ],
+     "cons": [
+      "Block lettering can feel techy or cold",
+      "Needs gentler words than 'parts' and 'assembly' for everyday users"
+     ]
+    },
+    {
+     "id": "bubble",
+     "label": "Say it",
+     "pros": [
+      "Warmest and most grown-up; help pages feel trustworthy",
+      "Clearest tray icon, and its face shows what it's doing"
+     ],
+     "cons": [
+      "Can be mistaken for a chat app",
+      "Replaces the robot mascot people know"
+     ]
+    },
+    {
+     "id": "sticker",
+     "label": "Stick it anywhere",
+     "pros": [
+      "Builds on the waving, sticker-style mascot you chose in September",
+      "Most joyful; themes become collectibles"
+     ],
+     "cons": [
+      "Can read as a kids' product",
+      "Icon turns yellow instead of purple"
+     ]
+    },
+    {
+     "id": "pixel",
+     "label": "Choose your player",
+     "pros": [
+      "Sharpest small icons by design",
+      "Strong 'pick and customise your character' story"
+     ],
+     "cons": [
+      "Reads as gaming or retro",
+      "Themes have to be pixel art"
+     ]
+    }
+   ]
+  }
+ ]
+}

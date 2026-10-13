@@ -1,0 +1,24 @@
+{
+ "deck": "brand-identity-v28",
+ "started": "2026-10-04T07:32:38.221Z",
+ "submitted": "2026-10-04T07:37:03Z",
+ "cur": 1,
+ "answers": {
+  "DOCK": {
+   "v": "other",
+   "t": 1791099372644,
+   "note": "i'd want to keep our white background with theme face when no glass. clear glass with theme face for dark/clear. don't swap for tinted.",
+   "seconds": 214,
+   "theme": "light",
+   "zoom": 1
+  },
+  "MENUBAR": {
+   "v": "other",
+   "t": 1791099422567,
+   "note": "looks a little odd still. give me a few more options with different eye fill styles",
+   "seconds": 50,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

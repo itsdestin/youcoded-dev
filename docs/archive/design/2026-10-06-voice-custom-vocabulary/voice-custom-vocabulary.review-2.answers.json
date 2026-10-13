@@ -1,0 +1,30 @@
+{
+ "deck": "voice-custom-vocabulary-review-2",
+ "started": "2026-10-06T09:50:31.619Z",
+ "submitted": "2026-10-06T09:51:19Z",
+ "cur": 2,
+ "answers": {
+  "S-3": {
+   "note": "this meenu ugly",
+   "t": 1791280250417,
+   "v": "other",
+   "seconds": 19,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1791280256404,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "L-5": {
+   "v": "yes",
+   "t": 1791280277699,
+   "seconds": 21,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

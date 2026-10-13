@@ -2,12 +2,12 @@ id: buddy-show-consults-refusal-gate
 language: typescript
 severity: error
 message: >-
-  The BUDDY_SHOW IPC handler must consult the refusal gate — calling both
-  `refreshBuddyHelperStatus()` and `buddyShowRefusal()` — before it may show
-  the buddy. The gate is pure and lives in ipc-handlers.ts precisely so a
-  correct answer there means nothing unless the handler that creates the
-  buddy actually asks it; a gate nothing calls is the same bug with extra
-  steps. The status is re-read on every show, never trusted from launch,
+  The IPC.BUDDY_SHOW channel-table entry (main/ipc/buddy.ts) must consult the
+  refusal gate — calling both `showRefusal()` and `refresh()` on the helper —
+  before it may show the buddy. The gate is pure and lives in ipc-handlers.ts
+  precisely so a correct answer there means nothing unless the handler that
+  creates the buddy actually asks it; a gate nothing calls is the same bug with
+  extra steps. The status is re-read on every show, never trusted from launch,
   because the user can flip the KWin helper off in System Settings while
   YouCoded is running (design §4).
 note: |
@@ -18,23 +18,33 @@ note: |
   buddy-work-area-reresolved-on-display-change (review of t6a, 2026-09-16);
   its handler-brevity check only proved the old text slice was the handler,
   and went with the slice.
+  RETARGETED 2026-10-01 (one-core R3-8): the handler was
+  `ipcMain.handle(IPC.BUDDY_SHOW, …)` in main.ts calling `buddyShowRefusal()` and
+  `refreshBuddyHelperStatus()`; buddy:show is a channel-table entry now
+  (main/ipc/buddy.ts) and reaches the same two functions through the helper hand-over
+  (`helper().showRefusal(...)`, `helper().refresh()`). THE REGION is the object
+  literal holding the pair `name: IPC.BUDDY_SHOW`.
 files:
-  - "**/src/main/main.ts"
+  - "**/src/main/ipc/buddy.ts"
   - "**/fixtures/buddy-show-consults-refusal-gate.ts"
+utils:
+  show-entry:
+    kind: object
+    has: { kind: pair, regex: "^name:\\s*IPC\\.BUDDY_SHOW$" }
 rule:
   kind: program
   any:
-    # The handler exists but is missing one (or both) of the two required calls.
+    # The entry exists but is missing one (or both) of the two required calls.
     - has:
         stopBy: end
-        pattern: ipcMain.handle(IPC.BUDDY_SHOW, $HANDLER)
+        matches: show-entry
         not:
           all:
-            - has: { stopBy: end, pattern: "buddyShowRefusal($$$)" }
-            - has: { stopBy: end, pattern: "refreshBuddyHelperStatus($$$)" }
-    # The handler is gone entirely — the same failure this rule exists to
-    # catch, invisible to a "not: has:" scoped to a call that no longer exists.
+            - has: { stopBy: end, pattern: "$H.showRefusal($$$)" }
+            - has: { stopBy: end, pattern: "$H.refresh($$$)" }
+    # The entry is gone entirely — the same failure this rule exists to catch,
+    # invisible to a "not: has:" scoped to an entry that no longer exists.
     - not:
         has:
           stopBy: end
-          pattern: ipcMain.handle(IPC.BUDDY_SHOW, $HANDLER)
+          matches: show-entry

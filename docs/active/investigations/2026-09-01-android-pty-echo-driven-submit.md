@@ -11,6 +11,8 @@ topic: Android PtyBridge still submits long messages on a 600 ms timer
 
 # Android PtyBridge: echo-driven submit
 
+> **2026-09-24 — where this goes now:** This is cut C4 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`: the timer goes only once the desktop's echo-driven submit moves out of `pty-worker.js` into shared code (a desktop change), then A3's sessions family.
+
 **What it is.** Desktop submits a long message by writing the body, waiting for the PTY to
 echo its tail back, then sending `\r` — no timing assumption. Android still uses the older
 scheme: for any send over `SAFE_ATOMIC_LEN` (56 bytes) `PtyBridge.writeInput` writes the

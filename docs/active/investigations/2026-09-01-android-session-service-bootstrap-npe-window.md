@@ -11,6 +11,8 @@ topic: Android SessionService dereferences bootstrap!! in 18 bridge handlers, an
 
 # Android `SessionService.kt` dereferences `bootstrap!!` in 18 handlers
 
+> **2026-09-24 — where this goes now:** Retires as `SessionService`'s dispatcher shrinks in A3 and is deleted in A4 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`.
+
 **Symptom.** Hypothesised, not observed: an Android crash (Kotlin NPE) if the WebView sends
 one of ~18 preference/config/sync channels before the service has finished bootstrapping.
 

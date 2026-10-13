@@ -1,0 +1,313 @@
+{
+ "title": "Home page round 2b \u2014 arrow pad, Lights cards, Media cards",
+ "key": "home-redesign-r2b",
+ "out": "home-redesign-r2b.html",
+ "images": "images/home-redesign-r2b",
+ "runs": {
+  "after": "r2b-runs"
+ },
+ "themes": [
+  "golden-sunbreak",
+  "creme"
+ ],
+ "crops": {
+  "tvremote2b-a-open": [
+   "tvremote2b",
+   "a-open",
+   "360x605+0+0"
+  ],
+  "tvremote2b-b-open": [
+   "tvremote2b",
+   "b-open",
+   "360x605+0+0"
+  ],
+  "tvremote2b-c-open": [
+   "tvremote2b",
+   "c-open",
+   "360x605+0+0"
+  ],
+  "tvremote2b-closed": [
+   "tvremote2b",
+   "closed",
+   "360x605+0+0"
+  ],
+  "lt2b-rows": [
+   "lights",
+   "rows",
+   "540x730+306+168"
+  ],
+  "lt2b-tiles": [
+   "lights",
+   "tiles",
+   "540x440+306+168"
+  ],
+  "lt2b-chips": [
+   "lights",
+   "chips",
+   "540x360+306+168"
+  ]
+ },
+ "live": {
+  "worktree": "sessions/ha-pages-connection/youcoded"
+ },
+ "steps": [
+  {
+   "id": "TV2-1",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card > remote icon",
+   "headline": "With the remote open, which arrow pad should the TV card use?",
+   "notice": "All three use the page's own glass look and round buttons. Under the volume bar the row is now Back, previous, play, next, Home, with the four app buttons below. Netflix is playing, so Prime Video takes its place.",
+   "risk": "Whichever you pick, the card is taller while the remote is open, so cards below it move down.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Round glass pad",
+     "crop": "tvremote2b-a-open",
+     "summary": "One glass circle with an arrow at each edge and a round OK in the middle, coloured like the play button.",
+     "risk": "Smallest of the three, but the arrows are small targets near the circle's edge on a phone."
+    },
+    {
+     "id": "b",
+     "label": "Five round buttons",
+     "crop": "tvremote2b-b-open",
+     "summary": "Up, down, left, right and OK as five separate round buttons in a plus shape, like the play and skip buttons.",
+     "risk": "Most familiar and easiest to tap; takes the most room and looks the most like a row of buttons."
+    },
+    {
+     "id": "c",
+     "label": "Touchpad",
+     "crop": "tvremote2b-c-open",
+     "summary": "A rounded glass square with arrows on its edges and OK in the middle. Pressing near an edge lights that side.",
+     "risk": "Big forgiving targets; with no outlines around the arrows, it is less obvious where one button ends."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "TV2-2",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card",
+   "headline": "With the remote closed, is this the right row of buttons?",
+   "risk": "Which buttons sit in the row changes when the remote opens, so a thumb that learned the closed row finds different buttons after opening.",
+   "crop": "tvremote2b-closed",
+   "runs": [
+    "after"
+   ],
+   "changed": "With the remote closed, the transport row is previous, back 10 seconds, play or pause, forward 10 seconds, next. No Back, Home or app buttons.",
+   "notice": "The two 10-second buttons only appear when the TV or its player can skip in time. Pressing the remote icon fades them out and fades Back and Home in, with previous and next sliding one place inward.",
+   "highlight": {
+    "box": [
+     8,
+     37,
+     84,
+     9
+    ]
+   }
+  },
+  {
+   "id": "TV2-3",
+   "surface": "Home page",
+   "path": "Home > Media > the TV card",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Press the remote icon and try each pad. Do the swap and the reveal feel right?",
+   "notice": "Open and close the remote a few times. The panel stretches down while the volume bar slides lower and the pad fades in; skip buttons swap with Back and Home. Then press HBO Max or Disney+: Prime Video slides into its place.",
+   "risk": "The pretend TV answers app presses after a short delay, like a real one. Motion stops if the computer is set to reduce motion.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Round glass pad",
+     "summary": "The round pad.",
+     "risk": "All three share the same reveal and swap; only the pad differs.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-a"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Five round buttons",
+     "summary": "The plus of five buttons.",
+     "risk": "All three share the same reveal and swap; only the pad differs.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-b"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Touchpad",
+     "summary": "The rounded touchpad.",
+     "risk": "All three share the same reveal and swap; only the pad differs.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-tv-remote-c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "LT2B-1",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "Which card style should each room use on the Lights tab?",
+   "notice": "Each room is one card with the page's own round All button, the palette scenes button, the fold arrow and the room bar on top. Cards start closed; here Destin's Room is open, with its unreachable TV backlight last.",
+   "risk": "All three keep your earlier choices; colour pop-ups close on an outside click or Escape.",
+   "variants": [
+    {
+     "id": "rows",
+     "label": "Roomy rows",
+     "crop": "lt2b-rows",
+     "summary": "One wide, roomy row per light: bulb, name and percent on top, a thick bar underneath, and a colour dot. The dot opens the colour menu inside the card, pushing the lights below it down.",
+     "risk": "Longest card: three working lights already fill a screen, and opening a colour menu makes it taller still. On a phone every bar stays easy to hit."
+    },
+    {
+     "id": "tiles",
+     "label": "Big tiles",
+     "crop": "lt2b-tiles",
+     "summary": "Two or three big tiles per row. A tile glows and fills to show how bright it is, with the percent in large type. Tap to switch, drag sideways to dim. The colour dot opens a small floating colour panel next to the tile.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. The floating panel covers the lights beside it until you tap away or press Escape. On a phone two tiles fit per row."
+    },
+    {
+     "id": "chips",
+     "label": "Chips",
+     "crop": "lt2b-chips",
+     "summary": "Every light is one small chip you tap to switch, packed in a wrapped line so a whole room fits in a few lines. Press the little arrow on a chip and it opens into a full-width panel with its bar and a colour dot; the dot opens the floating colour panel.",
+     "risk": "Dimming or recolouring takes an extra press to open a chip first, and the open panel pushes the other chips down. Chips are the most compact, so names that are long get cut short on a phone."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "LV2B-1",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Switch the room, dim one light, change a colour. Which card style feels simplest to use?",
+   "notice": "In Destin's Room press the round All button, then drag the room bar. Switch one light and dim it, change its colour, and press the palette for scenes. The TV backlight is unreachable; try it. Press the fold arrow to close the card.",
+   "risk": "Everything here is practice data; nothing reaches a real light.",
+   "variants": [
+    {
+     "id": "rows",
+     "label": "Roomy rows",
+     "summary": "One wide, roomy row per light: bulb, name and percent on top, a thick bar underneath, and a colour dot. The dot opens the colour menu inside the card, pushing the lights below it down.",
+     "risk": "Longest card: three working lights already fill a screen, and opening a colour menu makes it taller still. On a phone every bar stays easy to hit.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-rows-play"
+     }
+    },
+    {
+     "id": "tiles",
+     "label": "Big tiles",
+     "summary": "Two or three big tiles per row. A tile glows and fills to show how bright it is, with the percent in large type. Tap to switch, drag sideways to dim. The colour dot opens a small floating colour panel next to the tile.",
+     "risk": "Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. The floating panel covers the lights beside it until you tap away or press Escape. On a phone two tiles fit per row.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-tiles-play"
+     }
+    },
+    {
+     "id": "chips",
+     "label": "Chips",
+     "summary": "Every light is one small chip you tap to switch, packed in a wrapped line so a whole room fits in a few lines. Press the little arrow on a chip and it opens into a full-width panel with its bar and a colour dot; the dot opens the floating colour panel.",
+     "risk": "Dimming or recolouring takes an extra press to open a chip first, and the open panel pushes the other chips down. Chips are the most compact, so names that are long get cut short on a phone.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-chips-play"
+     }
+    }
+   ]
+  },
+  {
+   "id": "M2-1",
+   "surface": "Home page",
+   "path": "Home > Media tab",
+   "headline": "Which card design makes the right speaker or TV easiest to spot?",
+   "notice": "Same house in all three: the TV and its soundbar are now ONE card (the TV controls playback, the soundbar's volume is used), two speakers play together in a box with a volume bar each, then a Not Playing shelf with a speaker that is not responding.",
+   "risk": "Cards re-sort when something starts or stops, so a card you just paused can move down the page.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Name as the title",
+     "crop": "pages/page/page-home#v-media-tab-a",
+     "summary": "The device name is the big title at the top of each card, with its room in small capitals under it. The song or app sits below in a soft box. Shelf tiles lead with the name too.",
+     "risk": "Simplest and calmest, but the card has no strong colour to pick it out from across the room."
+    },
+    {
+     "id": "b",
+     "label": "Name strip across the top",
+     "crop": "pages/page/page-home#v-media-tab-b",
+     "summary": "A coloured band across the top of the card carries the room (small) and the device name (big), in the colour of the app playing (red for YouTube, green for Spotify). The song sits in the body below.",
+     "risk": "The loudest at a glance, but the colour band is tied to the app, so two devices on the same app look alike."
+    },
+    {
+     "id": "c",
+     "label": "Name column on the left",
+     "crop": "pages/page/page-home#v-media-tab-c",
+     "summary": "The left third of each card is the device: icon, big name, room, status and its remote or power button. The right side holds the song, buttons and volume. Shelf devices become slim one-line rows.",
+     "risk": "A long group name wraps onto three lines in the narrow left column, and on a phone the card stacks into a taller shape."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "M2-2",
+   "surface": "Home page",
+   "path": "Home > Media tab",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Press play, pause, volume and Turn on in each. Which one feels easiest to use?",
+   "notice": "This is the working page with a pretend house. The TV's remote is only a small round icon for now; its design is decided separately.",
+   "risk": "Pressing pause or play can move a card to a new place in the list, which may feel like a jump.",
+   "variants": [
+    {
+     "id": "a",
+     "label": "Name as the title",
+     "summary": "Big name on top, song under it.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-media-tab-a"
+     }
+    },
+    {
+     "id": "b",
+     "label": "Name strip across the top",
+     "summary": "Coloured band with the name, song below.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-media-tab-b"
+     }
+    },
+    {
+     "id": "c",
+     "label": "Name column on the left",
+     "summary": "Device on the left, controls on the right.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-media-tab-c"
+     }
+    }
+   ]
+  }
+ ]
+}

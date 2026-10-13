@@ -1,0 +1,297 @@
+{
+ "title": "YouCoded \u2014 round 10: the logo set in Outfit, the K4 family, glass box installers",
+ "key": "brand-identity-v10",
+ "out": "brand-identity-v10.html",
+ "images": "images/brand-identity-v10",
+ "runs": {
+  "today": "runs/v10"
+ },
+ "labels": {
+  "today": "Proposed"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "l1": [
+   "brand",
+   "l1",
+   "1200x700+0+0"
+  ],
+  "l2": [
+   "brand",
+   "l2",
+   "1200x700+0+0"
+  ],
+  "l3": [
+   "brand",
+   "l3",
+   "1200x700+0+0"
+  ],
+  "l4": [
+   "brand",
+   "l4",
+   "1200x700+0+0"
+  ],
+  "m1": [
+   "brand",
+   "m1",
+   "1200x700+0+0"
+  ],
+  "m2": [
+   "brand",
+   "m2",
+   "1200x700+0+0"
+  ],
+  "m3": [
+   "brand",
+   "m3",
+   "1200x700+0+0"
+  ],
+  "m4": [
+   "brand",
+   "m4",
+   "1200x700+0+0"
+  ],
+  "m5": [
+   "brand",
+   "m5",
+   "1200x700+0+0"
+  ],
+  "m6": [
+   "brand",
+   "m6",
+   "1200x700+0+0"
+  ],
+  "m7": [
+   "brand",
+   "m7",
+   "1200x700+0+0"
+  ],
+  "m8": [
+   "brand",
+   "m8",
+   "1200x700+0+0"
+  ],
+  "m9": [
+   "brand",
+   "m9",
+   "1200x700+0+0"
+  ],
+  "m10": [
+   "brand",
+   "m10",
+   "1200x700+0+0"
+  ],
+  "n1": [
+   "brand",
+   "n1",
+   "1200x700+0+0"
+  ],
+  "n2": [
+   "brand",
+   "n2",
+   "1200x700+0+0"
+  ],
+  "n3": [
+   "brand",
+   "n3",
+   "1200x700+0+0"
+  ],
+  "n4": [
+   "brand",
+   "n4",
+   "1200x700+0+0"
+  ],
+  "n5": [
+   "brand",
+   "n5",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "L1",
+   "surface": "The logo set",
+   "path": "Everywhere the name, icon or \"yc\" appears",
+   "crop": "l1",
+   "headline": "Are these the right lockups: horizontal, with tagline, stacked, name alone, and \"yc\"?",
+   "changed": "Six fixed arrangements of the icon, the lowercase name in Outfit SemiBold, the tagline and the initials, so every surface uses one of these instead of improvising.",
+   "notice": "Picking the icon later only swaps the picture; the arrangements stay.",
+   "risk": "\"Name alone\" relies on the icon being visible somewhere else on the same screen.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     89
+    ]
+   }
+  },
+  {
+   "id": "L2",
+   "surface": "The logo set",
+   "path": "Everywhere the name, icon or \"yc\" appears",
+   "crop": "l2",
+   "headline": "Are these the right colour versions: light, dark, over a theme picture, one-colour, and following the theme?",
+   "changed": "\"you\" in the mascot's glass gradient and \"coded\" in ink on light; white on dark; white glass over pictures; single-colour versions for print; and the gradient taking each theme's colours.",
+   "notice": "The app already changes its icon per theme; the name could follow the same way.",
+   "risk": "Over very busy pictures only the white glass version stays readable.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     89
+    ]
+   }
+  },
+  {
+   "id": "L3",
+   "surface": "The logo set",
+   "path": "Everywhere the name, icon or \"yc\" appears",
+   "crop": "l3",
+   "headline": "Are these the right rules for spacing, sizes, colours, type and don'ts?",
+   "changed": "Clear space of half the icon's height around the logo, smallest sizes, the four colours with exact codes, Outfit SemiBold lowercase, \"YouCoded\" in sentences, and four don'ts.",
+   "notice": "This is the sheet anyone (you, a contributor, a future session) follows to put the logo somewhere new.",
+   "risk": "Writing \"YouCoded\" in sentences but \"youcoded\" in the logo is a deliberate split; say so if you'd rather the name be lowercase everywhere.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     89
+    ]
+   }
+  },
+  {
+   "id": "L4",
+   "surface": "The logo set",
+   "path": "Everywhere the name, icon or \"yc\" appears",
+   "crop": "l4",
+   "headline": "Does the set work in use: site header and hero, app title bar, browser tab, help pages, footer?",
+   "changed": "The same lockups from L1 placed on the real surfaces, including \"yc\" + section name for help and docs pages.",
+   "notice": "Help pages use the plain ink initials so they read calm and clinical.",
+   "risk": "The app title bar version is small (14px name); it's at the edge of readable on high-resolution screens.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     89
+    ]
+   }
+  },
+  {
+   "id": "ICON",
+   "surface": "App icon",
+   "path": "Taskbar, dock, browser tab, the lockups",
+   "headline": "Which of K4's family do you like? Pick as many as you want.",
+   "notice": "All keep K4's milk-glass face panel and eyes; each changes one thing \u2014 expression, pose, material or setting.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "m1",
+     "label": "M1 K4 (your pick)",
+     "crop": "m1",
+     "summary": "Unchanged, for comparison."
+    },
+    {
+     "id": "m2",
+     "label": "M2 Wink",
+     "crop": "m2",
+     "summary": "One eye closed."
+    },
+    {
+     "id": "m3",
+     "label": "M3 Glance",
+     "crop": "m3",
+     "summary": "Tipped, eyes glancing up and aside."
+    },
+    {
+     "id": "m4",
+     "label": "M4 Peeking up",
+     "crop": "m4",
+     "summary": "Rising from the tile's bottom edge."
+    },
+    {
+     "id": "m5",
+     "label": "M5 Sunset in its eyes",
+     "crop": "m5",
+     "summary": "The theme's colours reflected in the eyes."
+    },
+    {
+     "id": "m6",
+     "label": "M6 Thick slab",
+     "crop": "m6",
+     "summary": "A visible glass edge underneath."
+    },
+    {
+     "id": "m7",
+     "label": "M7 Night",
+     "crop": "m7",
+     "summary": "Dimmed wallpaper, glow behind the face."
+    },
+    {
+     "id": "m8",
+     "label": "M8 Mid-bounce",
+     "crop": "m8",
+     "summary": "Slightly squashed, shadow beneath."
+    },
+    {
+     "id": "m9",
+     "label": "M9 Inside out",
+     "crop": "m9",
+     "summary": "White glass tile, the theme's colour in the face."
+    },
+    {
+     "id": "m10",
+     "label": "M10 Happy",
+     "crop": "m10",
+     "summary": "Eyes closed in a smile."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which glass box installers do you like? Pick as many as you want.",
+   "notice": "Your box idea, rebuilt in the same glass and colour as the app icon, with K4's face.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "n1",
+     "label": "N1 Peeking out of a glass box",
+     "crop": "n1",
+     "summary": "Just delivered, looking over the edge."
+    },
+    {
+     "id": "n2",
+     "label": "N2 Still inside",
+     "crop": "n2",
+     "summary": "Seen through the frosted front, arrow on the lid."
+    },
+    {
+     "id": "n3",
+     "label": "N3 Being lowered in",
+     "crop": "n3",
+     "summary": "Face above an open box, arrow between."
+    },
+    {
+     "id": "n4",
+     "label": "N4 A present",
+     "crop": "n4",
+     "summary": "N1 with a colour-glass ribbon."
+    },
+    {
+     "id": "n5",
+     "label": "N5 The box on H3's band",
+     "crop": "n5",
+     "summary": "Your H3's glass band and arrow, with the box on it."
+    }
+   ]
+  }
+ ]
+}

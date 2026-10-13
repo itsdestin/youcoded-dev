@@ -1,0 +1,22 @@
+{
+ "deck": "home-device-lights-r3",
+ "started": "2026-10-01T10:25:56.906Z",
+ "submitted": "2026-10-01T10:26:11Z",
+ "cur": 1,
+ "answers": {
+  "S-room-one": {
+   "v": "yes",
+   "t": 1790850363603,
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-thermostat": {
+   "v": "yes",
+   "t": 1790850367512,
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,138 @@
+{
+  "title": "TV card: the arrow pad, plus the closed row",
+  "key": "home-tv-remote-2b",
+  "out": "tv-remote-2b.deck.html",
+  "images": "images/tv-remote-2b.deck",
+  "runs": {
+    "after": "tv-remote-2b-runs/after"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "crops": {
+    "tvremote2b-a-open": [
+      "tvremote2b",
+      "a-open",
+      "360x605+0+0"
+    ],
+    "tvremote2b-b-open": [
+      "tvremote2b",
+      "b-open",
+      "360x605+0+0"
+    ],
+    "tvremote2b-c-open": [
+      "tvremote2b",
+      "c-open",
+      "360x605+0+0"
+    ],
+    "tvremote2b-closed": [
+      "tvremote2b",
+      "closed",
+      "360x605+0+0"
+    ]
+  },
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "TV2-1",
+      "surface": "Home page",
+      "path": "Home > Media > the TV card > remote icon",
+      "headline": "With the remote open, which arrow pad should the TV card use?",
+      "notice": "All three use the page's own glass look and round buttons. Under the volume bar the row is now Back, previous, play, next, Home, with the four app buttons below. Netflix is playing, so Prime Video takes its place.",
+      "risk": "Whichever you pick, the card is taller while the remote is open, so cards below it move down.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Round glass pad",
+          "crop": "tvremote2b-a-open",
+          "summary": "One glass circle with an arrow at each edge and a round OK in the middle, coloured like the play button.",
+          "risk": "Smallest of the three, but the arrows are small targets near the circle's edge on a phone."
+        },
+        {
+          "id": "b",
+          "label": "Five round buttons",
+          "crop": "tvremote2b-b-open",
+          "summary": "Up, down, left, right and OK as five separate round buttons in a plus shape, like the play and skip buttons.",
+          "risk": "Most familiar and easiest to tap; takes the most room and looks the most like a row of buttons."
+        },
+        {
+          "id": "c",
+          "label": "Touchpad",
+          "crop": "tvremote2b-c-open",
+          "summary": "A rounded glass square with arrows on its edges and OK in the middle. Pressing near an edge lights that side.",
+          "risk": "Big forgiving targets; with no outlines around the arrows, it is less obvious where one button ends."
+        }
+      ]
+    },
+    {
+      "id": "TV2-2",
+      "surface": "Home page",
+      "path": "Home > Media > the TV card",
+      "headline": "With the remote closed, is this the right row of buttons?",
+      "risk": "Which buttons sit in the row changes when the remote opens, so a thumb that learned the closed row finds different buttons after opening.",
+      "crop": "tvremote2b-closed",
+      "runs": [
+        "after"
+      ],
+      "changed": "With the remote closed, the transport row is previous, back 10 seconds, play or pause, forward 10 seconds, next. No Back, Home or app buttons.",
+      "notice": "The two 10-second buttons only appear when the TV or its player can skip in time. Pressing the remote icon fades them out and fades Back and Home in, with previous and next sliding one place inward.",
+      "highlight": {
+        "box": [
+          8,
+          37,
+          84,
+          9
+        ]
+      }
+    },
+    {
+      "id": "TV2-3",
+      "surface": "Home page",
+      "path": "Home > Media > the TV card",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Press the remote icon and try each pad. Do the swap and the reveal feel right?",
+      "notice": "Open and close the remote a few times. The panel stretches down while the volume bar slides lower and the pad fades in; skip buttons swap with Back and Home. Then press HBO Max or Disney+: Prime Video slides into its place.",
+      "risk": "The pretend TV answers app presses after a short delay, like a real one. Motion stops if the computer is set to reduce motion.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Round glass pad",
+          "summary": "The round pad.",
+          "risk": "All three share the same reveal and swap; only the pad differs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-tv-remote-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Five round buttons",
+          "summary": "The plus of five buttons.",
+          "risk": "All three share the same reveal and swap; only the pad differs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-tv-remote-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Touchpad",
+          "summary": "The rounded touchpad.",
+          "risk": "All three share the same reveal and swap; only the pad differs.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-tv-remote-c"
+          }
+        }
+      ]
+    }
+  ]
+}

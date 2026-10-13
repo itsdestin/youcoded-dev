@@ -1,0 +1,25 @@
+{
+ "deck": "home-camera-live",
+ "started": "2026-10-05T04:43:05.759Z",
+ "submitted": "2026-10-05T04:43:41Z",
+ "cur": 1,
+ "answers": {
+  "CL-1": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1791175399116,
+   "seconds": 13,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "CL-2": {
+   "v": "pick",
+   "pick": "a",
+   "t": 1791175421030,
+   "note": "but we can improve the styling of this. ",
+   "seconds": 22,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

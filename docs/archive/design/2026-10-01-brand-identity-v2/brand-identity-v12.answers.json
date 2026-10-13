@@ -1,0 +1,35 @@
+{
+ "deck": "brand-identity-v12",
+ "started": "2026-10-02T09:40:25.478Z",
+ "submitted": "2026-10-02T09:44:36Z",
+ "cur": 2,
+ "answers": {
+  "ICON": {
+   "note": "i think a should be app icon, but want to keep b around as a reference. could be useful elsewhere. still think contrast isn't great for on some themes... har to tell mascot shape/features apart from backgrond...",
+   "t": 1790934194517,
+   "v": "picks",
+   "picks": [
+    "r1"
+   ],
+   "seconds": 169,
+   "theme": "light",
+   "zoom": 1
+  },
+  "CONTRAST": {
+   "note": "not quite. think the eyes still throw me off too. should be different for each theme.",
+   "t": 1790934224707,
+   "v": "other",
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "thiss is a regression from last round. i just wanted the flaps wider, but u changed the shape of the box. lines currently look more like sweat beads than anything.",
+   "t": 1790934274548,
+   "v": "other",
+   "seconds": 50,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

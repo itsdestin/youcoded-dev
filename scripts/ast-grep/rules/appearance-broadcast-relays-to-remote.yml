@@ -2,40 +2,37 @@ id: appearance-broadcast-relays-to-remote
 language: typescript
 severity: error
 message: >-
-  main.ts must relay theme changes both ways between the computer and phones:
-  the ipcMain.on(IPC.APPEARANCE_BROADCAST, …) handler must also call
-  remoteServer.broadcast({ type: IPC.APPEARANCE_SYNC, … }), and the
-  RemoteServer must be given an onAppearanceBroadcast callback. Without them a
-  phone keeps an old theme until reloaded, or a phone's change never reaches
-  the computer's windows (Destin, 2026-09-11).
+  The IPC.APPEARANCE_BROADCAST entry (main/ipc/appearance.ts) must relay theme
+  changes both ways between the computer and phones: its handler must call
+  `sendToPhones({ type: IPC.APPEARANCE_SYNC, … })` (a window's change reaches the
+  phones) and `sendToWindows(IPC.APPEARANCE_SYNC, …)` (a phone's change reaches
+  the computer's windows). Without them a phone keeps an old theme until
+  reloaded, or a phone's change never reaches the computer's windows (Destin,
+  2026-09-11).
 note: |
   Invariant source: tests/remote-server-connections.test.ts (Plan B, 2026-09-16)
   — "the window relay also broadcasts appearance:sync to remote clients" and
-  "the remote server is told how to reach the computer's windows". The file's
-  server-side behaviour cases stay; only these two main.ts text reads moved here.
-  Branch 1 (the relay): fires on the ipcMain.on(IPC.APPEARANCE_BROADCAST, …)
-  call when nothing inside its handler is a call whose callee ends in
-  `remoteServer.broadcast` (or `remoteServer?.broadcast`) with a first
-  argument object holding `type: IPC.APPEARANCE_SYNC`. The retired regex
-  `remoteServer\.broadcast\(\{\s*type:\s*IPC\.APPEARANCE_SYNC` also demanded
-  `type` be the object's FIRST key; key order is not the invariant, so any
-  position is accepted here. It read raw text, so a comment spelling the call
-  satisfied it; a real call is required here (deliberately stricter). If the
-  whole registration is deleted, appearance-broadcast-handler-registered fires.
-  Branch 2 (presence): fires on the whole file when no object property named
-  `onAppearanceBroadcast` exists (a `key: value` pair — the retired
-  /onAppearanceBroadcast:/ — or its shorthand/method spellings, which mean the
-  same). A comment or string naming it no longer counts.
+  "the remote server is told how to reach the computer's windows".
+  RETARGETED 2026-10-01 (one-core R3-8): the two halves used to be an
+  `ipcMain.on(IPC.APPEARANCE_BROADCAST, …)` in main.ts that called
+  `remoteServer.broadcast({ type: IPC.APPEARANCE_SYNC, … })`, plus an
+  `onAppearanceBroadcast` callback main.ts gave the RemoteServer. Both are one
+  channel-table entry now: the computer's branch calls `ctx.desktop.sendToPhones`
+  and the phone's branch calls `ctx.remote.sendToWindows`. THE REGION is the
+  object literal holding the pair `name: IPC.APPEARANCE_BROADCAST`; it fires when
+  that object holds no call of either shape. A comment spelling a call no longer
+  counts (a real call is required). If the whole entry is deleted,
+  appearance-broadcast-handler-registered fires.
 files:
-  - "**/src/main/main.ts"
-  - "**/fixtures/appearance-broadcast-relays-to-remote.ts"
-  - "**/fixtures/appearance-broadcast-relays-to-remote-absent.ts"
+  - "**/src/main/ipc/appearance.ts"
+  - "**/fixtures/appearance-broadcast-relays-to-remote*.ts"
 utils:
-  remote-sync-broadcast:
+  broadcast-entry:
+    kind: object
+    has: { kind: pair, regex: "^name:\\s*IPC\\.APPEARANCE_BROADCAST$" }
+  sends-sync-object-to-phones:
     kind: call_expression
-    has:
-      field: function
-      regex: "remoteServer\\??\\.broadcast$"
+    has: { field: function, regex: "sendToPhones$" }
     all:
       - has:
           field: arguments
@@ -48,18 +45,8 @@ utils:
                 - has: { field: key, regex: "^type$" }
                 - has: { field: value, regex: "^IPC\\.APPEARANCE_SYNC$" }
 rule:
-  any:
-    - pattern: "ipcMain.on(IPC.APPEARANCE_BROADCAST, $HANDLER)"
-      not:
-        has: { stopBy: end, matches: remote-sync-broadcast }
-    - kind: program
-      not:
-        has:
-          stopBy: end
-          any:
-            - kind: pair
-              has: { field: key, regex: "^onAppearanceBroadcast$" }
-            - kind: shorthand_property_identifier
-              regex: "^onAppearanceBroadcast$"
-            - kind: method_definition
-              has: { field: name, regex: "^onAppearanceBroadcast$" }
+  matches: broadcast-entry
+  not:
+    all:
+      - has: { stopBy: end, matches: sends-sync-object-to-phones }
+      - has: { stopBy: end, pattern: "$R.sendToWindows(IPC.APPEARANCE_SYNC, $$$)" }

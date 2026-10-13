@@ -1,0 +1,152 @@
+[
+  {
+    "name": "chat/voice/vocabulary#empty",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary#empty/halftone-dimension.png",
+    "ms": 3162,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 269,
+      "w": 420,
+      "h": 363
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary#stress",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary#stress/halftone-dimension.png",
+    "ms": 3174,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 173,
+      "w": 420,
+      "h": 555
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary/halftone-dimension.png",
+    "ms": 3555,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 256,
+      "w": 420,
+      "h": 388
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary#narrow",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary#narrow/halftone-dimension.png",
+    "ms": 3613,
+    "errors": [],
+    "panel": {
+      "x": 23,
+      "y": 209,
+      "w": 343,
+      "h": 426
+    }
+  },
+  {
+    "name": "chat/voice/menu",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/menu/halftone-dimension.png",
+    "ms": 3724,
+    "errors": [],
+    "panel": {
+      "x": 1115,
+      "y": 814,
+      "w": 200,
+      "h": 39
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary#stress",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary#stress/meadow-mist.png",
+    "ms": 5364,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 191,
+      "w": 420,
+      "h": 519
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary#empty",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary#empty/meadow-mist.png",
+    "ms": 5513,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 287,
+      "w": 420,
+      "h": 327
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary/meadow-mist.png",
+    "ms": 5645,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 274,
+      "w": 420,
+      "h": 352
+    }
+  },
+  {
+    "name": "chat/voice/vocabulary#narrow",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/vocabulary#narrow/meadow-mist.png",
+    "ms": 7144,
+    "errors": [],
+    "panel": {
+      "x": 23,
+      "y": 225,
+      "w": 343,
+      "h": 393
+    }
+  },
+  {
+    "name": "chat/voice/menu",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/round2/chat/voice/menu/meadow-mist.png",
+    "ms": 7306,
+    "errors": [],
+    "panel": {
+      "x": 1124,
+      "y": 829,
+      "w": 200,
+      "h": 39
+    }
+  }
+]

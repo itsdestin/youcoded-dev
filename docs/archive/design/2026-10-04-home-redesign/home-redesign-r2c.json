@@ -1,0 +1,189 @@
+{
+ "title": "Home page round 2c \u2014 built TV and Media, Lights mixes",
+ "key": "home-redesign-r2c",
+ "out": "home-redesign-r2c.html",
+ "images": "images/home-redesign-r2c",
+ "runs": {
+  "after": "r2c-runs"
+ },
+ "themes": [
+  "golden-sunbreak",
+  "creme"
+ ],
+ "crops": {
+  "lt2c-r1": [
+   "lights",
+   "r1",
+   "540x460+306+168"
+  ],
+  "lt2c-r2": [
+   "lights",
+   "r2",
+   "540x460+306+168"
+  ],
+  "lt2c-r3": [
+   "lights",
+   "r3",
+   "540x460+306+168"
+  ]
+ },
+ "live": {
+  "worktree": "sessions/ha-pages-connection/youcoded"
+ },
+ "steps": [
+  {
+   "id": "C-TV1",
+   "surface": "Home page",
+   "path": "Home > the TV card",
+   "headline": "Built: is this the TV card you asked for, with the remote open?",
+   "crop": "pages/page/page-home#remote",
+   "runs": [
+    "after"
+   ],
+   "changed": "Remote is an icon beside power. Open, the round pad sits in the playing panel above volume; the row is Back, previous, play/pause, next, Home; app buttons below, with the playing app swapped for Prime Video.",
+   "notice": "Arrows are the page's own icons; hovering a direction lights that side and nudges its arrow out. Closed, the row is previous, back 10 s, play/pause, forward 10 s, next.",
+   "risk": "Back/Forward 10 s on your Destin's Room TV press the TV's own rewind/fast-forward keys; how far they jump depends on the app. HBO Max may not open until tried on the real TV."
+  },
+  {
+   "id": "C-MT1",
+   "surface": "Home page",
+   "path": "Home > Media tab",
+   "headline": "Built: is this the Media tab you asked for?",
+   "crop": "pages/page/page-home#media",
+   "runs": [
+    "after"
+   ],
+   "changed": "Playing devices are wide cards titled with the device name. Play/pause/skip sit at the right of the song box so volume runs full width. Your TV and soundbar are one card, the soundbar slider in a glass box with its name. Others sit under \"Not Playing\", unreachable last.",
+   "notice": "A TV that is on but reports nothing stays a wide card so its remote has a home.",
+   "risk": "Pressing pause moves a card between the top and the shelf."
+  },
+  {
+   "id": "C-MT2",
+   "surface": "Home page",
+   "path": "Home > Media tab",
+   "headline": "Built: do grouped speakers look right?",
+   "crop": "pages/page/page-home#media-group",
+   "runs": [
+    "after"
+   ],
+   "changed": "Speakers playing together are one card with a \"Playing together\" box, one volume bar each. The old \"Playing with\u2026\" bar is gone from this tab; a small Change button in the box adds or removes speakers.",
+   "notice": "The Home tab keeps its \"Playing with\u2026\" bar.",
+   "risk": "A long group name wraps to two lines."
+  },
+  {
+   "id": "C-LIVE",
+   "surface": "Home page",
+   "path": "Home",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Try the built TV card on Home and on the Media tab. Which pane feels off, if any?",
+   "notice": "Open and close the remote, hover the arrows, press an app, drag volume; switch to the Media tab and pause something.",
+   "risk": "This is the pretend house; your real TV answers more slowly.",
+   "variants": [
+    {
+     "id": "home",
+     "label": "Home tab",
+     "summary": "The TV card on the Home tab: open the remote, hover the arrows, press an app.",
+     "risk": "Motion is untried by me; this is the first look.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "connected"
+     }
+    },
+    {
+     "id": "media",
+     "label": "Media tab",
+     "summary": "The new Media tab: pause and play, drag volume, open the TV remote.",
+     "risk": "Pausing moves a card between the top and the shelf.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "view-media"
+     }
+    }
+   ]
+  },
+  {
+   "id": "LT2C-1",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "headline": "Which mix should each room use?",
+   "notice": "Each keeps the rows' look (clear name and percent, thick bar, calm glass, colour dot) in the tiles' shape, in one card per room. Destin's Room is open here, with its unreachable TV backlight last. The colour panel floats next to the light; you can try it in the next step.",
+   "risk": "All three keep your earlier choices: the round All button, scenes button and fold arrow on top, cards starting closed, unreachable lights last.",
+   "variants": [
+    {
+     "id": "r1",
+     "label": "Tall cards",
+     "crop": "lt2c-r1",
+     "summary": "Portrait cards, about three per line, in the same calm glass as the rows: bulb, name, percent and a colour dot on top, and the thick bar along the bottom. Tap the card to switch the light; use the bar to dim it. The dot opens a floating colour panel.",
+     "risk": "Tallest card of the three, and the unreachable light gets a full-size card of its own. Names that are long wrap onto two lines. On a phone two cards fit per line."
+    },
+    {
+     "id": "r2",
+     "label": "Slide tiles",
+     "crop": "lt2c-r2",
+     "summary": "Wide tiles, two per line, with the rows' name and percent on a calm surface. The whole tile is the bar: a soft tint fills it to show how bright the light is, with a thin bright edge at the level. Tap to switch, drag sideways to dim.",
+     "risk": "Shortest card, but there is no bar to look at. Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. Long names wrap onto several lines."
+    },
+    {
+     "id": "r3",
+     "label": "Half rows",
+     "crop": "lt2c-r3",
+     "summary": "Exactly the roomy rows, at half the width, two lights per line: bulb, name, percent, colour dot and the thick bar. Tap the bulb or name to switch; the bar dims. The dot opens a floating colour panel.",
+     "risk": "Most like the rows you liked, but names squeeze, so long ones wrap onto two lines. On a phone the lights go back to one per line."
+    }
+   ],
+   "runs": [
+    "after"
+   ]
+  },
+  {
+   "id": "LV2C-1",
+   "surface": "Home page",
+   "path": "Home > Lights tab",
+   "live": {
+    "app": "default"
+   },
+   "headline": "Switch a light, dim it, change its colour. Which mix feels simplest to use?",
+   "notice": "In Destin's Room, tap a light to switch it, dim it with the bar (or by dragging the tile in Slide tiles), and press its colour dot. The TV backlight is unreachable; try it.",
+   "risk": "Everything here is practice data; nothing reaches a real light.",
+   "variants": [
+    {
+     "id": "r1",
+     "label": "Tall cards",
+     "summary": "Portrait cards, about three per line, in the same calm glass as the rows: bulb, name, percent and a colour dot on top, and the thick bar along the bottom. Tap the card to switch the light; use the bar to dim it. The dot opens a floating colour panel.",
+     "risk": "Tallest card of the three, and the unreachable light gets a full-size card of its own. Names that are long wrap onto two lines. On a phone two cards fit per line.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-r1-play"
+     }
+    },
+    {
+     "id": "r2",
+     "label": "Slide tiles",
+     "summary": "Wide tiles, two per line, with the rows' name and percent on a calm surface. The whole tile is the bar: a soft tint fills it to show how bright the light is, with a thin bright edge at the level. Tap to switch, drag sideways to dim.",
+     "risk": "Shortest card, but there is no bar to look at. Tap and drag share one surface, so a slow, wobbly tap can dim a light instead of switching it. Long names wrap onto several lines.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-r2-play"
+     }
+    },
+    {
+     "id": "r3",
+     "label": "Half rows",
+     "summary": "Exactly the roomy rows, at half the width, two lights per line: bulb, name, percent, colour dot and the thick bar. Tap the bulb or name to switch; the bar dims. The dot opens a floating colour panel.",
+     "risk": "Most like the rows you liked, but names squeeze, so long ones wrap onto two lines. On a phone the lights go back to one per line.",
+     "app": "default",
+     "params": {
+      "openPage": "page-home",
+      "pagesHome": "v-lights-tab-r3-play"
+     }
+    }
+   ]
+  }
+ ]
+}

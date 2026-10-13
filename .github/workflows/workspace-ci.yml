@@ -118,6 +118,12 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test scripts/prune-worktrees.test.mjs
 
+      # dev-isolation.sh keeps a throwaway-HOME dev launch off the real GitHub login; the test also pins that it cannot end a launch
+      # on a machine without getent (Windows Git Bash).
+      - name: Test dev-isolation
+        if: ${{ !cancelled() }}
+        run: node --test scripts/dev-isolation.test.mjs
+
       # workspace-sync.mjs backs the same startup tool and can fast-forward the shared
       # checkout. Its suite once took minutes (a per-file git lookup made one 14,000-path
       # test run ~150-280s), so it briefly ran nightly only; the 2026-09-23 batching rewrite
@@ -239,6 +245,11 @@ jobs:
       - name: close-out.sh warns about untracked files in the shared checkout
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-untracked-warning.test.sh
+
+      # The refactor's edit lock (docs/active/locks/) is only a promise unless close-out says it aloud.
+      - name: close-out.sh flags a branch that edits locked files
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-edit-lock.test.sh
 
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite

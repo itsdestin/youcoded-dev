@@ -1,0 +1,192 @@
+{
+ "title": "YouCoded \u2014 round 15: mouths, a dark icon, matched name colours, the inverted installer",
+ "key": "brand-identity-v15",
+ "out": "brand-identity-v15.html",
+ "images": "images/brand-identity-v15",
+ "runs": {
+  "today": "runs/v14"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "fin": [
+   "brand",
+   "fin",
+   "1200x700+0+0"
+  ],
+  "dk": [
+   "brand",
+   "dk",
+   "1200x700+0+0"
+  ],
+  "fini": [
+   "brand",
+   "fini",
+   "1200x700+0+0"
+  ],
+  "fiv": [
+   "brand",
+   "fiv",
+   "1200x700+0+0"
+  ],
+  "ma": [
+   "brand",
+   "mouths",
+   "182x630+24+62"
+  ],
+  "mb": [
+   "brand",
+   "mouths",
+   "182x630+218+62"
+  ],
+  "mc": [
+   "brand",
+   "mouths",
+   "182x630+412+62"
+  ],
+  "md": [
+   "brand",
+   "mouths",
+   "182x630+606+62"
+  ],
+  "me": [
+   "brand",
+   "mouths",
+   "182x630+800+62"
+  ],
+  "mf": [
+   "brand",
+   "mouths",
+   "182x630+994+62"
+  ],
+  "col-old": [
+   "brand",
+   "colour",
+   "1152x310+24+58"
+  ],
+  "col-new": [
+   "brand",
+   "colour",
+   "1152x310+24+374"
+  ]
+ },
+ "steps": [
+  {
+   "id": "MOUTH",
+   "surface": "App icon",
+   "path": "The final icon's face",
+   "headline": "Which mouth, if any? Pick as many as you like.",
+   "notice": "Each drawn in the theme's eye colour, with true small sizes and three other themes under it. \"None\" is the final icon as it stands.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "none",
+     "label": "None (as it stands)",
+     "crop": "fin",
+     "summary": "The final icon without a mouth."
+    },
+    {
+     "id": "ma",
+     "label": "Smile",
+     "crop": "ma",
+     "summary": "A small curved smile."
+    },
+    {
+     "id": "mb",
+     "label": "Open",
+     "crop": "mb",
+     "summary": "A small open mouth with a pink tongue."
+    },
+    {
+     "id": "mc",
+     "label": "Little \"o\"",
+     "crop": "mc",
+     "summary": "Surprised / curious."
+    },
+    {
+     "id": "md",
+     "label": "Cat",
+     "crop": "md",
+     "summary": "A tiny \"w\" mouth."
+    },
+    {
+     "id": "me",
+     "label": "Grin",
+     "crop": "me",
+     "summary": "A wide open grin."
+    },
+    {
+     "id": "mf",
+     "label": "Flat",
+     "crop": "mf",
+     "summary": "A short straight line."
+    }
+   ]
+  },
+  {
+   "id": "DARK",
+   "surface": "App icon",
+   "path": "Dark taskbars, dark sites, dark slides",
+   "crop": "dk",
+   "headline": "Keep this dark version of the icon alongside the white one?",
+   "changed": "The same face on a deep night-purple glass tile instead of white glass.",
+   "notice": "It stands out on dark taskbars, where the white tile is very bright.",
+   "risk": "Two versions means picking which one the installed app uses by default.",
+   "highlight": {
+    "box": [
+     2,
+     4,
+     96,
+     94
+    ]
+   }
+  },
+  {
+   "id": "COLOUR",
+   "surface": "The logo set",
+   "path": "The name's colours next to the icon",
+   "headline": "Which name colours match the icon better?",
+   "notice": "After: \"you\" runs from the face's periwinkle to its pink, deepened to read as text; \"coded\" is the eyes' exact violet. Shown on light and dark.",
+   "variants": [
+    {
+     "id": "old",
+     "label": "Before",
+     "crop": "col-old",
+     "summary": "Today's approved purple-to-pink and ink."
+    },
+    {
+     "id": "new",
+     "label": "After",
+     "crop": "col-new",
+     "summary": "Sampled from the icon's face and eyes."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download",
+   "headline": "Which installer: the final one, or inverted like the app icon?",
+   "notice": "Same scene; the inverted one swaps to a white glass tile with the theme's picture inside the face.",
+   "variants": [
+    {
+     "id": "fini",
+     "label": "Final (theme picture behind)",
+     "crop": "fini",
+     "summary": "As signed off last round."
+    },
+    {
+     "id": "fiv",
+     "label": "Inverted (white tile)",
+     "crop": "fiv",
+     "summary": "Matches the app icon's look."
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+  "title": "The Home page, next version — round 1, the lights card, fourth look",
+  "key": "home-page-v2-r1d",
+  "out": "home-page-v2-r1d.review.html",
+  "images": "images/home-page-v2-r1d.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built (test app, pretend Home Assistant)"
+  },
+  "themes": [
+    "midnight",
+    "golden-sunbreak",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "S-one-surface",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room, lights card open",
+      "crop": "pages/page/page-home#connected",
+      "highlight": {
+        "box": [
+          22.8,
+          48.6,
+          21.9,
+          51.0
+        ]
+      },
+      "headline": "The lights card is one surface now: no line under the All row, and its bulb lines up with the bulbs below.",
+      "changed": "The All row had its own tint that stopped in a hard edge above the lights. Now the whole card shares one soft tint in the colour of a light that is on, the line is gone, and the All row's bulb sits in line with each light's bulb.",
+      "notice": "Each light is still its own card inside, the same gap on every side.",
+      "risk": "With every light off, the card has no tint at all, just the plain card colour."
+    }
+  ]
+}

@@ -428,6 +428,40 @@ BACKUP_RESTORE_MESSAGE = (
 )
 
 
+# ── guard 8: package install/remove inside a hardlinked worktree ─────────────────────────
+# WHY: workspace-start gives each worktree a `cp -al` hardlink farm of node_modules. `npm install`
+# rewrites node_modules/.package-lock.json IN PLACE, so one install in a worktree rewrites the
+# shared checkout's file and every sibling worktree's. Happened 2026-08-31, 2026-09-11 and again
+# 2026-10-07 (80 links) — the PITFALLS prose did not stop it, so this does. Blocks only when the
+# command runs under `/worktrees/` (cwd, a named path, or a `cd`); shared checkouts are untouched.
+PKG_MUTATE = re.compile(
+    r"(?:^|[|&;(]\s*)(?:npm|pnpm|yarn)\s+(?:-\S+\s+)*"
+    r"(?:install|i|add|ci|uninstall|remove|rm|update|up|upgrade)(?=\s|;|&|\||$)([^|&;\n]*)"
+)
+WORKTREE_PATH = re.compile(r"(?:^|[\s/\"'=])worktrees/")
+
+
+def worktree_install_offender(command: str, cwd: str = ""):
+    """True when a package install/remove would run inside a worktree's hardlinked node_modules."""
+    body = strip_heredocs(command)
+    for m in PKG_MUTATE.finditer(body):
+        if "--dry-run" in m.group(1) or "--package-lock-only" in m.group(1):
+            continue   # neither writes node_modules
+        return "/worktrees/" in (cwd or "") or bool(WORKTREE_PATH.search(body))
+    return False
+
+
+WORKTREE_INSTALL_MESSAGE = (
+    "Blocked before it ran: a package install/remove inside a worktree rewrites "
+    "node_modules/.package-lock.json IN PLACE through the hardlink farm, so it also rewrites the "
+    "shared checkout's copy and every sibling worktree's (hit 3 times; 80 links on 2026-10-07). "
+    "See docs/PITFALLS.md -> Worktrees.\n"
+    "Instead: `node scripts/fill-missing-deps.mjs <worktree>/youcoded/desktop` to fill missing "
+    "packages, or `npm pack <pkg>` and `tar` it into a fresh directory. `npm install --dry-run` "
+    "and `--package-lock-only` are allowed."
+)
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -449,6 +483,13 @@ def main() -> int:
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook
+
+    try:
+        if worktree_install_offender(command, payload.get("cwd") or ""):
+            print(WORKTREE_INSTALL_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
 
     try:
         hits = live_app_pids(command)

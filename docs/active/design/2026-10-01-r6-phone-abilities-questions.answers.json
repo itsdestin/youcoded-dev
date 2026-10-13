@@ -1,0 +1,57 @@
+{
+ "deck": "r6-phone-abilities-questions",
+ "started": "2026-10-01T23:28:06.022Z",
+ "submitted": "2026-10-01T23:28:54Z",
+ "cur": 0,
+ "answers": {
+  "Q-skill-update": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1790897334016,
+   "seconds": 7,
+   "theme": "golden-sunbreak"
+  },
+  "Q-themes": {
+   "v": "pick",
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "t": 1790897334016,
+   "pick": "yes"
+  },
+  "Q-publish": {
+   "v": "pick",
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "t": 1790897334016,
+   "pick": "yes"
+  },
+  "Q-install-count": {
+   "v": "pick",
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "t": 1790897334016,
+   "pick": "yes"
+  },
+  "Q-report": {
+   "v": "pick",
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "t": 1790897334016,
+   "pick": "yes"
+  },
+  "Q-skill-file": {
+   "v": "pick",
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "t": 1790897334016,
+   "pick": "yes"
+  },
+  "Q-folders": {
+   "v": "pick",
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "t": 1790897334016,
+   "pick": "leave"
+  }
+ }
+}

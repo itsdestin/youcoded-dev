@@ -1,0 +1,23 @@
+{
+ "deck": "home-page-v3-r4",
+ "started": "2026-10-04T06:03:40.363Z",
+ "submitted": "2026-10-04T06:04:24Z",
+ "cur": 1,
+ "answers": {
+  "S-tabs": {
+   "v": "yes",
+   "t": 1791093830540,
+   "seconds": 10,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-climate-swap": {
+   "note": "i think it's a bit hard to tell selected state from the regular status colors of the various pills",
+   "t": 1791093863118,
+   "v": "yes",
+   "seconds": 33,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

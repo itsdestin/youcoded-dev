@@ -1,0 +1,48 @@
+{
+  "title": "Voice vocabulary — microphone and chips",
+  "key": "voice-custom-vocabulary-review-2",
+  "out": "voice-custom-vocabulary.review-2.html",
+  "images": "images/voice-custom-vocabulary.review-2",
+  "runs": { "before": "runs/after", "after": "runs/round2" },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "live": { "worktree": "youcoded" },
+  "crops": {
+    "microphone-menu": ["voice-review", "menu", "500x260+940+640"],
+    "vocabulary": ["voice-review", "voice", "460x473+490+214"]
+  },
+  "steps": [
+    {
+      "id": "S-3",
+      "surface": "Microphone",
+      "path": "Right-click the microphone → Vocabulary…",
+      "crop": "microphone-menu",
+      "runs": ["after"],
+      "highlight": { "box": [33, 63, 49, 23] },
+      "headline": "3. Right-click the microphone to open Vocabulary.",
+      "changed": "The editor moves to the microphone. The separate Settings card is gone.",
+      "notice": "A normal click still starts or stops dictation.",
+      "risk": "Right-click is less discoverable than a Settings entry."
+    },
+    {
+      "id": "S-4",
+      "surface": "Voice vocabulary",
+      "path": "Microphone → right-click → Vocabulary…",
+      "crop": "vocabulary",
+      "labels": { "before": "First idea", "after": "Chips" },
+      "headline": "4. Each word or phrase is a removable chip.",
+      "changed": "Add a phrase with the field; remove it with its chip’s ×.",
+      "notice": "No multiline text box. Save applies the edited list.",
+      "risk": "UI only; speech is unchanged."
+    },
+    {
+      "id": "L-5",
+      "surface": "Microphone and vocabulary",
+      "path": "Right-click the microphone beside Send",
+      "headline": "Try adding and removing vocabulary chips.",
+      "changed": "Right-click the mic, choose Vocabulary, add a phrase, remove a chip, then Save.",
+      "notice": "Check whether this is the editing style you wanted.",
+      "risk": "Practice data only; saving does not change recordings.",
+      "live": { "app": "default" }
+    }
+  ]
+}

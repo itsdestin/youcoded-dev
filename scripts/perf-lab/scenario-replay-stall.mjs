@@ -15,7 +15,7 @@
 // mechanism is in the source: TranscriptWatcher.getHistory
 // (youcoded/desktop/src/main/transcript-watcher.ts:451-488) does a synchronous
 // fs.readFileSync of the entire transcript plus a full parse of every line, and it
-// is called from an IPC handler (ipc-handlers.ts:2489). The main process is
+// is called from an IPC handler (main/ipc/session.ts, the session:history entry). The main process is
 // single-threaded and serves IPC for EVERY session, so while that runs, nothing in
 // the app can respond — not the conversation being resumed, not the other five.
 //
@@ -120,7 +120,7 @@ export function medianRun(runs) {
 // WHY this rule and not something simpler:
 //  * The IPC probe measures END-TO-END unresponsiveness — it pings
 //    `window.claude.getPlatform()`, whose handler is literally `() => process.platform`
-//    (ipc-handlers.ts:1387-1389), so every millisecond it reports is queueing and
+//    (main/ipc/ui.ts, the platform:get entry), so every millisecond it reports is queueing and
 //    thread availability, never handler cost. But a blocked RENDERER also delays that
 //    ping (it cannot dispatch the call, and it cannot run the promise resolution), so
 //    a big number on its own does not say which thread was at fault.

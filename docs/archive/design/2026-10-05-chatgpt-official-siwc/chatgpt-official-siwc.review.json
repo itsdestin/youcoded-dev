@@ -1,0 +1,83 @@
+{
+  "title": "ChatGPT sign-in: what changes on the day we switch to OpenAI's official version",
+  "key": "chatgpt-official-siwc-review",
+  "out": "chatgpt-official-siwc.review.html",
+  "stage": "review",
+  "images": "images/chatgpt-official-siwc.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "After the switch"
+  },
+  "crops": {
+    "card": [
+      "main",
+      "card",
+      "650x200+480+285"
+    ],
+    "signin": [
+      "main",
+      "signin",
+      "650x150+480+330"
+    ],
+    "limit": [
+      "main",
+      "limit",
+      "1200x80+0+700"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "ChatGPT card",
+      "path": "Settings → Assistant settings → Cloud providers → ChatGPT, while signed in",
+      "crop": "card",
+      "headline": "Signed in on the official version, the card loses its usage bars and plan name and gains a Manage usage button.",
+      "changed": "The 5-hour and weekly bars and the plan name (\"ChatGPT Plus\") are gone: OpenAI won't give them to apps on this version. My Account becomes Manage usage, which opens ChatGPT's usage page.",
+      "notice": "To see how much is left, or to change how much YouCoded may use, press Manage usage. It opens in your browser."
+    },
+    {
+      "id": "R-2",
+      "surface": "ChatGPT card",
+      "path": "Settings → Assistant settings → Cloud providers → ChatGPT, right after the update that flips the switch",
+      "crop": "signin",
+      "headline": "Anyone signed in the old way is asked once to sign in again, in plain words (your answer to question 2).",
+      "changed": "Instead of \"Not signed in\", the card says \"Sign in again\" and explains that ChatGPT sign-in has changed. The button is the same Sign in with ChatGPT.",
+      "notice": "One click, and the browser shows a ChatGPT page naming YouCoded rather than Codex. A ChatGPT message sent before that says the same thing and offers Open Settings.",
+      "risk": "Until they sign in again, ChatGPT models don't work for that person.",
+      "highlight": {
+        "box": [
+          3,
+          10,
+          95,
+          72
+        ]
+      }
+    },
+    {
+      "id": "R-3",
+      "surface": "Chat",
+      "path": "The message under a conversation when the ChatGPT allowance runs out",
+      "crop": "limit",
+      "headline": "When the allowance runs out on the official version, the message points to ChatGPT's usage page instead of a reset time.",
+      "changed": "OpenAI doesn't tell apps when the limit resets, or whether it's the whole plan or just YouCoded's share. So the message says what's known, and Upgrade plan becomes Manage usage.",
+      "notice": "Manage usage opens ChatGPT's page, where you can see when it resets or give YouCoded a bigger share. Switch Providers works as today.",
+      "risk": "The message no longer says when you can carry on. You find that out on ChatGPT's page.",
+      "highlight": {
+        "box": [
+          1,
+          2,
+          91,
+          56
+        ]
+      }
+    }
+  ],
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ]
+}

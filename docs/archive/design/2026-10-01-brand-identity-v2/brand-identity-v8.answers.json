@@ -1,0 +1,32 @@
+{
+ "deck": "brand-identity-v8",
+ "started": "2026-10-02T04:45:47.695Z",
+ "submitted": "2026-10-02T04:50:20Z",
+ "cur": 2,
+ "answers": {
+  "NAME": {
+   "note": "t1/t3/t4 all interesting, let me see some more fonts. also let me see this on different surfaces and paired with different things (new first-launch/setup screen, with our agents for everyone tagline, site footer, etc)",
+   "t": 1790916495836,
+   "v": "other",
+   "seconds": 148,
+   "theme": "light",
+   "zoom": 1
+  },
+  "ICON": {
+   "note": "i like k4, k8,  k6. again, want to see some that integrate the name or other stuff. i also think we need standards for how to style BOTH the full name and just our initials yc. i want a full slate of marketing materials ",
+   "t": 1790916591245,
+   "v": "other",
+   "seconds": 95,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "we've degraded back down again.",
+   "t": 1790916619451,
+   "v": "other",
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

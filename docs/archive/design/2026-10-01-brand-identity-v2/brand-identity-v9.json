@@ -1,0 +1,336 @@
+{
+ "title": "YouCoded name and icons \u2014 round 9: fonts on real surfaces, yc, and the marketing slate",
+ "key": "brand-identity-v9",
+ "out": "brand-identity-v9.html",
+ "images": "images/brand-identity-v9",
+ "runs": {
+  "today": "runs/v9"
+ },
+ "labels": {
+  "today": "Idea"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "f1": [
+   "brand",
+   "f1",
+   "1200x700+0+0"
+  ],
+  "f2": [
+   "brand",
+   "f2",
+   "1200x700+0+0"
+  ],
+  "f3": [
+   "brand",
+   "f3",
+   "1200x700+0+0"
+  ],
+  "f4": [
+   "brand",
+   "f4",
+   "1200x700+0+0"
+  ],
+  "f5": [
+   "brand",
+   "f5",
+   "1200x700+0+0"
+  ],
+  "f6": [
+   "brand",
+   "f6",
+   "1200x700+0+0"
+  ],
+  "f7": [
+   "brand",
+   "f7",
+   "1200x700+0+0"
+  ],
+  "k4": [
+   "brand",
+   "k4",
+   "1200x700+0+0"
+  ],
+  "k6": [
+   "brand",
+   "k6",
+   "1200x700+0+0"
+  ],
+  "k8": [
+   "brand",
+   "k8",
+   "1200x700+0+0"
+  ],
+  "y1": [
+   "brand",
+   "y1",
+   "1200x700+0+0"
+  ],
+  "y2": [
+   "brand",
+   "y2",
+   "1200x700+0+0"
+  ],
+  "y3": [
+   "brand",
+   "y3",
+   "1200x700+0+0"
+  ],
+  "y4": [
+   "brand",
+   "y4",
+   "1200x700+0+0"
+  ],
+  "i1": [
+   "brand",
+   "i1",
+   "1200x700+0+0"
+  ],
+  "i2": [
+   "brand",
+   "i2",
+   "1200x700+0+0"
+  ],
+  "i3": [
+   "brand",
+   "i3",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "FONT",
+   "surface": "The name",
+   "path": "Setup screen, site footer, lockups, the \"yc\" initials",
+   "headline": "Which fonts do you like for \"youcoded\" and \"yc\"? Pick as many as you want.",
+   "notice": "Each board shows one font on the first-launch setup screen (with the tagline), the site footer, the icon + name lockups and the initials. Only the font changes between boards.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "f1",
+     "label": "F1 DM Sans (your T1)",
+     "crop": "f1",
+     "summary": "The site's font today. Crisp, neutral, safest."
+    },
+    {
+     "id": "f2",
+     "label": "F2 Outfit (your T3)",
+     "crop": "f2",
+     "summary": "Lighter, airier geometric; calm on technical pages."
+    },
+    {
+     "id": "f3",
+     "label": "F3 M PLUS Rounded (your T4)",
+     "crop": "f3",
+     "summary": "Soft round stroke ends, like the mascot's limbs."
+    },
+    {
+     "id": "f4",
+     "label": "F4 Manrope",
+     "crop": "f4",
+     "summary": "Like DM Sans but a touch rounder and warmer."
+    },
+    {
+     "id": "f5",
+     "label": "F5 Figtree",
+     "crop": "f5",
+     "summary": "Friendly geometric; very readable small."
+    },
+    {
+     "id": "f6",
+     "label": "F6 Urbanist",
+     "crop": "f6",
+     "summary": "Pure circles and lines; the most minimal."
+    },
+    {
+     "id": "f7",
+     "label": "F7 Lexend",
+     "crop": "f7",
+     "summary": "Wide and very easy to read."
+    }
+   ]
+  },
+  {
+   "id": "ICON",
+   "surface": "App icon and initials",
+   "path": "Taskbar, dock, browser tab, profile pictures",
+   "headline": "Which icons do you like? Pick as many as you want.",
+   "notice": "Your K4, K6 and K8 unchanged for comparison, plus four that bring in \"yc\" or the full name. Lettering will follow the font you pick.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "k4",
+     "label": "K4 Just the face (your pick)",
+     "crop": "k4",
+     "summary": "Milk-glass face panel and two eyes."
+    },
+    {
+     "id": "k6",
+     "label": "K6 Stands up (your pick)",
+     "crop": "k6",
+     "summary": "The tile is the body, on glass legs."
+    },
+    {
+     "id": "k8",
+     "label": "K8 Standing, on a tile (your pick)",
+     "crop": "k8",
+     "summary": "K6 on a frosted square."
+    },
+    {
+     "id": "y1",
+     "label": "Y1 Face with \"yc\" for a mouth",
+     "crop": "y1",
+     "summary": "K4 with the initials as its expression."
+    },
+    {
+     "id": "y2",
+     "label": "Y2 The initials alone",
+     "crop": "y2",
+     "summary": "\"yc\" in milk-glass: the proposed standard for the initials."
+    },
+    {
+     "id": "y3",
+     "label": "Y3 Standing, \"yc\" mouth",
+     "crop": "y3",
+     "summary": "K6 with the initials under its eyes."
+    },
+    {
+     "id": "y4",
+     "label": "Y4 Badge: face over the full name",
+     "crop": "y4",
+     "summary": "For avatars, stores, stickers; not a taskbar icon."
+    }
+   ]
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "The file people download: YouCoded-Setup.exe",
+   "headline": "Which installer icons do you like? Pick as many as you want.",
+   "notice": "Back to your round-7 H3 exactly (theme colour, frosted band, white arrow), now with the icons you picked above the band.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "i1",
+     "label": "I1 H3 with K4's face",
+     "crop": "i1",
+     "summary": "The face above the glass band."
+    },
+    {
+     "id": "i2",
+     "label": "I2 H3 with K6 standing",
+     "crop": "i2",
+     "summary": "The standing mascot above the band."
+    },
+    {
+     "id": "i3",
+     "label": "I3 H3 with Y1",
+     "crop": "i3",
+     "summary": "The face with \"yc\" for a mouth above the band."
+    }
+   ]
+  },
+  {
+   "id": "SLATE",
+   "words": true,
+   "surface": "Marketing materials",
+   "path": "Everything made once the font and icon are chosen",
+   "headline": "Which pieces should the full marketing slate include? Pick as many as you want.",
+   "today": "There are no shared marketing materials: the site, the app and any posts each style the name and mascot their own way.",
+   "problem": "The style rules and every piece depend on which font and icon you choose, so building them before you choose would mean redoing all of it.",
+   "proposal": "After you pick a font and icon above, the next round is a brand standards sheet (how to write the full name and \"yc\", colours, spacing, do and don't) plus whichever of these pieces you choose, all built from that sheet.",
+   "pick": "several",
+   "options": [
+    {
+     "id": "profile",
+     "label": "Profile pictures",
+     "pros": [
+      "One square image for every social account, GitHub and Discord.",
+      "The piece people see most."
+     ],
+     "cons": [
+      "Needs a version that works as a circle crop."
+     ]
+    },
+    {
+     "id": "linkcard",
+     "label": "Link preview card",
+     "pros": [
+      "The picture that shows when someone shares youcoded.ai in a chat or post.",
+      "Shown thousands of times for free."
+     ],
+     "cons": [
+      "One more image to keep up to date when the site changes."
+     ]
+    },
+    {
+     "id": "banners",
+     "label": "Social banners",
+     "pros": [
+      "Header images for X, LinkedIn, YouTube and GitHub.",
+      "Makes every profile look like one brand."
+     ],
+     "cons": [
+      "Each site crops differently, so it is several sizes of one design."
+     ]
+    },
+    {
+     "id": "launch",
+     "label": "Launch / announcement graphics",
+     "pros": [
+      "Ready-made templates for \"new version\" and \"new feature\" posts.",
+      "Future announcements take minutes, not a design session."
+     ],
+     "cons": [
+      "Only useful if you post updates regularly."
+     ]
+    },
+    {
+     "id": "store",
+     "label": "Download page and store screenshots frame",
+     "pros": [
+      "A consistent frame around app screenshots for the site and app stores.",
+      "Makes screenshots look finished."
+     ],
+     "cons": [
+      "Needs fresh screenshots whenever the app's look changes."
+     ]
+    },
+    {
+     "id": "slides",
+     "label": "Slide template",
+     "pros": [
+      "Title, section and content slides in the brand's style for talks and pitches."
+     ],
+     "cons": [
+      "Only worth it if you present YouCoded to people."
+     ]
+    },
+    {
+     "id": "stickers",
+     "label": "Sticker sheet",
+     "pros": [
+      "Mascot faces, \"yc\" and the name as stickers, for laptops and events.",
+      "The mascot is made for this."
+     ],
+     "cons": [
+      "Printed stickers cost money to order."
+     ]
+    },
+    {
+     "id": "merch",
+     "label": "T-shirt and merch mockups",
+     "pros": [
+      "Shows the brand on a shirt, mug and tote."
+     ],
+     "cons": [
+      "Purely for fun or events unless you plan to sell or give them away."
+     ]
+    }
+   ]
+  }
+ ]
+}

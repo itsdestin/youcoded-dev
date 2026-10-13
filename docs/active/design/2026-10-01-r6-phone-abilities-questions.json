@@ -1,0 +1,243 @@
+{
+  "title": "What else should your phone be able to do?",
+  "key": "r6-phone-abilities-questions",
+  "out": "r6-phone-abilities-questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-skill-update",
+      "words": true,
+      "surface": "Marketplace on your phone",
+      "path": "A skill with an 'Update available' badge",
+      "headline": "Should the Update button on a skill work from your phone?",
+      "today": "Your phone can now see that a skill has an update, but pressing Update says it isn't available on this device.",
+      "problem": "You can see the update but have to walk to the computer to apply it.",
+      "proposal": "Yes lets the phone tell your computer to update that skill, exactly as the computer's own button does.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Allow it",
+          "pros": [
+            "The button you can see actually works.",
+            "Matches what you asked for: the phone works like the computer."
+          ],
+          "cons": [
+            "Someone holding your paired phone could update your skills (they can already install them)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Computer only",
+          "pros": [
+            "Skill updates only happen when you are at the computer."
+          ],
+          "cons": [
+            "A visible button that refuses on the phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-themes",
+      "words": true,
+      "surface": "Theme marketplace on your phone",
+      "path": "Browsing themes from your phone",
+      "headline": "Should your phone be able to install, remove and update themes on your computer?",
+      "today": "Your phone can now browse the theme marketplace, but installing, removing or updating a theme says it isn't available on this device.",
+      "problem": "You can find a theme you like on the phone but cannot install it from there.",
+      "proposal": "Yes makes those buttons work from the phone. The theme changes on the computer and every screen.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Allow it",
+          "pros": [
+            "Browse and install in one place.",
+            "Matches the phone-works-like-the-computer goal."
+          ],
+          "cons": [
+            "Someone with your paired phone could change how the app looks on your computer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Browse only",
+          "pros": [
+            "Themes change only when you are at the computer."
+          ],
+          "cons": [
+            "Install buttons that refuse on the phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-publish",
+      "words": true,
+      "surface": "Theme marketplace on your phone",
+      "path": "Publishing a theme you made",
+      "headline": "Should your phone be able to publish one of your themes to the public marketplace?",
+      "today": "Publishing a theme works only from the computer.",
+      "problem": "Rarely matters day to day, but it is one of the few things the phone cannot do.",
+      "proposal": "Yes lets the phone press Publish on a theme that already exists on your computer. It goes public, like publishing from the computer.",
+      "options": [
+        {
+          "id": "no",
+          "label": "Computer only",
+          "pros": [
+            "Something public only ever happens when you are at the computer and can see what is going out."
+          ],
+          "cons": [
+            "One more thing the phone cannot do."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "yes",
+          "label": "Allow it",
+          "pros": [
+            "The phone matches the computer completely here."
+          ],
+          "cons": [
+            "Someone with your paired phone could publish under your name."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-install-count",
+      "words": true,
+      "surface": "Marketplace on your phone",
+      "path": "Installing a skill from your phone while signed in",
+      "headline": "When you install a skill from your phone, should it count towards that skill's install number, like it does from the computer?",
+      "today": "Installs from the phone work, but the marketplace's public install count is not told about them.",
+      "problem": "Skill authors see lower install numbers than reality, and your phone installs are invisible to the ranking.",
+      "proposal": "Yes sends the same small 'installed' note the computer sends. Nothing else is shared.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Count it",
+          "pros": [
+            "Install numbers are honest.",
+            "Same as installing from the computer."
+          ],
+          "cons": [
+            "None beyond what the computer already sends."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Don't count",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Phone installs stay invisible to the counts."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-report",
+      "words": true,
+      "surface": "Marketplace on your phone",
+      "path": "The Report button on a skill or theme",
+      "headline": "Should you be able to report a bad skill or theme to the marketplace from your phone?",
+      "today": "Reporting works only from the computer.",
+      "problem": "If you notice something broken or harmful while browsing on the phone, you have to remember to report it later.",
+      "proposal": "Yes makes the Report button work from the phone, as it does on the computer.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Allow it",
+          "pros": [
+            "Report the moment you notice it."
+          ],
+          "cons": [
+            "Someone with your paired phone could file reports under your name."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Computer only",
+          "pros": [
+            "Reports only come from you at the desk."
+          ],
+          "cons": [
+            "A button that refuses on the phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-skill-file",
+      "words": true,
+      "surface": "Chat on your phone",
+      "path": "The 'what the assistant was given' panel, after running a skill",
+      "headline": "Should the phone's 'what the assistant was given' panel also show the skill's own instructions file?",
+      "today": "Since your last answers, the phone's panel shows your project and personal instruction files. When a skill ran, its own instructions file is still left out on the phone.",
+      "problem": "On the phone you see that a skill ran but not what it told the assistant; the computer shows it.",
+      "proposal": "Yes shows the skill's file on the phone too, with the same protection that hides secret files from the phone.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Show it",
+          "pros": [
+            "The phone's panel matches the computer's."
+          ],
+          "cons": [
+            "One more file on your computer readable from the phone (secret files stay blocked)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Leave it out",
+          "pros": [
+            "Fewer files readable from the phone."
+          ],
+          "cons": [
+            "The phone and computer panels differ."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-folders",
+      "words": true,
+      "surface": "Folders on your phone",
+      "path": "Adding a folder to work in, from your phone",
+      "headline": "Should your phone be allowed to add any folder on your computer as a place to work?",
+      "today": "A phone can add any folder on your computer, even your whole home folder, and then browse and open the files in it. Secret files (keys, saved logins, the app's passwords) are always blocked from the phone.",
+      "problem": "If someone got hold of your paired phone, they could look through most of your files, not just your projects.",
+      "proposal": "Restricting it means the phone can only use folders you added at the computer.",
+      "options": [
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "The phone can start work in any folder, same as the computer — what you asked for.",
+            "Secret files stay blocked either way."
+          ],
+          "cons": [
+            "A stolen, still-paired phone could browse most of your files."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "restrict",
+          "label": "Computer-added only",
+          "pros": [
+            "A phone can only reach folders you chose at the desk."
+          ],
+          "cons": [
+            "You cannot start work in a brand-new folder from the phone."
+          ]
+        }
+      ]
+    }
+  ]
+}

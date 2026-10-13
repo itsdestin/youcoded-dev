@@ -1,0 +1,112 @@
+{
+ "title": "YouCoded brand \u2014 the logo pages with every pick applied",
+ "key": "brand-identity-v23",
+ "out": "brand-identity-v23.html",
+ "images": "images/brand-identity-v23",
+ "runs": {
+  "today": "runs/v22"
+ },
+ "labels": {
+  "today": "With every pick"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "l1": [
+   "brand",
+   "l1",
+   "1200x700+0+0"
+  ],
+  "l2": [
+   "brand",
+   "l2",
+   "1200x700+0+0"
+  ],
+  "l3": [
+   "brand",
+   "l3",
+   "1200x700+0+0"
+  ],
+  "l4": [
+   "brand",
+   "l4",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "L1",
+   "surface": "The logo set",
+   "path": "Everywhere the name appears",
+   "crop": "l1",
+   "headline": "Are the lockups right now?",
+   "changed": "Soft lowercase tagline, the name raised slightly next to the icon, and the new initials (gradient \"y\", raised, on the white tile).",
+   "notice": "Everything you picked in rounds 20\u201322, applied.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  },
+  {
+   "id": "L2",
+   "surface": "The logo set",
+   "path": "Everywhere the name appears",
+   "crop": "l2",
+   "headline": "Are the colour versions right now?",
+   "changed": "\"yc\" now colours only the \"y\"; the \"Follows the theme\" names take their colours from each mascot's face.",
+   "notice": "On dark, the \"c\" turns light so it stays readable.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  },
+  {
+   "id": "L3",
+   "surface": "The logo set",
+   "path": "Everywhere the name appears",
+   "crop": "l3",
+   "headline": "Are the rules still right?",
+   "changed": "Only the type note changed: the tagline is now Outfit, lowercase, soft grey, and the name sits slightly above centre next to the icon.",
+   "notice": "Everything else is as you approved.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  },
+  {
+   "id": "L4",
+   "surface": "The logo set",
+   "path": "Everywhere the name appears",
+   "crop": "l4",
+   "headline": "Does it all work in use now?",
+   "changed": "Site header and hero, title bar, browser tab, help pages and footer, all with the new tagline and spacing.",
+   "notice": "Nothing else changed.",
+   "risk": "The title-bar version is tiny; the raise is under a pixel there.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,91 @@
+{
+  "title": "Website logo — round 2: tagline in the top bar, brand font, tab title",
+  "key": "brand-website-v2",
+  "out": "brand-website-v2.html",
+  "images": "images/brand-website-v2",
+  "runs": {"before": "runs/before", "after": "runs-v2/after"},
+  "labels": {"before": "Live site today", "after": "New"},
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "nav": ["site", "nav-themes", "560x440+0+0"],
+    "bar": ["site", "nav-cotton-candy-sky-1440x900", "1304x88+0+0"],
+    "navphone": ["site", "nav-phone", "780x90+0+0"],
+    "foot": ["site", "foot-cotton-candy-sky-1440x900", "1244x170+0+0"],
+    "footphone": ["site", "foot-phone", "756x280+0+0"],
+    "tab-a": ["site", "tab-a", "1040x236+0+0"],
+    "tab-b": ["site", "tab-b", "1040x236+0+0"],
+    "tab-c": ["site", "tab-c", "1040x236+0+0"]
+  },
+  "steps": [
+    {
+      "id": "HEADER",
+      "surface": "Website",
+      "path": "The bar across the top of youcoded.ai, in five of the site's themes",
+      "crop": "nav",
+      "headline": "The top bar now carries the logo with \"agents for everyone\" tucked beside the y.",
+      "changed": "Swapped with the footer, as you asked: the top bar gets the tagline version. The icon grew from 36 to 44 px so the tagline stays readable.",
+      "measured": "Tagline 9.5 px tall on a computer, 8.7 px on a phone",
+      "notice": "The logo is a little bigger in the bar than in round 1.",
+      "risk": "At 8.7 px on a phone the tagline is small, though still legible on a phone's sharp screen.",
+      "highlight": {"box": [0, 0, 100, 100]}
+    },
+    {
+      "id": "LINKS",
+      "surface": "Website",
+      "path": "About, Features and FAQ at the right of the top bar",
+      "crop": "bar",
+      "headline": "About, Features and FAQ now use the logo's font (Outfit).",
+      "changed": "The three links switch from DM Sans bold to Outfit medium, a touch larger so they read the same size.",
+      "notice": "The bar reads as one set with the logo. The page's headlines and body text keep their fonts.",
+      "risk": "None known.",
+      "highlight": {"box": [86, 20, 14, 60]}
+    },
+    {
+      "id": "PHONEHEAD",
+      "surface": "Website",
+      "path": "The top bar on a phone, light and dark",
+      "crop": "navphone",
+      "headline": "On a phone the top bar shows the tagline logo too.",
+      "changed": "Same logo at a 40 px icon. The phone bar has no links, so nothing competes for room.",
+      "notice": "The old phone bar's caps logo is gone.",
+      "risk": "None known.",
+      "highlight": {"box": [0, 0, 100, 100]}
+    },
+    {
+      "id": "FOOTER",
+      "surface": "Website",
+      "path": "The card at the very bottom of the page, on a computer",
+      "crop": "foot",
+      "headline": "The footer now shows the plain logo, icon and name, no tagline.",
+      "changed": "The name-only lockup at a 44 px icon.",
+      "notice": "The tagline appears once on the page, at the top.",
+      "risk": "None known.",
+      "highlight": {"box": [0, 0, 30, 100]}
+    },
+    {
+      "id": "PHONEFOOT",
+      "surface": "Website",
+      "path": "The footer on a phone, light and dark",
+      "crop": "footphone",
+      "headline": "On a phone the plain footer logo sits with the Open Source badge beside it.",
+      "changed": "The badge moved to sit just after the name, centred on the icon. Today it lands on top of \"ASSISTANT\".",
+      "measured": "15 px between the name and the badge on a 390 px screen",
+      "notice": "Nothing overlaps at phone width.",
+      "risk": "None known.",
+      "highlight": {"box": [0, 0, 100, 40]}
+    },
+    {
+      "id": "TITLE",
+      "surface": "Browser",
+      "path": "The words on the browser tab, and a bookmark's name",
+      "headline": "Which tab title, now that \"youcoded\" is lowercase?",
+      "notice": "Search results and bookmarks show this text too. A is on the branch now; each option is drawn with the real tab icon.",
+      "variants": [
+        {"id": "a", "label": "A Agentic AI", "crop": "tab-a", "summary": "Today's wording, without \"Assistant\". Fits the tab."},
+        {"id": "b", "label": "B Tagline", "crop": "tab-b", "summary": "The logo's own tagline, all lowercase, so the tab matches the top bar exactly."},
+        {"id": "c", "label": "C Keep Assistant", "crop": "tab-c", "summary": "Only the name lowercased. Keeps the word search engines know, but the tab cuts it off.", "risk": "Cut off at the end in a normal-width tab."}
+      ]
+    }
+  ]
+}

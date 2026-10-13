@@ -1,0 +1,96 @@
+{
+ "title": "YouCoded brand \u2014 round 29: menu-bar eye styles",
+ "key": "brand-identity-v29",
+ "out": "brand-identity-v29.html",
+ "images": "images/brand-identity-v29",
+ "runs": {
+  "today": "runs/v29"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "ea": [
+   "brand",
+   "eyes",
+   "182x602+24+74"
+  ],
+  "eb": [
+   "brand",
+   "eyes",
+   "182x602+218+74"
+  ],
+  "ec": [
+   "brand",
+   "eyes",
+   "182x602+412+74"
+  ],
+  "ed": [
+   "brand",
+   "eyes",
+   "182x602+606+74"
+  ],
+  "ee": [
+   "brand",
+   "eyes",
+   "182x602+800+74"
+  ],
+  "ef": [
+   "brand",
+   "eyes",
+   "182x602+994+74"
+  ]
+ },
+ "steps": [
+  {
+   "id": "EYES",
+   "surface": "Mac menu bar icon",
+   "path": "Top-right of the Mac screen",
+   "headline": "Which eye style for the one-colour menu-bar face?",
+   "notice": "Six eye treatments, each enlarged, then at real and twice real size on light and dark menu bars. Pick any you like.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "ea",
+     "label": "A Last round",
+     "crop": "ea",
+     "summary": "Cut-out eyes with sparkle."
+    },
+    {
+     "id": "eb",
+     "label": "B Pupils",
+     "crop": "eb",
+     "summary": "Cut-out eyes with a solid pupil."
+    },
+    {
+     "id": "ec",
+     "label": "C Small dot eyes",
+     "crop": "ec",
+     "summary": "Smaller round eyes, no sparkle."
+    },
+    {
+     "id": "ed",
+     "label": "D Happy eyes",
+     "crop": "ed",
+     "summary": "Closed, smiling eyes."
+    },
+    {
+     "id": "ee",
+     "label": "E Outline face",
+     "crop": "ee",
+     "summary": "Outline, solid eyes with sparkle."
+    },
+    {
+     "id": "ef",
+     "label": "F Outline, plain eyes",
+     "crop": "ef",
+     "summary": "Outline, solid eyes, no sparkle."
+    }
+   ]
+  }
+ ]
+}

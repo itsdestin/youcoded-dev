@@ -1,0 +1,84 @@
+{
+ "title": "YouCoded brand \u2014 round 28: Mac Dock middle ground, menu bar sparkles",
+ "key": "brand-identity-v28",
+ "out": "brand-identity-v28.html",
+ "images": "images/brand-identity-v28",
+ "runs": {
+  "today": "runs/v28"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "da": [
+   "brand",
+   "dockmid",
+   "1160x200+20+74"
+  ],
+  "db": [
+   "brand",
+   "dockmid",
+   "1160x200+20+278"
+  ],
+  "dc": [
+   "brand",
+   "dockmid",
+   "1160x200+20+482"
+  ],
+  "menu": [
+   "brand",
+   "menubar2",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "DOCK",
+   "surface": "Mac Dock while a theme is on",
+   "path": "Dock, Mac only",
+   "headline": "Which middle ground for the Mac Dock?",
+   "notice": "B and C keep the theme's face but swap the white tile for see-through glass we draw. The Mac can't add real Liquid Glass to a swapped icon, so the glass is our drawing and won't move with the light. The face stays full colour in every look.",
+   "variants": [
+    {
+     "id": "da",
+     "label": "A Never swap",
+     "crop": "da",
+     "summary": "As picked last round: the Mac's own glass icon, no theme face."
+    },
+    {
+     "id": "db",
+     "label": "B Clear glass",
+     "crop": "db",
+     "summary": "Theme face on see-through white glass."
+    },
+    {
+     "id": "dc",
+     "label": "C Tinted glass",
+     "crop": "dc",
+     "summary": "Theme face on glass faintly tinted with the theme's colour."
+    }
+   ]
+  },
+  {
+   "id": "MENUBAR",
+   "surface": "Mac menu bar icon",
+   "path": "Top-right of the Mac screen",
+   "headline": "One-colour menu bar icon with the eye sparkles kept \u2014 good?",
+   "changed": "A small solid highlight sits inside each eye, so the cut-out face reads as friendly, not hollow.",
+   "notice": "Right: sparkles kept. Left: last round's, for comparison.",
+   "crop": "menu",
+   "highlight": {
+    "box": [
+     44,
+     13,
+     32,
+     28
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,152 @@
+[
+  {
+    "name": "settings/voice#empty",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice#empty/halftone-dimension.png",
+    "ms": 3013,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 224,
+      "w": 420,
+      "h": 453
+    }
+  },
+  {
+    "name": "settings/voice#empty",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice#empty/meadow-mist.png",
+    "ms": 3742,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 241,
+      "w": 420,
+      "h": 418
+    }
+  },
+  {
+    "name": "settings/voice#stress",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice#stress/halftone-dimension.png",
+    "ms": 4520,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 224,
+      "w": 420,
+      "h": 453
+    }
+  },
+  {
+    "name": "settings/voice",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice/halftone-dimension.png",
+    "ms": 4936,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 224,
+      "w": 420,
+      "h": 453
+    }
+  },
+  {
+    "name": "settings/voice",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice/meadow-mist.png",
+    "ms": 5517,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 241,
+      "w": 420,
+      "h": 418
+    }
+  },
+  {
+    "name": "settings/voice#stress",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice#stress/meadow-mist.png",
+    "ms": 6160,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 241,
+      "w": 420,
+      "h": 418
+    }
+  },
+  {
+    "name": "settings/voice#narrow",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice#narrow/halftone-dimension.png",
+    "ms": 6474,
+    "errors": [],
+    "panel": {
+      "x": 23,
+      "y": 169,
+      "w": 343,
+      "h": 507
+    }
+  },
+  {
+    "name": "settings",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/halftone-dimension.png",
+    "ms": 6580,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 900
+    }
+  },
+  {
+    "name": "settings/voice#narrow",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/voice#narrow/meadow-mist.png",
+    "ms": 8136,
+    "errors": [],
+    "panel": {
+      "x": 23,
+      "y": 176,
+      "w": 343,
+      "h": 491
+    }
+  },
+  {
+    "name": "settings",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "docs/active/design/2026-10-06-voice-custom-vocabulary/runs/after/settings/meadow-mist.png",
+    "ms": 8370,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 900
+    }
+  }
+]

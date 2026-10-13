@@ -1,0 +1,65 @@
+{
+ "deck": "brand-identity-v27",
+ "started": "2026-10-04T07:22:52.204Z",
+ "submitted": "2026-10-04T07:29:09Z",
+ "cur": 6,
+ "answers": {
+  "THEMES": {
+   "v": "yes",
+   "t": 1791098590279,
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "HALFTONE": {
+   "note": "idk if i meant taskbar? like icon/window/dock bar thing. the main app icon should cahnge with them, in addition to the taskbar icon",
+   "t": 1791098667763,
+   "v": "pick",
+   "pick": "ha",
+   "seconds": 77,
+   "theme": "light",
+   "zoom": 1
+  },
+  "MORNING": {
+   "v": "pick",
+   "pick": "ma",
+   "t": 1791098691801,
+   "seconds": 24,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GLASS": {
+   "v": "yes",
+   "t": 1791098736393,
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "DOCK": {
+   "v": "pick",
+   "pick": "da",
+   "t": 1791098843699,
+   "note": "could we possibly meet in the middle? like keep the themed face, but the glass background instead of the white?",
+   "seconds": 107,
+   "theme": "light",
+   "zoom": 1
+  },
+  "TRAY": {
+   "v": "pick",
+   "pick": "tc",
+   "t": 1791098874276,
+   "seconds": 31,
+   "theme": "light",
+   "zoom": 1
+  },
+  "MENUBAR": {
+   "v": "pick",
+   "t": 1791098948568,
+   "note": "fine with a but we need to keep eye sparkle elements or they look really scary. what are the issues with b? ",
+   "pick": "ka",
+   "seconds": 74,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

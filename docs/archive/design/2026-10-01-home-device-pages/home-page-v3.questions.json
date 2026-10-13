@@ -1,0 +1,190 @@
+{
+  "title": "The Home page, round 4 — the questions before anything is drawn",
+  "key": "home-page-v3-questions",
+  "out": "home-page-v3.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-chip-tap",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, the new chip bar at the top",
+      "headline": "What happens when you press one of the four chips (Lights, Media, Climate, Problems)?",
+      "today": "There is no chip bar. The top of the page has Everything off and Edit.",
+      "problem": "A chip can either reshape the page or open something on top of it, and the two feel very different.",
+      "proposal": "Pressing a chip filters the page to just that kind of thing, room by room; pressing it again shows everything.",
+      "options": [
+        {
+          "id": "filter",
+          "label": "Filter the page",
+          "summary": "Lights shows only light cards in each room; Media only TVs and speakers; and so on.",
+          "pros": ["You stay on one page; nothing covers it.", "Rooms keep their order, so you know where you are."],
+          "cons": ["Problems as a filter shows broken devices but not fixes that are not one device (like signing in to Nest)."],
+          "recommended": true
+        },
+        {
+          "id": "sheet",
+          "label": "Open a panel",
+          "summary": "A panel slides in listing everything of that kind, with its controls.",
+          "pros": ["Room for extra controls, e.g. a Fix button per problem."],
+          "cons": ["Covers the page; one more thing to close."]
+        },
+        {
+          "id": "mixed",
+          "label": "Filter, except Problems opens a panel",
+          "pros": ["Problems needs room for explanations and Fix buttons; the others do not."],
+          "cons": ["Two behaviours to learn for four chips that look alike."]
+        }
+      ]
+    },
+    {
+      "id": "Q-scenes",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, Hue scenes",
+      "headline": "Where should your Hue scenes go?",
+      "today": "Scenes are only in the Hue app and Home Assistant. Your bridge has several per room.",
+      "problem": "Most scenes belong to one room, and a page-wide row of every scene from every room gets long fast.",
+      "proposal": "Each room's Lights card gets a row of its own scenes, under the room brightness bar.",
+      "options": [
+        {
+          "id": "per-room",
+          "label": "In each room's Lights card",
+          "pros": ["A scene sits next to the lights it changes.", "Short rows: only that room's scenes."],
+          "cons": ["Home-wide scenes (if you ever make one) need a place too."],
+          "recommended": true
+        },
+        {
+          "id": "top-row",
+          "label": "One row at the top of the page",
+          "pros": ["All one-tap moods in one place."],
+          "cons": ["Every room's scenes mixed together; needs hiding to stay short."]
+        },
+        {
+          "id": "both",
+          "label": "Per room, plus a top row for ones you star",
+          "pros": ["Favourite moods one tap from the top; the rest where they belong."],
+          "cons": ["More to build; a starred scene shows twice."]
+        }
+      ]
+    },
+    {
+      "id": "Q-settings",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, a settings menu",
+      "headline": "Where should the page's settings live (which chips, scenes, sensors and sections to show)?",
+      "today": "Edit mode handles single devices: star, order, rename, room, hide. Nothing switches whole features on or off.",
+      "problem": "You asked for a place to show, hide or turn off features like the chips and scenes.",
+      "proposal": "A gear button next to Edit opens a Page settings panel with one switch per feature.",
+      "options": [
+        {
+          "id": "gear",
+          "label": "A gear next to Edit, opening a settings panel",
+          "pros": ["Edit stays about devices; settings stay about the page.", "Familiar: every app has a gear."],
+          "cons": ["One more button at the top."],
+          "recommended": true
+        },
+        {
+          "id": "in-edit",
+          "label": "A section at the top of Edit mode",
+          "pros": ["No new button; all changes happen in one mode."],
+          "cons": ["Edit mode already fills every card with controls; this adds more."]
+        }
+      ]
+    },
+    {
+      "id": "Q-device-page",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, a device's own page",
+      "headline": "What should a device's own page look like (its history, its info like \"Sonos Roam 2\", its settings)?",
+      "today": "There is no device page. Each card holds its controls; Edit has a link out to Home Assistant.",
+      "problem": "Per-device history and the maker/model info you asked for need somewhere to live that is not the card.",
+      "proposal": "Pressing a device's name opens a panel from the side with three parts: its controls, its history, and an Info section (maker, model, software version, address, which integration).",
+      "options": [
+        {
+          "id": "side-panel",
+          "label": "A panel from the side",
+          "pros": ["The page stays visible behind it; close and you are where you were."],
+          "cons": ["Narrower than a full page; long histories scroll."],
+          "recommended": true
+        },
+        {
+          "id": "full-page",
+          "label": "A full page, with Back",
+          "pros": ["Most room for history and graphs."],
+          "cons": ["You lose sight of the room you came from."]
+        },
+        {
+          "id": "expand",
+          "label": "The card grows in place",
+          "pros": ["No new surface at all."],
+          "cons": ["A tall card pushes the whole room around."]
+        }
+      ]
+    },
+    {
+      "id": "Q-activity",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, home activity",
+      "headline": "Where should the home-wide activity list go?",
+      "today": "There is none. Home Assistant keeps a record of every change (lights, doors, who pressed what).",
+      "problem": "A long scrolling history does not fit among the room cards.",
+      "proposal": "An Activity button at the top opens a side panel: a Today list, newest first, with filters by room and by type.",
+      "options": [
+        {
+          "id": "panel",
+          "label": "An Activity side panel",
+          "pros": ["Same panel style as a device's page.", "Filters fit at its top."],
+          "cons": ["Hidden until you open it."],
+          "recommended": true
+        },
+        {
+          "id": "section",
+          "label": "A section at the bottom of the page",
+          "pros": ["Always there; scroll down to see it."],
+          "cons": ["Long, and pushes nothing useful but is easy to miss below every room."]
+        }
+      ]
+    },
+    {
+      "id": "Q-sonos",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, a Sonos speaker",
+      "headline": "How should grouping your Sonos speakers (playing the same thing in sync) work?",
+      "today": "Each Sonos plays on its own here; grouping is only in the Sonos app.",
+      "problem": "Grouping is real Sonos grouping, the same as in the Sonos app, so it needs to be clear which speaker leads.",
+      "proposal": "A Group button on a playing Sonos opens a list of your other Sonos speakers with ticks; ticked ones join it. Grouped speakers show one Now playing with a volume bar for each.",
+      "options": [
+        {
+          "id": "tick-list",
+          "label": "Group button with a tick list",
+          "pros": ["Same idea as the Sonos app.", "One shared Now playing; each speaker keeps its own volume."],
+          "cons": ["Only Sonos: Google speakers group differently and are left out for now."],
+          "recommended": true
+        },
+        {
+          "id": "drag",
+          "label": "Drag one speaker onto another",
+          "pros": ["Quick once learned."],
+          "cons": ["Nobody discovers it; awkward on a touch screen."]
+        }
+      ]
+    },
+    {
+      "id": "S-included",
+      "words": true,
+      "surface": "Pages",
+      "path": "What this round builds",
+      "headline": "This round also builds, as you said: room temperature and humidity, actionable problems, search, multi-select in Edit, and the camera fix.",
+      "changed": "Stated, not asked. Problems lists devices that stopped responding, low batteries and connections that need you (like Nest asking to sign in again), each with a Fix or Open button that goes straight to the fix. Search filters the page as you type. Edit gets tick boxes to hide, move or star several things at once. Cameras that cannot give a picture say why, with a fix where there is one.",
+      "notice": "It comes in pieces, each shown to you before the next.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}

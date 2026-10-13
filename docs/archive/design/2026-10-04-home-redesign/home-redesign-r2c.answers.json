@@ -1,0 +1,54 @@
+{
+ "deck": "home-redesign-r2c",
+ "started": "2026-10-05T06:36:35.598Z",
+ "submitted": "2026-10-05T06:40:51Z",
+ "cur": 5,
+ "answers": {
+  "C-TV1": {
+   "v": "yes",
+   "t": 1791182216214,
+   "seconds": 21,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-MT1": {
+   "note": "changing my mind. volume slider should just be part of the same glass media card as youtube play/pause skip/back. it should be like a sub-card in the media card. the sonos soundbar should have a group button to link other speakers",
+   "t": 1791182367649,
+   "v": "other",
+   "seconds": 115,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-MT2": {
+   "v": "yes",
+   "seconds": 50,
+   "theme": "golden-sunbreak",
+   "zoom": 1,
+   "t": 1791182381907
+  },
+  "C-LIVE": {
+   "v": "other",
+   "t": 1791182414500,
+   "note": "looks good",
+   "seconds": 33,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LT2C-1": {
+   "v": "pick",
+   "pick": "r1",
+   "t": 1791182436772,
+   "seconds": 22,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "LV2C-1": {
+   "v": "pick",
+   "pick": "r1",
+   "t": 1791182450099,
+   "seconds": 13,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

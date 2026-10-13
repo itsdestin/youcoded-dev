@@ -1,0 +1,23 @@
+{
+ "deck": "home-page-v2-r2b",
+ "started": "2026-10-01T23:35:49.233Z",
+ "submitted": "2026-10-01T23:38:04Z",
+ "cur": 1,
+ "answers": {
+  "S-kinds": {
+   "note": "good. i think we can improve the youtube/netflix/prime/disney buttons. and the polish of our remote ui. i think tv's should have an obvious power button/icon in the right of the card/header. improve the \"now playing\" ui styling. also, the tv keeps showing a weird fullscreen homeassistant cast screen thing. what is that? ",
+   "t": 1790897873923,
+   "v": "other",
+   "seconds": 125,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-remote-own": {
+   "v": "yes",
+   "t": 1790897883507,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,438 @@
+{
+  "title": "Your money page — what it shows",
+  "key": "finance-dashboard-questions",
+  "out": "finance-dashboard.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-headline",
+      "words": true,
+      "surface": "Money page",
+      "path": "The top of a new page in your Pages list",
+      "headline": "What big number should sit at the top of the page?",
+      "today": "There is no money page. To see where you stand you open Capital One, Amex, Robinhood, Wells Fargo and the loan sites one at a time.",
+      "problem": "Every account tells you one slice. Nothing adds them up, so the question \"am I okay right now?\" needs mental math across six apps.",
+      "proposal": "One large number at the top, with smaller totals under it. Pick which number earns the top spot.",
+      "options": [
+        {
+          "id": "net-worth",
+          "label": "Net worth",
+          "summary": "Everything you have (cash, savings, investments) minus everything you owe (cards, loans).",
+          "pros": ["The single truest \"where do I stand\" number.", "Goes up as loans shrink, so paying debt feels like progress."],
+          "cons": ["Can be negative for years with student loans, which can feel discouraging.", "Swings with the stock market even when nothing else changed."],
+          "recommended": true
+        },
+        {
+          "id": "cash-on-hand",
+          "label": "Cash available",
+          "summary": "Checking plus savings, minus what is due on cards this month.",
+          "pros": ["Answers \"can I afford this right now?\"", "Ignores long-term loans and stock swings."],
+          "cons": ["Hides the size of your loans entirely."]
+        },
+        {
+          "id": "total-owed",
+          "label": "Total owed",
+          "summary": "Every card, loan and Affirm plan added together.",
+          "pros": ["Keeps debt payoff front and center."],
+          "cons": ["Says nothing about what you have."]
+        }
+      ]
+    },
+    {
+      "id": "Q-grouping",
+      "words": true,
+      "surface": "Money page",
+      "path": "The list of accounts under the big number",
+      "headline": "Should accounts be grouped by kind, or by bank?",
+      "today": "Each bank's own app shows only that bank, mixing its checking and its card on one screen.",
+      "problem": "Your cards are spread over four companies and your loans over three, so a bank-by-bank list never shows \"all my cards\" in one place.",
+      "proposal": "The page groups accounts one way, with a subtotal for each group.",
+      "options": [
+        {
+          "id": "by-kind",
+          "label": "By kind",
+          "summary": "Checking, Savings, Investments, Credit cards, Loans, Bills — each with a subtotal.",
+          "pros": ["\"How much do I owe on cards?\" is one subtotal.", "Matches the question you usually ask."],
+          "cons": ["Capital One shows up in two groups (checking and card)."],
+          "recommended": true
+        },
+        {
+          "id": "by-bank",
+          "label": "By bank",
+          "pros": ["Mirrors how you log in, so you know where to go to fix something."],
+          "cons": ["Totals by kind need mental math again."]
+        }
+      ]
+    },
+    {
+      "id": "Q-card-limits",
+      "words": true,
+      "surface": "Money page",
+      "path": "Each credit card in the Credit cards group",
+      "headline": "How should each card show how close you are to its limit?",
+      "today": "Each card's app shows a balance and a limit as two separate numbers.",
+      "problem": "You want to see how close you are to your limits across five cards at a glance, without dividing in your head.",
+      "proposal": "Each card gets a bar that fills as the balance grows. The bar changes color past a warning point. Pick the warning point.",
+      "options": [
+        {
+          "id": "warn-30",
+          "label": "Warn at 30%",
+          "summary": "The bar turns amber past 30% of the limit, red past 80%.",
+          "pros": ["30% is the commonly cited point where credit scores start to dip, so it warns before it costs you."],
+          "cons": ["May look \"amber\" often, which can feel naggy."],
+          "recommended": true
+        },
+        {
+          "id": "warn-80",
+          "label": "Warn at 80%",
+          "summary": "The bar only changes color near the limit.",
+          "pros": ["Calm most of the time; only shouts when it matters for declined purchases."],
+          "cons": ["Gives no early hint about your credit score."]
+        },
+        {
+          "id": "no-bar",
+          "label": "Numbers only",
+          "summary": "Balance and limit as text, no bar.",
+          "pros": ["Compact."],
+          "cons": ["Back to dividing in your head."]
+        }
+      ]
+    },
+    {
+      "id": "Q-bills",
+      "words": true,
+      "surface": "Money page",
+      "path": "A Bills section on the page",
+      "headline": "Should the page list upcoming payments by due date?",
+      "today": "Your car payment, Liberty Mutual, Visible, loan payments, card minimums and Affirm plans are each due on their own date, tracked in their own apps or emails.",
+      "problem": "Nothing shows \"what is due this week\" across all of them, so a due date can slip by.",
+      "proposal": "A Bills list sorted by the next due date, showing amount and how many days are left.",
+      "options": [
+        {
+          "id": "due-list",
+          "label": "List by due date",
+          "pros": ["See the next two weeks of payments at once.", "Card and loan due dates can fill in automatically from the bank where available."],
+          "cons": ["Bills from Liberty Mutual and Visible must be entered by you or by me, since they can't connect."],
+          "recommended": true
+        },
+        {
+          "id": "monthly-total",
+          "label": "Monthly total only",
+          "pros": ["One number: what leaves your accounts each month."],
+          "cons": ["Doesn't warn you about a specific upcoming date."]
+        },
+        {
+          "id": "no-bills",
+          "label": "No bills",
+          "pros": ["Simpler page; balances only."],
+          "cons": ["Misses half of what you described wanting."]
+        }
+      ]
+    },
+    {
+      "id": "Q-income",
+      "words": true,
+      "surface": "Money page",
+      "path": "An Income line on the page",
+      "headline": "Should the page show your regular income next to your bills?",
+      "today": "Paychecks land in checking with nothing labeling them as income.",
+      "problem": "Without income on the page, you can't see \"money in vs. money out\" for the month.",
+      "proposal": "You (or I) enter each regular income source once — amount and how often — and the page shows monthly income beside monthly bills.",
+      "options": [
+        {
+          "id": "income-yes",
+          "label": "Show income",
+          "pros": ["See whether bills fit inside income at a glance."],
+          "cons": ["One more thing to keep current when pay changes."],
+          "recommended": true
+        },
+        {
+          "id": "income-later",
+          "label": "Leave for later",
+          "pros": ["Smaller first version."],
+          "cons": ["No money-in vs money-out view yet."]
+        }
+      ]
+    },
+    {
+      "id": "Q-history",
+      "words": true,
+      "surface": "Money page",
+      "path": "A chart under the big number",
+      "headline": "Should the page remember past totals and draw a chart over time?",
+      "today": "Banks show today's balance. Seeing how your overall picture changed needs months of statements.",
+      "problem": "Without history you can't tell if you are getting ahead or falling behind.",
+      "proposal": "Each day the page refreshes, it keeps that day's totals. A simple line chart shows net worth (or your top number) over time.",
+      "options": [
+        {
+          "id": "chart",
+          "label": "Keep history",
+          "pros": ["See progress month to month.", "Small: years of daily totals fit easily."],
+          "cons": ["The chart starts empty and fills in from the day you start.", "Old totals are kept, which matters if this page syncs (see the privacy page)."],
+          "recommended": true
+        },
+        {
+          "id": "today-only",
+          "label": "Today only",
+          "pros": ["Nothing old is kept."],
+          "cons": ["No sense of progress."]
+        }
+      ]
+    },
+    {
+      "id": "P-fresh",
+      "page": "Keeping numbers current",
+      "intro": "Some accounts connect through Plaid; the rest are typed in. These decide how the numbers stay fresh and how you know when one is old."
+    },
+    {
+      "id": "Q-refresh",
+      "words": true,
+      "surface": "Money page",
+      "path": "Opening the page, and its refresh button",
+      "headline": "When should connected accounts update?",
+      "today": "Pages update only while open: when you open one, or press its refresh button. Nothing updates while YouCoded is closed.",
+      "problem": "Plaid gives two kinds of balance: one it checks about once a day (included), and an up-to-the-minute check that costs a small fee every time.",
+      "proposal": "Pick how the page fetches balances.",
+      "options": [
+        {
+          "id": "daily-on-open",
+          "label": "Daily, on open",
+          "summary": "Opening the page shows Plaid's once-a-day balances. A separate \"check now\" button asks the bank directly.",
+          "pros": ["Free day to day; you only pay for a check you ask for.", "Fast to open."],
+          "cons": ["Numbers can be up to a day behind unless you press \"check now\"."],
+          "recommended": true
+        },
+        {
+          "id": "live-on-open",
+          "label": "Live, every open",
+          "pros": ["Always as current as the bank."],
+          "cons": ["A fee every time you open the page, for every account.", "Slower to open."]
+        }
+      ]
+    },
+    {
+      "id": "Q-stale",
+      "words": true,
+      "surface": "Money page",
+      "path": "Each account's \"updated\" time",
+      "headline": "How old can an account's number get before the page warns you?",
+      "today": "Every account will show when it last updated. Banks sometimes quietly stop sharing until you log in again.",
+      "problem": "A stale number looks exactly like a fresh one, so you could trust a balance that is a week old.",
+      "proposal": "Past a cutoff, the account dims and shows \"out of date — reconnect\" (or \"update me\" for typed-in accounts).",
+      "options": [
+        {
+          "id": "stale-3",
+          "label": "3 days",
+          "pros": ["Catches a broken connection quickly without warning over a weekend."],
+          "cons": ["Typed-in accounts would warn often unless their own cutoff is longer."],
+          "recommended": true
+        },
+        {
+          "id": "stale-1",
+          "label": "1 day",
+          "pros": ["Strictest."],
+          "cons": ["Warnings whenever Plaid is a few hours late."]
+        },
+        {
+          "id": "stale-7",
+          "label": "7 days",
+          "pros": ["Quiet."],
+          "cons": ["A broken connection can go unnoticed for a week."]
+        }
+      ]
+    },
+    {
+      "id": "Q-manual",
+      "words": true,
+      "surface": "Money page",
+      "path": "Accounts that can't connect (likely MOHELA, Earnest, Affirm, Robinhood Gold card, Liberty Mutual, Visible)",
+      "headline": "How should accounts that can't connect get updated?",
+      "today": "Some of your accounts will not connect through Plaid. Their numbers have to come from somewhere.",
+      "problem": "If updating them is a chore, they go stale and the totals stop being true.",
+      "proposal": "Pick how those numbers get in.",
+      "options": [
+        {
+          "id": "both",
+          "label": "On the page and by chat",
+          "summary": "An edit button on each account, and you can also tell me (\"Earnest is $14,200\").",
+          "pros": ["Use whichever is handy.", "Chat also lets me fill things in from statement emails later."],
+          "cons": ["Needs the new \"I can edit page data\" feature (next page)."],
+          "recommended": true
+        },
+        {
+          "id": "page-only",
+          "label": "On the page only",
+          "pros": ["Works with what Pages can already do."],
+          "cons": ["You have to open the page and type."]
+        },
+        {
+          "id": "chat-only",
+          "label": "By chat only",
+          "pros": ["No forms on the page."],
+          "cons": ["Can't fix a number without opening a chat."]
+        }
+      ]
+    },
+    {
+      "id": "Q-transactions",
+      "words": true,
+      "surface": "Money page",
+      "path": "Each account, when opened",
+      "headline": "Should the first version show recent purchases, or balances only?",
+      "today": "You'd still check each bank's app for individual purchases.",
+      "problem": "Purchases make the page much bigger: more to design, more data stored and synced, and Plaid charges for it monthly per bank.",
+      "proposal": "Pick the scope of the first version.",
+      "options": [
+        {
+          "id": "balances-only",
+          "label": "Balances only",
+          "pros": ["Smaller, faster first version.", "Less personal data stored."],
+          "cons": ["Still need the bank app to see what a charge was."],
+          "recommended": true
+        },
+        {
+          "id": "with-purchases",
+          "label": "Recent purchases too",
+          "pros": ["One place for everything."],
+          "cons": ["Larger build, ongoing Plaid cost, and every purchase stored in the page."]
+        }
+      ]
+    },
+    {
+      "id": "P-chat",
+      "page": "Me editing pages by chat",
+      "intro": "This is a feature for every page, not just this one — a grocery list, workout log or reading list would use it the same way."
+    },
+    {
+      "id": "Q-chat-edit",
+      "words": true,
+      "surface": "Pages",
+      "path": "Any page, from a chat",
+      "headline": "Which pages should I be allowed to change when you ask me in chat?",
+      "today": "A page saves its own data. I can build and redesign pages, but I'm told never to change the numbers or lists inside one.",
+      "problem": "\"Add eggs to my grocery page\" or \"Earnest is $14,200\" means you have to open the page and type it yourself.",
+      "proposal": "The app gives me a safe way to change a page's data: the page describes what its data looks like so I can't save junk, an open page updates instantly, and every change goes into the page's history so it can be undone.",
+      "options": [
+        {
+          "id": "ask-once",
+          "label": "Pages you allow",
+          "summary": "The first time I try to change a page, you're asked once — the same way pages ask before going online.",
+          "pros": ["A sensitive page stays off-limits unless you say yes."],
+          "cons": ["One extra approval per page."],
+          "recommended": true
+        },
+        {
+          "id": "all-pages",
+          "label": "Every page",
+          "pros": ["Nothing to approve."],
+          "cons": ["Your money page is editable by me from any chat without you agreeing first."]
+        },
+        {
+          "id": "none",
+          "label": "None for now",
+          "pros": ["Smaller project."],
+          "cons": ["All typed-in accounts are updated by hand on the page."]
+        }
+      ]
+    },
+    {
+      "id": "Q-chat-notice",
+      "words": true,
+      "surface": "Pages",
+      "path": "The chat, right after I change a page",
+      "headline": "When I change a page's data, how should you find out?",
+      "today": "Nothing does this yet.",
+      "problem": "A change you didn't notice — like a mistyped balance — makes the page quietly wrong.",
+      "proposal": "Pick how my changes show up.",
+      "options": [
+        {
+          "id": "note-undo",
+          "label": "Note with Undo",
+          "summary": "A small card in chat: \"Money page — Earnest $15,100 → $14,200\" with an Undo button.",
+          "pros": ["You see every change, and fixing a mistake is one press."],
+          "cons": ["A little more in the chat."],
+          "recommended": true
+        },
+        {
+          "id": "ask-first",
+          "label": "Ask every time",
+          "pros": ["Nothing changes without a yes."],
+          "cons": ["Slow when I update several accounts at once."]
+        },
+        {
+          "id": "silent",
+          "label": "Just do it",
+          "pros": ["Quietest."],
+          "cons": ["Mistakes are invisible until you notice a wrong number."]
+        }
+      ]
+    },
+    {
+      "id": "Q-chat-read",
+      "words": true,
+      "surface": "Pages",
+      "path": "Any chat",
+      "headline": "Should I be able to read your money page to answer questions like \"how much do I owe?\"",
+      "today": "I can't see what's inside a page's saved data during a chat.",
+      "problem": "Questions like \"can I afford this?\" or \"which card should I pay first?\" need me to see your balances.",
+      "proposal": "Yes: I can read the page when you ask, which sends those numbers to the AI model for that chat (the same as typing them to me). No: I can only change numbers you tell me, never read them. Don't know: we decide after the page exists."
+    },
+    {
+      "id": "P-privacy",
+      "page": "Privacy and setup",
+      "intro": "Where your balances are stored, and whose name goes on the Plaid account."
+    },
+    {
+      "id": "Q-sync",
+      "words": true,
+      "surface": "Money page",
+      "path": "Your Personal folder, which syncs between your computers",
+      "headline": "Should your money page's numbers sync to your other computer?",
+      "today": "Pages live in your Personal folder, which syncs between your computers and keeps a history of every past version.",
+      "problem": "Balances synced means a copy of your finances sits wherever Personal syncs to. Bank access itself never syncs; it stays locked in each computer's password storage.",
+      "proposal": "Pick where the numbers live.",
+      "options": [
+        {
+          "id": "sync",
+          "label": "Sync normally",
+          "pros": ["See the page on both computers.", "Connecting a bank on the second computer would use up more of Plaid's 10 free logins — syncing avoids that."],
+          "cons": ["A copy of your balances (and their history) sits in your sync storage."],
+          "recommended": true
+        },
+        {
+          "id": "local",
+          "label": "This computer only",
+          "pros": ["Your numbers never leave this laptop."],
+          "cons": ["The page is empty on the other computer.", "Needs a new \"don't sync this page\" option built."]
+        }
+      ]
+    },
+    {
+      "id": "Q-plaid-name",
+      "words": true,
+      "surface": "Plaid sign-up",
+      "path": "Plaid's application for real (not practice) bank access",
+      "headline": "Whose name goes on the Plaid application?",
+      "today": "Plaid's form asks for \"company information\". It isn't clear whether it accepts a person instead of a company.",
+      "problem": "Whoever applies signs Plaid's agreement and is responsible for how the bank data is handled.",
+      "proposal": "Pick how to apply. This is for your own data only, so the responsibility is about your own accounts.",
+      "options": [
+        {
+          "id": "self-first",
+          "label": "You, then LLC",
+          "summary": "Apply as yourself; if Plaid refuses, apply again as your LLC.",
+          "pros": ["Keeps your company out of a personal project if Plaid allows it."],
+          "cons": ["Might cost a day if the first try is refused."],
+          "recommended": true
+        },
+        {
+          "id": "llc",
+          "label": "LLC from the start",
+          "pros": ["Most likely to be approved the first time."],
+          "cons": ["Puts your company's name on a personal-use account."]
+        }
+      ]
+    }
+  ]
+}

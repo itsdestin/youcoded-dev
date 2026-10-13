@@ -1,0 +1,30 @@
+{
+ "deck": "home-check-r2",
+ "started": "2026-10-05T02:54:54.223Z",
+ "submitted": "2026-10-05T02:56:01Z",
+ "cur": 2,
+ "answers": {
+  "C-slider": {
+   "note": "much better. when dragging a brightness slider for a room/group, the sliders for the individually lights visibly lag behind and jump around. can we sync these a bit better?",
+   "t": 1791168939551,
+   "v": "yes",
+   "seconds": 45,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-thermo": {
+   "v": "yes",
+   "t": 1791168946436,
+   "seconds": 7,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-tabs": {
+   "v": "yes",
+   "t": 1791168960270,
+   "seconds": 14,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

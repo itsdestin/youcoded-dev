@@ -6,6 +6,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
+import { sweep, formatSweep } from './prune-worktrees.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
 function git(root, ...args) {
@@ -490,7 +491,24 @@ function main(args) {
       else if (shared && shared.status === 'diverged') console.log(`  shared checkout: DIVERGED — ${shared.detail}`);
       else if (shared && shared.status === 'skipped') console.log(`  shared checkout: left alone — ${shared.detail}`);
     }
-    console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. No worktrees are automatically removed. This is not a sandbox.`);
+    console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. Only merged, clean, unused worktrees idle 3+ days are removed automatically. This is not a sandbox.`);
+  }
+  runWorktreeSweep(opts.root, result.session, json);
+}
+
+// WHY at session start (2026-10-08): cleanup used to happen only when a branch merged, so
+// sessions that never merge themselves piled up to ~100 GB and filled the disk. Every
+// development session starts here, so this is the one place that reliably runs. The sweep
+// deletes only merged, clean, unused worktrees idle 3+ days (prune-worktrees.mjs → sweep)
+// and never this session's own. A failure here must never block starting work, so it only
+// prints. YOUCODED_NO_WORKTREE_SWEEP=1 turns it off.
+function runWorktreeSweep(root, session, json) {
+  if (process.env.YOUCODED_NO_WORKTREE_SWEEP === '1') return;
+  try {
+    const out = formatSweep(sweep({ root, inventory, excludeKeys: [session] }));
+    if (out) (json ? console.error : console.log)(`\n${out}`); // WHY stderr under --json: stdout must stay parseable JSON
+  } catch (error) {
+    console.error(`worktree sweep skipped: ${error.message}`);
   }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

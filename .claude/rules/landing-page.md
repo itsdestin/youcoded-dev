@@ -24,7 +24,7 @@ verify:
   - path: youcoded/docs/tools/gen-og-image.mjs
     contains: "1600x840"
   - path: youcoded/docs/mascots/golden-sunbreak.rig.svg
-  - path: youcoded/docs/favicon.svg
+  - path: youcoded/docs/brand/default-32.png
   - path: youcoded/desktop/src/renderer/dev/workbench/reply-script.ts
     contains: "splitTurns"
   - path: youcoded/desktop/src/renderer/dev/workbench/fixture-loader.ts

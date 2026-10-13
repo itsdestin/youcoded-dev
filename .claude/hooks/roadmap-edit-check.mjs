@@ -3,7 +3,8 @@
 //
 // After a write under docs/roadmap/ or to ROADMAP.md, re-run the roadmap structure check
 // and hand any errors back to the session that made the write — the only session that
-// knows what the entry meant. Every other write: exit 0, say nothing.
+// knows what the entry meant. A structurally clean roadmap that has grown past its entry
+// budget is handed back the same way. Every other write: exit 0, say nothing.
 //
 // Protocol (Claude Code PostToolUse): exit 0 = nothing to report. exit 2 + stderr = the
 // text on stderr goes back to the model. Plain stdout on exit 0 reaches the user's
@@ -33,7 +34,20 @@ if (!(rel === 'ROADMAP.md' || rel.startsWith('docs/roadmap/'))) process.exit(0);
 // The script ships beside this hook in the workspace, whatever CLAUDE_PROJECT_DIR says.
 const script = path.resolve(here, '..', '..', 'scripts', 'roadmap-check.mjs');
 const r = spawnSync(process.execPath, [script, '--structure', '--quiet', '--root', root], { encoding: 'utf8' });
-if (r.status === 0) process.exit(0);
+if (r.status === 0) {
+  // WHY (Destin, 2026-10-05): the roadmap reached 423 entries one small filing at a time —
+  // "that's impossible to understand and maintain". The session that just added an entry is
+  // the one that can still fold it into a bundle, so it is told here, not at the next audit.
+  const b = spawnSync(process.execPath, [script, '--budget', '--root', root], { encoding: 'utf8' });
+  if (b.status !== 1) process.exit(0);
+  process.stderr.write(
+    (b.stdout || '')
+    + 'Do not add another standalone entry: put a small fault or idea into its theme\'s bundled '
+    + 'entry as one more lettered clause, or merge two small entries into one. Only something big '
+    + 'earns its own entry. See "Filing an item" in ROADMAP.md.\n',
+  );
+  process.exit(2);
+}
 process.stderr.write(
   'roadmap-check: the roadmap file you just wrote has structure errors — fix them now. '
   + 'Every token is a closed list: `node scripts/roadmap-check.mjs --vocab` prints all of '

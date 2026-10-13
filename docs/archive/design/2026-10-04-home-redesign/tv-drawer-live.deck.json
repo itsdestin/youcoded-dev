@@ -1,0 +1,60 @@
+{
+  "title": "TV remote app drawer: try each",
+  "key": "home-tv-drawer-live",
+  "out": "tv-drawer.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "TDL-1",
+      "surface": "Home page",
+      "path": "Home > Media > the TV card",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Open the remote and try the drawer. Which feels best to use?",
+      "notice": "Open the remote icon on the TV card. Resize the window to watch the drawer grow, shrink and drop to a bottom bar. In the grid, press More. Presses go to the practice TV only.",
+      "risk": "Everything here is practice data; nothing reaches a real TV.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Icon rail",
+          "summary": "A slim column of app icons to the left of the arrow pad, no names (hover shows one). The app on the TV has a ring. Two columns on a normal card, three on a very wide one, and the icons grow a little.",
+          "risk": "Quietest and tidiest, but you must recognise an app by its logo alone; the less common ones (Tubi, Plex) are easy to mistake.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-tv-remote-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Launcher grid",
+          "summary": "A small grid of app icons with names under them, left of the pad, like a phone home screen. Only the first few show, with a More tile that opens the rest.",
+          "risk": "Easiest to read, but the apps past the first few take a tap on More, and opening them makes the card taller.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-tv-remote-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Name list",
+          "summary": "A list left of the pad: logo and name on each row, with On now beside the open app. Becomes two or three columns on a wider card.",
+          "risk": "Clearest labels and best for many apps, but the widest and busiest of the three.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-tv-remote-c"
+          }
+        }
+      ]
+    }
+  ]
+}

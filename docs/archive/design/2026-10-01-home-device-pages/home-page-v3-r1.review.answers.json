@@ -1,0 +1,54 @@
+{
+ "deck": "home-page-v3-r1",
+ "started": "2026-10-02T21:08:13.930Z",
+ "submitted": "2026-10-02T21:32:52Z",
+ "cur": 5,
+ "answers": {
+  "S-chips": {
+   "note": "dont love these chips and how they use the fill icon with the accent color. give me a few more interesting variantss. maybe some nice visual effects or statuss animations based on colors/playing status/temp/etc?",
+   "t": 1790975493423,
+   "v": "other",
+   "seconds": 199,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-problems": {
+   "note": "these look proportionally weird on the page",
+   "t": 1790975660778,
+   "v": "other",
+   "seconds": 167,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-lights-page": {
+   "v": "yes",
+   "t": 1790975740201,
+   "seconds": 79,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-media-page": {
+   "v": "yes",
+   "t": 1790976424228,
+   "seconds": 684,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-climate-page": {
+   "v": "yes",
+   "t": 1790976455710,
+   "note": "the outside weather card looks a bit odd. sizing is weird. we can make it prettier ",
+   "seconds": 31,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-settings": {
+   "note": "i think this should probably be a full page menu?",
+   "t": 1790976769751,
+   "v": "other",
+   "seconds": 314,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

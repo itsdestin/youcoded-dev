@@ -1,0 +1,56 @@
+{
+  "title": "Media tab, round 2b: finding the right device at a glance",
+  "key": "home-media-tab-2b",
+  "out": "media-tab-2b.choice.html",
+  "images": "images/media-tab-2b.deck",
+  "runs": { "after": "media-tab-2b-runs" },
+  "themes": ["golden-sunbreak", "creme"],
+  "live": { "worktree": "sessions/ha-pages-connection/youcoded" },
+  "steps": [
+    {
+      "id": "M2-1",
+      "surface": "Home page",
+      "path": "Home > Media tab",
+      "headline": "Which card design makes the right speaker or TV easiest to spot?",
+      "notice": "Same house in all three: the TV and its soundbar are now ONE card (the TV controls playback, the soundbar's volume is used), two speakers play together in a box with a volume bar each, then a Not Playing shelf with a speaker that is not responding.",
+      "risk": "Cards re-sort when something starts or stops, so a card you just paused can move down the page.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Name as the title",
+          "crop": "pages/page/page-home#v-media-tab-a",
+          "summary": "The device name is the big title at the top of each card, with its room in small capitals under it. The song or app sits below in a soft box. Shelf tiles lead with the name too.",
+          "risk": "Simplest and calmest, but the card has no strong colour to pick it out from across the room."
+        },
+        {
+          "id": "b",
+          "label": "Name strip across the top",
+          "crop": "pages/page/page-home#v-media-tab-b",
+          "summary": "A coloured band across the top of the card carries the room (small) and the device name (big), in the colour of the app playing (red for YouTube, green for Spotify). The song sits in the body below.",
+          "risk": "The loudest at a glance, but the colour band is tied to the app, so two devices on the same app look alike."
+        },
+        {
+          "id": "c",
+          "label": "Name column on the left",
+          "crop": "pages/page/page-home#v-media-tab-c",
+          "summary": "The left third of each card is the device: icon, big name, room, status and its remote or power button. The right side holds the song, buttons and volume. Shelf devices become slim one-line rows.",
+          "risk": "A long group name wraps onto three lines in the narrow left column, and on a phone the card stacks into a taller shape."
+        }
+      ]
+    },
+    {
+      "id": "M2-2",
+      "surface": "Home page",
+      "path": "Home > Media tab",
+      "live": { "app": "default" },
+      "headline": "Press play, pause, volume and Turn on in each. Which one feels easiest to use?",
+      "notice": "This is the working page with a pretend house. The TV's remote is only a small round icon for now; its design is decided separately.",
+      "risk": "Pressing pause or play can move a card to a new place in the list, which may feel like a jump.",
+      "variants": [
+        { "id": "a", "label": "Name as the title", "summary": "Big name on top, song under it.", "app": "default", "params": { "openPage": "page-home", "pagesHome": "v-media-tab-a" } },
+        { "id": "b", "label": "Name strip across the top", "summary": "Coloured band with the name, song below.", "app": "default", "params": { "openPage": "page-home", "pagesHome": "v-media-tab-b" } },
+        { "id": "c", "label": "Name column on the left", "summary": "Device on the left, controls on the right.", "app": "default", "params": { "openPage": "page-home", "pagesHome": "v-media-tab-c" } }
+      ]
+    }
+  ]
+}

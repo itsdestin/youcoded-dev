@@ -1,0 +1,45 @@
+{
+ "deck": "brand-identity-v16",
+ "started": "2026-10-02T10:53:49.912Z",
+ "submitted": "2026-10-02T10:59:04Z",
+ "cur": 3,
+ "answers": {
+  "MOUTH": {
+   "v": "picks",
+   "picks": [
+    "mc2",
+    "mj",
+    "mh"
+   ],
+   "t": 1790938508442,
+   "note": "more soft/round/happt options",
+   "seconds": 79,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GREY": {
+   "v": "pick",
+   "pick": "gy2",
+   "t": 1790938543021,
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  },
+  "COLOUR": {
+   "v": "pick",
+   "t": 1790938714968,
+   "note": "",
+   "pick": "c0",
+   "seconds": 172,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "v": "yes",
+   "t": 1790938743438,
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

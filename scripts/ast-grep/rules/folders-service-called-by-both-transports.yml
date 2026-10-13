@@ -2,12 +2,17 @@ id: folders-service-called-by-both-transports
 language: typescript
 severity: error
 message: >-
-  remote-server.ts and ipc-handlers.ts must each call all five folder-service
-  functions — listPickerFolders, addFolder, removeFolder, renameFolder and
-  setFolderDescription. A transport that stops calling one has grown its own
-  copy, which is how the phone's picker lost every synced project
-  (Destin, 2026-09-11).
+  The folders table entries (main/ipc/folders.ts) must call all five
+  folder-service functions — listPickerFolders, addFolder, removeFolder,
+  renameFolder and setFolderDescription. A door that stops calling one has
+  grown its own copy, which is how the phone's picker lost every synced
+  project (Destin, 2026-09-11).
 note: |
+  RETARGETED 2026-09-30 (one-core R3-1): the two transports used to each call
+  the service (remote-server.ts and ipc-handlers.ts). Both doors now run ONE
+  table entry per channel in main/ipc/folders.ts, which is the only file that
+  may call the five functions; the rule reads that file. remote-server.ts
+  keeping no copy is still pinned by no-folders-json-outside-service.
   Invariant source: tests/folders-service.test.ts (Plan B, 2026-09-16) —
   "both transports call the shared service for all five folder channels".
   Whole-file (`kind: program`): fires when either file has no call to any
@@ -22,8 +27,7 @@ note: |
   passed the retired substring check (the import itself is not pinned).
   The sibling absence half is no-folders-json-outside-service.
 files:
-  - "**/src/main/remote-server.ts"
-  - "**/src/main/ipc-handlers.ts"
+  - "**/src/main/ipc/folders.ts"
   - "**/fixtures/folders-service-called-by-both-transports.ts"
 rule:
   kind: program

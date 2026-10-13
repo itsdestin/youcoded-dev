@@ -1,0 +1,242 @@
+<!doctype html>
+<!-- boards.html?b=<id> — one board per option, 1200×700, shot by shoot.sh into the deck.
+     WHY every board shows the mark in real places (site header, a plain help page, taskbar,
+     dock, browser tab, downloads folder) at true size: a logo that only looks good big is
+     not a logo. Today's icon sits beside every new icon so the improvement is judged, not
+     assumed. -->
+<meta charset="utf-8">
+<link href="fonts/fonts.css" rel="stylesheet">
+<script src="marks.js"></script>
+<style>
+  :root { --ink:#21152C; --mut:#6b5a78; --pur:#8B47B8; }
+  * { box-sizing: border-box; }
+  body { margin:0; width:1200px; height:700px; overflow:hidden; font-family:'DM Sans',sans-serif; color:var(--ink); background:#F4ECF8; }
+  .lab { font:500 11px/1 'JetBrains Mono',monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--mut); }
+  .tag { position:absolute; left:18px; top:16px; z-index:5; font:700 13px/1 'JetBrains Mono'; background:#21152Cdd; color:#fff; padding:7px 10px; border-radius:8px; letter-spacing:.02em; }
+  /* ---- shared wordmark styles ---- */
+  .cw { font:800 var(--s)/1 'JetBrains Mono'; letter-spacing:-.045em; display:inline-flex; align-items:flex-end; white-space:nowrap; }
+  .cw-p { margin-right:.28em; }
+  .cw-b { margin-left:.1em; margin-bottom:calc(var(--s) * -.17); animation:none; }
+  .sw { font:800 var(--s)/1 'Baloo 2'; color:var(--f); letter-spacing:-.035em; display:inline-flex; align-items:baseline; white-space:nowrap;
+        filter: drop-shadow(calc(var(--s)*.035) 0 0 #fff) drop-shadow(calc(var(--s)*-.035) 0 0 #fff) drop-shadow(0 calc(var(--s)*.035) 0 #fff) drop-shadow(0 calc(var(--s)*-.035) 0 #fff) drop-shadow(0 calc(var(--s)*.05) calc(var(--s)*.08) rgba(60,20,90,.28)); }
+  .sw.flat { filter:none; }
+  .sw-o { margin:0 .015em 0 .02em; transform:translateY(calc(var(--s) * .155)); }
+  .hl { font:900 var(--s)/1 'DM Sans'; letter-spacing:-.05em; white-space:nowrap; }
+  .hl b { font-weight:900; background:linear-gradient(90deg,var(--a),var(--b)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .tw { font:900 var(--s)/1 'DM Sans'; letter-spacing:-.045em; white-space:nowrap; display:inline-flex; align-items:baseline; }
+  .tw i { font-style:normal; }
+
+  /* ---- name boards ---- */
+  .hero { position:absolute; inset:0 0 270px 0; background:url(walls/cotton-candy-sky.jpg) center 62%/cover; }
+  .hero::after { content:''; position:absolute; inset:0; background:linear-gradient(#fff0 40%, #f4ecf8 100%); }
+  .glass { position:absolute; left:50px; right:50px; top:44px; height:62px; border-radius:20px; background:rgba(245,236,250,.62); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.7); display:flex; align-items:center; padding:0 26px; z-index:2; }
+  .nav { margin-left:auto; display:flex; gap:26px; font-size:15px; color:#4a3a58; align-items:center; }
+  .pill { background:var(--pur); color:#fff; padding:8px 16px; border-radius:999px; font-weight:700; font-size:14px; }
+  .big { position:absolute; left:0; right:0; top:150px; height:230px; display:flex; align-items:center; justify-content:center; z-index:2; }
+  .row4 { position:absolute; left:24px; right:24px; bottom:22px; height:226px; display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .card { position:relative; border-radius:18px; overflow:hidden; background-size:cover; background-position:center; }
+  .card .hdr { position:absolute; left:12px; right:12px; top:12px; height:46px; border-radius:13px; display:flex; align-items:center; padding:0 14px; backdrop-filter:blur(10px); }
+  .card .hdr .nav { gap:12px; font-size:11px; }
+  .card .cap { position:absolute; left:14px; bottom:12px; }
+  .doc { background:#fff; border:1px solid #e4dcea; }
+  .doc .bar { height:46px; border-bottom:1px solid #eee7f2; display:flex; align-items:center; padding:0 14px; }
+  .doc .crumb { font:500 10.5px 'JetBrains Mono'; color:#8a7b96; margin:14px 16px 6px; letter-spacing:.04em; }
+  .doc h4 { margin:0 16px 10px; font:700 17px/1.2 'DM Sans'; letter-spacing:-.01em; }
+  .doc .ln { height:7px; border-radius:4px; background:#ece6f0; margin:0 16px 8px; max-width:calc(100% - 32px); }
+  .note { position:absolute; right:24px; top:395px; width:520px; text-align:right; font-size:13.5px; color:#4a3a58; z-index:3; }
+
+  /* ---- icon / installer boards ---- */
+  .left { position:absolute; left:0; top:0; bottom:0; width:430px; background:url(walls/cotton-candy-sky.jpg) 38% 60%/cover; display:flex; align-items:center; justify-content:center; }
+  .left.plain { background:radial-gradient(circle at 50% 42%, #fff, #EDE2F4 70%); }
+  .left:not(.plain)::after { content:''; position:absolute; left:0; right:0; bottom:0; height:230px; background:linear-gradient(rgba(30,12,48,0), rgba(30,12,48,.82)); }
+  .left .desc { z-index:2; }
+  .left .big-ic { filter: drop-shadow(0 18px 28px rgba(50,20,80,.32)); }
+  .left .desc { position:absolute; left:26px; right:26px; bottom:22px; font-size:14.5px; line-height:1.42; color:#fff; text-shadow:0 1px 8px rgba(40,10,60,.55); }
+  .left.plain .desc { color:#3c2d48; text-shadow:none; }
+  .right { position:absolute; left:458px; right:26px; top:22px; bottom:20px; display:flex; flex-direction:column; gap:15px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .tb { height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:14px; }
+  .tb.d { background:#1f1d24; } .tb.l { background:#ecebf0; border:1px solid #dcdae2; }
+  .tb .x { width:24px; height:24px; border-radius:6px; }
+  .tb .me { position:relative; width:24px; height:24px; }
+  .tb .me::after { content:''; position:absolute; left:6px; right:6px; bottom:-8px; height:3px; border-radius:2px; background:#8fb4ff; }
+  .tb.l .me::after { background:#2f6fe0; }
+  .dock { height:96px; border-radius:16px; background:url(walls/cotton-candy-sky.jpg) center 70%/cover; display:flex; align-items:center; justify-content:center; }
+  .dock .tray { display:flex; gap:12px; padding:10px 14px; border-radius:20px; background:rgba(255,255,255,.35); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.5); align-items:center; }
+  .dock .x { width:56px; height:56px; border-radius:13px; }
+  .tabs { height:40px; border-radius:10px; display:flex; align-items:flex-end; padding:0 8px; gap:4px; }
+  .tabs.l { background:#dee1e6; } .tabs.d { background:#202124; }
+  .tab { height:32px; width:168px; border-radius:9px 9px 0 0; display:flex; align-items:center; gap:8px; padding:0 11px; font-size:12.5px; }
+  .tabs.l .tab.on { background:#fff; color:#1f1f1f; } .tabs.d .tab.on { background:#35363a; color:#e8eaed; }
+  .tabs .tab.off { color:#5f6368; } .tabs.d .tab.off { color:#9aa0a6; }
+  .tab .fv { width:16px; height:16px; border-radius:3px; flex:none; }
+  .menu { height:30px; border-radius:8px; display:flex; align-items:center; justify-content:flex-end; gap:16px; padding:0 14px; font:500 12.5px 'DM Sans'; }
+  .menu.d { background:#1c1b20; color:#eee; } .menu.l { background:#f1eff4; color:#222; border:1px solid #dcdae2; }
+  .menu .m { width:18px; height:18px; } .menu .g { width:14px; height:14px; border-radius:3px; opacity:.85; }
+  .themes { display:flex; gap:14px; align-items:center; }
+  .themes figure { margin:0; display:flex; flex-direction:column; align-items:center; gap:5px; font:500 10px 'JetBrains Mono'; color:var(--mut); letter-spacing:.06em; }
+  .px { display:flex; gap:14px; align-items:center; }
+  .px canvas { image-rendering:pixelated; border-radius:6px; background:#fff; border:1px solid #e3dbe9; }
+  .vs { display:flex; align-items:center; gap:10px; font:500 11px 'JetBrains Mono'; color:var(--mut); }
+
+  /* installer */
+  .win { border-radius:12px; background:#fff; border:1px solid #dcd6e2; box-shadow:0 10px 30px rgba(60,30,90,.12); overflow:hidden; }
+  .win .t { height:34px; background:#f3f1f6; border-bottom:1px solid #e6e1ea; display:flex; align-items:center; padding:0 14px; font-size:12.5px; color:#444; gap:8px; }
+  .grid { display:flex; gap:22px; padding:18px 22px; align-items:flex-start; }
+  .file { width:112px; display:flex; flex-direction:column; align-items:center; gap:8px; font-size:12px; text-align:center; color:#333; border-radius:8px; padding:8px 4px; }
+  .file.sel { background:#e6efff; outline:1px solid #b7cdf6; }
+  .gen { width:80px; height:96px; display:flex; align-items:center; justify-content:center; }
+  .list { padding:6px 0 10px; }
+  .li { display:flex; align-items:center; gap:10px; padding:5px 18px; font-size:12.5px; color:#333; }
+  .li .ic { width:16px; height:16px; flex:none; } .li .dim { color:#888; margin-left:auto; font-size:11.5px; }
+</style>
+<body><div id="root"></div>
+<script>
+const P = new URLSearchParams(location.search), B = P.get('b') || 'n1';
+const $ = (h) => { document.getElementById('root').insertAdjacentHTML('beforeend', h); };
+const NEIGH = ['#3b82f6','#ef4444','#22c55e','#f59e0b','#6366f1','#64748b'];
+
+// Neighbour app icons on the taskbar/dock: plain coloured tiles with a white glyph, the way
+// real neighbours look at that size — so ours is judged against a realistic crowd.
+const neighbour = (c, s) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="${c}"/><rect x="7" y="7" width="10" height="10" rx="${c==='#22c55e'?5:2}" fill="#fff" opacity=".9"/></svg>`;
+
+// ======================== NAME STYLES ========================
+// mark(ctx) draws the name for one place. ctx: {h: height in px, ink, acc, font (theme font), bg: 'light'|'dark'}
+const NAMES = {
+  n1: { title:'N1 · Letters built from the mascot',
+        note:'Hand-drawn letters, not a font. Every round letter is the mascot\'s own rounded-square body, and the strokes are as thick as its legs. No one else can have this name shape — but it never puts the mascot in your face.',
+        mark: (c) => squircleWord({ you: c.acc, coded: c.ink, id: 'n1' + Math.random().toString(36).slice(2,6), grad: c.grad !== false }).svg(c.h * 1.35) },
+  n2: { title:'N2 · "You" wears your theme',
+        note:'"Coded" is always the same heavy letters. "You" takes on the font and colour of whatever theme you\'re using — so the name itself shows off what the app does. On help pages both halves are plain.',
+        mark: (c) => `<span class="tw" style="--s:${c.h}px;color:${c.ink}"><i style="font-family:${c.font};color:${c.acc};letter-spacing:${c.font.includes('Comfortaa')?'-.02em':'-.04em'};margin-right:.02em">You</i>Coded</span>` },
+  n3: { title:'N3 · The cursor',
+        note:'Typed in the site\'s own label font, ending in the blinking block cursor from the old ">YC▌" logo — except the cursor has the mascot\'s legs and squint. On the website it blinks, and hops now and then. Feels most at home on technical pages.',
+        mark: (c) => cursorWord({ ink: c.ink, accent: c.acc, size: c.h * .92, face: c.h > 30 }) },
+  n4: { title:'N4 · Sticker, with the "o" that stands',
+        note:'Your W6 (chunky lowercase) and L3 (mascot as the "o") picks, redone. The "o" is drawn at exactly a letter\'s weight first; the squint sits in its hole and the legs hang below the line, the way the tail of the "y" does.',
+        mark: (c) => stickerWord({ fill: c.acc, size: c.h * 1.12 }).replace(c.flat ? 'class="sw"' : '###', 'class="sw flat"') },
+  n5: { title:'N5 · Matches the headline',
+        note:'Exactly the website\'s big-headline lettering ("An Assistant That\'s Yours."), with "You" in the purple-to-pink fade you liked in W11. The safest choice: nothing new to learn, already consistent with the site today.',
+        mark: (c) => `<span class="hl" style="--s:${c.h}px;color:${c.ink};--a:${c.acc};--b:${c.acc2 || '#E2679A'}"><b>You</b>Coded</span>` },
+  n6: { title:'N6 · The name is the body',
+        note:'"you / coded" stacked to fill the mascot\'s body, with its arms and legs outside: a badge that is the name and the character at once. Works as a stamp, a sticker, a profile picture — and doubles as an app icon idea.',
+        mark: (c) => bodyBadge({ fill: c.acc, ink: c.bg === 'dark' ? '#1a1020' : '#fff', h: c.h * 1.9 }) },
+};
+
+// The four places every name is shown: two other themes, a third theme, and a plain help page.
+const PLACES = [
+  { key:'devils-garden', label:"Devil's Garden theme", wall:'walls/devils-garden.jpg', hdr:'rgba(20,8,16,.62)', ink:'#FBE9C9', acc:'#FFC627', acc2:'#FF7A3D', font:"'Space Grotesk'", bg:'dark', navc:'#e8d6b4' },
+  { key:'meadow-mist', label:'Meadow Mist theme', wall:'walls/meadow-mist.jpg', hdr:'rgba(246,250,245,.7)', ink:'#041008', acc:'#2F7D55', acc2:'#7FB069', font:"'Nunito'", bg:'light', navc:'#2a3a2e' },
+  { key:'strawberry-kitty', label:'Strawberry Kitty theme', wall:'walls/strawberry-kitty.jpg', hdr:'rgba(252,228,233,.72)', ink:'#3A1420', acc:'#CC4060', acc2:'#F08AA0', font:"'Comfortaa'", bg:'light', navc:'#5a2a38' },
+];
+
+function nameBoard(id) {
+  const N = NAMES[id];
+  const site = { ink:'#21152C', acc:'#8B47B8', font:"'Comfortaa'", bg:'light' };
+  $(`<div class="tag">${N.title}</div>
+    <div class="hero"><div class="glass">${N.mark({ ...site, h: 26 })}<div class="nav"><span>About</span><span>Features</span><span>FAQ</span><span class="pill">Download</span></div></div>
+      <div class="big">${N.mark({ ...site, h: 92 })}</div></div>
+    <div class="note">${N.note}</div>
+    <div class="row4">${PLACES.map(p => `<div class="card" style="background-image:url(${p.wall})">
+        <div class="hdr" style="background:${p.hdr}">${N.mark({ ...p, h: 21 })}<div class="nav" style="color:${p.navc}"><span>About</span><span>FAQ</span></div></div>
+        <div class="cap lab" style="color:${p.bg==='dark'?'#f5e6c8':'#3a2a3a'};background:${p.bg==='dark'?'#0008':'#fff9'};padding:5px 8px;border-radius:6px">${p.label}</div></div>`).join('')}
+      <div class="card doc"><div class="bar">${N.mark({ ink:'#21152C', acc:'#21152C', acc2:'#21152C', font:"'DM Sans'", bg:'light', h:17, grad:false, flat:true })}<div class="nav" style="font-size:11px;gap:12px;color:#666"><span>Docs</span><span>Support</span></div></div>
+        <div class="crumb">HELP › PRIVACY &amp; DATA</div><h4>Where YouCoded keeps your files</h4>
+        <div class="ln" style="width:88%"></div><div class="ln" style="width:94%"></div><div class="ln" style="width:70%"></div>
+        <div class="cap lab" style="color:#3a2a3a">Plain help page</div></div></div>`);
+}
+
+// ======================== APP ICONS ========================
+const ICON_INFO = {
+  i1: { title:'I1 · Your wallpaper, our shape', theme:'wall',
+        desc:'The tile is the scenery from whatever theme you\'re on; the mascot stands in front as a dark cut-out. The shape never changes, the picture behind it always does. The app already swaps its icon when you change theme, so this is buildable.' },
+  i2: { title:'I2 · The icon is the mascot', theme:'fill',
+        desc:'No tile at all. The mascot\'s body is the icon\'s outline, so on a taskbar full of rounded squares, ours is the one with arms and legs. Flat, one colour plus white: the clearest of the five when small.' },
+  i3: { title:'I3 · The cursor', theme:'acc',
+        desc:'A dark screen, a prompt arrow, and a blinking cursor that turns out to be the mascot. The old ">YC▌" logo, come to life. Pairs with the N3 name; at home on technical and help pages.' },
+  i4: { title:'I4 · Just the squint', theme:'grad',
+        desc:'The mascot\'s "> <" face on its own, with a small smile so it never reads as a close button. Like the smiley face, a symbol you can put anywhere. The most abstract of the five; the boldest when tiny.' },
+  i5: { title:'I5 · Peeking', theme:'sky',
+        desc:'The mascot climbs up from the bottom edge of a night-sky tile, mitts on the edge, eyes wide. The most "cute character" of the five. At the smallest sizes the eyes carry it.' },
+};
+const THEMES4 = [
+  { n:'cotton candy', wall:'walls/cotton-candy-sky.jpg', fill:'#8B47B8', a:'#8B47B8', b:'#E2679A', acc:'#C792EA', sky:['#2E1A52','#7B3FA6','#E58BB8'] },
+  { n:'golden', wall:'walls/golden-sunbreak.jpg', fill:'#E9A21F', a:'#F2B33A', b:'#E0632E', acc:'#FFC030', sky:['#2A1A08','#B5651D','#FFC97A'] },
+  { n:'meadow', wall:'walls/meadow-mist.jpg', fill:'#2F7D55', a:'#2F7D55', b:'#7FB069', acc:'#8CD3A8', sky:['#0E2A1C','#2F7D55','#BFE3C6'] },
+  { n:'strawberry', wall:'walls/strawberry-kitty.jpg', fill:'#CC4060', a:'#CC4060', b:'#F59AB0', acc:'#F28CA6', sky:['#4A1426','#CC4060','#FFC4D2'] },
+  { n:'kuromi', wall:'walls/kuromi-dreamer.jpg', fill:'#6B4596', a:'#3B2A55', b:'#B48CD9', acc:'#B48CD9', sky:['#140C22','#5A3D85','#D6B6F0'] },
+];
+const themedIcon = (k, t, px, small) => ICONS[k]({ px, small, uid: k + t.n.replace(/ /g,'') + px, wall: t.wall, fill: t.fill, a: t.a, b: t.b, acc: t.acc, sky: t.sky });
+
+// Pixel check: draw the 16px version to a real 16×16 canvas, then blow it up with hard pixels,
+// so the board shows exactly what a browser tab will show.
+function pixelate(svg, n, scale, el) {
+  const img = new Image(); img.onload = () => {
+    const a = document.createElement('canvas'); a.width = a.height = n; a.getContext('2d').drawImage(img, 0, 0, n, n);
+    const c = el.getContext('2d'); c.imageSmoothingEnabled = false; c.drawImage(a, 0, 0, n * scale, n * scale);
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+const todayIcon = (px) => `<img src="${TODAY_ICON}" width="${px}" height="${px}">`;
+
+function iconBoard(k) {
+  const I = ICON_INFO[k], big = ICONS[k]({ px: 300, uid: 'big' }), sm = (px, uid) => ICONS[k]({ px, small: true, uid });
+  const tb = (cls) => `<div class="tb ${cls}">${NEIGH.slice(0,3).map(c => neighbour(c,24)).join('')}<span class="me">${sm(24, 'tb' + cls)}</span>${NEIGH.slice(3).map(c => neighbour(c,24)).join('')}</div>`;
+  $(`<div class="tag">${I.title}</div>
+    <div class="left${k==='i1'?' plain':''}"><div class="big-ic">${big}</div><div class="desc">${I.desc}</div></div>
+    <div class="right">
+      <div><div class="lab" style="margin-bottom:7px">Windows taskbar · real size (24px) · dark and light</div><div class="two">${tb('d')}${tb('l')}</div></div>
+      <div><div class="lab" style="margin-bottom:7px">Mac dock · real size</div><div class="dock"><div class="tray">${NEIGH.slice(0,3).map(c => neighbour(c,56)).join('')}${ICONS[k]({ px: 56, uid: 'dock' })}${NEIGH.slice(3,5).map(c => neighbour(c,56)).join('')}</div></div></div>
+      <div><div class="lab" style="margin-bottom:7px">Browser tab · 16px</div><div class="two">
+        <div class="tabs l"><div class="tab on"><span class="fv">${sm(16,'fvl')}</span>YouCoded — yours</div><div class="tab off">Inbox (3)</div></div>
+        <div class="tabs d"><div class="tab on"><span class="fv">${sm(16,'fvd')}</span>YouCoded — yours</div><div class="tab off">Inbox (3)</div></div></div></div>
+      <div class="two">
+        <div><div class="lab" style="margin-bottom:7px">One-colour (Mac menu bar, Linux tray)</div>
+          <div class="menu d"><span class="g" style="background:#888"></span><span class="m">${MONO[k]('#fff')}</span><span>Wi-Fi</span><span>9:41</span></div>
+          <div class="menu l" style="margin-top:6px"><span class="g" style="background:#999"></span><span class="m">${MONO[k]('#111')}</span><span>Wi-Fi</span><span>9:41</span></div></div>
+        <div><div class="lab" style="margin-bottom:7px">Today vs this · 32px and 16px blown up</div>
+          <div class="px"><span class="vs">today ${todayIcon(32)}</span><span class="vs">new ${sm(32,'vs32')}</span><canvas id="pxT" width="80" height="80"></canvas><canvas id="pxN" width="80" height="80"></canvas></div></div>
+      </div>
+      <div><div class="lab" style="margin-bottom:7px">Wearing other themes (the app re-dresses its icon when you switch)</div>
+        <div class="themes">${THEMES4.map(t => `<figure>${themedIcon(k, t, 58, false)}<span>${t.n}</span></figure>`).join('')}
+          <figure style="margin-left:14px"><div style="display:flex;gap:8px">${THEMES4.slice(1).map(t => themedIcon(k, t, 24, true)).join('')}</div><span>same, at 24px</span></figure></div></div>
+    </div>`);
+  fetch(TODAY_ICON).then(r => r.text()).then(t => pixelate(t, 16, 5, document.getElementById('pxT')));
+  pixelate(sm(16, 'px16'), 16, 5, document.getElementById('pxN'));
+}
+
+// ======================== INSTALLER ICONS ========================
+const INST_INFO = {
+  d1: { title:'D1 · Arriving in a box', desc:'The mascot pops out of an opened parcel, waving: "here I am". Says "new thing arriving" without a single arrow, and is the friendliest thing in anyone\'s Downloads folder.' },
+  d2: { title:'D2 · The app icon, plus a download badge', desc:'The conventional choice: whatever app icon you pick, with a green download badge in the corner. Instantly understood as "the thing that installs that app". Shown here with I2; it works with any of them.' },
+  d3: { title:'D3 · Dropping in', desc:'The mascot floats down to your computer under a little parachute in the theme\'s stripes. "Download", literally: coming down. More of a picture than D1/D2, so it shines big and simplifies when small.' },
+};
+const fileIcon = (label, color) => `<svg width="64" height="80" viewBox="0 0 64 80"><path d="M6 2 H42 L60 20 V76 Q60 78 58 78 H6 Q4 78 4 76 V4 Q4 2 6 2 Z" fill="#fff" stroke="#c9c4cf" stroke-width="2"/><path d="M42 2 V20 H60" fill="#eee" stroke="#c9c4cf" stroke-width="2"/><rect x="10" y="50" width="34" height="14" rx="3" fill="${color}"/><text x="27" y="61" font-size="10" font-family="DM Sans" font-weight="700" fill="#fff" text-anchor="middle">${label}</text></svg>`;
+
+function installerBoard(k) {
+  const I = INST_INFO[k], big = INSTALLERS[k]({ px: 300 }), sm = (px) => INSTALLERS[k]({ px, small: px < 40 });
+  $(`<div class="tag">${I.title}</div>
+    <div class="left plain"><div class="big-ic">${big}</div><div class="desc">${I.desc}</div></div>
+    <div class="right">
+      <div class="lab">Your Downloads folder, right after clicking Download</div>
+      <div class="win"><div class="t">📁 Downloads</div>
+        <div class="grid">
+          <div class="file"><div class="gen">${fileIcon('PDF','#d64545')}</div>Q3 report.pdf</div>
+          <div class="file"><div class="gen">${fileIcon('ZIP','#c99a2e')}</div>photos.zip</div>
+          <div class="file sel"><div class="gen">${sm(92)}</div>YouCoded-Setup-1.3.1.exe</div>
+          <div class="file"><div class="gen">${fileIcon('MP3','#3b82f6')}</div>song.mp3</div>
+        </div>
+        <div class="list" style="border-top:1px solid #eee">
+          <div class="li"><span class="ic">${sm(16)}</span>YouCoded-Setup-1.3.1.exe<span class="dim">Application · 142 MB</span></div>
+          <div class="li"><span class="ic"><svg width="16" height="16"><rect x="2" y="1" width="12" height="14" rx="2" fill="#d64545"/></svg></span>Q3 report.pdf<span class="dim">PDF · 2 MB</span></div>
+        </div></div>
+      <div class="two" style="margin-top:6px">
+        <div><div class="lab" style="margin-bottom:10px">Today's installer icon</div><div class="px"><img src="${TODAY_INSTALLER}" width="96"><img src="${TODAY_INSTALLER}" width="32"><img src="${TODAY_INSTALLER}" width="16"></div></div>
+        <div><div class="lab" style="margin-bottom:10px">This one · 96 · 32 · 16px</div><div class="px">${sm(96)}${sm(32)}${sm(16)}</div></div>
+      </div>
+    </div>`);
+}
+
+if (NAMES[B]) nameBoard(B); else if (ICONS[B]) iconBoard(B); else if (INSTALLERS[B]) installerBoard(B);
+</script>
+</body>

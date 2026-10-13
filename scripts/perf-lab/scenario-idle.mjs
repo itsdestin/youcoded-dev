@@ -76,7 +76,7 @@ export const SESSION_COUNTS = Object.freeze([1, 6]);
 // 40 ms block always overlaps at least one ping.
 //
 // The cost of pinging 40x/second is negligible next to what is being measured: the
-// handler is `() => process.platform` (ipc-handlers.ts:1387-1389), a constant. And it
+// handler is `() => process.platform` (main/ipc/ui.ts, the platform:get entry), a constant. And it
 // is the SAME cost at every session count, so it cannot bias the per-session slope,
 // which is the number the scenario is really after.
 const PING_EVERY_MS = 25;

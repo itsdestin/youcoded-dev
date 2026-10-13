@@ -1,0 +1,187 @@
+{
+  "title": "Home page — what comes next",
+  "key": "home-page-next-questions",
+  "out": "home-page-next.questions.html",
+  "steps": [
+    {
+      "id": "Q-order",
+      "words": true,
+      "surface": "Home page",
+      "path": "Your Home page in YouCoded",
+      "headline": "Which piece of the Home page should I work on next?",
+      "today": "Five things you asked for are not built yet: Sonos grouping, search, ticking several devices at once in Edit, a page for each device (its history and maker/model), and a home-wide activity list.",
+      "problem": "You asked to SEE designs for the device page and the activity list before I build them, so those two need drawings first. The other three are already decided and can be built straight away.",
+      "proposal": "Pick where to start. Everything else follows after, in the order shown in the recommended option.",
+      "options": [
+        {
+          "id": "designs-first",
+          "label": "Designs first",
+          "summary": "Draw 2–3 versions each of the device page and the activity list, then build Sonos grouping, search and multi-select while you decide.",
+          "pros": [
+            "You get pictures to choose from soon, and building carries on while you think.",
+            "The device page and activity list share a lot (history appears in both), so designing them together avoids building one twice."
+          ],
+          "cons": [
+            "Nothing new to tap on the Home page until the first build lands after the deck."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "sonos-first",
+          "label": "Sonos grouping first",
+          "summary": "Build the Group button with a tick list of your other Sonos speakers, then the rest.",
+          "pros": [
+            "The feature you were most excited about arrives first.",
+            "Already decided, so no deck before it works."
+          ],
+          "cons": [
+            "The two designs you asked to see wait longer."
+          ]
+        },
+        {
+          "id": "search-multi-first",
+          "label": "Search and multi-select first",
+          "summary": "Build search across all devices, and ticking several devices in Edit to hide, move or star them together.",
+          "pros": [
+            "Makes tidying up your many devices much faster right away."
+          ],
+          "cons": [
+            "Less exciting day to day once your rooms are tidied."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-speed",
+      "words": true,
+      "surface": "Home page",
+      "path": "Every card on the Home page",
+      "headline": "How quickly should the Home page notice changes made somewhere else?",
+      "today": "The page asks Home Assistant for news every 5 seconds. If someone turns on a light with a switch or the Google app, the card catches up within 5 seconds. Your own taps on the page show instantly.",
+      "problem": "Up to 5 seconds of a card showing the wrong thing feels slow next to Google Home or Apple Home, which update the moment something changes.",
+      "proposal": "Three speeds. Each costs a different amount of work.",
+      "options": [
+        {
+          "id": "instant",
+          "label": "Instant",
+          "summary": "The page keeps one line open to Home Assistant, and Home Assistant tells it the moment anything changes.",
+          "pros": [
+            "Feels like a real smart-home app: cards change the same moment the light does.",
+            "Actually asks Home Assistant LESS often than checking every few seconds."
+          ],
+          "cons": [
+            "The biggest job: the app itself has to learn to keep a line open, plus tests for when the Pi restarts or Wi-Fi drops.",
+            "Until that is done well, a dropped line could leave cards frozen — I would show a small 'reconnecting' note if that happens."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "two-seconds",
+          "label": "Every 2 seconds",
+          "pros": [
+            "A small change I can make in minutes.",
+            "Cards are at most 2 seconds behind."
+          ],
+          "cons": [
+            "Still visibly a beat behind.",
+            "Asks the Pi 2.5 times as often, which is fine for the Pi but wasteful."
+          ]
+        },
+        {
+          "id": "keep-five",
+          "label": "Keep 5 seconds",
+          "pros": [
+            "No work, nothing changes."
+          ],
+          "cons": [
+            "The lag you can see today stays."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-bars",
+      "words": true,
+      "surface": "Home page",
+      "path": "Lights card inside each room",
+      "headline": "Should light brightness bars be as tall as the new volume bars?",
+      "today": "Light brightness bars are thin; the volume bars on speakers and TVs are taller and easier to grab.",
+      "problem": "Two kinds of sliders on one page look mismatched, and the thin one is harder to drag on a touchscreen.",
+      "proposal": "Yes makes every light's bar the same height as the volume bar. Rooms with many lights would get a bit longer. No leaves them thin."
+    },
+    {
+      "id": "Q-hatheme",
+      "words": true,
+      "surface": "Home Assistant's own screens",
+      "path": "The Home Assistant website, opened from the Problems page or the Open links",
+      "headline": "Should Home Assistant's own screens use YouCoded's colours?",
+      "today": "When a fix button sends you into Home Assistant itself, it uses Home Assistant's default blue look, which looks nothing like YouCoded.",
+      "problem": "Jumping between the two looks like jumping between two unrelated apps. You said earlier you'd like 'colours at a minimum' to match.",
+      "proposal": "Yes: I make a Home Assistant colour theme matching your YouCoded theme, and set it as its default. Put WHICH YouCoded theme you use most in the note. No: Home Assistant keeps its own look."
+    },
+    {
+      "id": "Q-camera",
+      "words": true,
+      "surface": "Home page",
+      "path": "Camera cards",
+      "headline": "Do the camera cards still look broken to you?",
+      "today": "Nest cameras now show a note saying Nest needs you to sign in again in Home Assistant, with a button to do it, instead of a black box. The Pi Zero camera shows its picture.",
+      "problem": "You said 'camera previews are broken'. On your real data I could only find the Nest sign-in cause, so if you saw something else I have not fixed it.",
+      "proposal": "Yes: describe what you see in the note (or paste a screenshot path), and I'll dig in. No: the Nest sign-in note covers it."
+    },
+    {
+      "id": "Q-helper",
+      "words": true,
+      "surface": "Behind the scenes",
+      "path": "The helper's leftover work",
+      "headline": "What should happen to the helper's stricter version of the flaky approval test?",
+      "today": "A test that clicks 'Approve' on a permission request used to fail at random. It is already fixed on the main copy of the app. A helper also wrote a stricter version of that test, saved on its own branch, plus an empty work folder it never used.",
+      "problem": "The stricter version is optional, and the empty folder is clutter on this computer.",
+      "proposal": "Choose what to keep. Nothing here changes the app you use.",
+      "options": [
+        {
+          "id": "keep-branch-delete-folder",
+          "label": "Keep it, tidy up",
+          "summary": "Keep the stricter test saved on GitHub for later; delete the empty folder.",
+          "pros": [
+            "Nothing useful is lost, and the clutter goes."
+          ],
+          "cons": [
+            "One more saved branch to decide about later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "delete-both",
+          "label": "Throw both away",
+          "pros": [
+            "Fully tidy; the existing fix already stops the random failures."
+          ],
+          "cons": [
+            "The stricter check is gone; it would catch a future break a little sooner."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave everything",
+          "pros": [
+            "Nothing touched."
+          ],
+          "cons": [
+            "The empty folder stays as clutter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-restart",
+      "words": true,
+      "surface": "The test copy of YouCoded",
+      "path": "The 'Home Assistant Pages' dev window",
+      "headline": "May I restart the test copy of YouCoded now?",
+      "today": "The test window you try the Home page in is running older app code than what is saved now.",
+      "problem": "Until it restarts, it lacks the latest fixes from the main app (including the remote-flicker fix being combined with them).",
+      "proposal": "Yes: I close and reopen ONLY the test window (your everyday YouCoded is not touched). It takes about a minute; anything open in the test window closes. No: I leave it until you say."
+    }
+  ]
+}

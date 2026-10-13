@@ -1,0 +1,37 @@
+{
+  "title": "Custom voice vocabulary",
+  "key": "voice-custom-vocabulary-review",
+  "out": "voice-custom-vocabulary.review.html",
+  "images": "images/voice-custom-vocabulary.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "crops": {
+    "settings": ["voice-review", "settings", "320x260+0+245"],
+    "vocabulary": ["voice-review", "voice", "440x473+500+214"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings → Voice vocabulary, below Sound",
+      "crop": "settings",
+      "highlight": { "box": [5, 43, 90, 25] },
+      "headline": "1. Voice vocabulary gets its own Settings entry below Sound.",
+      "changed": "A new Voice vocabulary row opens the editor for names, words and phrases.",
+      "notice": "You can find your speech hints without opening model or assistant settings.",
+      "risk": "This first version is desktop-only. The phone uses a different speech recognizer."
+    },
+    {
+      "id": "S-2",
+      "surface": "Voice vocabulary",
+      "path": "Settings → Voice vocabulary",
+      "crop": "vocabulary",
+      "runs": ["after"],
+      "highlight": { "box": [6, 41, 88, 33] },
+      "headline": "2. Add and save your vocabulary.",
+      "changed": "One phrase per line; delete lines to remove hints.",
+      "notice": "Local hints for your next recording, not forced replacements.",
+      "risk": "UI only; speech is unchanged."
+    }
+  ]
+}

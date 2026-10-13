@@ -1,0 +1,219 @@
+{
+  "title": "One core — what needs your call before merging",
+  "key": "one-core-merge-questions",
+  "out": "one-core-merge.questions.html",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Fix before merging",
+      "intro": "Review found no security hole and no lost feature. These are the gaps worth closing first."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Phone and Android app",
+      "path": "Any chat, opened on a phone connected to your computer",
+      "headline": "When the phone and computer are on different app versions, should the screen say which one to update?",
+      "today": "The phone and the computer now speak a new shared language. The PR says both should be updated together, but nothing makes that happen — the computer updates itself, the Android app doesn't.",
+      "problem": "New phone + old computer: chats look empty with a 'may be out of date' strip, and Refresh fails the same way. Old Android app + new computer: every chat shows one line, 'Refresh this page to finish updating' — wrong advice, an app has no page to refresh. Either way it looks like lost chats.",
+      "proposal": "Show one clear sentence naming the device that needs updating. Both sides already send a version number; nothing reads it yet. Small job.",
+      "options": [
+        {
+          "id": "build",
+          "label": "Add the message",
+          "pros": [
+            "The first person on mismatched versions knows exactly what to do.",
+            "Avoids 'my chats are gone' reports that are really just an update."
+          ],
+          "cons": [
+            "A little more work before merging."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "skip",
+          "label": "Merge without it",
+          "pros": [
+            "Merges sooner."
+          ],
+          "cons": [
+            "Anyone not updated on both devices sees empty or stuck chats with no explanation."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Phone access",
+      "path": "Every feature a paired phone can use on your computer",
+      "headline": "Should new features be closed to phones unless someone marks them phone-safe?",
+      "today": "When a feature is added, a phone can use it automatically unless the builder remembers to mark it 'computer only'. An automatic test catches a forgotten label, but only when the tests run.",
+      "problem": "One forgotten label could quietly let a paired phone do something on your computer it shouldn't. The old setup was the opposite: closed unless allowed.",
+      "proposal": "Flip it: phones get a feature only when it is marked phone-safe. You'd notice nothing; it's a few dozen one-word labels in the code.",
+      "options": [
+        {
+          "id": "flip",
+          "label": "Closed unless allowed",
+          "pros": [
+            "A mistake hides a feature from the phone instead of exposing it.",
+            "Matches how it worked before this PR."
+          ],
+          "cons": [
+            "A new phone feature is missing on the phone until someone labels it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep it open by default",
+          "pros": [
+            "No extra work; the test still catches mistakes."
+          ],
+          "cons": [
+            "Safety depends on a test running, not on the design."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Phone access",
+      "path": "Reading project instruction files from a phone",
+      "headline": "Should the 'never show a phone this file' check always run when a phone reads instruction files?",
+      "today": "A phone can now read your project instruction files. Before handing one over, the computer checks a blocklist of private files (passwords, keys).",
+      "problem": "That check is skipped if the answer comes back without a file location attached. I couldn't confirm that ever happens, but if it does, a blocked file could reach the phone.",
+      "proposal": "Yes: make the check run every time — a one-line change, nothing you'd notice. No: leave it as is."
+    },
+    {
+      "id": "P-2",
+      "page": "Phone powers you approved earlier",
+      "intro": "You okayed these on Sept 30 and Oct 1. Now that they're built, confirm they should stay. Anyone holding a paired phone gets them."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "pick": "several",
+      "surface": "Phone access",
+      "path": "Things a paired phone can now do on your computer",
+      "headline": "Which of these new phone powers should stay allowed? Unpicked ones become computer-only.",
+      "today": "A paired phone can now do all four of these on your computer. Before this PR it could do none of them.",
+      "problem": "Each one acts as you. If a paired phone is lost or someone else uses it, they could do these too.",
+      "proposal": "Pick the ones to keep on the phone. Anything left unpicked becomes computer-only; nothing else changes.",
+      "options": [
+        {
+          "id": "themes",
+          "label": "Install and remove themes",
+          "pros": [
+            "Change your look from the couch."
+          ],
+          "cons": [
+            "Someone holding your phone could change your theme (appearance only)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "theme-publish",
+          "label": "Publish themes",
+          "pros": [
+            "Share a theme without going to the computer."
+          ],
+          "cons": [
+            "Opens a public GitHub pull request under your account."
+          ]
+        },
+        {
+          "id": "marketplace",
+          "label": "Rate, comment and report",
+          "pros": [
+            "Use the marketplace fully from the phone."
+          ],
+          "cons": [
+            "Posts publicly as you."
+          ]
+        },
+        {
+          "id": "plugin-update",
+          "label": "Update plugins",
+          "pros": [
+            "Keep plugins current from anywhere."
+          ],
+          "cons": [
+            "Changes what runs on your computer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Things to watch, and small tidy-ups",
+      "intro": "Lower stakes. Quick yes or no."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chats on the computer",
+      "path": "Running several Claude Code chats at once",
+      "headline": "Is it okay to merge and just watch for slowdown with several chats running at once?",
+      "today": "To spot pop-ups like 'Switch model?', the computer now keeps a hidden screen reader for every Claude Code chat, even ones you're not looking at.",
+      "problem": "With three or more chats streaming at the same time, typing might feel a bit slower. Not measured — it may be fine.",
+      "proposal": "Two ways to handle it.",
+      "options": [
+        {
+          "id": "watch",
+          "label": "Merge, watch for it",
+          "pros": [
+            "No delay; you check it during your real-device test.",
+            "If it's slow, it gets fixed then."
+          ],
+          "cons": [
+            "If it is slow, you'll feel it before the fix."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "measure",
+          "label": "Measure first",
+          "pros": [
+            "Know for sure before merging."
+          ],
+          "cons": [
+            "Delays the merge for something that may be fine."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Chats on the computer",
+      "path": "Pop-ups like 'Switch model?' inside a chat",
+      "headline": "Is a tenth-of-a-second delay in spotting pop-ups acceptable?",
+      "today": "When Claude Code shows a pop-up, the app blocks your typing box so you don't type into it by mistake.",
+      "problem": "That block can now arrive up to a tenth of a second late. Typing and pressing Enter in that instant could send your message into the pop-up. The PR admits this.",
+      "proposal": "Yes: accept it, it's rare. No: I'll look for a way to close the gap before merging."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Workspace notes",
+      "path": "Notes and checks assistants read; nothing in the app",
+      "headline": "Should I do the bundle of small tidy-ups on both PRs?",
+      "today": "Several notes are out of date after this work.",
+      "problem": "About ten to-do items still say work is 'planned' that this PR finishes. Three phone-test items overlap. The start-here page contradicts itself. One rules note every session loads is double its size limit. A comment names a test that doesn't exist. Also a dev-tool bug: a crashed test copy could make a later launch stop an unrelated program on your computer (never your real app).",
+      "proposal": "Yes: fix all of these and push to the same PRs. Nothing in the app changes. No: leave them for after the merge."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Merging",
+      "path": "Both pull requests",
+      "headline": "Merge the app PR first, then re-run the workspace PR's checks before merging it.",
+      "changed": "The workspace PR's automatic checks are red right now only because they look for app files that don't exist until the app PR merges.",
+      "notice": "After the app merges, those checks should turn green. If they don't, something is really wrong and I'll tell you.",
+      "yes": "Got it",
+      "no": "Do it differently"
+    }
+  ]
+}

@@ -75,3 +75,14 @@ test('silent (exit 0) when docs/roadmap does not exist yet', () => {
   const r = runHook(root, { file_path: 'ROADMAP.md' });
   assert.equal(r.status, 0);
 });
+
+test('a clean roadmap over its entry budget is handed back with what to do instead', () => {
+  const root = fixtureRoot(r => {
+    const extra = Array.from({ length: 150 }, (_, i) => `- [ ] Filler item number ${i}\n      \`all\` \`parked\` \`P3\` \`checked 2026-08-01\``).join('\n');
+    fs.appendFileSync(path.join(r, 'docs', 'roadmap', 'sync.md'), extra + '\n');
+  });
+  const r = runHook(root, { file_path: path.join(root, 'docs', 'roadmap', 'sync.md') });
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /over budget: 15\d entries \(budget 150\)/);
+  assert.match(r.stderr, /bundled entry/);
+});

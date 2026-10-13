@@ -11,11 +11,11 @@
 // window updates. A concrete instance is already in the source —
 // TranscriptWatcher.getHistory (transcript-watcher.ts:451-488) does a
 // synchronous fs.readFileSync of an ENTIRE transcript and then parses every line,
-// from inside an IPC handler (ipc-handlers.ts:2489). On a large transcript that is
+// from inside an IPC handler (main/ipc/session.ts, the session:history entry). On a large transcript that is
 // seconds during which the whole app is frozen.
 //
 // HOW: ping `window.claude.getPlatform()` on a fixed interval and record the
-// round-trip. Its handler is `() => process.platform` (ipc-handlers.ts:1387-1389)
+// round-trip. Its handler is `() => process.platform` (main/ipc/ui.ts, the platform:get entry)
 // — a constant, zero work — so every millisecond measured is queueing and thread
 // availability, never handler cost.
 //

@@ -1,0 +1,22 @@
+{
+  "title": "The Home page, next version — round 2: the TV remote",
+  "key": "home-page-v2-r2",
+  "out": "home-page-v2-r2.review.html",
+  "images": "images/home-page-v2-r2.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-remote",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV, the remote button",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 45.8, 21.8, 48.7] },
+      "headline": "A paired Google TV's tile gets a remote button that opens a remote: apps, arrows and OK, back, home, play/pause, volume.",
+      "changed": "New. The round remote button sits on the right of the TV's tile and lights up while the remote is open. The page remembers which remotes you left open.",
+      "notice": "Presses go straight to the TV with nothing redrawn, so pressing Down five times is five quick presses. Only Destin's Room TV is paired, so only its tile has the button.",
+      "risk": "Volume works only if the TV box is set to control the TV's volume. The app buttons cover YouTube, Netflix, Prime Video and Disney+ only."
+    }
+  ]
+}

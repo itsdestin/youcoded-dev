@@ -1,0 +1,164 @@
+{
+  "title": "Website — the new logo in the header, footer and browser tab",
+  "key": "brand-website-v1",
+  "out": "brand-website-v1.html",
+  "images": "images/brand-website-v1",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Live site today",
+    "after": "New"
+  },
+  "themes": [
+    "light"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "nav": [
+      "site",
+      "nav-themes",
+      "560x440+0+0"
+    ],
+    "foot": [
+      "site",
+      "foot-cotton-candy-sky-1440x900",
+      "1244x170+0+0"
+    ],
+    "footdark": [
+      "site",
+      "foot-golden-sunbreak-1440x900",
+      "1244x170+0+0"
+    ],
+    "footphone": [
+      "site",
+      "foot-phone",
+      "756x280+0+0"
+    ],
+    "tabs": [
+      "site",
+      "tabs",
+      "2080x328+0+0"
+    ],
+    "og": [
+      "site",
+      "og",
+      "1200x630+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "HEADER",
+      "surface": "Website",
+      "path": "The bar across the top of youcoded.ai, in five of the site's themes",
+      "crop": "nav",
+      "headline": "The top bar now shows the app icon and lowercase \"youcoded\", in each theme's own colours.",
+      "changed": "The robot tile and \"YOUCODED ASSISTANT / AGENTS FOR EVERYONE\" in caps are replaced by the approved logo: the glass app icon and \"youcoded\" in Outfit. The icon and the name's colours change with the theme picked on the page.",
+      "measured": "Icon 36 px (32 px on a phone); name 72% of the icon's height, a quarter of the icon apart",
+      "notice": "The word \"Assistant\" and the tagline are gone from the bar, as on the approved board. The tab title and share text still say \"YouCoded Assistant\".",
+      "risk": "Halftone Dimension's name colours (pink to blue) were never on a board; I picked them from its icon face the same way as the others. Midnight has no icon of its own, so it wears the default, as in the app.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "id": "FOOTER",
+      "surface": "Website",
+      "path": "The card at the very bottom of the page, on a computer (light and dark theme)",
+      "crop": "foot",
+      "headline": "The footer shows the logo with \"agents for everyone\" tucked beside the y's tail.",
+      "changed": "The old robot tile and \"YouCoded Assistant\" become the approved side-by-side logo with tagline, using the round 26 spacing.",
+      "measured": "Icon 52 px; tagline a third of the name's size",
+      "notice": "Same icon and colours as the top bar, so the page's two logos finally match.",
+      "risk": "None known.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          30,
+          100
+        ]
+      }
+    },
+    {
+      "id": "FOOTDARK",
+      "surface": "Website",
+      "path": "The same footer in a dark theme (Golden Sunbreak)",
+      "crop": "footdark",
+      "headline": "On dark themes \"coded\" and the tagline turn light so they stay readable.",
+      "changed": "\"coded\" takes the theme's own text colour and the tagline its soft text colour; \"you\" keeps the theme's gradient.",
+      "notice": "This follows the approved \"on dark\" logo version.",
+      "risk": "None known.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          30,
+          100
+        ]
+      }
+    },
+    {
+      "id": "PHONE",
+      "surface": "Website",
+      "path": "The footer on a phone, light and dark",
+      "crop": "footphone",
+      "headline": "On a phone the footer logo fits with the Open Source badge beside it.",
+      "changed": "The badge moved right to make room for the wider logo. It also fixes today's site, where the badge sits on top of \"ASSISTANT\" on a phone.",
+      "measured": "Logo 205 px wide; the badge starts 15 px after it on a 390 px screen",
+      "notice": "Nothing wraps or overlaps at phone width.",
+      "risk": "On the narrowest phones (320 px wide) the badge may drop onto its own line.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          40
+        ]
+      }
+    },
+    {
+      "id": "TAB",
+      "surface": "Browser",
+      "path": "The icon in the browser tab, light and dark browser, five themes",
+      "crop": "tabs",
+      "headline": "The browser tab shows the app icon, and it follows the theme picked on the page.",
+      "changed": "The coloured robot square becomes the app icon (the small-size drawing with bigger eyes). iPhones saving the site to the home screen also get the app icon.",
+      "measured": "32 px icon file, shown at 16 px",
+      "notice": "A bookmark keeps the default (Cotton Candy) icon.",
+      "risk": "At 16 px the white tile is lighter than the old solid square, so it stands out less on a light browser.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "id": "SHARE",
+      "surface": "Link previews",
+      "path": "The picture shown when someone shares youcoded.ai in Messages, Discord, Slack",
+      "crop": "og",
+      "headline": "The link-preview picture is retaken so it shows the new top bar.",
+      "changed": "Same photo of the page, retaken with the new logo; its cache number moved up so apps fetch the new one.",
+      "notice": "Links already shared may show the old picture for a few days until those apps refresh.",
+      "risk": "None known.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          45,
+          12
+        ]
+      }
+    }
+  ]
+}

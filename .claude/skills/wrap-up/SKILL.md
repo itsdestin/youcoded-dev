@@ -118,6 +118,9 @@ Then:
   the check returned.
 - **Roadmap:** the area file whose `Filing test:` says yes; **dedupe by file or symbol name,
   not by symptom** — searching `flaky` instead of `sync-spaces-engine` filed a duplicate.
+  A small finding becomes one more lettered clause in its theme's bundled entry, not a new
+  entry (the roadmap is budgeted at 150 entries and was 423 before 2026-10-05); a new entry
+  is `P3` unless it blocks the next release or Destin named it.
 - **Dropped:** say so in your reply, with the reason. An unrecorded rejection gets re-argued.
 - **When editing is authorized:** append this session's entry to `docs/wrap-ups.md` — its header explains the format. In a read-only session, give the retrospective in chat and ask before recording it. The ledger is Step 1 for the next editing session.
 
@@ -160,7 +163,7 @@ git worktree list --porcelain | sed -n 's/^worktree //p' | while read -r w; do
 done
 ```
 
-For a fuller inventory across every OLD worktree, not just this session's own, `node scripts/prune-worktrees.mjs` reports which are actually safe to delete (clean, merged, unused) — dry run only; never run its `--apply` without Destin naming the exact ones.
+**Leave this session's worktrees clean** — committed and pushed, or deliberately discarded with Destin's OK. Session start sweeps merged, clean worktrees idle 3+ days automatically (`docs/workspace-workflows.md` → Git, worktrees, and shipping); a dirty one is never swept and sits on disk until someone decides, which is how ~100 GB piled up by 2026-10-08. For a fuller inventory across every OLD worktree, `node scripts/prune-worktrees.mjs` reports which are safe to delete — dry run only; never run its `--apply` without Destin naming the exact ones.
 
 **Secrets-scan any branch before its first authorized push to a PUBLIC repo.** For other sessions' branches, report local-only work rather than publishing it under this session's authority. `youcoded` and `youcoded-dev` are public; `youcoded-admin` is not.
 

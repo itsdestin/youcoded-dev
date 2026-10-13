@@ -1,0 +1,255 @@
+{
+ "title": "YouCoded brand \u2014 round 27: Mac Liquid Glass, tray icons that follow the theme, every theme's icon",
+ "key": "brand-identity-v27",
+ "out": "brand-identity-v27.html",
+ "images": "images/brand-identity-v27",
+ "runs": {
+  "today": "runs/v27"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "themes": [
+   "brand",
+   "themes",
+   "1200x700+0+0"
+  ],
+  "glass": [
+   "brand",
+   "glass",
+   "1200x700+0+0"
+  ],
+  "dockswap": [
+   "brand",
+   "dockswap",
+   "1200x700+0+0"
+  ],
+  "ha": [
+   "brand",
+   "pair-halftone",
+   "570x602+24+74"
+  ],
+  "hb": [
+   "brand",
+   "pair-halftone",
+   "570x602+606+74"
+  ],
+  "ma": [
+   "brand",
+   "pair-morning",
+   "570x602+24+74"
+  ],
+  "mb": [
+   "brand",
+   "pair-morning",
+   "570x602+606+74"
+  ],
+  "ta": [
+   "brand",
+   "tray",
+   "376x602+24+74"
+  ],
+  "tb": [
+   "brand",
+   "tray",
+   "376x602+412+74"
+  ],
+  "tc": [
+   "brand",
+   "tray",
+   "376x602+800+74"
+  ],
+  "ka": [
+   "brand",
+   "menubar",
+   "570x602+24+74"
+  ],
+  "kb": [
+   "brand",
+   "menubar",
+   "570x602+606+74"
+  ]
+ },
+ "steps": [
+  {
+   "id": "THEMES",
+   "surface": "App icon, every marketplace theme",
+   "path": "Taskbar, Dock, window icon while a theme is on",
+   "headline": "Do all eight theme icons look right together?",
+   "notice": "Five approved before; Cotton Candy Sky wears the default (it is drawn from that theme's picture). Halftone and Morning Rounds are new, each with a second option on the next pages. The four built-in themes (Light, Dark, Cr\u00e8me, Midnight) keep the default icon.",
+   "crop": "themes",
+   "highlight": {
+    "box": [
+     50,
+     53,
+     49,
+     45
+    ]
+   },
+   "changed": "Halftone Dimension and Morning Rounds get icons for the first time; Cotton Candy Sky uses the default."
+  },
+  {
+   "id": "HALFTONE",
+   "surface": "Halftone Dimension icon",
+   "path": "Taskbar, Dock while Halftone is on",
+   "headline": "Which Halftone icon?",
+   "notice": "Halftone has no picture, only a dark gradient with pink and cyan glows; its buddy has glowing cyan eyes.",
+   "variants": [
+    {
+     "id": "ha",
+     "label": "A Same recipe",
+     "crop": "ha",
+     "summary": "Light face, dark eyes, pink rim \u2014 matches the other seven."
+    },
+    {
+     "id": "hb",
+     "label": "B Night look",
+     "crop": "hb",
+     "summary": "Dark tile and face, glowing cyan eyes, like its buddy."
+    }
+   ]
+  },
+  {
+   "id": "MORNING",
+   "surface": "Morning Rounds icon",
+   "path": "Taskbar, Dock while Morning Rounds is on",
+   "headline": "Which Morning Rounds icon?",
+   "notice": "Morning Rounds' buddy is a dog in scrubs.",
+   "variants": [
+    {
+     "id": "ma",
+     "label": "A Same recipe",
+     "crop": "ma",
+     "summary": "Plain face, cream and carnelian."
+    },
+    {
+     "id": "mb",
+     "label": "B Dog's ears",
+     "crop": "mb",
+     "summary": "Two floppy ears folded over the corners."
+    }
+   ]
+  },
+  {
+   "id": "GLASS",
+   "surface": "Mac app icon (macOS 26)",
+   "path": "Dock, Launchpad, Finder on Macs with Liquid Glass",
+   "headline": "Build the Mac icon this way: three layers, Mac adds the glass?",
+   "notice": "Same approved design, split into the layers Apple's new icon format wants. It then follows the Mac's Default, Dark, Clear and Tinted looks like Apple's own apps. Older Macs get the flat version automatically. Pictures are approximate; a real Mac check comes before release.",
+   "crop": "glass",
+   "highlight": {
+    "box": [
+     2,
+     11,
+     96,
+     28
+    ]
+   },
+   "changed": "Nothing in the design; it is cut into three layers so Macs on macOS 26 can add their own glass."
+  },
+  {
+   "id": "DOCK",
+   "surface": "Mac Dock while a theme is on",
+   "path": "Dock, Mac only",
+   "headline": "On a Mac, should the Dock icon change with the theme?",
+   "notice": "Swapping the Dock picture while the app runs replaces the Liquid Glass icon with a flat one. That looks fine in Default and Dark, but sticks out in Clear and Tinted (shown).",
+   "crop": "dockswap",
+   "options": [
+    {
+     "id": "da",
+     "label": "Never on Mac",
+     "pros": [
+      "Always matches the Mac's look, like every other app."
+     ],
+     "cons": [
+      "Mac users never see their theme in the Dock (Windows and Linux still do)."
+     ]
+    },
+    {
+     "id": "db",
+     "label": "Always swap",
+     "pros": [
+      "Theme shows in the Dock for everyone.",
+      "Same rule on every computer."
+     ],
+     "cons": [
+      "In Clear or Tinted, ours is the one full-colour, flat icon."
+     ]
+    },
+    {
+     "id": "dc",
+     "label": "Swap except Clear/Tinted",
+     "recommended": true,
+     "pros": [
+      "Theme shows in Default and Dark (most Mac users).",
+      "Never clashes with Clear or Tinted."
+     ],
+     "cons": [
+      "Relies on the app reading which look the Mac uses; I still have to confirm that works on a real Mac. If it can't, this becomes \"Never on Mac\"."
+     ]
+    }
+   ],
+   "highlight": {
+    "box": [
+     2,
+     10,
+     96,
+     88
+    ]
+   }
+  },
+  {
+   "id": "TRAY",
+   "surface": "Tray icon (taskbar corner)",
+   "path": "Windows notification area, Linux panel; the buddy's taskbar style",
+   "headline": "Which tray picture, now that it changes with the theme?",
+   "notice": "Today it is always the purple mascot. After this it switches the moment you change theme, on Windows, Mac and Linux. The red \"needs you\" dot stays.",
+   "variants": [
+    {
+     "id": "ta",
+     "label": "A Face alone",
+     "crop": "ta",
+     "summary": "Fills the tiny square; easiest to read."
+    },
+    {
+     "id": "tb",
+     "label": "B Today's shape",
+     "crop": "tb",
+     "summary": "Body, arms and legs, new face. Smallest face."
+    },
+    {
+     "id": "tc",
+     "label": "C App icon",
+     "crop": "tc",
+     "summary": "Identical to the taskbar button."
+    }
+   ]
+  },
+  {
+   "id": "MENUBAR",
+   "surface": "Mac menu bar icon",
+   "path": "Top-right of the Mac screen; the buddy's taskbar style",
+   "headline": "On a Mac's menu bar: one colour, or the theme's colours?",
+   "notice": "Apple asks menu-bar icons to be one colour so they flip black/white with the bar; many apps still use colour.",
+   "variants": [
+    {
+     "id": "ka",
+     "label": "A One colour",
+     "crop": "ka",
+     "summary": "Black or white, like Apple's icons. Ignores the theme."
+    },
+    {
+     "id": "kb",
+     "label": "B Theme colours",
+     "crop": "kb",
+     "summary": "Same picture as Windows and Linux; changes with the theme."
+    }
+   ]
+  }
+ ]
+}

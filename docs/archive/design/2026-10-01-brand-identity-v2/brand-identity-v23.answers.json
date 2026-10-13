@@ -1,0 +1,37 @@
+{
+ "deck": "brand-identity-v23",
+ "started": "2026-10-04T03:55:04.953Z",
+ "submitted": "2026-10-04T03:57:10Z",
+ "cur": 3,
+ "answers": {
+  "L1": {
+   "note": "again, my primary issue with the tagline was the spacing in horizontal + tagline. the spacing is too wide, and neither looks right next to the icon because of it. and stacked looks like it got wider?",
+   "t": 1791086175981,
+   "v": "other",
+   "seconds": 71,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L2": {
+   "v": "yes",
+   "t": 1791086186598,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L3": {
+   "v": "yes",
+   "t": 1791086190855,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L4": {
+   "v": "yes",
+   "t": 1791086223082,
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,204 @@
+{
+  "title": "Phone and computer agree — five questions before R5",
+  "key": "r5-phone-record-questions",
+  "out": "r5-phone-record-questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-follow",
+      "words": true,
+      "surface": "Phone (remote access)",
+      "path": "Opening YouCoded on your phone while the computer is on",
+      "headline": "After your phone connects, should it keep jumping to whatever conversation the computer is showing?",
+      "today": "When your phone connects it opens your last conversation on the phone, or the one the computer is showing. After that, the phone and the computer each choose their own conversation, and each chooses chat or terminal view for itself.",
+      "problem": "If you glance at your phone to see what the computer is busy with, you have to tap to that conversation yourself.",
+      "proposal": "Three ways it could work. This was an old plan item that was half-built in September; this settles the rest.",
+      "options": [
+        {
+          "id": "leave",
+          "label": "Leave it as is",
+          "pros": [
+            "Nothing moves under your thumb while you read.",
+            "Matches the rule you approved in September: each screen picks its own view."
+          ],
+          "cons": [
+            "To watch what the computer is doing, you tap to that conversation yourself."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "follow-until-pick",
+          "label": "Follow until I pick",
+          "summary": "The phone follows the computer's conversation until you choose one on the phone, or a 'Follow computer' switch.",
+          "pros": [
+            "Handy if you use the phone as a second screen for the computer."
+          ],
+          "cons": [
+            "The screen can change while you are reading it.",
+            "One more setting, and one more way for the two to disagree."
+          ]
+        },
+        {
+          "id": "mirror",
+          "label": "Mirror everything",
+          "summary": "Also follow chat vs terminal view.",
+          "pros": [
+            "The phone always shows exactly what the computer shows."
+          ],
+          "cons": [
+            "Brings back the old bug: switching view on the phone made the computer jump too.",
+            "Reverses the rule you approved in September."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-stuck",
+      "words": true,
+      "surface": "Session status dots and the 'Claude may be stuck' banner",
+      "path": "The coloured dot beside each session, on computer and phone",
+      "headline": "Should the computer itself work out 'working / needs you / may be stuck', so the phone is right even with no computer window open?",
+      "today": "Only the computer's open window works this out, by reading the terminal screen. The phone copies whatever the window last said.",
+      "problem": "If the computer's window is closed or minimised to the tray, the phone's dots and 'stuck' warning go stale or disappear.",
+      "proposal": "We measured it. Running the check in the computer's background costs about 1 thousandth of a second per second per busy session, at most about 3% of one processor core with 10 busy sessions, nothing when idle, and about 1 MB of memory per session. It would be built last in R5.",
+      "options": [
+        {
+          "id": "core",
+          "label": "Computer works it out",
+          "pros": [
+            "The phone's dots are right even when no computer window is open.",
+            "One copy of the logic instead of four, so fewer disagreements."
+          ],
+          "measured": "about 3% of one core with 10 busy sessions",
+          "cons": [
+            "A small always-on cost on the computer while sessions are working.",
+            "The app download grows slightly (one extra built-in piece).",
+            "The Android app keeps its own copy until the Android rebuild."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "window",
+          "label": "Keep it in the window",
+          "pros": [
+            "No new background work and no bigger download."
+          ],
+          "cons": [
+            "Phone status is stale or missing whenever the computer window is closed."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-queue",
+      "words": true,
+      "surface": "Queued messages",
+      "path": "Messages you type while the assistant is still answering",
+      "headline": "For built-in assistant sessions, should your phone show — and be able to cancel — messages you queued on the computer?",
+      "today": "Messages you type while the assistant is busy wait in a queue. The phone cannot see the computer's queue, so the two screens show different things.",
+      "problem": "On the phone it looks like your message vanished, or the phone and computer disagree about what is coming next.",
+      "proposal": "Yes shows the same queue on both, with the same cancel button. For Claude Code sessions the queue belongs to Claude Code itself, so the phone still only sees those once they are sent.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Show and allow cancel",
+          "pros": [
+            "Both screens show the same thing — what you asked for: the phone should match the computer."
+          ],
+          "cons": [
+            "Someone holding your phone could cancel a message you typed at your desk (same as any other phone power)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "view-only",
+          "label": "Show, no cancel",
+          "pros": [
+            "The phone sees the queue but cannot change what you typed at the desk."
+          ],
+          "cons": [
+            "The phone does not fully match the computer."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "The phone and computer keep disagreeing about queued messages."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-lost-send",
+      "words": true,
+      "surface": "Phone (remote access)",
+      "path": "Sending a message from your phone on a patchy connection",
+      "headline": "If the connection drops just as you press Send on the phone, should it say 'Not sure this was sent' with a Send again button?",
+      "today": "If the connection drops at that moment, the message may or may not have reached the computer, and the phone says nothing either way.",
+      "problem": "A message can be silently lost, and you only find out when the assistant never answers.",
+      "proposal": "Yes makes every send carry a number so the phone can check afterwards. For Claude Code sessions the check is approximate, so the note says 'not sure' rather than 'failed'.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Show the note",
+          "pros": [
+            "No more silently lost messages.",
+            "One tap to send it again."
+          ],
+          "cons": [
+            "Sometimes the note appears for a message that did arrive (Claude Code sessions), so you may see a duplicate if you resend without checking."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing new on screen."
+          ],
+          "cons": [
+            "Lost messages stay silent."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-shared-lines",
+      "words": true,
+      "surface": "Chat",
+      "path": "Lines like 'Switched to Opus', 'Conversation cleared', 'Usage limit reached', and permission prompt cards",
+      "headline": "Should these notice lines and prompt cards appear in the same place on every screen?",
+      "today": "Each screen works these out for itself from what it saw, so a line may appear on the computer but not the phone, and prompt cards can sit in different places on the two.",
+      "problem": "The phone and computer tell slightly different stories about the same conversation.",
+      "proposal": "Yes makes the computer record them once, and every screen draws them from that record.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Same on every screen",
+          "pros": [
+            "Phone and computer show the same lines in the same places."
+          ],
+          "cons": [
+            "You will start seeing these lines on the screen you did not type on.",
+            "Conversations from before the change will not have them."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "The two screens keep telling slightly different stories."
+          ]
+        }
+      ]
+    }
+  ]
+}

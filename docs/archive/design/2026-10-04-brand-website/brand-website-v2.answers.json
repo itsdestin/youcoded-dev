@@ -1,0 +1,51 @@
+{
+ "deck": "brand-website-v2",
+ "started": "2026-10-05T05:25:00.101Z",
+ "submitted": "2026-10-05T05:26:10Z",
+ "cur": 5,
+ "answers": {
+  "HEADER": {
+   "v": "yes",
+   "t": 1791177908328,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LINKS": {
+   "v": "yes",
+   "t": 1791177943138,
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PHONEHEAD": {
+   "v": "yes",
+   "t": 1791177947565,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "FOOTER": {
+   "v": "yes",
+   "t": 1791177951999,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PHONEFOOT": {
+   "v": "yes",
+   "t": 1791177957944,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "TITLE": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791177970040,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

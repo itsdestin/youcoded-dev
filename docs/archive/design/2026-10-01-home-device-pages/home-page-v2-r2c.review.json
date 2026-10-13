@@ -1,0 +1,44 @@
+{
+  "title": "The Home page, next version — round 2, third look: the TV card",
+  "key": "home-page-v2-r2c",
+  "out": "home-page-v2-r2c.review.html",
+  "images": "images/home-page-v2-r2c.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-power",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV, top of the card",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 61.8, 21.8, 8.2] },
+      "headline": "Every TV has a round power button on the right; tapping the TV itself opens or closes its remote.",
+      "changed": "Power used to be the whole tile, so opening the remote meant finding a small separate button. Now the power button lights up in your accent colour while the TV is on, and the arrow beside it shows whether the remote is open.",
+      "notice": "Opening the remote can never switch the TV off. A TV with no paired remote (the Samsung) has the power button only.",
+      "risk": "Soundbars and speakers keep the old way: tap the tile to switch them on or off."
+    },
+    {
+      "id": "S-now",
+      "surface": "Pages",
+      "path": "Pages → Home, now playing",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 70.2, 20.2, 7.8] },
+      "headline": "What is playing sits in its own block: a Now playing label, the title, and the app it is in, with that app's mark.",
+      "changed": "The title used to be the grey second line under the name. Now it is a block of its own; on a TV it shows the app's mark (YouTube here), on a speaker a music note. Paused says Paused.",
+      "notice": "The line under the name now just says Playing, Paused, On or Off.",
+      "risk": "The app is known only for YouTube, Netflix, Prime Video and Disney+; other apps show the title without a mark."
+    },
+    {
+      "id": "S-remote2",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV, the remote",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 81.4, 20.2, 18.4] },
+      "headline": "The remote is reworked: app buttons are coloured marks with names, a bigger arrow pad, labelled Back, Home and Play/pause, and one volume bar.",
+      "changed": "The app pills became four marks in each app's own colour. The arrow pad grew, Back/Home/Play/pause got labels under them, and volume down, mute and up are one joined bar below.",
+      "notice": "The marks are drawn by the page in each app's colour, not downloaded logos.",
+      "risk": "The remote is tall: open it only when you need it; the page remembers it open or closed."
+    }
+  ]
+}

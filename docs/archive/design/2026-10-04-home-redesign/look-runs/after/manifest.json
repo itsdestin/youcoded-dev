@@ -1,0 +1,512 @@
+[
+ {
+  "name": "pages/page/page-home#v-look-a",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a/creme.png",
+  "ms": 1972,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a-activity",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a-activity/creme.png",
+  "ms": 1981,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b-activity",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b-activity/creme.png",
+  "ms": 2007,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a-climate",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a-climate/creme.png",
+  "ms": 2088,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b/creme.png",
+  "ms": 2108,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b-climate",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b-climate/creme.png",
+  "ms": 2168,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a-device",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a-device/creme.png",
+  "ms": 2463,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b-device",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b-device/creme.png",
+  "ms": 2583,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a/golden-sunbreak.png",
+  "ms": 2772,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b/golden-sunbreak.png",
+  "ms": 2781,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a-climate",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a-climate/golden-sunbreak.png",
+  "ms": 2792,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a-activity",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a-activity/golden-sunbreak.png",
+  "ms": 2838,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b-activity",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b-activity/golden-sunbreak.png",
+  "ms": 2853,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b-climate",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b-climate/golden-sunbreak.png",
+  "ms": 2863,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-a-device",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-a-device/golden-sunbreak.png",
+  "ms": 3748,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-b-device",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-b-device/golden-sunbreak.png",
+  "ms": 3783,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c-device",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c-device/creme.png",
+  "ms": 1175,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c/creme.png",
+  "ms": 1459,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c-activity",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c-activity/creme.png",
+  "ms": 1275,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c-device",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c-device/golden-sunbreak.png",
+  "ms": 1722,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c/golden-sunbreak.png",
+  "ms": 1881,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c-activity",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c-activity/golden-sunbreak.png",
+  "ms": 1863,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c-climate",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c-climate/creme.png",
+  "ms": 1391,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#v-look-c-climate",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#v-look-c-climate/golden-sunbreak.png",
+  "ms": 1750,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#lights",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#lights/creme.png",
+  "ms": 1523,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#device",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#device/creme.png",
+  "ms": 1552,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#connected",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#connected/creme.png",
+  "ms": 1690,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#climate",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#climate/creme.png",
+  "ms": 1694,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#activity",
+  "theme": "creme",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#activity/creme.png",
+  "ms": 1791,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#device",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#device/golden-sunbreak.png",
+  "ms": 2111,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#lights",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#lights/golden-sunbreak.png",
+  "ms": 2117,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#climate",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#climate/golden-sunbreak.png",
+  "ms": 2180,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#activity",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#activity/golden-sunbreak.png",
+  "ms": 2370,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ },
+ {
+  "name": "pages/page/page-home#connected",
+  "theme": "golden-sunbreak",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/ha-pages-connection/docs/archive/design/2026-10-04-home-redesign/look-runs/after/pages/page/page-home#connected/golden-sunbreak.png",
+  "ms": 2466,
+  "errors": [],
+  "panel": {
+   "x": 260,
+   "y": 40,
+   "w": 1170,
+   "h": 850
+  }
+ }
+]

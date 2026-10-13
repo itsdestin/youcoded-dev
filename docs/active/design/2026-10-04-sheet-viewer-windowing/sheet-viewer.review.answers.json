@@ -1,0 +1,50 @@
+{
+ "deck": "sheet-viewer-windowing",
+ "started": "2026-10-05T01:06:42.033Z",
+ "submitted": "2026-10-05T01:07:36Z",
+ "cur": 5,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1791162411497,
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1791162424798,
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1791162430658,
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "t": 1791162436542,
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-5": {
+   "v": "yes",
+   "t": 1791162445515,
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-6": {
+   "v": "yes",
+   "t": 1791162453714,
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

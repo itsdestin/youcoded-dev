@@ -1,0 +1,33 @@
+{
+  "title": "The Home page, next version — round 3: room brightness and media headers",
+  "key": "home-page-v2-r3",
+  "out": "home-page-v2-r3.review.html",
+  "images": "images/home-page-v2-r3.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-room-bright",
+      "surface": "Pages",
+      "path": "Pages → Home, a room's Lights card",
+      "crop": "pages/page/page-home#connected",
+      "highlight": { "box": [23.4, 49.6, 20.6, 8.6] },
+      "headline": "Each room's Lights card has one brightness bar that sets every light in the room together, open or folded.",
+      "changed": "New, under the All row. It shows the lights that are on, averaged. Dragging sets every working dimmable light in the room, and turns on any that were off.",
+      "notice": "The lights follow while you drag, like the single bars. Lights that only switch on and off are left alone.",
+      "risk": "With every dimmable light off, the bar sits at its lowest point until you drag it."
+    },
+    {
+      "id": "S-media-head",
+      "surface": "Pages",
+      "path": "Pages → Home, the soundbar, speaker and TV cards",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [22.8, 27.5, 21.8, 31.6] },
+      "headline": "Media cards now start with a small type icon beside its label, the name flush left, and power or mute at top right.",
+      "changed": "The big icon square left of the name is gone. TVs keep their power button top right; soundbars and speakers lose on/off entirely and get a mute button there instead, which fills in while muted.",
+      "notice": "Muted, the card says Muted under the name and its volume bar dims.",
+      "risk": "A speaker that is truly switched off can no longer be switched on from here; playing music to it wakes it."
+    }
+  ]
+}

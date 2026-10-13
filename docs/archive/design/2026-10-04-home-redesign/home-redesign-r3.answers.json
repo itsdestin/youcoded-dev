@@ -1,0 +1,49 @@
+{
+ "deck": "home-redesign-r3",
+ "started": "2026-10-05T07:50:40.386Z",
+ "submitted": "2026-10-05T07:57:34Z",
+ "cur": 4,
+ "answers": {
+  "TD-1": {
+   "note": "b/c. when the panel is really big and wide like this, i want the apps to look big/zoomed and the app panel should take most of the width (like 2/3s). then the controller pad more on th right.",
+   "t": 1791186770345,
+   "v": "pick",
+   "pick": "a",
+   "seconds": 130,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "TD-2": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791186845060,
+   "seconds": 75,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "TDL-1": {
+   "v": "pick",
+   "pick": "b",
+   "t": 1791186901344,
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "PB-1": {
+   "note": "can i see real versions of b/c",
+   "t": 1791186982173,
+   "v": "other",
+   "seconds": 81,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "PBL-1": {
+   "v": "other",
+   "t": 1791187053272,
+   "note": "hard to tell with these stand ins",
+   "seconds": 71,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

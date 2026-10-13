@@ -1,0 +1,66 @@
+{
+ "title": "YouCoded brand \u2014 round 22: initials raised, installer box polished",
+ "key": "brand-identity-v22",
+ "out": "brand-identity-v22.html",
+ "images": "images/brand-identity-v22",
+ "runs": {
+  "today": "runs/v22"
+ },
+ "labels": {
+  "today": "Before \u2192 after"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "ycba": [
+   "brand",
+   "ycba",
+   "1200x700+0+0"
+  ],
+  "ipba": [
+   "brand",
+   "ipba",
+   "1200x700+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "INITIALS",
+   "surface": "\"yc\"",
+   "path": "Everywhere it appears",
+   "crop": "ycba",
+   "headline": "Keep the initials like this?",
+   "changed": "Your pick E (bigger letters, A's gradient on the \"y\"), with the letters moved up so they sit centred higher on the tile.",
+   "notice": "Shown big and at 48\u201316px on light and dark.",
+   "risk": "None new.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  },
+  {
+   "id": "INSTALLER",
+   "surface": "Installer icon",
+   "path": "Everywhere it appears",
+   "crop": "ipba",
+   "headline": "Keep the installer like this?",
+   "changed": "Your pick B, polished: the box, its flaps and its outline are now one drawing \u2014 the flaps grow out of the box's top corners, everything shares one outline colour and one shadow, and the download symbol is a touch bigger.",
+   "notice": "Still clear at 16px.",
+   "risk": "The flaps are slightly wider and more upright than before.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     96,
+     90
+    ]
+   }
+  }
+ ]
+}
