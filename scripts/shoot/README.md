@@ -106,9 +106,10 @@ To start a folder over, delete it first.
   your name + status, a detail page's name + status, Specialists' label + warnings, Settings → Local
   models' "Local engine" + pill — 1.4px off at 1.5× until 2026-10-12, when the pill moved out of the
   title's line of text onto a flex row). Prints `PARTS`.
-- **The Office editor** — Office screens need its server. Port 4717 is used when free or already this
-  checkout's; when another worktree holds it, shoot starts this checkout's own on a free port and tells
-  the app with `?officePort=` (it never stops someone else's).
+- **The Office editor** — Office screens need its server. Each run starts its own and stops it at the
+  end: on 4717 when free, otherwise on a free port, told to the app with `?officePort=`. It never
+  reuses or stops one it did not start — not even this checkout's, because the run that started it
+  stops it when that run ends (an overlapping run then lost every editor screen, 2026-10-13).
 
 ## The icon sheet
 

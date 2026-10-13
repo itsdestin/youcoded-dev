@@ -6,10 +6,9 @@
 // someone had started by hand and left running — invisible state, so verify.sh was green only on
 // a machine that happened to have one. Now shoot owns it for the length of the run.
 //
-// A server already answering for THIS checkout is reused and left running (another run, or a
-// person's workbench, owns it). One answering for another checkout is left alone and this
-// checkout gets its own server on a free port, because pictures from someone else's would show
-// a different build of the editor.
+// A server already answering on the usual port is left alone — whoever started it owns it and
+// may stop it at any moment — and this run gets its own server on a free port (see
+// ensureOfficeEditor for why even this checkout's own is not reused).
 import { spawn, execFileSync } from 'node:child_process';
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -64,11 +63,19 @@ export async function ensureOfficeEditor(checkout, log = () => {}) {
   let port = DEFAULT_PORT;
   const there = await whoServes(port);
   if (there) {
-    if (there.desktop === desktop) { log('office editor: reusing the server already running for this checkout'); return { port, stop() {} }; }
-    // Someone else's editor (another worktree's, or an old one). Never stopped from here — it is
-    // not ours — and never used: its pictures would show a different build of the editor.
+    // WHY never reuse, not even this checkout's own (2026-10-13): the server on 4717 belongs to
+    // whoever started it — usually ANOTHER shoot run of this same checkout (two verify.sh runs, or
+    // a verify and a deck build, overlapping) — and that run stops it when it finishes. A run that
+    // reused it lost its editor mid-run: every screen that draws a document (office/document,
+    // office/spreadsheet, chat/files/edit/*, …) then failed together at its 20 s limit, "its mark
+    // is not on the page". Measured over this worktree's verify logs: 6 of 10 runs that reused
+    // the server lost editor screens (4 lost all six, every one "mark not on the page"); of 15
+    // that started their own, none did (one lost them to a browser stall that hit every
+    // screen, a different failure). It looked like
+    // load (it came with load above ~50) only because overlapping runs are what make the load.
+    // Never stopped from here — it is not ours — and never used.
     port = await freePort();
-    log(`office editor: port ${DEFAULT_PORT} is held by ${there.desktop ? `the office editor of ${there.desktop}` : there.other} — starting this checkout's own on ${port}`);
+    log(`office editor: port ${DEFAULT_PORT} is held by ${there.desktop === desktop ? 'another run of this checkout (it stops it when it ends)' : there.desktop ? `the office editor of ${there.desktop}` : there.other} — starting this run's own on ${port}`);
   }
   if (!existsSync(join(desktop, 'office-addon', 'manifest.json'))) {
     // WHY fetch here (2026-10-03): office-addon/ is downloaded, not in git, so every fresh
