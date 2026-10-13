@@ -14,7 +14,7 @@ note: |
   `text-(green|amber|red)-\d{3}` or `text-destructive-fg`, requiring 0
   outside its CENTRED_STATUS_ELSEWHERE list. The regex below is that pair in
   one (the colour before or after text-center, inside the one quoted span).
-  The listed files (FirstRunView, ShareSheet, ThemeShareSheet) are under
+  The listed files (FirstRunView, ShareSheet; ThemeShareSheet left 2026-10-13) are under
   ignores: here; their exact per-file counts are still pinned by that case,
   kept as a source read, because a per-file count is not something a rule
   can express.
@@ -75,7 +75,6 @@ ignores:
   # not here; check.sh fails if this block and that table differ.
   - "**/FirstRunView.tsx"
   - "**/ShareSheet.tsx"
-  - "**/ThemeShareSheet.tsx"
 utils:
   holds-match:
     regex: "className=\"[^\"]*(?:text-center[^\"]*(?:text-(?:green|amber|red)-\\d{3}|text-destructive-fg)|(?:text-(?:green|amber|red)-\\d{3}|text-destructive-fg)[^\"]*text-center)[^\"]*\""
