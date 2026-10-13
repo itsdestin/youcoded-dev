@@ -1,6 +1,42 @@
 {
   "_about": "The vision as a tree, written from Destin's own words (destin-words.md). Pillars hold capabilities; capabilities hold features. Status and evidence are filled by agents from the repos; relations (needs / shares) are proposed by agents and reviewed. Status values: done (shipped to users), building (an unmerged branch or active plan exists), planned (a roadmap entry exists, no work), vision (only in Destin's words).",
   "mission": "An app that is yours: your tools, your data, your choice of AI, built and shared with everyone. The core of a personal, open-source 'artisan web' against the own-nothing-and-be-happy economy.",
+  "_tracks_about": "Added 2026-10-13 (Destin: 'the money feature, and other pages like home assistant, would probably be better tracked as marketplace extensions rather than core app'). A track is the line of work an item belongs to, separate from the area of the app it lives in. track_of sets it per area, capability or feature; the nearest one wins (feature, then capability, then area). The five tracks follow the work streams Destin named on Oct 8: plugins and integrations with the marketplace, harness engineering, workflow engineering, plus installs and the app itself. screens_of names the screens a capability shows up on (screen-name prefixes, read off the screen list by hand; the real version derives them from the files the evidence cites).",
+  "tracks": [
+    {"id":"app","title":"The app","about":"What every install has: the screens and features people use day to day."},
+    {"id":"addons","title":"Marketplace & add-ons","about":"The store, and things that install from it: pages like Money and Home, integrations, themes, skills."},
+    {"id":"engine","title":"The assistant's engine","about":"How the assistant runs underneath: models, YouCoded's own runtime, fewer tokens, tests of answer quality."},
+    {"id":"devices","title":"Installs & devices","about":"Getting the app onto every computer and phone: installers, signing, updates, Android, the web version."},
+    {"id":"building","title":"How it gets built","about":"Your own tools for building YouCoded: review decks, screenshots, this page, speed checks, the public roadmap."}
+  ],
+  "track_of": {
+    "chat":"app","projects":"app","pages":"app","marketplace":"addons","social":"app","sync":"app","agents":"app","yours":"app","everywhere":"devices","together":"building",
+    "chat.harness":"engine","chat.converse.native":"engine","chat.converse.local":"engine","yours.model.free":"engine",
+    "pages.connect.money":"addons","pages.connect.home":"addons","pages.connect.moneypage":"addons","pages.connect.homepage":"addons","pages.connect.analytics":"addons",
+    "yours.everyone.ostools":"addons","yours.look.themebuilder":"addons",
+    "together.contribute.source":"app","together.contribute.bugs":"app","sync.follow.remote":"devices"
+  },
+  "screens_of": {
+    "chat.converse":["chat","chat/resume","chat/switcher","chat/sessions","chat/model-picker","chat/status-bar"],
+    "chat.steer":["settings/assistant","chat/skills","chat/specialists","chat/preferences","chat/commands","chat/session-context","projects/context","chat/first-time-warning"],
+    "chat.files":["chat/files","office"],
+    "projects.folder":["projects","projects/files","projects/context","projects/switcher"],
+    "projects.controls":["projects","chat/skills"],
+    "pages.build":["pages","pages/create","pages/library"],
+    "pages.connect":["pages/library/connections","marketplace/detail/connection"],
+    "marketplace.browse":["marketplace","library"],
+    "marketplace.publish":["marketplace/share","marketplace/theme-share"],
+    "marketplace.setup":["marketplace/detail/install","marketplace/theme-detail/install"],
+    "social.friends":["chat/games"],
+    "sync.follow":["settings/sync","settings/remote","chat/takeover","projects/turn-on-sync"],
+    "agents.unit":["chat/specialists","settings/assistant/specialists"],
+    "yours.look":["settings/appearance","settings/buddy","marketplace/themes","marketplace/theme-detail"],
+    "yours.model":["settings/assistant/cloud","settings/assistant/local","chat/model-picker"],
+    "everywhere.platforms":["settings/android","chat/update"],
+    "everywhere.firstrun":["first-run","welcome","handle-prompt"],
+    "together.contribute":["settings/development"],
+    "together.workflow":["dev"]
+  },
   "pillars": [
     {"id":"chat","title":"Chat and the assistant","quote":"Right now the core of it is the app shell and the agent experience. You open the app, you get a conversation window.",
      "capabilities":[

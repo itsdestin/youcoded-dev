@@ -9,6 +9,7 @@ thumbs/ (made from the ui-consistency-audit worktree's shoot run 20261012-141521
 import json, os, re, html, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD
+import screens_tab as stab
 HERE = os.path.dirname(os.path.abspath(__file__))
 THUMBS = os.path.join(HERE, 'thumbs')
 
@@ -180,7 +181,8 @@ def pic(cands):
     """First existing thumbnail for any of the screen names, trying the screen's states too."""
     for s in cands:
         for n in [s] + [x for x in names if x.startswith(s + '#') or x.startswith(s + '/')]:
-            if os.path.exists(os.path.join(HERE, thumb(n))): return f'<img class="shot" src="{thumb(n)}" alt="">'
+            # WHY a button: a picture on Today opens the same picture popup the Screens tab uses
+            if os.path.exists(os.path.join(HERE, thumb(n))): return f'<button class="shotbtn" data-shot="{E(n.split("#")[0])}" title="Open this screen"><img class="shot" src="{thumb(n).replace("#", "%23")}" alt=""></button>'
     return ''
 base = [n for n in names if '#' not in n]
 variants = {}
@@ -268,7 +270,7 @@ today.append('<section class="sec">' + sechead('In progress', len(active), 'Touc
 for e in active:
     today.append(f'''<div class="row">{pic(e['screens'])}<div class="body"><div class="t-sm">{E(e['title'])}</div>
       <div class="hint wrap">Last worked on {ago(e['days'])}. {E(e['note'])}</div>{meta(e['touches'], e['side'])}</div>
-      <div class="acts">{btn('Open its conversation','opens its conversation')}{btn('Write its finish line','asks you for one to three sentences saying when this is done; every big piece of work would get one at its start','ghost','One to three sentences saying when this is done')}{btn('Set aside','records why and moves it to Waiting','ghost')}</div></div>''')
+      <div class="acts">{f'<button class="btn sm" data-effscreens="{EFFORTS.index(e)}">See its screens</button>' if e['screens'] else ''}{btn('Open its conversation','opens its conversation')}{btn('Write its finish line','asks you for one to three sentences saying when this is done; every big piece of work would get one at its start','ghost','One to three sentences saying when this is done')}{btn('Set aside','records why and moves it to Waiting','ghost')}</div></div>''')
 today.append('</section>')
 
 w = []
@@ -277,7 +279,7 @@ for e in waiting:
     paused = f'<div class="hint wrap">Waiting on: {E(e["paused"])}</div>' if e.get('paused') else ''
     w.append(f'''<div class="row"><div class="body"><div class="t-sm">{E(e['title'])}</div>
       <div class="hint wrap">{ago(e['days']).capitalize()}{pr}. {E(e['note'])}</div>{paused}{meta(e['touches'], e['side'])}</div>
-      <div class="acts">{btn('Open its conversation','opens its conversation')}{btn('Wrap up','runs the wrap-up checklist and removes the working copy if nothing is lost','ghost','Checks nothing is lost, then removes the working copy')}</div></div>''')
+      <div class="acts">{f'<button class="btn sm" data-effscreens="{EFFORTS.index(e)}">See its screens</button>' if e['screens'] else ''}{btn('Open its conversation','opens its conversation')}{btn('Wrap up','runs the wrap-up checklist and removes the working copy if nothing is lost','ghost','Checks nothing is lost, then removes the working copy')}</div></div>''')
 w.append('<div class="sub">' + sechead('Notes and research only', len(DEV_ONLY)) + ''.join(f'<div class="row slim"><div class="body"><div class="t-sm">{E(d["title"])}</div><div class="hint">Last touched {ago(d["days"])}</div></div><div class="acts">{btn("Open","opens the notes")}{btn("Archive","files the notes away and removes the working copy","ghost")}</div></div>' for d in DEV_ONLY) + '</div>')
 w.append(f'<div class="t-xs muted note">Cleaned up automatically at session start, nothing to do: {E(LEFTOVERS["backups"])}; {E(LEFTOVERS["diag"])}.</div>')
 today.append(fold('Waiting', len(waiting), 'Untouched for a week or more. Only one says why.', ''.join(w)))
@@ -295,32 +297,15 @@ r.append(f'</div><div class="t-xs muted note">The most recent test release went 
 today.append(fold('Since the last release', None, f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.', ''.join(r)))
 
 # ----------------------------------------------------------------------------- SCREENS
-# WHY short labels: seven full questions wrapped to three rows of pills; the full question shows on hover and in the note.
-SHORTQ = {'Where does the app talk to the AI?':'Talks to the AI','What changes how the assistant behaves?':'Changes how it behaves','Where do marketplace add-ons show up?':'Add-ons appear',
-  'Where are permissions set or asked?':'Permissions','What is being worked on right now?':'Being changed now','What changed since the last release?':'Changed since release','Which screens have a phone version?':'Has a phone version'}
-SHOW = 6  # WHY: six pictures per place is enough to recognise it; "Show all" opens the rest.
-def pretty(seg): return seg.replace('-', ' ').replace('_', ' ').capitalize()
-app = []
-app.append('<div class="lensbar"><div class="fchips qtabs" role="group" aria-label="Show me"><button class="fchip" data-q="" aria-pressed="true">Every place</button>' + ''.join(f'<button class="fchip" data-q="{E(q)}" title="{E(q)}">{E(SHORTQ.get(q,q))}</button>' for q,_ in QUESTIONS) + '</div><span class="muted t-xs qnote"></span></div>')
-for p, _ in PLACES:
-    lst = by_place.get(p, [])
-    if not lst: continue
-    lst = [n for n in lst if any(os.path.exists(os.path.join(HERE, thumb(x))) for x in [n] + variants.get(n, []))]
-    more = f'<button class="btn sm showall">Show all {len(lst)}</button>' if len(lst) > SHOW else ''
-    app.append(f'<section class="sec place" data-place="{E(p)}"><div class="sechead"><div class="gtext"><h2 class="gh">{E(p)}<span class="cnt" data-total="{len(lst)}">{len(lst)}</span></h2></div>{more}</div><div class="wall">')
-    for i, n in enumerate(lst):
-        v = variants.get(n, [])
-        # WHY (U3): a tile never renders an empty box: own picture, else its first state's picture. The
-        # pictures are loaded eagerly (5 MB) so a tile is never blank while scrolling or in a screenshot.
-        src = next((x for x in [n] + v if os.path.exists(os.path.join(HERE, thumb(x)))), None)
-        if not src: continue
-        wk = work_on(n)
-        segs = n.split('/')
-        sub = DESC.get(n) or (' › '.join(pretty(s) for s in segs[1:-1]) if len(segs) > 2 else '')
-        app.append(f'''<figure class="tile{" extra" if i >= SHOW else ""}" data-name="{E(n)}" data-variants="{E(json.dumps(v))}" tabindex="0">
-          <img src="{thumb(src)}" alt=""><figcaption><span class="t-xs fw">{E(pretty(segs[-1]))}</span>{f'<span class="t-2xs muted clamp">{E(sub)}</span>' if sub else ''}
-          <span class="tbadges">{('<span class="badge" title="the same screen in different situations">' + str(len(v)) + (' state' if len(v)==1 else ' states') + '</span>') if v else ''}{('<span class="spill"><span class="dot"></span>being changed</span>') if wk else ''}</span></figcaption></figure>''')
-    app.append('</div></section>')
+# WHY rebuilt (2026-10-13, Destin: "sort/filter/group in more interesting/dynamic ways ... clearer
+# nesting and ways to trace/visualize click-paths ... i don't like the side panel for images"):
+# the facets, click paths and picture popup live in screens_tab.py; this only feeds it the page's data.
+SHORTQ = ['Talks to the AI','Changes its behaviour','Add-ons','Permissions']
+QPATS = [(q, pats) for q, pats in QUESTIONS if pats and not pats[0].startswith('#')]
+REL_PATS = sorted({s for g in RELEASE['groups'] for s in g[2]})
+SGROUPS = stab.build(HERE, names, place_of, DESC, EFFORTS, REL_PATS, QPATS, matches)
+GROUP_IDS = {g['id'] for g in SGROUPS}
+app = [stab.head_controls(list(zip([q for q,_ in QPATS], SHORTQ)), EFFORTS), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
 cols = ['Chat','Projects','Pages','Marketplace','Settings','Devices & sync']
 bt = ['<p class="t-xs muted">Filled dot: you set it here. Hollow: it is used here. A first draft; it will be built properly later.</p><div class="tablewrap"><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th>{E(c)}</th>' for c in cols) + '<th></th></tr></thead><tbody>']
 for bname, cells, note in BLOCKS:
@@ -329,7 +314,6 @@ for bname, cells, note in BLOCKS:
 bt.append('</tbody></table></div>')
 app.append(fold('Which parts are set in more than one place', None, 'Each row is one part of the app; a filled dot is a place where you set it.', ''.join(bt)))
 
-panel = {n: dict(desc=DESC.get(n), variants=variants.get(n, []), work=[dict(title=e['title'], days=e['days']) for e in work_on(n)], place=place_of(n)) for n in base}
 
 # ----------------------------------------------------------------------------- PAGE
 vision_html, vision_nodes, vision_tot = vrender(HERE)
@@ -344,22 +328,22 @@ ICON_SCREENS=_ic('<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 2
 ICON_MAP=_ic('<path d="M9 4l-6 3v13l6-3 6 3 6-3V4l-6 3z"/><path d="M9 4v13M15 7v13"/>')
 CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>'
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{VCSS}{SVG_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{SVG_CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge tip below draft" tabindex="0" data-tip="{E(DRAFT)}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
 <div class="br"><span class="muted t-2xs asof">As of Oct 12 · the main copy</span><div class="bandpill"><select id="theme" aria-label="Theme"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></div></div></header>
 <div class="screen-body"><div class="pane">
-<div class="panehead hline" id="panehead"><div class="tabs" role="tablist" aria-label="Views"><button role="tab" aria-selected="true" data-view="today">{ICON_TODAY}Today</button><button role="tab" aria-selected="false" data-view="app">{ICON_SCREENS}Screens <span class="count">{len(base)}</span></button><button role="tab" aria-selected="false" data-view="vision">{ICON_MAP}Big picture</button></div></div>
+<div class="panehead hline" id="panehead"><div class="tabs" role="tablist" aria-label="Views"><button role="tab" aria-selected="true" data-view="today">{ICON_TODAY}Today</button><button role="tab" aria-selected="false" data-view="app">{ICON_SCREENS}Screens <span class="count">{len(SGROUPS)}</span></button><button role="tab" aria-selected="false" data-view="vision">{ICON_MAP}Big picture</button></div></div>
 <div class="panescroll fadescroll" id="scroller"><main class="cc-main">
 <div id="today" class="view on">{''.join(today)}</div>
 <div id="app" class="view">{''.join(app)}</div>
 <div id="vision" class="view">{vision_html}</div>
 </main></div></div></div></div>
 <aside class="panel" id="panel" aria-label="Details"><div class="phd hline"><div class="t-base" id="pti"></div><button class="closebtn" aria-label="Close" id="pclose"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="pbody fadescroll" id="pbody"></div><div class="pfoot" id="pfoot"></div></aside>
+{stab.dialog_shell()}
 <div class="toast" id="toast"></div>
 <script>
-const PANEL={json.dumps(panel)}; const LIGHT={json.dumps(light)}; const THUMB=n=>'thumbs/'+n.replaceAll('/','__')+'.jpg';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 // WHY (T-02, approved): a fixed head over a separately scrolling body; the body fades 42px at an edge
 // only while more is hidden there. Same data-fade-top/bottom switch the app's useScrollFade sets.
@@ -372,28 +356,18 @@ addEventListener('DOMContentLoaded',()=>{{['#scroller','#pbody'].forEach(s=>$(s)
   // WHY: each view's filter strip lives in the fixed head (like Projects' tab row), not in the scroll body
   $$('.view .lensbar').forEach(l=>{{l.dataset.view=l.closest('.view').id;l.hidden=!l.closest('.view').classList.contains('on');$('#panehead').appendChild(l)}});fades()}});
 let tt; function toast(m){{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}}
-document.addEventListener('click',e=>{{const b=e.target.closest('[data-does]');if(b){{toast('In the real version this '+b.dataset.does+'.');e.preventDefault();}}}});
+document.addEventListener('click',e=>{{const b=e.target.closest('[data-does]');if(b){{toast('In the real version this '+b.dataset.does+'.');e.preventDefault();}}
+  // WHY (cross-links): Today's pictures and "See its screens" lead into the Screens tab's popup and filters
+  const sh=e.target.closest('[data-shot]');if(sh&&!sh.classList.contains('vshot')&&typeof openShot==='function'&&GI[sh.dataset.shot]){{openShot(sh.dataset.shot);return}}
+  const es=e.target.closest('[data-effscreens]');if(es){{showScreensFor(+es.dataset.effscreens)}}}});
 // WHY one side pane for everything: G-4.5 anatomy (title row + close, body, actions on the right per G-28).
 function openPanel(eb,title,body,acts){{$('#pti').textContent=title;$('#pbody').innerHTML=(eb?`<div class="eyebrow">${{eb}}</div>`:'')+body;$('#pfoot').innerHTML=acts;$('#panel').classList.add('open');$('#pbody').scrollTop=0;fades()}}
-function closePanel(){{$('#panel').classList.remove('open');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));const s=$('#lines');if(s&&typeof vApply==='function')vApply()}}
+function closePanel(){{$('#panel').classList.remove('open');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));if(typeof vApply==='function'&&$('#vision').classList.contains('on'))vApply()}}
 $('#pclose').onclick=closePanel;document.addEventListener('keydown',e=>{{if(e.key==='Escape')closePanel()}});
 $$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));$('#panel').classList.remove('open');$('#scroller').scrollTop=0;$$('#panehead .lensbar').forEach(l=>l.hidden=l.dataset.view!==b.dataset.view);fades()}});
 $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
-$$('.showall').forEach(b=>b.onclick=()=>{{const s=b.closest('.place');setTimeout(fades,0);const on=s.classList.toggle('expanded');b.textContent=on?'Show fewer':'Show all '+s.querySelectorAll('.tile').length}});
-$$('.qtabs .fchip').forEach(b=>b.onclick=()=>{{$$('.qtabs .fchip').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));const q=b.dataset.q;const lit=new Set(q?LIGHT[q]:[]);
-  document.body.classList.toggle('asking',!!q);document.body.classList.toggle('askwork',q==='What is being worked on right now?');
-  $$('.tile').forEach(t=>{{const n=t.dataset.name;const vs=JSON.parse(t.dataset.variants);const on=lit.has(n)||vs.some(v=>lit.has(v));t.classList.toggle('lit',!!q&&on)}});
-  // WHY (U2): with a question on, each place says how many of its screens match, and places with none disappear
-  $$('.place').forEach(s=>{{const k=s.querySelectorAll('.tile.lit').length;s.style.display=(!q||k)?'':'none';const c=s.querySelector('.gh .cnt');c.textContent=q?k+' of '+c.dataset.total:c.dataset.total}});
-  const shown=$$('.tile.lit').length;
-  $('.qnote').textContent=q?(q+' '+shown+(shown===1?' screen. ':' screens. ')+'Shown in the place each screen lives.'):''}});
-$$('.tile').forEach(t=>{{const open=()=>{{const n=t.dataset.name,d=PANEL[n];
-  openPanel(d.place+' · '+n,t.querySelector('figcaption .fw').textContent,`<p class="t-sm">${{d.desc||'<span class="missing">No description yet. The real version has an agent write one sentence when this screen\\'s code changes, and marks it stale when the code changes again.</span>'}}</p>
-  <img class="big" src="${{THUMB(n)}}" alt="">
-  ${{d.variants.length?`<div class="eyebrow pe">States <span class="cnt" title="the same screen in different situations">${{d.variants.length}}</span></div><div class="strip">${{d.variants.map(v=>`<img src="${{THUMB(v)}}" title="${{v}}" alt="">`).join('')}}</div>`:''}}
-  <div class="eyebrow pe">Work changing it</div>${{d.work.length?d.work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${{w.title}}</div><div class="hint">last worked on ${{w.days===0?'today':w.days+' days ago'}}</div></div></div>`).join(''):'<div class="muted t-xs">Nothing open.</div>'}}
-  <div class="eyebrow pe">History</div><div class="muted t-xs">One picture per merge, newest first, with the change highlighted. Starts collecting once this runs on every merge.</div>`,
-  `<button class="btn" data-does="opens the before/after for the last change that touched it">See before and after</button><button class="btn" data-does="opens a chat already pointed at this screen\\'s code">Ask about this</button><button class="btn primary" data-does="saves your comment as a task with you as the source, and shows it in Today">Comment</button>`)}};t.onclick=open;t.onkeydown=e=>{{if(e.key==='Enter')open()}}}});
+</script><script>
+{stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps(SHORTQ), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']))}
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 </script></body></html>'''

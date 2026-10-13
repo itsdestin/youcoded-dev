@@ -95,20 +95,7 @@
 .fold.sec{margin-bottom:8px}
 .relgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
 
-/* ---- Screens: a wall per place; each picture is a full-screen card (.layer-surface + hover-lift) ---- */
-.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;padding:0 0 4px}
-.tile.extra{display:none} .place.expanded .tile.extra{display:block}
-body.askwork .tile .spill{display:none} /* every match is being changed, so the pill adds nothing */
-body.asking .tile{display:none} body.asking .tile.lit{display:block} body.asking .showall{display:none}
-.tile{margin:0;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);overflow:hidden;cursor:pointer;transition:background-color 120ms steps(4),transform 200ms steps(5)}
-@media (hover:hover){.tile:hover{background:var(--inset);transform:scale(1.02)}}
-.tile:active{background:var(--edge)}
-.tile img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;display:block;background:var(--well);border-bottom:1px solid var(--edge-dim)}
-.tile figcaption{padding:8px 12px 12px;display:flex;flex-direction:column;gap:2px}
-.tile figcaption .fw{font-size:14px}
-.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.tbadges{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px} .tbadges:empty{display:none}
-.tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* ---- Screens: the wall, tree, trail and picture popup are styled in screens_tab.py (CSS) ---- */
 .tablewrap{overflow-x:auto}
 .blocks{border-collapse:collapse;width:100%} .blocks th,.blocks td{padding:6px 8px;text-align:left;vertical-align:middle}
 .blocks tbody tr:nth-child(odd){background:color-mix(in srgb,var(--inset) 50%,transparent)}
@@ -131,8 +118,6 @@ body.asking .tile{display:none} body.asking .tile.lit{display:block} body.asking
 .pfoot:empty{display:none}
 .pfoot .btn{width:100%}
 .statusline{display:flex;align-items:center;gap:8px;color:var(--fg-2)}
-.panel img.big{width:100%;border-radius:var(--radius-lg);border:1px solid var(--edge-card);display:block}
-.panel .strip{display:flex;gap:6px;overflow:auto;padding:2px 0} .panel .strip img{height:54px;border-radius:var(--radius-md);border:1px solid var(--edge-card)}
 .panel .row{margin-bottom:8px}
 body:has(.panel.open) .cc-main{padding-right:416px}
 /* ---- Toast.tsx: OverlayPanel layer 4 (= layer-surface) 'px-4 py-2 text-sm text-fg', radius-lg ---- */
@@ -155,3 +140,7 @@ body:has(.panel.open) .cc-main{padding-right:416px}
   .fchips[data-fade-left="true"],.tabs[data-fade-left="true"]{--fx-l:28px} .fchips[data-fade-right="true"],.tabs[data-fade-right="true"]{--fx-r:28px}
   body:has(.panel.open) .cc-main{padding-right:12px}
 }
+/* a picture on Today is a button into the Screens tab's picture popup (2026-10-13 cross-links) */
+.shotbtn{padding:0;border:0;background:none;cursor:pointer;border-radius:var(--radius-md);flex:none;display:block;transition:transform 200ms steps(5)}
+@media (hover:hover){.shotbtn:hover{transform:scale(1.02)}} .shotbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shotbtn .shot{display:block}
