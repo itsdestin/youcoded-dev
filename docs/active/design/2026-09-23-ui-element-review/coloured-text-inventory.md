@@ -1,5 +1,5 @@
 ---
-status: active
+status: active (swept 2026-10-13)
 date: 2026-10-13
 related: small-fixes-3 (the sweep question), guide-draft.md principle 2, decisions "Small fixes" rows
 ---
@@ -7,10 +7,12 @@ related: small-fixes-3 (the sweep question), guide-draft.md principle 2, decisio
 # Status colours used as text — inventory (not fixed yet)
 
 The guide: the fixed status hues (green, red, amber, blue) go in tints, never in text (principle 2).
-Two spots were fixed already with the status-pill convention — Local models' fit labels (SF2-9) and
-the model menu's memory warning (SF2-10). Everything below is **listed, not changed**: Destin asked
-for the list and one question on small-fixes-3 ("sweep them all next, using the fit-pill
-convention?"). Read-only sweep of `youcoded/desktop/src/renderer` (`*.test.*` and comments excluded),
+**Swept 2026-10-13** (small-fixes-3#SF3-10, Destin picked "sweep"): every place below that coloured
+WORDS now keeps them in the text colour, with the status colour in a pill, tint, outline, bar or
+status dot. Kept on purpose: destructive buttons / menu items (`ui/Button.tsx` danger-outline, the
+red danger menu items in Backup & sync and the project hero), the permission and plan buttons, the
+icon-only marks, the brand colours, and `OpenTasksChip.tsx` (Open tasks is being reworked by another
+session). The table is the list as it was found. Read-only sweep of `youcoded/desktop/src/renderer` (`*.test.*` and comments excluded),
 2026-10-13. Paths are under `desktop/src/renderer/`.
 
 **Totals:** 75 places colour **words or numbers** — 12 of them the permission/plan buttons' light
