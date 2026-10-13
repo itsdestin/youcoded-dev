@@ -16,8 +16,8 @@ note: |
   (`text-destructive-fg/80`, prose styling, not this primitive): the negative
   lookahead blocks a following `/`, word char or `-`.
   EXEMPT (carried as `ignores:` below, from the retired test's EXEMPT table):
-    - components/git/GitReviewView.tsx — a destructive text BUTTON (hover
-      fill, padding, rounded), not an error line.
+    (GitReviewView.tsx left 2026-10-13: its destructive text button is the
+    shared danger-outline Button now, so it carries no copy of the markup.)
     - components/marketplace/UpdateButton.tsx — deliberately role="status"
       (polite): a failed update check must not interrupt what the user is
       reading. FieldError is role="alert".
@@ -50,7 +50,6 @@ files:
 ignores:
   - "**/components/ui/states.tsx"
   - "**/components/SkipPermissionsCaption.tsx"
-  - "**/components/git/GitReviewView.tsx"
   - "**/components/marketplace/UpdateButton.tsx"
   - "**/*.test.tsx"
 rule:
