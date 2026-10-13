@@ -66,6 +66,12 @@ def words(counts, total):
     if counts.get('unchecked'): parts.append(f"{counts['unchecked']} not checked yet")
     return f"of {total}: " + ', '.join(parts)
 
+MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+def nice(d):
+    """2026-10-08 -> 'Oct 8' (U9: a student cannot tell 10/08 from 8 October)."""
+    try: return f"{MONTHS[int(d[5:7])-1]} {int(d[8:10])}"
+    except Exception: return d
+
 def dot(status):
     return f'<i class="sdot {E(status)}" aria-hidden="true"></i>'
 
@@ -87,8 +93,8 @@ def render(here):
       <div class="t-sm dim msum">Of the {len(feats)} things you have said the app should do, <b>{tot['done']}</b> exist, <b>{tot['building']}</b> are being built, <b>{tot['planned']}</b> are planned and <b>{tot['vision']}</b> are only ideas{(' (' + str(tot['unchecked']) + ' not checked yet)') if tot['unchecked'] else ''}.</div>
       {bar(tot, len(feats))}<div class="legend t-2xs">{LEGEND}</div></div>''')
     # 2. filters: filter pills (G-14), each a question you might ask across every area
-    out.append('''<div class="lensbar"><div class="fchips vtabs" role="group" aria-label="Show">
-      <button class="fchip" data-lens="all" aria-pressed="true">By area</button><button class="fchip" data-lens="missing">Not started</button><button class="fchip" data-lens="building">Being built</button><button class="fchip" data-lens="blocked">Waiting on something</button><button class="fchip" data-lens="shared">Overlaps</button></div>
+    out.append('''<div class="lensbar"><div class="tabs vtabs" role="group" aria-label="Show">
+      <button data-lens="all" aria-pressed="true">By area</button><button data-lens="missing">Not started</button><button data-lens="building">Being built</button><button data-lens="blocked">Waiting on something</button><button data-lens="shared">Built twice</button></div>
       <span class="t-xs muted lensnote"></span></div>''')
     # 3. overview: what most things wait on, what just shipped, then the ten areas as cards
     out.append('<div id="voverview">')
@@ -97,26 +103,26 @@ def render(here):
         if blockers:
             out.append('<div class="card"><div class="eyebrow">Most things are waiting on</div>' + ''.join(f'<button class="irow" data-focus="{E(b["id"])}">{dot(b["status"])}<span class="t-sm">{E(b["title"])}</span><span class="t-2xs muted irmeta">{len(b["needed_by"])} need it</span></button>' for b in blockers) + '</div>')
         if recent:
-            out.append('<div class="card"><div class="eyebrow">Became real in the last month</div>' + ''.join(f'<button class="irow" data-focus="{E(r["id"])}">{dot("done")}<span class="t-sm">{E(r["title"])}</span><span class="t-2xs muted irmeta">{E(r["since"][5:].replace("-","/"))}</span></button>' for r in recent[:8]) + '</div>')
+            out.append('<div class="card"><div class="eyebrow">Became real in the last month</div>' + ''.join(f'<button class="irow" data-focus="{E(r["id"])}">{dot("done")}<span class="t-sm">{E(r["title"])}</span><span class="t-2xs muted irmeta">{E(nice(r["since"]))}</span></button>' for r in recent[:8]) + '</div>')
         out.append('</div>')
-    out.append(f'<div class="sechead"><span class="eyebrow">Areas <span class="cnt">{len(sk["pillars"])}</span></span></div><div class="pgrid">')
+    out.append(f'<div class="sechead"><div class="gtext"><h2 class="gh">Areas<span class="cnt">{len(sk["pillars"])}</span></h2><div class="legend t-2xs">{LEGEND}</div></div></div><div class="pgrid">')
     for p in sk['pillars']:
         n = nodes[p['id']]
         c = n['counts']
         caps = ' · '.join(E(x['title']) for x in p['capabilities'])
-        out.append(f'''<button class="card card-interactive pcard" data-pillar="{E(p['id'])}"><div class="pctop"><span class="t-base">{E(p['title'])}</span><span class="chev" aria-hidden="true">›</span></div>
+        out.append(f'''<button class="card card-interactive pcard" data-pillar="{E(p['id'])}"><div class="pctop"><span class="t-base">{E(p['title'])}</span></div>
           <div class="t-xs dim">{c.get('done',0)} of {n['total']} exist{(' · ' + str(c['building']) + ' being built') if c.get('building') else ''}</div>{bar(c, n['total'])}
-          <div class="t-2xs muted pccaps">{caps}</div></button>''')
+          <div class="t-2xs pccaps">{caps}</div><div class="pcopen t-xs fw">See inside<span class="chev" aria-hidden="true">›</span></div></button>''')
     out.append('</div></div>')
     # 4. the full tree, hidden until an area is opened or a filter is on
-    out.append('<div id="vdetail" hidden><div class="vback"><button class="btn ghost sm" id="vback">‹ All areas</button></div></div>')
+    out.append('<div id="vdetail" hidden><div class="vback"><button class="btn sm" id="vback">‹ All areas</button></div></div>')
     out.append('<div class="web" id="web" hidden><svg class="lines" id="lines"></svg>')
     for p in sk['pillars']:
         n = nodes[p['id']]
         ins = insights.get(p['id'], [])
         out.append(f'''<section class="pillar" data-id="{E(p['id'])}"><header class="phead"><div class="t-base ptitle vlink" data-focus="{E(p['id'])}">{E(p['title'])}</div>
           {f'<div class="quote t-xs">“{E(p["quote"])}”</div>' if p.get('quote') else ''}
-          <div class="t-xs dim">{E(words(n['counts'], n['total']))}</div>{bar(n['counts'], n['total'])}</header><div class="caps">''')
+          <div class="t-xs dim">{E(words(n['counts'], n['total']))}</div>{bar(n['counts'], n['total'])}<div class="legend t-2xs">{LEGEND}</div></header><div class="caps">''')
         for c in p['capabilities']:
             out.append(f'<div class="cap" data-id="{E(c["id"])}"><button class="caphead t-xs" data-focus="{E(c["id"])}">{E(c["title"])}</button><div class="chips">')
             for f in c['features']:
@@ -131,48 +137,59 @@ def render(here):
     return ''.join(out), data, dict(total=len(feats), **tot)
 
 CSS = '''
-.mission{margin-bottom:16px} .mission .mtext{max-width:880px} .mission .msum{margin-top:8px} .mission .vbar{margin-top:12px}
+/* Big picture. Shared looks come from cc.css; this only arranges them. WHY rewritten (2026-10-13,
+   audit.md #14, #27-#29): boxes, chips and bars now use the app's card levels, ProgressBar and
+   action-chip recipes instead of their own numbers. */
+.mission{margin-bottom:16px} .mission .mtext{max-width:880px;margin-top:4px} .mission .msum{margin-top:8px} .mission .vbar{margin-top:12px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;color:var(--fg-muted)} .leg{display:inline-flex;align-items:center;gap:6px}
-.vbar{display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--inset);border:1px solid var(--edge-dim)} .vbar .seg{display:block}
+/* ProgressBar.tsx: 'h-1.5 rounded-full bg-inset overflow-hidden' */
+.vbar{display:flex;height:6px;border-radius:var(--radius-full);overflow:hidden;background:var(--inset)} .vbar .seg{display:block}
 .seg.done{background:var(--status-ok)} .seg.building{background:var(--fg-muted)} .seg.planned{background:var(--fg-faint)} .seg.vision{background:repeating-linear-gradient(45deg,var(--fg-faint) 0 2px,transparent 2px 5px)} .seg.unchecked{background:var(--status-warn);opacity:.5}
-/* status dots — the one status signal on this tab (G-14 tag: dot + neutral text) */
+/* status dots: dot + neutral text */
 .sdot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none;border:1.5px solid var(--fg-muted);box-sizing:border-box}
 .sdot.done{background:var(--status-ok);border-color:var(--status-ok)}
 .sdot.building{background:linear-gradient(90deg,var(--fg-2) 50%,transparent 50%);border-color:var(--fg-2)}
 .sdot.planned{background:transparent}
-.sdot.vision{border-style:dashed;border-color:var(--fg-faint)}
+.sdot.vision{border-style:dotted;border-color:var(--fg-muted)}
 .sdot.unchecked{border-color:var(--status-warn)}
-.lensbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;position:sticky;top:48px;background:var(--canvas);padding:8px 0;z-index:2}
 .vinsights{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
-.irow{font:inherit;display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-radius:var(--radius-md);padding:6px 8px;margin:0 -8px;color:var(--fg);cursor:pointer;transition:background var(--dur-hover) var(--ease)}
+/* plain rows inside a card (decisions "List rows by job": pick-one lists are plain rows, hover highlights) */
+.irow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-radius:var(--radius-md);padding:6px 8px;margin:0 -8px;color:var(--fg);cursor:pointer;transition:background-color 120ms steps(4)}
+.vinsights .eyebrow{margin-bottom:6px}
 .irow .t-sm{flex:1;min-width:0} .irmeta{white-space:nowrap}
 @media (hover:hover){.irow:hover{background:var(--inset)}} .irow:active{background:var(--edge)} .irow:focus-visible{outline:2px solid var(--accent)}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.pcard{font:inherit;color:var(--fg);text-align:left;display:flex;flex-direction:column;gap:8px}
-.pctop{display:flex;align-items:center;gap:8px} .pctop .t-base{flex:1} .chev{color:var(--fg-muted);font-size:16px;line-height:1}
-.pccaps{line-height:1.5}
-.vback{margin:-4px 0 8px}
-.web{position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;align-items:start}
+.pcard{color:var(--fg);text-align:left;display:flex;flex-direction:column;gap:8px}
+.pctop{display:flex;align-items:center;gap:8px} .pctop .t-base{flex:1}
+.pccaps{line-height:1.5;color:var(--fg-2)} /* WHY fg-2 (U12): fg-muted read as disabled on Midnight */
+.pcard{height:100%} .pcopen{margin-top:auto;display:flex;align-items:center;justify-content:flex-end;gap:2px;color:var(--fg-2)}
+.pgrid .legend,.sechead .legend{margin-top:2px}
+.vback{margin:0 0 12px}
+.web{position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;align-items:start}
 .web.detail{grid-template-columns:1fr}
 .lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden}
-.pillar{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:16px}
+/* an area = a raised first-level card; each capability inside = the nested level (CARD_LEVEL_2) */
+.pillar{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);padding:16px}
 .phead{margin-bottom:12px;display:flex;flex-direction:column;gap:6px} .phead .vbar{max-width:480px}
-.ptitle{cursor:pointer} .web.detail .ptitle{font-size:18px;font-weight:600}
+.ptitle{cursor:pointer} .web.detail .ptitle{font-size:18px;font-weight:500}
 .web:not(.detail) .quote{display:none}
-.caps{display:grid;gap:10px;grid-template-columns:1fr} .web.detail .caps{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
-.cap{background:var(--inset);border:1px solid var(--edge-dim);border-radius:var(--radius-md);padding:10px 12px}
-.caphead{font:inherit;font-size:12px;font-weight:500;background:none;border:0;padding:0;margin:0 0 8px;color:var(--fg-2);cursor:pointer;text-align:left} .caphead:hover{color:var(--fg)}
+.caps{display:grid;gap:8px;grid-template-columns:1fr} .web.detail .caps{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.cap{background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);padding:12px}
+.caphead{font-size:12px;font-weight:500;background:none;border:0;padding:0;margin:0 0 8px;color:var(--fg-muted);cursor:pointer;text-align:left} .caphead:hover{color:var(--fg)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{font:inherit;font-size:12px;line-height:1.3;text-align:left;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--edge-dim);background:var(--panel);color:var(--fg);cursor:pointer;max-width:100%;display:inline-flex;align-items:center;gap:6px;transition:background var(--dur-hover),box-shadow var(--dur-hover)}
-@media (hover:hover){.chip:hover{background:var(--edge)}} .chip:focus-visible{outline:2px solid var(--accent)}
-.chip.vision{color:var(--fg-2)}
+/* a clickable item is an action chip = Button secondary sm ('rounded-lg border-edge-strong text-fg-2 text-2xs px-2.5 py-1') */
+.chip{font-size:11px;line-height:14px;font-weight:500;text-align:left;padding:4px 10px;border-radius:var(--radius-lg);border:1px solid var(--edge-strong);background:transparent;color:var(--fg-2);cursor:pointer;max-width:100%;display:inline-flex;align-items:center;gap:6px;transition:background-color var(--dur-hover),box-shadow var(--dur-hover)}
+@media (hover:hover){.chip:hover{background:var(--panel);color:var(--fg)}} .chip:active{background:var(--edge)} .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .chip.added::after{content:" +";color:var(--fg-muted)}
 .chip.hide,.cap.hide,.pillar.hide{display:none}
 .chip.focus{box-shadow:0 0 0 2px var(--accent)} .chip.rel{box-shadow:0 0 0 2px var(--status-ok)} .chip.relby{box-shadow:0 0 0 2px var(--tag-blue)}
-.pins{margin-top:12px} .pins ul{margin:8px 0 0;padding-left:18px;color:var(--fg-2)} .pins li{margin:4px 0}
-.ev{margin:4px 0;padding-left:0;list-style:none} .ev li{padding:6px 0;border-bottom:1px solid var(--edge-dim)} .ev .kind{display:inline-block;min-width:72px;color:var(--fg-muted)}
+.pins{margin-top:12px} .pins ul{margin:0 12px 12px;padding-left:18px;color:var(--fg-2)} .pins li{margin:4px 0}
+.ev{margin:0 12px 12px;padding-left:0;list-style:none} .ev li{padding:4px 0} .ev .kind{display:inline-block;min-width:72px;color:var(--fg-muted)}
 .quote{border-left:2px solid var(--edge);padding-left:8px;color:var(--fg-2);font-style:italic;margin:4px 0;max-width:880px}
-.panel .vlink{cursor:pointer;padding:6px 0;border-bottom:1px solid var(--edge-dim);display:flex;gap:8px;align-items:baseline} .panel .vlink:hover b{text-decoration:underline}
+/* side-panel lists: plain rows, no lines between them (decisions "Card levels": no full-width lines in a popup) */
+.panel .vlink{cursor:pointer;padding:6px 8px;margin:0 -8px;border-radius:var(--radius-md);display:flex;gap:8px;align-items:baseline;transition:background-color 120ms steps(4)}
+@media (hover:hover){.panel .vlink:hover{background:var(--inset)}}
+.panel .eyebrow + .vlink{margin-top:4px}
 @media (max-width:760px){.vinsights{grid-template-columns:1fr}}
 '''
 
@@ -180,6 +197,8 @@ JS = r'''
 const VN=%s; const SW=%s;
 const web=$('#web'), svg=$('#lines');
 let vLens='all', vPillar=null;
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function nice(d){const m=/^\d{4}-(\d\d)-(\d\d)$/.exec(d||'');return m?MON[+m[1]-1]+' '+(+m[2]):(d||'')}
 function shown(el){return el&&el.offsetParent!==null}
 function center(el){const r=el.getBoundingClientRect(),w=web.getBoundingClientRect();return {x:r.left-w.left+r.width/2,y:r.top-w.top+r.height/2}}
 function line(a,b,cls){if(!shown(a)||!shown(b))return;const p=center(a),q=center(b);const dx=(q.x-p.x)/2;const el=document.createElementNS('http://www.w3.org/2000/svg','path');el.setAttribute('d',`M${p.x},${p.y} C${p.x+dx},${p.y} ${q.x-dx},${q.y} ${q.x},${q.y}`);el.setAttribute('class',cls);svg.appendChild(el)}
@@ -187,12 +206,12 @@ function chipOf(id){return web.querySelector(`.chip[data-focus="${CSS.escape(id)
 const OPEN=['vision','planned','building'];
 function lensOn(n,l){if(l==='missing')return ['vision','planned'].includes(n.status);if(l==='building')return n.status==='building';
   if(l==='blocked')return (n.needs||[]).some(x=>OPEN.includes(VN[x.id].status));if(l==='shared')return (n.shares||[]).length>0;return true}
-const LNOTE={missing:'Planned or only an idea; nothing built yet.',building:'Someone is working on these now.',blocked:'Each needs something that does not exist yet. Lines show what.',shared:'Pairs that share parts. Lines join them; maybe build once.'};
+const LNOTE={missing:'Planned or only an idea; nothing built yet.',building:'Someone is working on these now.',blocked:'Each needs something that does not exist yet. Lines show what.',shared:'Pairs of things that share parts. Lines join them; each pair could be built once.'};
 // WHY one apply(): the tab has three states (areas overview / one area open / a filter across all areas) and every control just changes vLens or vPillar.
 function vApply(){svg.innerHTML='';$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));
-  const over=vLens==='all'&&!vPillar;$('#voverview').hidden=!over;web.hidden=over;$('#vdetail').hidden=!vPillar;
+  const over=vLens==='all'&&!vPillar;$('.mission .legend').hidden=!over; /* WHY: an open area shows its own legend next to its bar; one legend per bar group, never two */$('#voverview').hidden=!over;web.hidden=over;$('#vdetail').hidden=!vPillar;
   web.classList.toggle('detail',!!vPillar);
-  $$('.vtabs .fchip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lens===vLens));
+  $$('.vtabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lens===vLens));
   $('.lensnote').textContent=LNOTE[vLens]||'';
   if(over)return;
   $$('.chip').forEach(c=>c.classList.toggle('hide',!lensOn(VN[c.dataset.focus],vLens)));
@@ -201,10 +220,10 @@ function vApply(){svg.innerHTML='';$$('.chip').forEach(c=>c.classList.remove('fo
   requestAnimationFrame(()=>{
   if(vLens==='blocked')Object.values(VN).forEach(n=>(n.needs||[]).forEach(x=>{if(OPEN.includes(VN[x.id].status))line(chipOf(n.id),chipOf(x.id),'dep')}));
   if(vLens==='shared')Object.values(VN).forEach(n=>(n.shares||[]).forEach(x=>line(chipOf(n.id),chipOf(x.id),'share')))});}
-function openPillar(id){vPillar=id;vLens='all';vApply();window.scrollTo(0,0)}
+function openPillar(id){vPillar=id;vLens='all';vApply();$('#scroller').scrollTop=0;fades()}
 $$('.pcard').forEach(c=>c.onclick=()=>openPillar(c.dataset.pillar));
-$('#vback').onclick=()=>{vPillar=null;vApply();window.scrollTo(0,0)};
-$$('.vtabs .fchip').forEach(b=>b.onclick=()=>{vLens=b.dataset.lens;if(vLens!=='all')vPillar=null;vApply()});
+$('#vback').onclick=()=>{vPillar=null;vApply();$('#scroller').scrollTop=0;fades()};
+$$('.vtabs button').forEach(b=>b.onclick=()=>{vLens=b.dataset.lens;if(vLens!=='all')vPillar=null;vApply()});
 function focus(id){const n=VN[id];if(!n)return;
   // WHY: an item picked from the overview lists opens its area first, so its lines have somewhere to land.
   if(web.hidden||(vPillar&&vPillar!==n.pillar)){vPillar=n.pillar;vLens='all';vApply()}
@@ -214,12 +233,12 @@ function focus(id){const n=VN[id];if(!n)return;
   const row=(x,extra)=>`<div class="vlink" data-focus="${x.id}"><i class="sdot ${VN[x.id].status}"></i><div><b class="t-sm">${VN[x.id].title}</b>${extra?`<div class="t-xs muted">${extra}</div>`:''}</div></div>`;
   openPanel(where,n.title,`
   ${n.quote?`<div class="quote t-xs">“${n.quote}”</div>`:''}
-  ${n.kind==='feature'?`<div class="statusline t-xs"><i class="sdot ${n.status}"></i>${SW[n.status]}${n.since?' · since '+n.since:''}</div><p class="t-sm">${n.why||'<span class="missing">No evidence gathered yet.</span>'}</p>`:''}
+  ${n.kind==='feature'?`<div class="statusline t-xs"><i class="sdot ${n.status}"></i>${SW[n.status]}${n.since?' · since '+nice(n.since):''}</div><p class="t-sm">${n.why||'<span class="missing">No evidence gathered yet.</span>'}</p>`:''}
   ${kids.length?`<div class="eyebrow pe">Inside <span class="cnt">${kids.length}</span></div>`+kids.map(k=>row(k,SW[k.status])).join(''):''}
   ${(n.needs||[]).length?`<div class="eyebrow pe">Needs first</div>`+n.needs.map(x=>row(x,x.because)).join(''):''}
   ${(n.needed_by||[]).length?`<div class="eyebrow pe">Needed by</div>`+n.needed_by.map(x=>row(x,x.because)).join(''):''}
   ${(n.shares||[]).length?`<div class="eyebrow pe">Shares parts with</div>`+n.shares.map(x=>row(x,x.because)).join(''):''}
-  ${ev.length?`<details class="fold pe"><summary class="foldrow"><span class="t-xs">How we know <span class="cnt">${ev.length}</span></span><span class="chev">›</span></summary><ul class="ev t-xs">${ev.map(e=>`<li><span class="kind">${e.kind}</span>${e.note||''} <span class="muted">${e.date||''}</span><div class="muted t-2xs">${e.ref||''}</div></li>`).join('')}</ul></details>`:''}`,
+  ${ev.length?`<details class="fold pe"><summary class="foldrow"><span class="t-xs">How we know <span class="cnt">${ev.length}</span></span><span class="chev">›</span></summary><ul class="ev t-xs">${ev.map(e=>`<li><span class="kind">${e.kind}</span>${e.note||''} <span class="muted">${nice(e.date||'')}</span><div class="muted t-2xs">${e.ref||''}</div></li>`).join('')}</ul></details>`:''}`,
   `<button class="btn" data-does="asks you to say in a sentence why the status is wrong; the answer is recorded with the evidence">That's wrong</button><button class="btn primary" data-does="starts a session on this with its evidence, what it needs and what needs it pasted in">Start a session on this</button>`);
   // WHY after openPanel + a frame: opening the pane narrows the page, so lines measured earlier point at stale spots.
   requestAnimationFrame(()=>{svg.innerHTML='';const me=chipOf(id);if(me){me.classList.add('focus');me.scrollIntoView({block:'nearest'})}
