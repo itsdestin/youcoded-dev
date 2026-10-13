@@ -111,6 +111,9 @@ A job none of these does needs a new shared piece and Destin's look for it — n
   description under it, never beside it), its tools right. Every tab of a screen opens with the same
   heading row (the Projects view's tabs). Lists scroll under a see-through fade at both edges, tall
   enough to fade a whole card edge.
+- Known deviation: **at phone width the band shows no title** — only the lit Pages or Projects
+  button says where you are, and pinned pages hide (they stay in Pages). Three columns could not
+  hold both button clusters, the title and "Back to chat" at 390px; they drew over each other.
 
 ### Popups and side panels
 - Every popup and side panel uses the shared popup (`Dialog`): a **one-line 16px semibold title**, the
@@ -323,6 +326,16 @@ Backup & sync, Assistant → General, Account.
   or a hand-made chip.
 - **Quick actions on a card** (tag, note, favourite, pin) sit at its **top right**; a **date** goes at
   the **bottom right**, at the end of the details line. Example: conversation cards.
+
+Known deviations (built 2026-10-13 from the final review; the rest of this recipe is built):
+- **Marketplace rail cards keep a tighter shadow** (`0 3px 10px`, `globals.css` `.mp-rail-scroll`):
+  a row that scrolls sideways clips anything taller than its own box, and the medium shadow
+  would need about 24px more room between rails.
+- **Project files' folder cards stay flat** (`FilesTab.tsx`): the folder is a tab and a body,
+  two boxes, so a box shadow would draw a seam across the tab; a single drop-shadow filter on a
+  grid of folders costs paint on every frame (`.claude/rules/performance.md`).
+- **Games' tiles and Settings cards are not raised**: they follow the later Card levels rule
+  (the glass first-level card), which replaced the raised look inside popups and side panes.
 
 ### Tags
 Reference: Session details' Tags card. (Decisions "Tag look", "Tag actions menu", "Tags & note → Session
