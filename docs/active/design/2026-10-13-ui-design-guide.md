@@ -37,6 +37,37 @@ illustrations, not the limit of where it applies. Exact sizes live in the shared
 use the piece and you get them. If a rule seems wrong for a new situation, ask rather than bending it
 or copying one screen's quirk.
 
+**The shared pieces** (`components/ui/`, imported from `../ui`). Pick by job:
+
+| Job | Piece |
+|---|---|
+| Any button; the ✕ | `Button` (filled `primary`, outlined `secondary`, red `danger` / `danger-outline`); `CloseButton` |
+| An on/off setting | `Toggle` in a `SettingRow` |
+| One "I understand" tick | `ConsentRow` |
+| 2–4 short choices / a view switch | `SegmentedTabs` |
+| Many choices | `Select` (`TypeableSelect` when typing helps) |
+| Choices that each need a line of explanation | `RadioGroup` |
+| Ticking several items in a list | `Checkbox` |
+| Text | `TextInput`, `Textarea`; an action inside the box: `InputGroup` |
+| Search with filters | `SearchFilterPill`, `FilterChip` |
+| A row with a control, or one that opens | `SettingRow` |
+| Something that folds open | `FoldRow` |
+| A value you drag | `Slider` |
+| Progress of a known length (a download, an import) | `ProgressBar` |
+| A status | `Pill` (`PillButton` when clicking it opens a menu) |
+| A fact in a chip row | `Chip` |
+| A notice | `Callout` (`compact` for the slim one-line box) |
+| Loading, empty, error | `LoadingState`, `EmptyState`, `ErrorState`; a field's error `FieldError` |
+| A short confirmation that goes away | `Toast` |
+| An (i) explainer; a hover name | `AnchorTip`; `Tooltip` |
+| A small menu under a control | `Menu` |
+| A popup or side panel | `Dialog` (its `footer`, `onEnter` and back arrow) |
+| A small label | `SectionLabel` |
+| Cards inside a popup | `CARD_LEVEL_1`, `CARD_LEVEL_2` |
+| A thin status band above the message box | `StatusStrip` |
+
+A job none of these does needs a new shared piece and Destin's look for it — not a hand-made one.
+
 ## Principles
 
 1. **Find the job first.** Every element has a job with a recipe below — "two buttons in a narrow
@@ -56,7 +87,7 @@ or copying one screen's quirk.
    Page, a file) is a raised card. A list you read or pick from (settings, a menu) is rows. Inside a
    popup, every card at the same depth looks the same (see Card levels) — a card that holds one idea
    keeps it together; never split one idea into separate boxes.
-6. **Actions live on the right.** One filled button per view — except a list whose rows each carry
+6. **Actions live on the right — or span the full width.** At most one filled button per view — except a list whose rows each carry
    their own main action, where each row's is filled (see Buttons). A filled button, switch or
    selection never sits alone at the bottom-left — only when balanced by something on the right of
    the same line.
@@ -97,7 +128,9 @@ and Git review inside it are still hand-built — see their sections below.)
 - When the body scrolls, the content fades at the hidden edge, **evenly across the whole width**;
   never a solid strip, never an unfaded side strip (decisions "Popup scroll fade").
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide** popups are
-  larger.
+  larger. At phone width a popup stays a popup, as wide as the screen allows (old guide §4.8).
+- **Settings save as you change them.** A settings popup has no Save, no Done and no footer: closing it
+  keeps what you set (old guide §4.3). A footer is only for a decision to confirm.
 - **A popup's own buttons that must stay in view** (a long body above them) go in the shared popup's
   **footer**: pinned under the body, which scrolls and fades see-through where it meets them — no line
   between them. Never a hand-made scroll area with its buttons under it (Close session, Close window,
@@ -171,14 +204,17 @@ under its words (`SectionLabel reading`). Labels over short settings groups stay
   fit. When they must stack, the buttons go **full width** (side by side, sharing the width) — never
   pushed to the right under the text.
 - Shape follows the theme's control roundness (built-in themes: Round, 14px).
-- **Main action:** filled. **Everything less important beside it** (Cancel, Preview, Not now, Dismiss):
+- **Main action:** filled — and only when there is one; a card of settings may have no filled button
+  at all. **An action that only opens more** ("See full history", "Manage…") is outlined.
+  **Everything less important beside it** (Cancel, Preview, Not now, Dismiss):
   **outlined** with the full-strength outline, never bare text.
 - **One button:** any lone button is full width, unless it fits on one line beside its text — then it
   sits at the right of that line.
 - **Two buttons, side by side** (wide popups, chat messages): the **filled one on the right**, the
   outlined one directly left of it, both hugging their labels at the right edge. A chat question card
   is the same: outlined Dismiss directly left of filled Submit.
-- **Two buttons, stacked** (narrow popups and phone width): full width, **filled on top**. "Narrow" is
+- **Two buttons, stacked** (narrow popups and phone width): full width, **filled on top** — so the way
+  back (Back, Back to draft) is the outlined one under it. "Narrow" is
   the space the buttons sit in, not only the popup: a ~250px column inside a wide popup stacks too.
 - **Destructive confirm:** the red button takes the main action's place — on the right when side by
   side, on top when stacked.
@@ -386,7 +422,7 @@ box for its opened list.
   it. A one-sentence notice centres its words beside its buttons.
 - **A problem replaces the card it is about.** When a whole card cannot work (no internet, the server
   unreachable), **the card becomes the notice box** — same spot, **same label above it** — with one plain
-  sentence and its Try again inside, and no title. Never a changed line or a notice tucked inside a card
+  sentence and its Try again inside (filled — it is the box's main action), and no title. Never a changed line or a notice tucked inside a card
   that cannot work. Reference: Games → Friends while offline.
 - **A failed action replaces the buttons it came from.** When Send, Download, Install or Update fails,
   the notice box takes the buttons' place — **one plain sentence saying what happened and what still
@@ -410,8 +446,11 @@ box for its opened list.
   line of normal grey text in a small red-tinted box with a red border. Never red text.
 - **An error with a button is built with `ErrorState`** (`components/ui/states.tsx`) — it draws this
   notice box (red tint, red border) with its buttons inside at the right; never hand-draw one. **Every
-  error box has something to press**: Try again where trying again can help, Report bug where it can't.
-  "We don't know why" errors keep a bold title (normal colour) and put Report bug / Diagnose on their own
+  error box has something to press**: Try again where trying again can help, Report bug where it can't;
+  the first of them is filled, the rest outlined (`ErrorState` does this). **Which shape:** when you
+  can say what went wrong ("Usage couldn't be loaded — the server didn't answer"), one plain sentence
+  and Try again, no title; only when nothing is known is it a "we don't know why" error, which keeps a
+  bold title (normal colour) and put Report bug / Diagnose on their own
   line at the bottom right. The box lines up with the content it sits in, and a failed list spans that
   list's width.
 - Errors follow `docs/error-message-standards.md`: never invent a cause.
@@ -703,8 +742,8 @@ for citations; this list says where each went.
 - **G-15 Status bar**: one chip treatment; at phone width chips become icons before the bar wraps; never
   two rows. (Its coloured words are listed as deviations in `coloured-text-inventory.md`.)
 - **G-19 Counts** — Text and numbers.
-- **G-22 Find bar**, **G-23 Attachment card** — The message box, below.
-- **G-24 Terminal backing** — The terminal, below.
+- **G-22 Find bar**, **G-23 Attachment card** — The message box, above.
+- **G-24 Terminal backing** — The terminal, above.
 - **G-25 Session row** (two lines: name, then project folder; status pill and tags at the right; names
   never wrap) and **G-26 Session status pill** (dot + word, word in the text colour, words from
   `STATUS_LABEL`).
@@ -754,8 +793,16 @@ recipe and ask.
 | Q11 | **Steps of a multi-step popup** (Add a backup): one label and one card per step was tried; the first step was "worse", and the finished step should be dropped ("just remove this page and dump them back on the main backup & sync page"). | small-fixes-3#SF3-1, #SF3-5 |
 | Q12 | **The number on the header's Session Files button**: "decide with status/badges", never decided. | decisions "Counts beside a label or tab" |
 | Q13 | **Skills drawer, filters and tag notes as quick pickers**: Destin unsure, not ruled. | decisions "Quick pickers" (Q-2) |
-| Q14 | **Who-said-it colour in chat-like lists** (game chat sender names in accent): an identity marker, not a status — allowed or not. | game boards, below |
-| Q15 | **Mid-match states in games**: losing your own connection, an opponent who never comes back, a challenge arriving while you play — nothing shows today. | game boards, below |
+| Q14 | **Who-said-it colour in chat-like lists** (game chat sender names in accent): an identity marker, not a status — allowed or not. | Game boards, above |
+| Q15 | **Mid-match states in games**: losing your own connection, an opponent who never comes back, a challenge arriving while you play — nothing shows today. | Game boards, above |
+| Q16 | **Work that runs for a while and can be stopped** (an import, a long download): whether it offers Stop, what the ✕ and Esc do while it runs, and how a part-finished result shows (one pill on the subject, or one per piece). | three-builder test, 2026-10-13 |
+| Q17 | **A notice about a whole popup step** (not about one card): its own labelled box, or inside the step's card. "Nothing bare on the popup" doesn't say. | three-builder test |
+| Q18 | **Status colour in a bar's fill** (a usage meter past its limit): a tint like a pill, or never. | three-builder test |
+| Q19 | **A master switch over other settings**: whether the rows it governs dim or hide when it is off. | three-builder test |
+| Q20 | **Times and dates** (quiet hours from / to): no shared piece and no look. | three-builder test |
+| Q21 | **Something unavailable until you sign in**: whether its row offers Sign in, and the pill's words. | three-builder test |
+| Q22 | **A step of a flow**: whether it shows "2 of 3", whether the title changes per step, and whether the outlined Back button repeats the title's back arrow (part of Q11). | three-builder test |
+| Q23 | **Switches or tick boxes for picking items to bring along** (what an import includes): the ticket's include choices are switches; the old guide kept tick boxes for picking several items in a list. | three-builder test; submit-ticket-2#ST2-1 |
 
 ## Before you show Destin
 
