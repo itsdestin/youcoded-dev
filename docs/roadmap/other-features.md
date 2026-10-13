@@ -45,6 +45,17 @@ has passed ~8 items — graduate it to its own file.
       with a Threads-like feel; wait for Pages sign-in, wider picture loading and background refresh.
       `all` `parked` `P3` `checked 2026-09-01` `security`
 
+- [ ] Browser follow-ups (the assistant's own browser, built 2026-10-13): 7 items left out of the first release.
+      (a) Phones and the Android app get no Browser controls or live picture; a phone watching a
+      computer chat cannot answer a Browser card (the call gives up after 90 seconds).
+      (b) Attaching a local file to a website (upload) was cut for safety; needs its own design.
+      (c) Clicking and typing through the live picture was cut; signing in uses a real window.
+      (d) My Chrome is Experimental: never run against Destin's own Chrome's remote-debugging switch;
+      no Chrome tab group marks the assistant's tabs. (e) Sign-ins are shared by all chats; per-chat
+      storage was deferred. (f) Specialists (helper agents) don't get the Browser. (g) The Browser
+      download (when no Chrome/Edge/Chromium/Brave is installed) is verified on Linux only.
+      `all` `confirmed` `P3` `checked 2026-10-13`
+
 - [ ] Small items: 2.
       (a) The dev log shows React's "Cannot update a component while rendering a different component"
       warning when many sessions arrive at once (a phone's catch-up); nothing visibly wrong yet.
