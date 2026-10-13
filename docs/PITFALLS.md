@@ -11,6 +11,7 @@ This file now holds **only cross-repo invariants** — constraints that span two
 - **Desktop version comes from the git tag, not `package.json`.** CI extracts the version from the tag and patches `package.json` during build. *Guard:* `desktop-release.yml`.
 - **`youcoded-core` is archived and read-only, never a release target.** Hook fixes land in the app's bundled desktop/Android copies, not the old plugin. *Guard:* `youcoded/desktop/tests/write-guard-contract.test.ts` and `.claude/rules/youcoded-toolkit.md`.
 - **App release coordination lives in the `youcoded-admin` release skill** (`youcoded-admin/skills/release/SKILL.md`). The app tag starts both platform workflows; admin owns the procedure and platform checklist, not a separate product release. See `docs/build-and-release.md`. *Guard:* `youcoded-admin/skills/release/release-skill.test.mjs` and platform CI workflows.
+- **Deploy the Worker's hidden presence before incognito apps ship.** *Why:* old servers expose hidden users. *Guard:* `presence-socket.test.ts`.
 
 ## IPC and cross-platform parity
 
