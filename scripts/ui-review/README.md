@@ -418,6 +418,17 @@ runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-
 real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
 quoted text is no longer in its file).
 
+Added by the UI consistency round (documented 2026-10-13; same file):
+`?friends=none|many|requests|lots` (with `?signedIn=1`: no friends, four friends showing every
+status, those plus a request each way, or a long list — unset is Jake alone),
+`?incognito=1` (start hidden from friends), `?network=offline` (no network: friends never
+connect, and a sent ticket fails with the request's own error), `?syncWarn=github|timeout`
+(Backup & sync: an old GitHub backup computers no longer copy to, or Google Drive's "timed out"
+warning), `?syncSetup=save-failed|install-failed|auth-failed` (the add-a-backup steps fail),
+`?devCopy=ready` (Contribute: YouCoded's code already on this computer), `?devOpen=fail`
+(Contribute's "open a session" fails, as with the CLI missing), `?ticket=hold` (Submit a
+ticket's sending and working-copy setup never finish, so their waiting states can be shot).
+
 Failure switches, for review shots of error states (added 2026-09-11):
 `?fail=<ns.method>[,<ns.method>…]` makes those channels REJECT from the very first call —
 `?fail=skills.list`, `?fail=tags.list`, nested `?fail=theme.marketplace.list`. Use it for any
