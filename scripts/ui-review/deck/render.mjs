@@ -187,6 +187,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     pages: Number(args.pages || 1),
     settle: Number(args.settle || 400),
   });
-  console.log(JSON.stringify(result));
-  process.exit(result.errors.length ? 1 : 0);
+  // WHY: write, THEN exit from its callback. Writes to a pipe are asynchronous in Node, so
+  // console.log + an immediate process.exit cut a large deck's result line off mid-JSON
+  // (final-review, 206 pages, 2026-10-13): preview.py could not parse it and made no sheet.
+  process.stdout.write(JSON.stringify(result) + '\n', () => process.exit(result.errors.length ? 1 : 0));
 }
