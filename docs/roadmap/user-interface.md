@@ -3,6 +3,14 @@ Filing test: does the fix change more than one screen? Yes — shared primitives
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
 
+- [ ] Buttons beside text in cards and rows are top-, centre- or bottom-aligned with no one rule — a model to
+      download has its button at the top, the installed model under it is centred, Model providers' cards
+      are top-aligned while the rows beside them centre. Destin, 2026-10-13 (small-fixes-3#SF3-9): "just
+      leave this for now, but keep a future roadmap item to do a full review and deal with
+      top/center/bottom alignment for buttons by text."
+      → docs/active/design/2026-09-23-ui-element-review/button-alignment-survey.md
+      `all` `confirmed` `checked 2026-10-13`
+
 - [ ] The app has no shared set of icons: about a hundred are drawn one by one in their own
       files, so the same idea looks different across screens and a badly drawn one (the theme
       page's heart, found 2026-10-05) is caught only by eye. Make one shared icon set and move
