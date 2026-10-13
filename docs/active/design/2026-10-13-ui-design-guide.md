@@ -534,15 +534,10 @@ Known deviations:
   (`InputBar.tsx` ~1412, ~1424; `VoiceButton.tsx` ~299) — one filled button per view.
 - Stop and the mic are a fixed round pill (`StopButton.tsx` ~66, `VoiceButton.tsx` ~306) — roundness
   comes from the theme (a deliberate earlier choice; ask before changing).
-- The voice popover's "Not now" is a bare text button beside the filled Download (`VoiceButton.tsx`
-  ~236); its "Check again" and "OK" are lone bare text buttons at the right (~253, ~263).
 - The local-model download warning is an inset strip with a coloured dot, not the notice box
   (`LocalModelDownloadStrip.tsx` ~105).
 - "Waiting for approval..." shows for every disabled reason, including a moved project
   (`InputBar.tsx` ~1354) — say what is happening.
-- **Dragging a file in shows no highlight at all** (`InputBar.tsx` ~1065–1073); the agreed rule is the
-  same highlight as dragging a session tab (the dashed accent outline of `SessionDropZone.tsx`;
-  decisions "Applied from earlier rules").
 - The box has no border; the old guide asked for a visible edge on it.
 - Quick chips are hand-made buttons, not a shared piece (`QuickChips.tsx` ~61).
 
@@ -564,17 +559,13 @@ plugin's file); the shared body `artifact-views/ActiveArtifactView.tsx`, routed 
 - At phone width the list and the file stack, and the list button becomes "‹ Files".
 
 Known deviations:
-- **None of the three hosts is the shared popup**: the pane has a full `border-b` line instead of the
-  tapered line; the two overlays' titles are 16px medium, not semibold.
-
-- A spaced-capitals label ("What keeping yours changes", ~913).
-- Several failures are plain grey notes with nothing to press: Word, PDF, Excel, binary files, the
-  plugin file overlay, a missing file (~843).
-- Hand-made filled pill buttons for Edit / Save / Cancel / Comments (`SessionDrawer.tsx` ~1361–1379), a
-  red rename border (~1052), hand-made tool buttons (`project-view/detail-tool-icons.tsx`).
+- The Session Files top bar's file name is 14px, not the 16px panel title (decisions "Applied from
+  earlier rules"); the bar is crowded at 480px, so it needs a look rather than a swap.
+- A Word, PDF or Excel file that can't be opened (damaged or password-protected) is a plain grey note
+  beside "Open in default app": trying again can't help, and the error box needs Try again, Report
+  bug or Diagnose — the shape for "only open it elsewhere" is undecided.
 - Sheets and HTML use fixed paper colours (`sheet-theme.ts`, `XlsxView.tsx`, white HTML) — possibly
   intended, never decided.
-- Loading words vary ("Loading viewer…", "Loading…") outside `LoadingState`.
 
 ### The terminal
 *Documents current behaviour; not yet reviewed by Destin.* **Exempt**: the terminal stays exactly as it
@@ -611,16 +602,10 @@ the Edit tool card (exempt) and the file viewer's conflict diff.
   filled "Commit N staged files".
 
 Known deviations:
-- **Coloured text:** the diff's − / + marks (`UnifiedDiff.tsx` ~199–201) — principle 2. The line
-  tints are fine; the colours are fixed palette values, not theme tokens. (The +N / −N counts and the
-  Conflict pill follow the rules since the colour sweep.)
-- Bare text buttons: "Show N more lines", "Review changes →", and "Include in commit" (a hand-made tick
-  box).
-- A failed commit diff is grey text; an operation error is a hand-drawn neutral box; neither has Try
-  again (`GitReviewView.tsx` ~332, ~362).
-- The revert confirm has no ✕ and puts Cancel and Revert side by side in a narrow popup (should stack,
-  red on top).
-- Hand-set corners on the back button and branch chip.
+- The removed / added line tints and bars are fixed red and green, not theme tokens — allowed as
+  status hues in a tint (principle 2); no theme token exists for them.
+- "Show N more lines" is still bare text, but only in the exempt Edit tool card; Git review never
+  shows it.
 
 ### Buddy windows
 *Documents current behaviour; not yet reviewed by Destin.*
@@ -641,17 +626,13 @@ Files: `main/main.ts` (`createAppWindow({buddy})`), `main/buddy-window-manager.t
 - Esc closes the chat.
 
 Known deviations:
-- **No ✕** on the chat window or the session list (popups have the ✕).
-- **The new-session form's Cancel and Create session sit side by side**, Cancel left, in a 320px window
-  (`BuddyNewSessionForm.tsx` ~207–220); the agreed rule is that it stacks, filled on top (decisions
-  "Applied from earlier rules"). The resume list's take-over question does the same.
-- Fixed corners and colours throughout (`SessionPill.tsx`, `CompactToolStrip.tsx`, `AttentionStrip.tsx`,
-  `buddy.css`), including grey hex dots.
-- Text at 10px (`SessionPill.tsx` ~93, ~166; `CompactToolStrip.tsx` ~23, ~33, ~119, ~327) — under 11px.
-- Plain error lines with nothing to press (`BuddyResumeList.tsx` ~207, ~283,
-  `BuddyNewSessionForm.tsx` ~222, `CompactToolStrip.tsx` ~327).
-- Hand-made Allow / Deny / Always buttons; "✕ Deny" uses the ✕ for something other than close.
-- A full-width line inside the session list (`SessionPill.tsx` ~174).
+- **No ✕ on the chat window** — a frameless window, not a popup: where a ✕ goes beside the mascot
+  press and Esc needs a design. The session list drops from the pill like a menu, and menus have no
+  ✕ (Lists and menus) — the main session menu has none either; ruled neither way.
+- The session pill, the collapsed "N tools used" pill and the attention strip are fixed full pills;
+  the main window's session strip is too, so there is no theme-shaped reference to copy.
+- Allow / Deny / Always ("✕ Deny") and "Dismiss — I answered in the terminal" are hand-made, at 10px —
+  permission prompts are exempt until their rework (decisions "Permission row and tool cards").
 
 ### Game boards
 *Documents current behaviour; not yet reviewed by Destin.*
@@ -674,20 +655,10 @@ Files: `components/game/ArcadeShell.tsx` (which screen shows, the header), `Conn
   `ErrorState` with Try again.
 
 Known deviations:
-- **Coloured text:** "You Win!" in the accent (`GameOverlay.tsx` ~239, ~253); the challenger's name in
-  link colour (`GameLobby.tsx` ~132); game-chat sender names (see Open questions Q14).
-- Bare text buttons: Leave (`ConnectFourBoard.tsx` ~113, `ChessBoard.tsx` ~219) and the chess promotion
-  Cancel (~428).
-- **Filled on the left:** Play again left of Back to games (`RunOverCard.tsx` ~60); Accept left of
-  Decline on an incoming challenge (`GameLobby.tsx` ~139) — filled goes on the right.
-- Stacked game-over buttons in a fixed narrow column, not full width (`GameOverlay.tsx` ~273).
-- Three full-width lines in the game chat (`GameChat.tsx` ~118, ~120, ~145).
-- The pane title is 14px, not the 16px panel title (`ArcadeShell.tsx` ~390); a hand-made back button.
-- "New best" and "2048 reached" are solid accent blocks, not tinted status pills; the turn pill and
-  overlays have hand-set corners.
-- "Pipes / Score / Best" in spaced capitals (`FlappyGame.tsx` ~724, `TwentyFortyEightGame.tsx` ~334).
-- A raw connection code in the words the user reads ("code 1006", `state/game-reducer.ts` ~56).
-- "Back to Lobby" in title case.
+- Game-chat sender names are coloured (see Open questions Q14).
+- A hand-made back button in the pane header: the shared back arrow belongs to the shared popup only
+  (ast-grep `no-hand-rolled-dialog-back-chevron`), and the pane is not one.
+- "You Win!" / "You Lose!" are in title case (the words this section quotes; not yet ruled).
 - **2048 has no touch input**, so it can't be played on a phone.
 - Mid-match states are missing (Open questions Q15).
 
@@ -712,7 +683,6 @@ Files: `components/guide/GuideTour.tsx`, `guide-stops.ts`, `GuideBubble.tsx`, `G
   the words without asking.
 
 Known deviations:
-- **No ✕ on the bubble** (decisions "Applied from earlier rules": the tour gets a ✕).
 - Back, Skip tour and the stop's action are bare text on the accent fill; Next / Done's fill is set by
   hand (`GuideBubble.tsx` ~75–91).
 - The bubble is an accent-filled box rather than the shared popup surface — an earlier deliberate shape,
