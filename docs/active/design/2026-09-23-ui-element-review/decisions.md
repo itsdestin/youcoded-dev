@@ -303,3 +303,5 @@ Deck `popup-cards-3` (2026-10-14) — answers:
 Deck `popup-cards-4` (2026-10-14) — answers: grey words under the box and Submit a ticket's bottom line both **yes**; Rename's main button reads **"Save"**, not "Save name" (`popup-cards-4#C-1`, "change save name to just save."; `#C-2`).
 
 Deck `popup-cards-5` (2026-10-14): Fast mode's confirm is rebuilt on the shared one-job layout (final-fixes#PR-7a "fast mode is a bit wierd"); its main button **keeps the orange** — a fixed money-warning colour on every theme, now the shared button's `charge` style. Not chosen: today's layout; the theme's normal main button. `popup-cards-5#F-1`.
+
+Deck `popup-cards-6` (2026-10-14): the take-over popups get the approved titles and a ✕ (final-fixes#Q-TO), and **every phase is one box** holding the words and the stacked buttons — "why ask/taekn back should have the box/card styling of no answer/cant reach" — so the one-sentence phases do not use the short-question exception. `popup-cards-6#T-1`.
