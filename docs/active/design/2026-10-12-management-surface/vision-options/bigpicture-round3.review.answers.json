@@ -1,0 +1,63 @@
+{
+ "deck": "bigpicture-round3-review",
+ "started": "2026-10-14T18:33:25.140Z",
+ "submitted": "2026-10-14T18:37:11Z",
+ "cur": 6,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 33,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792002855431
+  },
+  "A-1": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792002860458,
+   "note": "so much better"
+  },
+  "A-2": {
+   "v": "other",
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792002886373,
+   "note": "dont like the side panels. would prefer large centered popups i think"
+  },
+  "A-3": {
+   "v": "other",
+   "t": 1792002914705,
+   "note": "think we can still improve this a bit for clarity/structure",
+   "seconds": 27,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "yes",
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792002958620,
+   "note": "styling is still poor in the side panel. should work to improve when we move to popup"
+  },
+  "A-5": {
+   "note": "unsure. i think i kinda liked the old version in theory, maybe need to find a better middle ground of some sort",
+   "t": 1792002990913,
+   "v": "other",
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-6": {
+   "note": "yeah i think i want a middle ground or hybrid of some sort. or maybe just two views for this page? idk",
+   "t": 1792003030490,
+   "v": "other",
+   "seconds": 40,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
