@@ -158,7 +158,11 @@ and Git review inside it are still hand-built — see their sections below.)
   and never the fields bare on the popup. A tick box before an action is always the shared "I
   understand" box (`ConsentRow`), never a bare square. **The one exception:** a short confirmation
   question of one or two sentences with nothing to tick or type ("Remove backup?", a missing folder's
-  Remove project, Switch model) stays plain text.
+  Remove project, Switch model) stays plain text. **Every one-job popup is drawn the same way** by the
+  shared `OneJobCard` (popup-cards-2#A-1–#A-3): narrow (420px), 12px grey words, a name above each
+  text box, then the buttons stacked full width with the main one on top. A button never sits inside
+  the text box. **Exception:** a popup that is only one dropdown and its buttons (Choose a model to
+  resume with) has no card (popup-cards-2#A-4).
 - **A popup with several groups** gives each group a small label over its own card, the way About groups
   its text (Settings → About). **Not decided yet:** where buttons that act on the whole popup go when it
   has several cards (Close session and Update use the footer line, Submit a ticket puts them under the
