@@ -136,8 +136,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       do." The guide marks them as not final; nothing changes until then.
       `tool-cards` `all` `decision` `P3` `checked 2026-10-13`
 
-- [ ] Popups that need their own design pass (2 things).
+- [ ] Popups that need their own design pass (3 things).
       (a) Session context: Destin, 2026-10-13, looking at a skill's fold in it (final-review#CH-28):
       "this particular popups needs additional ui/ux work"; (b) the Donate ("buy me a coffee") popup
-      in Settings: "buy me a coffer popup needs work" (final-review#ST-30).
+      in Settings: "buy me a coffer popup needs work" (final-review#ST-30); (c) Projects →
+      Instructions → How context works: "i want to fully rebuild the how context works popup at some
+      point" (final-review#PU-1).
       `all` `confirmed` `P3` `checked 2026-10-13`
