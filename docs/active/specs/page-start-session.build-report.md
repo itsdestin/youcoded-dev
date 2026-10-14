@@ -132,3 +132,25 @@ App commit `b83b8af3e` on `session/page-start-session` (pushed). Review:
 
 verify.sh: all checks passed (types, tests, knip, lint, design lint, ast-grep, shoot --check,
 journeys). Android and the Worker are not covered; no Kotlin changed.
+
+## F4 (2026-10-14) — the message shows in the window
+
+App commit `f6b02b294` on `session/page-start-session` (pushed). Destin picked "preview" on the
+review deck (Q-F4). Tests first: 2 new checks failed, then passed.
+
+- **The window a page opens shows its whole message** above Project Folder, Model and Skip
+  Permissions, under "Message from <page>", read-only, scrolling inside its own box (about 8
+  lines tall), with "It waits in the message box until you press Enter." Plain text only, so a
+  page cannot put a link or formatting there. Create a page, Edit and every other new-session
+  window are unchanged.
+- **The chat opens with the caret at the start of a page's message**, so a long one shows its
+  beginning. Every other waiting text keeps the caret at the end. The note that says "this
+  text came from a page" lives only in the window's own code, so nothing new crosses to desktop
+  main or Android.
+- The workbench sample (Weekly briefing) now sends a several-line message, so the box's scroll
+  shows. Pictures (Midnight, Light, Halftone Dimension): `page-start-session.f4-images/`.
+- verify.sh: all checks passed. One earlier run failed once on an unrelated test
+  (`ipc-handlers.test.ts`, "sends a changed payload once…": 2 sends instead of 1). It passed
+  alone 3 times, 12 times in parallel and in 3 more full suite runs with extra logging, so its
+  cause was not found here.
+- Still open: F8, the paired-phone run by hand (step 5 above).
