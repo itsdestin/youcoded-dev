@@ -317,3 +317,5 @@ Deck `popup-cards-8` (2026-10-14) — answers:
 | One-sentence popups | **Box them all** — Switch model, Remove backup and a missing folder's Remove project use the one-job card; the short-confirmation exception is retired. Not chosen: keep them plain. | `popup-cards-8#Q-2` |
 
 Deck `popup-cards-9` (2026-10-14): all four approved as built — Version always on (`#W-2`), full-window theme previews (`#M-2`), Details inside the error box everywhere (`#E-1`), short popups boxed (`#S-1`).
+
+Deck `vocab-chips-1` (2026-10-14, voice vocabulary / quick chips working session): chip editor commit 7b41b47fe — "idk, need to see this next to other similar popups. which would be most consistent?"; Voice vocabulary — "i want you to propose visual redesigns for voice/quick chips that better align with tags, while still keeping unique elements as needed for hteir unique purposes."; adding a word — "unsure, want to see some of these alternativers"; word chips — **tag chip size and ×** (`#V-4`). Proposals shown on `vocab-chips-2`; the code for them is held as a patch, not committed, until answered.
