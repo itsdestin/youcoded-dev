@@ -1,0 +1,53 @@
+{
+ "deck": "today-rebuild-review",
+ "started": "2026-10-14T21:26:17.851Z",
+ "submitted": "2026-10-14T21:32:22Z",
+ "cur": 5,
+ "answers": {
+  "A-1": {
+   "note": "the square chips need to adopt theme rounding. unsaved changes on project skills & tools should be near the name, not in the bottom row of chips. unclear what needs your look means vs unsaved changes. 3 dot menu should be to left of buttons. replace worked on these today with worked on these in the last 24 hours",
+   "t": 1792013323295,
+   "v": "yes",
+   "seconds": 145,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "note": "\"join chat\" is weird. what does that mean? is it just focusing the open conversation? \"join\" is just a strange term here. also not clear what \"pause\" and \"close\" actually do in real terms. delete the branch? just make a page update? ",
+   "t": 1792013409841,
+   "v": "other",
+   "seconds": 87,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-3": {
+   "note": "open is a weird button for this. View Chats would be clearer. otherwise, what am i opening? the branch in github? the a single conversation? just lots of unclear buttons that could be tied to any number of actions",
+   "t": 1792013495561,
+   "v": "other",
+   "seconds": 86,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "yes",
+   "t": 1792013525694,
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-5": {
+   "v": "yes",
+   "t": 1792013536356,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-6": {
+   "v": "yes",
+   "t": 1792013539208,
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
