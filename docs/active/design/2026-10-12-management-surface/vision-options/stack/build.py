@@ -5,7 +5,7 @@ WHY floors are computed: a block's floor is the longest chain of "needs" under i
 vision-evidence-*.json). Floor 0 needs nothing; a block sits one floor above the highest thing it
 needs. Nothing is placed by hand. Statuses come only from the evidence files.
 """
-import json, os, html, functools
+import json, os, html, functools, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VO = os.path.dirname(HERE)                            # vision-options (holds facts.json)
@@ -18,7 +18,7 @@ nodes = F['nodes']
 for _k, _n in nodes.items():
     _n['title'] = _n.get('label') or _n['title']       # the plain label, where facts.py supplies one
 
-STATUS_WORD = {'done': 'exists', 'building': 'being built', 'planned': 'planned', 'vision': 'only an idea', 'unchecked': 'not checked yet'}
+STATUS_WORD = {'done': 'exists', 'building': 'being built', 'planned': 'planned', 'vision': 'only an idea', 'unchecked': 'not checked yet'}  # WHY: the four shared words (U3); only the seven systems themselves are unchecked (a system has no status of its own), and inventing 'planned' for them would be a made-up status
 SHORT = {'chat': 'Chat', 'projects': 'Projects', 'pages': 'Pages', 'marketplace': 'Marketplace', 'social': 'Social',
          'sync': 'Sync & Mesh', 'agents': 'Agents', 'yours': 'Yours', 'everywhere': 'Everywhere', 'together': 'Built together'}
 sk = {'pillars': [{'id': k} for k in SHORT]}
@@ -73,6 +73,22 @@ for k, n in nodes.items():
     if k in conn or n['kind'] != 'feature': continue
     loose.setdefault(n['pillar'], []).append(k)
 
+# WHY U2: words Destin did not coin get a plain hover; his own words (Mesh, Fediverse) keep the word and gain one
+GLOSS = [
+    (r'Mesh', 'Mesh: your phone, computer and browser working together as one.'),
+    (r'Fediverse', 'Fediverse: social networks (like Mastodon) that talk to each other instead of one company owning them.'),
+    (r'AT protocol', 'AT protocol: the open system behind Bluesky.'),
+    (r'MCP', 'MCP: a standard way to plug outside tools into the assistant.'),
+    (r'Specialist file', 'Specialist file: a saved set of instructions for one kind of helper.'),
+    (r'Harness engineering', 'Harness engineering: improving the machinery around the assistant so it does its work faster and cheaper.'),
+]
+def glossed(text):
+    """escape text; wrap each glossary word in a span that carries its own hover"""
+    out = E(text)
+    for pat, tip in GLOSS:
+        out = re.sub('(' + pat + ')', lambda m: f'<span class="gl" data-tip="{E(tip)}">{m.group(1)}</span>', out, count=1)
+    return out
+
 def short(k):
     return nodes[k]['title']
 
@@ -105,7 +121,7 @@ def block(k):
     legs = '<span class="legs" aria-hidden="true"><i></i><i></i></span>' if fl else ''
     # WHY no "up" badge: the count of things resting on a block now lives only in the detail panel
     return (f'<button class="blk {d["status"]}{" float" if fl else ""}" data-id="{E(k)}" data-tip="{E(d["why"] or d["title"])}">'
-            f'<span class="bt">{E(d["title"])}</span>'
+            f'<span class="bt">{glossed(d["title"])}</span>'
             f'<span class="bs"><i class="sdot {d["status"]}"></i>{E(d["word"])}</span>{legs}</button>')
 
 floors_html = []
@@ -113,14 +129,14 @@ tops = []
 for f in range(TOP, -1, -1):
     ks = groups.get(f, [])
     nfl = sum(1 for k in ks if DATA[k]['floating'])
-    note = f'<span class="fnote" data-tip="A block floats when something it rests on is not built yet.">{nfl} floating</span>' if nfl else ''
+    note = f'<span class="fnote" data-tip="Missing support: something these blocks rest on is not built yet, so they cannot stand properly.">{nfl} missing support</span>' if nfl else ''
     # WHY: finished, well-supported blocks collapse into one quiet strip so the unfinished ones stand out
     quiet = [k for k in ks if DATA[k]['status'] == 'done' and not DATA[k]['floating']]
     shown = [k for k in ks if k not in quiet]
     strip = ''
     if quiet:
         strip = (f'<div class="strip"><button class="sbtn" aria-expanded="false" data-tip="Click to show or hide them.">'
-                 f'<i class="sdot done"></i>{len(quiet)} thing{"s" if len(quiet) != 1 else ""} that already work<span class="car">&#9656;</span></button>'
+                 f'<i class="sdot done"></i>{len(quiet)} {"things that already work" if len(quiet) != 1 else "thing that already works"}<span class="car">&#9656;</span></button>'
                  f'<div class="sblks">{"".join(block(k) for k in quiet)}</div></div>')
     (tops if f >= 3 else floors_html).append(
         f'<section class="floor" data-floor="{f}"><header class="fh"><span class="fn" data-tip="{E(FLOOR_SUB[f])}">{E(FLOOR_NAME[f])}</span>{note}</header>'
@@ -132,8 +148,8 @@ nxt_html = ''.join(
     f'<i class="sdot {nodes[k]["status"]}"></i><b>{E(short(k))}</b></button>' for c, k, fl in NEXT)
 
 loose_html = ''.join(
-    f'<div class="lp"><div class="lph">{E(SHORT[p])}</div><div class="lc">' +
-    ''.join(f'<button class="chip2 {nodes[k]["status"]}" data-id="{E(k)}" data-tip="{E(nodes[k].get("why") or nodes[k]["title"])}"><i class="sdot {nodes[k]["status"]}"></i>{E(nodes[k]["title"])}</button>' for k in sorted(ks)) +
+    f'<div class="lp"><div class="lph">{glossed(SHORT[p])}</div><div class="lc">' +
+    ''.join(f'<button class="chip2 {nodes[k]["status"]}" data-id="{E(k)}" data-tip="{E(nodes[k].get("why") or nodes[k]["title"])}"><i class="sdot {nodes[k]["status"]}"></i>{glossed(nodes[k]["title"])}</button>' for k in sorted(ks)) +
     '</div></div>' for p, ks in sorted(loose.items(), key=lambda t: order_p[t[0]]))
 nloose = sum(len(v) for v in loose.values())
 
@@ -163,7 +179,7 @@ body:has(.panel.open) .cc-main{padding-right:420px}
 .sdot.unchecked{border-color:var(--status-warn)}
 
 #bld{position:relative}
-#lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2}
+#lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
 #lines path{fill:none;stroke:var(--fg);stroke-width:1.6;opacity:.7}
 #lines path.dash{stroke:var(--status-warn);stroke-dasharray:5 4;opacity:1;stroke-width:1.8}
 .floor{position:relative;padding:6px 0 8px;border-bottom:3px solid var(--edge-strong)}
@@ -253,6 +269,32 @@ details.more summary{cursor:pointer;font-size:12px;color:var(--fg-muted)}
 details.more[open] summary{margin-bottom:8px}
 .pbody .ev{font-size:11px;color:var(--fg-muted);margin:0 0 4px}
 .pbody p{margin:0}
+
+/* ---- beta-test round 1 ---- */
+/* WHY U1: lines sit UNDER the blocks (blocks are opaque, so a line can never cross text) and are faint */
+#bld>.floor,#bld>.tops{position:relative;z-index:1}
+.floor,.tops .floor{background:transparent}
+.blk{position:relative;z-index:1;background-color:var(--panel)}
+.blk.planned{background:var(--panel)}
+.blk.vision{background-color:var(--panel)}
+.blk:hover{z-index:3}
+/* WHY: dimming by block opacity let lines show through the text of dimmed blocks; dim the contents instead so the block stays solid */
+body.lit .blk,body.lit .chip2{opacity:1}
+body.lit .blk:not(.is-self):not(.is-below):not(.is-above)>*{opacity:.3}
+body.lit .chip2{opacity:.4}
+.phd .t-base{white-space:normal;line-height:1.3}
+#lines path{stroke-width:1.1;opacity:.3}
+#lines path.dash{stroke-width:1.2;opacity:.45}
+/* WHY U1: the detail panel appears in place (no slide). A slide caught mid-flight by a screenshot or a slow
+   machine looks cut off at the right edge. It is also sized to the frame, never wider than it. */
+.panel,.panel.open{transition:none}
+.panel{width:min(400px,calc(100vw - 24px))}
+.panel.open{box-shadow:-8px 0 24px rgba(0,0,0,.08)}
+body:has(.panel.open) .cc-main{padding-right:calc(min(400px,100vw - 24px) + 16px)}
+.gl{border-bottom:1px dotted var(--fg-muted);cursor:help}
+/* WHY U10: a visible cue when there is more below (the scrollbar is hidden) */
+.morebelow{position:fixed;left:calc(50% - 120px);bottom:18px;z-index:4;font-size:11px;padding:3px 12px;border-radius:9999px;background:var(--panel);border:1px solid var(--edge-strong);color:var(--fg-2);box-shadow:var(--layer-shadow);cursor:pointer;display:none}
+.morebelow.on{display:block}
 '''
 
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded - the vision, foundations up</title>
@@ -261,15 +303,16 @@ page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset
 <div class="screen">
 <header class="band"><div class="bl"></div><div class="btitle">Where the vision stands: foundations up</div><div class="br"><span class="t-2xs muted asof">Facts as of Oct 12</span></div></header>
 <div class="screen-body"><div class="pane"><div class="panescroll fadescroll" id="scroller"><main class="cc-main">
-<div class="legend"><div class="lg1">Each block rests on the ones it needs. Hover or click one.</div><div><i class="sdot done"></i>exists</div><div><i class="sdot building"></i>being built</div><div><i class="sdot planned"></i>planned</div><div><i class="sdot vision"></i>only an idea (hatched)</div><div><span class="lgf"></span>floating: a foundation is missing</div></div>
+<div class="legend"><div class="lg1">Each block rests on the ones it needs. Hover or click one.</div><div><i class="sdot done"></i>exists</div><div><i class="sdot building"></i>being built</div><div><i class="sdot planned"></i>planned</div><div><i class="sdot vision"></i>only an idea (hatched)</div><div data-tip="Dashed outline and legs: something this block rests on is not built yet."><span class="lgf"></span>missing support</div></div>
 <div class="topline">
- <div class="nxbox"><h2>Build next <span>(unfinished, with the most resting on it)</span></h2><div class="nxs">{nxt_html}</div></div>
+ <div class="nxbox"><h2 data-tip="The unfinished things that the most other unfinished things are waiting on. Finish these first and the most opens up.">Build next <span>(unfinished, with the most resting on it)</span></h2><div class="nxs">{nxt_html}</div></div>
 </div>
 <div class="lit-key"><span class="k1">holds it up</span><span class="k2">it holds up</span><span class="k3">holds it up, but not finished</span></div>
 <div id="bld"><svg id="lines" aria-hidden="true"></svg>{''.join(floors_html)}</div>
-<details class="loose" id="loose"><summary>Everything else <span>({nloose} features that no other feature needs or depends on)</span></summary>{loose_html}</details>
+<details class="loose" id="loose"><summary>Everything else <span>({nloose} other features, nothing depends on them)</span></summary>{loose_html}</details>
 </main></div></div></div></div>
 <aside class="panel" id="panel" aria-label="Details"><div class="phd hline"><div class="t-base" id="pti"></div><button class="closebtn" aria-label="Close" id="pclose" data-tip="Close this panel"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="pbody fadescroll" id="pbody"></div></aside>
+<button class="morebelow" id="mb" aria-label="Scroll down for more">More below &#8595;</button>
 <div class="tipbubble tooltip-in" id="tb" hidden></div>
 <script>
 const D={json.dumps(DATA)};
@@ -278,6 +321,8 @@ const PARENT={json.dumps(PARENT)},PARTS={json.dumps(PARTS)},PIL={json.dumps(PILL
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let pinned=null,hover=null;
 const blk=id=>$('#bld .blk[data-id="'+CSS.escape(id)+'"]');
+const GL={json.dumps(GLOSS)};
+const gl=s=>{{let o=esc(s);GL.forEach(([p,t])=>{{o=o.replace(new RegExp('('+p+')'),'<span class="gl" data-tip="'+esc(t).replace(/"/g,'&quot;')+'">$1</span>')}});return o}};
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const tell=(id,title)=>{{if(window.parent!==window)parent.postMessage({{bp:'focus',id:id,title:title}},'*')}};
 function clear(){{$$('.blk').forEach(b=>b.classList.remove('is-self','is-below','is-above','notdone'));$$('.strip').forEach(s=>s.classList.remove('has-lit'));document.body.classList.remove('lit');$('#lines').innerHTML=''}}
@@ -310,14 +355,14 @@ function open_(id){{
   const [lead,rest]=firstSentence(d.why||'');
   const facts=[];
   if(d.floor!==null){{
-    if(d.floating.length)facts.push('Waiting on: <b>'+esc(names(d.floating))+'</b>');
-    else facts.push(d.needs.length?'Everything it rests on already works.':'Needs nothing else.');
+    if(d.floating.length)facts.push('Missing support: waiting on <b>'+esc(names(d.floating))+'</b>');
+    else facts.push(d.needs.length?'Everything it rests on exists.':'Needs nothing else.');
     const open=d.held.filter(h=>D[h].status!=='done').length;
     facts.push(open?`Holds up ${{open}} other unfinished thing${{open>1?'s':''}}.`:d.held.length?`Holds up ${{d.held.length}} other thing${{d.held.length>1?'s':''}}.`:'Nothing else depends on it yet.');
   }}else facts.push('Nothing else needs it, and it needs nothing else.');
   facts.push(esc(d.pillar)+(d.since?', since '+esc(d.since):''));
   let h=`<div class="pst">${{pill(d)}}</div>`;
-  if(lead)h+=`<p class="t-xs">${{esc(lead)}}</p>`;
+  if(lead)h+=`<p class="t-xs">${{gl(lead)}}</p>`;
   h+=`<ul class="facts">${{facts.slice(0,3).map(f=>'<li>'+f+'</li>').join('')}}</ul>`;
   let m='';
   if(rest)m+=`<p class="t-xs">${{esc(rest)}}</p>`;
@@ -348,6 +393,13 @@ $('#bld').addEventListener('mouseover',e=>{{const b=e.target.closest('.blk');if(
 $('#bld').addEventListener('mouseleave',()=>{{hover=null;refresh()}});
 $$('.nx').forEach(n=>{{n.addEventListener('mouseenter',()=>{{hover=n.dataset.id;refresh()}});n.addEventListener('mouseleave',()=>{{hover=null;refresh()}})}});
 addEventListener('resize',refresh);
+// WHY U10: the scrollbar is hidden, so mark the edges that have more beyond them (fade) and offer a "More below" cue
+const sc=$('#scroller'),mb=$('#mb');
+function fades(el){{const t=el.scrollTop>4,b=el.scrollTop+el.clientHeight<el.scrollHeight-4;el.dataset.fadeTop=t;el.dataset.fadeBottom=b;return b}}
+function fadeAll(){{const b=fades(sc);mb.classList.toggle('on',b);fades($('#pbody'))}}
+sc.addEventListener('scroll',fadeAll);$('#pbody').addEventListener('scroll',fadeAll);addEventListener('resize',fadeAll);
+mb.addEventListener('click',()=>sc.scrollBy({{top:sc.clientHeight*0.7,behavior:'smooth'}}));
+new ResizeObserver(fadeAll).observe($('#bld'));addEventListener('load',fadeAll);document.addEventListener('click',()=>setTimeout(fadeAll,50));
 const tb=$('#tb');
 document.addEventListener('mouseover',e=>{{const t=e.target.closest('[data-tip]');if(!t){{tb.hidden=true;return}}
   tb.textContent=t.dataset.tip;tb.hidden=false;const r=t.getBoundingClientRect(),w=tb.offsetWidth,h=tb.offsetHeight;

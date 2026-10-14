@@ -15,3 +15,11 @@
 **Missing from facts.** Nothing blocking. Short system names are derived by cutting at the first colon.
 
 Files: `build.py` + `template.html` make `index.html`; `shot.png`, `shot-detail.png` (click on "A saved recipe"), `shot-framed.png`.
+
+## Round 2 fixes after beta test (U2, U3, U8, U9, U10, sideways scroll)
+- U2: words like Mesh, Specialist file, Fork, runtime get a dotted-underline hover in visible text and plainer wording inside hovers.
+- U3: one name per thing: always the node title (labels dropped). Status words are exactly exists / being built / planned / only an idea.
+- U8: "with a catch" now explains itself on hover; the detail leads with "The catch: ...".
+- U9: "5 of 7 steps work", "Stops at step 6: ...", "3 more unbuilt things it needs", "Can't start: step 1 is unbuilt".
+- U10: the journey list and the right-hand list fade out at the bottom with a "More journeys below" / "More below" cue while more is hidden.
+- Sideways scroll: a pill's hidden hover bubble was making the rows wider than the pane; removed, and the pane no longer scrolls sideways (checked standalone and framed at 1440x900).

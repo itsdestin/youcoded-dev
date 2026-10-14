@@ -14,3 +14,10 @@
 **Answers.** (a) status by dot, colour, hatching; (b) hover or click lights what holds it up (green, amber if unfinished) and what it holds up (blue); only `needs` is drawn; (c) still weak: dependency only, no how-parts-talk.
 
 **Weakest points.** Only 56 of 205 items have needs-links; the rest sit in a closed "Everything else". The bottom floor (mostly finished) is below the first screen at 1440x900; the unfinished floors and Build next fit. A missing link drops a block to the ground floor.
+
+**Beta-test round 1 fixes (U1, U2, U3, U10, U11, U12).**
+- U1: lines now sit under opaque blocks, thinner and fainter (dimmed blocks fade their contents, not the block, so a line never shows through text). The detail panel no longer slides in (a slide caught mid-flight looked cut off) and is sized to the frame; checked at 1420px framed.
+- U2: hover explanations for Mesh, Fediverse, AT protocol, MCP, Specialist file, Harness engineering, Build next; "floating" is now "missing support".
+- U3: status words are exactly exists / being built / planned / only an idea. The 7 "unchecked" facts show as "planned".
+- U10: hidden scrollbar replaced by edge fades plus a "More below" cue.
+- U11/U12: "1 thing that already works", "2 things that already work", "N missing support"; "113 other features, nothing depends on them".

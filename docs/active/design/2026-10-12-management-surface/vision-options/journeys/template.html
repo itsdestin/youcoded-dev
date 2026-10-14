@@ -13,8 +13,17 @@
 .panehead{flex:none;padding:12px 20px;display:flex;flex-direction:column;gap:4px;position:relative}
 .panehead::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;background:linear-gradient(to right,transparent,var(--edge-card) 8%,var(--edge-card) 92%,transparent)}
 .cols{flex:1;min-height:0;display:flex}
+/* WHY (U10): both scrolling panes fade out at the bottom with a plain "more below" cue while there is more to scroll to, so nothing looks cut off by accident */
+.wrap{position:relative;display:flex;min-width:0;min-height:0}
+.wrap.grow{flex:1}
+.side-wrap{width:360px;flex:none}
+.wrap>.main,.wrap>.side{flex:1;width:auto;min-height:0}
+.cue{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;pointer-events:none;opacity:0;transition:opacity 150ms;background:linear-gradient(to bottom,transparent,var(--canvas) 80%)}
+.cue.on{opacity:1}
+.cue span{font-size:12px;color:var(--fg-2);background:var(--panel);border:1px solid var(--edge-card);border-radius:var(--radius-full);padding:3px 10px}
+.gl{border-bottom:1px dotted var(--fg-muted);cursor:help}
 .main{flex:1;min-width:0;overflow-y:auto;padding:14px 20px 40px;display:flex;flex-direction:column;gap:10px}
-.side{width:360px;flex:none;overflow-y:auto;padding:16px 16px 40px 4px;display:flex;flex-direction:column;gap:12px}
+.side{overflow-y:auto;padding:16px 16px 40px 4px;display:flex;flex-direction:column;gap:12px}
 .side .card{padding:12px}
 .gh{font-size:16px;font-weight:500;margin:0}
 .gdesc{font-size:12px;color:var(--fg-muted);margin:2px 0 0}
@@ -37,6 +46,7 @@
 .jtitle{font-size:14px;font-weight:500;color:var(--fg)}
 .jline{font-size:12px;color:var(--fg-2);margin-top:2px}
 .jquote{font-size:11px;color:var(--fg-muted);margin-top:1px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.main{overflow-x:hidden}
 .verdict{flex:none;margin-top:1px}
 .verdict.ok{background:color-mix(in srgb,var(--status-ok) 15%,transparent);border-color:color-mix(in srgb,var(--status-ok) 35%,transparent)}
 .steps{display:flex;align-items:stretch;margin-top:8px}
@@ -115,8 +125,8 @@ details.more[open]>summary::before{content:'\2212 '}
       <div class="legend" id="legend"></div>
     </div>
     <div class="cols">
-      <div class="main" id="main"></div>
-      <aside class="side" id="side"></aside>
+      <div class="wrap grow"><div class="main" id="main"></div><div class="cue" id="cue-main"><span>More journeys below ↓</span></div></div>
+      <div class="wrap side-wrap"><aside class="side" id="side"></aside><div class="cue" id="cue-side"><span>More below ↓</span></div></div>
     </div>
   </div></div>
 </div>
@@ -129,8 +139,17 @@ const TIPS={done:'This exists in the app today.',building:'Someone is building t
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nice=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+dd)+', '+y};
 const dot=s=>`<i class="sdot ${s}" aria-hidden="true"></i>`;
-const nm=x=>N[x].label||N[x].title;
+const nm=x=>N[x].title; // WHY (U3): one name per thing, everywhere: the node title (labels are no longer used)
 const shortSys=s=>s.split(':')[0]; // "Everywhere: desktop, phone, web" -> "Everywhere" in a box; full name stays in hovers
+// WHY (U2): words the person may not know get a plain hover (gl, in visible text) or plainer wording (plain, inside hovers)
+const GLOSS=[['Specialist file','a file that describes one helper assistant and what it may do','a helper-assistant file'],
+ ['Mesh','your phone, computer and browser working together as one','Mesh (your devices working as one)'],
+ ['Fediverse','open networks where different apps can follow each other','Fediverse (open networks of apps)'],
+ ['AT protocol','an open standard that lets different social apps share one account','AT protocol (open social standard)'],
+ ['Fork','copy someone else\u2019s work, change it, and share your own version','Copy'],
+ ['runtime','the part of the app that runs the assistant','engine']];
+const gl=h=>GLOSS.reduce((a,[w,t])=>a.replace(new RegExp('\\b'+w+'\\b','g'),m=>`<span class="gl" data-tip="${esc(t)}">${m}</span>`),h);
+const plain=t=>GLOSS.reduce((a,[w,,p])=>a.replace(new RegExp('\\b'+w+'\\b','g'),p),t);
 const plural=(n,w)=>n+' '+w+(n===1?'':'s');
 let sel=null, filt=null; // sel = open step id; filt = {key, ids:Set} things to light up
 const post=(id,title)=>{ if(window.parent!==window) parent.postMessage({bp:'focus',id:id,title:title||''},'*'); };
@@ -146,21 +165,21 @@ function renderMain(){
     const rowHit=H&&inJ(j,H);
     const stopN=j.stop===null?null:N[j.steps[j.stop]];
     const verdict=j.stop===null
-      ?`<span class="spill verdict ok tip" data-tip="Every step in this row exists today. A person can do this from start to finish."><i class="sdot done"></i>Works from start to finish</span>`
-      :`<span class="spill verdict tip" data-tip="${esc(j.stop===0?'The very first step does not exist yet, so this cannot be started.':'The first '+j.stop+' step'+(j.stop>1?'s work':' works')+'; the next one does not exist yet, so a person gets stuck there.')}">${j.stop===0?'Cannot start yet':'Works up to step '+j.stop+' of '+j.steps.length}</span>`;
+      ?`<span class="spill verdict ok" data-tip="Every step in this row exists today. A person can do this from start to finish."><i class="sdot done"></i>Works from start to finish</span>`
+      :`<span class="spill verdict" data-tip="${esc(j.stop===0?'The very first step does not exist yet, so this cannot be started.':'The first '+j.stop+' step'+(j.stop>1?'s work':' works')+'; the next one does not exist yet, so a person gets stuck there.')}">${j.stop===0?'Can\u2019t start: step 1 is unbuilt':j.stop+' of '+j.steps.length+' steps work'}</span>`;
     const steps=j.steps.map((s,k)=>{
       const n=N[s], beyond=j.stop!==null&&k>j.stop&&n.status==='done', isStop=k===j.stop;
       const link=k?`<span class="link${j.stop!==null&&k>j.stop?' broken':''}"></span>`:'';
-      const tip=nm(s)+' ('+n.system+') — '+TIPS[n.status]+(isStop?' This is where the journey stops.':'')+(beyond?' It works on its own, but you cannot reach it in this journey yet because an earlier step is missing.':'')+(n.catch?' Counted as existing, but there is a catch: '+n.why:'')+' Click for details.';
+      const tip=plain(nm(s))+' ('+plain(n.system)+') — '+TIPS[n.status]+(isStop?' This is where the journey stops.':'')+(beyond?' It works on its own, but you cannot reach it in this journey yet because an earlier step is missing.':'')+(n.catch?' Counted as existing, but there is a catch: '+plain(n.why):'')+' Click for details.';
       return link+`<button class="step ${n.status}${isStop?' stop':''}${beyond?' beyond':''}${sel===s?' sel':''}${H&&H.has(s)?' hit':''}" data-step="${s}" data-tip="${esc(tip)}">${isStop?'<span class="flag">stops here</span>':''}
-        <span class="st">${esc(nm(s))}</span><span class="sy">${esc(shortSys(n.system))}</span><span class="sw">${dot(n.status)}${WORD[n.status]}${n.catch?' <b class="catch">· with a catch</b>':''}</span></button>`;
+        <span class="st">${gl(esc(nm(s)))}</span><span class="sy">${gl(esc(shortSys(n.system)))}</span><span class="sw">${dot(n.status)}${WORD[n.status]}${n.catch?` <b class="catch" data-tip="${esc('The catch: '+plain(n.why))}">· with a catch</b>`:''}</span></button>`;
     }).join('');
     // one short line at most; the reason, the catch and the hidden dependencies sit in its hover
     let line='';
     if(stopN){
-      const hid=j.extra.length?` · ${plural(j.extra.length,'more thing')} to finish behind the scenes`:'';
-      const tipL='Why it stops: '+stopN.why+(j.extra.length?' Also waiting on, behind the scenes: '+j.extra.map(nm).join('; ')+'.':'')+(j.steps.some(s=>N[s].catch)?' Catch on a finished step: '+j.steps.filter(s=>N[s].catch).map(s=>nm(s)+' — '+N[s].why).join(' '):'');
-      line=`<div class="jline" data-tip="${esc(tipL)}">Stops at “${esc(nm(j.steps[j.stop]))}”${hid}</div>`;
+      const hid=j.extra.length?` · ${j.extra.length} more unbuilt ${j.extra.length===1?'thing':'things'} it needs`:'';
+      const tipL='Why it stops: '+plain(stopN.why)+(j.extra.length?' Also needs: '+j.extra.map(nm).join('; ')+'.':'')+(j.steps.some(s=>N[s].catch)?' Catch on a finished step: '+j.steps.filter(s=>N[s].catch).map(s=>nm(s)+' — '+plain(N[s].why)).join(' '):'');
+      line=`<div class="jline" data-tip="${esc(tipL)}">Stops at step ${j.stop+1}: “${esc(nm(j.steps[j.stop]))}”${hid}</div>`;
     }
     return `<section class="card jcard${H&&!rowHit?' dim':''}" id="j${i}"><div class="jhead"><span class="jnum">${i+1}</span><div class="jtext"><div class="jtitle" data-tip="${esc('In Destin’s words: “'+j.quote+'”')}">${esc(j.title)}</div>${line}</div>${verdict}</div>
       <div class="steps">${steps}</div></section>`;
@@ -174,7 +193,7 @@ function renderSide(){
   let h='';
   if(sel) h+=detail(sel);
   h+=`<div class="card"><div class="eyebrow" data-tip="Parts of the app that are not finished and that journeys run into. The one at the top is the one to finish first to get the most journeys working.">What holds journeys back</div>
-    ${sysRows.map(([id,v])=>`<button class="irow${on('sys:'+id)}" data-filt="sys:${id}" data-tip="${esc(DATA.sys[id]+' holds back: \n'+names(v)+'\nClick to light these up.')}"><span class="t-sm">${esc(shortSys(DATA.sys[id]))}</span><span class="hold">${plural(v.length,'journey')}</span></button>`).join('')}</div>`;
+    ${sysRows.map(([id,v])=>`<button class="irow${on('sys:'+id)}" data-filt="sys:${id}" data-tip="${esc(plain(DATA.sys[id])+' holds back: \n'+names(v)+'\nClick to light these up.')}"><span class="t-sm">${gl(esc(shortSys(DATA.sys[id])))}</span><span class="hold">${plural(v.length,'journey')}</span></button>`).join('')}</div>`;
   h+=`<div class="card"><div class="eyebrow" data-tip="Single unfinished things that more than one journey runs into. Finishing one of these moves several journeys at once.">Single things that stop several</div>
     ${nodeRows.map(([id,v])=>`<button class="irow${on('node:'+id)}" data-filt="node:${id}" data-tip="${esc(nm(id)+' ('+WORD[N[id].status]+') holds back: \n'+names(v)+'\nClick to light it up.')}">${dot(N[id].status)}<span class="t-sm">${esc(nm(id))}</span><span class="hold">${plural(v.length,'journey')}</span></button>`).join('')}</div>`;
   if(filt) h+=`<button class="btn sm ghost clear" data-clear data-tip="Stop highlighting and show every journey normally.">Clear highlight</button>`;
@@ -184,20 +203,20 @@ function detail(id){
   const n=N[id], js=journeysOf(id);
   const unf=n.needs.filter(x=>N[x].status!=='done');
   const first=(n.why.match(/^.*?[.!?](\s|$)/)||[n.why])[0].trim(), rest=n.why.slice(first.length).trim();
-  const row=(x,extra)=>`<div class="vlink" data-step="${x}" data-tip="Open the details for this piece."><i class="sdot ${N[x].status}"></i><div><div class="t-sm">${esc(N[x].title)}</div><div class="t-2xs muted">${WORD[N[x].status]}${extra?' · '+esc(extra):''}</div></div></div>`;
+  const row=(x,extra)=>`<div class="vlink" data-step="${x}" data-tip="Open the details for this piece."><i class="sdot ${N[x].status}"></i><div><div class="t-sm">${gl(esc(N[x].title))}</div><div class="t-2xs muted">${WORD[N[x].status]}${extra?' · '+esc(extra):''}</div></div></div>`;
   const facts=[];
   facts.push(unf.length?`<p class="fact"><b>Waiting on:</b> ${unf.map(x=>`<button data-step="${x}">${esc(nm(x))}</button>`).join(', ')}</p>`:`<p class="fact"><b>Waiting on:</b> nothing that is missing</p>`);
   if(js.length) facts.push(`<p class="fact"><b>${n.status==='done'?'Used by':'Holds up'}:</b> <button data-lightnode="${id}" data-tip="Light up these journeys: ${esc(js.map(i=>J[i].title).join('; '))}">${plural(js.length,'journey')}</button></p>`);
   facts.push(`<p class="fact"><b>Part of:</b> ${esc(shortSys(n.system))}</p>`);
   const ev=(n.evidence||[]).filter(e=>e.note);
-  return `<div class="card"><div class="dhead"><div class="t-base">${esc(nm(id))}</div><button class="closebtn" data-closed aria-label="Close" data-tip="Close these details."><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-   <div class="statusline t-xs"><span data-tip="${esc(TIPS[n.status])}">${dot(n.status)} ${WORD[n.status]}${n.catch?' · with a catch':''}</span></div>
-   <p class="t-sm" style="margin:8px 0 0">${esc(first)}</p>
+  return `<div class="card"><div class="dhead"><div class="t-base">${gl(esc(nm(id)))}</div><button class="closebtn" data-closed aria-label="Close" data-tip="Close these details."><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+   <div class="statusline t-xs"><span data-tip="${esc(TIPS[n.status])}">${dot(n.status)} ${WORD[n.status]}</span>${n.catch?'<span class="catch">· with a catch</span>':''}</div>
+   <p class="t-sm" style="margin:8px 0 0">${n.catch?'<b>The catch:</b> ':''}${gl(esc(first))}</p>
    ${facts.slice(0,3).join('')}
    <details class="more"><summary>More</summary>
-     ${rest?`<p class="t-sm" style="margin:8px 0 0">${esc(rest)}</p>`:''}
+     ${rest?`<p class="t-sm" style="margin:8px 0 0">${gl(esc(rest))}</p>`:''}
      ${n.since?`<div class="t-xs muted" style="margin-top:8px">Status since ${nice(n.since)}</div>`:''}
-     <div class="dsec"><div class="eyebrow">Belongs to</div><div class="crumb">${esc(n.system)}${n.cap?' › '+esc(n.cap):''}</div></div>
+     <div class="dsec"><div class="eyebrow">Belongs to</div><div class="crumb">${gl(esc(n.system))}${n.cap?' › '+esc(n.cap):''}</div></div>
      <div class="dsec"><div class="eyebrow" data-tip="Pieces that have to exist first.">What it needs first</div>${n.needs.map(x=>row(x,n.needsWhy[x])).join('')||'<div class="t-xs muted">Nothing else. It stands on its own.</div>'}</div>
      ${n.shares.length?`<div class="dsec"><div class="eyebrow" data-tip="Different names for overlapping work. Doing one moves the other.">Closely tied to</div>${n.shares.map(x=>row(x)).join('')}</div>`:''}
      ${js.length?`<div class="dsec"><div class="eyebrow">Journeys it matters to</div>${js.map(i=>`<div class="t-sm" style="margin:2px 0">${i+1}. ${esc(J[i].title)}</div>`).join('')}</div>`:''}
@@ -242,6 +261,11 @@ function applyFocus(){
   setFilt('focus:'+id,ids);
   if(id&&N[id]) sel=id;
 }
-applyFocus(); renderMain(); renderSide();
+function cues(){[['main','cue-main'],['side','cue-side']].forEach(([a,c])=>{const e=document.getElementById(a);
+  document.getElementById(c).classList.toggle('on',e.scrollHeight-e.clientHeight>4&&e.scrollTop+e.clientHeight<e.scrollHeight-12)})}
+['main','side'].forEach(i=>document.getElementById(i).addEventListener('scroll',cues));
+addEventListener('resize',cues);
+new MutationObserver(cues).observe(document.querySelector('.cols'),{childList:true,subtree:true});
+applyFocus(); renderMain(); renderSide(); cues();
 if(filt&&sel) setTimeout(()=>{const r=document.querySelector('.jcard:not(.dim)'); if(r) r.scrollIntoView({block:'nearest'})},0);
 </script></body></html>

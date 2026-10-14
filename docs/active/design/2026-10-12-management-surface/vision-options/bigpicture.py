@@ -7,16 +7,22 @@ facts.json) and this page only frames them. What you are looking at follows you 
 a view reports its selection with postMessage, and the next view opens with #focus=<id>
 (contract in ROUND2.md). Opened by file path; ?view=<name>&focus=<id> opens straight to a view.
 """
-import os
+import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
 CC = open(os.path.join(os.path.dirname(HERE), 'cc.css')).read()
 
-# id, button word, the hover hint in plain words
+# id, button word, the hover hint, and the one question the view answers
+# WHY the question (beta tester U16, 2026-10-14): the four names did not say which view answers
+# "what is missing" or "how does a message travel"; one line under the switcher now does.
 VIEWS = [
-    ('zoom', 'Systems', 'Every major system as a box, with each feature as a coloured square. Click a system to look inside it.'),
-    ('journeys', 'Journeys', 'Things real people would do with the app, step by step: how far each gets today, and where it stops.'),
-    ('stack', 'Foundations', 'What the big ideas rest on, from the ground up, and what to build next to unblock the most.'),
-    ('wiring', 'How it works', "The app's real parts and how they connect. Follow a message, a sync or an install step by step."),
+    ('zoom', 'Systems', 'Every major system as a box, with each feature as a coloured square. Click a system to look inside it.',
+     'How much of each system exists?'),
+    ('journeys', 'Journeys', 'Things real people would do with the app, step by step: how far each gets today, and where it stops.',
+     'How far can someone get today, and where do they get stuck?'),
+    ('stack', 'Foundations', 'What the big ideas rest on, from the ground up, and what to build next to unblock the most.',
+     'What are the big ideas waiting on, and what should be built next?'),
+    ('wiring', 'How it works', "The app's real parts and how they connect. Follow a message, a sync or an install step by step.",
+     'What are the parts of the app, and how do they talk to each other?'),
 ]
 
 PAGE = r'''<!doctype html><html data-theme="light"><head><meta charset="utf-8">
@@ -24,12 +30,13 @@ PAGE = r'''<!doctype html><html data-theme="light"><head><meta charset="utf-8">
 <style>
 /*CC*/
 html,body{margin:0;height:100%;background:var(--panel);color:var(--fg);font-family:var(--font)}
-.top{height:52px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 16px}
+.top{height:44px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 16px}
 .ttl{font-size:14px;font-weight:500}
 .focus{justify-self:end;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg-dim);max-width:100%}
 .focus b{font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22rem}
 .focus[hidden]{display:none}
-.frame{position:absolute;top:52px;left:10px;right:10px;bottom:10px;border-radius:var(--radius-xl);overflow:hidden;background:var(--canvas)}
+.ask{height:26px;text-align:center;font-size:12px;color:var(--fg-dim)}
+.frame{position:absolute;top:70px;left:10px;right:10px;bottom:10px;border-radius:var(--radius-xl);overflow:hidden;background:var(--canvas)}
 iframe{width:100%;height:100%;border:0;display:block}
 /* WHY a drawn hint, not title=: the operating system draws title= as its own grey box (round 3 rule);
    this copies the app's Tooltip look and timing as the main page does */
@@ -44,14 +51,17 @@ iframe{width:100%;height:100%;border:0;display:block}
   <div class="focus" id="focus" hidden><span>Looking at</span><b id="focusName"></b>
     <button class="btn sm ghost" id="clear" data-tip="Stop following this one thing; the next view opens on everything.">✕</button></div>
 </div>
+<div class="ask" id="ask"></div>
 <div class="frame"><iframe id="view" title="Big picture view"></iframe></div>
 <div class="tip" id="tip"></div>
 <script>
+const ASK = /*ASK*/;
 const q = new URLSearchParams(location.search);
 let view = q.get('view') || 'zoom', focus = q.get('focus') || null, focusTitle = '';
 const frame = document.getElementById('view');
 function show() {
   for (const b of document.querySelectorAll('.tabs button')) b.setAttribute('aria-selected', b.dataset.view === view);
+  document.getElementById('ask').textContent = ASK[view];
   frame.src = view + '/index.html' + (focus ? '#focus=' + encodeURIComponent(focus) : '');
   paintFocus();
 }
@@ -84,7 +94,7 @@ document.addEventListener('click', () => { clearTimeout(timer); tip.classList.re
 show();
 </script></body></html>'''
 
-buttons = ''.join(f'<button role="tab" data-view="{v}" data-tip="{tip}">{word}</button>' for v, word, tip in VIEWS)
-out = PAGE.replace('/*CC*/', CC).replace('/*BUTTONS*/', buttons)
+buttons = ''.join(f'<button role="tab" data-view="{v}" data-tip="{tip}">{word}</button>' for v, word, tip, _ in VIEWS)
+out = PAGE.replace('/*CC*/', CC).replace('/*BUTTONS*/', buttons).replace('/*ASK*/', json.dumps({v: a for v, _, _, a in VIEWS}))
 open(os.path.join(HERE, 'bigpicture.html'), 'w').write(out)
 print('wrote bigpicture.html')

@@ -13,3 +13,9 @@
 - Own title band hidden when framed; legend kept.
 
 **Weakest point.** Only 3 of 16 boxes come from the vision. Some straight lines still cross. Layout is hand-placed. Android's unfinished move to the shared core is not drawn. Selecting a line does not report a focus.
+
+**Beta-tester round 1 fixes (U2, U3, U14, U15).**
+- U2: Mesh, specialists, doorway, keeper and "Outside the app" carry a dotted underline and a plain hover wherever they appear. Part hovers now say what the part is, not where it sits in the code.
+- U3: status words are exactly exists / being built / planned / only an idea. A part that stands for several big-picture items keeps its short name and opens with "Called this in the other views", listing the first two exact titles (the rest under More). A part standing for exactly one item would take that item's title (none does today).
+- U14: the toggle is labelled "Which assistant answers:" with "Claude Code" and "YouCoded's own". A step that opens with a stub ("You press Enter.") now shows its first two sentences.
+- U15: "dashed box = not built yet" is in the legend; the floating note is gone. The unfinished list reads "A / needs B · status".

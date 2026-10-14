@@ -156,6 +156,7 @@ svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-wid
 .lens{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .legend{display:flex;gap:14px;align-items:center;margin-left:auto;font-size:11px;color:var(--fg-muted)}
 .legend i{display:inline-block;width:26px;height:0;border-top:2px solid var(--status-ok);vertical-align:middle;margin-right:5px}
+.legend i.box{width:16px;height:10px;border:1px dashed var(--fg-faint);border-radius:3px;margin-right:5px;vertical-align:-1px}
 .legend i.building{border-top-color:var(--fg-muted)} .legend i.planned{border-top:2px dashed var(--fg-faint)}
 .scroll{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:12px 20px 20px}
 .stage{position:relative;width:944px;height:600px;margin:0 auto}
@@ -185,7 +186,6 @@ svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-wid
 .node.sel{outline:2px solid var(--accent);outline-offset:2px}
 .badge-n{position:absolute;top:-9px;right:-9px;min-width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 4px}
 .zone{position:absolute;font-size:11px;color:var(--fg-muted)}
-.zone.ahead{left:680px;top:545px;width:250px;line-height:1.4}
 .framed .band{display:none}
 .zone.out{}
 .dot.building{background:var(--fg-muted)} .dot.planned{background:var(--fg-faint)}
@@ -212,6 +212,13 @@ details.code code{display:block;font-size:11px;color:var(--fg-2);margin:3px 0;wo
 .stepcard .acts{display:flex;gap:8px;align-items:center}
 .vtabs{margin:8px 0}.vtabs button{font-size:12px;padding:3px 10px}
 .tooltip{position:fixed;z-index:50;max-width:300px;padding:8px 10px;border-radius:var(--radius-lg);background:var(--panel);border:1px solid var(--edge);box-shadow:var(--layer-shadow);font-size:12px;line-height:1.4;pointer-events:none;display:none}
+.gl{border-bottom:1px dotted var(--fg-muted);cursor:help}
+.same{margin:8px 0;font-size:12px;color:var(--fg-muted)}
+.same div{color:var(--fg);padding:3px 0;display:flex;gap:6px;align-items:flex-start;line-height:1.35}
+.same .dot{margin-top:4px}
+.which{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0;font-size:12px;color:var(--fg-muted)}
+.which .tabs{margin:0}
+.todo b{font-weight:500}
 .hint1{font-size:12px;color:var(--fg-muted)}
 .one{font-size:14px;line-height:1.4;margin:8px 0}
 ul.facts{list-style:none;margin:8px 0;padding:0;font-size:13px;line-height:1.4}
@@ -233,11 +240,10 @@ details.more[open]>summary{margin-bottom:8px}
   <div class="main">
    <div class="head">
     <div class="t-xs muted tip" data-tip="The app's real parts and what connects them. Pick a part or a line, or follow one path step by step.">Pick a part or a line, or follow a path.</div>
-    <div class="lens" id="traces"><span class="legend"><span><i></i>works today</span><span><i class="building"></i>being built</span><span><i class="planned"></i>planned</span></span></div>
+    <div class="lens" id="traces"><span class="legend"><span><i></i>works today</span><span><i class="building"></i>being built</span><span><i class="planned"></i>planned</span><span><i class="box"></i>dashed box = not built yet</span></span></div>
    </div>
    <div class="scroll"><div class="stage" id="stage">
      <svg id="lines"></svg>
-     <div class="zone ahead">Not built yet: these exist only in your big picture</div>
    </div></div>
   </div>
   <aside class="drawer" id="drawer"></aside>
@@ -249,11 +255,25 @@ details.more[open]>summary{margin-bottom:8px}
 const D = JSON.parse(document.getElementById('data').textContent);
 const W=144,H=70,PX=160;
 const stage=document.getElementById('stage'), svg=document.getElementById('lines'), drawer=document.getElementById('drawer'), tip=document.getElementById('tooltip');
-const WORD={exists:'exists',building:'being built',planned:'planned',idea:'only an idea so far'};
+const VLABEL={cc:'Claude Code',engine:"YouCoded's own"};
+const WORD={exists:'exists',building:'being built',planned:'planned',idea:'only an idea'};
 const P={},E={},els={},eels={};
+// WHY one word set in all four views (review U3): facts.json still says "only an idea so far" on some items
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sw=w=>String(w).replace('only an idea so far','only an idea');
+// WHY plain meanings (review U2): every term he did not coin gets a hover; Mesh stays his word and gains one
+const GLOSS={'Mesh':'Your own devices (computer, phone, others) acting as one group, so work can run on whichever is switched on. Not built yet.',
+ 'specialists':'Helpers the assistant hands a small job to, such as researching or checking something.',
+ 'doorway':'The one shared list of things a screen can ask the app to do. The computer window and the phone both use it.',
+ 'keeper':'The part that runs one conversation: it starts it, keeps its record and tells every screen what is new.',
+ 'Outside the app':'Not part of YouCoded. It is run by someone else and YouCoded only talks to it.'};
+const glRe=new RegExp('\\b('+Object.keys(GLOSS).join('|')+')\\b','g');
+// wrap glossary words inside already-escaped text
+const gl=h=>String(h).replace(glRe,(m)=>`<span class="gl" data-gl="${esc(GLOSS[m])}">${m}</span>`);
+// the exact title a part carries in the other views, when it stands for one single item
+const label=p=>p.vision.length===1&&D.nodes[p.vision[0]]?D.nodes[p.vision[0]][0]:p.t;
 D.parts.forEach(p=>{P[p.id]=p;p.px=p.x*PX;p.py=p.y});
 D.edges.forEach(e=>E[e.id]=e);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function showTip(html,ev){tip.innerHTML=html;tip.style.display='block';moveTip(ev)}
 function moveTip(ev){const r=tip.getBoundingClientRect();let x=ev.clientX+14,y=ev.clientY+14;if(x+r.width>innerWidth-8)x=ev.clientX-r.width-14;if(y+r.height>innerHeight-8)y=ev.clientY-r.height-14;tip.style.left=x+'px';tip.style.top=y+'px'}
 function hideTip(){tip.style.display='none'}
@@ -265,8 +285,9 @@ function edgePath(e){const a=P[e.a],b=P[e.b],[x1,y1]=anchor(a,b,3),[x2,y2]=ancho
 D.parts.forEach(p=>{
   const b=document.createElement('button');b.className=`node ${p.kind} ${p.cls}`;b.style.left=p.px+'px';b.style.top=p.py+'px';b.dataset.id=p.id;
   const lead=p.kind==='outside'?'Outside the app':p.kind==='ahead'?WORD[p.cls]:'';
-  b.innerHTML=`<span class="nt">${esc(p.t)}</span><span class="ns">${p.kind==='ahead'?`<i class="dot ${p.cls}"></i>${esc(WORD[p.cls])}`:p.kind==='outside'?'Outside the app':`<i class="dot ${p.cls}"></i>${esc(WORD[p.cls])}`}</span>`;
-  b.onmouseenter=ev=>showTip(p.code.length?`<b>${esc(p.t)}</b><br>Click for what it does. Where it lives in the code: ${p.code.slice(0,3).map(esc).join(', ')}${p.code.length>3?' …':''}`:`<b>${esc(p.t)}</b><br>${esc(WORD[p.cls])}. Click for what it needs.`,ev);
+  b.innerHTML=`<span class="nt">${gl(esc(label(p)))}</span><span class="ns">${p.kind==='ahead'?`<i class="dot ${p.cls}"></i>${esc(WORD[p.cls])}`:p.kind==='outside'?'Outside the app':`<i class="dot ${p.cls}"></i>${esc(WORD[p.cls])}`}</span>`;
+  // WHY the hover says what the part IS in plain words (review U2), not where it sits in the code
+  b.onmouseenter=ev=>showTip(`<b>${esc(label(p))}</b> <span style="color:var(--fg-muted)">· ${p.kind==='outside'?'outside the app':esc(WORD[p.cls])}</span><br>${esc(first(p.what))}<br><span style="color:var(--fg-muted)">Click for more.</span>`,ev);
   b.onmousemove=moveTip;b.onmouseleave=hideTip;
   b.onclick=()=>{leaveTrace();select('node',p.id)};
   stage.appendChild(b);els[p.id]=b;
@@ -289,12 +310,15 @@ let sel=null,trace=null;
 function clearMarks(){Object.values(els).forEach(n=>{n.classList.remove('on','seen','sel');const b=n.querySelector('.badge-n');if(b)b.remove()});Object.values(eels).forEach(n=>n.classList.remove('on','seen','sel'));stage.classList.remove('dim');dotLayer.innerHTML=''}
 function dotRow(c){return`<i class="dot ${c}"></i>`}
 function conRow(e,fromId){const other=P[e.a===fromId?e.b:e.a];
-  return`<button class="crow" data-e="${e.id}"><i class="dot ${e.cls}"></i><span><b>${esc(other.t)}</b>: ${esc(e.s)} <span class="muted">(${WORD[e.cls]})</span></span></button>`}
+  return`<button class="crow" data-e="${e.id}"><i class="dot ${e.cls}"></i><span><b>${esc(label(other))}</b>: ${gl(esc(e.s))} <span class="muted">(${WORD[e.cls]})</span></span></button>`}
 function bindRows(){drawer.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{select('edge',b.dataset.e)})}
 // WHY every detail is: name, status, ONE sentence, at most three facts, the rest behind a closed More (ROUND2 section 3)
-const first=t=>{const m=String(t).match(/^.*?[.!?](?=\s|$)/);return m?m[0]:t};
-const rest=t=>String(t).slice(first(t).length).trim();
+function first(t){const m=String(t).match(/^.*?[.!?](?=\s|$)/);return m?m[0]:t}
+// WHY: a step that opens with a stub ("You press Enter.") reads as a fragment; keep the first two sentences together (review U14)
+function lead(t){const a=first(t);if(a.length>=30)return a;const r=String(t).slice(a.length).trim();return r?a+' '+first(r):a}
+const rest=(t,f)=>String(t).slice((f||first)(t).length).trim();
 const more=inner=>`<details class="more"><summary>More</summary>${inner}</details>`;
+function bindGl(){document.querySelectorAll('[data-gl]').forEach(x=>{x.onmouseenter=ev=>showTip(x.dataset.gl,ev);x.onmousemove=moveTip;x.onmouseleave=hideTip})}
 function say(msg){if(window.parent!==window)parent.postMessage(msg,'*')}
 function tell(id,title){say({bp:'focus',id:id,title:title})}
 function renderDefault(){
@@ -302,9 +326,9 @@ function renderDefault(){
   const order={building:0,planned:1};open.sort((a,b)=>order[a.cls]-order[b.cls]);
   // WHY one short line each: the reason lives in the hover and in the connection's own detail, not on the list
   drawer.innerHTML=`<h2>What is not finished</h2>`+
-   open.map(e=>`<button class="todo" data-e="${e.id}" data-tip="${esc(e.s)}"><i class="dot ${e.cls}"></i><span>${esc(P[e.a].t)} needs ${esc(P[e.b].t)} <span class="muted">· ${esc(WORD[e.cls])}</span></span></button>`).join('')+
-   more(`<p class="hint1">Boxes are the app's real parts. Solid green lines work today, dashed grey lines are planned, and faint dashed boxes do not exist yet. Pick a part or a line, or follow a path above.</p>`);
-  drawer.querySelectorAll('.todo').forEach(b=>{const e=E[b.dataset.e];b.onclick=()=>{leaveTrace();select('edge',e.id)};b.onmouseenter=ev=>showTip(esc(e.s),ev);b.onmousemove=moveTip;b.onmouseleave=hideTip});
+   open.map(e=>`<button class="todo" data-e="${e.id}" data-tip="${esc(e.s)}"><i class="dot ${e.cls}"></i><span><b>${gl(esc(label(P[e.a])))}</b><br>needs ${gl(esc(label(P[e.b])))} <span class="muted">· ${esc(WORD[e.cls])}</span></span></button>`).join('')+
+   more(`<p class="hint1">Boxes are the app's real parts. Solid green lines work today, dashed grey lines are planned, and dashed boxes are not built yet. Pick a part or a line, or follow a path above.</p>`);
+  drawer.querySelectorAll('.todo').forEach(b=>{const e=E[b.dataset.e];b.onclick=()=>{leaveTrace();select('edge',e.id)};b.onmouseenter=ev=>showTip(esc(e.s),ev);b.onmousemove=moveTip;b.onmouseleave=hideTip});bindGl();
 }
 function select(kind,id,quiet){
   clearMarks();sel={kind,id};
@@ -319,21 +343,23 @@ function select(kind,id,quiet){
     const facts=[];
     if(needs.length)facts.push(`Waiting on: ${names(needs)}`);
     if(holds.length)facts.push(`Holds up: ${names(holds)}`);
-    if(todo&&facts.length<3)facts.push(`${todo} of ${p.visionItems.length} big-picture items still to do`);
+    if(todo&&facts.length<3)facts.push(`${todo} of ${p.visionItems.length} big-picture items not finished`);
     if(facts.length<3){const w=edges.filter(e=>e.cls==='exists').length;if(w)facts.push(`Working link${w>1?'s':''} to ${w} other part${w>1?'s':''}`)}
-    let h=`<h2>${esc(p.t)}</h2><p><span class="spill"><i class="dot ${p.cls}"></i>${p.kind==='outside'?'Outside the app':esc(WORD[p.cls])}</span></p><p class="one">${esc(first(p.what))}</p>`;
-    if(facts.length)h+=`<ul class="facts">${facts.slice(0,3).map(f=>`<li>${f}</li>`).join('')}</ul>`;
+    let h=`<h2>${esc(label(p))}</h2><p><span class="spill"><i class="dot ${p.cls}"></i>${p.kind==='outside'?gl('Outside the app'):esc(WORD[p.cls])}</span></p><p class="one">${gl(esc(first(p.what)))}</p>`;
+    // WHY (review U3): the exact titles this part carries in the other views, first two shown, the rest under More
+    if(p.visionItems.length&&label(p)===p.t)h+=`<div class="same">Called this in the other views:${p.visionItems.slice(0,2).map(v=>`<div><i class="dot ${v.cls}"></i><span><b class="fw">${esc(v.t)}</b> · ${esc(sw(v.w))}</span></div>`).join('')}${p.visionItems.length>2?`<div class="muted">and ${p.visionItems.length-2} more under More</div>`:''}</div>`;
+    if(facts.length)h+=`<ul class="facts">${facts.slice(0,3).map(f=>`<li>${gl(f)}</li>`).join('')}</ul>`;
     let m='';
-    if(rest(p.what))m+=`<p>${esc(rest(p.what))}</p>`;
+    if(rest(p.what))m+=`<p>${gl(esc(rest(p.what)))}</p>`;
     if(p.inside.length)m+=`<h3>Inside this part</h3><ul class="plain">${p.inside.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
     m+=`<h3>Connections (${edges.length})</h3>`+edges.map(e=>conRow(e,id)).join('');
-    if(p.visionItems.length)m+=`<h3>In your big picture</h3>`+p.visionItems.map(v=>`<div class="vrow"><i class="dot ${v.cls}"></i> <b class="fw">${esc(v.t)}</b> <span class="muted">${esc(v.w)}</span><div class="muted">${esc(v.why)}</div></div>`).join('');
+    if(p.visionItems.length)m+=`<h3>Every big-picture item for this part</h3>`+p.visionItems.map(v=>`<div class="vrow"><i class="dot ${v.cls}"></i> <b class="fw">${esc(v.t)}</b> <span class="muted">· ${esc(sw(v.w))}</span><div class="muted">${esc(v.why)}</div></div>`).join('');
     if(p.code.length)m+=`<h3>Where it lives in the code</h3>`+p.code.map(c=>`<code style="display:block;font-size:11px;word-break:break-all">youcoded/desktop/src/${esc(c)}</code>`).join('')+`<div class="hint1" style="margin-top:6px">Read from: ${esc(p.src)}</div>`;
-    drawer.innerHTML=h+more(m);
+    drawer.innerHTML=h+more(m);bindGl();
     if(!quiet)tell('part:'+id,p.t);
   }else{
     const e=E[id];eels[id].classList.add('on','sel');els[e.a].classList.add('on');els[e.b].classList.add('on');stage.classList.add('dim');
-    drawer.innerHTML=`<h2>${esc(P[e.a].t)} ${e.both?'and':'to'} ${esc(P[e.b].t)}</h2><p><span class="spill"><i class="dot ${e.cls}"></i>${esc(WORD[e.cls])}</span></p><p class="one">${esc(first(e.s))}</p>`+
+    drawer.innerHTML=`<h2>${esc(label(P[e.a]))} ${e.both?'and':'to'} ${esc(label(P[e.b]))}</h2><p><span class="spill"><i class="dot ${e.cls}"></i>${esc(WORD[e.cls])}</span></p><p class="one">${gl(esc(first(e.s)))}</p>`+
     more((rest(e.s)?`<p>${esc(rest(e.s))}</p>`:'')+`<h3>Why we say so</h3><ul class="plain">${e.src.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><h3>Ends of this connection</h3><button class="crow" data-n="${e.a}"><b>${esc(P[e.a].t)}</b></button><button class="crow" data-n="${e.b}"><b>${esc(P[e.b].t)}</b></button>`);
     drawer.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>select('node',b.dataset.n));
   }
@@ -358,9 +384,11 @@ function drawStep(){
     const am=document.createElementNS(NS,'animateMotion');am.setAttribute('dur','1.4s');am.setAttribute('repeatCount','indefinite');am.setAttribute('path',`M${x1},${y1} L${x2},${y2}`);c.appendChild(am);dotLayer.appendChild(c)}
   const t=trace.t,multi=t.variants.length>1;
   // WHY one short sentence per step; the remainder of a long step and the step picker stay quiet
-  drawer.innerHTML=`<h2>${esc(t.t)}</h2>`+(multi?`<div class="tabs vtabs">${t.variants.map(v=>`<button data-v="${v.id}" aria-selected="${v===trace.v}">${esc(v.t)}</button>`).join('')}</div>`:'')+
-   `<div class="stepcard"><div class="sn">Step ${trace.i+1} of ${steps.length}</div><p>${esc(first(s.s))}</p>${rest(s.s)?more(`<p>${esc(rest(s.s))}</p>`):''}<div class="acts"><button class="btn sm" id="bk" ${trace.i?'':'disabled'}>Back</button><button class="btn sm primary" id="nx">${trace.i<steps.length-1?'Next':'Start again'}</button><span class="spacer"></span><button class="btn sm ghost" id="ex">Close</button></div></div>
+  drawer.innerHTML=`<h2>${esc(t.t)}</h2>`+// WHY a label on the toggle (review U14): it says what it chooses
+   (multi?`<div class="which"><span>${esc(t.choose||'Which assistant answers:')}</span><div class="tabs vtabs">${t.variants.map(v=>`<button data-v="${v.id}" aria-selected="${v===trace.v}">${esc(VLABEL[v.id]||v.t)}</button>`).join('')}</div></div>`:'')+
+   `<div class="stepcard"><div class="sn">Step ${trace.i+1} of ${steps.length}</div><p>${gl(esc(lead(s.s)))}</p>${rest(s.s,lead)?more(`<p>${gl(esc(rest(s.s,lead)))}</p>`):''}<div class="acts"><button class="btn sm" id="bk" ${trace.i?'':'disabled'}>Back</button><button class="btn sm primary" id="nx">${trace.i<steps.length-1?'Next':'Start again'}</button><span class="spacer"></span><button class="btn sm ghost" id="ex">Close</button></div></div>
    <div class="steps">`+steps.map((x,k)=>`<button data-k="${k}" class="${k<trace.i?'past':''}" ${k===trace.i?'aria-current="true"':''} data-tip="Step ${k+1}">${k+1}</button>`).join('')+`</div>`;
+  bindGl();
   drawer.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{trace.v=t.variants.find(v=>v.id===b.dataset.v);trace.i=0;drawStep()});
   drawer.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{trace.i=+b.dataset.k;drawStep()});
   document.getElementById('nx').onclick=()=>{trace.i=(trace.i+1)%steps.length;drawStep()};

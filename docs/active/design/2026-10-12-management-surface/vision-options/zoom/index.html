@@ -174,8 +174,7 @@ svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-wid
 
 /* the boxes: every one is absolutely placed; JS moves them and CSS glides them */
 .nd{position:absolute;box-sizing:border-box;overflow:hidden;opacity:0;pointer-events:none;border-radius:4px}
-/* WHY no glide: 200 boxes sliding at once cannot be verified headlessly and risks jank; a 150ms fade between views is safe */
-#canvas{transition:opacity 150ms var(--ease)}#canvas.fading{opacity:0}
+/* WHY no glide and no fade: the fade relied on requestAnimationFrame to come back, and a tester saw the map stay pale; the switch is now instant so it cannot strand */
 .nd.on{opacity:1;pointer-events:auto}
 .nd.dim{opacity:.5}
 .nd.pillar,.nd.capability{border-radius:var(--radius-lg)}
@@ -223,11 +222,11 @@ svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-wid
 /* right column: a short, calm list of the other systems this one connects to */
 #railhd{position:absolute;font-size:12px;font-weight:500;color:var(--fg-muted)}
 #conns{position:absolute;overflow-y:auto;font-size:13px}
-#conns .row{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;border:1px solid var(--edge-card);border-radius:var(--radius-lg);background:var(--panel);margin:0 0 6px;padding:8px 10px;color:var(--fg);cursor:pointer;text-align:left;font:inherit}
+#conns .row{display:flex;align-items:flex-start;gap:8px;width:100%;box-sizing:border-box;border:1px solid var(--edge-card);border-radius:var(--radius-lg);background:var(--panel);margin:0 0 6px;padding:8px 10px;color:var(--fg);cursor:pointer;text-align:left;font:inherit}
 #conns .row:hover{background:var(--inset)}
 #conns .row:focus-visible{outline:2px solid var(--accent)}
-#conns .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-#conns .stw{font-size:12px;color:var(--fg-muted);flex:none}
+#conns .nm{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:500;line-height:1.3}
+#conns .stw{font-size:12px;color:var(--fg-muted);flex:none;max-width:44%;text-align:right}
 #conns .more{border:0;background:transparent;color:var(--fg-2);cursor:pointer;padding:4px 2px;font:inherit;font-size:12px;text-decoration:underline}
 #conns .none{padding:2px 0;color:var(--fg-muted)}
 #card{position:absolute;overflow:auto;padding:22px 26px;border-radius:var(--radius-xl);background:var(--panel);border:1px solid var(--edge);box-shadow:var(--layer-shadow);opacity:0;pointer-events:none;transition:opacity 150ms var(--ease)}
@@ -245,6 +244,7 @@ svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-wid
 #card .mt li{padding:7px 0;border-top:1px solid var(--edge-dim);font-size:12px;color:var(--fg-2);line-height:1.4}
 #card .mt b{color:var(--fg);font-weight:600}
 
+#card .term{border-bottom:1px dotted var(--fg-muted);cursor:help}
 #hint{position:absolute;left:0;bottom:0;font-size:12px;color:var(--fg-muted);pointer-events:none}
 #tip{position:fixed;z-index:50;max-width:340px;padding:8px 10px;border-radius:var(--radius-lg);background:var(--panel);color:var(--fg);border:1px solid var(--edge);box-shadow:var(--layer-shadow);font-size:12px;line-height:1.4;pointer-events:none;opacity:0;transition:opacity 120ms}
 #tip.on{opacity:1}
@@ -280,6 +280,16 @@ const $=s=>document.querySelector(s), esc=s=>String(s==null?'':s).replace(/[&<>"
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const nice=d=>d?MON[+d.slice(5,7)-1]+' '+(+d.slice(8,10)):'';
 const canvas=$('#canvas');
+
+/* ---- plain-word explanations for terms a newcomer would not know (beta U2): hover on a tile or on the word in the card ---- */
+const TERMS=[[/Mesh/,'Mesh','Your phone, computer and browser working together as one, so a task can move between them.'],
+ [/Fediverse/,'Fediverse','A network of independent social apps (like Mastodon) that can all read each other.'],
+ [/AT protocol/,'AT protocol','The open system behind Bluesky, another social network not owned by one company.'],
+ [/Specialist file/,'Specialist file','A text file that describes a helper agent: what it knows and what it may do.'],
+ [/MCP/,'MCP','A standard way to plug outside tools into the assistant.'],
+ [/[Hh]arness/,'Harness','The behind-the-scenes machinery that runs the assistant: how it reads, remembers and uses tools.']];
+const glossTips=t=>TERMS.filter(x=>x[0].test(t)).map(x=>'<br><span class="m"><b>'+x[1]+':</b> '+x[2]+'</span>').join('');
+function gloss(escd){ TERMS.forEach(x=>{ escd=escd.replace(new RegExp(x[0].source),m=>'<span class="term" data-tip="'+esc(x[1]+': '+x[2])+'">'+m+'</span>'); }); return escd; }
 
 /* ---- the tree ---- */
 const leafCache={};
@@ -361,8 +371,11 @@ function compute(){
   const out={}; Object.keys(meta).forEach(k=>delete meta[k]);
   let railX=Cw, railW=0;
   if(focus==='root'){ lay('root',{x:0,y:0,w:Cw,h:Ch},0,'main',out); }
-  else { railW=Math.min(260,Math.round(Cw*.2)); railX=Cw-railW; lay(focus,{x:0,y:0,w:Cw-railW-24,h:Ch},0,'main',out); }
-  cur.out=out; cur.main=out[focus==='root'?'root':focus]; cur.railX=railX; cur.railW=railW;
+  else { railW=Math.min(300,Math.round(Cw*.22)); railX=Cw-railW; const avail=Cw-railW-24;
+    if(D[focus].kids.length) lay(focus,{x:0,y:0,w:avail,h:Ch},0,'main',out);
+    else { // WHY (beta U6): a single feature is shown highlighted among its sibling features, with its card beside them, not alone in an empty frame
+      const tilesW=Math.max(300,Math.round(avail*.42)); cur.tilesW=tilesW; lay(D[focus].parent,{x:0,y:0,w:tilesW,h:Ch},0,'main',out); } }
+  cur.out=out; cur.main=out[focus==='root'?'root':(D[focus].kids.length?focus:D[focus].parent)]; cur.railX=railX; cur.railW=railW;
   Object.entries(els).forEach(([id,e])=>{
     const r=out[id], m=meta[id]; e.classList.remove('hot','isfocus','big','r0','r1','rx','click');
     if(!r){ e.classList.remove('on'); e.tabIndex=-1; return; }
@@ -371,18 +384,19 @@ function compute(){
     const n=D[id], leaf=!n.kids.length;
     if(!leaf) e.classList.add(m.rel===0?'r0':m.rel===1?'r1':'rx');
     if(leaf){ const lb=e.querySelector('.lb'); let show=false;
-      if(id===focus){e.classList.add('isfocus');}
+      if(id===focus){e.classList.add('isfocus'); show=r.w>=60&&r.h>=30;}
       else if(focus!=='root'){ show=r.w>=96&&r.h>=44; }  // zoomed: every tile that can hold a name shows it
       else if(m.rel===1){show=true; e.classList.add('big');} else show=(r.w>=118&&r.h>=50);
       lb.style.display=show?'':'none'; }
     else { const hd=e.querySelector('.hd'); hd.style.display=(m.rel===1)?'':'none'; }
     if(m.rel===1&&id!==focus){ e.classList.add('click'); e.tabIndex=0; } else e.tabIndex=-1;
+    e.setAttribute('aria-label',n.title+(leaf?', '+SW[n.status]:''));
   });
   buildRail(); card(); crumbs(); caption();
 }
 
 /* ---- right column: other systems this one connects to, one status word each ---- */
-const LWORD={exists:'exists',building:'in progress',planned:'planned',mixed:'partly planned'};
+const LWORD=SW; // WHY: the one status vocabulary shared by all four views: exists / being built / planned / only an idea
 function buildRail(){
   const rh=$('#railhd'), cn=$('#conns');
   if(focus==='root'){ rh.style.display='none'; cn.style.display='none'; return; }
@@ -392,7 +406,8 @@ function buildRail(){
   cn.style.left=cur.railX+'px'; cn.style.width=cur.railW+'px'; cn.style.top='24px'; cn.style.height=Math.max(60,size.h-24)+'px';
   const map={}; links.forEach(l=>{ if(l.own)return; (map[l.tp]=map[l.tp]||{tp:l.tp,items:[]}).items.push(l); });
   const rows=Object.values(map).map(g=>{ const st=new Set(g.items.map(l=>l.state));
-    g.word=st.size===1?[...st][0]:(st.has('planned')&&st.has('exists')?'mixed':(st.has('planned')?'planned':'building')); return g; })
+    // WHY: the word is the least-finished thing this system is linked through, so it answers 'is the other end there yet?'
+    g.word=g.items.map(l=>statusOf(l.outside)).sort((a,b)=>ORDER[b]-ORDER[a])[0]; return g; })
     .sort((a,b)=>b.items.length-a.items.length||D.root.kids.indexOf(a.tp)-D.root.kids.indexOf(b.tp));
   const MAXV=5; let h='';
   if(!rows.length) h='<div class="none">Nothing outside this system is recorded.</div>';
@@ -409,15 +424,15 @@ function names(list){ const t=list.map(x=>'<b data-go="'+x.id+'">'+esc(D[x.id].t
 function card(){
   const c=$('#card'); const n=D[focus];
   if(focus==='root'||n.kids.length){ c.classList.remove('on'); return; }
-  const r=cur.main, w=Math.min(640,r.w-60), h=Math.min(r.h-60,460);
-  c.style.left=(r.x+(r.w-w)/2)+'px'; c.style.top=(r.y+(r.h-h)/2)+'px'; c.style.width=w+'px'; c.style.maxHeight=h+'px';
+  const x0=cur.tilesW+20, w=Math.min(640,cur.railX-24-x0), h=Math.min(size.h-8,460); // WHY: card sits to the right of the sibling tiles
+  c.style.left=x0+'px'; c.style.top='0px'; c.style.width=w+'px'; c.style.maxHeight=h+'px';
   const path=ancestors(focus).slice(0,-1).map(a=>D[a].title).join('  ›  ');
   const fact=(k,list)=>list.length?'<li><span>'+k+'</span><div>'+names(list)+'</div></li>':'';
   const facts=fact('Waiting on',n.needs)+fact('Holds up',n.needed_by)+fact('Shares work with',n.shares);
   const all=(t,list)=>list.length?'<li><b>'+t+'</b><br>'+list.map(x=>esc(D[x.id].title)+(x.because?' — '+esc(x.because):'')).join('<br>')+'</li>':'';
   const ev=(n.evidence||[]).map(e=>'<li data-tip="Where this is recorded: '+esc(e.ref||'')+'"><b>'+esc(KIND[e.kind]||'Record')+(e.date?' · '+nice(e.date):'')+'</b><br>'+esc(e.note||'')+'</li>').join('');
-  c.innerHTML='<div class="t-xs muted">'+esc(path)+'</div><h2>'+esc(n.title)+'</h2><span class="pill"><i class="sw" style="width:10px;height:10px;border-radius:3px;background:'+({done:'var(--c-done)',building:'var(--c-building)',planned:'var(--c-planned)',vision:'repeating-linear-gradient(45deg,var(--fg-faint) 0 1.5px,transparent 1.5px 4px)'}[n.status])+'"></i>'+SW[n.status]+(n.since?' · since '+nice(n.since):'')+'</span>'
-    +'<p class="why">'+(n.why?esc(n.why):'<span class="muted">Nothing written about this one yet.</span>')+'</p>'
+  c.innerHTML='<div class="t-xs muted">'+esc(path)+'</div><h2>'+gloss(esc(n.title))+'</h2><span class="pill"><i class="sw" style="width:10px;height:10px;border-radius:3px;background:'+({done:'var(--c-done)',building:'var(--c-building)',planned:'var(--c-planned)',vision:'repeating-linear-gradient(45deg,var(--fg-faint) 0 1.5px,transparent 1.5px 4px)'}[n.status])+'"></i>'+SW[n.status]+(n.since?' · since '+nice(n.since):'')+'</span>'
+    +'<p class="why">'+(n.why?gloss(esc(n.why)):'<span class="muted">Nothing written about this one yet.</span>')+'</p>'
     +(facts?'<ul class="facts">'+facts+'</ul>':'')
     +'<details><summary>More</summary><ul class="mt">'+(n.why?'<li>'+esc(n.why)+'</li>':'')+all('Waiting on',n.needs)+all('Holds up',n.needed_by)+all('Shares work with',n.shares)+ev+'</ul></details>';
   c.classList.add('on');
@@ -431,18 +446,16 @@ function crumbs(){
 }
 function caption(){
   const c=$('#caption'), n=D[focus]; let t;
-  if(focus==='root') t='<b>Each big box is a major system.</b> Each small square is one feature, coloured by where it stands. Click a system to zoom in.';
+  if(focus==='root') t='<b>Boxes are systems, squares are features.</b> Click a box to look inside.';
   else if(n.kids.length){ const k=counts(focus); t='<b>'+esc(verdict(focus).replace(/^./,x=>x.toUpperCase()))+'.</b> '+k.done+' of '+weight(focus)+' features exist.'; }
-  else t='<b>'+SW[n.status].replace(/^./,x=>x.toUpperCase())+'.</b> Press Esc to zoom out.';
+  else t='<b>'+SW[n.status].replace(/^./,x=>x.toUpperCase())+'.</b> Highlighted among the '+D[n.parent].kids.length+' features in '+esc(D[n.parent].title)+'. Click another to switch; Esc zooms out.';
   c.innerHTML=t; c.dataset.tip=c.textContent;
 }
 
 /* ---- moving around ---- */
 function tell(){ if(window.parent===window) return;
   const id=focus==='root'?null:focus; parent.postMessage({bp:'focus',id:id,title:id?D[id].title:''},'*'); }
-function show(id){ // WHY fade: swap the layout while the canvas is invisible, then fade back in
-  canvas.classList.add('fading'); clearTimeout(show.t);
-  show.t=setTimeout(()=>{ focus=id; compute(); requestAnimationFrame(()=>canvas.classList.remove('fading')); },150); }
+function show(id){ focus=id; compute(); } // WHY instant: no timer or animation frame to get stuck
 function go(id){ if(!D[id]||id===focus)return; try{history.replaceState(null,'',id==='root'?location.pathname:'#focus='+id);}catch(e){} show(id); tell(); }
 canvas.addEventListener('click',e=>{ const t=e.target.closest('.nd'); if(!t)return; const m=meta[t.dataset.id]; if(!m)return;
   let id=t.dataset.id; if(id===focus) return;
@@ -457,10 +470,10 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&focus!=='root') go
 const tip=$('#tip');
 function tipFor(el){
   const nd=el.closest('.nd'); if(nd&&meta[nd.dataset.id]){ const id=nd.dataset.id, n=D[id], m=meta[id];
-    if(!n.kids.length){ let s='<b>'+esc(n.title)+'</b><br>'+SW[n.status]+(n.since?' since '+nice(n.since):'')+(n.why?'<br><span class="m">'+esc(n.why)+'</span>':'');
+    if(!n.kids.length){ let s='<b>'+esc(n.title)+'</b><br>'+SW[n.status]+(n.since?' since '+nice(n.since):'')+(n.why?'<br><span class="m">'+esc(n.why)+'</span>':'')+glossTips(n.title+' '+(n.why||''));
       let a=id; while(meta[a]&&meta[a].rel>1) a=D[a].parent; if(a!==id&&a!==focus) s+='<br><span class="m">Click to zoom into '+esc(D[a].title)+'.</span>'; else if(id!==focus) s+='<br><span class="m">Click for details.</span>';
       return s; }
-    let s='<b>'+esc(n.title)+'</b><br>'+verdict(id).replace(/^./,x=>x.toUpperCase())+'. '+esc(countsWords(id))+'.';
+    let s='<b>'+esc(n.title)+'</b>'+glossTips(n.title)+'<br>'+verdict(id).replace(/^./,x=>x.toUpperCase())+'. '+esc(countsWords(id))+'.';
     if(id!==focus) s+='<br><span class="m">Click to zoom in.</span>'; return s; }
   return el.closest('[data-tip]')?.dataset.tip||null; }
 let hotEl=null;
