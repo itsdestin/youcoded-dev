@@ -1,0 +1,206 @@
+<!doctype html><html data-theme="light"><head><meta charset="utf-8">
+<title>Big picture</title>
+<style>
+/* cc.css — the shared pieces, ported class-for-class from the app's real components on
+   origin/session/ui-consistency-audit (desktop/src/renderer/components/ui/*.tsx and
+   styles/globals.css). Each block names the component it copies; the numbers are that
+   component's Tailwind classes turned into CSS. WHY a rewrite (2026-10-13, audit.md): the
+   previous file was written from the older guide text, not from the components, and
+   drifted on almost every number (8px button corners, 32px buttons, capitals headings,
+   panel-coloured rows, a 48px bordered header). Paint only with these variables.
+   Switch theme with <html data-theme="creme|midnight|dark|light">. */
+
+/* ---- theme palettes: the four built-ins, values from globals.css ---- */
+:root, :root[data-theme="light"]{--canvas:#F2F2F2;--panel:#EAEAEA;--inset:#D7D7D7;--well:#F9F9F9;--accent:#1A1A1A;--on-accent:#F2F2F2;--fg:#1A1A1A;--fg-2:#444444;--fg-dim:#535353;--fg-muted:#5E5E5E;--fg-faint:#989898;--edge:#C0C0C0;--edge-dim:#B3B3B380;--link:#2055CA;--shadow-strength:.15;color-scheme:light}
+:root[data-theme="dark"]{--canvas:#111111;--panel:#191919;--inset:#222222;--well:#1C1C1C;--accent:#D4D4D4;--on-accent:#111111;--fg:#E0E0E0;--fg-2:#B0B0B0;--fg-dim:#999999;--fg-muted:#898989;--fg-faint:#515151;--edge:#393939;--edge-dim:#44444480;--link:#66AAFF;--shadow-strength:.4;color-scheme:dark}
+:root[data-theme="midnight"]{--canvas:#0D1117;--panel:#161B22;--inset:#21262D;--well:#0D1117;--accent:#B1BAC4;--on-accent:#0D1117;--fg:#C9D1D9;--fg-2:#A0AAB4;--fg-dim:#919AA4;--fg-muted:#858D97;--fg-faint:#4E555E;--edge:#343A41;--edge-dim:#3F454C80;--link:#58A6FF;--shadow-strength:.4;color-scheme:dark}
+:root[data-theme="creme"]{--canvas:#F6EEE1;--panel:#EBE1D1;--inset:#D8CCB9;--well:#F9F0E2;--accent:#3D3229;--on-accent:#F6EEE1;--fg:#2C2418;--fg-2:#504333;--fg-dim:#564C3D;--fg-muted:#615648;--fg-faint:#9A8F7F;--edge:#C4B8A6;--edge-dim:#B8AC9A80;--link:#5B4A1E;--shadow-strength:.15;color-scheme:light}
+
+/* ---- derived outlines (globals.css:2061-2062) and the semantic set (§2.3) ---- */
+:root{
+  /* WHY these two: card and button outlines in the app are not the raw --edge; they mix in
+     text colour so they stay visible on every theme (decisions "Surface levels"). */
+  --edge-card:color-mix(in srgb,var(--edge) 82%,var(--fg) 18%);
+  --edge-strong:color-mix(in srgb,var(--edge) 65%,var(--fg) 35%);
+  --status-ok:#2E9B57;--status-warn:#C99700;--status-error:#E5484D;--status-idle:#8A8A8A;
+  --tag-blue:#3B82C4;
+  --radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;--radius-full:9999px;
+  --font:'Cascadia Mono','Cascadia Code','Fira Code',ui-monospace,monospace;
+  --dur-hover:180ms;--dur-reveal:260ms;--ease:cubic-bezier(.2,.7,.2,1);
+  --layer-shadow:0 8px 32px rgba(0,0,0,var(--shadow-strength));
+}
+:root[data-theme="midnight"],:root[data-theme="dark"]{--status-warn:#F2B33D}
+
+/* ---- page ---- */
+*{box-sizing:border-box}
+/* WHY clip: the page never scrolls itself (the pane does); without it the off-screen side panel
+   widened the page and scrollIntoView slid everything sideways, cutting the panel off. */
+html,body{margin:0;height:100%;overflow:clip}
+body{font:14px/1.45 var(--font);color:var(--fg);background:var(--panel)}
+a{color:var(--link)}
+button{font:inherit}
+svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- type scale (globals.css: 2xs/3xs 11 · xs 12 · sm 14 · base 16) ---- */
+.t-lg{font-size:18px;font-weight:600}
+.t-base{font-size:16px;font-weight:500}
+.t-sm{font-size:14px}
+.t-xs{font-size:12px}
+.t-2xs{font-size:11px}
+/* SectionLabel.tsx — 12px medium muted, NORMAL CASE, no letter-spacing. WHY: Destin retired
+   the spaced-capitals eyebrow app-wide (decisions "Heading ladder", all "No capitals"). The
+   class keeps its old name so every call site moves at once. */
+.eyebrow{font-size:12px;font-weight:500;color:var(--fg-muted)}
+.muted{color:var(--fg-muted)} .dim{color:var(--fg-2)}
+.num{font-variant-numeric:tabular-nums}
+/* Count after a word: faint, smaller (decisions "Counts", SegmentedTabLabel) */
+.cnt{font-size:11px;font-weight:400;color:var(--fg-muted);margin-left:4px}
+
+/* ---- .layer-surface (globals.css:1375): popups, full-screen cards ---- */
+.layer{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow)}
+
+/* ---- cards on a full screen are raised: .layer-surface (globals.css:1375) — panel fill, 1px edge,
+        radius-xl, the layer shadow (MarketplaceCard.tsx:339; decisions "Card look: raised").
+        A box inside one is the nested level: CARD_LEVEL_2 = FIELD_SURFACE 'bg-inset border border-edge-card rounded-lg'. ---- */
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);padding:16px}
+.card .card,.card.inset{background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);box-shadow:none;padding:12px}
+/* + .card-interactive and .hover-lift on a grid card (MarketplaceCard.tsx:339; globals.css:1524,1547) */
+.card-interactive{cursor:pointer;transition:background-color 120ms steps(4),transform 200ms steps(5)}
+@media (hover:hover){.card-interactive:hover{background-color:var(--inset);transform:scale(1.02)}}
+.card-interactive:active{background-color:var(--edge)}
+.card-interactive:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- Button.tsx ---- base 'inline-flex items-center justify-center gap-1.5 font-medium rounded-lg'
+   md 'text-xs px-3 py-1.5' · sm 'text-2xs px-2.5 py-1' · secondary is the default here. */
+.btn{font-size:12px;line-height:16px;font-weight:500;padding:6px 12px;border-radius:var(--radius-lg);border:1px solid var(--edge-strong);background:transparent;color:var(--fg-2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;transition:background-color var(--dur-hover) var(--ease),color var(--dur-hover) var(--ease)}
+.btn.sm{font-size:11px;line-height:14px;padding:4px 10px}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.btn.ghost{border-color:transparent;color:var(--fg-dim)}
+@media (hover:hover){.btn:hover{background:var(--inset)} .btn.ghost:hover{color:var(--fg)}
+  .btn.primary:hover{background:color-mix(in srgb,var(--accent) 90%,transparent)}}
+.btn:active{background:var(--edge)} .btn.primary:active{background:color-mix(in srgb,var(--accent) 80%,transparent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- CloseButton.tsx = Button size="icon" variant="ghost": w-7 h-7, rounded-lg, svg w-4 h-4 ---- */
+.closebtn{width:28px;height:28px;padding:0;flex:none;border:0;border-radius:var(--radius-lg);background:transparent;color:var(--fg-dim);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background-color var(--dur-hover) var(--ease)}
+@media (hover:hover){.closebtn:hover{background:var(--inset);color:var(--fg)}}
+.closebtn:active{background:var(--edge)} .closebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- SegmentedTabs.tsx variant="pill" ----
+   PILL_CONTAINER 'w-fit flex items-center gap-0.5 p-0.5 layer-surface !rounded-full' (shadow off)
+   PILL_TAB_BASE 'px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1.5' */
+.tabs{display:inline-flex;align-items:center;gap:2px;padding:2px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-full);width:fit-content;flex:none}
+.tabs button{font-size:14px;line-height:20px;font-weight:500;padding:4px 12px;border:0;border-radius:var(--radius-full);background:transparent;color:var(--fg-2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:background-color var(--dur-hover) var(--ease)}
+.tabs button .count{font-size:11px;color:var(--fg-muted)}
+.tabs button svg.ic{width:16px;height:16px}
+.tabs button[aria-selected="true"],.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.tabs button[aria-selected="true"] .count,.tabs button[aria-pressed="true"] .count{color:inherit;opacity:.8}
+@media (hover:hover){.tabs button:not([aria-selected="true"]):not([aria-pressed="true"]):hover{background:var(--inset);color:var(--fg)}}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- FilterChip.tsx: 'px-3 py-1 rounded-full text-sm'; inactive 'bg-inset text-fg-2 hover:text-fg
+        border border-edge hover:border-edge-dim'; active 'bg-accent text-on-accent' ---- */
+.fchips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{font-size:14px;line-height:20px;padding:4px 12px;border-radius:var(--radius-full);background:var(--inset);border:1px solid var(--edge);color:var(--fg-2);cursor:pointer;white-space:nowrap;transition:color var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease)}
+@media (hover:hover){.fchip:not([aria-pressed="true"]):hover{color:var(--fg);border-color:var(--edge-dim)}}
+.fchip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.fchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- Chip.tsx (counts, plain tags): 'rounded-sm px-1.5 py-0.5 text-2xs text-fg-2 bg-inset border border-edge-dim' ---- */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:var(--radius-sm);background:var(--inset);border:1px solid var(--edge-dim);font-size:11px;line-height:14px;color:var(--fg-2);white-space:nowrap}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--fg-muted);flex:none}
+.dot.ok{background:var(--status-ok)} .dot.warn{background:var(--status-warn)} .dot.error{background:var(--status-error)} .dot.idle{background:var(--status-idle)}
+/* ---- Pill.tsx (status labels: "tinted pill, normal case, dot inside" — decisions "Status labels"):
+        'rounded-full border gap-1 pl-1.5 pr-2 py-px text-3xs leading-tight text-fg-2'; neutral 'bg-inset border-edge-dim' ---- */
+.spill{display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:var(--radius-full);border:1px solid var(--edge-dim);background:var(--inset);font-size:11px;line-height:1.25;color:var(--fg-2);white-space:nowrap}
+.spill.warn{background:color-mix(in srgb,var(--status-warn) 15%,transparent);border-color:color-mix(in srgb,var(--status-warn) 30%,transparent)}
+.spill.warn .dot{background:var(--status-warn)}
+/* the two sides of the app — a word with a small mark, in the muted line under a row */
+.side{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--fg-muted)}
+/* WHY no mark (U8): the two small icons were unexplained; the words say it */
+
+/* ---- SettingRow.tsx (nav density): 'surface-1 flex items-center gap-3 px-3 py-2 bg-inset/50
+        border border-edge-card rounded-lg'; title 'text-sm text-fg font-medium'; description
+        'text-2xs -mt-0.5 text-fg-muted' ---- */
+.row{display:flex;align-items:center;gap:12px;padding:8px 12px;background:color-mix(in srgb,var(--inset) 50%,transparent);border:1px solid var(--edge-card);border-radius:var(--radius-lg)}
+.row .body{flex:1;min-width:0}
+.row .body>.t-sm,.row .body>.t-xs{font-weight:500;color:var(--fg)}
+.row .hint{font-size:11px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .meta{font-size:11px;color:var(--fg-muted);white-space:nowrap}
+.card .row{background:var(--inset)}   /* a row inside a card is level 2 (globals.css .surface-1 .surface-1) */
+/* the right-hand chevron every navigating row has (SettingRow: svg w-4 h-4 text-fg-muted, rotate-90 when open) */
+.chev{display:inline-flex;color:var(--fg-muted);flex:none;transition:transform var(--dur-hover) var(--ease)}
+.chev svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- Callout.tsx info: 'rounded-lg p-3 border bg-accent/10 border-accent/25', text-xs ---- */
+.callout{border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:var(--radius-lg);padding:12px;font-size:12px;color:var(--fg-2)}
+/* ---- states.tsx EmptyState block: 'flex flex-col items-center gap-2 py-8', 'text-sm text-fg-muted text-center' ---- */
+.empty{text-align:center;color:var(--fg-muted);padding:32px 0;font-size:14px}
+
+/* ---- tooltips (Tooltip.tsx look: a small layer surface) ---- */
+.tip{position:relative}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) translateY(4px);min-width:160px;max-width:320px;width:max-content;padding:8px 10px;border-radius:var(--radius-lg);background:var(--panel);color:var(--fg);border:1px solid var(--edge);box-shadow:var(--layer-shadow);font-size:12px;font-weight:400;line-height:1.4;text-align:left;text-transform:none;letter-spacing:0;white-space:normal;opacity:0;pointer-events:none;transition:opacity var(--dur-hover) var(--ease),transform var(--dur-hover) var(--ease);z-index:20}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{opacity:1;transform:translateX(-50%) translateY(0)}
+.tip.below::after{bottom:auto;top:calc(100% + 8px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+html,body{margin:0;height:100%;background:var(--panel);color:var(--fg);font-family:var(--font)}
+.top{height:52px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 16px}
+.ttl{font-size:14px;font-weight:500}
+.focus{justify-self:end;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg-dim);max-width:100%}
+.focus b{font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22rem}
+.focus[hidden]{display:none}
+.frame{position:absolute;top:52px;left:10px;right:10px;bottom:10px;border-radius:var(--radius-xl);overflow:hidden;background:var(--canvas)}
+iframe{width:100%;height:100%;border:0;display:block}
+/* WHY a drawn hint, not title=: the operating system draws title= as its own grey box (round 3 rule);
+   this copies the app's Tooltip look and timing as the main page does */
+.tip{position:fixed;z-index:50;max-width:20rem;padding:4px 8px;font-size:11px;line-height:15px;color:var(--fg-2);
+  background:var(--well);border:1px solid var(--edge);border-radius:var(--radius-md);box-shadow:var(--layer-shadow);
+  pointer-events:none;opacity:0;transition:opacity 110ms}
+.tip.on{opacity:1}
+</style></head><body>
+<div class="top">
+  <div class="ttl">Big picture</div>
+  <div class="tabs" role="tablist"><button role="tab" data-view="zoom" data-tip="Every major system as a box, with each feature as a coloured square. Click a system to look inside it.">Systems</button><button role="tab" data-view="journeys" data-tip="Things real people would do with the app, step by step: how far each gets today, and where it stops.">Journeys</button><button role="tab" data-view="stack" data-tip="What the big ideas rest on, from the ground up, and what to build next to unblock the most.">Foundations</button><button role="tab" data-view="wiring" data-tip="The app's real parts and how they connect. Follow a message, a sync or an install step by step.">How it works</button></div>
+  <div class="focus" id="focus" hidden><span>Looking at</span><b id="focusName"></b>
+    <button class="btn sm ghost" id="clear" data-tip="Stop following this one thing; the next view opens on everything.">✕</button></div>
+</div>
+<div class="frame"><iframe id="view" title="Big picture view"></iframe></div>
+<div class="tip" id="tip"></div>
+<script>
+const q = new URLSearchParams(location.search);
+let view = q.get('view') || 'zoom', focus = q.get('focus') || null, focusTitle = '';
+const frame = document.getElementById('view');
+function show() {
+  for (const b of document.querySelectorAll('.tabs button')) b.setAttribute('aria-selected', b.dataset.view === view);
+  frame.src = view + '/index.html' + (focus ? '#focus=' + encodeURIComponent(focus) : '');
+  paintFocus();
+}
+function paintFocus() {
+  const box = document.getElementById('focus');
+  box.hidden = !focus;
+  document.getElementById('focusName').textContent = focusTitle || focus || '';
+}
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { if (b.dataset.view !== view) { view = b.dataset.view; show(); } });
+document.getElementById('clear').onclick = () => { focus = null; focusTitle = ''; show(); };
+// A view tells us what the person is looking at; we only remember it, so the NEXT view opens on it.
+window.addEventListener('message', e => {
+  const m = e.data;
+  if (!m || m.bp !== 'focus') return;
+  focus = m.id || null; focusTitle = m.id ? (m.title || '') : ''; paintFocus();
+});
+// hover hints: 800 ms before the first, 130 ms for a neighbour within 400 ms (the app's Tooltip timing)
+const tip = document.getElementById('tip'); let timer, lastHide = 0;
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('[data-tip]'); if (!t) return;
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    tip.textContent = t.dataset.tip; const r = t.getBoundingClientRect();
+    tip.style.left = Math.max(12, Math.min(r.left, innerWidth - tip.offsetWidth - 12)) + 'px';
+    tip.style.top = (r.bottom + 6) + 'px'; tip.classList.add('on');
+  }, Date.now() - lastHide < 400 ? 130 : 800);
+});
+document.addEventListener('mouseout', e => { if (e.target.closest('[data-tip]')) { clearTimeout(timer); if (tip.classList.contains('on')) lastHide = Date.now(); tip.classList.remove('on'); } });
+document.addEventListener('click', () => { clearTimeout(timer); tip.classList.remove('on'); });
+show();
+</script></body></html>
