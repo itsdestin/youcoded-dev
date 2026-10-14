@@ -152,6 +152,16 @@ and Git review inside it are still hand-built — see their sections below.)
   its editing cards are **open** when it opens — the same cards as where you edit it elsewhere, never a
   summary that swaps into a second form — and **nothing it edits is saved until the action**; the ✕
   leaves everything as it was (close-session-1#CS-2).
+- **What a popup says and offers sits in cards** — the same in every popup and every (i) explainer
+  (final-review#ST-21, #PR-7): explanations, tick boxes, switches, fields and choices go inside
+  first-level cards under small labels, the way About groups its text (Settings → About; an (i)
+  page is a label over a card per section). A popup that is one card needs no label (a confirmation:
+  what will happen, any notice about it and its "also delete…" tick box, all in the one card); the
+  card about the popup's own subject opens it unlabelled. A tick box before an action is always the
+  shared "I understand" box (`ConsentRow`), never a bare square. A line about the whole popup is the
+  title's second line (`Dialog` `subtitle`). The popup's own buttons stay outside the cards, under
+  them. **The one exception:** a short confirmation question of one or two sentences with nothing to
+  tick or type ("Remove backup?", a missing folder's Remove project, Switch model) stays plain text.
 - **"Don't ask again"** on a popup that asks every time: a switch with its words, **bottom-left on the
   footer line**, balanced by the main button at the right (principle 6). The same choice lives in
   Settings so it can be turned back on (Close session: Settings → Assistant → General → "Close-session
@@ -164,8 +174,8 @@ and Git review inside it are still hand-built — see their sections below.)
 | Title | A popup or side panel's name | 16px semibold (above) |
 | Small label | A group inside a screen, popup or list ("Volume", "Privacy") | 12px medium, grey, sentence case, no letter-spacing (`SectionLabel`) |
 
-A small label heading a **section of reading text** (About's "Disclaimer") also gets a soft underline
-under its words (`SectionLabel reading`). Labels over short settings groups stay plain.
+Every small label is plain. (The soft underline that once marked labels over bare reading text is
+retired: reading text now sits in a labelled card — final-review#ST-21.)
 
 ### Text and numbers
 - Body text: 14px, main text colour.
