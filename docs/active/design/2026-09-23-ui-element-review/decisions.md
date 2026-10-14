@@ -267,3 +267,13 @@ Approved as built: FV-6, CH-17, ST-30, MK-1, PR-5, GM-1, PR-8, CT-8, ST-22, the 
 | Quick chips vs tags | "just tell the handoff session i want to work on this more. i didnt ask you to change anything, i said i wanted to look at this" — the chip-editor changes (app `7b41b47fe`) were not asked for; keep or revert is his call there. | `final-fixes#CH-5`, `#CH-6` |
 | Close prompt Details | "this isn't what i asked? i'm confused about what the details card is? if it's part of the error, it should appear in the error card?" | `final-fixes#CH-11` |
 | Marketplace theme previews | Approved, but "the previews should be better fitted to the card. this looks janky" | `final-fixes#MK-2` |
+
+## Popup boxes (2026-10-14, deck `popup-cards-1`, folder `2026-10-14-popup-cards/`)
+
+Settles the reopened popup-card rule (final-fixes#PR-7e, #PR-7f, #ST-21), shown on Rename session, Pick a handle, Create a page, a Page's connections and two (i) pages.
+
+| Topic | Decision | Not chosen | Source |
+|---|---|---|---|
+| A popup that does one job | **One box holding everything, its buttons included** (Create a page's shape today). | No box (fields straight on the popup); a box with the buttons under it. | `popup-cards-1#PC-1` |
+| The line under a popup's title | **Keep it** (`Dialog` `subtitle`) where a popup has one. Status bar widgets still loses its own (final-fixes#PR-7d, replaced by the "Always on" section). | Remove it; move it into the popup. | `popup-cards-1#PC-2` |
+| (i) pages: the first box | **Labelled** — "Overview" over the opening box, so every box on the page has a label. | Unlabelled first box. | `popup-cards-1#PC-3` |
