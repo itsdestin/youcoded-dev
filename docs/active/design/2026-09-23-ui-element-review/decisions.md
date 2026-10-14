@@ -248,3 +248,22 @@ source is `<deck key>#<step id>`. Research behind each question: `inventory/`.
 | Cards separate from their surface | "the cards no longer separate from the main background surface … game/skill cards don't just look like bare outlines". The Games pane wears the popups' panel surface; skills-drawer tiles are the first-level card. | — | `final-review#GM-1` |
 | Marketplace theme cards framed like Appearance's | "improve these marketplace theme cards a bit to slightly better match the cards used in the appearance panel". The preview sits inset in the card with its own corner and outline (THEME_PREVIEW_FRAME). | — | `final-review#MK-2` |
 | Turn on sync popup | "this seems a little odd". Rebuilt on the shared popup (title, ✕, outlined Cancel, body in a card, Callout note). | — | `final-review#PR-8` |
+
+## Final fixes (2026-10-14, deck `final-fixes`) — open items for the guide-testing session
+
+Approved as built: FV-6, CH-17, ST-30, MK-1, PR-5, GM-1, PR-8, CT-8, ST-22, the Context tab strip (CX-1), Q-3, CH-21, F47, TL-0, the roadmap filings, the guide approval. **Take-over popups: add titles** ("Take over this conversation?" / "That device can't be reached") and a ✕ — "this might address my earlier issue with these" (`final-fixes#Q-TO`; not built yet).
+
+**Reopened — Destin: "i don't trust you to fix at this point, i want the handoff session to deal with it."** Nothing below is decided; the "Popup content in cards" row above is NOT settled guidance until these are resolved.
+
+| Item | Destin's words | Source |
+|---|---|---|
+| Popup cards were applied too broadly | "you just added cards to everything arbitrarily, and ignore some of the conventions/rules established earlier. a popup with no header or sections doesn't need another card level inside. that's just doing it for the sake of it and doesn't improve the clarity or structure of the popup." (take-over, can't reach) | `final-fixes#PR-7f` |
+| Subheaders and button placement in popups | "i thought we had decided against subheaders in popup headers? and why are the create/cancel buttons inside the card here, but outside of the cards in a bunch of popups i just reviewed? … i'm not sure whether i want to keep inside or out" (Create a page / Edit page / connections) | `final-fixes#PR-7e` |
+| First card's header | "thought we established in the guide that the first box should have a header above it when there are multiple and headers are being used?" ((i) explainers) | `final-fixes#ST-21` |
+| Tick box hint | "remove "tick the box to continue" and replace with a hover tooltip over the action button that would be disabled." | `final-fixes#ST-12` |
+| Rename / handle / OpenRouter | "rename session/pick a handle should probably basically mirror eachother"; "connect openrouter seems like it should also mirror/match the rename/handle poups. fast mode is a bit wierd. remove the extra container around model picker in resume card" | `final-fixes#PR-7a`, `#PR-7c` |
+| Voice vocabulary | "voice vocabulary needs work. also want to compare alongisde tag/quick chip surfaces" | `final-fixes#PR-7b` |
+| Status bar widgets | "remove subheader under status bar widgets, add a new "always on" section with model, permission, tag/not, etc lines with on but greyed toggles that can't be disabled." | `final-fixes#PR-7d` |
+| Quick chips vs tags | "just tell the handoff session i want to work on this more. i didnt ask you to change anything, i said i wanted to look at this" — the chip-editor changes (app `7b41b47fe`) were not asked for; keep or revert is his call there. | `final-fixes#CH-5`, `#CH-6` |
+| Close prompt Details | "this isn't what i asked? i'm confused about what the details card is? if it's part of the error, it should appear in the error card?" | `final-fixes#CH-11` |
+| Marketplace theme previews | Approved, but "the previews should be better fitted to the card. this looks janky" | `final-fixes#MK-2` |

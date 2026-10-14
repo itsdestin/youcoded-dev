@@ -1,0 +1,260 @@
+{
+ "deck": "final-fixes",
+ "started": "2026-10-14T06:57:16.425Z",
+ "submitted": "2026-10-14T07:25:04Z",
+ "cur": 33,
+ "answers": {
+  "OV-1": {
+   "v": "yes",
+   "t": 1791961038835,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-6": {
+   "v": "yes",
+   "t": 1791961042765,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-17": {
+   "v": "yes",
+   "t": 1791961046258,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-30": {
+   "v": "yes",
+   "t": 1791961053442,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-1": {
+   "v": "yes",
+   "t": 1791961056045,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-5": {
+   "v": "yes",
+   "t": 1791961059110,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-2": {
+   "v": "yes",
+   "t": 1791961088672,
+   "note": "the previews should be better fitted to the card. this looks janky",
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-1": {
+   "v": "yes",
+   "t": 1791961103783,
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-1b": {
+   "v": "yes",
+   "t": 1791961107021,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-5": {
+   "v": "other",
+   "t": 1791961291380,
+   "note": "what? just tell the handoff session i want to work on this more. i didnt ask you to change anything, i said i wanted to look at this",
+   "seconds": 184,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-6": {
+   "note": "will look at this in handoff session",
+   "t": 1791961325600,
+   "v": "other",
+   "seconds": 29,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-6b": {
+   "v": "other",
+   "seconds": 38,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1791961357534
+  },
+  "ST-12": {
+   "note": "remove \"tick the box to continue\" and replace with a hover tooltip over the action button that would be disabled.",
+   "t": 1791961422252,
+   "v": "other",
+   "seconds": 65,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-12b": {
+   "v": "yes",
+   "t": 1791961465221,
+   "seconds": 43,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-21": {
+   "note": "thought we established in the guide that the first box should have a header above it when there are multiple and headers are being used?",
+   "t": 1791961506236,
+   "v": "other",
+   "seconds": 41,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7a": {
+   "note": "i feel like these seem a bit inconsistent. rename session/pick a handle should probably basically mirror eachother. ",
+   "t": 1791961963586,
+   "v": "other",
+   "seconds": 457,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7b": {
+   "note": "also think voice vocabulary needs work. also want to compare alongisde tag/quick chip surfaces",
+   "t": 1791962040269,
+   "v": "other",
+   "seconds": 77,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7c": {
+   "note": "connect openrouter seems like it should also mirror/match the rename/handle poups. fast mode is a bit wierd. remove the extra container around model picker in resume card",
+   "t": 1791962199745,
+   "v": "other",
+   "seconds": 159,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7d": {
+   "note": "we should remove subheader under status bar widgets, add a new \"always on\" section with model, permission, tag/not, etc lines with on but greyed toggles that can't be disabled.",
+   "t": 1791962283404,
+   "v": "other",
+   "seconds": 84,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7e": {
+   "note": "ugh brother we're introducing even more inconsistencies now. i thought we had decided against subheaders in popup headers? and why are the create/cancel buttons inside the card here, but outside of the cards in a bunch of popups i just reviewed? i don't trust you to fix at this point, i want the handoff session to deal with it. i'm not sure whether i want to keep inside or out....",
+   "t": 1791962395327,
+   "v": "other",
+   "seconds": 112,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7f": {
+   "note": "takeover and cant reach look worse now. you just added cards to everything arbitrarily, and ignore some of the conventions/rules established earlier. a popup with no header or sections doesn't need another card level inside. that's just doing it for the sake of it and doesn't improve the clarity or structure of the popup.",
+   "t": 1791962491618,
+   "v": "other",
+   "seconds": 96,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-8": {
+   "v": "yes",
+   "t": 1791962509678,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-8": {
+   "v": "yes",
+   "t": 1791962519400,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-11": {
+   "note": "what? this isn't what i asked? i'm confused about what the details card is? if it's part of the error, it should appear in the error card? ",
+   "t": 1791962588177,
+   "v": "other",
+   "seconds": 69,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-22": {
+   "v": "yes",
+   "t": 1791962607681,
+   "seconds": 20,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CX-1": {
+   "v": "yes",
+   "t": 1791962625306,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "yes",
+   "t": 1791962647693,
+   "seconds": 22,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-21": {
+   "v": "yes",
+   "t": 1791962652446,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "F47": {
+   "v": "yes",
+   "t": 1791962664719,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TL-0": {
+   "v": "yes",
+   "t": 1791962668527,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "RM-1": {
+   "v": "yes",
+   "t": 1791962672351,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "DC-0": {
+   "v": "yes",
+   "t": 1791962675496,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-TO": {
+   "v": "pick",
+   "pick": "titles",
+   "t": 1791962698099,
+   "note": "this might address my earlier issue with these",
+   "seconds": 23,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "END-1": {
+   "v": "yes",
+   "t": 1791962702935,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}
