@@ -1,0 +1,75 @@
+{
+  "title": "The big picture: four attempts",
+  "key": "vision-options-choice",
+  "out": "vision-options.choice.html",
+  "images": "images/vision-options.choice",
+  "runs": { "today": "runs/today" },
+  "labels": { "today": "Attempt" },
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "zoom": ["vision", "zoom", "1440x900+0+0"],
+    "journeys": ["vision", "journeys", "1440x900+0+0"],
+    "stack": ["vision", "stack", "1440x900+0+0"],
+    "wiring": ["vision", "wiring", "1440x900+0+0"],
+    "zoom-detail": ["vision", "zoom-detail", "1440x900+0+0"],
+    "journeys-detail": ["vision", "journeys-detail", "1440x900+0+0"],
+    "stack-detail": ["vision", "stack-detail", "1440x900+0+0"],
+    "wiring-detail": ["vision", "wiring-detail", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Management page",
+      "path": "Big picture tab, as it first opens",
+      "pick": "several",
+      "headline": "As each first opens: which of these is worth keeping, alone or combined with another?",
+      "notice": "Each was built by a different agent from your own words and the same status facts. Pick every one with an idea worth keeping; your note can say which parts to combine.",
+      "risk": "The status facts are from Oct 12 and gathered by hand; the real version reads them from the work cards.",
+      "variants": [
+        {
+          "id": "zoom",
+          "label": "Zoom in",
+          "crop": "zoom",
+          "summary": "Ten boxes, one per major system, sized by how much they hold. Each small square is one feature, coloured by where it stands. Click a system to zoom inside it.",
+          "risk": "Every feature counts the same, so a one-line idea takes as much room as a big finished feature."
+        },
+        {
+          "id": "journeys",
+          "label": "Journeys",
+          "crop": "journeys",
+          "summary": "Seven things real people would do, each a row of steps. Each row shows how far you get today and where it stops; the side lists which systems stop the most journeys.",
+          "risk": "Only 33 of the 168 features sit on any journey, so a system no journey passes through is invisible."
+        },
+        {
+          "id": "stack",
+          "label": "Foundations up",
+          "crop": "stack",
+          "summary": "A building: what everything rests on at the bottom, the big ideas at the top. A block missing its support hangs on dashed legs. A strip at the top ranks what to build next.",
+          "risk": "Dense and wordy; only about a quarter of features have a known dependency, so the rest sit in an \"everything else\" list."
+        },
+        {
+          "id": "wiring",
+          "label": "How it's wired",
+          "crop": "wiring",
+          "summary": "The app's 13 real parts and how they connect, taken from the actual code. Pick \"follow a message\", \"follow a sync\" or \"follow a marketplace install\" to step through one path.",
+          "risk": "Shows how the app works today far better than how far it is from the vision; only 3 unbuilt things appear."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "surface": "Management page",
+      "path": "Big picture tab, after one click",
+      "pick": "several",
+      "headline": "After one click: which of these tells you something you actually want to know?",
+      "notice": "Zoom in: inside Sync and Mesh. Journeys: one step opened. Foundations up: one block lit with what holds it up. How it's wired: step 4 of following a marketplace install.",
+      "variants": [
+        { "id": "zoom", "label": "Zoom in", "crop": "zoom-detail", "summary": "Every feature of one system by name and status, with lines to the other systems it needs." },
+        { "id": "journeys", "label": "Journeys", "crop": "journeys-detail", "summary": "One step's system, what it needs first, and which journeys it matters to." },
+        { "id": "stack", "label": "Foundations up", "crop": "stack-detail", "summary": "What holds one block up, what it holds up, and which of those are unfinished." },
+        { "id": "wiring", "label": "How it's wired", "crop": "wiring-detail", "summary": "One step of a path through the app, lit up, with a plain sentence for what happens there." }
+      ]
+    }
+  ]
+}
