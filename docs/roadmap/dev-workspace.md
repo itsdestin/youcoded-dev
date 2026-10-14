@@ -188,8 +188,10 @@ seen-on is always n/a here.
       fixes?" Two answers he liked, neither built: (1) a NIGHTLY rehearsal build from master that
       publishes nothing and notifies on failure (the launch check runs in no other workflow and sat
       broken from 2026-09-16); (2) a way to run ONE test file on ONE OS instead of a ~15-minute
-      three-OS matrix
-      `n/a` `confirmed` `P1` `checked 2026-09-20` `v1.3.1`
+      three-OS matrix. RECURRED 2026-10-14: master's Windows and macOS runs were red every day from
+      2026-10-08 (terminal-flow tests, a permission check, a CPU budget) and nobody was told; the fix
+      session then waited through five ~20-minute three-OS runs to tune one test (youcoded#619)
+      `n/a` `confirmed` `P1` `checked 2026-10-14` `v1.3.1`
 
 - [ ] Re-work the release method: releases tag master directly, so each ships all ~3,200 commits since
       v1.2.4 and bug-fix minors cannot go out alone. Goal: cut `release/vX.Y.x` branches off the last tag

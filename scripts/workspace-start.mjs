@@ -189,8 +189,10 @@ export function fillMissingPackages(componentDir, label = path.basename(componen
   }
   const notes = [];
   if (gaps.length > MAX_FILLED_PACKAGES) {
-    // Deleting a hardlink farm only drops link counts, so a real install is safe from here.
-    return [`${label}/node_modules is missing or outdated in ${gaps.length} packages, too many to fetch one by one — delete it and run npm ci in ${componentDir}`];
+    // WHY not "npm ci" (2026-10-14): glob-guard refuses any npm install under worktrees/ (it once
+    // rewrote shared hardlinks), so that advice sent a session into a refusal. Copying a current
+    // worktree's farm is what worked; a fresh install outside worktrees/ is the fallback.
+    return [`${label}/node_modules is missing or outdated in ${gaps.length} packages, too many to fetch one by one — delete it, then copy (cp -al) the node_modules of a worktree whose deps are current, or npm ci in a fresh directory outside worktrees/ and move its node_modules into ${componentDir} (npm ci inside worktrees/ is refused by glob-guard)`];
   }
   // Parents before their nested packages: a replaced parent carries its nested
   // node_modules over, and a fetched child needs its parent's directory.
