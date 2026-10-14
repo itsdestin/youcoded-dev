@@ -1,0 +1,50 @@
+{
+ "deck": "bigpicture-round4-review",
+ "started": "2026-10-14T18:44:14.786Z",
+ "submitted": "2026-10-14T18:45:40Z",
+ "cur": 5,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "t": 1792003461751,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1792003494131,
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "yes",
+   "t": 1792003512864,
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "yes",
+   "t": 1792003526591,
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-5": {
+   "v": "yes",
+   "t": 1792003534907,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-6": {
+   "v": "yes",
+   "t": 1792003539052,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
