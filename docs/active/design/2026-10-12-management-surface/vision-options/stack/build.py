@@ -5,22 +5,23 @@ WHY floors are computed: a block's floor is the longest chain of "needs" under i
 vision-evidence-*.json). Floor 0 needs nothing; a block sits one floor above the highest thing it
 needs. Nothing is placed by hand. Statuses come only from the evidence files.
 """
-import json, os, sys, html, functools
+import json, os, html, functools
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-UP = os.path.dirname(os.path.dirname(HERE))          # .../2026-10-12-management-surface
-sys.path.insert(0, UP)
-import vision_tab as V                                # the page's own loader: skeleton + all evidence files merged
+VO = os.path.dirname(HERE)                            # vision-options (holds facts.json)
+UP = os.path.dirname(VO)                              # .../2026-10-12-management-surface (cc.css, page.css)
 E = html.escape
 
-sk, ev, _ = V.load(UP)
-nodes = V.flatten(sk)
-V.merge(nodes, ev)
+# WHY facts.json only: round 2 puts all four views on one merged set of facts (ROUND2.md section 1).
+F = json.load(open(os.path.join(VO, 'facts.json')))
+nodes = F['nodes']
+for _k, _n in nodes.items():
+    _n['title'] = _n.get('label') or _n['title']       # the plain label, where facts.py supplies one
 
 STATUS_WORD = {'done': 'exists', 'building': 'being built', 'planned': 'planned', 'vision': 'only an idea', 'unchecked': 'not checked yet'}
-PILLAR = {p['id']: p['title'] for p in sk['pillars']}
 SHORT = {'chat': 'Chat', 'projects': 'Projects', 'pages': 'Pages', 'marketplace': 'Marketplace', 'social': 'Social',
          'sync': 'Sync & Mesh', 'agents': 'Agents', 'yours': 'Yours', 'everywhere': 'Everywhere', 'together': 'Built together'}
+sk = {'pillars': [{'id': k} for k in SHORT]}
 
 # --- the building: only blocks that take part in a "needs" link are drawn as floors -------------
 conn = [k for k, n in nodes.items() if n['needs'] or n['needed_by']]
@@ -45,7 +46,7 @@ def floating(k):
 TOP = max(floor(k) for k in conn)
 FLOOR_NAME = {0: 'Foundations', 1: 'Built on the foundations', 2: 'Built on those', 3: 'Higher still', 4: 'Top of the building'}
 FLOOR_SUB = {0: 'These need nothing else.', 1: 'Each needs something from the floor below.', 2: 'Needs things that themselves need things.',
-             3: 'Needs three floors of other work.', 4: 'Needs four floors of other work.'}
+             3: 'Needs three floors of other work.', 4: 'Needs four floors of other work.'}  # shown on hover only
 
 # "build next": unfinished blocks ranked by how many other unfinished blocks wait on them (through any chain)
 nxt = []
@@ -57,7 +58,7 @@ for k in conn:
     if held:
         nxt.append((len(held), k, bool(floating(k))))
 nxt.sort(key=lambda t: (-t[0], t[2], t[1]))
-NEXT = nxt[:6]
+NEXT = nxt[:3]   # WHY 3: ROUND2 complaint - fewer things at once, full names
 
 order_p = {p['id']: i for i, p in enumerate(sk['pillars'])}
 groups = {}
@@ -75,51 +76,60 @@ for k, n in nodes.items():
 def short(k):
     return nodes[k]['title']
 
+
 def data_for(k):
     n = nodes[k]
+    why = n.get('why') or ''
     return dict(
         id=k, title=n['title'], status=n['status'], word=STATUS_WORD[n['status']], pillar=SHORT[n['pillar']],
-        why=n.get('why') or '', since=n.get('since'), floor=floor(k) if k in conn else None,
+        why=why, since=n.get('since'), floor=floor(k) if k in conn else None, catch=bool(n.get('catch')),
         needs=[dict(id=x['id'], why=x.get('because', '')) for x in n['needs']],
         holds=[dict(id=x['id'], why=x.get('because', '')) for x in n['needed_by']],
         shares=[dict(id=x['id'], why=x.get('because', '')) for x in n['shares']],
+        proof=[dict(kind=e.get('kind', ''), ref=e.get('ref', ''), note=e.get('note', '')) for e in n.get('evidence', [])],
         floating=floating(k) if k in conn else [],
         held=sorted(trans(k, 'needed_by')) if k in conn else [], below=sorted(trans(k, 'needs')) if k in conn else [],
         kind=n['kind'])
 
 DATA = {k: data_for(k) for k in nodes if k in conn or any(k in l for l in loose.values())}
-TITLES = {k: v['title'] for k, v in DATA.items()}
-for k, n in nodes.items():
-    TITLES.setdefault(k, n['title'])
+TITLES = {k: n['title'] for k, n in nodes.items()}
+# WHY: focus links from the switcher can name any node, or a wiring part; the page maps them to the nearest block
+PARENT = {k: n.get('parent') for k, n in nodes.items()}
+PARTS = {p['id']: [v if isinstance(v, str) else v.get('id') for v in (p.get('vision') or [])] for p in F['parts']}
+PILLAR_OF = {k: n['pillar'] for k, n in nodes.items()}
+CONN = sorted(conn)
 
 def block(k):
     d = DATA[k]
     fl = bool(d['floating'])
-    legs = ''
-    if fl:
-        legs = '<span class="legs" aria-hidden="true"><i></i><i></i></span>'
-    # WHY the badge: an unfinished block that other blocks stand on is the thing to build next
-    nw = len([h for h in d['held'] if DATA[h]['status'] != 'done'])
-    up = f'<span class="up" aria-hidden="true">▲{nw}</span>' if d['status'] != 'done' and nw else ''
+    legs = '<span class="legs" aria-hidden="true"><i></i><i></i></span>' if fl else ''
+    # WHY no "up" badge: the count of things resting on a block now lives only in the detail panel
     return (f'<button class="blk {d["status"]}{" float" if fl else ""}" data-id="{E(k)}" data-tip="{E(d["why"] or d["title"])}">'
             f'<span class="bt">{E(d["title"])}</span>'
-            f'<span class="bs"><i class="sdot {d["status"]}"></i>{E(d["word"])}{up}</span>{legs}</button>')
+            f'<span class="bs"><i class="sdot {d["status"]}"></i>{E(d["word"])}</span>{legs}</button>')
 
 floors_html = []
 tops = []
 for f in range(TOP, -1, -1):
     ks = groups.get(f, [])
     nfl = sum(1 for k in ks if DATA[k]['floating'])
-    note = f'<span class="fnote">{nfl} floating</span>' if nfl else ''
+    note = f'<span class="fnote" data-tip="A block floats when something it rests on is not built yet.">{nfl} floating</span>' if nfl else ''
+    # WHY: finished, well-supported blocks collapse into one quiet strip so the unfinished ones stand out
+    quiet = [k for k in ks if DATA[k]['status'] == 'done' and not DATA[k]['floating']]
+    shown = [k for k in ks if k not in quiet]
+    strip = ''
+    if quiet:
+        strip = (f'<div class="strip"><button class="sbtn" aria-expanded="false" data-tip="Click to show or hide them.">'
+                 f'<i class="sdot done"></i>{len(quiet)} thing{"s" if len(quiet) != 1 else ""} that already work<span class="car">&#9656;</span></button>'
+                 f'<div class="sblks">{"".join(block(k) for k in quiet)}</div></div>')
     (tops if f >= 3 else floors_html).append(
-        f'<section class="floor" data-floor="{f}"><header class="fh"><span class="fn">{E(FLOOR_NAME[f])}</span>'
-        f'<span class="fs">{E(FLOOR_SUB[f])}</span>{note}</header><div class="bl">{"".join(block(k) for k in ks)}</div></section>')
+        f'<section class="floor" data-floor="{f}"><header class="fh"><span class="fn" data-tip="{E(FLOOR_SUB[f])}">{E(FLOOR_NAME[f])}</span>{note}</header>'
+        f'<div class="bl">{"".join(block(k) for k in shown)}</div>{strip}</section>')
 
-# WHY the two highest floors share one row: it keeps the foundations on the first screen
 floors_html.insert(0, '<div class="tops">' + ''.join(reversed(tops)) + '</div>')
 nxt_html = ''.join(
-    f'<button class="nx" data-id="{E(k)}" data-tip="Not finished, and {c} unfinished thing{"s" if c != 1 else ""} sit on it, directly or further up. Click to light them up.">'
-    f'<i class="sdot {nodes[k]["status"]}"></i><b>{E(short(k))}</b><span>holds up {c}</span></button>' for c, k, fl in NEXT)
+    f'<button class="nx" data-id="{E(k)}" data-tip="Not finished, and {c} other unfinished thing{"s" if c != 1 else ""} sit on it. Click to light them up.">'
+    f'<i class="sdot {nodes[k]["status"]}"></i><b>{E(short(k))}</b></button>' for c, k, fl in NEXT)
 
 loose_html = ''.join(
     f'<div class="lp"><div class="lph">{E(SHORT[p])}</div><div class="lc">' +
@@ -210,16 +220,50 @@ details.loose summary span{font-weight:400;color:var(--fg-muted)}
 .tipbubble{position:fixed;left:0;top:0;z-index:60;pointer-events:none;padding:4px 8px;max-width:20rem;font-size:11px;line-height:1.375;color:var(--fg-2);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow)}
 @media (max-width:760px){.topline{grid-template-columns:1fr}.blk{width:calc(50% - 4px)}body:has(.panel.open) .cc-main{padding-right:20px}}
 '''
+CSS += '''
+/* ---- round 2 overrides: fewer, wider, fully readable blocks ---- */
+.blk{width:184px;height:auto;min-height:40px;padding:4px 8px}
+.legend{margin-bottom:5px;padding:4px 12px}.legend .lg1{color:var(--fg);margin-right:8px}
+.nxbox{padding:6px 12px}.nxbox h2{margin-bottom:4px}
+.floor{padding:4px 0 2px}.bl{padding-bottom:4px;gap:8px}.cc-main{padding-top:10px}
+.tops{gap:20px}
+.blk .bt{display:block;-webkit-line-clamp:unset;overflow:visible;font-size:12px;line-height:15px}
+.bl{gap:10px 8px}
+.nx b{max-width:none;white-space:normal;text-align:left}
+.nx{font-size:12px;padding:5px 12px}
+.nxbox h2 span{margin-left:4px}
+.fh{margin-bottom:5px}
+#lines path{stroke-width:1.2;opacity:.45}
+#lines path.dash{stroke-width:1.3;opacity:.8}
+.strip{padding:0 0 8px}
+.sbtn{display:inline-flex;align-items:center;gap:7px;font-size:11px;padding:3px 10px;border-radius:var(--radius-lg);border:1px dashed var(--edge-strong);background:transparent;color:var(--fg-2);cursor:pointer}
+.sbtn .car{display:inline-block;transition:transform var(--dur-hover);color:var(--fg-muted)}
+.strip.open .sbtn .car{transform:rotate(90deg)}
+.strip.has-lit .sbtn{box-shadow:0 0 0 2px var(--status-ok);color:var(--fg)}
+@media (hover:hover){.sbtn:hover{background:var(--inset)}}
+.sblks{display:none;flex-wrap:wrap;gap:8px;margin-top:8px}
+.strip.open .sblks{display:flex}
+.sbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+html.framed .band{display:none}
+.pbody .facts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--fg-2)}
+.pbody .facts li{display:block;padding-left:12px;position:relative}.pbody .facts li::before{content:"\\2022";color:var(--fg-muted);position:absolute;left:0}
+#pbody{display:flex;flex-direction:column;gap:10px}
+details.more{border-top:1px solid var(--edge-card);padding-top:8px}
+details.more summary{cursor:pointer;font-size:12px;color:var(--fg-muted)}
+details.more[open] summary{margin-bottom:8px}
+.pbody .ev{font-size:11px;color:var(--fg-muted);margin:0 0 4px}
+.pbody p{margin:0}
+'''
 
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded - the vision, foundations up</title>
+<script>if(window.self!==window.top)document.documentElement.classList.add('framed')</script>
 <style>{CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"></div><div class="btitle">Where the vision stands: foundations up</div><div class="br"><span class="t-2xs muted asof">Facts as of Oct 12</span></div></header>
 <div class="screen-body"><div class="pane"><div class="panescroll fadescroll" id="scroller"><main class="cc-main">
-<div class="lead"><h1>What the big ideas are waiting on <span>Every block rests on the blocks it needs. Hover or click one to see what holds it up and what it holds up.</span></h1></div>
-<div class="legend"><div><i class="sdot done"></i>exists</div><div><i class="sdot building"></i>being built</div><div><i class="sdot planned"></i>planned</div><div><i class="sdot vision"></i>only an idea (hatched)</div><div><span class="lgf"></span>floating: a foundation is missing</div><div><span class="up2">▲3</span>unfinished, with 3 unfinished things resting on it</div></div>
+<div class="legend"><div class="lg1">Each block rests on the ones it needs. Hover or click one.</div><div><i class="sdot done"></i>exists</div><div><i class="sdot building"></i>being built</div><div><i class="sdot planned"></i>planned</div><div><i class="sdot vision"></i>only an idea (hatched)</div><div><span class="lgf"></span>floating: a foundation is missing</div></div>
 <div class="topline">
- <div class="nxbox"><h2>Build next <span>(unfinished things holding up the most)</span></h2><div class="nxs">{nxt_html}</div></div>
+ <div class="nxbox"><h2>Build next <span>(unfinished, with the most resting on it)</span></h2><div class="nxs">{nxt_html}</div></div>
 </div>
 <div class="lit-key"><span class="k1">holds it up</span><span class="k2">it holds up</span><span class="k3">holds it up, but not finished</span></div>
 <div id="bld"><svg id="lines" aria-hidden="true"></svg>{''.join(floors_html)}</div>
@@ -230,21 +274,24 @@ page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset
 <script>
 const D={json.dumps(DATA)};
 const T={json.dumps(TITLES)};
+const PARENT={json.dumps(PARENT)},PARTS={json.dumps(PARTS)},PIL={json.dumps(PILLAR_OF)},CONN={json.dumps(CONN)};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let pinned=null,hover=null;
 const blk=id=>$('#bld .blk[data-id="'+CSS.escape(id)+'"]');
-function clear(){{$$('.blk').forEach(b=>b.classList.remove('is-self','is-below','is-above','notdone'));document.body.classList.remove('lit');$('#lines').innerHTML=''}}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const tell=(id,title)=>{{if(window.parent!==window)parent.postMessage({{bp:'focus',id:id,title:title}},'*')}};
+function clear(){{$$('.blk').forEach(b=>b.classList.remove('is-self','is-below','is-above','notdone'));$$('.strip').forEach(s=>s.classList.remove('has-lit'));document.body.classList.remove('lit');$('#lines').innerHTML=''}}
 function light(id){{
   clear();const d=D[id];if(!d||d.floor===null)return;
   document.body.classList.add('lit');
   const set=new Set([id,...d.below,...d.held]);
-  blk(id).classList.add('is-self');
-  d.below.forEach(x=>{{const b=blk(x);if(b){{b.classList.add('is-below');if(D[x].status!=='done')b.classList.add('notdone')}}}});
-  d.held.forEach(x=>{{const b=blk(x);if(b)b.classList.add('is-above')}});
-  // lines for every needs-link inside the lit set
+  const mark=(x,c)=>{{const b=blk(x);if(!b)return;b.classList.add(c);const s=b.closest('.strip');if(s&&!s.classList.contains('open'))s.classList.add('has-lit')}};
+  mark(id,'is-self');
+  d.below.forEach(x=>{{mark(x,'is-below');const b=blk(x);if(b&&D[x].status!=='done')b.classList.add('notdone')}});
+  d.held.forEach(x=>mark(x,'is-above'));
   const root=$('#bld').getBoundingClientRect(),svg=$('#lines');let p='';
   set.forEach(a=>D[a].needs.forEach(n=>{{
-    if(!set.has(n.id))return;const A=blk(a),B=blk(n.id);if(!A||!B)return;
+    if(!set.has(n.id))return;const A=blk(a),B=blk(n.id);if(!A||!B||!A.offsetParent||!B.offsetParent)return;
     const ra=A.getBoundingClientRect(),rb=B.getBoundingClientRect();
     const x1=ra.left+ra.width/2-root.left,y1=ra.bottom-root.top,x2=rb.left+rb.width/2-root.left,y2=rb.top-root.top;
     const my=(y1+y2)/2,dash=D[n.id].status!=='done'?' class="dash"':'';
@@ -253,24 +300,46 @@ function light(id){{
 }}
 function refresh(){{const id=hover||pinned;if(id)light(id);else clear()}}
 function pill(d){{return `<span class="spill"><i class="sdot ${{d.status}}"></i>${{d.word}}</span>`}}
-function lnk(x,why){{const d=D[x.id]||{{title:T[x.id],status:'unchecked',word:'not checked yet'}};return `<button class="ln" data-open="${{x.id}}"><span class="t"><i class="sdot ${{d.status}}"></i>${{d.title}}</span><span class="w">${{(x.why||'').replace(/</g,'&lt;')}}</span></button>`}}
+function lnk(x){{const d=D[x.id]||{{title:T[x.id],status:'unchecked'}};return `<button class="ln" data-open="${{x.id}}"><span class="t"><i class="sdot ${{d.status}}"></i>${{esc(d.title)}}</span><span class="w">${{esc(x.why||'')}}</span></button>`}}
+function firstSentence(t){{const m=t.match(/^.*?[.!?](\\s|$)/);let a=m?m[0].trim():t,r=t.slice(a.length).trim();
+  if(a.length>130){{const cut=a.lastIndexOf(' ',125);r=(a.slice(cut)+' '+r).trim();a=a.slice(0,cut)+'\\u2026'}}return [a,r]}}
+const names=ids=>{{const t=ids.map(x=>T[x]);return t.length>2?t.slice(0,2).join(', ')+' and '+(t.length-2)+' more':t.join(' and ')}};
 function open_(id){{
   const d=D[id];if(!d)return;pinned=id;
   $('#pti').textContent=d.title;
-  let h=`<div class="pst">${{pill(d)}}<span class="muted t-2xs">${{d.pillar}}${{d.since?' · since '+d.since:''}}</span></div>`;
-  if(d.why)h+=`<p class="t-xs">${{d.why.replace(/</g,'&lt;')}}</p>`;
-  if(d.floating.length)h+=`<div class="alert">Floating: it needs ${{d.floating.map(x=>'<b>'+T[x]+'</b>').join(' and ')}}, which ${{d.floating.length>1?'are':'is'}} not built yet.</div>`;
+  const [lead,rest]=firstSentence(d.why||'');
+  const facts=[];
   if(d.floor!==null){{
-    h+=`<div><h3>Rests on (${{d.needs.length}})</h3>${{d.needs.length?d.needs.map(lnk).join(''):'<div class="none">Nothing. This is a foundation.</div>'}}</div>`;
-    h+=`<div><h3>Holds up (${{d.holds.length}})</h3>${{d.holds.length?d.holds.map(lnk).join(''):'<div class="none">Nothing yet depends on this.</div>'}}</div>`;
-  }}else h+='<div class="none">No other feature needs this or depends on it, so it sits outside the building.</div>';
-  if(d.shares.length)h+=`<div><h3>Overlaps with</h3>${{d.shares.map(lnk).join('')}}</div>`;
+    if(d.floating.length)facts.push('Waiting on: <b>'+esc(names(d.floating))+'</b>');
+    else facts.push(d.needs.length?'Everything it rests on already works.':'Needs nothing else.');
+    const open=d.held.filter(h=>D[h].status!=='done').length;
+    facts.push(open?`Holds up ${{open}} other unfinished thing${{open>1?'s':''}}.`:d.held.length?`Holds up ${{d.held.length}} other thing${{d.held.length>1?'s':''}}.`:'Nothing else depends on it yet.');
+  }}else facts.push('Nothing else needs it, and it needs nothing else.');
+  facts.push(esc(d.pillar)+(d.since?', since '+esc(d.since):''));
+  let h=`<div class="pst">${{pill(d)}}</div>`;
+  if(lead)h+=`<p class="t-xs">${{esc(lead)}}</p>`;
+  h+=`<ul class="facts">${{facts.slice(0,3).map(f=>'<li>'+f+'</li>').join('')}}</ul>`;
+  let m='';
+  if(rest)m+=`<p class="t-xs">${{esc(rest)}}</p>`;
+  if(d.catch)m+='<div class="alert">Marked as working, but its own evidence names a catch.</div>';
+  if(d.floor!==null){{
+    if(d.needs.length)m+=`<div><h3>Rests on</h3>${{d.needs.map(lnk).join('')}}</div>`;
+    if(d.holds.length)m+=`<div><h3>Holds up</h3>${{d.holds.map(lnk).join('')}}</div>`;
+  }}
+  if(d.shares.length)m+=`<div><h3>Overlaps with</h3>${{d.shares.map(lnk).join('')}}</div>`;
+  if(d.proof.length)m+=`<div><h3>What backs this up</h3>${{d.proof.map(e=>`<div class="ev">${{esc(e.note||e.kind)}}${{e.ref?' ('+esc(e.ref)+')':''}}</div>`).join('')}}</div>`;
+  if(m)h+=`<details class="more"><summary>More</summary>${{m}}</details>`;
   $('#pbody').innerHTML=h;$('#panel').classList.add('open');
-  requestAnimationFrame(()=>{{refresh();const b=blk(id);if(b)b.scrollIntoView({{block:'center',behavior:'instant'}});}});
+  // WHY: a finished block inside a collapsed strip must be visible when it is the thing being looked at
+  const sb=blk(id)&&blk(id).closest('.strip');if(sb)setStrip(sb,true);
+  tell(id,d.title);
+  requestAnimationFrame(()=>{{refresh();const b=blk(id);if(b&&b.offsetParent)b.scrollIntoView({{block:'center',behavior:'instant'}});}});
 }}
-function close_(){{pinned=null;$('#panel').classList.remove('open');requestAnimationFrame(refresh)}}
+function setStrip(s,on){{s.classList.toggle('open',on);s.querySelector('.sbtn').setAttribute('aria-expanded',on)}}
+function close_(){{const was=pinned;pinned=null;$('#panel').classList.remove('open');requestAnimationFrame(refresh);if(was)tell(null,null)}}
 document.addEventListener('click',e=>{{
   const o=e.target.closest('[data-open]');if(o){{open_(o.dataset.open);return}}
+  const sb=e.target.closest('.sbtn');if(sb){{const s=sb.parentElement;setStrip(s,!s.classList.contains('open'));requestAnimationFrame(refresh);return}}
   const b=e.target.closest('.blk,.nx,.chip2');if(b){{open_(b.dataset.id);return}}
   if(e.target.closest('#pclose')){{close_();return}}
 }});
@@ -279,13 +348,21 @@ $('#bld').addEventListener('mouseover',e=>{{const b=e.target.closest('.blk');if(
 $('#bld').addEventListener('mouseleave',()=>{{hover=null;refresh()}});
 $$('.nx').forEach(n=>{{n.addEventListener('mouseenter',()=>{{hover=n.dataset.id;refresh()}});n.addEventListener('mouseleave',()=>{{hover=null;refresh()}})}});
 addEventListener('resize',refresh);
-// hover hints, same look as the app's tooltip
 const tb=$('#tb');
 document.addEventListener('mouseover',e=>{{const t=e.target.closest('[data-tip]');if(!t){{tb.hidden=true;return}}
   tb.textContent=t.dataset.tip;tb.hidden=false;const r=t.getBoundingClientRect(),w=tb.offsetWidth,h=tb.offsetHeight;
   let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8),y=r.top-h-8;if(y<8)y=r.bottom+8;tb.style.transform=`translate(${{x}}px,${{y}}px)`}});
 document.addEventListener('mouseleave',()=>tb.hidden=true);
-const q=new URLSearchParams(location.search).get('focus');if(q&&D[q])addEventListener('load',()=>open_(q));
+// focus from the switcher: a node, or part:<id>. Map to the block itself, else the nearest block in the same system.
+function mapFocus(f){{
+  if(!f)return null;
+  if(f.startsWith('part:')){{const v=(PARTS[f.slice(5)]||[]).find(x=>D[x]);if(v)return v;f=null;return null}}
+  let k=f;while(k){{if(D[k]&&D[k].floor!==null)return k;k=PARENT[k]}}
+  const pil=PIL[f];if(!pil)return D[f]?f:null;
+  const kin=CONN.find(x=>PIL[x]===pil&&(PARENT[x]===PARENT[f]))||CONN.find(x=>PIL[x]===pil);
+  return kin||(D[f]?f:null)}}
+function applyFocus(){{const t=mapFocus(decodeURIComponent((location.hash.match(/focus=([^&]+)/)||[])[1]||''));if(t)open_(t)}}
+addEventListener('load',applyFocus);addEventListener('hashchange',applyFocus);
 </script></body></html>'''
 
 with open(os.path.join(HERE, 'index.html'), 'w') as f:

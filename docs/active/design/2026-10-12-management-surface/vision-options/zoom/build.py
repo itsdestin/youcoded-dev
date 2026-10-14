@@ -1,39 +1,32 @@
-"""Zoom in: the whole vision as nested boxes on one canvas. Reads the real vision files, writes index.html.
+"""Zoom in (Systems view), round 2: reads ONLY ../facts.json (plus ../../cc.css for looks), writes index.html.
 
-WHY it reuses ../../vision_tab.py's loader: that is how the current page already merges the skeleton
-with the three evidence files (A, B, C), so statuses here are exactly the ones the page shows.
-Nothing is invented: a box's colour is the status in the evidence file; a line is a needs/shares entry.
+WHY: round 1 merged the evidence files itself; round 2 shares one fact sheet across all four views so
+statuses and connections agree everywhere. Nothing is invented: colour = node status, link = needs/shares.
 """
-import json, os, sys, html
+import json, os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
-DESIGN = os.path.abspath(os.path.join(HERE, '..', '..'))
-sys.path.insert(0, DESIGN)
-import vision_tab as vt
+VO = os.path.abspath(os.path.join(HERE, '..'))
+FACTS = os.path.join(VO, 'facts.json')
+if not os.path.exists(FACTS):
+    subprocess.check_call([sys.executable, os.path.join(VO, 'facts.py')])
+facts = json.load(open(FACTS))
+nodes = facts['nodes']
 
-sk, ev, _ = vt.load(DESIGN)
-nodes = vt.flatten(sk)
-vt.merge(nodes, ev)
-
-# ---- the tree the page draws: root > pillars > capabilities > features (leaf = a feature) ----
 data = {'root': dict(id='root', title='The whole vision', kind='root', kids=[], parent=None)}
 for nid, n in nodes.items():
+    st = n['status'] if n['status'] in ('done', 'building', 'planned', 'vision') else None
     data[nid] = dict(id=nid, title=n['title'], kind=n['kind'], parent=n.get('parent') or 'root',
-                     pillar=n['pillar'], kids=[], quote=n.get('quote'), status=(n['status'] if n['status'] != 'unchecked' else None),
-                     since=n.get('since'), why=n.get('why'),
+                     pillar=n['pillar'], kids=[], status=st, since=n.get('since'), why=n.get('why'),
                      evidence=[dict(kind=e.get('kind'), ref=e.get('ref'), date=e.get('date'), note=e.get('note')) for e in n.get('evidence', [])],
                      needs=[dict(id=x['id'], because=x.get('because', '')) for x in n['needs']],
-                     shares=[dict(id=x['id'], because=x.get('because', '')) for x in n['shares']])
+                     shares=[dict(id=x['id'], because=x.get('because', '')) for x in n['shares']],
+                     needed_by=[dict(id=x['id'], because=x.get('because', '')) for x in n.get('needed_by', [])])
 for nid, n in nodes.items():
     data[n.get('parent') or 'root']['kids'].append(nid)
-# only the keys that are needed in the browser
-for d in data.values():
-    d['kids'] = [k for k in d['kids'] if k in data]
-
-# sanity: every feature has a real status (never invented)
 bad = [n['id'] for n in nodes.values() if n['kind'] == 'feature' and n['status'] not in ('done', 'building', 'planned', 'vision')]
 assert not bad, bad
 
-css = open(os.path.join(DESIGN, 'cc.css')).read()
+css = open(os.path.join(VO, '..', 'cc.css')).read()
 tpl = open(os.path.join(HERE, 'template.html')).read()
 out = tpl.replace('/*CC_CSS*/', css).replace('/*DATA*/', json.dumps(data, ensure_ascii=False).replace('</', '<\\/'))
 open(os.path.join(HERE, 'index.html'), 'w').write(out)

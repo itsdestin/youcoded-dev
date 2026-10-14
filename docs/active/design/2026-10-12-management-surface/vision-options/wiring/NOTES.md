@@ -1,13 +1,15 @@
-# How it's wired
+# How it works (round 2)
 
-**The idea.** One picture of the app's real parts (13, plus 3 faint ones for things not built yet), joined by connections that each carry a plain sentence and a status. Three "Follow" buttons walk one path step by step: a message, a marketplace install, a sync.
+**The idea.** One picture of the app's real parts, joined by connections that each carry a plain sentence and a status. Three "Follow" buttons walk one path step by step: a message, a marketplace install, a sync.
 
-**(a) Systems: complete / in progress / planned.** Green stripe = exists (from MAP.md and checked files). The dashed boxes (Mesh, Scheduled agents, Saved agent recipes) take their status from `vision-evidence-C.json`. Clicking Sync or Phone lists its vision items with recorded status.
+**Round 2 changes.**
+- Reads only `../facts.json` (parts, connections, traces and merged statuses); the hand-written copies were deleted from `build.py`.
+- Light theme like the other views.
+- Diagram narrowed (boxes 144 wide, 160 apart, 944 total) and sideways scrolling switched off, so no horizontal scrollbar at 1440 wide, framed or not.
+- "What is not finished" is five one-line rows ("Mesh needs Scheduled agents · planned"); the reason shows on hover and in the connection's own detail.
+- Part detail is: name, status, one sentence, at most three facts (waiting on / holds up / items still to do / working links), everything else (rest of the description, inside list, connections, big-picture items, code locations) behind a closed More.
+- Trace steps show one short sentence; a long step keeps its remainder under More. The repeated "All steps" list became numbered dots.
+- Opens on `#focus=part:<id>` or any node id (the part whose vision list holds it, else its system's part). Selecting a part sends `{bp:'focus', id:'part:<id>', title}`; clicking empty space sends `id:null`.
+- Own title band hidden when framed; legend kept.
 
-**(b) Connections planned / in progress.** Dashed grey = planned, solid dark = being built. The side panel opens on "What is not finished", each with its reason read from `needs` and `shares`, not hand-written. Only five such connections exist in the data.
-
-**(c) How the app works inside.** 17 working connections, from MAP.md and real code. Hover gives a plain sentence; clicking shows the file behind it, labelled "Where it lives in the code".
-
-**Levels / units.** One level: a "part" is a MAP.md subsystem rolled up with neighbours (all sign-in and model code is "Cloud AI companies"). What is inside a part is a plain list in the side panel. This keeps the first screen near a dozen boxes.
-
-**Weakest point.** It shows the inside well but the vision thinly: only 3 of 16 boxes come from the vision, most vision items have no recorded status so they do not appear, and nothing shows a part's size or importance. Some straight lines cross (Claude Code to Saved conversations). The layout is hand-placed, so a new part means moving boxes. Android's unfinished move onto the shared core is not drawn as its own connection.
+**Weakest point.** Only 3 of 16 boxes come from the vision. Some straight lines still cross. Layout is hand-placed. Android's unfinished move to the shared core is not drawn. Selecting a line does not report a focus.

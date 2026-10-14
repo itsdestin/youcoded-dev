@@ -1,15 +1,18 @@
-# Zoom in
+# Zoom in (labelled "Systems")
 
-**The idea.** One canvas of nested boxes: ten big boxes (major systems), each as large as what it holds and filled with one square per feature, coloured by status (green exists, dark being built, grey planned, hatched idea). Click a box to zoom into its groups, again for one feature; breadcrumb, "Zoom out" or Esc goes back.
+**The idea.** One canvas of nested boxes: ten big boxes (major systems), each sized by how much it holds and filled with one square per feature, coloured by status. Click a system to zoom in, again for one feature; breadcrumb, "Zoom out" or Esc goes back.
 
-**(a) Status of systems.** The first screen is the answer: how much green, dark, grey and hatched area each box has. Hover any square for its title, status and reason.
+**Round 2 changes.**
+- Reads only `../facts.json` (no evidence loader). Statuses and links come from it.
+- Switcher: opens on `#focus=<id>` (a system or any node; unknown ids such as `part:` open normally), reports each selection with `postMessage({bp:'focus',...})`, `null` on zoom-out. Own title band is dropped when framed; legend stays.
+- After zooming: the "rest of the app" mini boxes, the connecting lines and the long "What it connects to" list are gone. A short "Connects to" column lists other systems with one word each (exists, in progress, planned, partly planned), five shown, rest behind "More". Hover gives the reason.
+- Header is one short line ("Mostly still ahead. 4 of 13 features exist.").
+- Zoomed features are neutral tiles with a thin status stripe, the name, and a dot plus status word, instead of walls of colour. The first view keeps coloured squares.
+- Feature detail: name, status, one-to-two-line why, up to three facts (Waiting on / Holds up / Shares work with), everything else behind "More".
+- Animation: the glide was replaced by a 150 ms fade (verified: canvas opacity 0 mid-swap, layout correct after).
 
-**(b) Connections.** Only for the box in focus. The other nine systems shrink into a right-hand column; lines run to those it needs or shares work with. Green solid = both ends exist, dark = in progress, grey dashed = planned. Thickness = how many links. A plain list below ("X needs Y", with the reason) is grouped the same way; names are clickable.
+**Answers.** (a) first view colour areas; (b) connections shown only for the zoomed system, as a list; (c) the nesting plus needs/shares.
 
-**(c) Inside the app.** Only the nesting plus the needs/shares entries. Nothing from MAP.md or code was added. Statuses come from evidence files A, B and C, merged with the current page's own loader.
+**Weakest point.** Size means "how many features", not effort; tiles in small groups still have empty area. Connections are only a list now, so a link's direction is only in the hover text.
 
-**Levels.** System, group, feature, in Destin's own tree. Box size = feature count; a feature is the smallest thing with its own status, so area needs no typed-in number.
-
-**Weakest point.** Every feature counts equally, so a one-line idea takes the same area as a big shipped feature: size means "how many things", not "how much work". The overview shows no connections by design, so dependencies are seen one box at a time, and a missing line does not prove independence. The glide animation was not watched in headless shots; check by hand. `index.html#sync` opens a zoomed view directly.
-
-Files: `build.py` + `template.html` make `index.html`; `shot.png`, `shot-detail.png`.
+**Missing facts.** None needed; `label`/`catch` fields were unused.

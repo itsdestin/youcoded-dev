@@ -12,6 +12,7 @@
   --l-exists:var(--status-ok);--l-building:var(--fg-2);--l-planned:var(--fg-faint)}
 [hidden]{display:none!important}
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--panel)}
+.framed .band{height:32px;justify-content:flex-end;padding-right:16px}.framed .band .ttl{display:none}.framed .legend{position:static}
 .band{position:relative;height:40px;flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--fg)}
 .screen-body{flex:1;min-height:0;display:flex;padding:0 10px 10px}
 .pane{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--canvas);border-radius:var(--radius-xl);overflow:hidden}
@@ -31,7 +32,8 @@
 
 /* the boxes: every one is absolutely placed; JS moves them and CSS glides them */
 .nd{position:absolute;box-sizing:border-box;overflow:hidden;opacity:0;pointer-events:none;border-radius:4px}
-.anim .nd{transition:left 460ms var(--ease),top 460ms var(--ease),width 460ms var(--ease),height 460ms var(--ease),opacity 320ms var(--ease),background-color 200ms}
+/* WHY no glide: 200 boxes sliding at once cannot be verified headlessly and risks jank; a 150ms fade between views is safe */
+#canvas{transition:opacity 150ms var(--ease)}#canvas.fading{opacity:0}
 .nd.on{opacity:1;pointer-events:auto}
 .nd.dim{opacity:.5}
 .nd.pillar,.nd.capability{border-radius:var(--radius-lg)}
@@ -39,15 +41,12 @@
 .nd.r1.pillar{border-radius:var(--radius-xl)}
 .nd.rx{background:transparent;border:1px solid var(--edge-dim)}
 .nd.r0{background:transparent;border:0}
-.nd.mini{background:var(--panel);border:1px solid var(--edge-card);border-radius:var(--radius-lg)}
 .nd.click{cursor:pointer}
 .nd.click:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .nd.hot{border-color:var(--edge-strong);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
-.nd.hot.mini{box-shadow:0 0 0 2px var(--accent)}
 .hd{position:absolute;left:0;right:0;top:0;padding:7px 10px 0;font-weight:500;color:var(--fg);pointer-events:none;overflow:hidden}
 .hd .ti{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:13px;line-height:16px}
 .nd.capability .hd{padding:5px 8px 0}.nd.capability .hd .ti{-webkit-line-clamp:1;font-size:12px;line-height:15px}
-.nd.mini .hd{padding:2px 7px 0}.nd.mini .hd .ti{-webkit-line-clamp:1;font-size:11px;line-height:13px}
 .nd.leaf{border:0;border-radius:4px}
 .nd.leaf.s-done{background:var(--c-done);color:var(--fg)}
 .nd.leaf.s-building{background:var(--c-building);color:var(--on-accent)}
@@ -62,50 +61,47 @@
 .lb .ti{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;font-size:12px;line-height:15px;font-weight:500}
 .lb .st{font-size:11px;line-height:14px;opacity:.78;margin-top:2px}
 .nd.leaf.big .lb{padding:12px 13px}.nd.leaf.big .lb .ti{font-size:14px;line-height:18px;-webkit-line-clamp:5}
-.nd.hasl::after{content:'';position:absolute;right:6px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 2px color-mix(in srgb,var(--canvas) 70%,transparent)}
-.nd.leaf.s-building.hasl::after{background:var(--on-accent)}
-.nd.lk-exists{box-shadow:inset 0 0 0 2px var(--l-exists),0 0 0 1px var(--l-exists)}
-.nd.lk-building{box-shadow:inset 0 0 0 2px var(--fg),0 0 0 1px var(--fg)}
-.nd.lk-planned{box-shadow:inset 0 0 0 2px var(--fg-2),0 0 0 1px var(--canvas)}
-.nd.mini.far{opacity:.55}
-.nd.mini.far.on:hover{opacity:1}
 .nd.leaf.isfocus.s-vision{box-shadow:inset 0 0 0 2px var(--fg-faint)}
 
-/* the connection lines */
-#lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;opacity:0;transition:opacity 260ms var(--ease)}
-#lines.show{opacity:1}
-#lines path{fill:none;stroke-linecap:round}
-#lines path.exists{stroke:var(--l-exists)}#lines path.building{stroke:var(--l-building)}#lines path.planned{stroke:var(--l-planned);stroke-dasharray:6 5}
-#lines circle{stroke:none}#lines circle.exists{fill:var(--l-exists)}#lines circle.building{fill:var(--l-building)}#lines circle.planned{fill:var(--l-planned)}
-#lines .off{opacity:.12}
-#lines .ls{transition:opacity 160ms}
+/* zoomed feature tiles: calm neutral tile, a thin status stripe, name and status in words */
+.zoomed .nd.leaf{background:var(--panel);border:1px solid var(--edge-card);border-radius:var(--radius-lg);color:var(--fg)}
+.zoomed .nd.leaf::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sc)}
+.zoomed .nd.leaf.s-vision{border-style:dashed;background:var(--well)}
+.zoomed .nd.leaf.s-vision::before{background:repeating-linear-gradient(45deg,var(--fg-faint) 0 2px,transparent 2px 5px)}
+.zoomed .nd.leaf.s-planned{--sc:var(--fg-faint)}
+.zoomed .nd.leaf .lb{padding:9px 10px 8px 14px}
+.zoomed .nd.leaf .lb .ti{font-size:13px;line-height:17px;-webkit-line-clamp:3}
+.zoomed .nd.leaf .lb .st{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:12px;opacity:1;color:var(--fg-2)}
+.zoomed .nd.leaf .lb .st i{width:8px;height:8px;border-radius:50%;background:var(--sc);flex:none}
+.zoomed .nd.leaf.s-vision .lb .st i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--fg-faint)}
+.zoomed .nd.leaf.s-planned .lb .st i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--fg-faint)}
+.zoomed .nd.leaf.on:hover{filter:none;outline:2px solid var(--fg);outline-offset:-2px}
+.zoomed .nd.leaf.isfocus{box-shadow:inset 0 0 0 2px var(--sc)}
 
+/* right column: a short, calm list of the other systems this one connects to */
 #railhd{position:absolute;font-size:12px;font-weight:500;color:var(--fg-muted)}
-#conns{position:absolute;overflow-y:auto;padding:0 2px 8px 0;font-size:12px}
-#conns .eyebrow{margin:0 0 6px}
-#conns details{border:1px solid var(--edge-card);border-radius:var(--radius-lg);background:var(--panel);margin:0 0 6px}
-#conns summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:var(--radius-lg);color:var(--fg)}
-#conns summary::-webkit-details-marker{display:none}
-#conns summary:hover{background:var(--inset)}
-#conns summary .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-#conns summary .cnt{margin:0}
-.lsw{width:30px;height:0;border-top:3px solid var(--l-exists);flex:none;border-radius:2px}
-.lsw.building{border-color:var(--l-building)}.lsw.planned{border-top-style:dashed;border-color:var(--l-planned)}
-#conns .it{padding:6px 10px 8px 10px;border-top:1px solid var(--edge-dim);color:var(--fg-2);line-height:1.4}
-#conns .it b{font-weight:600;color:var(--fg);cursor:pointer}
-#conns .it b:hover{text-decoration:underline}
-#conns .it .bc{color:var(--fg-muted);display:block;margin-top:2px}
-#conns .none{padding:8px 4px;color:var(--fg-muted)}
-.lstate{font-size:11px;color:var(--fg-muted)}
-
-#card{position:absolute;overflow:auto;padding:22px 26px;border-radius:var(--radius-xl);background:var(--panel);border:1px solid var(--edge);box-shadow:var(--layer-shadow);opacity:0;pointer-events:none;transition:opacity 260ms var(--ease) 260ms}
+#conns{position:absolute;overflow-y:auto;font-size:13px}
+#conns .row{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;border:1px solid var(--edge-card);border-radius:var(--radius-lg);background:var(--panel);margin:0 0 6px;padding:8px 10px;color:var(--fg);cursor:pointer;text-align:left;font:inherit}
+#conns .row:hover{background:var(--inset)}
+#conns .row:focus-visible{outline:2px solid var(--accent)}
+#conns .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+#conns .stw{font-size:12px;color:var(--fg-muted);flex:none}
+#conns .more{border:0;background:transparent;color:var(--fg-2);cursor:pointer;padding:4px 2px;font:inherit;font-size:12px;text-decoration:underline}
+#conns .none{padding:2px 0;color:var(--fg-muted)}
+#card{position:absolute;overflow:auto;padding:22px 26px;border-radius:var(--radius-xl);background:var(--panel);border:1px solid var(--edge);box-shadow:var(--layer-shadow);opacity:0;pointer-events:none;transition:opacity 150ms var(--ease)}
 #card.on{opacity:1;pointer-events:auto}
 #card h2{margin:6px 0 8px;font-size:18px;font-weight:600;color:var(--fg)}
 #card .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 10px 2px 8px;border-radius:9999px;background:var(--inset);border:1px solid var(--edge)}
-#card .why{font-size:14px;color:var(--fg);margin:0 0 14px}
-#card .ev{margin:0;padding:0;list-style:none}
-#card .ev li{padding:7px 0;border-top:1px solid var(--edge-dim);font-size:12px;color:var(--fg-2)}
-#card .ev b{color:var(--fg);font-weight:600}
+#card .why{font-size:14px;color:var(--fg);margin:14px 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#card .facts{margin:0 0 12px;padding:0;list-style:none}
+#card .facts li{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--edge-dim);font-size:13px;color:var(--fg-2)}
+#card .facts li span{flex:none;width:112px;color:var(--fg-muted)}
+#card .facts li div{min-width:0}
+#card b[data-go]{cursor:pointer;color:var(--fg);font-weight:500}#card b[data-go]:hover{text-decoration:underline}
+#card details{margin-top:6px}#card summary{cursor:pointer;font-size:13px;color:var(--fg-2)}
+#card .mt{margin:8px 0 0;padding:0;list-style:none}
+#card .mt li{padding:7px 0;border-top:1px solid var(--edge-dim);font-size:12px;color:var(--fg-2);line-height:1.4}
+#card .mt b{color:var(--fg);font-weight:600}
 
 #hint{position:absolute;left:0;bottom:0;font-size:12px;color:var(--fg-muted);pointer-events:none}
 #tip{position:fixed;z-index:50;max-width:340px;padding:8px 10px;border-radius:var(--radius-lg);background:var(--panel);color:var(--fg);border:1px solid var(--edge);box-shadow:var(--layer-shadow);font-size:12px;line-height:1.4;pointer-events:none;opacity:0;transition:opacity 120ms}
@@ -116,7 +112,7 @@
 </head>
 <body>
 <div class="screen">
-  <div class="band"><span>Big picture</span>      <div class="legend" id="legend">
+  <div class="band"><span class="ttl">Big picture</span>      <div class="legend" id="legend">
   <span class="leg" data-tip="Done and in the app today."><i class="sw" style="background:var(--c-done)"></i>exists</span>
   <span class="leg" data-tip="Work has started: an unmerged branch or an active plan."><i class="sw" style="background:var(--c-building)"></i>being built</span>
   <span class="leg" data-tip="Written on the roadmap, not started."><i class="sw" style="background:var(--c-planned)"></i>planned</span>
@@ -129,7 +125,7 @@
       <button class="btn zbtn" id="up" data-tip="Zoom out one step. The Esc key does the same.">Zoom out</button>
     </div>
     <div class="caption" id="caption"></div>
-    <div id="canvas"><svg id="lines"></svg><div id="railhd"></div><div id="conns"></div><div id="card"></div><div id="hint"></div></div>
+    <div id="canvas"><div id="railhd"></div><div id="conns"></div><div id="card"></div><div id="hint"></div></div>
   </div></div>
 </div>
 <div id="tip"></div>
@@ -191,11 +187,11 @@ function lay(id,r,rel,mode,out){
 const els={};
 Object.values(D).forEach(n=>{ if(n.id==='root')return;
   const e=document.createElement('div'); e.className='nd '+n.kind; e.dataset.id=n.id; e.setAttribute('role','button');
-  if(!n.kids.length){ e.classList.add('leaf','s-'+n.status); e.innerHTML='<div class="lb"><div class="ti">'+esc(n.title)+'</div><div class="st">'+SW[n.status]+'</div></div>'; }
+  if(!n.kids.length){ e.classList.add('leaf','s-'+n.status); e.innerHTML='<div class="lb"><div class="ti">'+esc(n.title)+'</div><div class="st"><i></i>'+SW[n.status]+'</div></div>'; }
   else e.innerHTML='<div class="hd"><div class="ti">'+esc(n.title)+'</div></div>';
   els[n.id]=e; });
 // parents first so smaller boxes paint on top
-Object.values(D).sort((a,b)=>ancestors(a.id).length-ancestors(b.id).length).forEach(n=>{ if(els[n.id]) canvas.insertBefore(els[n.id],$('#lines')); });
+Object.values(D).sort((a,b)=>ancestors(a.id).length-ancestors(b.id).length).forEach(n=>{ if(els[n.id]) canvas.insertBefore(els[n.id],$('#railhd')); });
 
 /* ---- state ---- */
 let focus='root', links=[], groups=[], cur={};
@@ -216,101 +212,72 @@ function computeLinks(){
 }
 
 let size={w:0,h:0};
-function compute(animate){
+function compute(){
   size={w:canvas.clientWidth,h:canvas.clientHeight}; const Cw=size.w,Ch=size.h;
   computeLinks();
+  canvas.classList.toggle('zoomed',focus!=='root');
   const out={}; Object.keys(meta).forEach(k=>delete meta[k]);
-  let railX=Cw, railW=0, miniIds=[], boxes={};
+  let railX=Cw, railW=0;
   if(focus==='root'){ lay('root',{x:0,y:0,w:Cw,h:Ch},0,'main',out); }
-  else {
-    railW=Math.min(300,Math.round(Cw*.24)); const gap=Cw>1000?100:50; railX=Cw-railW; const mainW=Cw-railW-gap;
-    lay(focus,{x:0,y:0,w:mainW,h:Ch},0,'main',out);
-    miniIds=D.root.kids.filter(p=>p!==D[focus].pillar);
-    const top=24, mh=Math.min(Math.round(Ch*.58),480), n=miniIds.length, g=4, minH=32;
-    const free=Math.max(0,mh-top-n*minH-(n-1)*g), W=miniIds.reduce((s,i)=>s+weight(i),0);
-    let y=top; miniIds.forEach(p=>{ const h=minH+free*weight(p)/W; const r={x:railX,y:y,w:railW,h:h}; boxes[p]=r; lay(p,r,0,'mini',out); y+=h+g; });
-    cur.railBottom=y;
-  }
-  cur.out=out; cur.main=out[focus==='root'?'root':focus]; cur.railX=railX; cur.railW=railW; cur.boxes=boxes;
-  // apply to the DOM
-  const inMain=new Set(focus==='root'?[]:[]);
+  else { railW=Math.min(260,Math.round(Cw*.2)); railX=Cw-railW; lay(focus,{x:0,y:0,w:Cw-railW-24,h:Ch},0,'main',out); }
+  cur.out=out; cur.main=out[focus==='root'?'root':focus]; cur.railX=railX; cur.railW=railW;
   Object.entries(els).forEach(([id,e])=>{
-    const r=out[id], m=meta[id]; e.classList.remove('hot','hasl','lk-exists','lk-building','lk-planned','isfocus','big','r0','r1','rx','mini','click','far');
+    const r=out[id], m=meta[id]; e.classList.remove('hot','isfocus','big','r0','r1','rx','click');
     if(!r){ e.classList.remove('on'); e.tabIndex=-1; return; }
     e.style.left=r.x+'px'; e.style.top=r.y+'px'; e.style.width=r.w+'px'; e.style.height=r.h+'px';
-    e.classList.add('on'); e.classList.remove('dim');
+    e.classList.add('on');
     const n=D[id], leaf=!n.kids.length;
-    if(m.mode==='mini'){ e.classList.add('mini'); if(leaf) e.classList.remove('mini'); }
-    else e.classList.add(m.rel===0?'r0':m.rel===1?'r1':'rx');
-    if(leaf){ e.classList.remove('r0','r1','rx');
-      const lb=e.querySelector('.lb'); let show=false;
-      if(m.mode==='main'){ if(id===focus){e.classList.add('isfocus');show=false;} else if(m.rel===1){show=true; e.classList.add('big');} else show=(r.w>=118&&r.h>=50); }
+    if(!leaf) e.classList.add(m.rel===0?'r0':m.rel===1?'r1':'rx');
+    if(leaf){ const lb=e.querySelector('.lb'); let show=false;
+      if(id===focus){e.classList.add('isfocus');}
+      else if(focus!=='root'){ show=r.w>=96&&r.h>=44; }  // zoomed: every tile that can hold a name shows it
+      else if(m.rel===1){show=true; e.classList.add('big');} else show=(r.w>=118&&r.h>=50);
       lb.style.display=show?'':'none'; }
-    else { const hd=e.querySelector('.hd'); let show=(m.mode==='main'&&m.rel===1)||(m.mode==='mini'&&m.rel===0&&r.h>=30); hd.style.display=show?'':'none'; }
-    const clickable=(m.mode==='main'&&m.rel===1)||(m.mode==='mini'&&m.rel===0);
-    if(clickable){ e.classList.add('click'); e.tabIndex=0; } else e.tabIndex=-1;
-    if(m.mode==='mini'&&m.rel===0) e.classList.add('far');
+    else { const hd=e.querySelector('.hd'); hd.style.display=(m.rel===1)?'':'none'; }
+    if(m.rel===1&&id!==focus){ e.classList.add('click'); e.tabIndex=0; } else e.tabIndex=-1;
   });
-  // dots on features that have a connection, rings on the far-end features
-  const ins=new Set(links.map(l=>l.inside)), outs=links.filter(l=>!l.own);
-  if(focus!=='root'&&D[focus].kids.length) leaves(focus).forEach(l=>{ if([...ins].some(i=>subtree(i).has(l)) && out[l]) els[l].classList.add('hasl'); });
-  outs.forEach(l=>leaves(l.outside).forEach(x=>{ const e=els[x]; if(e&&out[x]){ e.classList.remove('lk-exists','lk-building','lk-planned'); e.classList.add('lk-'+l.state); } }));
-  if(focus!=='root'&&!D[focus].kids.length) els[focus].classList.remove('hasl');
-  buildRail(); drawLines(); card(); crumbs(); caption(animate);
+  buildRail(); card(); crumbs(); caption();
 }
 
-/* ---- the right-hand side: connections for the box in focus ---- */
+/* ---- right column: other systems this one connects to, one status word each ---- */
+const LWORD={exists:'exists',building:'in progress',planned:'planned',mixed:'partly planned'};
 function buildRail(){
   const rh=$('#railhd'), cn=$('#conns');
-  if(focus==='root'){ rh.style.display='none'; cn.style.display='none'; groups=[]; return; }
+  if(focus==='root'){ rh.style.display='none'; cn.style.display='none'; return; }
   rh.style.display=''; cn.style.display='';
-  rh.style.left=cur.railX+'px'; rh.style.top='0px'; rh.textContent='The rest of the app'; rh.dataset.tip='Every other major system, shrunk. Click one to zoom there. Bright squares are things connected to what you are looking at.';
-  const top=(cur.railBottom||300)+12; cn.style.left=cur.railX+'px'; cn.style.width=cur.railW+'px'; cn.style.top=top+'px'; cn.style.height=Math.max(60,size.h-top)+'px';
-  // group by far-end system and state
-  const map={}; links.forEach(l=>{ const k=(l.own?'own':l.tp)+'|'+l.state; (map[k]=map[k]||{tp:l.own?'own':l.tp,state:l.state,items:[]}).items.push(l); });
-  const rank=p=>p==='own'?99:cur.order.indexOf(p), srank={exists:0,building:1,planned:2};
-  groups=Object.values(map).sort((a,b)=>(a.tp==='own')-(b.tp==='own')||rank(a.tp)-rank(b.tp)||srank[a.state]-srank[b.state]);
-  let h='<div class="eyebrow">What it connects to <span class="cnt">'+links.length+'</span></div>';
-  if(!links.length) h+='<div class="none">Nothing here is recorded as depending on, or sharing work with, anything else.</div>';
-  const total=links.length;
-  groups.forEach((g,gi)=>{
-    const nm=g.tp==='own'?'Elsewhere in this same system':D[g.tp].title;
-    const tipw={exists:'Both ends exist today, so this connection is real.',building:'At least one end is being built; none is only planned.',planned:'At least one end is only planned or an idea, so this connection does not exist yet.'}[g.state];
-    h+='<details data-g="'+gi+'"'+((groups.length<=3||total<=6)?' open':'')+'><summary data-tip="'+esc(tipw)+' Click to list them."><i class="lsw '+g.state+'"></i><span class="nm">'+esc(nm)+'</span><span class="lstate">'+({exists:'exists',building:'in progress',planned:'planned'}[g.state])+'</span><span class="cnt">'+g.items.length+'</span></summary>';
-    g.items.forEach(l=>{ const I='<b data-go="'+l.inside+'">'+esc(D[l.inside].title)+'</b>', O='<b data-go="'+l.outside+'">'+esc(D[l.outside].title)+'</b>';
-      const s=l.kind==='shares'?I+' shares work with '+O:(l.dir==='out'?I+' needs '+O:O+' needs '+I);
-      h+='<div class="it">'+s+(l.because?'<span class="bc">'+esc(l.because)+'</span>':'')+'</div>'; });
-    h+='</details>'; });
+  rh.style.left=cur.railX+'px'; rh.style.top='0px'; rh.textContent='Connects to';
+  rh.dataset.tip='The other major systems this one depends on or shares work with. Click one to go there.';
+  cn.style.left=cur.railX+'px'; cn.style.width=cur.railW+'px'; cn.style.top='24px'; cn.style.height=Math.max(60,size.h-24)+'px';
+  const map={}; links.forEach(l=>{ if(l.own)return; (map[l.tp]=map[l.tp]||{tp:l.tp,items:[]}).items.push(l); });
+  const rows=Object.values(map).map(g=>{ const st=new Set(g.items.map(l=>l.state));
+    g.word=st.size===1?[...st][0]:(st.has('planned')&&st.has('exists')?'mixed':(st.has('planned')?'planned':'building')); return g; })
+    .sort((a,b)=>b.items.length-a.items.length||D.root.kids.indexOf(a.tp)-D.root.kids.indexOf(b.tp));
+  const MAXV=5; let h='';
+  if(!rows.length) h='<div class="none">Nothing outside this system is recorded.</div>';
+  rows.forEach((g,i)=>{ const l=g.items[0];
+    const tip=(l.kind==='shares'?D[l.inside].title+' shares work with '+D[l.outside].title:(l.dir==='out'?D[l.inside].title+' needs '+D[l.outside].title:D[l.outside].title+' needs '+D[l.inside].title))+(l.because?'. '+l.because:'')+(g.items.length>1?' (and '+(g.items.length-1)+' more link'+(g.items.length>2?'s':'')+')':'');
+    h+='<button class="row'+(i>=MAXV?' extra':'')+'"'+(i>=MAXV?' hidden':'')+' data-go="'+g.tp+'" data-tip="'+esc(tip)+'"><span class="nm">'+esc(D[g.tp].title)+'</span><span class="stw">'+LWORD[g.word]+'</span></button>'; });
+  if(rows.length>MAXV) h+='<button class="more" data-more="1" data-tip="Show the other connected systems.">More ('+(rows.length-MAXV)+')</button>';
   cn.innerHTML=h;
 }
-
-function drawLines(){
-  const svg=$('#lines'); svg.classList.remove('show'); svg.innerHTML=''; svg.dataset.n='0';
-  clearTimeout(drawLines.t);
-  if(focus==='root'||!groups.length) return;
-  const real=groups.filter(g=>g.tp!=='own'); if(!real.length) return;
-  const Ch=size.h, K=real.length, step=K>1?Math.min(40,(Ch-130)/(K-1)):0, y0=Math.max(50,(Ch-step*(K-1))/2-40);
-  const sx=cur.main.x+cur.main.w, ex=cur.railX;
-  let h='';
-  real.forEach((g,i)=>{ const b=cur.boxes[g.tp]; const idx=real.filter(x=>x.tp===g.tp); const j=idx.indexOf(g);
-    const ey=b.y+b.h*(idx.length===1?.5:(.28+.44*j/(idx.length-1))), sy=y0+i*step;
-    const mx=(sx+ex)/2, w=1.6+Math.min(g.items.length,10)*.55;
-    h+='<g class="ls" data-g="'+groups.indexOf(g)+'"><path class="'+g.state+'" stroke-width="'+w.toFixed(1)+'" d="M'+sx+' '+sy+' C'+mx+' '+sy+' '+mx+' '+ey+' '+ex+' '+ey+'"/><circle class="'+g.state+'" cx="'+sx+'" cy="'+sy+'" r="'+(w/2+2).toFixed(1)+'"/><circle class="'+g.state+'" cx="'+ex+'" cy="'+ey+'" r="'+(w/2+2).toFixed(1)+'"/></g>'; });
-  svg.innerHTML=h;
-  drawLines.t=setTimeout(()=>svg.classList.add('show'),$('#canvas').classList.contains('anim')?480:0);
-}
+document.addEventListener('click',e=>{ const m=e.target.closest('[data-more]'); if(!m)return; document.querySelectorAll('#conns .extra').forEach(x=>x.hidden=false); m.remove(); });
 
 /* ---- the card for a single feature ---- */
+function names(list){ const t=list.map(x=>'<b data-go="'+x.id+'">'+esc(D[x.id].title)+'</b>'); return t.slice(0,2).join(', ')+(t.length>2?' and '+(t.length-2)+' more':''); }
 function card(){
   const c=$('#card'); const n=D[focus];
   if(focus==='root'||n.kids.length){ c.classList.remove('on'); return; }
-  const r=cur.main, w=Math.min(560,r.w-60), h=Math.min(r.h-60,440);
+  const r=cur.main, w=Math.min(640,r.w-60), h=Math.min(r.h-60,460);
   c.style.left=(r.x+(r.w-w)/2)+'px'; c.style.top=(r.y+(r.h-h)/2)+'px'; c.style.width=w+'px'; c.style.maxHeight=h+'px';
   const path=ancestors(focus).slice(0,-1).map(a=>D[a].title).join('  ›  ');
-  let ev=(n.evidence||[]).map(e=>'<li data-tip="Where this is recorded: '+esc(e.ref||'')+'"><b>'+esc(KIND[e.kind]||'Record')+(e.date?' · '+nice(e.date):'')+'</b><br>'+esc(e.note||'')+'</li>').join('');
+  const fact=(k,list)=>list.length?'<li><span>'+k+'</span><div>'+names(list)+'</div></li>':'';
+  const facts=fact('Waiting on',n.needs)+fact('Holds up',n.needed_by)+fact('Shares work with',n.shares);
+  const all=(t,list)=>list.length?'<li><b>'+t+'</b><br>'+list.map(x=>esc(D[x.id].title)+(x.because?' — '+esc(x.because):'')).join('<br>')+'</li>':'';
+  const ev=(n.evidence||[]).map(e=>'<li data-tip="Where this is recorded: '+esc(e.ref||'')+'"><b>'+esc(KIND[e.kind]||'Record')+(e.date?' · '+nice(e.date):'')+'</b><br>'+esc(e.note||'')+'</li>').join('');
   c.innerHTML='<div class="t-xs muted">'+esc(path)+'</div><h2>'+esc(n.title)+'</h2><span class="pill"><i class="sw" style="width:10px;height:10px;border-radius:3px;background:'+({done:'var(--c-done)',building:'var(--c-building)',planned:'var(--c-planned)',vision:'repeating-linear-gradient(45deg,var(--fg-faint) 0 1.5px,transparent 1.5px 4px)'}[n.status])+'"></i>'+SW[n.status]+(n.since?' · since '+nice(n.since):'')+'</span>'
-    +'<p class="why" style="margin-top:14px">'+(n.why?esc(n.why):'<span class="muted">Nothing written about this one yet.</span>')+'</p>'
-    +(ev?'<div class="eyebrow" style="margin-bottom:4px">What backs this up</div><ul class="ev">'+ev+'</ul>':'');
+    +'<p class="why">'+(n.why?esc(n.why):'<span class="muted">Nothing written about this one yet.</span>')+'</p>'
+    +(facts?'<ul class="facts">'+facts+'</ul>':'')
+    +'<details><summary>More</summary><ul class="mt">'+(n.why?'<li>'+esc(n.why)+'</li>':'')+all('Waiting on',n.needs)+all('Holds up',n.needed_by)+all('Shares work with',n.shares)+ev+'</ul></details>';
   c.classList.add('on');
 }
 
@@ -322,19 +289,21 @@ function crumbs(){
 }
 function caption(){
   const c=$('#caption'), n=D[focus]; let t;
-  if(focus==='root') t='<b>Each big box is a major system.</b> The bigger the box, the more it holds. Each small square is one feature, coloured by where it stands today. <b>Click a system to zoom in.</b>';
-  else if(n.kind==='pillar') t='<b>'+esc(verdict(focus).replace(/^./,x=>x.toUpperCase()))+'.</b> '+esc(countsWords(focus))+'. '+(n.quote?'<span class="muted">Your words: “'+esc(n.quote)+'”</span>':'');
-  else if(n.kind==='capability') t='<b>'+esc(verdict(focus).replace(/^./,x=>x.toUpperCase()))+'.</b> '+esc(countsWords(focus))+'. Click a feature for what backs it up. Lines on the right show what this connects to.';
-  else t='<b>'+SW[n.status].replace(/^./,x=>x.toUpperCase())+'.</b> Lines on the right show what this connects to. Press Esc to zoom out.';
+  if(focus==='root') t='<b>Each big box is a major system.</b> Each small square is one feature, coloured by where it stands. Click a system to zoom in.';
+  else if(n.kids.length){ const k=counts(focus); t='<b>'+esc(verdict(focus).replace(/^./,x=>x.toUpperCase()))+'.</b> '+k.done+' of '+weight(focus)+' features exist.'; }
+  else t='<b>'+SW[n.status].replace(/^./,x=>x.toUpperCase())+'.</b> Press Esc to zoom out.';
   c.innerHTML=t; c.dataset.tip=c.textContent;
 }
 
 /* ---- moving around ---- */
-function go(id,push){ if(!D[id])return; focus=id; try{history.replaceState(null,'',id==='root'?location.pathname:'#'+id);}catch(e){} cur.order=D.root.kids; compute(true); }
+function tell(){ if(window.parent===window) return;
+  const id=focus==='root'?null:focus; parent.postMessage({bp:'focus',id:id,title:id?D[id].title:''},'*'); }
+function show(id){ // WHY fade: swap the layout while the canvas is invisible, then fade back in
+  canvas.classList.add('fading'); clearTimeout(show.t);
+  show.t=setTimeout(()=>{ focus=id; compute(); requestAnimationFrame(()=>canvas.classList.remove('fading')); },150); }
+function go(id){ if(!D[id]||id===focus)return; try{history.replaceState(null,'',id==='root'?location.pathname:'#focus='+id);}catch(e){} show(id); tell(); }
 canvas.addEventListener('click',e=>{ const t=e.target.closest('.nd'); if(!t)return; const m=meta[t.dataset.id]; if(!m)return;
-  let id=t.dataset.id;
-  if(m.mode==='mini'){ go(D[id].pillar||id); return; }
-  if(id===focus) return;
+  let id=t.dataset.id; if(id===focus) return;
   while(id&&meta[id]&&meta[id].rel>1) id=D[id].parent;
   if(meta[id]&&meta[id].rel===1) go(id); });
 document.addEventListener('click',e=>{ const g=e.target.closest('[data-go]'); if(g){ e.preventDefault(); go(g.dataset.go); } });
@@ -347,8 +316,7 @@ const tip=$('#tip');
 function tipFor(el){
   const nd=el.closest('.nd'); if(nd&&meta[nd.dataset.id]){ const id=nd.dataset.id, n=D[id], m=meta[id];
     if(!n.kids.length){ let s='<b>'+esc(n.title)+'</b><br>'+SW[n.status]+(n.since?' since '+nice(n.since):'')+(n.why?'<br><span class="m">'+esc(n.why)+'</span>':'');
-      if(m.mode==='mini') s+='<br><span class="m">In '+esc(D[n.pillar].title)+'. Click to zoom there.</span>';
-      else { let a=id; while(meta[a]&&meta[a].rel>1) a=D[a].parent; if(a!==id&&a!==focus) s+='<br><span class="m">Click to zoom into '+esc(D[a].title)+'.</span>'; else if(id!==focus) s+='<br><span class="m">Click for what backs it up.</span>'; }
+      let a=id; while(meta[a]&&meta[a].rel>1) a=D[a].parent; if(a!==id&&a!==focus) s+='<br><span class="m">Click to zoom into '+esc(D[a].title)+'.</span>'; else if(id!==focus) s+='<br><span class="m">Click for details.</span>';
       return s; }
     let s='<b>'+esc(n.title)+'</b><br>'+verdict(id).replace(/^./,x=>x.toUpperCase())+'. '+esc(countsWords(id))+'.';
     if(id!==focus) s+='<br><span class="m">Click to zoom in.</span>'; return s; }
@@ -359,18 +327,19 @@ document.addEventListener('mousemove',e=>{
   const t=tipFor(e.target); if(!t){ tip.classList.remove('on'); } else {
     tip.innerHTML=t; tip.classList.add('on'); const w=tip.offsetWidth,h=tip.offsetHeight; let x=e.clientX+14,y=e.clientY+16; if(x+w>innerWidth-8)x=e.clientX-w-14; if(y+h>innerHeight-8)y=e.clientY-h-12; tip.style.left=x+'px'; tip.style.top=y+'px'; }
   const nd=e.target.closest('.nd'); let a=null;
-  if(nd&&meta[nd.dataset.id]){ const m=meta[nd.dataset.id]; let id=nd.dataset.id; if(m.mode==='mini'){ while(meta[id]&&meta[id].rel>0)id=D[id].parent; a=els[id]; } else if(id!==focus){ while(meta[id]&&meta[id].rel>1)id=D[id].parent; if(meta[id]&&meta[id].rel===1&&!(!D[id].kids.length&&id===nd.dataset.id)) a=els[id]; } }
+  if(nd&&meta[nd.dataset.id]&&nd.dataset.id!==focus){ let id=nd.dataset.id; while(meta[id]&&meta[id].rel>1)id=D[id].parent; if(meta[id]&&meta[id].rel===1&&D[id].kids.length) a=els[id]; }
   hot(a);
-  // line highlight when hovering a connection row
-  const det=e.target.closest('#conns details'); const svg=$('#lines');
-  svg.querySelectorAll('.ls').forEach(g=>g.classList.toggle('off',!!det&&g.dataset.g!==det.dataset.g));
 });
 document.addEventListener('mouseleave',()=>tip.classList.remove('on'));
 
 /* ---- start ---- */
-function init(){ cur.order=D.root.kids; const h=location.hash.slice(1); if(h&&D[h]) focus=h; compute(false); requestAnimationFrame(()=>requestAnimationFrame(()=>canvas.classList.add('anim'))); }
-addEventListener('resize',()=>{ canvas.classList.remove('anim'); compute(false); requestAnimationFrame(()=>canvas.classList.add('anim')); });
-addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(D[h]&&h!==focus){focus=h;compute(true);} else if(!h&&focus!=='root'){focus='root';compute(true);} });
+if(window.self!==window.top) document.documentElement.classList.add('framed');
+function fromHash(){ const m=location.hash.match(/focus=([^&]+)/), h=m?decodeURIComponent(m[1]):location.hash.slice(1);
+  if(D[h]&&h!=='root') return h;
+  const p=h.startsWith('part:')?null:null; return 'root'; }  // WHY: unknown ids (wiring parts) just open normally
+function init(){ cur.order=D.root.kids; focus=fromHash(); compute(); if(focus!=='root') tell(); } // WHY: tell the switcher the plain title of what we opened on
+addEventListener('resize',()=>compute());
+addEventListener('hashchange',()=>{ const f=fromHash(); if(f!==focus){ show(f); } });
 init();
 </script>
 </body>

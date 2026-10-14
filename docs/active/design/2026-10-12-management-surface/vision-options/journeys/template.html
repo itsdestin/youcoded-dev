@@ -14,7 +14,7 @@
 .panehead::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;background:linear-gradient(to right,transparent,var(--edge-card) 8%,var(--edge-card) 92%,transparent)}
 .cols{flex:1;min-height:0;display:flex}
 .main{flex:1;min-width:0;overflow-y:auto;padding:14px 20px 40px;display:flex;flex-direction:column;gap:10px}
-.side{width:340px;flex:none;overflow-y:auto;padding:16px 16px 40px 4px;display:flex;flex-direction:column;gap:12px}
+.side{width:360px;flex:none;overflow-y:auto;padding:16px 16px 40px 4px;display:flex;flex-direction:column;gap:12px}
 .side .card{padding:12px}
 .gh{font-size:16px;font-weight:500;margin:0}
 .gdesc{font-size:12px;color:var(--fg-muted);margin:2px 0 0}
@@ -35,6 +35,7 @@
 .jnum{flex:none;width:22px;height:22px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;margin-top:1px}
 .jtext{flex:1;min-width:0}
 .jtitle{font-size:14px;font-weight:500;color:var(--fg)}
+.jline{font-size:12px;color:var(--fg-2);margin-top:2px}
 .jquote{font-size:11px;color:var(--fg-muted);margin-top:1px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .verdict{flex:none;margin-top:1px}
 .verdict.ok{background:color-mix(in srgb,var(--status-ok) 15%,transparent);border-color:color-mix(in srgb,var(--status-ok) 35%,transparent)}
@@ -52,16 +53,17 @@
 .step.planned::before{background:var(--fg-faint)}
 .step.vision::before{background:repeating-linear-gradient(45deg,var(--fg-faint) 0 2px,transparent 2px 5px)}
 .step.vision{border-style:dashed}
-.step .st{font-size:12px;line-height:1.3;font-weight:500;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical}
-.step .sy{font-size:11px;color:var(--fg-muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.step .sw{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fg-2)}
+.step .st{font-size:12px;line-height:1.3;font-weight:500;flex:1;overflow-wrap:break-word;hyphens:auto}
+.step .sy{font-size:11px;color:var(--fg-muted);line-height:1.25;overflow-wrap:break-word}
+.step .sw{display:flex;align-items:center;flex-wrap:wrap;gap:2px 5px;font-size:11px;color:var(--fg-2)}
 .catch{font-weight:500;color:var(--fg)}
 .step.stop{box-shadow:0 0 0 2px var(--accent)}
 .step.beyond{opacity:.72}
 .step.sel{background:var(--inset);box-shadow:0 0 0 2px var(--tag-blue)}
 .step.hit{box-shadow:0 0 0 2px var(--status-warn);background:color-mix(in srgb,var(--status-warn) 14%,var(--inset))}
 .flag{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:600;line-height:1;padding:3px 7px;border-radius:var(--radius-full);white-space:nowrap}
-.stopwhy{margin-top:8px;font-size:12px;color:var(--fg-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stopwhy{margin-top:8px;font-size:12px;color:var(--fg-2)}
+.stopwhy .more{color:var(--fg-muted);cursor:default;border-bottom:1px dotted var(--fg-muted)}
 .stopwhy b{font-weight:600;color:var(--fg)}
 .also{margin-top:3px;font-size:11px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .also button{font:inherit;color:var(--fg-2);background:none;border:0;border-bottom:1px dotted var(--fg-muted);padding:0;cursor:pointer}
@@ -79,6 +81,17 @@
 .sub{font-size:11px;color:var(--fg-muted);margin:0 8px 6px}
 .clear{align-self:flex-start}
 
+.hold{flex:none;font-size:12px;color:var(--fg-muted);white-space:nowrap}
+.irow.on .hold{color:var(--fg)}
+.fact{font-size:13px;line-height:1.35;color:var(--fg-2);margin:6px 0 0}
+.fact b{font-weight:500;color:var(--fg)}
+.fact button{font:inherit;color:var(--fg);background:none;border:0;border-bottom:1px dotted var(--fg-muted);padding:0;cursor:pointer}
+details.more{margin-top:12px;border-top:1px solid var(--edge-card);padding-top:8px}
+details.more>summary{cursor:pointer;font-size:12px;color:var(--fg-2);list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:'+ '}
+details.more[open]>summary::before{content:'\2212 '}
+.framed .band{display:none}
 /* side: detail */
 .dhead{display:flex;align-items:flex-start;gap:8px}
 .dhead .t-base{flex:1;line-height:1.3}
@@ -93,6 +106,7 @@
 #tip.on{opacity:1}
 </style></head>
 <body>
+<script>if(window.self!==window.top)document.documentElement.classList.add("framed")</script>
 <div class="screen">
   <div class="band"><div></div><div class="btitle">Journeys</div><div></div></div>
   <div class="screen-body"><div class="pane">
@@ -115,20 +129,21 @@ const TIPS={done:'This exists in the app today.',building:'Someone is building t
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nice=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+dd)+', '+y};
 const dot=s=>`<i class="sdot ${s}" aria-hidden="true"></i>`;
-let sel=null, filt=null; // selected step id; filter = {kind:'sys'|'node', id}
+const nm=x=>N[x].label||N[x].title;
+const shortSys=s=>s.split(':')[0]; // "Everywhere: desktop, phone, web" -> "Everywhere" in a box; full name stays in hovers
+const plural=(n,w)=>n+' '+w+(n===1?'':'s');
+let sel=null, filt=null; // sel = open step id; filt = {key, ids:Set} things to light up
+const post=(id,title)=>{ if(window.parent!==window) parent.postMessage({bp:'focus',id:id,title:title||''},'*'); };
+const inJ=(j,ids)=>j.steps.some(s=>ids.has(s))||j.held.some(x=>ids.has(x));
+const journeysOf=id=>J.map((j,i)=>j.steps.includes(id)||j.held.includes(id)?i:-1).filter(i=>i>=0);
 
 document.getElementById('legend').innerHTML=Object.keys(WORD).map(s=>`<span class="leg" data-tip="${esc(TIPS[s])}">${dot(s)}${WORD[s]}</span>`).join('')+
   `<span class="leg" data-tip="The first box in a row that is not finished. Everything to its right cannot be reached yet."><span class="flag" style="position:static;transform:none">stops here</span></span>`;
 
-function heldIds(){ // which unfinished things match the current filter
-  if(!filt) return null;
-  if(filt.kind==='node') return new Set([filt.id]);
-  return new Set(Object.keys(DATA.byNode).filter(k=>N[k].sysid===filt.id));
-}
 function renderMain(){
-  const H=heldIds();
+  const H=filt?filt.ids:null;
   document.getElementById('main').innerHTML=J.map((j,i)=>{
-    const rowHit=H&&j.held.some(x=>H.has(x));
+    const rowHit=H&&inJ(j,H);
     const stopN=j.stop===null?null:N[j.steps[j.stop]];
     const verdict=j.stop===null
       ?`<span class="spill verdict ok tip" data-tip="Every step in this row exists today. A person can do this from start to finish."><i class="sdot done"></i>Works from start to finish</span>`
@@ -136,55 +151,77 @@ function renderMain(){
     const steps=j.steps.map((s,k)=>{
       const n=N[s], beyond=j.stop!==null&&k>j.stop&&n.status==='done', isStop=k===j.stop;
       const link=k?`<span class="link${j.stop!==null&&k>j.stop?' broken':''}"></span>`:'';
-      const tip=n.title+' — '+TIPS[n.status]+(isStop?' This is where the journey stops.':'')+(beyond?' It works on its own, but you cannot reach it in this journey yet because an earlier step is missing.':'')+' Click for details.';
+      const tip=nm(s)+' ('+n.system+') — '+TIPS[n.status]+(isStop?' This is where the journey stops.':'')+(beyond?' It works on its own, but you cannot reach it in this journey yet because an earlier step is missing.':'')+(n.catch?' Counted as existing, but there is a catch: '+n.why:'')+' Click for details.';
       return link+`<button class="step ${n.status}${isStop?' stop':''}${beyond?' beyond':''}${sel===s?' sel':''}${H&&H.has(s)?' hit':''}" data-step="${s}" data-tip="${esc(tip)}">${isStop?'<span class="flag">stops here</span>':''}
-        <span class="st">${esc(n.label||n.title)}</span><span class="sy">${esc(n.system)}</span><span class="sw">${dot(n.status)}${WORD[n.status]}${n.catch?' <b class="catch" data-tip="Counted as existing, but its own evidence names a catch. Click for details.">· with a catch</b>':''}</span></button>`;
+        <span class="st">${esc(nm(s))}</span><span class="sy">${esc(shortSys(n.system))}</span><span class="sw">${dot(n.status)}${WORD[n.status]}${n.catch?' <b class="catch">· with a catch</b>':''}</span></button>`;
     }).join('');
-    const cat=j.steps.filter(s=>N[s].catch).map(s=>`<div class="also" style="white-space:normal"><b>With a catch — ${esc(N[s].label||N[s].title)}:</b> ${esc(N[s].why)}</div>`).join('');
-    const why=stopN?`<div class="stopwhy"><b>Stops at “${esc(stopN.label||stopN.title)}”.</b> ${esc(stopN.why)}</div>`:'';
-    const also=j.extra.length?`<div class="also">Also waiting on, behind the scenes: ${j.extra.map(x=>`<button data-step="${x}" data-tip="${esc(WORD[N[x].status]+' — '+N[x].why+' Click for details.')}">${esc(N[x].label||N[x].title)}</button>`).join(', ')}</div>`:'';
-    return `<section class="card jcard${H&&!rowHit?' dim':''}" id="j${i}"><div class="jhead"><span class="jnum">${i+1}</span><div class="jtext"><div class="jtitle">${esc(j.title)}</div><div class="jquote">“${esc(j.quote)}”</div></div>${verdict}</div>
-      <div class="steps">${steps}</div>${why}${cat}${also}</section>`;
+    // one short line at most; the reason, the catch and the hidden dependencies sit in its hover
+    let line='';
+    if(stopN){
+      const hid=j.extra.length?` · ${plural(j.extra.length,'more thing')} to finish behind the scenes`:'';
+      const tipL='Why it stops: '+stopN.why+(j.extra.length?' Also waiting on, behind the scenes: '+j.extra.map(nm).join('; ')+'.':'')+(j.steps.some(s=>N[s].catch)?' Catch on a finished step: '+j.steps.filter(s=>N[s].catch).map(s=>nm(s)+' — '+N[s].why).join(' '):'');
+      line=`<div class="jline" data-tip="${esc(tipL)}">Stops at “${esc(nm(j.steps[j.stop]))}”${hid}</div>`;
+    }
+    return `<section class="card jcard${H&&!rowHit?' dim':''}" id="j${i}"><div class="jhead"><span class="jnum">${i+1}</span><div class="jtext"><div class="jtitle" data-tip="${esc('In Destin’s words: “'+j.quote+'”')}">${esc(j.title)}</div>${line}</div>${verdict}</div>
+      <div class="steps">${steps}</div></section>`;
   }).join('');
 }
-const chips=a=>`<span class="chips">${a.map(i=>`<span class="jc" data-tip="Journey ${i+1}: ${esc(J[i].title)}">${i+1}</span>`).join('')}</span>`;
 function renderSide(){
   const sysRows=Object.entries(DATA.bySys).sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0]));
-  const nodeRows=Object.entries(DATA.byNode).filter(([k,v])=>v.length>1).sort((a,b)=>b[1].length-a[1].length).slice(0,7);
-  const on=(k,id)=>filt&&filt.kind===k&&filt.id===id?' on':'';
+  const nodeRows=Object.entries(DATA.byNode).filter(([k,v])=>v.length>1).sort((a,b)=>b[1].length-a[1].length).slice(0,5);
+  const on=k=>filt&&filt.key===k?' on':'';
+  const names=v=>v.map(i=>(i+1)+'. '+J[i].title).join('\n');
   let h='';
   if(sel) h+=detail(sel);
-  h+=`<div class="card"><div class="eyebrow" data-tip="Parts of the app that are not finished and that journeys run into. The numbers are the journeys held up. A system at the top is the one to finish first to get the most journeys working.">Which systems hold journeys back</div>
-    ${sysRows.map(([id,v])=>`<button class="irow${on('sys',id)}" data-filt="sys:${id}" data-tip="Click to light up the unfinished boxes from ${esc(DATA.sys[id])} across all journeys. Click again to clear."><span class="t-sm">${esc(DATA.sys[id])}</span>${chips(v)}</button>`).join('')}</div>`;
-  h+=`<div class="card"><div class="eyebrow" data-tip="Single unfinished things that more than one journey runs into, including ones hidden behind the boxes you see. Finishing one of these moves several journeys at once.">Single things that stop more than one journey</div>
-    ${nodeRows.map(([id,v])=>`<button class="irow${on('node',id)}" data-filt="node:${id}" data-tip="${esc(WORD[N[id].status]+' — '+N[id].why+' Click to light it up.')}">${dot(N[id].status)}<span class="t-sm">${esc(N[id].label||N[id].title)}</span>${chips(v)}</button>`).join('')}</div>`;
+  h+=`<div class="card"><div class="eyebrow" data-tip="Parts of the app that are not finished and that journeys run into. The one at the top is the one to finish first to get the most journeys working.">What holds journeys back</div>
+    ${sysRows.map(([id,v])=>`<button class="irow${on('sys:'+id)}" data-filt="sys:${id}" data-tip="${esc(DATA.sys[id]+' holds back: \n'+names(v)+'\nClick to light these up.')}"><span class="t-sm">${esc(shortSys(DATA.sys[id]))}</span><span class="hold">${plural(v.length,'journey')}</span></button>`).join('')}</div>`;
+  h+=`<div class="card"><div class="eyebrow" data-tip="Single unfinished things that more than one journey runs into. Finishing one of these moves several journeys at once.">Single things that stop several</div>
+    ${nodeRows.map(([id,v])=>`<button class="irow${on('node:'+id)}" data-filt="node:${id}" data-tip="${esc(nm(id)+' ('+WORD[N[id].status]+') holds back: \n'+names(v)+'\nClick to light it up.')}">${dot(N[id].status)}<span class="t-sm">${esc(nm(id))}</span><span class="hold">${plural(v.length,'journey')}</span></button>`).join('')}</div>`;
   if(filt) h+=`<button class="btn sm ghost clear" data-clear data-tip="Stop highlighting and show every journey normally.">Clear highlight</button>`;
   document.getElementById('side').innerHTML=h;
 }
 function detail(id){
-  const n=N[id], usedBy=J.map((j,i)=>j.steps.includes(id)?i:-1).filter(i=>i>=0), heldBy=(DATA.byNode[id]||[]).filter(i=>!usedBy.includes(i));
+  const n=N[id], js=journeysOf(id);
+  const unf=n.needs.filter(x=>N[x].status!=='done');
+  const first=(n.why.match(/^.*?[.!?](\s|$)/)||[n.why])[0].trim(), rest=n.why.slice(first.length).trim();
   const row=(x,extra)=>`<div class="vlink" data-step="${x}" data-tip="Open the details for this piece."><i class="sdot ${N[x].status}"></i><div><div class="t-sm">${esc(N[x].title)}</div><div class="t-2xs muted">${WORD[N[x].status]}${extra?' · '+esc(extra):''}</div></div></div>`;
-  const needs=n.needs.map(x=>row(x,n.needsWhy[x])).join('');
-  return `<div class="card"><div class="dhead"><div class="t-base">${esc(n.title)}</div><button class="closebtn" data-closed aria-label="Close" data-tip="Close these details."><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-   <div class="statusline t-xs"><span data-tip="${esc(TIPS[n.status])}">${dot(n.status)} ${WORD[n.status]}${n.since?' · since '+nice(n.since):''}</span></div>
-   <p class="t-sm" style="margin:8px 0 0">${esc(n.why)}</p>
-   <div class="dsec"><div class="eyebrow">Belongs to</div><div class="crumb" data-tip="The big system this piece is part of.">${esc(n.system)}${n.cap?' › '+esc(n.cap):''}</div>
-     <div style="margin-top:4px"><span class="badge" data-tip="The line of work this piece belongs to.">${esc(DATA.tracks[n.track])}</span></div></div>
-   <div class="dsec"><div class="eyebrow" data-tip="Pieces that have to exist first. If one of them is missing, this one cannot work either.">What it needs first</div>${needs||'<div class="t-xs muted">Nothing else. It stands on its own.</div>'}</div>
-   ${n.shares.length?`<div class="dsec"><div class="eyebrow" data-tip="Different names for overlapping work. Doing one moves the other.">Closely tied to</div>${n.shares.map(x=>row(x)).join('')}</div>`:''}
-   <div class="dsec"><div class="eyebrow" data-tip="The journeys on this page that pass through this piece, or that are held up by it behind the scenes.">Journeys it matters to</div>
-     ${usedBy.length||heldBy.length?`<span class="chips">${usedBy.concat(heldBy).map(i=>`<span class="jc" data-tip="Journey ${i+1}: ${esc(J[i].title)}">${i+1}</span>`).join('')}</span>`:'<div class="t-xs muted">None of the journeys here.</div>'}</div></div>`;
+  const facts=[];
+  facts.push(unf.length?`<p class="fact"><b>Waiting on:</b> ${unf.map(x=>`<button data-step="${x}">${esc(nm(x))}</button>`).join(', ')}</p>`:`<p class="fact"><b>Waiting on:</b> nothing that is missing</p>`);
+  if(js.length) facts.push(`<p class="fact"><b>${n.status==='done'?'Used by':'Holds up'}:</b> <button data-lightnode="${id}" data-tip="Light up these journeys: ${esc(js.map(i=>J[i].title).join('; '))}">${plural(js.length,'journey')}</button></p>`);
+  facts.push(`<p class="fact"><b>Part of:</b> ${esc(shortSys(n.system))}</p>`);
+  const ev=(n.evidence||[]).filter(e=>e.note);
+  return `<div class="card"><div class="dhead"><div class="t-base">${esc(nm(id))}</div><button class="closebtn" data-closed aria-label="Close" data-tip="Close these details."><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+   <div class="statusline t-xs"><span data-tip="${esc(TIPS[n.status])}">${dot(n.status)} ${WORD[n.status]}${n.catch?' · with a catch':''}</span></div>
+   <p class="t-sm" style="margin:8px 0 0">${esc(first)}</p>
+   ${facts.slice(0,3).join('')}
+   <details class="more"><summary>More</summary>
+     ${rest?`<p class="t-sm" style="margin:8px 0 0">${esc(rest)}</p>`:''}
+     ${n.since?`<div class="t-xs muted" style="margin-top:8px">Status since ${nice(n.since)}</div>`:''}
+     <div class="dsec"><div class="eyebrow">Belongs to</div><div class="crumb">${esc(n.system)}${n.cap?' › '+esc(n.cap):''}</div></div>
+     <div class="dsec"><div class="eyebrow" data-tip="Pieces that have to exist first.">What it needs first</div>${n.needs.map(x=>row(x,n.needsWhy[x])).join('')||'<div class="t-xs muted">Nothing else. It stands on its own.</div>'}</div>
+     ${n.shares.length?`<div class="dsec"><div class="eyebrow" data-tip="Different names for overlapping work. Doing one moves the other.">Closely tied to</div>${n.shares.map(x=>row(x)).join('')}</div>`:''}
+     ${js.length?`<div class="dsec"><div class="eyebrow">Journeys it matters to</div>${js.map(i=>`<div class="t-sm" style="margin:2px 0">${i+1}. ${esc(J[i].title)}</div>`).join('')}</div>`:''}
+     ${ev.length?`<div class="dsec"><div class="eyebrow">What backs this up</div>${ev.map(e=>`<div class="t-xs muted" style="margin:2px 0">${esc(e.note)}${e.date?' ('+nice(e.date)+')':''}</div>`).join('')}</div>`:''}
+   </details></div>`;
 }
+function setFilt(key,ids){filt=key?{key,ids}:null;}
+function nodesUnfinishedOf(sys){return new Set(Object.keys(DATA.byNode).filter(k=>N[k].sysid===sys));}
 function selectStep(id){
   sel=id; renderMain(); renderSide();
   const b=document.querySelector(`.step[data-step="${id}"]`); if(b) b.classList.add('sel');
   document.getElementById('side').scrollTop=0;
+  post(id,nm(id));
 }
 document.addEventListener('click',e=>{
   const t=e.target;
-  if(t.closest('[data-closed]')){sel=null;renderMain();renderSide();return}
-  if(t.closest('[data-clear]')){filt=null;renderMain();renderSide();return}
-  const f=t.closest('[data-filt]'); if(f){const [k,id]=f.dataset.filt.split(':');filt=(filt&&filt.kind===k&&filt.id===id)?null:{kind:k,id};renderMain();renderSide();return}
+  if(t.closest('[data-closed]')){sel=null;renderMain();renderSide();post(null);return}
+  if(t.closest('[data-clear]')){filt=null;renderMain();renderSide();post(null);return}
+  const ln=t.closest('[data-lightnode]'); if(ln){const id=ln.dataset.lightnode;setFilt('node:'+id,new Set([id]));renderMain();renderSide();return}
+  const f=t.closest('[data-filt]'); if(f){const [k,id]=f.dataset.filt.split(':');
+    if(filt&&filt.key===f.dataset.filt){filt=null;renderMain();renderSide();post(null);return}
+    if(k==='sys'){setFilt('sys:'+id,nodesUnfinishedOf(id));renderMain();renderSide();post(id,DATA.sys[id]);}
+    else{setFilt('node:'+id,new Set([id]));renderMain();renderSide();post(id,nm(id));}
+    return}
   const s=t.closest('[data-step]'); if(s) selectStep(s.dataset.step);
 });
 // one floating hint for everything with data-tip (a CSS-only hint would be clipped by the scrolling panes)
@@ -193,5 +230,18 @@ document.addEventListener('mouseover',e=>{const t=e.target.closest('[data-tip]')
   tip.textContent=t.dataset.tip; tip.classList.add('on'); const r=t.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
   let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8), y=r.top-h-8; if(y<8) y=r.bottom+8; tip.style.left=x+'px'; tip.style.top=y+'px'});
 document.addEventListener('mouseleave',()=>tip.classList.remove('on'));
-renderMain(); renderSide();
+// open focused: #focus=<node id> or part:<id>. Light the journeys containing it (or its system's); never error.
+function applyFocus(){
+  const m=/focus=([^&]+)/.exec(location.hash); if(!m) return;
+  let id=decodeURIComponent(m[1]), ids=new Set(), pillar=null;
+  if(id.startsWith('part:')){ (DATA.parts[id.slice(5)]||[]).forEach(v=>{Object.keys(N).forEach(k=>{if(k===v||k.startsWith(v+'.'))ids.add(k)})}); id=[...ids][0]||null; }
+  else Object.keys(N).forEach(k=>{if(k===id||k.startsWith(id+'.'))ids.add(k)});
+  if(id) pillar=DATA.pillarOf[id]||null;
+  if(!J.some(j=>inJ(j,ids))&&pillar) ids=new Set(Object.keys(N).filter(k=>N[k].sysid===pillar));
+  if(!J.some(j=>inJ(j,ids))) return;
+  setFilt('focus:'+id,ids);
+  if(id&&N[id]) sel=id;
+}
+applyFocus(); renderMain(); renderSide();
+if(filt&&sel) setTimeout(()=>{const r=document.querySelector('.jcard:not(.dim)'); if(r) r.scrollIntoView({block:'nearest'})},0);
 </script></body></html>
