@@ -127,8 +127,17 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       reload went to the wrong session); not caused by the performance work
       `all` `needs-verify` `P3` `checked 2026-10-05` → docs/archive/investigations/2026-10-04-performance-gap-review.md
 
-- [ ] Tool cards and permission prompts get their own redesign, separate from the design-guide
-      work. Destin, 2026-09-24: "might rework tool cards and permission prompts as a seprate
-      endeavor. we should just have our design guide explicitly note that these elements are not
-      consider final/formal." The guide marks them as not final; nothing changes until then.
-      `tool-cards` `all` `decision` `P3` `checked 2026-09-24`
+- [ ] Tool cards, permission prompts and chat question cards get their own redesign, separate from
+      the design-guide work. Destin, 2026-09-24: "might rework tool cards and permission prompts as a
+      seprate endeavor. we should just have our design guide explicitly note that these elements are
+      not consider final/formal." The chat question cards (Dismiss / Submit) belong to the same pass:
+      their current button order was never approved — Destin, 2026-10-13 (final-review#CH-29): "this
+      wasn't approved, i just said we need to revisit this later alongisde tool cards. which we still
+      do." The guide marks them as not final; nothing changes until then.
+      `tool-cards` `all` `decision` `P3` `checked 2026-10-13`
+
+- [ ] Popups that need their own design pass (2 things).
+      (a) Session context: Destin, 2026-10-13, looking at a skill's fold in it (final-review#CH-28):
+      "this particular popups needs additional ui/ux work"; (b) the Donate ("buy me a coffee") popup
+      in Settings: "buy me a coffer popup needs work" (final-review#ST-30).
+      `all` `confirmed` `P3` `checked 2026-10-13`

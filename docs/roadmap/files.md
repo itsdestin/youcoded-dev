@@ -78,6 +78,11 @@ searched or resumed (chat-data).
       The same click on a project file works (Destin, 2026-09-03, a document in his notes repo).
       `chat` `desktop` `needs-verify` `P3` `checked 2026-09-03`
 
+- [ ] The side pane (session files) needs its own design pass. Destin, 2026-10-13 (final-review#FV-2,
+      pictures, diagrams and PDFs open in it): "the side pane needs separate ui/ux work, particularly to
+      make images look better nested fitted and to improve the bottom bar and our git surfaces".
+      `files-panel` `all` `confirmed` `P3` `checked 2026-10-13`
+
 - [ ] Parked ideas: files pane and editor (nine things).
       (a) HTML preview: fonts and background images referenced inside a linked stylesheet do not load.
       (b) Git surface phase 2: branch operations, push and PR creation, repo-wide review, hunk-level staging, an
