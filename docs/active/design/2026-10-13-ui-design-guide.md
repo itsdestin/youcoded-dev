@@ -152,20 +152,21 @@ and Git review inside it are still hand-built — see their sections below.)
   its editing cards are **open** when it opens — the same cards as where you edit it elsewhere, never a
   summary that swaps into a second form — and **nothing it edits is saved until the action**; the ✕
   leaves everything as it was (close-session-1#CS-2).
-- **REOPENED — do not follow until resolved** (final-fixes#PR-7e, #PR-7f, #ST-21; open items in
-  `2026-09-23-ui-element-review/decisions.md` → "Final fixes"). Destin: cards were added "to everything
-  arbitrarily … a popup with no header or sections doesn't need another card level inside"; popup
-  subheaders and buttons inside vs outside cards are undecided. The rule as first written:
-  **What a popup says and offers sits in cards** — the same in every popup and every (i) explainer
-  (final-review#ST-21, #PR-7): explanations, tick boxes, switches, fields and choices go inside
-  first-level cards under small labels, the way About groups its text (Settings → About; an (i)
-  page is a label over a card per section). A popup that is one card needs no label (a confirmation:
-  what will happen, any notice about it and its "also delete…" tick box, all in the one card); the
-  card about the popup's own subject opens it unlabelled. A tick box before an action is always the
-  shared "I understand" box (`ConsentRow`), never a bare square. A line about the whole popup is the
-  title's second line (`Dialog` `subtitle`). The popup's own buttons stay outside the cards, under
-  them. **The one exception:** a short confirmation question of one or two sentences with nothing to
-  tick or type ("Remove backup?", a missing folder's Remove project, Switch model) stays plain text.
+- **A popup that does one job is one card holding everything, its buttons included**
+  (popup-cards-1#PC-1): its words, fields, notice, tick box and then its buttons, all inside one
+  unlabelled first-level card. Reference: Create a page. Never a card with the buttons left under it,
+  and never the fields bare on the popup. A tick box before an action is always the shared "I
+  understand" box (`ConsentRow`), never a bare square. **The one exception:** a short confirmation
+  question of one or two sentences with nothing to tick or type ("Remove backup?", a missing folder's
+  Remove project, Switch model) stays plain text.
+- **A popup with several groups** gives each group a small label over its own card, the way About groups
+  its text (Settings → About). **Not decided yet:** where buttons that act on the whole popup go when it
+  has several cards (Close session and Update use the footer line, Submit a ticket puts them under the
+  cards).
+- **A line about the whole popup is the title's second line** (`Dialog` `subtitle`) — kept where a popup
+  has one (popup-cards-1#PC-2).
+- **An (i) page labels every card, the first one "Overview"** (popup-cards-1#PC-3): one shared piece
+  (`SettingsExplainer`) draws them all.
 - **"Don't ask again"** on a popup that asks every time: a switch with its words, **bottom-left on the
   footer line**, balanced by the main button at the right (principle 6). The same choice lives in
   Settings so it can be turned back on (Close session: Settings → Assistant → General → "Close-session
@@ -218,7 +219,7 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   card, and once one card has a label, every card on that page does (otherwise the next card reads as
   filed under the one above) — a card of switches too: Pin to top and Mark complete got their own label,
   "In your lists", rather than sitting under Tags (close-session-2#CS2-2, #CS2-5). A label never repeats
-  the popup's title. Exceptions: a small popup holding a single card (Buddy), short yes/no
+  the popup's title. Exceptions: a popup that is one card (a one-job popup, Buddy), short yes/no
   confirmations, popups that open on a warning, **the card about the popup's own subject** at its top
   (Session details' name card, a detail page's top card), and **a picture of the item** (a theme's
   preview).
@@ -249,7 +250,9 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   row**, and anything beside it is outlined (Decline, left of Accept). Everything else on the page
   follows the normal rule.
 - **A disabled control says why**, within reach: a line beside it or under it (the ticket's "the reason
-  the main button is grey", the greyed games "still saying why"). **Never a button that does nothing**
+  the main button is grey", the greyed games "still saying why"). **An action waiting on a tick box**
+  says it in a hover hint on the grey button instead — the shared `Tooltip`, "Tick the box to continue";
+  press-and-hold shows it on a touchscreen (final-fixes#ST-12). **Never a button that does nothing**
   ("Coming soon"); when something is unavailable, its status pill says so (decisions "Integration detail
   page").
 - Close is always the ✕ button, never a letter or the word.
