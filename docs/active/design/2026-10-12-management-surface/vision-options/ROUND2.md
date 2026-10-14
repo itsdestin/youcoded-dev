@@ -5,6 +5,11 @@ date: 2026-10-14
 
 # Round 2: one set of facts, one switcher, calmer detail
 
+> **Superseded 2026-10-14 (rounds 3–4).** The four views now live in the main page's Big picture tab
+> (`../bigpicture_tab.py`, built into `../mockup.html`). The separate pages this file describes
+> (`zoom/`, `journeys/`, `stack/`, `wiring/`, `bigpicture.html`) were removed; they remain in git history
+> before the commit that removed them. `facts.py` / `facts.json` are still used.
+
 Every agent changing a view reads this, then `BRIEF.md` (round 1's rules all still hold).
 
 ## Destin's verdict on round 1 (vision-options.choice.answers.json)

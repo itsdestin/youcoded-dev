@@ -8,6 +8,7 @@ import json, os, html, glob
 
 STATUS_WORD = {'done':'exists','building':'being built','planned':'planned','vision':'only an idea so far','unchecked':'not checked yet'}
 E = html.escape
+CHEV_TXT = '<span class="chev" aria-hidden="true">›</span>'
 
 def load(here):
     sk = json.load(open(os.path.join(here, 'vision-skeleton.json')))
@@ -73,7 +74,8 @@ def bar(counts, total):
 def words(counts, total):
     parts = []
     for s in ('done','building','planned','vision'):
-        if counts.get(s): parts.append(f"{counts[s]} {STATUS_WORD[s].replace('only an idea so far','still ideas')}")
+        # WHY the plural fix: "4 exists" read wrong; one exists, several exist
+        if counts.get(s): parts.append(f"{counts[s]} {STATUS_WORD[s].replace('only an idea so far','still ideas').replace('exists', 'exists' if counts[s] == 1 else 'exist')}")
     if counts.get('unchecked'): parts.append(f"{counts['unchecked']} not checked yet")
     return f"of {total}: " + ', '.join(parts)
 
@@ -82,6 +84,12 @@ def nice(d):
     """2026-10-08 -> 'Oct 8' (U9: a student cannot tell 10/08 from 8 October)."""
     try: return f"{MONTHS[int(d[5:7])-1]} {int(d[8:10])}"
     except Exception: return d
+
+# WHY pills (Destin, round 4: bring Areas in line): the same tinted status pill as the other three views
+TONE = {'done':'ok','building':'info','planned':'','vision':'','unchecked':'warn'}
+PILL_WORD = {'done':'exists','building':'being built','planned':'planned','vision':'only an idea','unchecked':'not checked yet'}
+def spill(status):
+    return f'<span class="spill {TONE[status]}" data-tip="{E(TIPS["status." + status])}">{PILL_WORD[status]}</span>'
 
 def dot(status):
     return f'<i class="sdot {E(status)}" aria-hidden="true"></i>'
@@ -121,9 +129,9 @@ def render(here, tip, track_short):
     if blockers or recent:
         out.append('<div class="vinsights">')
         if blockers:
-            out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.waitingon")}">What most things are waiting on</div>' + ''.join(f'<button class="irow" data-focus="{E(b["id"])}" data-tip="{E(TIPS["status." + b["status"]])} Click for details.">{dot(b["status"])}<span class="t-sm">{E(b["title"])}</span><span class="t-2xs muted irmeta" data-tip="{E(_needtip(len(b["needed_by"]), tip))}">{len(b["needed_by"])} need it</span></button>' for b in blockers) + '</div>')
+            out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.waitingon")}">What most things are waiting on</div>' + ''.join(f'<button class="irow" data-focus="{E(b["id"])}" data-tip="Click for details."><span class="t-sm">{E(b["title"])}</span><span class="t-2xs muted irmeta" data-tip="{E(_needtip(len(b["needed_by"]), tip))}">{len(b["needed_by"])} need it</span>{spill(b["status"])}</button>' for b in blockers) + '</div>')
         if recent:
-            out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.becamereal")}">Became real in the last month</div>' + ''.join(f'<button class="irow" data-focus="{E(r["id"])}" data-tip="{T("vis.row")}">{dot("done")}<span class="t-sm">{E(r["title"])}</span><span class="t-2xs muted irmeta" data-tip="{T("vis.since")}">{E(nice(r["since"]))}</span></button>' for r in recent[:8]) + '</div>')
+            out.append(f'<div class="card"><div class="eyebrow" data-tip="{T("vis.becamereal")}">Became real in the last month</div>' + ''.join(f'<button class="irow" data-focus="{E(r["id"])}" data-tip="{T("vis.row")}"><span class="t-sm">{E(r["title"])}</span><span class="t-2xs muted irmeta" data-tip="{T("vis.since")}">{E(nice(r["since"]))}</span></button>' for r in recent[:8]) + '</div>')
         out.append('</div>')
     out.append(f'<div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="{T("vis.areas")}">Areas</span><span class="cnt" data-tip="{T("vis.areas.count")}">{len(sk["pillars"])}</span></h2></div></div><div class="pgrid">')
     for p in sk['pillars']:
@@ -141,13 +149,16 @@ def render(here, tip, track_short):
     out.append(f'<div id="vdetail" hidden><div class="vback"><button class="btn sm" id="vback" data-tip="{T("vis.back")}">‹ Back to all areas</button></div></div>')
     TT = {t['id']: t for t in tracks}
     def capbox(cid, label, fids):
-        h = [f'<div class="cap" data-id="{E(cid)}"><button class="caphead t-xs" data-focus="{E(cid)}" data-tip="{T("vis.cap")}">{E(label)}</button><div class="chips">']
-        for fid in fids:
-            fn = nodes[fid]
-            # WHY the track as a label on the item (2026-10-13 cut): tracks are no longer a page mode
-            h.append(f'<button class="chip {E(fn["status"])}{" added" if fn.get("added") else ""}" data-focus="{E(fid)}" data-tip="{E(tip["status." + fn["status"]] + " Track: " + TT[fn["track"]]["title"] + ".")}">{dot(fn["status"])}{E(fn["title"])}<span class="ctrk" data-tip="{E(tip["track." + fn["track"]])}">{E(track_short[fn["track"]])}</span></button>')
-        h.append('</div></div>')
-        return ''.join(h)
+        """WHY a fold of rows (round 4 → Areas): the other views' look. Was a box of status chips with lines drawn
+        between them; the popup now shows what an item needs, so the lines went."""
+        done = sum(1 for f in fids if nodes[f]['status'] == 'done')
+        rows = ''.join(
+            f'<button class="row rowbtn" data-focus="{E(fid)}" data-tip="{T("vis.row")}"><span class="body"><span class="t-xs rt">{E(nodes[fid]["title"])}</span>'
+            f'<span class="hint">{E(TT[nodes[fid]["track"]]["title"])}{" · added from the evidence" if nodes[fid].get("added") else ""}</span></span>{spill(nodes[fid]["status"])}</button>'
+            for fid in fids)
+        return (f'<details class="fold bpf capf" data-id="{E(cid)}"><summary class="foldrow" data-tip="{T("vis.cap")}"><span class="fbody"><span class="t-sm fw">{E(label)}</span>'
+                f'<span class="t-2xs muted fh">{done} of {len(fids)} exist</span></span>{CHEV_TXT}</summary><div class="foldbody">{rows}'
+                f'<button class="btn bpfull" data-focus="{E(cid)}" data-tip="Opens this group\'s details: what is inside it and where it shows up.">Open group details</button></div></details>')
     out.append('<div class="web" id="web-area" hidden><svg class="lines"></svg>')
     for p in sk['pillars']:
         n = nodes[p['id']]
@@ -156,7 +167,7 @@ def render(here, tip, track_short):
         out.append(f'''<section class="pillar" data-id="{E(p['id'])}"><header class="phead"><div class="t-base ptitle">{E(p['title'])}</div>
           {f'<div class="quote t-xs">“{E(p["quote"])}”</div>' if p.get('quote') else ''}
           <div class="t-xs dim">{E(words(n['counts'], n['total']))}</div>{bar(n['counts'], n['total'])}<div class="legend t-2xs">{legend()}</div></header>
-          <div class="caps">{''.join(boxes)}</div>''' +
+          <div class="caps bpstack">{''.join(boxes)}</div>''' +
           (f'<details class="fold pins"><summary class="foldrow" data-tip="{T("vis.evidence")}"><span class="t-xs">What the evidence says about this area</span><span class="chev" aria-hidden="true">›</span></summary><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in ins) + '</ul></details>' if ins else '') + '</section>')
     out.append('</div>')
     data = {nid: {k: n.get(k) for k in ('id','title','kind','pillar','parent','quote','status','since','why','evidence','needs','shares','needed_by','added','track','screens')} for nid, n in nodes.items()}
@@ -234,7 +245,8 @@ CSS = '''
 /* an item's track: a small quiet word after its name */
 .ctrk{font-size:10px;font-weight:400;color:var(--fg-muted);margin-left:2px;white-space:nowrap}
 .chip .ctrk::before{content:"· "}
-.vlistcard{display:flex;flex-direction:column;gap:2px;padding:8px 16px}
+.vlistcard{display:flex;flex-direction:column;gap:8px;padding:12px}
+.irow .spill{flex:none}
 .vlistcard .irow{align-items:flex-start} .vlistcard .irow .sdot{margin-top:5px}
 .vlbody{flex:1;min-width:0;display:flex;flex-direction:column}
 .vshots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -249,6 +261,7 @@ JS = r'''
 const VN=%s; const SW=%s; const TRK=VN._tracks, TSH=VN._short; delete VN._tracks; delete VN._short;
 // WHY one look and three questions (2026-10-13 cut): vLens is 'all' or one of the three links under the mission
 let vLens='all', vOpen=null;
+const VTONE={done:'ok',building:'info',planned:'',vision:'',unchecked:'warn'},VPW={done:'exists',building:'being built',planned:'planned',vision:'only an idea',unchecked:'not checked yet'};
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function nice(d){const m=/^\d{4}-(\d\d)-(\d\d)$/.exec(d||'');return m?MON[+m[1]-1]+' '+(+m[2]):(d||'')}
 function shown(el){return el&&el.offsetParent!==null}
@@ -258,7 +271,7 @@ function line(a,b,cls){if(!shown(a)||!shown(b))return;const p=center(a),q=center
 function chipOf(id){return web().querySelector(`.chip[data-focus="${CSS.escape(id)}"]`)}
 const OPEN=['vision','planned','building'];
 const FEATS=Object.values(VN).filter(n=>n.kind==='feature');
-const titles=xs=>xs.map(x=>VN[x.id].title).join(', ');
+const titles=xs=>xs.map(x=>VN[x.id].title).join('; ');  // WHY ';': the names themselves contain commas
 // the three questions: which items match, what the small line under each says, and the heading
 const LISTS={
   blocked:{t:"What's blocked",d:'Each of these cannot be built until something else exists first.',
@@ -269,7 +282,7 @@ const LISTS={
   shipped:{t:'Shipped this month',d:'Everything that started to exist since Oct 1, newest first.',
     items:()=>FEATS.filter(n=>n.status==='done'&&(n.since||'')>='2026-10-01').sort((a,b)=>a.since<b.since?1:-1),meta:n=>'Since '+nice(n.since)}};
 function vList(){const L=LISTS[vLens],xs=L.items();$('#vlt').textContent=L.t;$('#vlc').textContent=xs.length;$('#vld').textContent=L.d;
-  $('#vlrows').innerHTML=xs.map(n=>`<button class="irow" data-focus="${n.id}" data-tip="${esc(TIP['status.'+n.status]+' Click for details.')}"><i class="sdot ${n.status}" aria-hidden="true"></i><span class="vlbody"><span class="t-sm">${esc(n.title)}</span><span class="t-2xs muted">${esc(VN[n.pillar].title)} · ${esc(L.meta(n))}</span></span><span class="ctrk" data-tip="${T('track.'+n.track)}">${TSH[n.track]}</span></button>`).join('')||'<div class="empty">Nothing here.</div>'}
+  $('#vlrows').innerHTML=xs.map(n=>`<button class="row rowbtn" data-focus="${n.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(n.title)}</span><span class="hint wrap">${esc(VN[n.pillar].title)} · ${esc(L.meta(n))}</span></span><span class="spill ${VTONE[n.status]}" data-tip="${T('status.'+n.status)}">${VPW[n.status]}</span></button>`).join('')||'<div class="empty">Nothing here.</div>'}
 function vApply(){$$('.web .lines').forEach(s=>s.innerHTML='');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));
   const list=vLens!=='all',over=!list&&!vOpen;
   $('#voverview').hidden=!over;$('#vlist').hidden=!list;$('#vdetail').hidden=list||!vOpen;
@@ -297,7 +310,7 @@ function focus(id,fromBack){const n=VN[id];if(!n)return;
   // recipe. Titled by kind; a top card with the name, its status pill, one chip row and the description;
   // then labelled cards in two columns: what you see (screens, work) left, how it connects right.
   const TONE={done:'ok',building:'info',planned:'',vision:'',unchecked:'warn'};
-  const pill=s=>`<span class="spill ${TONE[s]}" data-tip="${T('status.'+s)}">${SW[s]}</span>`;
+  const pill=s=>`<span class="spill ${TONE[s]}" data-tip="${T('status.'+s)}">${VPW[s]}</span>`;
   const row=(x,extra)=>`<button class="row rowbtn" data-focus="${x.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(VN[x.id].title)}</span>${extra?`<span class="hint wrap">${esc(extra)}</span>`:''}</span>${pill(VN[x.id].status)}</button>`;
   const group=(w,k,cnt,inner)=>`<section class="dgroup"><div class="eyebrow" data-tip="${T(k)}">${w}${cnt!=null?` <span class="cnt" data-tip="${T(k+'.count')}">${cnt}</span>`:''}</div><div class="card dcard">${inner}</div></section>`;
   const kind=n.kind==='feature'?'Feature details':n.kind==='capability'?'Group details':'Area details';
@@ -322,11 +335,7 @@ function focus(id,fromBack){const n=VN[id];if(!n)return;
   `<button class="btn" data-does data-tip="${T('vis.wrong')}">That's wrong</button><button class="btn primary" data-does data-tip="${T('vis.start')}">Start a session on this</button>`);
   $('#pback').hidden=!vHist.length;
   $$('#pbody .vshot').forEach(b=>b.onclick=()=>openShot(b.dataset.shot));
-  if(web().hidden)return;
-  requestAnimationFrame(()=>{svg().innerHTML='';const me=chipOf(id);if(me){me.classList.add('focus');me.scrollIntoView({block:'nearest'})}
-    (n.needs||[]).forEach(x=>{const b=chipOf(x.id);if(b){b.classList.add('rel');line(me,b,'dep')}});
-    (n.needed_by||[]).forEach(x=>{const b=chipOf(x.id);if(b){b.classList.add('relby');line(b,me,'dep by')}});
-    (n.shares||[]).forEach(x=>line(me,chipOf(x.id),'share'))})}
+}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-focus]');if(t){e.preventDefault();focus(t.dataset.focus)}});
 vApply();
 '''
