@@ -176,6 +176,7 @@ TIP = {
   'vis.p.neededby': 'Things that cannot be built until this one exists.',
   'vis.p.shares': 'Things that use some of the same parts, so the shared part could be built once.',
   'vis.p.work': 'Unfinished work on the screens where this item shows up.',
+  'vis.p.where': 'Where this item sits in your plan: its area, and the group inside that area.',
   'track.app': 'Track: the app. The screens and features everyone gets when they install YouCoded.',
   'track.addons': 'Track: marketplace and add-ons. The store, and things you install from it, like the Money and Home pages.',
   'track.engine': 'Track: the assistant\'s engine. How the assistant runs underneath: models, speed and cost.',

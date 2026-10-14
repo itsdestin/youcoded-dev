@@ -50,9 +50,9 @@ def item_row(k, hint, tips, extra=''):
             f'{extra}{pill(n["status"], tips)}</button>')
 
 
-def fold(summary_title, hint, right, body, tip, open_=False, cls=''):
+def fold(summary_title, hint, right, body, tip, open_=False, cls='', attrs=''):
     hint_html = f'<span class="t-2xs muted fh">{hint}</span>' if hint else ''
-    return (f'<details class="fold bpf {cls}"{" open" if open_ else ""}><summary class="foldrow" data-tip="{E(tip)}">'
+    return (f'<details class="fold bpf {cls}"{" open" if open_ else ""}{attrs}><summary class="foldrow" data-tip="{E(tip)}">'
             f'<span class="fbody"><span class="t-sm fw">{summary_title}</span>{hint_html}</span>'
             f'{right}{CHEV}</summary><div class="foldbody">{body}</div></details>')
 
@@ -129,21 +129,37 @@ def foundations(tips):
     nxt = [k for k in ready if held[k]][:5]
 
     out = [head('Foundations', None, 'What the unbuilt ideas rest on, and what to build first to unblock the most.', '')]
-    # WHY "Build next" open and everything else folded (Destin: "more nested/collapsible"): the one
-    # question this view answers is on screen first; the full lists are one click away.
-    out.append(label('Build next', 'Unbuilt things with nothing missing underneath them, ranked by how many other unbuilt things wait on them.'))
-    out.append('<div class="card bpcard">' + ''.join(
-        item_row(k, f'{where(k)} · unblocks {plural(held[k], "other thing")}', tips) for k in nxt) + '</div>')
-    out.append(label('Everything that needs or holds up something', 'Every item linked to another by “needs”. Folded into three lists.'))
+    # WHY a summary first, then each "build first" item opening to what it frees up (Destin, round 3 A-3:
+    # "we can still improve this a bit for clarity/structure"): round 3 listed the top five with a count;
+    # the count said how many, not which. Now each opens in place to the things that could move next.
+    freed = set().union(*[trans(k) for k in nxt]) if nxt else set()
+    freed = [h for h in freed if N[h]['status'] != 'done']
+    unbuilt = len(ready) + len(waiting)
+    out.append(f'<div class="card bpsum"><p class="t-sm">Of the <b>{unbuilt}</b> unbuilt things that are linked to others, <b>{len(ready)}</b> could start now and '
+               f'<b>{len(waiting)}</b> are waiting on something else first. Building the {len(nxt)} below would unblock <b>{len(freed)}</b> of them.</p></div>')
+    out.append(label('Build these first', 'Unbuilt things with nothing missing underneath them, ranked by how many other unbuilt things wait on them. Open one to see what it frees up.'))
+    firsts = []
+    for k in nxt:
+        direct = [x['id'] for x in N[k]['needed_by'] if N[x['id']]['status'] != 'done']
+        rows = ''.join(item_row(d, (f'Also waits on: {names([m for m in missing(d) if m != k])}' if [m for m in missing(d) if m != k] else 'Nothing else missing: it could start next'), tips) for d in direct)
+        further = held[k] - len(direct)
+        body = (label('Once it exists, these can move', 'Unbuilt things that need this one directly.') + rows +
+                (f'<p class="t-2xs muted bpp">…and {plural(further, "more thing")} further up, that need these in turn.</p>' if further > 0 else '') +
+                f'<button class="btn bpfull" data-focus="{E(k)}" data-tip="Opens its details: what it needs, what needs it, and the screens it shows up on.">Open its details</button>')
+        firsts.append(fold(E(title(k)), f'{E(where(k))} · unblocks {plural(held[k], "other thing")}', pill(N[k]['status'], tips), body,
+                           'Opens what this frees up once it exists.'))
+    out.append('<div class="bpstack">' + ''.join(firsts) + '</div>')
+    out.append(label('The rest of what is linked', 'Every other item linked to another by “needs”, folded into three lists.'))
+    rest_ready = [k for k in ready if k not in nxt]
 
     def lst(ks, hint):
         return ''.join(item_row(k, hint(k), tips) for k in ks) or '<div class="empty">Nothing here.</div>'
     out.append('<div class="bpstack">' +
-               fold('Ready to start', 'Not built yet, but nothing they need is missing.', f'<span class="cnt" data-tip="How many items.">{len(ready)}</span>',
-                    lst(ready, lambda k: where(k) + (f' · unblocks {plural(held[k], "other thing")}' if held[k] else '')), 'Opens the list.') +
+               fold('Could start now', 'Not built yet, and nothing they need is missing.', f'<span class="cnt" data-tip="How many items.">{len(rest_ready)}</span>',
+                    lst(rest_ready, lambda k: where(k) + (f' · unblocks {plural(held[k], "other thing")}' if held[k] else '')), 'Opens the list.') +
                fold('Waiting on something', 'Each needs something that does not exist yet.', f'<span class="cnt" data-tip="How many items.">{len(waiting)}</span>',
                     lst(waiting, lambda k: f'Waits on: {names(missing(k))}'), 'Opens the list.') +
-               fold('Already exist', 'Built, and other things rest on them.', f'<span class="cnt" data-tip="How many items.">{len(done)}</span>',
+               fold('Already built', 'They exist, and other things rest on them.', f'<span class="cnt" data-tip="How many items.">{len(done)}</span>',
                     lst(done, lambda k: where(k) + (f' · holds up {plural(len(N[k]["needed_by"]), "thing")}' if N[k]['needed_by'] else '')), 'Opens the list.') +
                '</div>')
     loose = {}
@@ -167,6 +183,26 @@ def workings(tips):
     def part_status(p):
         return PART_STATUS.get(p['cls'], 'planned')
 
+    # WHY a map on top again (Destin, round 3 A-5/A-6: "i kinda liked the old version in theory… a middle
+    # ground or hybrid"): round 2's boxes and arrows, redrawn with the page's own card and pill, and only as a
+    # map: no detail beside it. A box opens its part's row below; an open path lights its route here.
+    SX, SY, BW, BH = 182, .84, 150, 54
+    edges_svg = []
+    for e in F['edges']:
+        a, b = P[e['a']], P[e['b']]
+        x1, y1, x2, y2 = a['x'] * SX + BW / 2, a['y'] * SY + BH / 2, b['x'] * SX + BW / 2, b['y'] * SY + BH / 2
+        built = e['status'] in ('exists', 'done')
+        edges_svg.append(f'<line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" class="wl{"" if built else " later"}" data-e="{E(e["id"])}"/>')
+    boxes = ''.join(
+        f'<button class="wnode" data-part="{E(p["id"])}" style="left:{p["x"] * SX:.0f}px;top:{p["y"] * SY:.0f}px" '
+        f'data-tip="{E(p["what"].split(". ")[0].rstrip(".") + ". Click to open it below.")}"><span class="wt">{E(p["t"])}</span>{pill(part_status(p), tips)}</button>'
+        for p in F['parts'])
+    H = max(p['y'] for p in F['parts']) * SY + BH + 4
+    W = max(p['x'] for p in F['parts']) * SX + BW
+    out.append(label('The map', 'Every part as a box, with a line for each connection. Faint lines are connections not built yet.'))
+    out.append(f'<div class="card wmap"><div class="wstage" style="width:{W:.0f}px;height:{H:.0f}px"><svg class="wlines" width="{W:.0f}" height="{H:.0f}" aria-hidden="true">{"".join(edges_svg)}</svg>{boxes}</div>'
+               f'<p class="t-2xs muted wkey">Faint lines: connections not built yet. Open a path below to light up its route.</p></div>')
+
     # paths first: following one is the easiest way in (round-2 tester: "easy to follow once I clicked Next")
     out.append(label('Follow a path', 'Step by step: where a message, an install or a sync goes, and which part does what.'))
     traces = []
@@ -185,16 +221,20 @@ def workings(tips):
                 r.append(f'<div class="stepline"><span class="stepn t-2xs muted" aria-hidden="true">{i}</span><div class="row"><span class="body">'
                          f'<span class="t-xs rt">{E(s["s"])}</span><span class="hint">{E(w)}</span></span></div></div>')
             return ''.join(r)
+        route = ''
         if len(vs) == 1:
             body = steps(vs[0])
+            route = ' '.join(x['e'] for x in vs[0]['steps'] if 'e' in x)
         else:
             # WHY nested folds, not a switch: each way is its own list, closed until wanted (round-2 U14: the unexplained toggle)
             body = '<div class="bpstack">' + ''.join(
                 fold(E(('With ' if t['id'] == 'message' else 'For ') + v['t'].replace('A ', 'a ', 1)), None,
-                     f'<span class="cnt" data-tip="How many steps.">{len(v["steps"])}</span>', steps(v), 'Opens these steps.', open_=(i == 0))
+                     f'<span class="cnt" data-tip="How many steps.">{len(v["steps"])}</span>', steps(v), 'Opens these steps.', open_=(i == 0),
+                     attrs=' data-route="' + ' '.join(x['e'] for x in v['steps'] if 'e' in x) + '"')
                 for i, v in enumerate(vs)) + '</div>'
         n = max(len(v['steps']) for v in vs)
-        traces.append(fold(E(t['t']), E(t['hint']), f'<span class="cnt" data-tip="How many steps.">{n}</span>', body, 'Opens the path, one row per step.'))
+        traces.append(fold(E(t['t']), E(t['hint']), f'<span class="cnt" data-tip="How many steps.">{n}</span>', body, 'Opens the path, one row per step, and lights its route on the map.',
+                           attrs=(f' data-route="{route}"' if len(vs) == 1 else '') + ' data-trace="1"'))
     out.append('<div class="bpstack">' + ''.join(traces) + '</div>')
 
     groups = [('inside', 'Parts of the app', 'The pieces inside YouCoded that exist today.'),
@@ -221,7 +261,7 @@ def workings(tips):
             if p.get('code'):
                 body += fold('Where the code lives', None, '', '<ul class="t-2xs muted bpcode">' + ''.join(f'<li>{E(c)}</li>' for c in p['code']) + '</ul>', 'Opens the list of files.')
             st = part_status(p)
-            rows.append(fold(E(p['t']), E(first), pill(st, tips), body, 'Opens this part: what it is, what it talks to, and the ideas that rest on it.'))
+            rows.append(fold(E(p['t']), E(first), pill(st, tips), body, 'Opens this part: what it is, what it talks to, and the ideas that rest on it.', attrs=f' id="part-{E(p["id"])}"'))
         out.append('<div class="bpstack">' + ''.join(rows) + '</div>')
     return ''.join(out)
 
@@ -267,13 +307,30 @@ CSS = '''
 .stepline{display:flex;align-items:center;gap:8px} .stepline > .row{flex:1;min-width:0;margin:0}
 .stepn{width:16px;text-align:right;flex:none}
 .bpp{margin:0}
+.wmap{padding:12px;box-shadow:none;overflow-x:auto}
+.wstage{position:relative;margin:0 auto}
+.wlines{position:absolute;inset:0;pointer-events:none}
+.wl{stroke:var(--edge-strong);stroke-width:1.5} .wl.later{stroke:var(--edge);stroke-width:1}
+.wnode{position:absolute;width:150px;height:54px;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;text-align:left;font:inherit;color:var(--fg);cursor:pointer;
+  background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);transition:background-color 120ms steps(4),opacity 150ms}
+.wnode .wt{font-size:12px;font-weight:500;line-height:1.2}
+@media (hover:hover){.wnode:hover{background:color-mix(in srgb,var(--inset) 92%,var(--fg))}}
+.wnode:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* a lit route: its lines in the text colour, every other box and line faded */
+.wmap.lit .wl{opacity:.25} .wmap.lit .wl.on{opacity:1;stroke:var(--fg);stroke-width:2.5}
+/* WHY colour, not opacity: a see-through box let the lines behind it show through */
+.wmap.lit .wnode{color:var(--fg-faint)} .wmap.lit .wnode .spill{opacity:.45} .wmap.lit .wnode.on{color:var(--fg);border-color:var(--fg)} .wmap.lit .wnode.on .spill{opacity:1}
+.wkey{margin:8px 0 0}
+.bpf{scroll-margin-top:32px}  /* WHY: a part opened from the map lands clear of the top fade */
+.bpsum{padding:12px 16px;box-shadow:none} .bpsum p{margin:0}
+.bpfull{width:100%}
 .bpcode{margin:0;padding-left:16px} .bpcode li{margin:2px 0;overflow-wrap:anywhere}
 .spill.ok{background:color-mix(in srgb,var(--status-ok) 15%,transparent);border-color:color-mix(in srgb,var(--status-ok) 30%,transparent)}
 .spill.info{background:color-mix(in srgb,var(--accent) 15%,transparent);border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
 .foldrow .cnt{font-size:12px}
 '''
 
-JS = r'''
+JS = 'const ROUTE_PARTS=' + json.dumps({e['id']: [e['a'], e['b']] for e in F['edges']}) + ';' + r'''
 // WHY window.BPV: vision_tab's focus() reads it, so a click in Journeys / Foundations / How it works
 // opens the side panel without also switching the hidden Areas view into one area.
 window.BPV='areas';
@@ -281,4 +338,14 @@ function bpShow(k){window.BPV=k;$$('.bptabs [data-bp]').forEach(b=>b.setAttribut
   $$('.bpv').forEach(v=>v.hidden=v.id!=='bp-'+k);closePanel();$('#scroller').scrollTop=0;fades()}
 $$('.bptabs [data-bp]').forEach(b=>b.onclick=()=>bpShow(b.dataset.bp));
 document.addEventListener('toggle',()=>fades(),true);
+// the map (How it works): a box opens its part's row; an open path lights its route
+$$('.wnode').forEach(b=>b.onclick=()=>{const d=$('#part-'+b.dataset.part);if(!d)return;d.open=true;d.scrollIntoView({block:'start'})});
+const EDGE_ENDS={};$$('.wl').forEach(l=>{EDGE_ENDS[l.dataset.e]=l});
+function lightRoute(){const open=$$('#bp-workings details[data-route]').filter(d=>d.open&&(!d.parentElement.closest('details')||d.parentElement.closest('details').open));
+  const ids=new Set(open.flatMap(d=>d.dataset.route.split(' ').filter(Boolean)));const map=$('.wmap');if(!map)return;
+  map.classList.toggle('lit',ids.size>0);$$('.wl').forEach(l=>l.classList.toggle('on',ids.has(l.dataset.e)));
+  const parts=new Set();$$('.wl.on').forEach(l=>{const [a,b]=ROUTE_PARTS[l.dataset.e]||[];parts.add(a);parts.add(b)});
+  $$('.wnode').forEach(n=>n.classList.toggle('on',parts.has(n.dataset.part)))}
+document.addEventListener('toggle',e=>{if(e.target.closest&&e.target.closest('#bp-workings'))lightRoute()},true);
+
 '''

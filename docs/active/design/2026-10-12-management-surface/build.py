@@ -8,7 +8,7 @@ thumbs/ (made from the ui-consistency-audit worktree's shoot run 20261012-141521
 """
 import json, os, re, html, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD  # noqa
+from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD, POPUP_CSS  # noqa
 import screens_tab as stab
 import bigpicture_tab as bptab  # round 3: Journeys, Foundations, How it works beside Areas
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -387,7 +387,7 @@ CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{bptab.CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
@@ -399,7 +399,13 @@ page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset
 <div id="app" class="view">{''.join(app)}</div>
 <div id="vision" class="view">{vision_html}</div>
 </main></div></div></div></div>
-<aside class="panel" id="panel" aria-label="Details"><div class="phd hline"><div class="t-base" id="pti"></div><button class="closebtn" aria-label="Close" id="pclose" data-tip="{T('vis.panel.close')}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="pbody fadescroll" id="pbody"></div><div class="pfoot" id="pfoot"></div></aside>
+<!-- WHY a centred popup, not a side panel (Destin, round 3 deck A-2: "dont like the side panels. would prefer
+     large centered popups"): the app's Dialog at wide size, like a Marketplace detail page. It sits under the
+     picture popup (z 28/29 vs 30/31), so a screenshot opened from it lands on top and closing it comes back here. -->
+<div class="scrim" id="iscrim" hidden style="z-index:28"></div>
+<div class="dwrap" id="iwrap" hidden style="z-index:29"><div class="dialog layer idlg" role="dialog" aria-modal="true" aria-labelledby="pti">
+  <div class="dhead hline"><div class="dhbtns"><button class="closebtn" id="pback" aria-label="Back" data-tip="Back to the item you looked at before this one." hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button></div><h2 class="dtitle" id="pti"></h2><div class="dhbtns"><button class="closebtn" aria-label="Close" id="pclose" data-tip="{T('vis.panel.close')}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div></div>
+  <div class="dbody fadescroll" id="pbody"></div><div class="dfoot" id="pfoot"></div></div></div>
 {stab.dialog_shell(TIP)}
 <div class="toast" id="toast"></div>
 <script>
@@ -423,10 +429,12 @@ document.addEventListener('click',e=>{{const b=e.target.closest('[data-does]');i
   const sh=e.target.closest('[data-shot]');if(sh&&!sh.classList.contains('vshot')&&typeof openShot==='function'&&GI[sh.dataset.shot]){{openShot(sh.dataset.shot);return}}
   const es=e.target.closest('[data-effscreens]');if(es){{showScreensFor(+es.dataset.effscreens)}}}});
 // WHY one side pane for everything: G-4.5 anatomy (title row + close, body, actions on the right per G-28).
-function openPanel(eb,title,body,acts){{$('#pti').textContent=title;$('#pbody').innerHTML=(eb?`<div class="eyebrow">${{eb}}</div>`:'')+body;$('#pfoot').innerHTML=acts;$('#panel').classList.add('open');$('#pbody').scrollTop=0;fades()}}
-function closePanel(){{$('#panel').classList.remove('open');$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));$$('.web .lines').forEach(s=>s.innerHTML='')}}
-$('#pclose').onclick=closePanel;document.addEventListener('keydown',e=>{{if(e.key==='Escape')closePanel()}});
-$$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));$('#panel').classList.remove('open');$('#scroller').scrollTop=0;$$('#panehead .lensbar').forEach(l=>l.hidden=l.dataset.view!==b.dataset.view);fades()}});
+function openPanel(eb,title,body,acts){{$('#pti').textContent=title;$('#pbody').innerHTML=(eb?`<div class="eyebrow">${{eb}}</div>`:'')+body;$('#pfoot').innerHTML=acts;$('#iscrim').hidden=false;$('#iwrap').hidden=false;$('#pbody').scrollTop=0;fades()}}
+function closePanel(){{$('#iscrim').hidden=true;$('#iwrap').hidden=true;if(window.vHist)vHist.length=0;$$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));$$('.web .lines').forEach(s=>s.innerHTML='')}}
+$('#pclose').onclick=closePanel;$('#iscrim').onclick=closePanel;$('#iwrap').onclick=e=>{{if(e.target.id==='iwrap')closePanel()}};
+// WHY the DCUR check: Esc over a picture opened from the popup closes only the picture
+document.addEventListener('keydown',e=>{{if(e.key==='Escape'&&!(typeof DCUR!=='undefined'&&DCUR))closePanel()}});
+$$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));closePanel();$('#scroller').scrollTop=0;$$('#panehead .lensbar').forEach(l=>l.hidden=l.dataset.view!==b.dataset.view);fades()}});
 $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 </script><script>
 {stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP))}

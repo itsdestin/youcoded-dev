@@ -237,9 +237,9 @@ CSS = '''
 .vlistcard{display:flex;flex-direction:column;gap:2px;padding:8px 16px}
 .vlistcard .irow{align-items:flex-start} .vlistcard .irow .sdot{margin-top:5px}
 .vlbody{flex:1;min-width:0;display:flex;flex-direction:column}
-.vshots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.vshots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .vshot{border:1px solid var(--edge-card);border-radius:var(--radius-md);background:var(--well);padding:0;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;color:var(--fg-2)}
-.vshot img{height:64px;width:100%;object-fit:contain;padding:4px}
+.vshot img{height:96px;width:100%;object-fit:contain;padding:4px}
 .vshot span{font-size:11px;padding:2px 6px;background:var(--panel);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
 @media (hover:hover){.vshot:hover{border-color:var(--edge-strong)}}
 @media (max-width:760px){.vinsights{grid-template-columns:1fr}}
@@ -283,29 +283,44 @@ $('#vback').onclick=()=>{vOpen=null;vApply();$('#scroller').scrollTop=0;fades()}
 $('#vall').onclick=()=>{vLens='all';vOpen=null;closePanel();vApply();fades()};
 // WHY pressing the pressed link goes back (G-14): the same rule as the filter pills
 $$('.vlinks [data-lens]').forEach(b=>b.onclick=()=>{vLens=vLens===b.dataset.lens?'all':b.dataset.lens;vOpen=null;closePanel();vApply();$('#scroller').scrollTop=0;fades()});
-function focus(id){const n=VN[id];if(!n)return;
+let vHist=[],vCur=null;window.vHist=vHist;
+$('#pback').onclick=()=>{const p=vHist.pop();if(p)focus(p,true)};
+function focus(id,fromBack){const n=VN[id];if(!n)return;
   // WHY: from the overview an item opens its area; inside a flat list it stays in the list and only opens the details
   // WHY the BPV check (round 3): only the Areas view opens the item's area; the other views just open the panel
   if((window.BPV||'areas')==='areas'&&vLens==='all'&&vOpen!==n.pillar){vOpen=n.pillar;vApply()}
   $$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));
+  // WHY the back stack (round 3 popup): a click inside the popup replaces its contents; Back returns
+  if(!fromBack&&vCur&&vCur!==id&&!$('#iwrap').hidden)vHist.push(vCur);vCur=id;
   const ev=(n.evidence||[]);const kids=Object.values(VN).filter(m=>m.parent===id);
-  const where=n.kind==='feature'?VN[n.pillar].title+' › '+VN[n.parent].title:(n.kind==='capability'?VN[n.pillar].title:'Area');
-  const row=(x,extra)=>`<div class="vlink" data-focus="${x.id}" data-tip="${T('vis.row')}"><i class="sdot ${VN[x.id].status}" aria-hidden="true"></i><div><b class="t-sm">${VN[x.id].title}</b>${extra?`<div class="t-xs muted">${extra}</div>`:''}</div></div>`;
-  const head=(w,k,cnt)=>`<div class="eyebrow pe" data-tip="${T(k)}">${w}${cnt!=null?` <span class="cnt" data-tip="${T(k+'.count')}">${cnt}</span>`:''}</div>`;
+  // WHY this layout (Destin, round 3 A-4: "styling is still poor in the side panel"): the guide's Detail page
+  // recipe. Titled by kind; a top card with the name, its status pill, one chip row and the description;
+  // then labelled cards in two columns: what you see (screens, work) left, how it connects right.
+  const TONE={done:'ok',building:'info',planned:'',vision:'',unchecked:'warn'};
+  const pill=s=>`<span class="spill ${TONE[s]}" data-tip="${T('status.'+s)}">${SW[s]}</span>`;
+  const row=(x,extra)=>`<button class="row rowbtn" data-focus="${x.id}" data-tip="${T('vis.row')}"><span class="body"><span class="t-xs rt">${esc(VN[x.id].title)}</span>${extra?`<span class="hint wrap">${esc(extra)}</span>`:''}</span>${pill(VN[x.id].status)}</button>`;
+  const group=(w,k,cnt,inner)=>`<section class="dgroup"><div class="eyebrow" data-tip="${T(k)}">${w}${cnt!=null?` <span class="cnt" data-tip="${T(k+'.count')}">${cnt}</span>`:''}</div><div class="card dcard">${inner}</div></section>`;
+  const kind=n.kind==='feature'?'Feature details':n.kind==='capability'?'Group details':'Area details';
+  const chips=[n.kind!=='pillar'?VN[n.pillar].title:null,n.kind==='feature'?VN[n.parent].title:null].filter(Boolean).map(c=>`<span class="badge" data-tip="${T('vis.p.where')}">${esc(c)}</span>`).join('')
+    +(n.track&&n.kind==='feature'?`<span class="badge" data-tip="${T('track.'+n.track)}">${TRK[n.track]}</span>`:'')
+    +(n.since?`<span class="badge" data-tip="${T('vis.since')}">since ${nice(n.since)}</span>`:'');
+  const top=`<div class="card dtop"><div class="dtl"><span class="t-base fw">${esc(n.title)}</span>${n.kind==='feature'?pill(n.status):''}</div>
+    ${chips?`<div class="dchips">${chips}</div>`:''}
+    ${n.kind==='feature'?`<p class="t-sm dim">${n.why||'<span class="missing">No evidence gathered yet.</span>'}</p>`:''}
+    ${n.quote?`<div class="quote t-xs">“${n.quote}”</div>`:''}</div>`;
   // cross-links: the screens this part of the vision shows up on, and the open work on those screens
   const scr=typeof screensMatching==='function'?screensMatching(n.screens||[]):[];
   const work=[...new Set(scr.flatMap(s=>GI[s].work))].map(i=>EFF[i]);
-  openPanel(where,n.title,`
-  ${n.quote?`<div class="quote t-xs">“${n.quote}”</div>`:''}
-  ${n.kind==='feature'?`<div class="statusline t-xs" data-tip="${T('status.'+n.status)}"><i class="sdot ${n.status}" aria-hidden="true"></i>${SW[n.status]}${n.since?' · since '+nice(n.since):''} · <span class="badge trk" data-tip="${T('track.'+n.track)}">${TRK[n.track]}</span></div><p class="t-sm">${n.why||'<span class="missing">No evidence gathered yet.</span>'}</p>`:''}
-  ${kids.length?head('Inside','vis.inside',kids.length)+kids.map(k=>row(k,SW[k.status]+(k.kind==='feature'?' · '+TRK[k.track]:''))).join(''):''}
-  ${(n.needs||[]).length?head('Needs first','vis.p.needs')+n.needs.map(x=>row(x,x.because)).join(''):''}
-  ${(n.needed_by||[]).length?head('Needed by','vis.p.neededby')+n.needed_by.map(x=>row(x,x.because)).join(''):''}
-  ${(n.shares||[]).length?head('Shares parts with','vis.p.shares')+n.shares.map(x=>row(x,x.because)).join(''):''}
-  ${scr.length?head('Where it shows up','vis.wherescreens',scr.length)+`<div class="vshots">${scr.slice(0,6).map(s=>`<button class="vshot" data-shot="${s}" data-tip="${T('vis.shot')}"><img src="${GI[s].states[0].img}" alt=""><span>${GI[s].t}</span></button>`).join('')}</div>${scr.length>6?`<div class="t-xs muted">Showing 6 of ${scr.length}.</div>`:''}`:''}
-  ${work.length?head('Work on those screens','vis.p.work')+work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${w.title}</div><div class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</div></div></div>`).join(''):''}
-  ${ev.length?`<details class="fold pe"><summary class="foldrow" data-tip="${T('vis.howknow')}"><span class="t-xs">How we know <span class="cnt" data-tip="${T('vis.howknow.count')}">${ev.length}</span></span><span class="chev">›</span></summary><ul class="ev t-xs">${ev.map(e=>`<li><span class="kind">${e.kind}</span>${e.note||''} <span class="muted">${nice(e.date||'')}</span><div class="muted t-2xs">${e.ref||''}</div></li>`).join('')}</ul></details>`:''}`,
+  const left=(scr.length?group('Where it shows up','vis.wherescreens',scr.length,`<div class="vshots">${scr.slice(0,9).map(s=>`<button class="vshot" data-shot="${s}" data-tip="${T('vis.shot')}"><img src="${GI[s].states[0].img}" alt=""><span>${GI[s].t}</span></button>`).join('')}</div>${scr.length>9?`<div class="t-2xs muted">Showing 9 of ${scr.length}.</div>`:''}`):'')
+    +(work.length?group('Work on those screens','vis.p.work',null,work.map(w=>`<div class="row slim"><span class="body"><span class="t-xs rt">${esc(w.title)}</span><span class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</span></span></div>`).join('')):'');
+  const right=(kids.length?group('Inside','vis.inside',kids.length,kids.map(k=>row(k,k.kind==='feature'?TRK[k.track]:'')).join('')):'')
+    +((n.needs||[]).length?group('Needs first','vis.p.needs',null,n.needs.map(x=>row(x,x.because)).join('')):'')
+    +((n.needed_by||[]).length?group('Needed by','vis.p.neededby',null,n.needed_by.map(x=>row(x,x.because)).join('')):'')
+    +((n.shares||[]).length?group('Shares parts with','vis.p.shares',null,n.shares.map(x=>row(x,x.because)).join('')):'')
+    +(ev.length?`<details class="fold"><summary class="foldrow" data-tip="${T('vis.howknow')}"><span class="t-xs">How we know <span class="cnt" data-tip="${T('vis.howknow.count')}">${ev.length}</span></span><span class="chev">›</span></summary><ul class="ev t-xs">${ev.map(e=>`<li><span class="kind">${e.kind}</span>${e.note||''} <span class="muted">${nice(e.date||'')}</span><div class="muted t-2xs">${e.ref||''}</div></li>`).join('')}</ul></details>`:'');
+  openPanel('',kind,top+(left&&right?`<div class="dcols"><div class="dcol">${left}</div><div class="dcol">${right}</div></div>`:`<div class="dcol">${left}${right}</div>`),
   `<button class="btn" data-does data-tip="${T('vis.wrong')}">That's wrong</button><button class="btn primary" data-does data-tip="${T('vis.start')}">Start a session on this</button>`);
+  $('#pback').hidden=!vHist.length;
   $$('#pbody .vshot').forEach(b=>b.onclick=()=>openShot(b.dataset.shot));
   if(web().hidden)return;
   requestAnimationFrame(()=>{svg().innerHTML='';const me=chipOf(id);if(me){me.classList.add('focus');me.scrollIntoView({block:'nearest'})}
@@ -317,4 +332,22 @@ vApply();
 '''
 SVG_CSS = '''
 .lines path{fill:none;stroke-width:1.5} .lines .dep{stroke:var(--status-ok)} .lines .dep.by{stroke:var(--tag-blue)} .lines .share{stroke:var(--tag-purple);stroke-dasharray:4 3}
+'''
+
+POPUP_CSS = '''
+/* the item popup (round 3): Dialog wide + the Detail page recipe */
+.idlg{max-width:min(1000px,94vw)}
+.idlg .dhead .dtitle{flex:1}
+.idlg .card{box-shadow:none}  /* WHY: cards inside a popup are the flat first level, not raised (guide: Card levels) */
+.idlg .dhead .dhbtns:first-child:has(button[hidden]){display:none}
+.idlg .dbody > * + *{margin-top:16px}
+.dtop{padding:16px;display:flex;flex-direction:column;gap:8px}
+.dtop p{margin:0} .dtl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.dcols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+.dcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.dgroup .eyebrow{margin:0 4px 8px}
+.dcard{padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:none}
+.dcard .row{margin:0}
+@media (max-width:760px){.dcols{grid-template-columns:1fr}}
 '''
