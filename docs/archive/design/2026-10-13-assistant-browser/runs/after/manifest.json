@@ -1,0 +1,152 @@
+[
+  {
+    "name": "chat#browser-handoff",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat#browser-handoff/halftone-dimension.png",
+    "ms": 1661,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 952,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#browser-final",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat#browser-final/halftone-dimension.png",
+    "ms": 1668,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 952,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#browser-site",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat#browser-site/halftone-dimension.png",
+    "ms": 1698,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 952,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#browser-site",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat#browser-site/meadow-mist.png",
+    "ms": 2313,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 930,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#browser-final",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat#browser-final/meadow-mist.png",
+    "ms": 2469,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 930,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#browser-handoff",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat#browser-handoff/meadow-mist.png",
+    "ms": 2475,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 930,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat/browser",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat/browser/halftone-dimension.png",
+    "ms": 2616,
+    "errors": [],
+    "panel": {
+      "x": 961,
+      "y": 138,
+      "w": 462,
+      "h": 559
+    }
+  },
+  {
+    "name": "settings/browser",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/settings/browser/halftone-dimension.png",
+    "ms": 2716,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  },
+  {
+    "name": "chat/browser",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/chat/browser/meadow-mist.png",
+    "ms": 4850,
+    "errors": [],
+    "panel": {
+      "x": 958,
+      "y": 125,
+      "w": 464,
+      "h": 595
+    }
+  },
+  {
+    "name": "settings/browser",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/browser-automation-20261013/docs/active/design/2026-10-13-assistant-browser/runs/after/settings/browser/meadow-mist.png",
+    "ms": 4911,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    }
+  }
+]
