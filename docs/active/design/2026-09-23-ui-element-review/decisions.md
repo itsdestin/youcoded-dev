@@ -289,3 +289,13 @@ Deck `popup-cards-2` (the rule applied, 2026-10-14) — answers:
 | Friend details, Publish theme | Yes, kept. | `popup-cards-2#A-5` |
 | (i) Overview label | Yes, kept. | `popup-cards-2#A-6` |
 | Whole-popup buttons in a several-box popup | "help me visualize these" — shown as pictures on `popup-cards-3#Q-1`. | `popup-cards-2#Q-1` |
+
+Deck `popup-cards-3` (2026-10-14) — answers:
+
+| Topic | Decision | Source |
+|---|---|---|
+| Rename, Pick a handle, OpenRouter | **"again, the grey subtext should be below the text box in each for consistency"** — name, box, then grey words (OpenRouter's steps too, step 3 now says "above"); all under-box words one grey. | `popup-cards-3#B-1` |
+| Warnings, Skip permissions confirm | Yes. | `popup-cards-3#B-2` |
+| Remove project, Turn on sync | Yes — "grey text below text input box" (Turn on sync's words moved under its box). | `popup-cards-3#B-3` |
+| Resume: choose a model, bare | Yes. | `popup-cards-3#B-4` |
+| Whole-popup buttons, several boxes | **Pinned bottom line** — "if the buttons at the bottom apply to an entire popup with multiple sections, they should remain at the bottom". Submit a ticket moves to it. Not chosen: under the last box, inside the last box. | `popup-cards-3#Q-1` |

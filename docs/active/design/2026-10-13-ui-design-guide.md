@@ -160,13 +160,15 @@ and Git review inside it are still hand-built — see their sections below.)
   question of one or two sentences with nothing to tick or type ("Remove backup?", a missing folder's
   Remove project, Switch model) stays plain text. **Every one-job popup is drawn the same way** by the
   shared `OneJobCard` (popup-cards-2#A-1–#A-3): narrow (420px), 12px grey words, a name above each
-  text box, then the buttons stacked full width with the main one on top. A button never sits inside
+  text box, **the box's grey words under it** (popup-cards-3#B-1, #B-3: name, box, then words — the
+  steps of Connect OpenRouter too), then the buttons stacked full width with the main one on top. A button never sits inside
   the text box. **Exception:** a popup that is only one dropdown and its buttons (Choose a model to
   resume with) has no card (popup-cards-2#A-4).
 - **A popup with several groups** gives each group a small label over its own card, the way About groups
-  its text (Settings → About). **Not decided yet:** where buttons that act on the whole popup go when it
-  has several cards (Close session and Update use the footer line, Submit a ticket puts them under the
-  cards).
+  its text (Settings → About). **Buttons that act on the whole popup go on its pinned bottom line**
+  (`Dialog` `footer`), always in view while the cards scroll (popup-cards-3#Q-1, Destin: "if the
+  buttons at the bottom apply to an entire popup with multiple sections, they should remain at the
+  bottom") — Close session, Update, Submit a ticket. Never under the last card, never inside it.
 - **A line about the whole popup is the title's second line** (`Dialog` `subtitle`) — kept where a popup
   has one (popup-cards-1#PC-2).
 - **An (i) page labels every card, the first one "Overview"** (popup-cards-1#PC-3): one shared piece
