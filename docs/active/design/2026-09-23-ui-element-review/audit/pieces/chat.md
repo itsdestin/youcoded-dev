@@ -108,7 +108,7 @@ Verdict key: FOLLOWS / BREAKS / NO RULE. Pieces that plainly follow a rule are m
 | approval bubble | Yes (green) / No (red) pills | NO RULE | exempt: permission prompts keep today's look; note two coloured fills, green and red, are not the theme's filled/outlined |
 | helper asks | Yes / Always Allow (blue) / No (red) pills | NO RULE | exempt |
 | helper asks | approval card inside a bubble inside a bubble | NO RULE | exempt tool card |
-| tool gallery | ask-question card: filled "Submit" at left, bare-text "Dismiss" at right | BREAKS | decision BP-5: outlined Dismiss directly left of filled Submit at the right; Dismiss is bare text |
+| tool gallery | ask-question card: filled "Submit" at left, bare-text "Dismiss" at right | OPEN | not a ruling: BP-5 was never approved (final-review#CH-29); the card is revisited with the tool-cards redesign |
 | tool gallery | ask-question options as boxed rows with radio circles, "Add a note..." boxed text field | NO RULE | KIND: single-choice list with a note field |
 | tool gallery | "Couldn't send" and "SendUserFile failed: ..." in red text | BREAKS | never red body text |
 | tool gallery | tool card rows, grouped rows | NO RULE | exempt |
