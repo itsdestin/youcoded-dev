@@ -1,0 +1,212 @@
+{
+ "title": "Popup boxes — the rule applied, and buttons in popups with several boxes",
+ "key": "popup-cards-2",
+ "out": "popup-cards-2.review.html",
+ "images": "images/popup-cards-2",
+ "runs": {
+  "before": "runs/r2/before",
+  "after": "runs/r2/after"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "After"
+ },
+ "steps": [
+  {
+   "id": "A-1",
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ],
+   "surface": "Popups",
+   "path": "Rename session · Pick a handle · Settings → Assistant → Cloud → Connect OpenRouter",
+   "crop": [
+    {
+     "crop": "chat/rename-session@panel",
+     "label": "Rename"
+    },
+    {
+     "crop": "handle-prompt@panel",
+     "label": "Pick a handle"
+    },
+    {
+     "crop": "settings/assistant/cloud/openrouter/key@panel",
+     "label": "OpenRouter"
+    }
+   ],
+   "headline": "The buttons moved inside the box in Rename session, Pick a handle and Connect OpenRouter.",
+   "changed": "Each popup is now one box holding its words, field and buttons (your pick on the last page).",
+   "notice": "One less layer: nothing sits loose under the box any more.",
+   "risk": "These three don't fully mirror each other yet (item 4); that comes next on its own page."
+  },
+  {
+   "id": "A-2",
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ],
+   "surface": "Warnings before risky modes",
+   "path": "Picking Skip permissions or a small model the first time · Settings → Assistant → Permissions → Skip permissions",
+   "crop": [
+    {
+     "crop": "chat/first-time-warning/skip-permissions@panel",
+     "label": "Skip permissions warning"
+    },
+    {
+     "crop": "chat/first-time-warning/small-model@panel",
+     "label": "Small model warning"
+    },
+    {
+     "crop": "settings/assistant/permissions/skip-confirm@panel",
+     "label": "Settings: skip"
+    }
+   ],
+   "headline": "Buttons inside the box, and the \"Tick the box to continue\" line is gone.",
+   "changed": "The line under the tick box is removed. Point at the grey button and a hint says \"Tick the box to continue\". Skip permissions' own confirm got the same hint.",
+   "notice": "The hint appears after resting the pointer on the grey button for under a second; on a touchscreen, press and hold it.",
+   "risk": "Someone on a phone who never presses and holds won't see the hint; the tick box sits right above the button."
+  },
+  {
+   "id": "A-3",
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ],
+   "surface": "Projects",
+   "path": "Projects → remove a project (a folder; a synced one) · turn on sync for a folder",
+   "crop": [
+    {
+     "crop": "projects/remove@panel",
+     "label": "Remove project"
+    },
+    {
+     "crop": "projects/remove/synced@panel",
+     "label": "Remove synced"
+    },
+    {
+     "crop": "projects/turn-on-sync@panel",
+     "label": "Turn on sync"
+    }
+   ],
+   "headline": "Remove project and Turn on sync: buttons inside the box.",
+   "changed": "Same words and buttons, now inside the one box. A missing folder's plain two-sentence Remove stays plain text, as before.",
+   "notice": "The buttons now read as part of the same decision as the words above them."
+  },
+  {
+   "id": "A-4",
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ],
+   "surface": "Models",
+   "path": "Model picker → Fast mode · Resuming an older conversation that needs a model picked",
+   "crop": [
+    {
+     "crop": "chat/model-picker/fast-mode@panel",
+     "label": "Fast mode"
+    },
+    {
+     "crop": "chat/resume/pick-model@panel",
+     "label": "Resume: pick model"
+    }
+   ],
+   "headline": "Fast mode's buttons sit inside its box; the resume popup lost the extra box around the model picker.",
+   "changed": "Resume: the picker and its buttons now share one box instead of the picker alone being boxed (you asked for that box to go).",
+   "risk": "Fast mode is still \"a bit weird\" otherwise; it gets its own redesign with item 4.",
+   "notice": "Both popups are one layer shallower."
+  },
+  {
+   "id": "A-5",
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ],
+   "surface": "Friends and themes",
+   "path": "Games → a friend → details · Appearance → a theme you built → share",
+   "crop": [
+    {
+     "crop": "chat/games/friend@panel",
+     "label": "Friend details"
+    },
+    {
+     "crop": "marketplace/theme-share@panel",
+     "label": "Publish theme"
+    }
+   ],
+   "headline": "Friend details and Publish theme: actions inside the box.",
+   "changed": "Unfriend and Block now sit in the friend's own box; Publish sits in the box that explains publishing. The theme's picture stays outside, as a picture of the item.",
+   "notice": "The friend's actions read as being about that friend."
+  },
+  {
+   "id": "A-6",
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ],
+   "surface": "(i) pages",
+   "path": "Settings → Appearance → (i) · Backup & sync → What is this? (all six (i) pages)",
+   "crop": [
+    {
+     "crop": "settings/appearance/about@panel",
+     "label": "About Appearance"
+    },
+    {
+     "crop": "settings/sync#explainer@panel",
+     "label": "About Backup & sync"
+    }
+   ],
+   "headline": "Every (i) page now labels its first box \"Overview\".",
+   "changed": "The opening box has the label you picked; the boxes after it are unchanged.",
+   "notice": "Every box on an (i) page now has a label, so none looks filed under nothing."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Popups with several labelled boxes",
+   "path": "Close session, Update, Submit a ticket, Session details, Settings popups",
+   "headline": "In a popup with several labelled boxes, where should buttons that act on the whole popup go?",
+   "today": "It varies. Close session and Update pin their buttons to a line at the very bottom of the popup that stays put while the boxes scroll. Submit a ticket puts them under the last box, so they scroll with it. Popups whose boxes each have their own buttons (Settings) have none for the whole popup.",
+   "problem": "Two looks for the same thing; on a long popup the scrolling kind can sit out of sight until you scroll down.",
+   "proposal": "Pick one shape for every popup with several boxes. It only affects buttons that act on the whole popup (Close session, Send, Update), not a box's own buttons.",
+   "options": [
+    {
+     "id": "bottom-line",
+     "label": "Pinned bottom line",
+     "recommended": true,
+     "pros": [
+      "Always in view, however long the popup",
+      "Already how Close session and Update work",
+      "Clearly about the whole popup, not one box"
+     ],
+     "cons": [
+      "Takes a strip of height from the scrolling part",
+      "Submit a ticket changes"
+     ]
+    },
+    {
+     "id": "under-boxes",
+     "label": "Under the last box",
+     "pros": [
+      "Reads top to bottom: fill in, then act",
+      "No fixed strip"
+     ],
+     "cons": [
+      "Scrolls out of sight on long popups",
+      "Close session and Update change"
+     ]
+    },
+    {
+     "id": "inside-last",
+     "label": "Inside the last box",
+     "pros": [
+      "Matches the one-job rule (buttons inside a box)"
+     ],
+     "cons": [
+      "Reads as belonging to that box only, not the whole popup",
+      "Scrolls out of sight"
+     ]
+    }
+   ]
+  }
+ ]
+}
