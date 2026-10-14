@@ -315,3 +315,5 @@ Deck `popup-cards-8` (2026-10-14) — answers:
 | Marketplace theme previews | **"still cant see the bottom of the preview. i should be able to see the full window."** — the preview frame takes the picture's 16:10 shape, so the whole window shows. | `popup-cards-8#M-1` |
 | Details in every error | **Everywhere** — the shared error box (Callout / ErrorState `details`) folds it at its foot; the eight under-the-box folds moved in. Not chosen: Close session only. | `popup-cards-8#Q-1` |
 | One-sentence popups | **Box them all** — Switch model, Remove backup and a missing folder's Remove project use the one-job card; the short-confirmation exception is retired. Not chosen: keep them plain. | `popup-cards-8#Q-2` |
+
+Deck `popup-cards-9` (2026-10-14): all four approved as built — Version always on (`#W-2`), full-window theme previews (`#M-2`), Details inside the error box everywhere (`#E-1`), short popups boxed (`#S-1`).

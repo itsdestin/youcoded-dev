@@ -1,0 +1,36 @@
+{
+ "deck": "popup-cards-9",
+ "started": "2026-10-14T20:48:13.332Z",
+ "submitted": "2026-10-14T20:48:43Z",
+ "cur": 3,
+ "answers": {
+  "W-2": {
+   "v": "yes",
+   "t": 1792010899503,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "t": 1792010905697,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-1": {
+   "v": "yes",
+   "t": 1792010916357,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1792010922347,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
