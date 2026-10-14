@@ -3,7 +3,7 @@ status: active
 date: 2026-09-21
 revised: 2026-10-04
 owner: Destin (taste and acceptance) / assistant (research, proposals and implementation)
-related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, decks, guide draft); docs/active/design/2026-08-25-ui-design-guide.md (old guide, to be archived)
+related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, decks, guide draft); docs/archive/design/2026-08-25-ui-design-guide.md (old guide, archived); docs/active/design/2026-10-13-ui-design-guide.md (the approved guide)
 ---
 
 # A real design language for YouCoded — guide and app
@@ -13,7 +13,7 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
 1. **A new design guide** that lets anyone building a new screen, popup or Page make it
    look like Destin designed it. General rules and build instructions, with real screens
    named only as examples — not a description of every existing screen. It completely
-   replaces the old AI-written guide (`2026-08-25-ui-design-guide.md`) once Destin approves the
+   replaces the old AI-written guide (`docs/archive/design/2026-08-25-ui-design-guide.md`; approved 2026-10-14) once Destin approves the
    new one on the final deck; until then the old guide stays active and is not archived.
 2. **Every rule in it comes from Destin's own choices**, made by comparing real screens
    side by side (Today vs. proposals), never from word-only questions or from the old guide.

@@ -2,7 +2,7 @@
 status: superseded
 date: 2026-09-24
 superseded_by: docs/active/design/2026-10-13-ui-design-guide.md
-replaces: docs/active/design/2026-08-25-ui-design-guide.md (on approval)
+replaces: docs/archive/design/2026-08-25-ui-design-guide.md (on approval)
 source: docs/active/design/2026-09-23-ui-element-review/decisions.md
 ---
 

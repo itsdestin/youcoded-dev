@@ -4,7 +4,7 @@ approval: approved by Destin on the final-review deck (final-review#Q-1, 2026-10
 date: 2026-10-13
 owner: Destin (decisions) / Claude (writing)
 replaces: docs/archive/design/2026-08-25-ui-design-guide.md
-source: docs/active/design/2026-09-23-ui-element-review/decisions.md (every rule's decision); guide-draft.md beside it (the working draft this finishes)
+source: docs/active/design/2026-09-23-ui-element-review/decisions.md (every rule's decision); guide-draft.md beside it is the superseded working draft
 ---
 
 # YouCoded design guide
@@ -78,7 +78,9 @@ A job none of these does needs a new shared piece and Destin's look for it — n
    (green, red, amber, blue) are the only exceptions, and they go **only in a tint** — a status pill,
    a notice box's tint and border, a status dot — **never in text**: not a word, not a number, not a
    label, not a notice's title (decisions "Error notices: no red titles", "Coloured warning in the
-   model menu"; small-fixes-3#SF3-10). Corner roundness comes from the theme's shape setting — never
+   model menu"; small-fixes-3#SF3-10). **Two exceptions:** a destructive action is red (a red button,
+   a red menu item, the bin — decisions "Status colours out of words, app-wide"), and an action that costs money keeps
+   its fixed orange button (Buttons). Corner roundness comes from the theme's shape setting — never
    write a fixed pill or pixel radius on a control.
 3. **Quiet by default.** Small grey labels in sentence case. Show what the user needs to act on; drop
    details nobody asked for, and options or information that would confuse someone who has never seen
@@ -88,10 +90,9 @@ A job none of these does needs a new shared piece and Destin's look for it — n
    Page, a file) is a raised card. A list you read or pick from (settings, a menu) is rows. Inside a
    popup, every card at the same depth looks the same (see Card levels) — a card that holds one idea
    keeps it together; never split one idea into separate boxes.
-6. **Actions live on the right — or span the full width.** At most one filled button per view — except a list whose rows each carry
-   their own main action, where each row's is filled (see Buttons). A filled button, switch or
-   selection never sits alone at the bottom-left — only when balanced by something on the right of
-   the same line.
+6. **Actions live on the right — or span the full width**, with one filled button per view (see
+   Buttons). A filled button, switch or selection never sits alone at the bottom-left — only when
+   balanced by something on the right of the same line.
 7. **Tight, even spacing** from one scale (below).
 8. **Every theme, every width.** Check light, a dark theme, a wallpaper theme and 390px phone width
    before showing anyone.
@@ -111,9 +112,8 @@ A job none of these does needs a new shared piece and Destin's look for it — n
   description under it, never beside it), its tools right. Every tab of a screen opens with the same
   heading row (the Projects view's tabs). Lists scroll under a see-through fade at both edges, tall
   enough to fade a whole card edge.
-- Known deviation: **at phone width the band shows no title** — only the lit Pages or Projects
-  button says where you are, and pinned pages hide (they stay in Pages). Three columns could not
-  hold both button clusters, the title and "Back to chat" at 390px; they drew over each other.
+- Known deviation: **at phone width the band shows no title** — the lit Pages or Projects button says
+  where you are, and pinned pages hide (they stay in Pages).
 
 ### Popups and side panels
 - Every popup and side panel uses the shared popup (`Dialog`): a **one-line 16px semibold title**, the
@@ -136,12 +136,9 @@ and Git review inside it are still hand-built — see their sections below.)
   never a solid strip, never an unfaded side strip (decisions "Popup scroll fade").
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide** popups are
   larger. At phone width a popup stays a popup, as wide as the screen allows (old guide §4.8).
-- **Settings save as you change them.** A settings popup has no Save, no Done and no footer: closing it
-  keeps what you set (old guide §4.3). A footer is only for a decision to confirm.
-- **A popup's own buttons that must stay in view** (a long body above them) go in the shared popup's
-  **footer**: pinned under the body, which scrolls and fades see-through where it meets them — no line
-  between them. Never a hand-made scroll area with its buttons under it (Close session, Close window,
-  Update available, Unsaved changes before quit).
+- **Settings save as you change them.** A settings popup has no Save and no Done: closing it keeps what
+  you set (old guide §4.3). The same goes for an editor of a list (tags, quick chips, voice words):
+  each change saves at once (vocab-chips-2#D-1).
 - **Enter does the popup's main action** only through the shared popup (`onEnter`): it never fires while
   the keyboard is on a button, switch, tag or text box (those keep their own Enter), nor while another
   popup sits on top. A destructive main action (Close window, Discard) takes a click, not Enter.
@@ -153,22 +150,22 @@ and Git review inside it are still hand-built — see their sections below.)
   summary that swaps into a second form — and **nothing it edits is saved until the action**; the ✕
   leaves everything as it was (close-session-1#CS-2).
 - **A popup that does one job is one card holding everything, its buttons included**
-  (popup-cards-1#PC-1): its words, fields, notice, tick box and then its buttons, all inside one
-  unlabelled first-level card. Reference: Create a page. Never a card with the buttons left under it,
-  and never the fields bare on the popup. A tick box before an action is always the shared "I
-  understand" box (`ConsentRow`), never a bare square. **Short confirmations too:** a one- or two-sentence question ("Remove
-  backup?", a missing folder's Remove project, Switch model, the take-over popups) is the same card
-  (popup-cards-6#T-1, popup-cards-8#Q-2 — the earlier plain-text exception is retired). **Every one-job popup is drawn the same way** by the
-  shared `OneJobCard` (popup-cards-2#A-1–#A-3): narrow (420px), 12px grey words, a name above each
-  text box, **the box's grey words under it** (popup-cards-3#B-1, #B-3: name, box, then words — the
-  steps of Connect OpenRouter too), then the buttons stacked full width with the main one on top. A button never sits inside
-  the text box. **Exception:** a popup that is only one dropdown and its buttons (Choose a model to
-  resume with) has no card (popup-cards-2#A-4).
+  (popup-cards-1#PC-1), drawn by the shared `OneJobCard` (popup-cards-2#A-1–#A-3): narrow (420px), its
+  words in 12px grey, a name above each text box with the box's grey words under it (Text and
+  numbers), a notice or tick box, then the buttons **stacked full width, main one on top**. Reference:
+  Rename session, Pick a handle, Connect OpenRouter. Never a card with the buttons left under it, never
+  the fields bare on the popup, never a button inside the text box. A tick box before an action is
+  always the shared "I understand" box (`ConsentRow`). **One- and two-sentence questions are the same
+  card** ("Remove backup?", Switch model, a missing folder's Remove project, the take-over popups —
+  popup-cards-6#T-1, popup-cards-8#Q-2). **The one exception:** a popup that is only one dropdown and
+  its buttons (Choose a model to resume with) has no card (popup-cards-2#A-4).
 - **A popup with several groups** gives each group a small label over its own card, the way About groups
   its text (Settings → About). **Buttons that act on the whole popup go on its pinned bottom line**
-  (`Dialog` `footer`), always in view while the cards scroll (popup-cards-3#Q-1, Destin: "if the
-  buttons at the bottom apply to an entire popup with multiple sections, they should remain at the
-  bottom") — Close session, Update, Submit a ticket. Never under the last card, never inside it.
+  (`Dialog` `footer`): always in view, the body scrolling and fading see-through above them with no
+  line between (popup-cards-3#Q-1, Destin: "if the buttons at the bottom apply to an entire popup with
+  multiple sections, they should remain at the bottom"). References: Close session, Close window,
+  Update available, Unsaved changes before quit, Submit a ticket. Never under the last card, never
+  inside it, never a hand-made scroll area with buttons under it.
 - **A line about the whole popup is the title's second line** (`Dialog` `subtitle`) — kept where a popup
   has one (popup-cards-1#PC-2).
 - **An (i) page labels every card, the first one "Overview"** (popup-cards-1#PC-3): one shared piece
@@ -185,8 +182,7 @@ and Git review inside it are still hand-built — see their sections below.)
 | Title | A popup or side panel's name | 16px semibold (above) |
 | Small label | A group inside a screen, popup or list ("Volume", "Privacy") | 12px medium, grey, sentence case, no letter-spacing (`SectionLabel`) |
 
-Every small label is plain. (The soft underline that once marked labels over bare reading text is
-retired: reading text now sits in a labelled card — final-review#ST-21.)
+Every small label is plain (final-review#ST-21).
 
 ### Text and numbers
 - Body text: 14px, main text colour.
@@ -194,6 +190,9 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   except a setting row's hint, which the shared `SettingRow` draws at 11px (both its sizes).
   The faintest grey is only for disabled things and decoration.
 - **Nothing a user has to read is smaller than 11px** — the status bar included.
+- **A text box has its name above it and its grey words under it**: name, box, then the explanation
+  or the box's own error (popup-cards-3#B-1, #B-3: "the grey subtext should be below the text box in
+  each for consistency" — Rename, Pick a handle, Connect OpenRouter's steps, Voice vocabulary).
 - **Sentence case everywhere**: every label, title, button, menu item, hint and screen-reader name
   ("Skip permissions", "Launch in new window"). Kept capitalised: product and brand names, skill and
   theme names, Fast mode, the status bar's all-caps mode badges, "YouCoded Remote" (decisions
@@ -225,7 +224,7 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   card, and once one card has a label, every card on that page does (otherwise the next card reads as
   filed under the one above) — a card of switches too: Pin to top and Mark complete got their own label,
   "In your lists", rather than sitting under Tags (close-session-2#CS2-2, #CS2-5). A label never repeats
-  the popup's title. Exceptions: a popup that is one card (a one-job popup, a short confirmation, Buddy),
+  the popup's title. Exceptions: a popup that is one card (a one-job popup, Buddy),
   popups that open on a warning, **the card about the popup's own subject** at its top
   (Session details' name card, a detail page's top card), and **a picture of the item** (a theme's
   preview).
@@ -255,15 +254,18 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   own main action (Challenge a friend, Accept a request), that action is **filled, at the right of its
   row**, and anything beside it is outlined (Decline, left of Accept). Everything else on the page
   follows the normal rule.
-- **A disabled control says why**, within reach: a line beside it or under it (the ticket's "the reason
+- **A disabled control says why**, directly beside or under it (the ticket's "the reason
   the main button is grey", the greyed games "still saying why"). **An action waiting on a tick box**
   says it in a hover hint on the grey button instead — the shared `Tooltip`, "Tick the box to continue";
   press-and-hold shows it on a touchscreen (final-fixes#ST-12). **Never a button that does nothing**
   ("Coming soon"); when something is unavailable, its status pill says so (decisions "Integration detail
   page").
-- Close is always the ✕ button, never a letter or the word.
-- **A text box with its own action** (a password's Set, a search's filter, send) keeps that action
-  **inside the box, at the right, as a small filled button** — like the message box.
+- **A text box with its own action** (a password's Set, a search's filter, send, a new tag's Create)
+  keeps that action **inside the box, at the right, as a small filled button** — like the message box.
+  Not in a one-job popup, whose action is the card's main button (Popups), and not where Enter alone
+  adds (voice words, chip names — vocab-chips-2#D-2).
+- **An action that costs money** (Fast mode's "Turn on and accept charges") is the main button in a
+  fixed orange — the shared button's `charge` style — on every theme (popup-cards-5#F-1).
 - **A plain multi-line field** (a note, a description, a ticket's text) is the shared text box at its
   standard size: full width, upright words, **three lines to start**, growing as you write. What you
   saved may show differently (a note in quotes and italics); the box you type in never does. Never
@@ -271,9 +273,12 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
 - **A follow-up action under a group** ("Back up all now") is a **full-width outlined button**. Never
   underlined text as a button; underlined text is only a link inside a sentence.
 - Switching views or filters uses the shared tab strip and filter chips, following the same roundness.
-- **An edit button for a list is shaped like the things it edits** (the status bar's, quick chips',
-  tags'): a pill among pills, a chip among chips. A "+ New" button among tags is a tag-shaped pill,
-  dashed so it never reads as a tag. One deliberate exception: the New tag box's Cancel is red.
+- **An edit button for a list is shaped like the things it edits** (the status bar's, tags'): a pill
+  among pills, a chip among chips. A "+ New" button among tags is a tag-shaped pill, dashed so it
+  never reads as a tag. One deliberate exception: the New tag box's Cancel is red.
+- **Adding to a list of words or chips** (Voice vocabulary, Quick chips) is a small title ("Add a
+  word", "Add a chip") over one box inside the list's card; Enter adds — the box says so — and the
+  list's explanation sits in grey under the box (vocab-chips-2#D-1–#D-3).
 
 ### Settings
 - **Small controls (switches) sit beside** the setting's title and hint, on the right, **vertically
@@ -302,6 +307,9 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   setting row per choice, **its switch at the right**, and **a plain line under the title saying what
   turning it on adds** — no (i) to explain it. **A choice that does not apply is not shown** (no error to
   attach → no error row). Reference: Submit a ticket → "Include with ticket".
+- **A setting that cannot be switched off** is still listed, its switch on and greyed, in a first
+  group labelled "Always on" — never a line of names under the title (Status bar widgets:
+  final-fixes#PR-7d, popup-cards-8#W-1).
 - **"I understand" before a risky action** (`ConsentRow`): the whole line is a tappable box, tick box on
   the left, lighting up when ticked; the action stays disabled until it is ticked.
 
@@ -357,12 +365,9 @@ Known deviations (built 2026-10-13 from the final review; the rest of this recip
 - **Project files' folder cards stay flat** (`FilesTab.tsx`): the folder is a tab and a body,
   two boxes, so a box shadow would draw a seam across the tab; a single drop-shadow filter on a
   grid of folders costs paint on every frame (`.claude/rules/performance.md`).
-- **Games' tiles, the skills drawer's tiles and Settings cards are not raised**: they follow the
-  later Card levels rule (the glass first-level card), which replaced the raised look inside popups,
-  drawers and side panes. A card must **separate from the surface it sits on**: the first-level card
-  is a step lighter than the popups' panel surface, so a pane or drawer holding cards wears that
-  panel surface too (the Games pane was the darker inset and its cards read as bare outlines —
-  final-review#GM-1).
+- **Games' tiles, the skills drawer's tiles and Settings cards are not raised**: inside popups,
+  drawers and side panes the Card levels rule applies instead. A pane or drawer holding cards wears
+  the popups' panel surface so its first-level cards separate from it (final-review#GM-1).
 
 ### Tags
 Reference: Session details' Tags card. (Decisions "Tag look", "Tag actions menu", "Tags & note → Session
@@ -405,8 +410,8 @@ Reference: Submit a ticket.
   kind pill, the text, the "will be public" line at its foot. Under a "Sent with it" label, one card:
   everything always sent (the app version) as a plain row, each chosen piece as a **folded row with a
   short summary** that opens inside itself to read or edit. Changing the words means going back a step.
-- **Buttons:** the way back outlined, the send filled, side by side at the right in a wide popup,
-  stacked (filled on top) at phone width. A failure takes their place (Status and notices).
+- **Buttons:** on the popup's pinned bottom line (popup-cards-3#Q-1): the way back outlined, the send
+  filled, side by side at the right in a wide popup, stacked (filled on top) at phone width. A failure takes their place (Status and notices).
 - **While sending:** a single box with the spinner under the same label, replaced by the result.
 - **After:** the card stays, tagged (Status and notices → "When an action finishes").
 
@@ -586,7 +591,8 @@ Known deviations:
 - "Waiting for approval..." shows for every disabled reason, including a moved project
   (`InputBar.tsx` ~1354) — say what is happening.
 - The box has no border; the old guide asked for a visible edge on it.
-- Quick chips are hand-made buttons, not a shared piece (`QuickChips.tsx` ~61).
+- The quick chips in the row above the box are hand-made buttons, not a shared piece (`QuickChips.tsx`;
+  their editor's chips are tag-shaped — vocab-chips-2#D-3).
 
 ### File viewers
 *Documents current behaviour; not yet reviewed by Destin.*
@@ -619,7 +625,7 @@ Known deviations:
 is (decisions "Terminal").
 Files: `components/TerminalView.tsx`, `SessionTerminal.tsx`, `TerminalToolbar.tsx`,
 `TerminalRightSlot.tsx`, `themes/theme-engine.ts` (`computeTerminalSurface`), the toggles
-`WideViewToggle.tsx` / `NarrowViewToggle.tsx` in `HeaderBar.tsx`.
+`header/WideViewToggle.tsx` / `NarrowViewToggle.tsx` (placed by `HeaderBar.tsx`).
 - Reached by the header's Chat / Terminal toggle or Ctrl+`; the toggle is hidden for native and shell
   sessions.
 - Drawn by xterm.js (WebGL, falling back to plain drawing). Font always Cascadia Code (14px; 12px on
@@ -720,7 +726,8 @@ Files: `components/guide/GuideTour.tsx`, `guide-stops.ts`, `GuideBubble.tsx`, `G
   accent colour: "6 of 9" above one sentence, buttons at the right — Back, a stop's own action, Skip
   tour, then Next / Done last.
 - A ring (accent outline and soft glow) around the thing being explained.
-- **Escape closes only the bubble** and leaves the screen under it open; Skip tour and Done take you back
+- The bubble has a **✕** at its top right (decisions "Applied from earlier rules", B-1).
+- **Escape and the ✕ close only the bubble** and leave the screen under it open; Skip tour and Done take you back
   where you started.
 - **The backup warning has two homes, in Destin's words, from one shared sentence**
   (`BACKUP_WARNING`: "With your permission, the assistant may create, change, or delete files on your
@@ -737,8 +744,9 @@ Known deviations:
 
 ## Kept from the 2026-08-25 guide
 
-The earlier guide's rules that no later decision changed still hold. Its `G-n` numbers stay valid
-for citations; this list says where each went.
+The earlier guide's rules that no later decision changed and that are not already stated above.
+Its `G-n` numbers stay valid for citations: G-2 is principle 2, G-4 and G-28 are Buttons and principle
+6, G-19 is Text and numbers, G-22–G-24 are the message box and the terminal sections.
 
 - **Hover, press and focus (§2.4, Destin 2026-09-18).** Every clickable thing answers hover, press and
   keyboard focus. The fill moves one step along the depth ladder on hover and one more on press, from
@@ -750,8 +758,6 @@ for citations; this list says where each went.
   number; movement sits behind reduced motion and *Reduce visual effects*; colour fades do not.
 - **G-1 One primitive, one look** — the "built from its shared piece" rule above. A job no piece does
   gets a new piece in `components/ui/` with a pinning test, never a one-off class string.
-- **G-2 Tokens paint everything** — principle 2.
-- **G-4 One primary per view** — Buttons (refined: one per row in a list of actions).
 - **G-6 Text on surfaces.** `fg-faint` is decoration and disabled only — never a spinner, value or date.
 - **G-8 Where the accent may paint**: state only (selected segment, on-state, focus ring, the filled
   button, send, links, the active dot). Midnight and Dark are monochrome by design; do not propose a
@@ -761,13 +767,9 @@ for citations; this list says where each went.
 - **G-12 Search**: every search-with-filter control is `SearchFilterPill`.
 - **G-15 Status bar**: one chip treatment; at phone width chips become icons before the bar wraps; never
   two rows. (Its coloured words are listed as deviations in `coloured-text-inventory.md`.)
-- **G-19 Counts** — Text and numbers.
-- **G-22 Find bar**, **G-23 Attachment card** — The message box, above.
-- **G-24 Terminal backing** — The terminal, above.
 - **G-25 Session row** (two lines: name, then project folder; status pill and tags at the right; names
   never wrap) and **G-26 Session status pill** (dot + word, word in the text colour, words from
   `STATUS_LABEL`).
-- **G-28 Where a button sits** — principle 6.
 - **G-30 Fast at any size**: a list of the user's own things draws only what can be seen
   (`.claude/rules/renderer-lists.md`).
 - **Phone width (§4.8)**: "Esc ·" is dropped from back buttons; chip rows scroll sideways with an edge
@@ -783,8 +785,8 @@ Buttons: less important actions are outlined, never bare text) · G-10 popup hea
 tapered line in the card-outline colour) · G-13 welcome screen (→ the first-session screen, First-run setup
 and sign-in) · G-14 chips (filter pill kept; fact chips → `Chip`; tags → Tags) · G-16 full-screen header (→
 centred title) · G-17 list rows (→ Lists and menus; no ✓ on the current item) · G-18 empty states (→ two
-jobs) · G-20 tool-card header (→ not covered yet) · G-21 menus (→ the shared `Menu`; see Open questions
-for red destructive items) · G-27 tags as named chips (→ Tags) · G-29 expandable rows (→ `FoldRow`,
+jobs) · G-20 tool-card header (→ not covered yet) · G-21 menus (→ the shared `Menu`; destructive items
+stay red — principle 2) · G-27 tags as named chips (→ Tags) · G-29 expandable rows (→ `FoldRow`,
 opening inside itself). The footer rule "ghost Cancel" is replaced by outlined Cancel.
 
 ## Not covered yet
@@ -810,8 +812,7 @@ recipe and ask.
 | Q7 | **A lone button inside a notice at phone width**: full width like any lone button, or kept beside its sentence. | backup-warning-friction proposal 11 |
 | Q8 | **Popup titles name the popup** (no sentences, counts or full stops in a title). Proposed, then deferred with the guide tooling. | close-session-friction proposal 23; dev-workspace roadmap |
 | Q9 | **A filterable list in a popup** (search first, one card of plain rows that alone scrolls, follow-up action pinned below, height kept while filtering). Only the quick picker is ruled. | project-switcher-friction proposal 1 |
-| Q10 | **Red destructive items in menus.** The old guide's G-21 put destructive menu items in red text; principle 2 now keeps status colour out of text. | 2026-08-25 guide G-21 vs principle 2 |
-| Q11 | **Steps of a multi-step popup** (Add a backup): one label and one card per step was tried; the choose-where step went back to one card per choice with logos, and the done page was dropped (both now decided). Still open: the shape of a step in general. | small-fixes-3#SF3-1, #SF3-5 |
+| Q11 | **Steps of a multi-step popup** in general (Add a backup's choose-where step and its dropped done page are decided). | small-fixes-3#SF3-1, #SF3-5 |
 | Q12 | **The number on the header's Session Files button**: "decide with status/badges", never decided. | decisions "Counts beside a label or tab" |
 | Q13 | **Skills drawer, filters and tag notes as quick pickers**: Destin unsure, not ruled. | decisions "Quick pickers" (Q-2) |
 | Q14 | **Who-said-it colour in chat-like lists** (game chat sender names in accent): an identity marker, not a status — allowed or not. | Game boards, above |
