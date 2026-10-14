@@ -176,9 +176,9 @@ seen-on is always n/a here.
       Since 2026-07-23 a dependency update stopped the Mac build being stamped, so macOS rejects it and
       the "Open Anyway" button vanished (terminal command only; in-app updates hit it too). Fix merged
       2026-09-04 (build checks its own seal, fails if it cannot sign); still open: a Mac confirming
-      "Open Anyway" is back on a build cut after it (test run 33921417200). Signing is blocked: Apple
-      refused the LLC's account on 2026-10-01; retry from an Apple device or via Apple Support, then it is
-      CI wiring. Windows is done (signed "Destin Moss"). (report:
+      "Open Anyway" is back on a build cut after it (test run 33921417200). Signing is blocked: the Apple
+      Developer enrollment was submitted 2026-10-14 and awaits Apple's check; once approved it is CI
+      wiring. Windows is done (signed "Destin Moss"). (report:
       docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md)
       `n/a` `blocked` `P1` `checked 2026-09-04` `regression` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 

@@ -66,6 +66,17 @@ has passed ~8 items — graduate it to its own file.
       Settings and the site footer once the subreddit has a few posts (not yet answered).
       `all` `confirmed` `P3` `checked 2026-09-10`
 
+- [ ] Desktop apps that update themselves. Destin, 2026-10-14: "would we be able to make the
+      mac/windows/linux apps update automatically once this is all done? or will users always have to
+      update manually?" Today the Update button downloads and checks the new version, then users finish
+      by hand: Windows clicks through the installer, Mac drags the app into Applications, Linux .deb/.rpm
+      asks for a password (only the AppImage already replaces itself). Wanted: download quietly, install
+      on quit or via "Restart to update", keep the "genuinely from us" check, an off switch, and a way
+      to pause a bad release. Mac self-updating needs the app signed, so wait for Apple's approval
+      (enrollment submitted 2026-10-14) and one signed release proving Windows signing works.
+      .deb/.rpm will always need a password short of Linux app stores
+      `desktop` `blocked` `P3` `checked 2026-10-14`
+
 - [ ] Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari pointed
       at another device. Options: a native app around the shared interface (minus on-device runtime,
       which App Store rules refuse), a pair-to-desktop-only app, or a web client over an encrypted
