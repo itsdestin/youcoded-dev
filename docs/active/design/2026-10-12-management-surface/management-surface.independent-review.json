@@ -1,0 +1,539 @@
+{
+  "title": "Management page: an independent review",
+  "key": "management-surface-independent-review",
+  "out": "management-surface.independent-review.html",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Does the page answer the questions you would actually ask?",
+      "intro": "A fresh reviewer wrote down 22 questions a builder asks at the start of a day. The page answers 6 easily, 10 with digging, and 6 not at all. These fix the biggest gaps."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Management page",
+      "path": "Today tab, top of the page",
+      "headline": "Should the Today tab follow your briefing order, with \"ready to merge\" first and the one recommendation last?",
+      "today": "Today opens on a big \"Start here\" recommendation, then \"Needs you\", \"In progress\", \"Waiting\", bugs, and the release list. There is no \"ready to merge\" section at all.",
+      "problem": "You asked for: ready to merge, leftovers, major bugs, changed since release, active work, then one recommendation. The page puts the recommendation first and leaves out the first thing you asked for.",
+      "proposal": "Pick the order the Today tab should follow.",
+      "options": [
+        {
+          "id": "your-order",
+          "label": "Your order exactly",
+          "pros": [
+            "Matches what you asked for, word for word.",
+            "You clear what is finished before being sold something new."
+          ],
+          "cons": [
+            "The recommendation sits at the bottom, below a scroll on a busy day."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "merge-then-pick",
+          "label": "Merge first, pick second",
+          "pros": [
+            "\"Ready to merge\" leads, and the recommendation is still visible without scrolling."
+          ],
+          "cons": [
+            "Breaks your stated order; bugs and leftovers move below the suggestion."
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Keep as it is",
+          "pros": [
+            "No change to a layout you have already seen."
+          ],
+          "cons": [
+            "Still no place to see what is ready to merge."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Management page",
+      "path": "Today tab, a new strip near the top",
+      "headline": "Should Today list every running session, one row each, saying what it is for and whether it is waiting on you?",
+      "today": "\"In progress\" shows 2 items, chosen only because something changed in the last 7 days. There are 16 session copies on disk right now; 3 started in the last two days and do not appear.",
+      "problem": "You steer about eight sessions at once, but the page cannot tell you which are running, which are stuck, or which are waiting for your answer.",
+      "proposal": "One row per session: its name, what it is for, last touched, how much unsaved work it holds, and a \"waiting on you\" mark when it ended on a question. Yes adds it; No leaves In progress as it is."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Management page",
+      "path": "Every row on the Today tab",
+      "headline": "Should every unfinished item say in plain words why it is not done yet?",
+      "today": "Rows describe what the work is. Only 1 of the 12 Waiting rows says why it is waiting.",
+      "problem": "You cannot tell \"needs your eyes\" from \"broken\" from \"forgotten\" without opening each one.",
+      "proposal": "A short reason on each row, worked out from the facts: clashes with the latest app, checks failing, waiting on your review, no finish line written, or untouched for over a month. Yes adds it; No keeps the descriptions only."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Management page",
+      "path": "Today tab, top line",
+      "headline": "Should Today show one line saying whether the main copy of the app is healthy right now?",
+      "today": "Nothing on the page says whether the latest main copy builds and passes its checks.",
+      "problem": "\"Did anything break since yesterday?\" is unanswerable, and starting new work on a broken base wastes the day.",
+      "proposal": "One line: \"Main copy healthy\", or \"Broken since Tuesday: these checks fail\", with a button to start a fix. Yes adds it; No leaves it out."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Management page",
+      "path": "Today tab, the \"Start here\" card and \"Put it in the app\" buttons",
+      "headline": "Should the page refuse to call something \"low effort\" or \"ready\" when the facts say otherwise?",
+      "today": "The recommendation says \"tests passing, low effort\". The \"Sync safety\" row offers \"Put it in the app\".",
+      "problem": "The recommended work clashes with three weeks of newer changes, so it is not low effort. The Sync safety copy also holds a half-finished second change, so its button would ship unfinished work along with the fix.",
+      "proposal": "Before calling anything ready or easy, the page checks for clashes and for extra unfinished changes, and says so if it finds any. Yes adds these checks; No keeps the current wording.",
+      "risk": "The recommendation may change more often as checks catch things."
+    },
+    {
+      "id": "P-2",
+      "page": "What to cut",
+      "intro": "Parts of the page that do not help answer any of the 22 questions, or that repeat something shown elsewhere."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Management page",
+      "path": "Screens tab label, Big picture mission card and area cards",
+      "headline": "What should happen to the counts and progress bars, such as \"168 things, 90 exist\" and \"20 of 27 exist\"?",
+      "today": "The big picture opens on \"Of the 168 things you have said the app should do, 90 exist…\" with a bar, and every area card carries a count and a bar. The Screens tab shows \"161\".",
+      "problem": "You called numbers like these meaningless. They also treat a one-line idea and a whole system as equal, so the bars mislead.",
+      "proposal": "This also settles your open question about showing distance travelled. Pick one.",
+      "options": [
+        {
+          "id": "words-only",
+          "label": "Words, no counts",
+          "pros": [
+            "Each item simply says exists, being built, planned, or idea.",
+            "Nothing to misread."
+          ],
+          "cons": [
+            "No quick sense of how far an area has come."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "action-counts",
+          "label": "Only counts you act on",
+          "pros": [
+            "Keeps numbers like \"3 waiting on you\" that lead to a click."
+          ],
+          "cons": [
+            "Judging which counts lead to action is a judgment call, and some will creep back."
+          ]
+        },
+        {
+          "id": "keep-counts",
+          "label": "Keep them",
+          "pros": [
+            "A rough sense of progress at a glance."
+          ],
+          "cons": [
+            "The bars stay misleading."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Management page",
+      "path": "Today tab, \"Needs you\"",
+      "headline": "Should housekeeping move out of \"Needs you\" into one quiet cleanup line?",
+      "today": "Two of the four \"Needs you\" rows are housekeeping: 7 automatic updates to borrowed code, and 10 old copies with unsaved changes.",
+      "problem": "Housekeeping crowds out the real decisions. You have said chores that should be automatic are annoying to be asked about.",
+      "proposal": "One line at the bottom, \"Cleanup: 7 updates, 10 old copies\", that opens a list with a button for each. Yes moves them; No leaves them in Needs you."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Management page",
+      "path": "Screens tab bottom table; Big picture, inside each area",
+      "headline": "Should the \"set in more than one place\" table and the per-area research notes be removed?",
+      "today": "Screens ends with a large table that labels itself a first draft. Each of the 10 areas holds about five bullets of research notes.",
+      "problem": "Neither helps any daily or weekly decision. The notes repeat facts shown elsewhere, which breaks \"nothing repeated\".",
+      "proposal": "Remove both; what the notes say worth acting on becomes a reason on the relevant row (see the \"why not done\" question). Yes removes them; No keeps them."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Management page",
+      "path": "Today tab, \"Waiting\"",
+      "headline": "Should Waiting split into \"stalled but still wanted\" and \"over a month old\", with one button to set aside all old ones?",
+      "today": "Waiting holds 12 rows, from 8 days to 76 days old, all with the same buttons.",
+      "problem": "Real stalled work is mixed with relics, so the list gets skimmed and nothing in it gets attention.",
+      "proposal": "Two groups. The old group folds shut with one \"set all aside\" button, which saves their work rather than deleting it. Yes splits it; No keeps one list."
+    },
+    {
+      "id": "P-3",
+      "page": "The page's shape",
+      "intro": "The page mixes a daily tool (what to do now) with a weekly one (how the app fits together). These decide how the two sit together."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Management page",
+      "path": "The three tabs at the top",
+      "headline": "Should the daily view and the big-picture views be treated differently?",
+      "today": "Today, Screens and Big picture are three equal tabs.",
+      "problem": "You will likely open Today every morning, but Screens and Big picture only now and then. Equal tabs give the occasional views the same weight, and each round of polish spreads across all three.",
+      "proposal": "Pick how they relate.",
+      "options": [
+        {
+          "id": "today-first",
+          "label": "Today leads, others linked",
+          "pros": [
+            "The page opens on what you do every day.",
+            "Effort goes where it is used most."
+          ],
+          "cons": [
+            "The big picture is one more click away."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "equal",
+          "label": "Three equal tabs",
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "Each round of work stays spread across three tabs."
+          ]
+        },
+        {
+          "id": "two-pages",
+          "label": "Two separate pages",
+          "pros": [
+            "Each page is simpler."
+          ],
+          "cons": [
+            "Two things to remember to open, and links between them break more easily."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Management page",
+      "path": "Screens tab",
+      "headline": "Should each screen picture keep a history of what every merge changed, with a place to leave a note?",
+      "today": "Screens shows only today's picture of each screen. There is no history and no notes, both of which you asked for.",
+      "problem": "You cannot see what a past change did to a screen, or flag something you dislike while looking at it.",
+      "proposal": "Each merge saves new pictures. A screen opens with before and after, the changed part boxed, and a note box that files your note as a work item. Yes puts it in line after the work items exist; No drops it.",
+      "risk": "Pictures for every merge take up disk space, a few hundred megabytes over months."
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Management page",
+      "path": "Big picture tab",
+      "pick": "several",
+      "headline": "Which of these are their own separate tracks of work?",
+      "today": "Tracks show only as a small word on each item. Money and Home appear only under \"Became real in the last month\".",
+      "problem": "You asked for tracks to be clearly separated, and this is still one of your open questions.",
+      "proposal": "Pick every one that should be its own track, with its own list and finish line. Anything left unpicked stays part of the main app.",
+      "options": [
+        { "id": "money", "label": "Money", "summary": "The bank-linked money page." },
+        { "id": "home", "label": "Home", "summary": "The smart-home page." },
+        { "id": "office", "label": "Office editors", "summary": "Documents, sheets and slides; built in today." },
+        { "id": "sync", "label": "Sync", "summary": "Chats and work following you across devices." },
+        { "id": "store", "label": "Marketplace store", "summary": "Browsing, publishing and reviews." }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "How work is organised today",
+      "intro": "Facts first. There is no single name that follows a piece of work from idea to session to merge to release. Nothing stops two sessions starting the same thing. 16 session copies exist, and most hold unsaved or unmerged work. Per-project skills appears in 2 roadmap entries, a design folder, two linked merge requests and a session idle since Sept 24. This dashboard itself was designed three times (Sept 5, Sept 21, Oct 12)."
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "The roadmap, sessions and merges",
+      "headline": "Should one piece of work mean exactly one card, one session, one branch and one merge?",
+      "today": "Roadmap entries bundle several jobs; one entry lists \"6 ways\" a session gets lost. Sessions are named freely and are not tied to any entry. Merges link back to nothing.",
+      "problem": "Nothing can be counted, claimed or marked done, because nothing has a clear start or end. This is the root of duplicates and leftovers.",
+      "proposal": "A card is one finishable thing with a finish line. A session works one card, its branch carries the card's name, and merging closes the card. Yes adopts this; No keeps entries as they are.",
+      "risk": "Splitting 143 bundled entries into cards is a one-time job, and the card count will grow past today's 150 cap."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Every card, branch and merge",
+      "headline": "What kind of name should each piece of work carry everywhere it appears?",
+      "today": "Sessions have hand-picked names like \"management-surface-20261012\"; roadmap entries are matched by their headline text.",
+      "problem": "Following one piece of work from idea to release means guessing across differently named places.",
+      "proposal": "One name, used on the card, the session, the branch, the merge and the release notes.",
+      "options": [
+        {
+          "id": "number",
+          "label": "Short number",
+          "summary": "W-142, handed out by the startup step, which already prevents two sessions starting at the same moment.",
+          "pros": [
+            "Easy to say and remember: \"how is 142 going?\"",
+            "Numbers show order."
+          ],
+          "cons": [
+            "Only the startup step can hand them out, so a card written elsewhere waits for its number."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "code",
+          "label": "Random short code",
+          "summary": "Like \"a3f8\", as the Beads tracker does.",
+          "pros": [
+            "Any session can make one at any moment without clashing."
+          ],
+          "cons": [
+            "Hard to remember or say aloud."
+          ]
+        },
+        {
+          "id": "words",
+          "label": "Words plus date",
+          "summary": "Today's session-name style.",
+          "pros": [
+            "No change; readable."
+          ],
+          "cons": [
+            "Names collide and drift, which is today's problem."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Starting a session",
+      "headline": "Should a session claim its card, so a second session finding it taken stops and asks you?",
+      "today": "Nothing records that a session is working on something. Two sessions can start the same job, and have.",
+      "problem": "Duplicate work wastes a session and leaves two half-versions to reconcile.",
+      "proposal": "Starting work writes \"taken by session X since date\" on the card; merging or setting aside clears it. A second session finding it taken asks you to continue the first or pick another. Yes adds claiming; No leaves it open.",
+      "risk": "A crashed session leaves a stale claim; claims older than 7 days with no activity show as \"abandoned\" and can be taken."
+    },
+    {
+      "id": "Q-16",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Where cards are kept",
+      "headline": "Where should the cards live?",
+      "today": "Planning lives in 16 roadmap files that eight sessions edit at once, plus 170-odd documents in the active folder.",
+      "problem": "Several sessions editing the same roadmap file clash, and documents stay marked \"active\" forever because nothing ties them to a finished card.",
+      "proposal": "Pick a home.",
+      "options": [
+        {
+          "id": "file-per-card",
+          "label": "One small file each",
+          "summary": "One short file per card, kept with the code; the roadmap list is generated from them.",
+          "pros": [
+            "Sessions never edit the same file, so no clashes.",
+            "Plans and notes attach to the card and close with it."
+          ],
+          "cons": [
+            "A one-time move of every entry, and today's roadmap checker needs rewriting."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "roadmap-fields",
+          "label": "Add to roadmap files",
+          "summary": "Keep the files; add name, owner, branch and finish line to each entry.",
+          "pros": [
+            "Smallest change from today."
+          ],
+          "cons": [
+            "Parallel sessions still clash editing the same file."
+          ]
+        },
+        {
+          "id": "github",
+          "label": "GitHub issues",
+          "pros": [
+            "Buttons and links work everywhere; community reports already arrive there."
+          ],
+          "cons": [
+            "Everything becomes public, and the work depends on an outside service being up."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-17",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "The roadmap's areas",
+      "headline": "Should the roadmap's 16 areas be replaced by the 10 areas from your big picture?",
+      "today": "Roadmap areas mix features (themes, games), qualities (speed) and platforms (Android only, remote access). Your big picture uses 10 different areas in your own words.",
+      "problem": "Two ways of slicing the same work, so nothing lines up between the roadmap and the page.",
+      "proposal": "Cards file under your 10 areas, and speed or platform become tags any card can carry. Yes replaces them; No keeps both sets.",
+      "risk": "Every agent instruction that names an old area needs updating once."
+    },
+    {
+      "id": "Q-18",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Old documents and leftover session copies",
+      "headline": "Should anything untouched for 30 days with no open card be listed for you to archive or keep?",
+      "today": "75 investigations and 18 handoffs are marked active, most months old. 11 session copies have sat for over two weeks with unsaved or unmerged work.",
+      "problem": "Old material looks current to every new session, and leftovers pile up.",
+      "proposal": "The page lists them under cleanup with Keep and Archive buttons. Nothing is deleted without your click, and unsaved work is saved before anything moves. Yes adds the list; No leaves them.",
+      "risk": "A month-quiet idea you still care about appears in the list until you press Keep once."
+    },
+    {
+      "id": "P-5",
+      "page": "Practices worth borrowing",
+      "intro": "From Anthropic's own write-ups on long-running agents and parallel sessions, and from the opencode, Hermes and pi agent tools."
+    },
+    {
+      "id": "Q-19",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Every card",
+      "headline": "Should a card need its finish line and a way to check it before any session starts work?",
+      "today": "You already decided big features carry a 1 to 3 sentence merge condition, but nothing enforces it, and most work has none.",
+      "problem": "Without a written finish line, sessions decide for themselves when they are done, and work drifts.",
+      "proposal": "From Anthropic's long-running-agent guide: each item starts as \"not met\" and is only marked met when its check passes. A session refuses to start a card without one and asks you to write it. Yes enforces it; No keeps it optional."
+    },
+    {
+      "id": "Q-20",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Every card",
+      "headline": "Should each card keep a short progress note that every session updates before it stops?",
+      "today": "Each conversation is an island. A new session reconstructs what happened from the code history, at cost, and gets a slightly different answer each time.",
+      "problem": "Work gets redone, and you have to re-explain what was decided.",
+      "proposal": "As Anthropic's progress file and pi's plan file do: a few lines on what was done, what is next, and what is blocked, updated at wrap-up. The page reads the latest line. Yes adds it; No keeps today's wrap-up only."
+    },
+    {
+      "id": "Q-21",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Finishing a card",
+      "headline": "Should a session be blocked from calling a card done until its merge request exists and its checks pass?",
+      "today": "A session can say it is finished without anything confirming it.",
+      "problem": "\"Done\" sometimes means done in a session's opinion only, which you discover later.",
+      "proposal": "Claude Code can run an automatic gate when a session tries to finish. The gate refuses until the merge request exists and checks pass. Yes adds the gate; No relies on the session's word.",
+      "risk": "A session working on something with no checks (notes, research) needs an exemption, or it gets stuck."
+    },
+    {
+      "id": "Q-22",
+      "words": true,
+      "surface": "Management page",
+      "path": "When the briefing is made",
+      "headline": "When should the briefing refresh itself?",
+      "today": "The page is made by hand and says \"Facts as of Oct 12\". By Oct 13 several facts were already out of date.",
+      "problem": "A stale briefing is worse than none, because you act on it.",
+      "proposal": "Pick when it rebuilds.",
+      "options": [
+        {
+          "id": "start-and-merge",
+          "label": "Session start and merges",
+          "pros": [
+            "Fresh whenever you sit down or something lands.",
+            "Uses steps that already run."
+          ],
+          "cons": [
+            "Each session start takes a few seconds longer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "schedule",
+          "label": "Every morning",
+          "summary": "As the Hermes agent does with scheduled tasks.",
+          "pros": [
+            "Ready before you open it."
+          ],
+          "cons": [
+            "Stale again by the afternoon."
+          ]
+        },
+        {
+          "id": "on-open",
+          "label": "When opened",
+          "pros": [
+            "Always current."
+          ],
+          "cons": [
+            "Needs a small program running behind the page; a page opened by file path cannot do it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "How work is tracked",
+      "path": "Outside tools",
+      "headline": "Copy the ideas from Beads, Conductor and Claude's agent teams, but adopt none of the tools.",
+      "changed": "Beads is a whole new database to trust; Conductor is Mac only; Claude's agent teams are experimental and cannot see across separate sessions; Vibe Kanban is shutting down.",
+      "notice": "Cards stay plain files in the repo that you and any agent can read. The useful parts (names, claims, a ready list, progress notes) are small scripts on top.",
+      "yes": "Agree",
+      "no": "Disagree"
+    },
+    {
+      "id": "P-6",
+      "page": "What to do next",
+      "intro": "One call about order."
+    },
+    {
+      "id": "Q-23",
+      "words": true,
+      "surface": "Management page",
+      "path": "The next session's work",
+      "headline": "What should the next session on this work do first?",
+      "today": "Three rounds have polished the page's look while the facts underneath are still gathered by hand.",
+      "problem": "Most gaps in this review (ready to merge, live sessions, why-not-done, duplicates) cannot be fixed by design, because the facts they need are not recorded anywhere yet.",
+      "proposal": "Pick the order.",
+      "options": [
+        {
+          "id": "cards-first",
+          "label": "Cards first",
+          "summary": "Build cards, names, claims and progress notes. Then rebuild Today on top of them, using the answers from this deck.",
+          "pros": [
+            "Every later improvement to the page becomes automatic rather than hand-made.",
+            "Fixes duplicate work even before the page changes."
+          ],
+          "cons": [
+            "No visible change to the page for a session or two."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page-first",
+          "label": "Page first",
+          "summary": "Apply this deck's cuts and additions to the mockup now.",
+          "pros": [
+            "Something new to look at quickly."
+          ],
+          "cons": [
+            "The new sections would be hand-filled and go stale the next day."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both, in parallel",
+          "pros": [
+            "Fastest overall."
+          ],
+          "cons": [
+            "The page design gets built before the facts it shows are settled, so it gets reworked."
+          ]
+        }
+      ]
+    }
+  ]
+}
