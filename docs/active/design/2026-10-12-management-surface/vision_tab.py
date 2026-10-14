@@ -95,6 +95,8 @@ def dot(status):
     return f'<i class="sdot {E(status)}" aria-hidden="true"></i>'
 
 TIPS = {}
+# WHY no longer drawn (Destin, round 5 A-2: "remove the key at the top now that we're using proper status chips");
+# the bar under the mission keeps its hover hint, which names the colours.
 def legend():
     # WHY each entry carries its hint: "exists" and "only an idea" are the page's own words for a status
     return ''.join(f'<span class="leg" data-tip="{E(TIPS["status." + s])}">{dot(s)}{w}</span>' for s, w in (('done','exists'),('building','being built'),('planned','planned'),('vision','only an idea')))
@@ -123,7 +125,7 @@ def render(here, tip, track_short):
     out = []
     out.append(f'''<div class="card mission"><div class="eyebrow" data-tip="{T('vis.mission')}">Your mission</div><div class="t-base mtext">{E(sk['mission'])}</div>
       <div class="t-sm dim msum">Of the {len(feats)} things you have said the app should do, <b>{tot['done']}</b> exist, <b>{tot['building']}</b> are being built, <b>{tot['planned']}</b> are planned and <b>{tot['vision']}</b> are only ideas{(' (' + str(tot['unchecked']) + ' not checked yet)') if tot['unchecked'] else ''}.</div>
-      {bar(tot, len(feats))}<div class="legend t-2xs">{legend()}</div>
+      {bar(tot, len(feats))}
       <div class="vlinks t-sm"><button class="lnk" data-lens="blocked" aria-pressed="false" data-tip="{T('vis.blocked')}">What's blocked</button><span class="muted" aria-hidden="true">·</span><button class="lnk" data-lens="twice" aria-pressed="false" data-tip="{T('vis.twice')}">Built twice</button><span class="muted" aria-hidden="true">·</span><button class="lnk" data-lens="shipped" aria-pressed="false" data-tip="{T('vis.shipped')}">Shipped this month</button></div></div>''')
     out.append('<div id="voverview">')
     if blockers or recent:
@@ -166,7 +168,7 @@ def render(here, tip, track_short):
         ins = insights.get(p['id'], [])
         out.append(f'''<section class="pillar" data-id="{E(p['id'])}"><header class="phead"><div class="t-base ptitle">{E(p['title'])}</div>
           {f'<div class="quote t-xs">“{E(p["quote"])}”</div>' if p.get('quote') else ''}
-          <div class="t-xs dim">{E(words(n['counts'], n['total']))}</div>{bar(n['counts'], n['total'])}<div class="legend t-2xs">{legend()}</div></header>
+          <div class="t-xs dim">{E(words(n['counts'], n['total']))}</div>{bar(n['counts'], n['total'])}</header>
           <div class="caps bpstack">{''.join(boxes)}</div>''' +
           (f'<details class="fold pins"><summary class="foldrow" data-tip="{T("vis.evidence")}"><span class="t-xs">What the evidence says about this area</span><span class="chev" aria-hidden="true">›</span></summary><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in ins) + '</ul></details>' if ins else '') + '</section>')
     out.append('</div>')
@@ -230,7 +232,8 @@ CSS = '''
 .chip.focus{box-shadow:0 0 0 2px var(--accent)} .chip.rel{box-shadow:0 0 0 2px var(--status-ok)} .chip.relby{box-shadow:0 0 0 2px var(--tag-blue)}
 .pins{margin-top:12px} .pins ul{margin:0 12px 12px;padding-left:18px;color:var(--fg-2)} .pins li{margin:4px 0}
 .ev{margin:0 12px 12px;padding-left:0;list-style:none} .ev li{padding:4px 0} .ev .kind{display:inline-block;min-width:72px;color:var(--fg-muted)}
-.quote{border-left:2px solid var(--edge);padding-left:8px;color:var(--fg-2);font-style:italic;margin:4px 0;max-width:880px}
+/* WHY no left bar (Destin, round 5 A-2: "don't like the fingernail styling on the quote"): Destin's own words in plain grey italics */
+.quote{color:var(--fg-2);font-style:italic;margin:4px 0;max-width:880px}
 /* side-panel lists: plain rows, no lines between them (decisions "Card levels": no full-width lines in a popup) */
 .panel .vlink{cursor:pointer;padding:6px 8px;margin:0 -8px;border-radius:var(--radius-md);display:flex;gap:8px;align-items:baseline;transition:background-color 120ms steps(4)}
 @media (hover:hover){.panel .vlink:hover{background:var(--inset)}}
