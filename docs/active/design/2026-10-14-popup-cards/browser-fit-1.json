@@ -1,0 +1,76 @@
+{
+  "title": "Since we started: master merged, the new Browser screens brought in line, the guide tidied",
+  "key": "browser-fit-1",
+  "out": "browser-fit-1.review.html",
+  "images": "images/browser-fit-1",
+  "runs": {
+    "before": "runs/r14/before",
+    "after": "runs/r14/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "N-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Settings → Browser",
+      "path": "Settings → Browser (new on master since we began)",
+      "crop": [
+        {
+          "crop": "settings/browser@panel",
+          "label": "Usual"
+        },
+        {
+          "crop": "settings/browser#no-browser@panel",
+          "label": "No browser found"
+        }
+      ],
+      "headline": "The new Browser settings now look like the rest of Settings.",
+      "changed": "Small sentence-case labels instead of SPACED CAPITALS; each group (Which browser, On this computer, Sites you've allowed, Saved sign-ins) is one proper card; nothing loose on the popup; Download and \"Close the browser\" are full-width buttons inside their card; the site count is the small faint number after the label.",
+      "notice": "Same words and controls; nothing about how the browser works changed.",
+      "risk": "\"On this computer\" is a new label I chose for the window and download group; say if you'd word it differently."
+    },
+    {
+      "id": "N-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Settings → Browser",
+      "path": "Settings → Browser while downloading",
+      "crop": "settings/browser#downloading@panel",
+      "headline": "Downloading a browser: the progress and Cancel sit inside the card.",
+      "changed": "The progress line, bar and a full-width Cancel are inside the \"On this computer\" card instead of a loose grey box. A failed download now reads \"The download didn't finish.\" with the technical reason folded under Details inside the red box (it used to be glued onto the sentence).",
+      "notice": "The two \"are you sure\" popups here (switching browsers, signing out of every site) now use the same box as every other small popup.",
+      "risk": "None of the wording changed."
+    },
+    {
+      "id": "N-3",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Browser panel and the chat's hand-off card",
+      "path": "Chat → the Browser panel (first time) · the card when the assistant hands a step back to you",
+      "crop": [
+        {
+          "crop": "chat/browser#explainer@470x210+955+30",
+          "label": "Panel, first time"
+        },
+        {
+          "crop": "chat#browser-handoff@900x125+25+670",
+          "label": "Hand-off card"
+        }
+      ],
+      "headline": "Two small fixes in the panel and the hand-off card.",
+      "changed": "The panel's first-time notice puts its \"Got it\" button inside the notice the shared way. \"I can't do this\" on the hand-off card is an outlined button, not bare grey text. A failure to open a page now shows as the small red error line, not grey text.",
+      "notice": "The hand-off card itself keeps its own look: it is in the family of permission prompts you set aside for their own redesign.",
+      "risk": "Small; nothing else on the panel changed."
+    }
+  ]
+}
