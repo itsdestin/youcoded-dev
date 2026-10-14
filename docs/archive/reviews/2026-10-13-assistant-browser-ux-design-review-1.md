@@ -1,7 +1,7 @@
 ---
 status:
 date: 2026-10-13
-reviewed: docs/active/specs/2026-10-13-assistant-browser-design.md
+reviewed: docs/archive/specs/2026-10-13-assistant-browser-design.md
 reviewer: context-free product/UX review (design stage, nothing built yet)
 ---
 

@@ -20,7 +20,7 @@ verify:
 ---
 # The Browser (the assistant's own web browser)
 
-Spec: `docs/active/specs/2026-10-13-assistant-browser-design.md` (archive on merge).
+Spec: `docs/archive/specs/2026-10-13-assistant-browser-design.md` (shipped; read its "As built" section first).
 
 ## One owner, one set of tools, both session kinds
 **Invariant:** the tools are defined ONCE (`browser-tool-specs.ts`: name, zod schema,

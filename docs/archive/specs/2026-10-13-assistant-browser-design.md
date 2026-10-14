@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-10-13
-revised: 2026-10-13 (after design review 1 — engineering + UX; triage in docs/active/reviews/2026-10-13-assistant-browser-*-review-1.md)
+revised: 2026-10-13 (after design review 1 — engineering + UX; triage in docs/archive/reviews/2026-10-13-assistant-browser-*-review-1.md)
 ---
 
 # Browser (the assistant's web browser) — design
@@ -135,7 +135,7 @@ sign-in storage per chat; OS-level hidden desktops (Windows CreateDesktop is fla
 and breaks GPU drawing; macOS has no API; Wayland has no portable one — a hidden browser is the
 cross-platform equivalent).
 
-## 4. Revisions from design review 2 (triage in `docs/active/reviews/2026-10-13-assistant-browser-design-review-2.md`)
+## 4. Revisions from design review 2 (triage in `docs/archive/reviews/2026-10-13-assistant-browser-design-review-2.md`)
 
 - **Ask path:** asks are raised inside the worker's tool runner and drawn from the conversation's
   `browser:state` (worker → main → screen); answers go back the same way.
@@ -154,3 +154,17 @@ cross-platform equivalent).
   a crashed worker fails pending calls and restarts on the next call (guarded).
 - **My Chrome** is labelled **Experimental**, off by default; tools can't see tabs they didn't open.
 - **Plan mode** (Claude Code) does not block browser actions — the relay can't see the mode.
+
+## As built (2026-10-14) — where the shipped app differs from the text above
+
+- **The person can use the page in the panel** (Destin, 2026-10-13/14; §3 had cut it): click, type,
+  scroll (wheel, touchpad, finger), drag to highlight, Copy/Cut/Paste with the computer's clipboard,
+  and a right-click menu (Copy, Paste, Select all). The person's own visits raise no Browser card.
+- **Tabs like Chrome's**: a tab strip in the panel's top row (new, switch, close), Back/Forward greyed
+  out with nowhere to go, Reload becomes Stop while loading, and Chrome's shortcuts on the page
+  (Ctrl+T/W/L/R, Ctrl+Tab, Alt+Left/Right, F5). The assistant is told about the person's tab changes.
+- **A hidden page is laid out to the panel's size** (320–2560 wide) and drawn at the screens' own
+  pixel density, so the picture fills an expanded panel and is sharp.
+- **The panel's header matches Session Files** (open in your own browser, copy link, expand, close);
+  the window and per-chat controls moved to Settings → Browser. Closing a shown window means "hide it".
+

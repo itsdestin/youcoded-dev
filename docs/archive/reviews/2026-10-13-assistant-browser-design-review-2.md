@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-10-13
-reviews: docs/active/specs/2026-10-13-assistant-browser-design.md (revised)
+reviews: docs/archive/specs/2026-10-13-assistant-browser-design.md (revised)
 ---
 
 # Assistant Browser design: engineering review, round 2
