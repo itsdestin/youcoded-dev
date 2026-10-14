@@ -101,7 +101,10 @@ A job none of these does needs a new shared piece and Destin's look for it — n
 ### Full screens (Projects, Pages, Marketplace, Library)
 - The screen names itself **centred in the window's top strip, small (14px medium), with its icon**.
   Reference: Pages or the Projects view.
-- The way out is a **filled small button reading "Esc · Back to chat"**, top right (the key first).
+- The way out is a **light button reading "Esc · Back to chat"**, top right (the key first): the
+  quiet inset pill that matches the window buttons beside it — **never filled** (final-review#FV-6,
+  which took back the fill of headers#H-5). Same on every full screen: Projects, Pages and the
+  Office editors, Marketplace, Library.
 - In framed themes every pane (chat, side pane, full-screen pane) has a **thin outline in the
   card-outline colour** where it meets the frame; floating layouts have none.
 - Big groups on the screen use the *Large* heading, one row per group: heading left (a one-line
