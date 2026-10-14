@@ -78,6 +78,11 @@ searched or resumed (chat-data).
       The same click on a project file works (Destin, 2026-09-03, a document in his notes repo).
       `chat` `desktop` `needs-verify` `P3` `checked 2026-09-03`
 
+- [ ] Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or
+      as "created by Claude" — e.g. a Word file built by a script (Destin, 2026-10-13: "track every file created,
+      edited, or deleted by claude, even done with scripts/bash"). Deletions are never recorded at all.
+      `files-panel` `all` `confirmed` `P3` `checked 2026-10-13` → docs/active/investigations/2026-10-13-command-file-tracking.md
+
 - [ ] Parked ideas: files pane and editor (nine things).
       (a) HTML preview: fonts and background images referenced inside a linked stylesheet do not load.
       (b) Git surface phase 2: branch operations, push and PR creation, repo-wide review, hunk-level staging, an

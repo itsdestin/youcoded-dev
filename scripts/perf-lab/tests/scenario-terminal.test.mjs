@@ -39,8 +39,16 @@ function runFake(input, untilText, { timeoutMs = 10_000 } = {}) {
     child.on('error', (e) => { clearTimeout(timer); reject(e); });
   });
   child.stdin.write(input);
-  return done.finally(() => {
+  // WHY wait for exit before removing HOME: kill() only SENDS the signal. On a
+  // busy CI runner fake-claude was still writing under HOME/.claude while the
+  // removal ran, and retries alone lost the race (ENOTEMPTY, 2026-10-14).
+  const exited = new Promise((resolve) => {
+    if (child.exitCode !== null || child.signalCode !== null) resolve();
+    else child.once('exit', resolve);
+  });
+  return done.finally(async () => {
     child.kill('SIGTERM');
+    await exited;
     rmSync(home, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   });
 }
