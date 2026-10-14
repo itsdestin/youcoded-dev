@@ -80,12 +80,15 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       tripwire that logs what emptied an open chat, or the friend's log file.
       `chat` `desktop` `needs-verify` `P2` `checked 2026-09-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
-- [ ] Chat view glitches (2 things).
+- [ ] Chat view glitches (3 things).
       (a) Floating items (attention toast, permission gates, spinners, sync status) were never
       audited for landing on top of each other (docs/active/investigations/2026-09-01-chat-float-stacking.md);
       (b) an empty timestamp-only assistant bubble appears above a permission card (spec:
-      docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md).
-      `chat` `all` `needs-verify` `P3` `checked 2026-09-01`
+      docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md); (c) after the window
+      reloads it returns to the first session instead of the one you were on — seen 2026-10-05 in the
+      performance rig's reload test, a message typed after the reload went to the wrong session
+      (docs/archive/investigations/2026-10-04-performance-gap-review.md).
+      `chat` `all` `needs-verify` `P3` `checked 2026-10-05`
 
 - [ ] Dialogs, help bubbles and window drag (3 things).
       (a) Closing a dialog from the Development menu closes the menu behind it, and "Known issues"
@@ -122,24 +125,14 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       transitions feel abrupt (Destin, 2026-07-20), no design pass yet.
       `all` `parked` `P3` `checked 2026-09-01`
 
-- [ ] After the window reloads it returns to the first session instead of the one you were on.
-      Seen 2026-10-05 in the performance rig's reload test (a chat message typed after the
-      reload went to the wrong session); not caused by the performance work
-      `all` `needs-verify` `P3` `checked 2026-10-05` → docs/archive/investigations/2026-10-04-performance-gap-review.md
-
-- [ ] Tool cards, permission prompts and chat question cards get their own redesign, separate from
-      the design-guide work. Destin, 2026-09-24: "might rework tool cards and permission prompts as a
-      seprate endeavor. we should just have our design guide explicitly note that these elements are
-      not consider final/formal." The chat question cards (Dismiss / Submit) belong to the same pass:
-      their current button order was never approved — Destin, 2026-10-13 (final-review#CH-29): "this
-      wasn't approved, i just said we need to revisit this later alongisde tool cards. which we still
-      do." The guide marks them as not final; nothing changes until then.
-      `tool-cards` `all` `decision` `P3` `checked 2026-10-13`
-
-- [ ] Popups that need their own design pass (3 things).
+- [ ] Surfaces that need their own design pass, separate from the design-guide work (4 things).
       (a) Session context: Destin, 2026-10-13, looking at a skill's fold in it (final-review#CH-28):
       "this particular popups needs additional ui/ux work"; (b) the Donate ("buy me a coffee") popup
       in Settings: "buy me a coffer popup needs work" (final-review#ST-30); (c) Projects →
       Instructions → How context works: "i want to fully rebuild the how context works popup at some
-      point" (final-review#PU-1).
-      `all` `confirmed` `P3` `checked 2026-10-13`
+      point" (final-review#PU-1); (d) tool cards, permission prompts and chat question cards — Destin,
+      2026-09-24: "might rework tool cards and permission prompts as a seprate endeavor. we should just
+      have our design guide explicitly note that these elements are not consider final/formal"; the
+      question cards' Dismiss / Submit order was never approved (2026-10-13, final-review#CH-29: "we
+      need to revisit this later alongisde tool cards"). The guide marks them not final.
+      `tool-cards` `all` `confirmed` `P3` `checked 2026-10-13`
