@@ -1,0 +1,63 @@
+{
+ "deck": "bigpicture-round2-review",
+ "started": "2026-10-14T18:06:55.833Z",
+ "submitted": null,
+ "cur": 7,
+ "answers": {
+  "S-1": {
+   "v": "other",
+   "t": 1792001966194,
+   "note": "confused how this ties in with what we created earlier, like the screenshot views and such?",
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-1": {
+   "v": "yes",
+   "t": 1792001990985,
+   "seconds": 25,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1792002036439,
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-3": {
+   "note": "i don't think hover over mesh is really useful or what i meant",
+   "t": 1792002080634,
+   "v": "yes",
+   "seconds": 44,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "yes",
+   "t": 1792002085415,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-5": {
+   "v": "yes",
+   "t": 1792002100630,
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-6": {
+   "v": "yes",
+   "t": 1792002117973,
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-7": {
+   "v": "yes",
+   "t": 1792002129689
+  }
+ }
+}

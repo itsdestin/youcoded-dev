@@ -285,7 +285,8 @@ $('#vall').onclick=()=>{vLens='all';vOpen=null;closePanel();vApply();fades()};
 $$('.vlinks [data-lens]').forEach(b=>b.onclick=()=>{vLens=vLens===b.dataset.lens?'all':b.dataset.lens;vOpen=null;closePanel();vApply();$('#scroller').scrollTop=0;fades()});
 function focus(id){const n=VN[id];if(!n)return;
   // WHY: from the overview an item opens its area; inside a flat list it stays in the list and only opens the details
-  if(vLens==='all'&&vOpen!==n.pillar){vOpen=n.pillar;vApply()}
+  // WHY the BPV check (round 3): only the Areas view opens the item's area; the other views just open the panel
+  if((window.BPV||'areas')==='areas'&&vLens==='all'&&vOpen!==n.pillar){vOpen=n.pillar;vApply()}
   $$('.chip').forEach(c=>c.classList.remove('focus','rel','relby'));
   const ev=(n.evidence||[]);const kids=Object.values(VN).filter(m=>m.parent===id);
   const where=n.kind==='feature'?VN[n.pillar].title+' › '+VN[n.parent].title:(n.kind==='capability'?VN[n.pillar].title:'Area');

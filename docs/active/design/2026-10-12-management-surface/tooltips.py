@@ -13,7 +13,7 @@ TIP = {
   # ---------------------------------------------------------------- header
   'tab.today': 'What needs you now: one suggested next step, the decisions only you can make, and the work in progress.',
   'tab.screens': 'A picture of every screen in the app. Find one, and see the clicks it takes to reach it.',
-  'tab.vision': 'Everything you have said the app should do, sorted into ten areas, and how much of it exists yet.',
+  'tab.vision': 'Everything you have said the app should do, four ways: by area, as journeys people take, by what rests on what, and by how the parts connect.',
   'tab.screens.count': 'How many screens have a picture so far.',
   'theme': 'Changes the colours of this page. These are the app\'s four built-in themes.',
   'draft': 'A draft to react to, not a working tool. The facts are real as of Oct 12; the buttons only show a note saying what they would do.',

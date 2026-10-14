@@ -10,6 +10,7 @@ import json, os, re, html, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vision_tab import render as vrender, CSS as VCSS, JS as VJS, SVG_CSS, STATUS_WORD  # noqa
 import screens_tab as stab
+import bigpicture_tab as bptab  # round 3: Journeys, Foundations, How it works beside Areas
 HERE = os.path.dirname(os.path.abspath(__file__))
 THUMBS = os.path.join(HERE, 'thumbs')
 
@@ -374,6 +375,8 @@ def check_tips(page):
 
 # ----------------------------------------------------------------------------- PAGE
 vision_html, vision_nodes, vision_tot = vrender(HERE, TIP, TRACK_SHORT)
+# WHY (2026-10-14, round 3): the four big-picture views live here, in one look, not on a separate page
+vision_html = bptab.render(vision_html, TIP)
 CSS = open(os.path.join(HERE, 'cc.css')).read() + open(os.path.join(HERE, 'page.css')).read()
 def _ic(d): return f'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">{d}</svg>'
 ICON_HOME=_ic('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>')
@@ -384,7 +387,7 @@ CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{SVG_CSS}{TIP_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{bptab.CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
@@ -429,6 +432,7 @@ $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 {stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP))}
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
+{bptab.JS}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
 check_tips(page)
