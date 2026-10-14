@@ -334,8 +334,12 @@ Known deviations (built 2026-10-13 from the final review; the rest of this recip
 - **Project files' folder cards stay flat** (`FilesTab.tsx`): the folder is a tab and a body,
   two boxes, so a box shadow would draw a seam across the tab; a single drop-shadow filter on a
   grid of folders costs paint on every frame (`.claude/rules/performance.md`).
-- **Games' tiles and Settings cards are not raised**: they follow the later Card levels rule
-  (the glass first-level card), which replaced the raised look inside popups and side panes.
+- **Games' tiles, the skills drawer's tiles and Settings cards are not raised**: they follow the
+  later Card levels rule (the glass first-level card), which replaced the raised look inside popups,
+  drawers and side panes. A card must **separate from the surface it sits on**: the first-level card
+  is a step lighter than the popups' panel surface, so a pane or drawer holding cards wears that
+  panel surface too (the Games pane was the darker inset and its cards read as bare outlines —
+  final-review#GM-1).
 
 ### Tags
 Reference: Session details' Tags card. (Decisions "Tag look", "Tag actions menu", "Tags & note → Session
