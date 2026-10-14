@@ -42,11 +42,23 @@ Works from a paired phone.
 ```js
 // Resolves; never throws. Only defined when page.json declares the ability.
 const r = await window.youcoded.startSession({ prompt: 'Run the weekly update…' });
-// r → { ok: true } the window is open (not "a session started"); { ok: false } otherwise
+// r → { ok: true } the window is open (not "a session started");
+//     { ok: false, reason } otherwise — reason is a plain sentence for the page's author
 ```
 
 - `prompt`: any text the page writes (Q-3), non-empty, ≤ 20,000 characters (broken-page guard).
-  Shown **in full** in the box — that is the safety.
+  Shown **in full** in the box — that is the safety. So a message carrying **hidden characters**
+  (format characters such as zero-width spaces/joiners and text-direction marks, and the Unicode
+  tag block) is **refused**, not cleaned (code review F1): they show nothing in the box yet reach
+  the model. Cost: an emoji built with a zero-width joiner (👩‍💻) is refused too.
+- **Only from a click** (code review F2): the call works only right after the person presses
+  something in the page (the browser's own "user activation", which page code cannot fake; the
+  app also checks that the page still has the focus). This is the same rule as "you press Start
+  yourself", one step earlier: a page cannot open the window on a timer, or reopen it straight
+  after Cancel. It is not a rate limit (Q-6 stands): every click still works.
+- **One window at a time** (code review F2): while the window is open, a page's further requests
+  are turned down (`{ ok: false }`), never swapped in, so the message and the choices the person
+  is making never change under them.
 - Folder (Q-8): a **project page** starts in its own project (`home.path`); a **personal page**
   starts on the saved default with the picker (later: "your assistant"). `project` (optional) is
   a personal page's suggested starting choice; the picker can still change it.
@@ -63,6 +75,10 @@ const r = await window.youcoded.startSession({ prompt: 'Run the weekly update…
   editing `page.html` or `data.json` never re-asks or shows the note. (Frontier Lab bakes its
   data into `page.html` weekly; this makes that harmless.)
 - Any page kind. Not a network destination: no CSP change; not counted for `open`-mixing.
+- An `open` page may hold this line too. Its message can then come from any server at run time
+  with no re-ask, because the approval is about the declaration, not the code (code review F5);
+  that is acceptable because the person still reads the whole message, which can no longer hide
+  characters (§2).
 
 ## 4. Flow and approval card
 

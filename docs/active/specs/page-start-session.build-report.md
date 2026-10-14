@@ -100,3 +100,35 @@ bash scripts/run-dev.sh --path /home/destin/youcoded-dev/worktrees/sessions/page
 4. Personal page: the window starts on the saved default folder.
 5. Paired phone: same as step 2. Check that the phone's message box fills (spec §6). This is not
    verified yet.
+
+## Fix round (2026-10-14) — code review findings
+
+App commit `b83b8af3e` on `session/page-start-session` (pushed). Review:
+`page-start-session.code-review.md`. Tests were written first and failed, then passed.
+
+- **F1, hidden characters:** a message with format characters (zero-width spaces and joiners,
+  word joiners, text-direction marks, U+FEFF, soft hyphen: all of Unicode Cf) or the tag block
+  U+E0000–E007F is refused in the page bridge and in PageHost, with a plain reason. The cost is
+  that an emoji built with a zero-width joiner (👩‍💻) is refused too.
+- **F2, one window:** while the window is open, a page's request is turned down, never swapped
+  in. This holds for two requests in the same instant too.
+- **F2, real click (no rate limit):** the bridge needs the page frame's own "just clicked"
+  signal. PageHost needs the app window's signal, which a click inside the page also sets, and
+  needs the page to still hold the focus. So a timer cannot open the window, and a page cannot
+  reopen it straight after Cancel (Cancel moves the focus off the page). Noted in design §2 as the
+  same rule as "you press Start yourself".
+- Every refusal now says why: `{ ok: false, reason }`.
+- **F3:** the approval is checked again after the folder lookup.
+- **F5:** one sentence added to design §3.
+- **F6:** a suggested folder now matches regardless of upper/lower case or slash style. The answer
+  is still the person's own saved entry.
+- **F7:** new tests cover a declared line that is not yet approved (in the bridge) and dismissing
+  "code changed" (the session line stays without a code hash). A host-side test for an unapproved
+  line is impossible because such a page is never framed: it shows the approval card.
+- **Left:** F4, showing the message inside the window or putting the caret at its start. That is a
+  UI design call and needs a review deck. F8, the paired-phone prefill, still needs a run by hand
+  (step 5 above). Also new and unverified on the phone: the "just clicked" signal needs a browser
+  that supports it (Safari 16.4+), and without it the call is refused.
+
+verify.sh: all checks passed (types, tests, knip, lint, design lint, ast-grep, shoot --check,
+journeys). Android and the Worker are not covered; no Kotlin changed.
