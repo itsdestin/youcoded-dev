@@ -7,7 +7,7 @@ description: Autonomous whole-app UI review — screenshot every YouCoded surfac
 
 Pictures come from `shoot` and click-throughs from `explore` (`scripts/shoot/README.md`);
 decks from `scripts/ui-review/` (README there). This skill is the procedure around them.
-Standard: `docs/active/design/2026-08-25-ui-design-guide.md`. Last full review and its
+Standard: `docs/active/design/2026-10-13-ui-design-guide.md`. Last full review and its
 ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 
 ## 1. Capture (no judgement yet)
@@ -51,7 +51,7 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
   approves by number (visible change · surfaces touched · what users will notice).
 - Copy the contact sheets into `docs/active/design/<date>-ui-audit/` (images
   git-ignored by the existing rule; a README naming the `shoot` command regenerates them).
-- Update the design guide only for rules that changed; new rules get the next `G-n`.
+- Update the design guide only for rules Destin decided; cite the decisions row (`docs/active/design/2026-09-23-ui-element-review/decisions.md`).
 - Roadmap entry: the whole-UI review item (in `docs/roadmap/dev-workspace.md` → `## rigs`) gets an update line pointing at the docs.
 
 ## 4. Improve (when asked, or as the follow-up)

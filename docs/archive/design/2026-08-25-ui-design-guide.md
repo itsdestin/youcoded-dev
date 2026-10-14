@@ -1,5 +1,6 @@
 ---
-status: active
+status: superseded
+superseded_by: docs/active/design/2026-10-13-ui-design-guide.md (approved by Destin on the final-review deck, 2026-10-14)
 date: 2026-08-25
 owner: Destin (decisions) / Claude (draft)
 related: 2026-08-25-ui-audit-findings.md (the evidence), docs/archive/specs/2026-07-16-ui-consistency-design-spec.md (the migration that made this possible)

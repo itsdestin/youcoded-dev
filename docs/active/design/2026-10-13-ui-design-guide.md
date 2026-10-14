@@ -1,16 +1,13 @@
 ---
-status: draft
-approval: awaiting Destin's approval on the final deck — not yet the approved guide
+status: active
+approval: approved by Destin on the final-review deck (final-review#Q-1, 2026-10-14), with the light Back-to-chat button (final-review#FV-6)
 date: 2026-10-13
 owner: Destin (decisions) / Claude (writing)
-replaces: docs/active/design/2026-08-25-ui-design-guide.md (once Destin approves this guide)
+replaces: docs/archive/design/2026-08-25-ui-design-guide.md
 source: docs/active/design/2026-09-23-ui-element-review/decisions.md (every rule's decision); guide-draft.md beside it (the working draft this finishes)
 ---
 
 # YouCoded design guide
-
-> **Awaiting Destin's approval** on the final deck. Until he approves it, the 2026-08-25 guide
-> stays active; this one is the proposed replacement.
 
 **Read this before you design any screen, popup, panel or Page.** It tells you how YouCoded
 looks and how it is arranged, so something new fits without Destin having to correct it. Every
