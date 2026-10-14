@@ -328,3 +328,5 @@ Deck `vocab-chips-2` (2026-10-14) — answers:
 | Voice vocabulary | **The redesign**: one "Your words" card like Tags — tag-sized chips, "Add a word" box, the explanation as grey words under it; each change saves at once (no Save button, no status line). | Today's layout. | `vocab-chips-2#D-1` |
 | Adding a word | **Enter only** — the box says "then press Enter"; no Add button. | Add button inside the box; beside it. | `vocab-chips-2#D-2` |
 | Quick chips | **Tag-shaped chips** — and "the spacing on the right side of these looks odd. and the add surface is still odd compared to tags/voice": the pencil now always shows (no hidden gap), and adding is an "Add a chip" box (Enter opens the add page with the name filled), the how-to line under it like Voice's. | Today; hint moved only. | `vocab-chips-2#D-3` |
+
+Deck `vocab-chips-3` (2026-10-14): both built editors approved as built (`#B-1` Voice vocabulary, `#B-2` Quick chips).
