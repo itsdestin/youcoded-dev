@@ -1,0 +1,37 @@
+{
+ "deck": "today-rebuild-2-review",
+ "started": "2026-10-14T22:12:16.561Z",
+ "submitted": "2026-10-14T22:13:38Z",
+ "cur": 3,
+ "answers": {
+  "A-1": {
+   "note": "still not clear what needs your look means. when does that appear and why? how does that differ from something like checks failing?",
+   "t": 1792015970610,
+   "v": "other",
+   "seconds": 34,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1792015995953,
+   "seconds": 25,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "yes",
+   "t": 1792016002566,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "yes",
+   "t": 1792016014333,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
