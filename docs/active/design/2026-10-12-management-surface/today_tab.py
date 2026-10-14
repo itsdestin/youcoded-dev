@@ -17,14 +17,23 @@ import html
 E = html.escape
 
 # state: (label, pill tone, main button, why that button, what the label means, where the row goes)
+# WHY each main button names its real effect, with a tip saying exactly what happens (Destin, today-rebuild
+# A-2/A-3: "join chat is weird… not clear what pause and close actually do in real terms… what am i opening?")
 STATES = {
-    'review':   ('Needs your look', 'warn',   'Review',             'Screens are ready for you to approve.', 'needs'),
-    'failing':  ('Checks failing',  'danger', 'Fix failing checks', 'Its automatic checks fail, so it cannot be merged.', 'needs'),
-    'ready':    ('Ready to merge',  'ok',     'Merge to master',    'Reviewed and its checks pass; only the merge is left.', 'needs'),
-    'working':  ('Working',         'info',   'Join chat',          'A chat worked on it today. In the real version this shows only while a chat is actually running.', 'working'),
-    'nofinish': ('No finish line',  '',       'Write finish line',  'Nobody has written down when it counts as done.', 'rest'),
-    'idle':     ('Idle',            '',       'Continue',           'Untouched for two weeks or more, with no reason given.', 'rest'),
-    'paused':   ('Paused',          '',       'Resume',             'Stopped on purpose; the reason is on the row.', 'rest'),
+    'review':   ('Needs your look', 'warn',   'Open review deck',   'Its screens are ready for you to approve.', 'needs',
+                 'Opens its review deck, where you approve or reject each screen.'),
+    'failing':  ('Checks failing',  'danger', 'Fix failing checks', 'Its automatic checks fail, so it cannot be merged.', 'needs',
+                 'Starts a chat on its branch with the failing checks\' output, to fix them.'),
+    'ready':    ('Ready to merge',  'ok',     'Merge to master',    'Reviewed and its checks pass; only the merge is left.', 'needs',
+                 'Merges its pull request into master, then deletes the branch.'),
+    'working':  ('Working',         'info',   'Go to chat',         'A chat is working on it now. (On this mockup: a chat worked on it in the last 24 hours.)', 'working',
+                 'Switches to the conversation that is working on it.'),
+    'nofinish': ('No finish line',  '',       'Write finish line',  'Nobody has written down when it counts as done.', 'rest',
+                 'Asks you for 1–3 sentences saying when it counts as done, saved on its card.'),
+    'idle':     ('Idle',            '',       'Resume latest chat', 'Untouched for two weeks or more, with no reason given.', 'rest',
+                 'Reopens its most recent conversation where it left off.'),
+    'paused':   ('Paused',          '',       'Unpause',            'Stopped on purpose; the reason is on the row.', 'rest',
+                 'Clears the pause, so it shows as active again. Nothing else changes.'),
 }
 ORDER = ['failing', 'review', 'ready', 'working', 'nofinish', 'idle', 'paused']  # urgency, when two apply (Q-1)
 
@@ -92,12 +101,17 @@ SIDE = {'screens': ('On screen', 'It changes what you see.'), 'behind': ('Behind
         'both': ('On screen and behind', 'It changes both what you see and how the app works.')}
 
 MENU_TIP = 'More: pause or close this work.'
-PAUSE = ('Pause…', 'Keep it, but stop showing it as active. Asks you why; the answer shows on the row.')
-CLOSE = ('Close…', 'Stop this work. Nothing is erased; unsaved changes are saved first. Asks you why.')
+PAUSE = ('Pause…', 'Marks it paused on its card, with your reason. Its branch, copy and pull request stay exactly as they are.')
+CLOSE = ('Close…', 'Saves any unsaved changes to a backup branch, closes its pull request, removes its copy from this computer and marks the card closed. The branch stays on GitHub.')
+
+
+# WHY beside the name and renamed (A-1: "unsaved changes … should be near the name… unclear what needs your
+# look means vs unsaved changes"): it is a warning about the copy on this computer, not the work's state
+NOT_BACKED = '<span class="spill warn" data-tip="Its copy on this computer has changes that exist nowhere else: not committed, or committed but not pushed to GitHub. Close… backs them up first.">Not backed up</span>'
 
 
 def pill(state):
-    w, tone, main, why, _ = STATES[state]
+    w, tone, main, why, _, _ = STATES[state]
     dot = '<span class="dot" aria-hidden="true"></span>' if state == 'working' else ''
     # WHY the hover names the button (Q-3): the rule is explained exactly where you would wonder about it
     return f'<span class="spill {tone}" data-tip="{E(w)}: {E(why)} That\'s why this row offers {E(main)}.">{dot}{E(w)}</span>'
@@ -107,8 +121,9 @@ def menu():
     """The ⋯ button and its small menu (the app's shared Menu): only the two stopping words (Q-2)."""
     return ('<span class="mwrap"><button class="btn sm mbtn" aria-haspopup="menu" aria-expanded="false" data-tip="' + E(MENU_TIP) + '">⋯</button>'
             '<span class="menu layer" role="menu" hidden>'
-            f'<button class="mitem" role="menuitem" data-does data-tip="{E(PAUSE[1])}">{PAUSE[0]}</button>'
-            f'<button class="mitem" role="menuitem" data-does data-tip="{E(CLOSE[1])}">{CLOSE[0]}</button></span></span>')
+            # WHY the effect is written under each item, not only on hover (A-2): what these do is the question
+            f'<button class="mitem" role="menuitem" data-does data-tip="{E(PAUSE[1])}"><span>{PAUSE[0]}</span><span class="mhint">{E(PAUSE[1])}</span></button>'
+            f'<button class="mitem" role="menuitem" data-does data-tip="{E(CLOSE[1])}"><span>{CLOSE[0]}</span><span class="mhint">{E(CLOSE[1])}</span></button></span></span>')
 
 
 def chips(c):
@@ -120,8 +135,6 @@ def chips(c):
     out.append(f'<span class="badge" data-tip="How many chats have worked on this. Open lists them.">{n} chat{"s" if n != 1 else ""}{f" · {live} working now" if live else ""}</span>')
     for p in c.get('prs', []):
         out.append(f'<span class="badge" data-tip="A change waiting to be merged into master.">Pull request {E(p)}</span>')
-    if c.get('unsaved'):
-        out.append('<span class="spill warn" data-tip="A copy of this work has changes that are not saved anywhere else. Close… saves them first.">Unsaved changes</span>')
     return ''.join(out)
 
 
@@ -142,10 +155,11 @@ def body(c, pic):
     h.append(f'<div class="eyebrow" data-tip="Every chat that worked on this, newest first.">Chats <span class="cnt" data-tip="How many chats.">{n}</span></div><div class="tline">')
     for x in c['chats']:
         d, name, res = x[0], x[1], x[2]; live = len(x) > 3 and x[3]
-        lp = '<span class="spill info" data-tip="This chat worked on it today."><span class="dot" aria-hidden="true"></span>Working</span>' if live else ''
+        lp = '<span class="spill info" data-tip="This chat is working on it now. (On this mockup: in the last 24 hours.)"><span class="dot" aria-hidden="true"></span>Working</span>' if live else ''
         r = E(res) if res else '<span class="missing">No summary saved.</span>'
-        h.append(f'<div class="row slim tl"><span class="t-2xs muted tld">{E(d)}</span><span class="body"><span class="t-xs rt">{E(name)}</span><span class="hint wrap">{r}</span></span>{lp}'
-                 f'<button class="btn sm" data-does data-tip="Opens this chat where it left off.">Open chat</button></div>')
+        h.append(f'<div class="row slim tl"><span class="t-2xs muted tld">{E(d)}</span><span class="body"><span class="t-xs rt">{E(name)}</span><span class="hint wrap">{r}</span></span>{lp}' +
+                 (f'<button class="btn sm" data-does data-tip="Switches to this conversation, which is open now.">Go to chat</button></div>' if live else
+                  f'<button class="btn sm" data-does data-tip="Reopens this conversation where it left off.">Resume chat</button></div>'))
     h.append('</div><button class="btn bpfull" data-does data-tip="Starts a new chat that already knows this work\'s finish line and progress, so it continues instead of starting over.">Start another chat on this card</button>')
     p = pic(c.get('screens') or [])
     if p:
@@ -155,12 +169,12 @@ def body(c, pic):
 
 
 def row(c, pic):
-    w, tone, main, why, _ = STATES[c['state']]
+    w, tone, main, why, _, does = STATES[c['state']]
     nxt = ('Paused because: ' + c['paused']) if c['state'] == 'paused' else ('Next: ' + c['next'] if c['state'] in ('review',) else c['next'])
-    return (f'<div class="row crow" data-card="{E(c["id"])}"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">{E(c["title"])}</span>{pill(c["state"])}</div>'
+    return (f'<div class="row crow" data-card="{E(c["id"])}"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">{E(c["title"])}</span>{pill(c["state"])}{NOT_BACKED if c.get("unsaved") else ""}</div>'
             f'<div class="t-xs dim cnext">{E(nxt)}</div></div>'
-            f'<div class="acts"><button class="btn sm copen" aria-expanded="false" data-tip="Shows its progress, every chat that worked on it, and its screens.">Open</button>{menu()}'
-            f'<button class="btn sm primary" data-does data-tip="{E(why)}">{E(main)}</button></div></div>'
+            f'<div class="acts">{menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this row, its progress, every conversation that worked on it, and its screens.">View chats</button>'
+            f'<button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></div>'
             # WHY the chips line spans the whole row: under the text column it was cut off, and the date belongs at the far right (guide: Cards)
             f'<div class="cmeta"><div class="cchips">{chips(c)}</div>{date(c)}</div>'
             f'<div class="cbody" hidden>{body(c, pic)}</div></div>')
@@ -176,11 +190,11 @@ def render(efforts, dev_only, leftovers, suggest, pic, T, sechead, fold):
     out = []
     # ---- Start here: the top card drawn large, same label and buttons as its row (Q-7)
     S = suggest
-    w, tone, main, why, _ = STATES[hero['state']]
+    w, tone, main, why, _, does = STATES[hero['state']]
     out.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
-<div class="herobody"><div class="herotext"><div class="ctl"><span class="t-lg">{E(hero['title'])}</span>{pill(hero['state'])}</div><p class="t-sm dim">{E(S['why'])}</p>
+<div class="herobody"><div class="herotext"><div class="ctl"><span class="t-lg">{E(hero['title'])}</span>{pill(hero['state'])}{NOT_BACKED if hero.get('unsaved') else ''}</div><p class="t-sm dim">{E(S['why'])}</p>
 <div class="cchips">{chips(hero)}</div></div>{pic(['projects', 'marketplace'])}</div>
-<div class="acts heroacts"><button class="btn sm" data-does data-tip="Shows its progress and every chat that worked on it (in the real version, the same view as the row's Open).">Open</button>{menu()}<button class="btn sm primary" data-does data-tip="{E(why)}">{E(main)}</button></div>
+<div class="acts heroacts">{menu()}<button class="btn sm" data-does data-tip="Shows its progress and every conversation that worked on it (the same list as its row's View chats).">View chats</button><button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div>
 <div class="herofolds"><details class="fold"><summary class="foldrow" data-tip="{T('today.why')}"><span class="t-xs">Why this one</span><span class="chev">›</span></summary>
 <div class="two"><div><div class="eyebrow">How it connects</div><ul class="t-xs">{''.join(f'<li>{E(x)}</li>' for x in S['connects'])}</ul></div>
 <div><div class="eyebrow">What should be adjustable</div><ul class="t-xs">{''.join(f'<li>{E(x)}</li>' for x in S['config'])}</ul></div></div></details></div></section>''')
@@ -192,7 +206,7 @@ def render(efforts, dev_only, leftovers, suggest, pic, T, sechead, fold):
     out.append('<section class="sec">' + sechead('Needs you', len(groups['needs']), 'Only you can decide these. The label on each row decides its main button.', 'today.needs', 'today.needs.count'))
     out += [row(c, pic) for c in groups['needs']]
     out.append('</section>')
-    out.append('<section class="sec">' + sechead('Being worked on', len(groups['working']), 'A chat worked on these today.', 'today.inprog', 'today.inprog.count'))
+    out.append('<section class="sec">' + sechead('Being worked on', len(groups['working']), 'A chat worked on these in the last 24 hours.', 'today.inprog', 'today.inprog.count'))
     out += [row(c, pic) for c in groups['working']]
     out.append('</section>')
     out.append(fold('Everything else', len(groups['rest']), 'No finish line, idle, or paused. Paused work is last, with its reason.',
@@ -242,9 +256,11 @@ CSS = '''
 .spill.info .dot{background:var(--accent)}
 /* the ⋯ menu: the app's shared Menu, hanging under its button */
 .mwrap{position:relative;display:inline-flex}
-.menu{position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:140px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg)}
+.mhint{font-size:11px;color:var(--fg-muted);line-height:1.35}
+.menu{position:absolute;right:auto;left:0;top:calc(100% + 4px);z-index:20;min-width:140px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg)}
 .menu[hidden]{display:none}
-.mitem{font:inherit;font-size:12px;text-align:left;padding:6px 10px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);cursor:pointer}
+.menu{min-width:280px;max-width:320px}
+.mitem{display:flex;flex-direction:column;gap:2px;font:inherit;font-size:12px;text-align:left;padding:6px 10px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);cursor:pointer}
 @media (hover:hover){.mitem:hover{background:var(--inset)}} .mitem:focus-visible{outline:2px solid var(--accent)}
 @media (max-width:760px){.ctop{flex-direction:column}.crow .acts{width:100%;justify-content:flex-end}}
 '''
@@ -252,7 +268,7 @@ CSS = '''
 JS = r'''
 // Today: Open unfolds a row inside its own box; ⋯ opens the small menu (closes on a click outside or Esc)
 document.addEventListener('click',e=>{
-  const o=e.target.closest('.copen');if(o){const b=o.closest('.crow').querySelector('.cbody');b.hidden=!b.hidden;o.setAttribute('aria-expanded',!b.hidden);o.textContent=b.hidden?'Open':'Hide';fades();return}
+  const o=e.target.closest('.copen');if(o){const b=o.closest('.crow').querySelector('.cbody');b.hidden=!b.hidden;o.setAttribute('aria-expanded',!b.hidden);o.textContent=b.hidden?'View chats':'Hide chats';fades();return}
   const m=e.target.closest('.mbtn');$$('.menu').forEach(x=>{if(!m||x!==m.nextElementSibling){x.hidden=true;x.previousElementSibling.setAttribute('aria-expanded','false')}});
   if(m){const x=m.nextElementSibling;x.hidden=!x.hidden;m.setAttribute('aria-expanded',!x.hidden)}
   if(e.target.closest('.mitem'))$$('.menu').forEach(x=>x.hidden=true)});
