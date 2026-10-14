@@ -299,3 +299,5 @@ Deck `popup-cards-3` (2026-10-14) — answers:
 | Remove project, Turn on sync | Yes — "grey text below text input box" (Turn on sync's words moved under its box). | `popup-cards-3#B-3` |
 | Resume: choose a model, bare | Yes. | `popup-cards-3#B-4` |
 | Whole-popup buttons, several boxes | **Pinned bottom line** — "if the buttons at the bottom apply to an entire popup with multiple sections, they should remain at the bottom". Submit a ticket moves to it. Not chosen: under the last box, inside the last box. | `popup-cards-3#Q-1` |
+
+Deck `popup-cards-4` (2026-10-14) — answers: grey words under the box and Submit a ticket's bottom line both **yes**; Rename's main button reads **"Save"**, not "Save name" (`popup-cards-4#C-1`, "change save name to just save."; `#C-2`).

@@ -1,0 +1,23 @@
+{
+ "deck": "popup-cards-4",
+ "started": "2026-10-14T17:41:58.708Z",
+ "submitted": "2026-10-14T17:42:35Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "v": "yes",
+   "t": 1791999743234,
+   "note": "change save name to just save.",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "t": 1791999754665,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
