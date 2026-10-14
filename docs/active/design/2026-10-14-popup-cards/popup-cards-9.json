@@ -1,0 +1,94 @@
+{
+  "title": "Version always on, full-window theme previews, Details inside, short popups boxed",
+  "key": "popup-cards-9",
+  "out": "popup-cards-9.review.html",
+  "images": "images/popup-cards-9",
+  "runs": {
+    "before": "runs/r10/before",
+    "after": "runs/r10/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "W-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Status bar widgets",
+      "path": "Chat → right-click the status bar → Status bar widgets",
+      "crop": "chat/status-bar@panel",
+      "headline": "Version is now in the Always on section, as you asked.",
+      "changed": "Its switch is on and greyed like the other four, and the version chip shows in the status bar even for anyone who had turned it off.",
+      "notice": "It's where an available update glows, so it can no longer be hidden.",
+      "risk": "Anyone who had hidden the version chip will see it again."
+    },
+    {
+      "id": "M-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Marketplace → Themes",
+      "path": "Marketplace → Themes tab",
+      "crop": "marketplace/themes",
+      "headline": "Theme previews show the whole window now.",
+      "changed": "The picture area takes the preview's own shape (16:10), so the bottom of the window, message box and status bar included, is no longer cut off. Corners still follow the card's.",
+      "notice": "Compare the bottom edge of each picture.",
+      "risk": "Each theme card is taller, so fewer fit on the screen without scrolling."
+    },
+    {
+      "id": "E-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Error messages",
+      "path": "A failed install on a plugin's page · Contribute when the conversation won't open",
+      "crop": [
+        {
+          "crop": "marketplace/detail/install#failed@panel",
+          "label": "Failed install"
+        },
+        {
+          "crop": "settings/development/contribute#open-failed-details@panel",
+          "label": "Contribute"
+        }
+      ],
+      "headline": "Details now sits inside the error box everywhere, your pick.",
+      "changed": "Two of the eight shown. The same change applies to a broken part of the app, a voice download, voice vocabulary, the games lobby, Git review and a file that won't open.",
+      "notice": "Details still opens to show the raw message.",
+      "risk": "None of the wording changed."
+    },
+    {
+      "id": "S-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Short popups",
+      "path": "Switch model (chat too long) · Settings → Backup & sync → Remove a backup · Remove a project whose folder is missing",
+      "crop": [
+        {
+          "crop": "chat/model-picker/switch-model@panel",
+          "label": "Switch model"
+        },
+        {
+          "crop": "settings/sync/remove-backend@panel",
+          "label": "Remove backup"
+        },
+        {
+          "crop": "projects/remove/missing@panel",
+          "label": "Folder missing"
+        }
+      ],
+      "headline": "The last one-sentence popups are boxed too, your pick.",
+      "changed": "Each is now one box with its words and stacked buttons, at the same width as the other small popups. Remove backup's buttons now stack with the red Remove on top (they were side by side).",
+      "notice": "Every small popup in the app now uses the same box.",
+      "risk": "Switch model and Remove backup got wider (340 → 420px). Words unchanged."
+    }
+  ]
+}

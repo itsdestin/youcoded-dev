@@ -156,9 +156,9 @@ and Git review inside it are still hand-built — see their sections below.)
   (popup-cards-1#PC-1): its words, fields, notice, tick box and then its buttons, all inside one
   unlabelled first-level card. Reference: Create a page. Never a card with the buttons left under it,
   and never the fields bare on the popup. A tick box before an action is always the shared "I
-  understand" box (`ConsentRow`), never a bare square. **The one exception:** a short confirmation
-  question of one or two sentences with nothing to tick or type ("Remove backup?", a missing folder's
-  Remove project, Switch model) stays plain text. **Every one-job popup is drawn the same way** by the
+  understand" box (`ConsentRow`), never a bare square. **Short confirmations too:** a one- or two-sentence question ("Remove
+  backup?", a missing folder's Remove project, Switch model, the take-over popups) is the same card
+  (popup-cards-6#T-1, popup-cards-8#Q-2 — the earlier plain-text exception is retired). **Every one-job popup is drawn the same way** by the
   shared `OneJobCard` (popup-cards-2#A-1–#A-3): narrow (420px), 12px grey words, a name above each
   text box, **the box's grey words under it** (popup-cards-3#B-1, #B-3: name, box, then words — the
   steps of Connect OpenRouter too), then the buttons stacked full width with the main one on top. A button never sits inside
@@ -225,8 +225,8 @@ retired: reading text now sits in a labelled card — final-review#ST-21.)
   card, and once one card has a label, every card on that page does (otherwise the next card reads as
   filed under the one above) — a card of switches too: Pin to top and Mark complete got their own label,
   "In your lists", rather than sitting under Tags (close-session-2#CS2-2, #CS2-5). A label never repeats
-  the popup's title. Exceptions: a popup that is one card (a one-job popup, Buddy), short yes/no
-  confirmations, popups that open on a warning, **the card about the popup's own subject** at its top
+  the popup's title. Exceptions: a popup that is one card (a one-job popup, a short confirmation, Buddy),
+  popups that open on a warning, **the card about the popup's own subject** at its top
   (Session details' name card, a detail page's top card), and **a picture of the item** (a theme's
   preview).
 
@@ -391,8 +391,8 @@ Reference: the Marketplace detail pages; Session details for the top card.
 - Show a state only once: no "Installed" pill where the buttons already say so (themes); a number that
   changes when you click (likes) is a chip that moves at once.
 - **A failed install** is one notice box in the buttons' place: "<name> couldn't be installed." with
-  Try again inside it, and the installer's own words under a **Details** fold (decisions "Failed install
-  on a detail page").
+  Try again inside it, and the installer's own words under a **Details** fold at the foot of the same box
+  (decisions "Failed install on a detail page"; popup-cards-8#Q-1: Details is inside the box, everywhere).
 
 ### Writing something others will read, then sending it (a ticket, a post, a share)
 Reference: Submit a ticket.
