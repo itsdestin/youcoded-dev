@@ -221,8 +221,8 @@ under its words (`SectionLabel reading`). Labels over short settings groups stay
 - **One button:** any lone button is full width, unless it fits on one line beside its text — then it
   sits at the right of that line.
 - **Two buttons, side by side** (wide popups, chat messages): the **filled one on the right**, the
-  outlined one directly left of it, both hugging their labels at the right edge. A chat question card
-  is the same: outlined Dismiss directly left of filled Submit.
+  outlined one directly left of it, both hugging their labels at the right edge. (Chat question
+  cards are not covered yet — see Not covered yet.)
 - **Two buttons, stacked** (narrow popups and phone width): full width, **filled on top** — so the way
   back (Back, Back to draft) is the outlined one under it. "Narrow" is
   the space the buttons sit in, not only the popup: a ~250px column inside a wide popup stacks too.
@@ -767,8 +767,9 @@ opening inside itself). The footer rule "ghost Cancel" is replaced by outlined C
 ## Not covered yet
 
 These are **not final** and are exempt from this guide until their own redesign: **tool cards** and
-**permission prompts** (Yes · Always allow · No stays as today, its coloured buttons included). The
-**terminal view** stays exactly as it is; its section above only records it.
+**permission prompts** (Yes · Always allow · No stays as today, its coloured buttons included), and
+**chat question cards** (their Dismiss / Submit buttons were never approved; revisit with tool cards —
+final-review#CH-29). The **terminal view** stays exactly as it is; its section above only records it.
 
 ## Open questions
 
