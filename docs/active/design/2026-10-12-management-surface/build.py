@@ -238,62 +238,10 @@ def sechead(title, count, hint='', tip=None, ctip=None):
     return f'<div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="{T(tip)}">{E(title)}</span>{c}</h2>{f"<p class=\'gdesc\'>{E(hint)}</p>" if hint else ""}</div></div>'
 
 # ----------------------------------------------------------------------------- TODAY
-active = [e for e in EFFORTS if e['days'] <= 7]
-IN_NEEDS = {'plugin-project-controls','sync-retry-feedback','sync-safety-audit-20260908'}
-waiting = [e for e in EFFORTS if e['days'] > 7 and e['id'] not in IN_NEEDS]
-# WHY "Project skills & tools" is gone from this list: it is the suggested next step at the top,
-# and the old page showed it twice (Destin's rule: nothing repeated twice in one view).
-# WHY renamed (2026-10-13 cut): "library updates" and "tests" were developer words; they now say
-# "code the app borrows" and "automatic checks".
-needs = [
-  ('Sync safety: backup-target selection fix', 'Reviewed and passing its checks on Sept 9, but never put in the app. Untouched 31 days.', None,
-   [btn('Put it in the app','today.putin'), btn('See before and after','today.beforeafter'), btn('Hold','today.hold')]),
-  ('Sync: acknowledge retry attempts', 'Waiting for review since Sept 8; its automatic checks fail. Nobody has looked.', 'Pull request #444',
-   [btn('Fix the failing checks','today.fixchecks'), btn('Drop it','today.drop')]),
-  ('7 automatic updates to code the app borrows, all failing their checks', 'Five for Android from Sept 3, two for desktop from Oct 5 and 8.', None,
-   [btn('Apply all seven and check them','today.applyall'), btn('Drop them','today.dropall')]),
-  ('10 unfinished copies with unsaved changes, untouched for two weeks or more', 'They cannot be cleaned up automatically because the changes are not saved anywhere.', None,
-   [btn('Save them all','today.saveall'), btn('List them','today.listthem')]),
-]
-today = []
-S = SUGGEST
-today.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
-<div class="herobody"><div class="herotext"><div class="t-lg">{E(S['title'])}</div><p class="t-sm dim">{E(S['why'])}</p>
-<div class="t-xs muted"><span data-tip="{T('today.lands')}">Lands in {E(" · ".join(S['touches']))}</span><br><span data-tip="{T('today.serves')}">Serves: &ldquo;{E(S['promisename'])}&rdquo; &mdash; {E(S['promise'])}</span></div></div>
-{pic(['projects','marketplace'])}</div>
-<div class="acts heroacts">{btn('Set aside','today.setaside')}{btn('Open its conversation','today.openconv')}<button class="btn sm primary" data-does data-tip="{T('today.deck')}">Open its review deck</button></div>
-<div class="herofolds">
-<details class="fold"><summary class="foldrow" data-tip="{T('today.why')}"><span class="t-xs">Why this one</span><span class="chev">›</span></summary>
-<div class="two"><div><div class="eyebrow">How it connects</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['connects'])}</ul></div>
-<div><div class="eyebrow">What should be adjustable</div><ul class="t-xs">{''.join(f'<li>{E(c)}</li>' for c in S['config'])}</ul></div></div></details>
-<div class="t-xs muted">Other options: the two in-progress items below, or anything in Waiting.</div>
-</div></section>''')
-
-today.append('<section class="sec">' + sechead('Needs you', len(needs), 'Only you can decide these.', 'today.needs', 'today.needs.count'))
-for t, hint, htip, bs in needs:
-    h = f'<span data-tip="{T("today.pr")} ({E(htip)})">{E(hint)}</span>' if htip else E(hint)
-    today.append(f'<div class="row"><div class="body"><div class="t-sm">{E(t)}</div><div class="hint wrap">{h}</div></div><div class="acts">{"".join(bs)}</div></div>')
-today.append(f'<div class="eyebrow othersh"><span data-tip="{T("today.reports")}">Reports from other people</span></div><div class="t-xs muted">No open reports. The last one was from tjmorin03 on Sept 15, closed.</div></section>')
-
-def seescreens(e):
-    return f'<button class="btn sm" data-effscreens="{EFFORTS.index(e)}" data-tip="{T("today.seescreens")}">See its screens</button>' if e['screens'] else ''
-today.append('<section class="sec">' + sechead('In progress', len(active), 'Touched in the last 7 days. Neither has a finish line yet.', 'today.inprog', 'today.inprog.count'))
-for e in active:
-    today.append(f'''<div class="row">{pic(e['screens'])}<div class="body"><div class="t-sm">{E(e['title'])}</div>
-      <div class="hint wrap">Last worked on {ago(e['days'])}. {E(e['note'])}</div>{meta(e['touches'], e['side'])}</div>
-      <div class="acts">{seescreens(e)}{btn('Open its conversation','today.openconv')}{btn('Write its finish line','today.finishline')}{btn('Set aside','today.setaside')}</div></div>''')
-today.append('</section>')
-
-w = []
-for e in waiting:
-    pr = f' · <span data-tip="{T("today.pr")} ({E(e["prtip"])})">{E(e["pr"].replace("tests", "checks"))}</span>' if e.get('pr') else ''
-    paused = f'<div class="hint wrap">Waiting on: {E(e["paused"])}</div>' if e.get('paused') else ''
-    w.append(f'''<div class="row"><div class="body"><div class="t-sm">{E(e['title'])}</div>
-      <div class="hint wrap">{ago(e['days']).capitalize()}{pr}. {E(e['note'])}</div>{paused}{meta(e['touches'], e['side'])}</div>
-      <div class="acts">{seescreens(e)}{btn('Open its conversation','today.openconv')}{btn('Wrap up','today.wrapup')}</div></div>''')
-w.append('<div class="sub">' + sechead('Notes and research only', len(DEV_ONLY), '', 'today.notes', 'today.notes.count') + ''.join(f'<div class="row slim"><div class="body"><div class="t-sm">{E(d["title"])}</div><div class="hint">Last touched {ago(d["days"])}</div></div><div class="acts">{btn("Open","today.opennotes")}{btn("Archive","today.archive")}</div></div>' for d in DEV_ONLY) + '</div>')
-w.append(f'<div class="t-xs muted note">Cleaned up automatically at session start, nothing to do: {E(LEFTOVERS["backups"])}; {E(LEFTOVERS["diag"])}.</div>')
-today.append(fold('Waiting', len(waiting), 'Untouched for a week or more. Only one says why.', ''.join(w), 'today.waiting', 'today.waiting.count'))
+# WHY replaced (2026-10-14, Destin's answers to the independent review: all eight recommended options):
+# Today's rows are drawn by today_tab.py from one table of states; the label decides each row's button.
+import today_tab as ttab
+today = ttab.render(EFFORTS, DEV_ONLY, LEFTOVERS, SUGGEST, pic, T, sechead, fold)
 
 b = []
 for x in BUGS:
@@ -387,7 +335,7 @@ CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
@@ -441,6 +389,7 @@ $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 {bptab.JS}
+{ttab.JS}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
 check_tips(page)
