@@ -152,7 +152,11 @@ and Git review inside it are still hand-built — see their sections below.)
   its editing cards are **open** when it opens — the same cards as where you edit it elsewhere, never a
   summary that swaps into a second form — and **nothing it edits is saved until the action**; the ✕
   leaves everything as it was (close-session-1#CS-2).
-- **What a popup says and offers sits in cards** — the same in every popup and every (i) explainer
+- **REOPENED — do not follow until resolved** (final-fixes#PR-7e, #PR-7f, #ST-21; open items in
+  `2026-09-23-ui-element-review/decisions.md` → "Final fixes"). Destin: cards were added "to everything
+  arbitrarily … a popup with no header or sections doesn't need another card level inside"; popup
+  subheaders and buttons inside vs outside cards are undecided. The rule as first written:
+  **What a popup says and offers sits in cards** — the same in every popup and every (i) explainer
   (final-review#ST-21, #PR-7): explanations, tick boxes, switches, fields and choices go inside
   first-level cards under small labels, the way About groups its text (Settings → About; an (i)
   page is a label over a card per section). A popup that is one card needs no label (a confirmation:
