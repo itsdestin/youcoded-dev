@@ -277,3 +277,15 @@ Settles the reopened popup-card rule (final-fixes#PR-7e, #PR-7f, #ST-21), shown 
 | A popup that does one job | **One box holding everything, its buttons included** (Create a page's shape today). | No box (fields straight on the popup); a box with the buttons under it. | `popup-cards-1#PC-1` |
 | The line under a popup's title | **Keep it** (`Dialog` `subtitle`) where a popup has one. Status bar widgets still loses its own (final-fixes#PR-7d, replaced by the "Always on" section). | Remove it; move it into the popup. | `popup-cards-1#PC-2` |
 | (i) pages: the first box | **Labelled** — "Overview" over the opening box, so every box on the page has a label. | Unlabelled first box. | `popup-cards-1#PC-3` |
+
+Deck `popup-cards-2` (the rule applied, 2026-10-14) — answers:
+
+| Topic | Decision | Source |
+|---|---|---|
+| Rename session, Pick a handle, Connect OpenRouter | Kept, and **"still think these can look more similar. notice the difference in header/text/input box/button positioning across all 3 popups that basically have the same job/size"** — led to one shared one-job layout (`OneJobCard`, shown on `popup-cards-3`). | `popup-cards-2#A-1` |
+| First-time warnings, Skip permissions confirm | "think these could be more consistent too" — same shared layout. | `popup-cards-2#A-2` |
+| Remove project, Turn on sync | "same" — same shared layout. | `popup-cards-2#A-3` |
+| Resume: choose a model | **"i don't want the exterior container. i think this is fine as bare dropdown w buttons"** — the box is removed. Fast mode keeps its box. | `popup-cards-2#A-4` |
+| Friend details, Publish theme | Yes, kept. | `popup-cards-2#A-5` |
+| (i) Overview label | Yes, kept. | `popup-cards-2#A-6` |
+| Whole-popup buttons in a several-box popup | "help me visualize these" — shown as pictures on `popup-cards-3#Q-1`. | `popup-cards-2#Q-1` |
