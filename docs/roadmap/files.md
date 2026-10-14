@@ -82,6 +82,10 @@ searched or resumed (chat-data).
       pictures, diagrams and PDFs open in it): "the side pane needs separate ui/ux work, particularly to
       make images look better nested fitted and to improve the bottom bar and our git surfaces".
       `files-panel` `all` `confirmed` `P3` `checked 2026-10-13`
+- [ ] Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or
+      as "created by Claude" — e.g. a Word file built by a script (Destin, 2026-10-13: "track every file created,
+      edited, or deleted by claude, even done with scripts/bash"). Deletions are never recorded at all.
+      `files-panel` `all` `confirmed` `P3` `checked 2026-10-13` → docs/active/investigations/2026-10-13-command-file-tracking.md
 
 - [ ] Parked ideas: files pane and editor (nine things).
       (a) HTML preview: fonts and background images referenced inside a linked stylesheet do not load.
