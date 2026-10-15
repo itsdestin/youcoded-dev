@@ -1,0 +1,270 @@
+{
+ "title": "Idea intake: a trial on five of your past ideas",
+ "key": "idea-intake-trial",
+ "out": "idea-intake-trial.questions.html",
+ "themes": [
+  "light",
+  "midnight"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "You, 2026-10-15",
+   "headline": "Z13 setup pack: is this how you'd want it filed?",
+   "today": "You said: “i think i want to add a roadmap item in youcoded-dev, which basically would entail taking all of our quick settings, panel (tablet/laptop mode), and keyboard customizations, along with any other cachyos tweaks etc, and making them something that could easily be downloaded and set up by literally anyone running a z13. i'd post this on the z13 subreddit … good little marketing boost i think”",
+   "problem": "What it had to work out: A big idea plus a later step (the Reddit post) that needs it.",
+   "proposal": "The reply you'd get:\nHow I'd file this:\n- Z13 setup pack — new, Planning. Bundle your quick settings, tablet/laptop mode, keyboard customizations and other CachyOS tweaks into one download any Z13 owner can install.\n- Later: Reddit post for the Z13 pack — saved as an idea that needs the pack. It would be your free post to the Z13 subreddit, with a comment on how you built it with YouCoded and a link. Nothing starts until the pack exists.\n\nOrder: the pack comes first, because there is nothing to post until it works on a machine that isn't yours.\nOverlap I noticed: none. Nothing on the roadmap covers a shareable Z13 setup. The closest items are the subreddit moderation entry and the marketplace's parked ideas, and neither duplicates this.\n\nSay yes and I'll file it, or tell me what to change.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, like this",
+     "pros": [
+      "File it exactly this way."
+     ],
+     "cons": []
+    },
+    {
+     "id": "close",
+     "label": "Close, but…",
+     "pros": [
+      "Say what you'd change in the note."
+     ],
+     "cons": []
+    },
+    {
+     "id": "no",
+     "label": "No, wrong idea",
+     "pros": [
+      "Say how you think of it instead."
+     ],
+     "cons": []
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "You, 2026-09-01",
+   "headline": "Duties grouped under an assistant: is this how you'd want it filed?",
+   "today": "You said: “i had an idea where basically we should have a \"duties\" feature and multiple \"duties\" can be grouped under an \"assistant\" or \"bot\" … the \"office\" assistant whose \"duties\" are 1) check emails … 2) prepare weekly finance reports … 3) review a shopping list, ping the user to confirm accuracy, then order the items from amazon … the pinging the user part … is something i imagine as a core competency of the eventual agents/automations system.”",
+   "problem": "What it had to work out: An idea that is already a one-line roadmap note, and a part (pinging you) you called a core ability.",
+   "proposal": "The reply you'd get:\nHow I'd file this:\n- Assistants made of Duties — new, Planning. Your idea: an \"assistant\" (workshop name) groups several \"duties\". Each duty is its own specialist, or a skill if the assistant is a single agent. The assistant can be a coordinator, the sole agent, or just a way to organize with no agent. I'd include your \"Office\" example (check email and calendar, weekly finance report, shopping list ordered after you confirm).\n- Ping the user to confirm — new, Planning. It's a core ability of the future agents system: a duty pauses, asks you, then continues. I'd keep it separate so the Agents & Automations work can build on it.\n- Agents & Automations — on the roadmap (native-harness, currently blocked on \"Assistants made of Duties\"). I'd make it a card at Planning that needs the two items above. Nothing starts yet.\n\nOrder: Duties first, since the roadmap says Agents & Automations is waiting on it. The ping ability comes with or right after it.\nOverlap I noticed: The roadmap already has a one-line note, \"Assistants made of Duties… captured, not designed.\" This is the same idea, so I'd link your message to it rather than add a second copy. There are no existing cards.\nSay yes and I'll file it, or tell me what to change.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, like this",
+     "pros": [
+      "File it exactly this way."
+     ],
+     "cons": []
+    },
+    {
+     "id": "close",
+     "label": "Close, but…",
+     "pros": [
+      "Say what you'd change in the note."
+     ],
+     "cons": []
+    },
+    {
+     "id": "no",
+     "label": "No, wrong idea",
+     "pros": [
+      "Say how you think of it instead."
+     ],
+     "cons": []
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "You, 2026-09-08",
+   "headline": "Refresh button on provider cards: is this how you'd want it filed?",
+   "today": "You said: “yeah we should add a refresh button on the openrouter and chatgpt provider cards in the model provider settings menu. just add this as a roadmap item for now.”",
+   "problem": "What it had to work out: A small one-liner, half of which is already on the roadmap.",
+   "proposal": "The reply you'd get:\nHow I'd file this:\n- Refresh button on the OpenRouter and ChatGPT cards — one small item, no prerequisites. Roadmap only, no card, as you asked.\n\nOverlap I noticed: the roadmap already has half of this. Under \"Native chat: small faults and polish\", item (a) says the ChatGPT card has no refresh, so after a plan upgrade the new models only showed up once you signed out and back in. I'd fold this in there and widen (a) to cover OpenRouter too. That way it isn't a second entry for the same thing.\n\nSay yes and I'll edit that roadmap line. Or tell me you'd rather have it as its own entry.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, like this",
+     "pros": [
+      "File it exactly this way."
+     ],
+     "cons": []
+    },
+    {
+     "id": "close",
+     "label": "Close, but…",
+     "pros": [
+      "Say what you'd change in the note."
+     ],
+     "cons": []
+    },
+    {
+     "id": "no",
+     "label": "No, wrong idea",
+     "pros": [
+      "Say how you think of it instead."
+     ],
+     "cons": []
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "You, 2026-09-24",
+   "headline": "Comments in the file viewer: is this how you'd want it filed?",
+   "today": "You said: “I'm not sure if this already exists in the roadmap somewhere … I want … Google Doc or Microsoft Word like comments where I can … mark it up and then have the assistant act on my markup. As part of this I also want to create a new UI for the ask about this feature for like the right click … I want it to feel like I've like attached something …”",
+   "problem": "What it had to work out: Two linked things, and a check of whether it already exists.",
+   "proposal": "The reply you'd get:\nHow I'd file this:\n- Comments and markup in the file viewer (new, Planning). Google-Docs-style notes on any span of text, plus a way for the assistant to act on your markup. Comments already exist for Word/Excel files, so this would extend that. Plain text and markdown files have none yet.\n- A better \"Ask about this\" (new, Planning). A text selection becomes an attachment chip above the input box, not pasted text. Today it pastes a text scaffold (\"The user is referencing lines 12-18…\") into the input, which is what you don't like.\n- Later: acting on your markup (new, Planning, waits on both items above). The assistant reads your notes and makes the edits. I'd split it out so the viewer work can ship first, unless you want it in the first version.\n\nOrder: The attachment chip comes first, because the comments would use the same \"attached to this span of text\" idea.\nOverlap I noticed: Not duplicates. The roadmap's \"Document comments: two gaps\" (files) is only about comment times and phone refresh. It is a small follow-up to the Word/Excel comments, not this. \"Ask about this\" shipped on 2026-07-17 and 2026-07-19. I found no old plan doc for this.\nSay yes and I'll file it, or tell me what to change.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, like this",
+     "pros": [
+      "File it exactly this way."
+     ],
+     "cons": []
+    },
+    {
+     "id": "close",
+     "label": "Close, but…",
+     "pros": [
+      "Say what you'd change in the note."
+     ],
+     "cons": []
+    },
+    {
+     "id": "no",
+     "label": "No, wrong idea",
+     "pros": [
+      "Say how you think of it instead."
+     ],
+     "cons": []
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "You, 2026-10-13",
+   "headline": "Browser use, visible or hidden: is this how you'd want it filed?",
+   "today": "You said: “i think i want our version of whatever we set up [for browser automation] to work identically with claude code and youcoded native sessions. would \"your chrome\" mode work in youcoded? i also think i'd like a way … for the assistant to offer either of 1) foreground browser use the user can watch, 2) background/hidden browser use … i want something comprehensive that works out of the box”",
+   "problem": "What it had to work out: A question mixed into an idea, and work that may have just merged.",
+   "proposal": "The reply you'd get:\nHow I'd file this:\n- Browser control, same in both kinds of session — new, Planning. One browser setup that behaves the same in Claude Code sessions and YouCoded's own sessions, and works out of the box. Whether \"your Chrome\" mode works in YouCoded is the first thing to look into, and I'd record that question on this item.\n- Visible or hidden browser (your choice) — new, Planning. The assistant offers a browser you can watch, or one that runs out of sight (a hidden window or second desktop, wherever Linux, Windows and Mac allow it) so it doesn't take over your screen.\n- Later: more — nothing else in your message needs its own item.\n\nOrder: Browser control comes first. The visible/hidden choice sits on top of it, so it needs the first item.\nOverlap I noticed: none. Nothing on the roadmap or among the existing items covers browser control. The browser-automation session merged yesterday (#254), but I found nothing filed for it. I'd check what it actually shipped before I plan the first item.\nSay yes and I'll file it, or tell me what to change.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, like this",
+     "pros": [
+      "File it exactly this way."
+     ],
+     "cons": []
+    },
+    {
+     "id": "close",
+     "label": "Close, but…",
+     "pros": [
+      "Say what you'd change in the note."
+     ],
+     "cons": []
+    },
+    {
+     "id": "no",
+     "label": "No, wrong idea",
+     "pros": [
+      "Say how you think of it instead."
+     ],
+     "cons": []
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Two behaviours to settle",
+   "intro": "Things the trial showed that the instructions don't decide yet."
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "When you say \"just add it to the roadmap\"",
+   "headline": "When you say \"just add a roadmap item\", should it still become an item I track like the others?",
+   "today": "For the refresh button you said \"just add this as a roadmap item for now\". The trial proposed folding it into an existing roadmap line instead of making a tracked item.",
+   "problem": "The plan is for everything to become tracked items eventually; keeping a second, roadmap-only path means two places to look.",
+   "proposal": "Everything becomes a tracked item, even small ones; \"for now\" just means nobody starts it yet.",
+   "options": [
+    {
+     "id": "always",
+     "label": "Always a tracked item",
+     "pros": [
+      "One place for everything; Today and Big picture see it."
+     ],
+     "cons": [
+      "Many tiny items."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "roadmap",
+     "label": "Small things stay roadmap lines",
+     "pros": [
+      "Fewer items."
+     ],
+     "cons": [
+      "Two places to look until the roadmap moves over."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Idea intake",
+   "path": "A reply's length",
+   "headline": "Are these replies the right length and detail?",
+   "today": "Each reply lists the pieces, the order, and any overlap it found, in about 4 to 8 lines.",
+   "problem": "Too short and you can't tell what it understood; too long and every idea costs you reading.",
+   "proposal": "Keep this length. Drop a section when it has nothing to say (the browser reply's \"Later: nothing else\" line is filler).",
+   "options": [
+    {
+     "id": "right",
+     "label": "About right",
+     "pros": [
+      "Enough to catch a wrong split."
+     ],
+     "cons": []
+    },
+    {
+     "id": "shorter",
+     "label": "Shorter",
+     "pros": [
+      "Less to read per idea."
+     ],
+     "cons": [
+      "Overlaps and order may not get said."
+     ]
+    },
+    {
+     "id": "longer",
+     "label": "More detail",
+     "pros": [
+      "More reasoning shown."
+     ],
+     "cons": [
+      "Slower to answer."
+     ]
+    }
+   ]
+  }
+ ]
+}
