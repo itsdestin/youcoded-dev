@@ -94,12 +94,19 @@ A job none of these does needs a new shared piece and Destin's look for it — n
    Buttons). A filled button, switch or selection never sits alone at the bottom-left — only when
    balanced by something on the right of the same line. **Every control sits flush left, flush right
    or full width** — never floating mid-row (a New/Used switch in the middle of a part row,
-   gt-r1#D-1).
+   gt-r1#D-1). **Controls on one line share one height**: a filter chip beside a search box is as
+   tall as the box, its words with room above and below (gt-r2#C-5a).
+9. **Anything clickable looks clickable.** It sits in a container — a button, chip, tab strip, card
+   or boxed row — never bare text (a build's name "All new" as a plain word you can click,
+   gt-r2#D-3b). Only a link inside a sentence is bare, and it is underlined.
 7. **Tight, even spacing** from one scale (below), and **no dead space**: a row is as tall as what is
    in it, a label sits on its row, not above a gap (gt-r1#D-1: "we should always optimize to reduce
    dead space").
 8. **Every theme, every width.** Check light, a dark theme, a wallpaper theme and 390px phone width
-   before showing anyone.
+   before showing anyone. **At phone width:** a row of tabs or chips never wraps onto a second line —
+   it scrolls sideways under the edge fade (the chip-row rule), with nothing left empty beside it
+   (gt-r2#D-3b); and **long cards or sections fold** (`FoldRow`), the first open, so the screen is a
+   short list you open rather than a long scroll (gt-r2#E-3b).
 
 ## Recipes
 

@@ -1,0 +1,235 @@
+{
+ "deck": "gt-r2",
+ "started": "2026-10-15T20:45:05.601Z",
+ "submitted": "2026-10-15T20:56:32Z",
+ "cur": 31,
+ "answers": {
+  "A-1a": {
+   "v": "yes",
+   "t": 1792097122143,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1b": {
+   "v": "yes",
+   "t": 1792097135141,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-2a": {
+   "v": "yes",
+   "t": 1792097143575,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-2b": {
+   "v": "yes",
+   "t": 1792097154156,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-3a": {
+   "v": "yes",
+   "t": 1792097159704,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-3b": {
+   "v": "yes",
+   "t": 1792097181738,
+   "seconds": 22,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-1": {
+   "v": "yes",
+   "t": 1792097214462,
+   "seconds": 33,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-2a": {
+   "v": "yes",
+   "t": 1792097230000,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-2b": {
+   "v": "yes",
+   "t": 1792097233373,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-3a": {
+   "v": "yes",
+   "t": 1792097241764,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-3b": {
+   "v": "yes",
+   "t": 1792097246677,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-4a": {
+   "v": "yes",
+   "t": 1792097249537,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-4b": {
+   "v": "yes",
+   "t": 1792097254625,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "yes",
+   "t": 1792097274398,
+   "seconds": 20,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-2a": {
+   "v": "yes",
+   "t": 1792097292672,
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-2b": {
+   "v": "yes",
+   "t": 1792097301276,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-3a": {
+   "v": "yes",
+   "t": 1792097309362,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-3b": {
+   "v": "yes",
+   "t": 1792097312519,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-4a": {
+   "v": "yes",
+   "t": 1792097315387,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-4b": {
+   "v": "yes",
+   "t": 1792097325279,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-5a": {
+   "v": "yes",
+   "t": 1792097378822,
+   "note": "the chips at the tope (work/idea) are a bit off. the top/bottom margins are too tight around the text. ",
+   "seconds": 54,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-5b": {
+   "v": "yes",
+   "t": 1792097382803,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "yes",
+   "t": 1792097415118,
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2a": {
+   "v": "yes",
+   "t": 1792097418067,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2b": {
+   "v": "yes",
+   "t": 1792097421628,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-3a": {
+   "v": "yes",
+   "t": 1792097426919,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-3b": {
+   "note": "the buttons at the top look bad here, i don't like how they wrap. too much empty space on the left side. i also thing clickable elements should NEVER be bare text like all new/mostly used. clickable elements should be container in some way and look clickable",
+   "t": 1792097492074,
+   "v": "other",
+   "seconds": 65,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-1": {
+   "v": "yes",
+   "t": 1792097518349,
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-2a": {
+   "v": "yes",
+   "t": 1792097520616,
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-2b": {
+   "v": "yes",
+   "t": 1792097533616,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-3a": {
+   "v": "yes",
+   "t": 1792097573917,
+   "seconds": 40,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-3b": {
+   "v": "yes",
+   "t": 1792097790969,
+   "note": "when possible, i think big/long cards/sections on phone should typically be expandable/collapsible",
+   "seconds": 217,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
