@@ -1,0 +1,108 @@
+{
+  "title": "Pages: which of the app's building blocks should the page builder get?",
+  "key": "pages-kit-questions",
+  "out": "pages-kit.questions.html",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "What Pages are missing",
+      "intro": "Pages (the small apps the assistant builds for you) get a style kit: buttons, text boxes, dropdowns, cards, chips, a slider and lists. In both test rounds, builders had to hand-make everything else, so each Page's version looks a little different. Pick what the kit should get."
+    },
+    {
+      "id": "K-1",
+      "words": true,
+      "pick": "several",
+      "surface": "Pages kit",
+      "path": "Any Page the assistant builds",
+      "headline": "Which status and problem pieces should Pages get?",
+      "today": "A Page has no status label, no notice box and no loading or error look. Four of five Page builders hand-made them.",
+      "problem": "Hand-made copies drift: one Page's error box isn't another's, and none match the app's own.",
+      "proposal": "Each picked piece becomes a kit class that looks exactly like the app's version, and the page-builder skill is told to use it.",
+      "options": [
+        {"id": "status-pill", "label": "Status label", "summary": "The small tinted pill with a dot: \"Running\", \"Needs you\", \"Best value\".", "pros": ["Builders made this most often.", "Colour stays in the tint, never the words, like the app."], "cons": ["Another class for the assistant to learn."]},
+        {"id": "notice", "label": "Notice box", "summary": "The tinted info / warning / error box, with its Details fold and its buttons below Details.", "pros": ["Every failure in a Page reads like one in the app.", "Machine words go under Details automatically."], "cons": ["Needs a little script for the Details fold."], "recommended": true},
+        {"id": "loading-error", "label": "Loading line and full-screen error", "summary": "\"Loading…\" with the app's spinner, and the centred full-screen error you approved for screens that load nothing.", "pros": ["A Page that can't fetch its data fails the same way the Marketplace does."], "cons": ["Rarely used by simple Pages."]}
+      ]
+    },
+    {
+      "id": "K-2",
+      "words": true,
+      "pick": "several",
+      "surface": "Pages kit",
+      "path": "Any Page the assistant builds",
+      "headline": "Which controls should Pages get?",
+      "today": "Pages have buttons, text boxes, dropdowns and a slider. For anything else (on/off, choosing between 2–4 things, filtering) builders hand-made something.",
+      "problem": "The PC build's New/Used choice and the trip planner's 30/90-day choice were each drawn differently from the app's tab strip.",
+      "proposal": "Picked controls become kit classes that look and behave like the app's own.",
+      "options": [
+        {"id": "toggle", "label": "On/off switch", "summary": "The app's switch.", "pros": ["Settings-like Pages (sources, alerts) need it."], "cons": ["—"], "recommended": true},
+        {"id": "tabs", "label": "Tab strip", "summary": "2–4 choices side by side (New / Used, 30 / 90 days, builds). On a phone it scrolls sideways instead of wrapping.", "pros": ["Covers your round 2 note about wrapping and bare-text choices."], "cons": ["—"]},
+        {"id": "filters", "label": "Filter chips and search box", "summary": "The app's search box with filter chips beside it, all one height.", "pros": ["Lists in Pages (reading list, purchases) need it.", "Covers your chip-height note."], "cons": ["Mostly for longer Pages."]}
+      ]
+    },
+    {
+      "id": "K-3",
+      "words": true,
+      "pick": "several",
+      "surface": "Pages kit",
+      "path": "Any Page the assistant builds",
+      "headline": "Which layout pieces should Pages get?",
+      "today": "A Page has cards and a 'well', but no fold-out, no nested box look, no section label rule and no scroll fade.",
+      "problem": "Your phone note (long sections fold) and the new scroll-fade rule can't be followed inside a Page without these.",
+      "proposal": "Picked pieces become kit classes; scroll fade could apply to every scrolling area in a Page automatically.",
+      "options": [
+        {"id": "fold", "label": "Fold-out row", "summary": "The boxed row with an arrow that opens inside itself; on a phone, long sections fold with the first open.", "pros": ["Lets Pages follow your phone rule."], "cons": ["Needs a small script."], "recommended": true},
+        {"id": "scroll-fade", "label": "Scroll fade, automatic", "summary": "Every scrolling area in a Page fades at its edges like the app's.", "pros": ["Matches your new rule with no effort from the assistant."], "cons": ["None to speak of."]},
+        {"id": "nested", "label": "Inner box and chip row", "summary": "The app's second-level box (a box inside a card, same look everywhere) and the one-line fact-chip row that scrolls sideways.", "pros": ["Builders mixed these by hand each time."], "cons": ["—"]}
+      ]
+    },
+    {
+      "id": "K-4",
+      "words": true,
+      "surface": "Pages kit",
+      "path": "The kit's existing pieces",
+      "headline": "Should the kit's existing pieces be corrected where they break the guide?",
+      "today": "The kit has a bare-text 'ghost' button (the guide says buttons are never bare text), cards with no shadow and wider padding than the app's, a full-width divider line (the guide uses the tapered line), and pills whose corners don't follow the theme's shape.",
+      "problem": "Builders using the kit correctly still break the guide, and copying a sample Page copies the breakage.",
+      "proposal": "Yes: the ghost button becomes the outlined button, cards get the app's padding and shadow, the divider becomes the tapered line, and corners follow the theme. Existing Pages change look slightly. No: leave the kit as it is."
+    },
+    {
+      "id": "K-5",
+      "words": true,
+      "surface": "Pages",
+      "path": "The sample Pages (Money, Home, Week planner, Trip board…)",
+      "headline": "Should the sample Pages be brought in line with the guide?",
+      "today": "The sample Pages were never checked against the guide; the Money page has spaced-out capitals, coloured warning text and its own button shapes.",
+      "problem": "Builders copy the nearest sample, so its mistakes spread. Round 1 and 2 builders both said so.",
+      "proposal": "Pick one.",
+      "options": [
+        {"id": "update", "label": "Update them", "recommended": true, "pros": ["The examples the assistant copies become good ones — why I recommend it.", "Your own Pages look consistent."], "cons": ["Some work; your existing Pages look slightly different afterwards."]},
+        {"id": "leave", "label": "Leave, mark unreviewed", "pros": ["No change to Pages you already use."], "cons": ["Their mistakes keep being copied."]}
+      ]
+    },
+    {
+      "id": "K-6",
+      "words": true,
+      "surface": "Pages",
+      "path": "Charts inside Pages (prices, spending, history)",
+      "headline": "Should charts get a guide recipe and kit colours?",
+      "today": "Nothing in the guide or kit covers charts. The PC build and trip planner each invented one (line colour, shaded range, marking the lowest point).",
+      "problem": "Data Pages are a big part of what Pages are for, and every chart will look different.",
+      "proposal": "Pick one.",
+      "options": [
+        {"id": "recipe", "label": "Recipe and colours", "recommended": true, "summary": "Lines in the text colour, the current or chosen item in the accent, ranges as a faint tint, small grey axis words; no status colours unless it's a warning.", "pros": ["Charts look like one family.", "Most Pages are data Pages."], "cons": ["A recipe without a chart piece still leaves drawing to the assistant."]},
+        {"id": "later", "label": "Not now", "pros": ["Keeps this branch small."], "cons": ["Every chart keeps being invented."]}
+      ]
+    },
+    {
+      "id": "K-7",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages screen at phone width",
+      "headline": "Fix the Pages screen squeezing a Page to a sliver on a phone?",
+      "today": "On a phone-width screen, opening a Page from the Pages list keeps the list beside it, leaving the Page about 170px wide. Three builders hit this.",
+      "problem": "Every Page is unusable from the Pages list on a phone or a narrow window.",
+      "proposal": "Yes: at phone width the list hides while a Page is open, with a back arrow to it (the pinned-page view already works this way). No: leave it for later."
+    }
+  ]
+}

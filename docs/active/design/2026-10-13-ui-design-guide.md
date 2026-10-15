@@ -154,6 +154,10 @@ and Git review inside it are still hand-built — see their sections below.)
   menu, not a centred popup (Lists and menus).
 - When the body scrolls, the content fades at the hidden edge, **evenly across the whole width**;
   never a solid strip, never an unfaded side strip (decisions "Popup scroll fade").
+- **Every scrolling area fades at its hidden edges with the app's one fade** (`scroll-fade` +
+  `useScrollFade`; in Pages, the kit's automatic fade) — popups, side panes, full screens, lists,
+  sideways chip rows and Pages alike. Never a hand-made gradient in another colour, and never a
+  scroll area with no fade (Destin, 2026-10-15).
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide** popups are
   larger. At phone width a popup stays a popup, as wide as the screen allows (old guide §4.8).
 - **Settings save as you change them.** A settings popup has no Save and no Done: closing it keeps what
