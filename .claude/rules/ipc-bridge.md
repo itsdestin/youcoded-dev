@@ -49,7 +49,7 @@ Desktop, Android and a remote browser render the SAME React UI over the SAME JSO
 - **CC-coupled code gets an entry in `youcoded/docs/cc-dependencies.md`** (parsing CC output, consuming a CC file, depending on CLI behavior, or matching CC text) — it feeds the `review-cc-changes` release agent.
 
 ## Shared-UI bundle
-- **The React UI bundle must be in `app/src/main/assets/web/assets/` before APK packaging** or Android launches a blank WebView. `bundleWebUi` runs `scripts/build-web-ui.sh` — don't bypass it (`-x bundleWebUi`) without running that script first.
+- **The React UI bundle must be in `app/src/main/assets/web/assets/` before APK packaging** or Android launches a blank WebView (`app/src/main/assets/web/` is generated and untracked). `bundleWebUi` runs `scripts/build-web-ui.sh` — don't bypass it (`-x bundleWebUi`) without running that script first.
 - **Transcript parser:** `desktop/src/main/transcript-watcher.ts` is the only one (the Kotlin mirror was deleted with the old Android app).
 
 ## Settings → Development — guard: `ipc-channels.test.ts`

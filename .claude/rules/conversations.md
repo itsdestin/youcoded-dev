@@ -68,4 +68,4 @@ Records at `~/YouCoded/Personal/Conversations/<provider>/<id>.json` + transcript
 ## Slug→path resolution (`session-browser.ts`, `conversations/resolve-local-project.ts`)
 - **`walkSlugParts` MUST try the LONGEST leading segment first** — shortest-first descends into a shorter sibling → resume silently launched in `$HOME`.
 - **Store-backed rows override the slug-walk with `resolveLocalProject`'s exact-basename resolution** (only when that folder holds the transcript); `session-manager.ts`'s missing-cwd mask WARNS.
-- **ANDROID still has the pre-fix bug** (`SessionBrowser.kt` shortest-first; `session:create` drops `resumeSessionId`) — deferred, Phase 3.
+- **Android runs this backend** since 2026-10-14; its old Kotlin bug is gone.

@@ -20,7 +20,7 @@ This file now holds **only cross-repo invariants** — constraints that span two
 
 ## Registries and bundled plugins
 
-- **The bundled-plugin list is two-way duplicated** — `BUNDLED_PLUGIN_IDS` in `youcoded/desktop/src/shared/bundled-plugins.ts` AND `youcoded/app/.../skills/BundledPlugins.kt`. Both must stay in sync; changing it requires an app release. *Why:* the list is intentionally hardcoded (offline-first launch can't fetch it; a remote list would grant the marketplace force-install authority). *Guard:* none mechanical — cross-file convention; depth in rule `.claude/rules/registries.md`.
+- **The bundled-plugin list is hardcoded in ONE place** — `BUNDLED_PLUGIN_IDS` in `youcoded/desktop/src/shared/bundled-plugins.ts` (the Android app runs the same backend since 2026-10-14). Changing it requires an app release. *Why:* the list is intentionally hardcoded (offline-first launch can't fetch it; a remote list would grant the marketplace force-install authority). *Guard:* none mechanical; depth in rule `.claude/rules/registries.md`.
 - **The marketplace + theme registries are fetched at runtime from `raw.githubusercontent.com`, cached ~24h.** No CI rebuild on the app side; registry entries with `sourceMarketplace: "youcoded-core"` are never overwritten by upstream sync. *Why:* apps read live registry state, so a bad registry commit reaches users without an app release. *Guard:* registry-PR CI in `wecoded-marketplace`/`wecoded-themes`; depth in `docs/registries.md`.
 
 ## Shared state: the dev instance and the built app
