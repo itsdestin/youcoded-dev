@@ -1,0 +1,46 @@
+{
+  "title": "The phone app's icon when themed icons are on",
+  "key": "android-icon-choice",
+  "out": "android-icon.choice.html",
+  "images": "images/android-icon.choice",
+  "runs": { "today": "runs/today" },
+  "themes": ["midnight"],
+  "crops": {
+    "icon-outline": ["icon", "outline", "1100x560+0+0"],
+    "icon-solid": ["icon", "solid", "1100x560+0+0"],
+    "icon-color": ["icon", "color", "1100x560+0+0"]
+  },
+  "steps": [
+    {
+      "id": "I-1",
+      "surface": "Phone home screen",
+      "path": "Your phone's home screen, with themed icons switched on",
+      "headline": "Which icon should the phone show when themed icons are on?",
+      "notice": "Android draws each app in one colour when themed icons are on, and flips that colour between dark and light home screens. Each picture shows both.",
+      "risk": "Only the themed look changes. With themed icons off, everyone keeps the full-colour icon.",
+      "variants": [
+        {
+          "id": "outline",
+          "label": "Today's outline face",
+          "crop": "icon-outline",
+          "summary": "A hollow face outline. Looks right on a light home screen; on a dark one the eyes turn into pale blobs with tiny dots — the staring look you saw.",
+          "risk": "Stays the scary-looking one on dark home screens."
+        },
+        {
+          "id": "solid",
+          "label": "Solid face",
+          "crop": "icon-solid",
+          "summary": "A filled face with the eyes and mouth cut out. On a dark home screen it reads like the real icon: soft face, dark eyes, white sparkles. On a light one Android flips it to a dark face with pale eyes.",
+          "risk": "Flips the other way on light home screens."
+        },
+        {
+          "id": "color",
+          "label": "Always the real icon",
+          "crop": "icon-color",
+          "summary": "No one-colour version at all: the phone shows the same full-colour icon as the desktop, whatever the home screen. It stands out from apps that do follow the theme.",
+          "risk": "Newer Android versions may tint it anyway to match the theme; I could not confirm which ones do."
+        }
+      ]
+    }
+  ]
+}
