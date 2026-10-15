@@ -64,7 +64,7 @@ result. Source: `docs/active/prototypes/2026-10-14-android-a0-spike/`.
 | Node idle memory | 38–42 MB RSS |
 | Not yet measured | Battery and Doze over a long session; cold start of the full backend; Claude Code hooks and its Bash tool with a real login (Bun's spawn path does not get the shim, and `/bin/sh` does not exist on Android); APK size of the final set (spike: 162 MB with Claude Code ~117 MB compressed) |
 
-## Progress — checkpoint P1–P3 (2026-10-14 overnight, branch `session/android-setup-20261014` in both repos)
+## Progress — checkpoint P1–P3 (built 2026-10-14/15; merged as youcoded#625 and youcoded-dev#258)
 
 Built and run on the Galaxy Z Flip7 as **YouCoded Dev** (`com.youcoded.app.dev`): the backend starts in the
 app's sandbox, the full shared UI connects (checked by loading the bundled page against the phone's backend over
