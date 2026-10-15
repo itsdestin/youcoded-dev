@@ -9,7 +9,7 @@
 //
 // This takes a real V8 CPU profile across one artifact open in the real app and
 // ranks functions by self time, so the next such number is read rather than
-// guessed. Filed as a rig gap in docs/roadmap/dev-workspace.md; this closes it.
+// guessed. Filed as a rig gap on the (since retired) roadmap; this closes it.
 //
 // The app runs on Xvfb, exactly as the rig does — nothing appears on the desktop.
 //

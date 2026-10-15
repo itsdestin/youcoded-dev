@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseCard, renderCard, createCard, loadCards, check, neededBy, slug, index, importRoadmap } from './cards.mjs';
+import { parseCard, renderCard, createCard, loadCards, check, neededBy, slug, index, closeCard, SHIPPED } from './cards.mjs';
 
 function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'cards-')); }
 
@@ -16,7 +16,7 @@ test('a card round-trips through render and parse', () => {
   assert.deepEqual(back.needs, ['1', '2']);
 });
 
-test('only the four stages are accepted', () => {
+test('only the known stages are accepted', () => {
   const bad = parseCard('---\nid: 1\ntitle: x\nstage: ready\n---\n', 'cards/1-x.md');
   assert.match(bad.errors.join(), /stage "ready"/);
 });
@@ -46,12 +46,12 @@ test('check catches a reused id and a needs loop to itself', () => {
   assert.match(errs, /needs itself/);
 });
 
-test('index lists cards and works with no roadmap folder', () => {
+test('index lists cards and nothing about the retired roadmap', () => {
   const root = tmp();
   createCard(root, { title: 'Saved agent setups', stage: 'build' });
   const out = index(root);
   assert.match(out, /#1 \[Agentic buildout\] Saved agent setups/);
-  assert.match(out, /Open roadmap entries \(0\)/);
+  assert.doesNotMatch(out, /roadmap/i);
 });
 
 test('slug keeps names short and plain', () => {
@@ -69,21 +69,37 @@ test('exploration items may overlap; planning items may not', () => {
   assert.match(check([a, b]).join(), /consolidate them into one card/);
 });
 
-test('import-roadmap makes one card per entry, keeps its facts, and is safe to re-run', () => {
+test('close moves a card to merged and adds one shipped line, header included the first time', () => {
   const root = tmp();
-  fs.mkdirSync(path.join(root, 'docs/roadmap'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'docs/roadmap/sync.md'), [
-    '# sync — moving your stuff between devices', 'Filing test: sync.', '',
-    '- [ ] Very long conversations stop updating on your other devices.',
-    '      Needs a way to sync in pieces.',
-    '      `settings/sync` `all` `decision` `P2` `checked 2026-09-16`', '',
-    '- [ ] Sync security gaps: three things.',
-    '      `settings/sync` `desktop` `confirmed` `P1` `checked 2026-09-21` `security`', ''].join('\n'));
-  assert.equal(importRoadmap(root, '2026-10-15').length, 2);
-  const [a, b] = loadCards(root);
-  assert.equal(a.stage, 'explore'); assert.equal(a.priority, 'P2');
-  assert.equal(b.stage, 'planning'); assert.deepEqual(b.tags, ['sync', 'settings/sync', 'desktop', 'security']);
-  assert.match(a.body, /Needs a way to sync in pieces/);
-  assert.equal(importRoadmap(root, '2026-10-15').length, 0);
-  assert.match(index(root), /Open roadmap entries \(0\)/);
+  createCard(root, { title: 'Saved agent setups', stage: 'polish' }, '2026-10-14');
+  const { file, line } = closeCard(root, '#1', 'youcoded#400', '2026-10-15');
+  assert.equal(file, path.join('cards', '1-saved-agent-setups.md'));
+  assert.equal(loadCards(root)[0].stage, 'merged');
+  assert.match(fs.readFileSync(path.join(root, file), 'utf8'), /Progress\nDone: nothing yet\./);  // free text untouched
+  const shipped = fs.readFileSync(path.join(root, SHIPPED), 'utf8');
+  assert.match(shipped, /^# Shipped\n/);
+  assert.ok(shipped.endsWith('- [x] 2026-10-15 #1 Saved agent setups (youcoded#400)\n'));
+  assert.equal(line, '- [x] 2026-10-15 #1 Saved agent setups (youcoded#400)');
+});
+
+test('close appends to an existing shipped file and keeps its history', () => {
+  const root = tmp();
+  fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(root, SHIPPED), '# Shipped\n\n- [x] 2026-09-01 sync — old line (abc)');  // no trailing newline
+  createCard(root, { title: 'A' });
+  createCard(root, { title: 'B' });
+  closeCard(root, 2, 'abc1234', '2026-10-15');
+  assert.equal(fs.readFileSync(path.join(root, SHIPPED), 'utf8'),
+    '# Shipped\n\n- [x] 2026-09-01 sync — old line (abc)\n- [x] 2026-10-15 #2 B (abc1234)\n');
+  assert.equal(loadCards(root)[0].stage, 'explore');
+});
+
+test('close refuses a missing ref, an unknown card and an already-merged card', () => {
+  const root = tmp();
+  createCard(root, { title: 'A' });
+  assert.throws(() => closeCard(root, 1, undefined), /--ref/);
+  assert.throws(() => closeCard(root, 9, 'x'), /no card has id 9/);
+  closeCard(root, 1, 'x');
+  assert.throws(() => closeCard(root, 1, 'y'), /already merged/);
+  assert.equal(fs.readFileSync(path.join(root, SHIPPED), 'utf8').match(/#1 /g).length, 1);
 });

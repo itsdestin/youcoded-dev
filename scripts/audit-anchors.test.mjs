@@ -659,9 +659,9 @@ test('subRepoRoot: ONE sub-repo linked into a worktree must not defeat the fallb
 // deleting their file. That already happened once here (2026-08-27).
 
 test('uncommittedPaths: parses porcelain, both modified and untracked', () => {
-  const fake = () => ' M docs/MAP.md\n?? .claude/rules/new-thing.md\n M docs/roadmap/files.md\n';
+  const fake = () => ' M docs/MAP.md\n?? .claude/rules/new-thing.md\n M cards/12-x.md\n';
   assert.deepEqual(uncommittedPaths('/anywhere', fake), [
-    'docs/MAP.md', '.claude/rules/new-thing.md', 'docs/roadmap/files.md',
+    'docs/MAP.md', '.claude/rules/new-thing.md', 'cards/12-x.md',
   ]);
 });
 

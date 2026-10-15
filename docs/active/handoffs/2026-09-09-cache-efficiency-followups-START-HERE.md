@@ -113,4 +113,4 @@ Paths are under `youcoded/desktop/`. "Who pays" is what the user loses.
 
 ## Definition of done
 
-Each item either ships with a test that pins the byte-stability it claims, or is explicitly parked on the roadmap with the reason. When the small set (1, 5, 6, 7, 8) lands, update `docs/roadmap/native-harness.md` → "Cloud model context management and cache/token efficiency improvements" and append to `docs/roadmap/shipped.md`; when the design set (2, 3, 4) has a spec, link it from the same entry. Archive this handoff when all eight are resolved or parked.
+Each item either ships with a test that pins the byte-stability it claims, or is explicitly parked in its card with the reason. When the small set (1, 5, 6, 7, 8) lands, update `cards/69-cloud-model-context-management-and.md` (the old roadmap entry, a card since 2026-10-15) and, once all of it ships, `node scripts/cards.mjs close 69 --ref "<commit or PR>"`; when the design set (2, 3, 4) has a spec, link it from the same card. Archive this handoff when all eight are resolved or parked.

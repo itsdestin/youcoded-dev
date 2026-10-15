@@ -24,7 +24,7 @@ The app serves students, professionals and everyday AI users—not just develope
 
 ## Cross-Repo Relationships
 
-Planning and versioning belong to the workspace; `ROADMAP.md` indexes area backlogs. Single-repo implementation depth belongs in that repo's `docs/`.
+Planning and versioning belong to the workspace; planned work is one card per piece in `cards/` (`node scripts/cards.mjs index` lists them). Single-repo implementation depth belongs in that repo's `docs/`.
 
 Registries are fetched at runtime. Bundled plugin definitions must agree across desktop and Android. **`youcoded-core` was ARCHIVED on GitHub 2026-09-20 (Destin): it is read-only, so a push, a release or a "mirror the fix into the legacy copy too" step now FAILS — hook fixes land in the app's bundled copies only (`desktop/hook-scripts/`, `app/src/main/assets/`, byte-identical, pinned by `write-guard-contract.test.ts`). Its clone URL still works, so v1.2.4 installs are unaffected.** The remaining retirement work — deleting the app's dead `youcoded-core`-aware branches, shipping in 1.3.1 — is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. Release coordination belongs to `youcoded-admin`.
 
@@ -34,7 +34,7 @@ Registries are fetched at runtime. Bundled plugin definitions must agree across 
 
 **Never experiment on Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/hook installation or modification of files it holds open. **Destin explicitly exempted requested theme-file updates**; follow the narrow backup-and-verify procedure in `.claude/rules/live-app-safety.md`. Read-only inspection from outside is allowed.
 
-Ordinary workspace docs, guidance, roadmap and source edits are allowed under the usual authorization/worktree rules; they do not require closing the app. Do not equate editing a repository with modifying the running app. Active configuration, integrations and live reloads remain subject to the safety rule.
+Ordinary workspace docs, guidance, card and source edits are allowed under the usual authorization/worktree rules; they do not require closing the app. Do not equate editing a repository with modifying the running app. Active configuration, integrations and live reloads remain subject to the safety rule.
 
 Runtime verification goes through an isolated dev worktree and `bash scripts/run-dev.sh`, never production. Ask before building an interactive or repeated-relaunch verification rig; Destin can often check motion, hover and drag directly. Unit tests, DOM assertions and static screenshots remain appropriate automation.
 
@@ -47,7 +47,7 @@ Runtime verification goes through an isolated dev worktree and `bash scripts/run
 - **`workspace-start` auto-provisions a component's `node_modules`** (currently `youcoded/desktop`) as a `cp -al` hardlink farm from the source, listed in its output as `deps: …`. **Never symlink or junction `node_modules` to a shared checkout.** Hardlinks still share inodes, so dependency patchers must replace files rather than write in place. Do not run `npm ci` or Android `bundleWebUi` against shared/linked dependencies. Details: `docs/PITFALLS.md` → Worktrees.
 - Parallelize independent work when the runtime permits it. Do not assume multiple write-capable specialists can run concurrently.
 - Stage explicit paths and inspect the staged diff. App code commits go to the app repo; workspace docs/tooling to `youcoded-dev`.
-- **"Merge" means merge AND push**, then archive shipped lifecycle docs, close roadmap entries and remove merged worktrees and local/remote branches. Merge only on explicit instruction; never end a turn suggesting it.
+- **"Merge" means merge AND push**, then archive shipped lifecycle docs, close their cards and remove merged worktrees and local/remote branches. Merge only on explicit instruction; never end a turn suggesting it.
 - Confirm remote ancestry before cleanup. `gh pr merge --delete-branch` can merge successfully then fail its local checkout step; verify before retrying. Run `bash scripts/close-out.sh <branch> [<repo>]` yourself and address findings within the approved scope.
 - Stop this session's dev server after landing on master unless Destin asks to keep it. Worker deployment is CI-driven on master; never tell him to run `wrangler deploy`.
 
@@ -57,7 +57,7 @@ Commands, cleanup recipes and recovery: `docs/workspace-workflows.md` → Git, w
 
 **Search before reading large files.** Use the available Grep tool (ripgrep), or shell `rg` for exact text; ast-grep for code shapes; focused Read ranges for implementation. Delegate broad sweeps to an available read-only specialist. Search the actual worktree, not a shared copy. Details: `.claude/rules/code-search.md` and `docs/code-intelligence.md`.
 
-**Counts, exemptions and negatives require evidence.** Search repo-wide before narrowing; use verdict tools where possible. A MAP entry is a starting point, not proof of completeness. Verify surprising negatives and cross-platform claims before making them durable in commits, docs or roadmap entries. Report search scope and truncation honestly.
+**Counts, exemptions and negatives require evidence.** Search repo-wide before narrowing; use verdict tools where possible. A MAP entry is a starting point, not proof of completeness. Verify surprising negatives and cross-platform claims before making them durable in commits, docs or cards. Report search scope and truncation honestly.
 
 **Prefer verdicts:** `npm run knip` for dead code, `tsc --noEmit` for types, lint for its bug classes, IPC parity tests for bridge coverage, ast-grep for executable invariants, and `scripts/verify.sh` for combined desktop checks.
 
@@ -113,7 +113,7 @@ Use existing tools before inventing a rig: `scripts/ui-probe.mjs` for an isolate
 
 **Before claiming a desktop change done, run `bash scripts/verify.sh [<worktree>]`.** It covers types, related tests plus source-scanning guards, knip, lint and ast-grep; `--full` forces the full suite. It covers desktop only. Android and Worker need their own checks.
 
-**A failing or flaky test is fixed when it is found, never filed as a roadmap item** — even if it predates your change or looks unrelated (Destin, 2026-09-17). In read-only work, report it and ask. If it truly cannot be fixed here (e.g. a Windows-only failure), tell Destin why rather than filing it. Diagnosis steps: `.claude/rules/test-suite-hygiene.md` → Before calling a failure "flake".
+**A failing or flaky test is fixed when it is found, never filed as a work item** — even if it predates your change or looks unrelated (Destin, 2026-09-17). In read-only work, report it and ask. If it truly cannot be fixed here (e.g. a Windows-only failure), tell Destin why rather than filing it. Diagnosis steps: `.claude/rules/test-suite-hygiene.md` → Before calling a failure "flake".
 
 **Whether Android builds here has flipped twice in six days, so CHECK — do not read an answer off this page.** `ls $HOME/.android-sdk/platform-tools /usr/lib/jvm` settles it in one call. Absent on 2026-09-04 (this paragraph then said so), present on 2026-09-09 (741 tests green, so it was rewritten to say the opposite), absent again on 2026-09-10 by an exhaustive `find / -name platform-tools`. Every one of those three edits was true when written and misleading within days — which is why the command, not the verdict, is what belongs here.
 
@@ -129,7 +129,7 @@ Read `docs/PITFALLS.md` before non-trivial changes. It holds cross-repo invarian
 
 ## Ending a Session
 
-On "wrap up," "close out," "we're done," or a substantial session's end, follow `.claude/skills/wrap-up/SKILL.md`. Invoke it if available; otherwise read the procedure directly. Apply findings, file dated roadmap items, or explicitly drop them with reasons—never leave an unactioned list. Respect authorization and the no-merge boundary even if a procedure says otherwise.
+On "wrap up," "close out," "we're done," or a substantial session's end, follow `.claude/skills/wrap-up/SKILL.md`. Invoke it if available; otherwise read the procedure directly. Apply findings, file them as cards, or explicitly drop them with reasons—never leave an unactioned list. Respect authorization and the no-merge boundary even if a procedure says otherwise.
 
 **Wrap-up is not merge permission.** Destin decides when work is ready. A new-session handoff prompt goes in plain chat, not a file, and carries only the task's own facts (see Where Knowledge Lives). Run the checks yourself; do not give him commands to type. Detailed close-out procedure: `docs/workspace-workflows.md` → Ending a Session.
 
@@ -145,15 +145,15 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 
 | Knowledge | Home |
 |---|---|
-| Planned feature / bug / idea | `docs/roadmap/<area>.md`; follow its Filing test and `ROADMAP.md` grammar; **add to an existing bundled entry before creating one** (150-entry budget), priority `P3` unless it is a blocker or Destin named it; symptoms in Destin's words; run `node scripts/roadmap-check.mjs --fix` |
+| Planned feature / bug / idea | A card in `cards/`, filed through the idea-intake skill (`.claude/skills/idea-intake/SKILL.md`): **link an existing card before creating one** (`node scripts/cards.mjs index`); symptoms in Destin's words; `node scripts/cards.mjs check` |
 | Invariant / lesson | Knowledge ladder above; cross-repo only in `docs/PITFALLS.md` |
-| Doc contradicting code | Fix verified drift within authorized editing scope; otherwise report it. Deferred work goes in `docs/roadmap/dev-workspace.md` → knowledge |
+| Doc contradicting code | Fix verified drift within authorized editing scope; otherwise report it. Deferred work becomes a card tagged `dev-workspace` |
 | Claude Code dependency watch | `youcoded/docs/cc-dependencies.md` |
 | In-flight specs/plans/handoffs | `docs/active/{specs,plans,handoffs,investigations,prototypes}/`, with `status: draft` or `active`. Task facts only: never restate workspace guidance — every session already loads CLAUDE.md and the rules |
 | Shipped/superseded records | `docs/archive/`, with corresponding status |
 | Personal preferences | Available personal guidance/memory mechanism, last resort; never product planning |
 
-When work merges, archive its lifecycle docs and close its roadmap item with `node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`. Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
+When work merges, archive its lifecycle docs and close its card with `node scripts/cards.mjs close <id> --ref "<commit or PR>"` (stage → merged, one line in `docs/shipped.md`). Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 

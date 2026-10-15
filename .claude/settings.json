@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/roadmap-edit-check.mjs\"",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/cards-edit-check.mjs\"",
             "timeout": 10
           }
         ]

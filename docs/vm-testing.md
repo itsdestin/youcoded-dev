@@ -597,7 +597,7 @@ So the answer to *"can we auto-install FUSE instead of telling users to run term
 When v1.3 ships `.deb`/`.rpm`/`.pacman`, that matcher still hands **every** Linux user the AppImage
 and its FUSE step. Offering deb → Debian/Ubuntu/Mint, rpm → Fedora, pacman → Arch, and AppImage only
 as the any-distro fallback covers the large majority of Linux desktops with **zero terminal**.
-Closed — see `docs/roadmap/shipped.md`.
+Closed — see `docs/shipped.md`.
 
 ## What to test where
 
@@ -628,8 +628,8 @@ Use `scripts/vm/vm.sh` (Quick loop above): `--headless` start, `shot`, `exec`, a
 SSH with `~/vms/vm-key`. Keys and typing without remote access: `scripts/vm/vmctl.sh keys|type`
 (set `VMCTL_VM`). Two monitor-socket traps still apply when driving by hand: keep the socket open
 for the reply (`( echo cmd; sleep 1 ) | socat - unix-connect:<sock>`), and `quit` ends the guest —
-which is exactly what `vm.sh stop` uses it for. The whole-path automated test is a parked roadmap
-idea (`docs/roadmap/dev-workspace.md`, "Nothing tests a new user's whole path").
+which is exactly what `vm.sh stop` uses it for. The whole-path automated test is a parked
+idea from the old roadmap ("Nothing tests a new user's whole path"); file it as a card to pick it up.
 
 ## Costs
 

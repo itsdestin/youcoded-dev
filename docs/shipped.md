@@ -1,15 +1,17 @@
 # Shipped
 
-One line per closed item, newest at the bottom: `- [x] YYYY-MM-DD <area> — <headline> (<commit or PR>)`.
-Lines are capped at 300 characters. Longer pre-2026-09-23 lines, and everything shipped before
-2026-09-01, are in full in `docs/archive/roadmap/shipped-full-to-2026-09-23.md`.
+One line per closed item, newest at the bottom. New lines come from
+`node scripts/cards.mjs close <id> --ref "<commit or PR>"`, which marks the card merged and appends
+`- [x] YYYY-MM-DD #<id> <title> (<commit or PR>)`. Lines before 2026-10-15 came from the old roadmap
+and read `- [x] YYYY-MM-DD <area> — <headline> (<commit or PR>)`, capped at 300 characters. Longer
+pre-2026-09-23 lines, and everything shipped before 2026-09-01, are in full in
+`docs/archive/roadmap/shipped-full-to-2026-09-23.md`.
 
 A line that reads **PENDING MERGE OF `<branch>`** is work that is built and reviewed but has NOT
-landed on master, so it cites a branch instead of a merge sha. It is written here — rather than
-held back — so the backlog item it replaces is never simply gone. When the branch merges, replace
-that phrase with the merge sha. **If the branch is dropped or reworked instead, move the line's
-headline back to its area file as an open item.** Never leave one of these unresolved after a merge
-decision either way.
+landed on master, so it cites a branch instead of a merge sha. When the branch merges, replace
+that phrase with the merge sha. **If the branch is dropped or reworked instead, file the work again
+as a card (the idea-intake skill) and delete the line.** Never leave one of these unresolved after a
+merge decision either way.
 
 - [x] 2026-09-09 chat-data — You cannot rename a conversation (youcoded `9d445011`)
 - [x] 2026-09-09 chat-data — The auto-title reminder fires about six times per conversation (youcoded `9d445011`)

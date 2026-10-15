@@ -237,9 +237,9 @@ Order (from the 2026-09-16 inventory; re-read the regenerated one): `remote-` 54
 
 Total cases at the start of Plan C (Task 1 Step 5's full run) minus every deleted title named in the commit messages (`git log --grep 'deleted' --format=%B origin/master..HEAD | rg -c '^- deleted'` after you have listed them that way) equals today's `Tests N passed`. Write the arithmetic into the final PR body.
 
-- [ ] **Step 3: Close the roadmap and the plan**
+- [ ] **Step 3: Close the card and the plan**
 
-In `docs/roadmap/dev-workspace.md` → tests, delete the entries this plan resolved (search the file for `one file per task`, `826`, `consolidat`); append one closure line to `docs/roadmap/shipped.md`. Set this plan's `status:` to `shipped` and move it to `docs/archive/plans/`; the inventory script stays (it is now the suite's own health check — add a line to `docs/workspace-workflows.md` → Local build & test: "`node scripts/test-inventory.mjs` shows which test files share a subject; a new cluster is a rule violation, not a style choice").
+The roadmap became cards on 2026-10-15: record what this plan resolved in `cards/14-test-suite-cleanup-work-8.md` (search it for `one file per task`, `826`, `consolidat`); when the card's work is all done, `node scripts/cards.mjs close 14 --ref "<commit or PR>"`. Set this plan's `status:` to `shipped` and move it to `docs/archive/plans/`; the inventory script stays (it is now the suite's own health check — add a line to `docs/workspace-workflows.md` → Local build & test: "`node scripts/test-inventory.mjs` shows which test files share a subject; a new cluster is a rule violation, not a style choice").
 
 - [ ] **Step 4: Final PR and stop**
 

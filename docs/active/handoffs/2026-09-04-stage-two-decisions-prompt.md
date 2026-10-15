@@ -65,8 +65,8 @@ Wait for the deck to be submitted. Then:
 
 **3. Record every answer** in `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`
 §9 (strike the row, add the decision and the date to §8) and in the matching
-`docs/roadmap/native-harness.md` entries (the "Assistants made of Duties" item and the
-"Specialists stage two" item). Run `node scripts/roadmap-check.mjs --fix`. Commit from a
+cards (the roadmap became cards on 2026-10-15: "Specialists stage two" is `cards/74-specialists-stage-two-plans-the.md`;
+find the "Assistants made of Duties" one with `node scripts/cards.mjs index`). Run `node scripts/cards.mjs check`. Commit from a
 worktree, never the main checkout.
 
 **4. Start stage two under `.claude/rules/feature-flow.md`.** Its opening questions go

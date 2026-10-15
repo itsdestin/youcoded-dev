@@ -10,7 +10,7 @@ to-do list is a failure mode, not an output. The dated report is an audit TRAIL 
 was verified, what was fixed — plus a near-empty residue of items that genuinely need
 Destin's decision.
 
-**Ground truth is the code.** The rules, depth docs, MAP, and ROADMAP are the claims
+**Ground truth is the code.** The rules, depth docs, MAP, and cards are the claims
 under test. This command doc deliberately contains NO subsystem-specific expectations —
 the claims live in the documents themselves and are harvested at run time. (The old
 /audit hardcoded its expectations and became the stalest doc in the workspace.)
@@ -87,28 +87,19 @@ Work every finding in the same run:
 - **Decision-residue** (privacy copy, LICENSE text, deleting user-created content,
   product-behavior questions) — never auto-edit; goes to the report's `## Residue` with a
   recommendation.
-- Drift genuinely unfixable this session → an entry in `docs/roadmap/dev-workspace.md`
-  under `## knowledge` (`ROADMAP.md` → "Filing an item") AND a residue entry.
+- Drift genuinely unfixable this session → a card tagged `dev-workspace`
+  (`node scripts/cards.mjs new`, idea-intake skill) AND a residue entry.
 
-### 5. Roadmap verification
+### 5. Cards verification
 
-One command: `node scripts/roadmap-check.mjs --fix`. Paste its output into the report
-under `## Roadmap`. Then:
+The work cards (`cards/`) replaced the roadmap on 2026-10-15. One command:
+`node scripts/cards.mjs check`. Paste its output into the report under `## Cards`. Then:
 
-- **Structure errors** (exit 1): fix the file it names, re-run. Nothing else runs until it is clean.
-- **Broken claims**: `--fix` already flipped them to `needs-verify`. Re-read each report
-  it names against the code; if the diagnosis still holds, update the anchor and set the
-  item back to `confirmed` with `checked` = today. If not, rewrite the report or close the item.
-- **Claim warnings** (confirmed with no anchor; anchor matching more than one place): fix the
-  report's anchor.
-- **For Destin**: hand him the list as is — decisions first, then symptoms unconfirmed for
-  60+ days grouped by area. Yes / no / don't know per item. Apply his answers: yes →
-  re-stamp `checked` (and `needs-verify` → `confirmed`); no → `node scripts/roadmap-check.mjs --close <area>:<line> --ref "no longer reproduces"`; don't know → `needs-verify`.
-- **Index**: already rewritten by `--fix`.
-
-Dedup near-identical items across area files by hand (one entry, one report, keep the
-older date in the report's history line). Filing rule and grammar: the bottom of
-`ROADMAP.md` and the spec, `docs/archive/specs/2026-09-01-roadmap-restructure-design.md` §2.
+- **Errors** (exit 1): fix the card it names, re-run. Nothing else runs until it is clean.
+- **Shipped but open**: a card at `build` or `polish` whose `branch` has merged → `node scripts/cards.mjs close <id> --ref "<commit or PR>"`.
+- **For Destin**: cards whose problem no longer reproduces, and exploration cards that say the
+  same thing — hand him the list as is, yes / no / don't know per item. Apply his answers: gone →
+  `node scripts/cards.mjs close <id> --ref "no longer reproduces"`; duplicates → merge into one card.
 
 ### 6. Gardening (the anti-rot pass)
 
@@ -117,7 +108,7 @@ older date in the report's history line). Filing rule and grammar: the bottom of
   to `shipped`/`superseded`. Verify every doc there still has `status:` frontmatter.
 - MAP: update rows for renamed/new entry points found in steps 2–3.
 - Auto-memory (`~/.claude/projects/C--Users-desti-youcoded-dev/memory/`): delete or
-  migrate duplicative/misplaced/drifted entries. Planning content moves to the area file under docs/roadmap/ whose Filing test says yes —
+  migrate duplicative/misplaced/drifted entries. Planning content becomes a card (idea-intake skill) —
   memory is the last-resort store.
 - Outward-facing docs: diff each repo since the last audit; review README, in-app
   privacy copy, landing-page FAQ, LICENSE, sub-repo CLAUDE.md against what changed.

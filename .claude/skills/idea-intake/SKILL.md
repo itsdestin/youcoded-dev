@@ -12,9 +12,10 @@ are your bookkeeping: `cards/<n>-<name>.md`, managed by `scripts/cards.mjs`. Spe
 
 ## 1. Read what already exists
 
-`node scripts/cards.mjs index` — every card (number, stage, title, tags, needs) and every open roadmap
-entry. Match his idea against it **by meaning, not wording**: "agents that run while I sleep" is the
-roadmap's "Agents that work while you're away".
+`node scripts/cards.mjs index` — every card (number, stage, title, tags, needs). The old roadmap's
+open entries were all moved into cards on 2026-10-15 (a card's `roadmap:` line names the entry it came from).
+Match his idea against it **by meaning, not wording**: "agents that run while I sleep" is the card
+"Agents that work while you're away".
 
 ## 2. Pick the stage: exploring or planning
 
@@ -35,8 +36,7 @@ When a new dump overlaps an existing exploration item, propose a new exploration
 An idea dump usually holds three kinds of thing. Keep them apart:
 
 - **The idea itself** — what he wants now.
-- **What it needs** — parts that must exist first. Each is either already a card (link it), already a
-  roadmap entry (propose turning that entry into a card), or new.
+- **What it needs** — parts that must exist first. Each is either already a card (link it) or new.
 - **What it unlocks later** — the "and then we could…" part. An exploration item that needs the main one;
   nobody starts it yet.
 
@@ -51,7 +51,6 @@ say "card" more than needed; say what happens. Shape:
 > **How I'd file this:**
 > - **<Name>** — new, exploring. <one line what it is>.
 > - **<Name>** — already exists (#12, Agentic buildout). I'd link to it, not add another.
-> - **<Name>** — an old roadmap entry (sync: "…") covers it; I'd turn that entry into a tracked item.
 > - **Later: <name>** — saved as an idea that needs <name>; nothing starts.
 > - **Overlaps:** <exploration items this one relates to, kept side by side>.
 >
@@ -69,7 +68,7 @@ proposal. Do not ask about anything you can decide.
 
 - **Yes** (or "sure", "do it", "ok"): for each new card, in dependency order so `--needs` can name the
   numbers just made:
-  `node scripts/cards.mjs new --title "<plain title>" --stage explore --tags <tags> --needs <ids> --related <ids> --why "<his words, short>" [--roadmap "<area>: <first words>"]`
+  `node scripts/cards.mjs new --title "<plain title>" --stage explore --tags <tags> --needs <ids> --related <ids> --why "<his words, short>"`
   then `node scripts/cards.mjs check`. A finish line (`--finish`) only when he said what "done" means;
   otherwise leave it for the first chat that builds it. Commit the new files by explicit path on a branch,
   push, and reply with one line naming what was filed and their numbers.
@@ -79,9 +78,9 @@ proposal. Do not ask about anything you can decide.
 ## Do not
 
 - File anything before he says yes.
-- Duplicate: if a card or roadmap entry already covers it, the answer is a link, not a new item.
+- Duplicate: if a card already covers it, the answer is a link, not a new item.
 - Turn this into a planning session. Intake ends at filing; building starts when he says to work on it.
 - Offer "roadmap only" or edit the old roadmap. **Cards replace the roadmap** (Destin, 2026-10-15: "thought
   we were obsoleting old roadmap?"). Everything becomes a card, even a one-line fix; "add it to the
-  roadmap" in his words means "file it". An old roadmap entry that covers the idea is turned into a card
-  (`--roadmap` records where it came from); moving the rest of the old roadmap over is separate work.
+  roadmap" in his words means "file it". The old roadmap's entries all became cards on 2026-10-15 and
+  its files were deleted.

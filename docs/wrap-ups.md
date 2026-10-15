@@ -12,11 +12,11 @@ One entry per session, kept to a handful of lines:
 
 ```
 ## YYYY-MM-DD — what the session was doing (branch, or "no branch")
-- <finding, one line> → applied: <file> | roadmap: <area file> | dropped: <reason>  [cost, if measured]
+- <finding, one line> → applied: <file> | card: #<id> | dropped: <reason>  [cost, if measured]
 - deleted/merged: <what got smaller>, or "none found"
 ```
 
-Do not edit past entries. A finding that recurs gets a NEW line saying so, on the day it
+Entries before 2026-10-15 say `roadmap:` — the work cards replaced the roadmap that day. Do not edit past entries. A finding that recurs gets a NEW line saying so, on the day it
 recurred — the repetition is the data.
 
 ---

@@ -174,7 +174,7 @@ export function subRepoRoot(root) {
   return resolved;
 }
 // The directory a workspace-relative path resolves against: sub-repo paths against the
-// clone location, everything else (docs/, .claude/, ROADMAP.md) against the checkout itself.
+// clone location, everything else (docs/, .claude/, cards/) against the checkout itself.
 export function baseFor(root, rel) {
   const repo = rel.split('/')[0];
   if (!REPOS.includes(repo)) return root;
@@ -280,9 +280,10 @@ function stripMarkdownCode(text) {
 // fails it loudly instead of dropping the claim. Code (fences/inline spans) is stripped
 // first so example anchors in docs that document the format aren't mistaken for claims.
 // `marker` is the word before the colon: 'verify' (depth docs, this script) or 'claim'
-// (roadmap reports, scripts/roadmap-check.mjs). The default keeps every existing caller as is.
-// A broken verify: is doc drift and fails CI; a broken claim: is a roadmap item to re-verify
-// and must NOT — which is why they are different words (spec §4).
+// (the retired roadmap's reports; nothing reads claim: since the work cards replaced it on
+// 2026-10-15, kept so old reports' anchors stay invisible to the verify: pass). The default
+// keeps every existing caller as is. A broken verify: is doc drift and fails CI; a broken
+// claim: was an item to re-verify and must NOT — which is why they are different words.
 export function harvestDocAnchors(text, marker = 'verify') {
   const anchors = [];
   const re = new RegExp(`<!--\\s*${marker}:\\s*(\\{[\\s\\S]*?\\})\\s*-->`, 'g');

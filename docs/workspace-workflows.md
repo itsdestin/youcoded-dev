@@ -70,7 +70,7 @@ check, read its output, then merge; read the merge result, then clean up. A guar
 2026-09-01); a refused merge in a chained command still went on to delete its branch and worktree
 (youcoded-dev#24, 2026-09-03).
 
-**Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
+**Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the card to close and the MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
 
 **Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
 
@@ -253,7 +253,7 @@ to replace. It also runs on its own at the end of any substantial session.
 It replays what the session actually did — what context loaded, what you had to hunt for
 because it was unwritten, which tooling you used and why, where you took a wrong turn —
 and turns that friction into workspace changes. Every recommendation ends the session
-**applied**, as a dated roadmap entry (`docs/roadmap/<area>.md` — see `ROADMAP.md` → "Filing an item"), or **explicitly dropped with a reason**.
+**applied**, as a card (`cards/` — the idea-intake skill), or **explicitly dropped with a reason**.
 A numbered list nobody actions is the failure mode, not the output.
 
 **Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`

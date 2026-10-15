@@ -516,4 +516,4 @@ FUZZ_H=900`. **A `worst:` line of all dashes, with no numbered scenario rows abo
 run that drove zero drags, not a clean sweep** (it printed exactly that six times on
 2026-09-07 before anyone noticed); the sweep now exits 1 rather than saying it. Frames of
 any scenario are in `drag-fuzz.json` — but the write of that file throws on a 60-drag run
-(`docs/roadmap/dev-workspace.md`), so read the scores off stdout until that is fixed.
+(filed as dev-workspace work), so read the scores off stdout until that is fixed.

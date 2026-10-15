@@ -28,7 +28,7 @@ The built YouCoded app on Destin's machine is his **working environment** — th
 
 ## Workspace files are not the running app
 
-Ordinary workspace documentation, guidance, roadmap and source edits are allowed under
+Ordinary workspace documentation, guidance, card and source edits are allowed under
 the usual authorization/worktree rules; they do not require closing YouCoded or launching
 a dev instance. Editing this document does not change an already-running session's instructions.
 

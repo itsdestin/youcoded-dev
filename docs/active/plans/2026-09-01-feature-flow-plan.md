@@ -1668,7 +1668,7 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
 3. A design spec under `docs/active/specs/` is written only when the work crosses repos,
    touches a migration or a protocol, or has ordering constraints (design §8). Otherwise the
    contract plus the approved decks is the plan.
-4. Add ROADMAP entries for every *fix later* note the contract agent listed, and follow the
+4. File a card (idea-intake skill) for every *fix later* note the contract agent listed, and follow the
    workspace knowledge rules (pinning test > ast-grep rule > WHY comment > path-scoped rule).
 5. At the end: write `<feature>.contract.verdicts.json` beside the contract, run
    `review-cards.py acceptance`, serve the acceptance deck; `bash scripts/close-out.sh <branch>`
