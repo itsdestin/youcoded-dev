@@ -64,6 +64,33 @@ result. Source: `docs/active/prototypes/2026-10-14-android-a0-spike/`.
 | Node idle memory | 38–42 MB RSS |
 | Not yet measured | Battery and Doze over a long session; cold start of the full backend; Claude Code hooks and its Bash tool with a real login (Bun's spawn path does not get the shim, and `/bin/sh` does not exist on Android); APK size of the final set (spike: 162 MB with Claude Code ~117 MB compressed) |
 
+## Progress — checkpoint P1–P3 (2026-10-14 overnight, branch `session/android-setup-20261014` in both repos)
+
+Built and run on the Galaxy Z Flip7 as **YouCoded Dev** (`com.youcoded.app.dev`): the backend starts in the
+app's sandbox, the full shared UI connects (checked by loading the bundled page against the phone's backend over
+`adb forward`, since the phone was locked), first-run reports Node/Git/Claude Code installed and asks for sign-in,
+a Claude Code 2.1.300 session runs in a terminal the backend opened, and "Log in with Claude" hands its sign-in
+link to Chrome. Memory with one session: backend ~135 MB, pty helper ~45 MB, Claude Code ~180 MB. APK: debug
+~268 MB, releaseTest ~195 MB (Claude Code is ~117 MB of it). Kotlin: ~30,500 → ~2,000 lines.
+
+Decisions made while building (not in the plan above):
+- **Electron stand-in, not an Electron-free refactor.** `headless-main.ts` points `require('electron')` at
+  `electron-headless.ts`; the backend modules are unchanged. `headless-boot.ts` mirrors main.ts's backend half.
+- **The app's page is the backend's owner**: `desktopOnly` and `remoteAllowed:false` refuse only visiting phones
+  (first-run sign-in is `desktopOnly` = "this device's own").
+- **Phone-only calls go through `window.YouCodedHost`**, not a second socket (works paired or local).
+- **musl built with `patch-musl.py`** (env-chosen resolv.conf) instead of a binary patch; `yc-open` is
+  `xdg-open`/`BROWSER`; a link opened while the app is off screen becomes a notification.
+
+Not yet seen by a person / left for P4–P6 (none blocks the merge):
+- Signing in to Claude, a real conversation, voice typing, QR pairing, attaching a file — need the phone unlocked.
+- Battery and Doze over a long session (the phone was charging all night).
+- The sign-in screen offers "Use a local model" and says "this computer"; desktop-only features are not yet
+  hidden ("not on this device" — P4). `remote-shim.ts` still carries the old `pty:raw-bytes` path (dead now).
+- `gh` (GitHub CLI) is not bundled: a static Go binary reads `/etc/resolv.conf` itself, so it needs its own fix.
+- Depth docs outside `android-runtime.md` still mention Kotlin mirrors in passing (office, native-permissions,
+  conversations, sync-spaces, pty-io, chat-reducer docs).
+
 ## Phases
 
 ### P1 — Headless backend (desktop code; laptop only)
