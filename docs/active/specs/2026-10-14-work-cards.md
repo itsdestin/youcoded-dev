@@ -65,6 +65,21 @@ device is on" already exists under Sync & Mesh.
 Build order: idea intake first (the habit every chat follows), then the cards underneath, then the page
 reading the cards, then moving the roadmap over.
 
+## Exploration before planning; cards replace the roadmap (decided 2026-10-15, idea-intake trial)
+
+- **Preliminary exploration** is a fifth stage, before Planning, and the default for an idea dump. Destin:
+  "things that i really haven't yet fleshed out … a bunch of these might overlap/intersect/contradict
+  eachother, whereas planning items … shouldnt be able to contradict or overlap eachother." Exploration
+  cards may overlap (`related`); moving to Planning consolidates them into one card; `cards.mjs check`
+  refuses overlapping Planning-or-later cards. On the management page, exploration items appear in Big
+  picture ("only an idea"); Today starts at Planning.
+- **Cards replace the roadmap**, not sit beside it (Q-3, Q-6: "thought we were obsoleting old roadmap?").
+  Intake never offers "roadmap only"; an old entry that covers an idea is turned into a card. Until the
+  144 open entries are moved, intake reads them so nothing is duplicated. At merge, CLAUDE.md's "Where
+  Knowledge Lives" row for planned features/bugs/ideas must point at cards, and the roadmap move becomes
+  the next step rather than the last.
+- Replies leave out any line with nothing to say (Q-7: length "about right").
+
 ## What the management page needs from every card (decided 2026-10-14)
 
 Destin approved the Today tab built from these facts (branch `session/management-surface-20261012`,
@@ -73,7 +88,7 @@ Destin approved the Today tab built from these facts (branch `session/management
 
 | Fact | Values | Notes |
 |---|---|---|
-| **Stage** | Planning · Agentic buildout · Human polish & review · Merged | Destin's four words. No "ready to merge" stage: "something ready to merge should just be merged when ready". Merged is set automatically when the branch merges |
+| **Stage** | Preliminary exploration · Planning · Agentic buildout · Human polish & review · Merged | Destin's four words. No "ready to merge" stage: "something ready to merge should just be merged when ready". Merged is set automatically when the branch merges |
 | **Problem markers** | Checks failing · Not backed up · Paused (with reason) · Working (a chat running now) | Separate from the stage; any stage can carry them. "Not backed up" = its copy has changes not committed or not pushed. "Working" only from a live signal, never guessed |
 | **Chats** | every conversation that worked on it, with date, and a one-line result when one was written | Several chats per card, in turn or at once. Shown as a list under "View chats", with "Start another chat on this card" |
 | **Next step** | derived: Unpause · Go to chat · Fix failing checks · Merge to master · Open review deck · Resume latest chat | The page's filled button; its hover says why |

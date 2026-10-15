@@ -57,3 +57,14 @@ test('index lists cards and works with no roadmap folder', () => {
 test('slug keeps names short and plain', () => {
   assert.equal(slug('Project skills & tools: per-project control of what the assistant uses'), 'project-skills-and-tools-per');
 });
+
+test('exploration items may overlap; planning items may not', () => {
+  const root = tmp();
+  createCard(root, { title: 'Assistants made of duties' });
+  createCard(root, { title: 'Office assistant with duties', related: '1' });
+  assert.deepEqual(check(loadCards(root)), []);
+  assert.equal(loadCards(root)[0].stage, 'explore');
+  const a = parseCard('---\nid: 1\ntitle: a\nstage: planning\n---\n', 'cards/1-a.md');
+  const b = parseCard('---\nid: 2\ntitle: b\nstage: planning\nrelated: 1\n---\n', 'cards/2-b.md');
+  assert.match(check([a, b]).join(), /consolidate them into one card/);
+});
