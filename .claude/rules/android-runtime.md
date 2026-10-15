@@ -30,7 +30,7 @@ thin shell. **Full context: `youcoded/docs/android-runtime.md` — read before n
 - **Every executable ships as `jniLibs/arm64-v8a/lib<name>.so`** (Android executes nothing in the data folder). A new
   program is a `RUNTIME_EXECUTABLES` entry in `pins.env`; it gets the patched interpreter, RUNPATH and the shim.
 - **Never drop `ycshim.c` from a program that spawns or runs Node:** without it libuv's io_uring probe is killed by
-  seccomp and `#!` scripts / `/bin/sh` fail. Claude Code (Bun) is the one exception: interpreter only.
+  seccomp and `#!` scripts / `/bin/sh` fail. **Claude Code is never edited** (Anthropic's terms: the binary must not be modified): `claude-launch.c` runs it through the loader; `build-runtime.sh` copies it byte-for-byte.
 - **Name lookups need `YOUCODED_ETC`** (patched musl + shim); TLS needs `SSL_CERT_FILE` / `GIT_SSL_CAINFO`. The
   environment lives in `RuntimeInstaller.environment()`.
 - **Bumping a pin is a phone test**, not a CI test: every pin in `pins.env` was run on a real phone.
