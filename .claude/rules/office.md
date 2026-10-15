@@ -39,6 +39,6 @@ The editors are an AGPL add-on (`itsdestin/youcoded-office`) in a sealed `office
 - **Add-on changes ship by pin.** Edit the add-on repo → bump its `PIN.json` version → push tag `vX.Y.Z` → CI release → set `desktop/office-pin.json` `version` plus all four platforms' `url`/`sha256` (from the release's `SHA256SUMS`) → `node scripts/fetch-office.mjs` → verify in a dev instance. A pin that disagrees with the installed `manifest.json` hides Office (`officeAvailable`). Guard: `fetch-office.test.ts`.
 - **No `:has()` in the add-on's CSS.** Measured ~23x slower editor style recalculation; set a class from script instead. Guard: the add-on's `test/yc-bridge-perf.test.mjs`.
 - **Add-on patches are exact-match.** `build/patch.mjs` fails the build if a pattern is missing or found twice; a euro-office-lite bump means re-checking each by hand.
-- **A new `office:*` channel** is also added to `preload.ts`, `remote-shim.ts` (refused), `SessionService.kt` (unsupported) and pinned in `ipc-channels.test.ts`. Desktop only.
+- **A new `office:*` channel** is also added to `preload.ts`, `remote-shim.ts` (refused) and pinned in `ipc-channels.test.ts`. Desktop only.
 
 Verify with `bash scripts/verify.sh`; real-converter tests need `node scripts/fetch-office.mjs` first. Depth, ship steps, platforms and known limits: `youcoded/docs/office.md`.

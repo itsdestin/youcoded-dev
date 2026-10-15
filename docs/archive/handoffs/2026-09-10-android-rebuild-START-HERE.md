@@ -9,7 +9,7 @@ topic: Android rebuild — where it stands, what was decided, and how to start s
 # Android rebuild — START HERE
 
 One roadmap item owns this work: `docs/roadmap/android-only.md`. One report holds every
-finding and every earlier Android bug: `docs/active/investigations/2026-09-10-android-parity-audit.md`
+finding and every earlier Android bug: `docs/archive/investigations/2026-09-10-android-parity-audit.md`
 (read its **Status** block first, then §7). This handoff is the short path between the two.
 
 ## Decided by Destin (2026-09-10 deck, `docs/active/design/2026-09-10-android-rebuild/`)

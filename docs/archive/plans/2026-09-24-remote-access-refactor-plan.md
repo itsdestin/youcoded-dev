@@ -13,7 +13,7 @@ topic: Remote access refactor — one assistant core with one feature list that 
 > Phase 4 (`docs/active/plans/2026-09-16-simplification-phases.md`): Phase 4 = R1–R4. It also
 > covers what follows (R5–R6). Held 2026-09-18; **Destin lifted the hold 2026-09-29** ("i want
 > to do the remote stuff"). **2026-10-04: R0–R6 complete, ready to merge as `feat/one-core` in both repos.** Still a v1.3.1 blocker until merged. The decisions table at the end is still open. Companion:
-> `docs/active/plans/2026-09-24-android-rebuild-plan.md` (phases A0–A6).
+> `docs/archive/plans/2026-09-24-android-rebuild-plan.md` (phases A0–A6).
 >
 > **Evidence.** Six read-only investigations (I1–I6) on 2026-09-24 against app master `ab15a5858`.
 > Line numbers are from that commit and will drift. Anything marked *(unverified)* was

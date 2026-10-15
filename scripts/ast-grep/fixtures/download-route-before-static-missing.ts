@@ -7,7 +7,7 @@ export class Host {
   start(hasStaticBuild: boolean, staticDir: string, viteDevUrl: string) {
     return http.createServer((req, res) => {
       if (hasStaticBuild) this.handleHttpRequest(req, res, staticDir);
-      else this.proxyToVite(req, res, viteDevUrl);
+      else proxyHttpToVite(req, res, viteDevUrl);
     });
   }
 }

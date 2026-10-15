@@ -102,7 +102,7 @@ which `nativeStoreSlug` never emits.
 
 ## Surfaces
 `permissions:list` / `:remove` / `:remove-project` are one table entry each (`main/ipc/permissions.ts`),
-plus `remote-shim` and SessionService.kt. NOT gated on `native.supported`
+plus `remote-shim`. NOT gated on `native.supported`
 (`remote-shim` hardcodes `false`, which would kill revoke from a phone).
 **Guard:** `ipc-channels.test.ts` → "permissions:* channel parity".
 

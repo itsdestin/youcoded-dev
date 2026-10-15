@@ -2,12 +2,10 @@
 paths:
   - "**/desktop/src/main/pty-worker.js"
   - "**/desktop/src/main/session-manager.ts"
-  - "**/app/**/PtyBridge.kt"
   - "**/desktop/src/renderer/hooks/useSubmitConfirmation.ts"
   - "**/desktop/src/renderer/state/pty-input-gate.ts"
   - "**/desktop/src/renderer/state/prompt-input.ts"
   - "**/desktop/src/shared/ink-select-parser.ts"
-  - "**/app/**/InkSelectParser.kt"
   - "**/desktop/src/renderer/components/outgoing-message.ts"
   - "**/desktop/test-conpty/**"
   - "**/desktop/src/renderer/components/TerminalView.tsx"

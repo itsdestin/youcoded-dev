@@ -1,17 +1,19 @@
 ---
 date: 2026-09-01
-status: active
+status: closed
 type: investigation
 topic: Android PtyBridge still submits long messages on a 600 ms timer
 ---
+> **Closed 2026-10-15:** the Kotlin code this describes was deleted by the Android clean rebuild (the phone runs the desktop backend); see `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`.
+
 
 > **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 22 in the
-> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> appendix of `docs/archive/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
 > part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
 
 # Android PtyBridge: echo-driven submit
 
-> **2026-09-24 — where this goes now:** This is cut C4 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`: the timer goes only once the desktop's echo-driven submit moves out of `pty-worker.js` into shared code (a desktop change), then A3's sessions family.
+> **2026-09-24 — where this goes now:** This is cut C4 of `docs/archive/plans/2026-09-24-android-rebuild-plan.md`: the timer goes only once the desktop's echo-driven submit moves out of `pty-worker.js` into shared code (a desktop change), then A3's sessions family.
 
 **What it is.** Desktop submits a long message by writing the body, waiting for the PTY to
 echo its tail back, then sending `\r` — no timing assumption. Android still uses the older

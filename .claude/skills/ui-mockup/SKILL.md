@@ -152,7 +152,7 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    `<feature>.contract.json`; it is the last thing Destin answers before the build. Run
    `review-cards.py contract-check` on it and paste the output into the handoff.
 2. Turn the `MOCK_ONLY` entries the approved UI depends on into real handlers (main +
-   `preload.ts` + `remote-shim.ts` + `SessionService.kt`, guarded by `ipc-channels.test.ts`),
+   `preload.ts` + `remote-shim.ts`, guarded by `ipc-channels.test.ts`),
    then drop them from the registry.
 3. **Run the build stage** (design §8): a short technical design (backend, data shape, reuse)
    → adversarial review, one findings file per round under `docs/active/reviews/`, stop on a

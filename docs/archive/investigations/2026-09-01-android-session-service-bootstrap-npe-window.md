@@ -1,17 +1,19 @@
 ---
 date: 2026-09-01
-status: active
+status: closed
 type: investigation
 topic: Android SessionService dereferences bootstrap!! in 18 bridge handlers, and the bridge listens before bootstrap is set
 ---
+> **Closed 2026-10-15:** the Kotlin code this describes was deleted by the Android clean rebuild (the phone runs the desktop backend); see `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`.
+
 
 > **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 5 in the
-> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> appendix of `docs/archive/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
 > part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
 
 # Android `SessionService.kt` dereferences `bootstrap!!` in 18 handlers
 
-> **2026-09-24 — where this goes now:** Retires as `SessionService`'s dispatcher shrinks in A3 and is deleted in A4 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`.
+> **2026-09-24 — where this goes now:** Retires as `SessionService`'s dispatcher shrinks in A3 and is deleted in A4 of `docs/archive/plans/2026-09-24-android-rebuild-plan.md`.
 
 **Symptom.** Hypothesised, not observed: an Android crash (Kotlin NPE) if the WebView sends
 one of ~18 preference/config/sync channels before the service has finished bootstrapping.
