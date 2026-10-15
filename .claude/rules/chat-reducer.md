@@ -7,7 +7,6 @@ paths:
   - "**/desktop/src/main/subagent-watcher.ts"
   - "**/desktop/src/shared/attention-classifier.ts"
   - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
-  - "**/terminal-emulator-vendored/**"
   - "**/shared-fixtures/**"
 last_verified: 2026-10-01
 verify:
