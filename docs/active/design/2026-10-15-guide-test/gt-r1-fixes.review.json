@@ -1,0 +1,95 @@
+{
+  "title": "Round 1 fixes — a full-screen error, and a themed dropdown for Pages",
+  "key": "gt-r1-fixes",
+  "out": "gt-r1-fixes.review.html",
+  "images": "images/gt-r1-fixes.review",
+  "runs": {
+    "before": "runs/screen-error/before",
+    "after": "runs/screen-error/after",
+    "kit": "runs/kit-menu"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After",
+    "kit": "After"
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Marketplace",
+      "path": "Marketplace, when nothing could load",
+      "crop": "marketplace#load-failed",
+      "highlight": "panel",
+      "headline": "A screen that loaded nothing now shows a proper full-screen error.",
+      "changed": "Instead of a small red strip with the raw error text, the screen shows one box in the middle: what couldn't load, a reassuring line, the technical reason folded under Details, and a full-width Try again under it.",
+      "notice": "The same box is used on the Library and Pages screens (next steps), and it's the rule new screens get.",
+      "risk": "The raw message is now one click away under Details instead of always shown.",
+      "runs": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "id": "F-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Your library",
+      "path": "Your library, when your plugins couldn't load",
+      "crop": "library#load-failed",
+      "highlight": "panel",
+      "headline": "Your library: the same full-screen error.",
+      "changed": "\"Couldn't load your installed plugins: <raw message>\" becomes \"Your installed plugins couldn't load\" with \"Nothing was removed.\", Details, then Try again.",
+      "notice": "Your notes on round 1 also moved every error box's buttons below its Details fold, app-wide.",
+      "risk": "—",
+      "runs": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "id": "F-3",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages",
+      "path": "Manage pages, when the list couldn't be read",
+      "crop": "pages/library#load-failed",
+      "highlight": "panel",
+      "headline": "Pages: the same full-screen error.",
+      "changed": "\"The list of pages could not be read.\" in a strip becomes the centred box \"Your pages couldn't load\" with Try again.",
+      "notice": "No Details here: this failure has no extra reason to show.",
+      "risk": "—",
+      "runs": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "id": "F-4",
+      "runs": [
+        "kit"
+      ],
+      "new": true,
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages (any Page)",
+      "path": "A Page's dropdown, opened — here the Week planner's Kind",
+      "crop": "pages/page/page-week-planner#menu-open",
+      "headline": "Every Page's dropdown now opens the app's own themed list, never the browser's white one.",
+      "changed": "Pages keep writing a plain dropdown; the Pages kit swaps the list that opens for the app's look: theme colours and corners, the current choice filled, arrow keys and typing work. An action at the foot (\"Add another kind…\") sits under the tapered line, apart from the choices.",
+      "notice": "All existing Pages get it automatically (Home, Money, Week planner…), and the page-building skill now tells the assistant to use it.",
+      "risk": "Not checked on phone touch screens yet. Escape with a list open now closes only the list, like the browser's list did.",
+      "yes": "Keep it",
+      "no": "Remove it"
+    }
+  ]
+}
