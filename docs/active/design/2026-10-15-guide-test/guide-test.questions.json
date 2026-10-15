@@ -1,0 +1,225 @@
+{
+  "title": "Testing the design guide — which made-up pages, and how the test runs",
+  "key": "guide-test-questions",
+  "out": "guide-test.questions.html",
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Which made-up pages to build",
+      "intro": "Each one is a page YouCoded does not have. Fresh builders who know only the guide design it; you critique; we fix the guide. Pick the ones worth testing — a mix of kinds tests more of the guide."
+    },
+    {
+      "id": "C-1",
+      "words": true,
+      "pick": "several",
+      "surface": "Made-up settings pages",
+      "path": "Would live under Settings",
+      "headline": "Which settings-style pages should the builders design?",
+      "today": "None of these exist. Settings pages are where most of the guide's rules about rows, switches, cards and labels apply.",
+      "problem": "If the guide's settings rules have gaps, a builder who has only the guide will fall into them here first.",
+      "proposal": "Pick any. Each becomes one page a builder designs from the guide alone.",
+      "options": [
+        {
+          "id": "scheduled-tasks",
+          "label": "Scheduled tasks",
+          "summary": "Have the assistant do something on a schedule, like summarising your email every morning: a list of tasks, each with a time, an on/off switch, edit and delete.",
+          "pros": ["Tests lists, switches, a time picker, and a delete confirmation all at once."],
+          "cons": ["Close to the existing Specialists page, so it may test less that's new."]
+        },
+        {
+          "id": "memory",
+          "label": "What the assistant remembers",
+          "summary": "A page listing facts the assistant has saved about you, with search, edit, remove and \"forget everything\".",
+          "pros": ["Tests a long list, search, an empty page, and a scary red action."],
+          "cons": ["Mostly one list, so fewer kinds of control."]
+        },
+        {
+          "id": "spending",
+          "label": "Spending limits",
+          "summary": "A monthly cap per paid provider, how much is used so far, and a warning when you're close.",
+          "pros": ["Tests numbers, progress bars, warnings, and the money-orange colour rule."],
+          "cons": ["Number-heavy pages are rare in YouCoded, so the lessons may not carry far."]
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "words": true,
+      "pick": "several",
+      "surface": "Made-up popups and step-by-step flows",
+      "path": "Popups opened from somewhere in the app",
+      "headline": "Which popups or step-by-step flows should the builders design?",
+      "today": "None of these exist. Popups are where we spent most of this round's decisions (one-job card, buttons stacked, the ✕).",
+      "problem": "Those rules are new, so they're the likeliest to be worded in a way a newcomer misreads.",
+      "proposal": "Pick any. Each becomes one popup or flow, including its waiting and failed states.",
+      "options": [
+        {
+          "id": "share",
+          "label": "Share a conversation",
+          "summary": "Make a read-only link to a chat, choose whether files are included, copy the link, stop sharing later.",
+          "pros": ["Tests the one-job popup, a choice, a copy button, and undoing."],
+          "cons": ["Small, so it may pass easily."]
+        },
+        {
+          "id": "import",
+          "label": "Import from ChatGPT",
+          "summary": "Pick your exported file, see what will come in, watch it import, and see what to do if part of it fails.",
+          "pros": ["Tests several steps, progress, and how errors are shown — a hard area."],
+          "cons": ["The biggest of the set; takes the builder longest."]
+        },
+        {
+          "id": "calendar",
+          "label": "Connect a calendar",
+          "summary": "Sign in to Google Calendar, choose what the assistant may do (read only, or add events), and disconnect.",
+          "pros": ["Tests sign-in states and permission choices, which many future features will need."],
+          "cons": ["Overlaps with the existing Connected accounts page."]
+        }
+      ]
+    },
+    {
+      "id": "C-3",
+      "words": true,
+      "pick": "several",
+      "surface": "Made-up full pages and chat cards",
+      "path": "A page of its own, or a card inside a chat",
+      "headline": "Which full pages or in-chat cards should the builders design?",
+      "today": "None of these exist. The guide also covers whole pages and the cards that appear inside a conversation.",
+      "problem": "Those are the parts of the guide we've tested least this round.",
+      "proposal": "Pick any.",
+      "options": [
+        {
+          "id": "reading-list",
+          "label": "Reading list",
+          "summary": "A page of links and files you've saved for later, with tags, search, an empty state, and \"ask the assistant about this\".",
+          "pros": ["Tests a whole page: header, list, empty state, tags."],
+          "cons": ["Resembles the existing Projects pages."]
+        },
+        {
+          "id": "quiz",
+          "label": "Study quiz card",
+          "summary": "A card in the chat where the assistant quizzes you: a question, answer choices, right/wrong, and a score.",
+          "pros": ["Tests in-chat cards, which the guide covers less."],
+          "cons": ["Chat cards have their own redesign coming (permission prompts), so the lessons may be overtaken."]
+        },
+        {
+          "id": "notifications",
+          "label": "Notifications",
+          "summary": "A panel listing what happened while you were away: finished tasks, mentions, updates, with mark-as-read.",
+          "pros": ["Tests a dropdown panel and read/unread looks."],
+          "cons": ["Hard to judge without real notifications behind it."]
+        }
+      ]
+    },
+    {
+      "id": "C-4",
+      "words": true,
+      "answer": "words",
+      "prompt": "e.g. a recipe planner, a habit tracker… or leave blank",
+      "surface": "Your own ideas",
+      "path": "Anywhere in the app",
+      "headline": "Any made-up pages of your own you'd like in the set?",
+      "today": "The pages above are my suggestions.",
+      "problem": "You know which kinds of pages YouCoded is likely to grow next better than I do.",
+      "proposal": "Type any ideas, one short line each. Leave it blank if the picks above are enough."
+    },
+    {
+      "id": "P-2",
+      "page": "How the test runs",
+      "intro": "Each round: fresh builders design the pages, you critique them on a review page, I change the guide, and the next round starts from scratch."
+    },
+    {
+      "id": "R-1",
+      "words": true,
+      "surface": "The builders",
+      "path": "What each builder is allowed to look at",
+      "headline": "Should builders see only the guide, or also a few real YouCoded screens?",
+      "today": "When I build a screen for real, I read the guide AND look at two or three existing screens that do a similar job.",
+      "problem": "Real screens fill in what the guide leaves out, so a builder who copies them can hide a gap in the guide.",
+      "proposal": "Either way, each builder gets the guide, the app's building blocks (buttons, switches, cards…) and the tool that photographs screens — nothing from our conversations.",
+      "options": [
+        {
+          "id": "guide-only",
+          "label": "Guide only",
+          "recommended": true,
+          "pros": ["Every mistake points straight at something the guide doesn't say — the fastest way to improve it.", "Recommended because finding the guide's gaps is the whole point."],
+          "cons": ["The first round will look rougher than real work would."]
+        },
+        {
+          "id": "guide-and-screens",
+          "label": "Guide plus real screens",
+          "pros": ["Matches how real work is done, so results predict real quality."],
+          "cons": ["Builders may copy a screen instead of following the guide, so gaps stay hidden."]
+        }
+      ]
+    },
+    {
+      "id": "R-2",
+      "words": true,
+      "surface": "The rounds",
+      "path": "Which pages each round builds",
+      "headline": "Same pages every round, or new ones?",
+      "today": "Nothing has run yet.",
+      "problem": "Rebuilding the same pages shows whether the guide got better; but the guide could then be tuned to those pages alone.",
+      "proposal": "Pick how each round's set is made.",
+      "options": [
+        {
+          "id": "same-plus-one",
+          "label": "Same set plus one new",
+          "recommended": true,
+          "pros": ["You can compare round to round on the same pages.", "The new page each round catches a guide that only works for the old ones — why I recommend it."],
+          "cons": ["One extra page to review each round."]
+        },
+        {
+          "id": "all-new",
+          "label": "All new each round",
+          "pros": ["Never tuned to particular pages."],
+          "cons": ["Hard to tell if a round got better because of the guide or because the pages were easier."]
+        },
+        {
+          "id": "same-only",
+          "label": "Same set only",
+          "pros": ["The cleanest comparison and the least to review."],
+          "cons": ["The guide may end up fitted to these few pages."]
+        }
+      ]
+    },
+    {
+      "id": "R-3",
+      "words": true,
+      "surface": "The builders",
+      "path": "Which AI model builds the pages",
+      "headline": "Which model should the builders be?",
+      "today": "Real YouCoded screens are built by the same model I am (Opus).",
+      "problem": "A cheaper model costs less per round but makes more of its own mistakes, which can be confused with the guide's.",
+      "proposal": "Pick one for every round.",
+      "options": [
+        {
+          "id": "opus",
+          "label": "Opus, like real work",
+          "recommended": true,
+          "pros": ["Mistakes are the guide's, not the model's — why I recommend it.", "Predicts real sessions."],
+          "cons": ["Each round costs more of your usage."]
+        },
+        {
+          "id": "sonnet",
+          "label": "Sonnet, cheaper",
+          "pros": ["About a fifth of the cost per round.", "A guide a smaller model can follow is a very clear guide."],
+          "cons": ["Some misses will be the model, and I'd have to tell those apart."]
+        }
+      ]
+    },
+    {
+      "id": "R-4",
+      "words": true,
+      "surface": "Your critique",
+      "path": "The review page each round",
+      "headline": "Should each design come with the builder's own note on where the guide left it guessing?",
+      "today": "Review pages show pictures with my notes; builders don't add their own.",
+      "problem": "Some of a builder's mistakes are guesses where the guide was silent; you can't see those from the picture alone.",
+      "proposal": "Yes: under each design, a short \"the guide didn't tell me…\" list from its builder, which I'd use alongside your critique. No: you judge the pictures only.",
+      "yes": "Yes, add the notes",
+      "no": "No, pictures only"
+    }
+  ]
+}
