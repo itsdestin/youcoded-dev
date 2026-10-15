@@ -36,3 +36,9 @@ purchases-page.
 |---|---|---|
 | r1 | 1792030997 | purchases-page, agents-automations, notifications, pc-build-page, import |
 | r2 | 1792039952 | quiz, news-page, reading-list, pc-build-page, trip-page — sample Pages "Headlines", "Trip board", "Link reader" left in: two-to-four-line stubs used by the connection screens, not designs |
+
+## Score
+| Round | Steps marked "Good first try" | Notes |
+|---|---|---|
+| r1 | 4 of 10 answered (purchases reviewed only by chat note) | 7 rules added, 3 shared pieces built |
+| r2 | 31 of 32 | 3 notes → 4 rules |
