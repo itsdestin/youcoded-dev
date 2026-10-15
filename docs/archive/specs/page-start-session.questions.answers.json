@@ -1,0 +1,72 @@
+{
+ "deck": "page-start-session-questions",
+ "started": "2026-10-14T20:33:29.785Z",
+ "submitted": "2026-10-14T20:37:39Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "window",
+   "t": 1792010047254,
+   "seconds": 12,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "wait",
+   "t": 1792010047254,
+   "seconds": 12,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "custom",
+   "t": 1792010047254,
+   "seconds": 12,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "other",
+   "t": 1792010190730,
+   "note": "just leave the toggle in the new session menu thing when starting from page, so ican chooose",
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "before",
+   "t": 1792010190730,
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "nolimit",
+   "t": 1792010190730,
+   "note": "i will still need to press the actual start button, so this shouldnt matter",
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "note": "why would the code be changing? we should be changing code, but the data the page pulls from/displays. this should be treated differently, no?",
+   "t": 1792010190730,
+   "v": "other",
+   "seconds": 36,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1792010257580,
+   "note": "you're overcomplicating the fuck out of this. this is just another standard page element, that can be opened from any page. a personal page should show the project picker and default to \"your assistant\" when we build that later",
+   "seconds": 34,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "phone",
+   "t": 1792010257580,
+   "seconds": 34,
+   "theme": "halftone-dimension"
+  }
+ }
+}

@@ -1,0 +1,364 @@
+{
+  "title": "Starting a conversation from a page: the questions before anything is drawn",
+  "key": "page-start-session-questions",
+  "out": "page-start-session.questions.html",
+  "stage": "ask",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "When you press the button, should it go straight to the new conversation or show the new-conversation window first?",
+      "today": "Frontier Lab's Update now shows a request in a box with a Copy button. You open a new conversation yourself and paste it.",
+      "problem": "That is several steps for something you do every week, and it is easy to forget or paste into the wrong place.",
+      "proposal": "Pressing the button would open a new conversation in the page's project with the request typed in the box. The question is whether you get a chance to adjust settings first.",
+      "options": [
+        {
+          "id": "straight",
+          "label": "Straight in",
+          "pros": [
+            "One press, then Enter.",
+            "Uses your usual folder-and-model settings, so nothing new to decide.",
+            "The approval card already checked with you the first time."
+          ],
+          "cons": [
+            "You cannot pick a cheaper or stronger assistant for this one run without changing it afterwards."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "window",
+          "label": "Show window first",
+          "pros": [
+            "You see and can change the model every time.",
+            "Works as an extra confirmation."
+          ],
+          "cons": [
+            "One more click every week.",
+            "Adds little safety, since the request still waits for your Enter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "Should the request be sent for you, or wait in the box until you press Enter?",
+      "today": "Today nothing is sent for you; you paste and press Enter yourself.",
+      "problem": "Waiting costs one key press. Sending for you saves it, but the assistant would start working before you have read anything.",
+      "proposal": "The proposal is that it always waits for your Enter. A per-page choice could be added later if the extra key press annoys you.",
+      "options": [
+        {
+          "id": "wait",
+          "label": "Always waits",
+          "pros": [
+            "Nothing runs until you have looked at it.",
+            "A page from someone else can never act on its own."
+          ],
+          "cons": [
+            "One extra key press."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "auto",
+          "label": "Sent automatically",
+          "pros": [
+            "Truly one press."
+          ],
+          "cons": [
+            "The assistant starts before you read anything.",
+            "A page from someone else becomes much more risky."
+          ]
+        },
+        {
+          "id": "perpage",
+          "label": "Your choice per page",
+          "pros": [
+            "Convenience for pages you trust, such as your own."
+          ],
+          "cons": [
+            "One more checkbox to understand on the approval card."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "Should the page be able to type its own message text, such as 'update only the Papers section'?",
+      "today": "The page can only show the request it was built with.",
+      "problem": "A page that needs variations, such as one section only, needs a separate fixed message for each.",
+      "proposal": "Either the page may only use fixed messages you approved, or it may write its own text each time.",
+      "options": [
+        {
+          "id": "fixed",
+          "label": "Fixed messages only",
+          "pros": [
+            "What you approved is exactly what gets typed.",
+            "Words from a website cannot sneak into the request."
+          ],
+          "cons": [
+            "The page needs one entry per variation."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "custom",
+          "label": "Page writes its own",
+          "pros": [
+            "Flexible: any variation without extra setup."
+          ],
+          "cons": [
+            "The approval card can no longer show you what will be typed.",
+            "A page that reads websites could pass their words along, even though you would still see it before pressing Enter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Safety and approval",
+      "intro": "How YouCoded makes sure a page cannot start work you did not expect."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "If your usual setting is to skip permission questions, should a conversation started by a page skip them too?",
+      "today": "Your normal conversations follow your own setting about asking before risky actions.",
+      "problem": "A page could quietly start a conversation that runs commands without asking you.",
+      "proposal": "Either page-started conversations always ask first, or they follow your usual setting and the card tells you so.",
+      "options": [
+        {
+          "id": "never",
+          "label": "Always ask",
+          "pros": [
+            "A page can never start a conversation that acts without asking.",
+            "Stays safe even if you later allow sending for you."
+          ],
+          "cons": [
+            "A weekly update may stop more often to ask you."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "follow",
+          "label": "Follow my setting",
+          "pros": [
+            "Same as all your other conversations."
+          ],
+          "cons": [
+            "Combined with sending for you, a page could start unattended work."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "When should the approval card appear: the first time you press the button, or before the page opens?",
+      "today": "Other page abilities, such as reaching websites, ask you before the page opens.",
+      "problem": "Asking up front would make you answer about a button you may never press.",
+      "proposal": "The card would appear as a window over the page the first time you press the button, naming the project and quoting the message word for word.",
+      "options": [
+        {
+          "id": "onpress",
+          "label": "First press",
+          "pros": [
+            "Asked exactly when it makes sense.",
+            "Frontier Lab opens normally."
+          ],
+          "cons": [
+            "Differs from other abilities, which ask before the page opens."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "before",
+          "label": "Before page opens",
+          "pros": [
+            "One familiar card with everything up front."
+          ],
+          "cons": [
+            "Frontier Lab cannot be read until you answer a question about a button you may not press."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "How many times may a page start a conversation?",
+      "today": "A page has no way to start conversations yet, so there is no limit to set.",
+      "problem": "A broken page that repeats a click could fill your screen with conversations.",
+      "proposal": "Proposed: one every 30 seconds and five an hour, and only when you actually press something.",
+      "options": [
+        {
+          "id": "limit",
+          "label": "30 seconds, 5 an hour",
+          "pros": [
+            "Stops runaway pages.",
+            "Plenty for a weekly button."
+          ],
+          "cons": [
+            "A page with several buttons used in a burst may say 'try again shortly'."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "nolimit",
+          "label": "Only on a press",
+          "pros": [
+            "Simplest."
+          ],
+          "cons": [
+            "A buggy page could open many conversations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's button, such as Frontier Lab's Update now",
+      "headline": "After each weekly Frontier Lab update, what should happen to the 'Code changed since you allowed this' note?",
+      "today": "YouCoded shows that note when a page's code changes after you approved it. Frontier Lab rewrites its own page every week.",
+      "problem": "You would see the note after every update, and a note that always appears gets ignored.",
+      "proposal": "Three ways to handle it, from quiet to more work.",
+      "options": [
+        {
+          "id": "hide",
+          "label": "Hide for these pages",
+          "pros": [
+            "No weekly nagging.",
+            "The message is checked separately, so a changed message still asks again."
+          ],
+          "cons": [
+            "You are not told when such a page's code changes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep the note",
+          "pros": [
+            "Consistent with other pages."
+          ],
+          "cons": [
+            "You learn to ignore it."
+          ]
+        },
+        {
+          "id": "data",
+          "label": "Change Frontier Lab",
+          "pros": [
+            "The note then means a real code change."
+          ],
+          "cons": [
+            "Needs work in the Frontier Lab project.",
+            "The page loads its data a moment later."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Where it works",
+      "intro": "Which pages and which devices get this ability."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages that are not inside a project, such as your personal pages",
+      "headline": "Should your personal pages, which are not in a project, be able to start a conversation?",
+      "today": "Frontier Lab belongs to a project, so the new conversation would open in that project's folder. Personal pages have no such folder.",
+      "problem": "A personal dashboard cannot start a conversation, but giving it a folder is harder to keep predictable.",
+      "proposal": "Project pages only, or personal pages too with a folder chosen some way.",
+      "options": [
+        {
+          "id": "projonly",
+          "label": "Project pages only",
+          "pros": [
+            "The folder is always obvious and fixed.",
+            "Least to build and least to go wrong."
+          ],
+          "cons": [
+            "A personal dashboard cannot start a conversation."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "default",
+          "label": "Use default folder",
+          "pros": [
+            "Works everywhere."
+          ],
+          "cons": [
+            "Your default folder can change, so conversations could land somewhere unexpected."
+          ]
+        },
+        {
+          "id": "pick",
+          "label": "Ask for a folder once",
+          "pros": [
+            "Flexible and explicit."
+          ],
+          "cons": [
+            "More on the card to read and remember."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Pages",
+      "path": "Approving from your phone while it is paired to the computer",
+      "headline": "Should you be able to allow a page's request from your phone?",
+      "today": "Some approvals on the phone are sent to the computer to finish there.",
+      "problem": "A quick tap on a small screen is easier to do without reading the message.",
+      "proposal": "Either the phone approves like the computer, or it says 'Finish on your computer'.",
+      "options": [
+        {
+          "id": "phone",
+          "label": "Yes, on the phone",
+          "pros": [
+            "The button works the same everywhere.",
+            "No secret is involved and the conversation opens visibly."
+          ],
+          "cons": [
+            "Easier to tap without reading the message."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "pc",
+          "label": "Computer only",
+          "pros": [
+            "Approvals happen on the bigger screen."
+          ],
+          "cons": [
+            "The first use must be on the computer."
+          ]
+        }
+      ]
+    }
+  ]
+}
