@@ -51,8 +51,6 @@ verify:
   - test: youcoded/desktop/tests/artifacts/folder-listing.test.ts
   - path: youcoded/desktop/src/shared/artifacts/editable-path-policy.ts
     contains: "export function privateForRecordTrust"
-  - path: youcoded/app/src/main/kotlin/com/youcoded/app/artifacts/ProjectManager.kt
-    contains: "fun judgeRelativeRecord"
 ---
 # Artifact Viewer (Session Drawer + Project View)
 
@@ -67,9 +65,9 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **Browsing is `artifacts:list-folder`**: one folder, paged, uncapped; unreadable → `<ErrorState>`.
 
 ## Recorded paths
-- **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3); a `..` one stays external and is trusted only via `judgeRelativeRecord` (TS + Kotlin): inside its project or a saved folder strictly below home, never a `privateForRecordTrust` path; else an honest code (`missing`/`protected-path`/`outside-projects`/`not-in-home-project`/`record-unreadable`). `absolutePath` is contractually ABSOLUTE — `isAbsoluteRecorded` guards **five** sites: `get`, `save`, `check-existence`, `countArtifacts`, `renameArtifact`.
+- **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3); a `..` one stays external and is trusted only via `judgeRelativeRecord`: inside its project or a saved folder strictly below home, never a `privateForRecordTrust` path; else an honest code (`missing`/`protected-path`/`outside-projects`/`not-in-home-project`/`record-unreadable`). `absolutePath` is contractually ABSOLUTE — `isAbsoluteRecorded` guards **five** sites: `get`, `save`, `check-existence`, `countArtifacts`, `renameArtifact`.
 - **`runSidecarMigration` repairs legacy records on open**, gated on `reclassified === 0`, never `$schema`; it must never throw into a read handler.
-- **`canonicalize()` is the sole source of truth for path equality** (TS + Kotlin, one fixture).
+- **`canonicalize()` is the sole source of truth for path equality** (one fixture).
 
 ## Paths & counts
 - **Project list = saved folders (`youcoded-folders.json`), NOT the central index.** `buildSavedFolderProjects` reuses an index entry by canonical path, else synths one whose `id` IS the path (traversal-guarded).
@@ -81,8 +79,8 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **Every read goes through `readSidecarShared`; only mutate-and-write paths call `readSidecar`** (2026-08-27 OOM, PR #335). ONE parsed copy per project, **READ-ONLY**; `casWrite` head-probes 4 KB.
 
 ## Binary viewers & security
-- **`artifacts:read-binary` is GUARDED on BOTH platforms** (`read-binary-access.ts`, Kotlin `EditablePathPolicy.kt`): project roots + tracked externals only; secret dirs refused even inside roots; 50MB gate. Viewers use it, never `fetch('file://…')`.
-- **`artifacts:get`/`save` enforce the D5 write boundary in MAIN and Kotlin** (ONE fixture, SYMLINK-RESOLVED): `.git`/`.youcoded`/credentials never writable; `.claude` + `.env*` need `confirmed`; the renderer only MIRRORS it. Save carries `baseMtimeMs`.
+- **`artifacts:read-binary` is GUARDED** (`read-binary-access.ts`): project roots + tracked externals only; secret dirs refused even inside roots; 50MB gate. Viewers use it, never `fetch('file://…')`.
+- **`artifacts:get`/`save` enforce the D5 write boundary in MAIN** (ONE fixture, SYMLINK-RESOLVED): `.git`/`.youcoded`/credentials never writable; `.claude` + `.env*` need `confirmed`; the renderer only MIRRORS it. Save carries `baseMtimeMs`.
 - **All binary viewers go through the `BinaryContent` shell**; `ViewerErrorBoundary` wraps the render. xlsx = **ExcelJS, not SheetJS**.
 
 ## UI invariants
@@ -91,4 +89,4 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **Drawer state is per-session keyed by `sessionId`**, labels SESSION-scoped; layout-level. Status glyphs (`●◐○`) BANNED. `.youcoded/` auto-gitignored.
 - **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — deliberate** (a tombstone, not a recovery path). Cross-device-SYNCED — don't delete the "unused" flag.
 - **`EXCLUDE` has NO renderer caller** (legacy round-trip only); in-folder files can't be excluded.
-- **Android `get`/`save`/`read-binary` are REAL (SessionService.kt), NOT stubs — mirror any new desktop guard in Kotlin.** List/list-folder/project/import-file/search-content/watch-project return `not-implemented-on-mobile`; `check-existence` stubs "nothing missing"; `project:*` is desktop-only.
+- **The Android app runs this same backend** (clean rebuild, 2026-10-14): no Kotlin mirror to keep in step.
