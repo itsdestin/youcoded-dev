@@ -1,0 +1,75 @@
+{
+  "title": "Notifications — the bell (round 1, design C)",
+  "key": "gt-r1-notifications.live",
+  "out": "gt-r1-notifications.live.html",
+  "live": {
+    "worktree": "sessions/gt-r1-notifications/youcoded"
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Notifications (new)",
+      "path": "Top bar → bell",
+      "headline": "Notifications: the bell and its popup of what happened while you were away.",
+      "hint": "Click the bell at the right of the top bar. Try Mark as read on a row and Mark all as read. Make the window narrow to see it move into the ☰ menu.",
+      "notice": "Builder's main guide gaps: no rule for a \"something new\" marker (its green dot looks like Games' online dot); \"row buttons only on hover\" contradicts an existing screen; nothing on where new top-bar buttons go.",
+      "risk": "Clicking an item only marks it read and closes.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-2",
+      "surface": "Notifications (new)",
+      "path": "Top bar → bell, nothing new",
+      "headline": "Notifications when everything is read.",
+      "hint": "Click the bell.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "notifications": "all-read"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-3",
+      "surface": "Notifications (new)",
+      "path": "Top bar → bell, never had any",
+      "headline": "Notifications before there has ever been one.",
+      "hint": "Click the bell.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "notifications": "empty"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-4",
+      "surface": "Notifications (new)",
+      "path": "Top bar → bell, couldn't load",
+      "headline": "Notifications when the list couldn't load.",
+      "hint": "Click the bell.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "fail": "notifications.list"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}
