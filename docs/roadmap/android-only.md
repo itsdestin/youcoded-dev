@@ -16,5 +16,7 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       fixes that we know we will rebuild later." P1–P3 merged 2026-10-15 (the backend runs on the
       phone, the Kotlin shell, the bundled programs). Next: P4, "not on this device" for desktop-only
       features (the sign-in screen still offers local models and says "this computer"), then P5
-      phone-native features and the P6 Play listing.
+      phone-native features and the P6 Play listing. Before giving the app to anyone: Destin's company
+      must have accepted Anthropic's Commercial Terms (shipping Claude Code inside a product requires it;
+      code.claude.com/docs/en/legal-and-compliance), and the binary stays unmodified.
       `android` `in-flight` `P2` `checked 2026-10-15` → docs/active/plans/2026-10-14-android-clean-rebuild-plan.md

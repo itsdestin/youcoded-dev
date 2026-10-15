@@ -88,7 +88,7 @@ seen-on is always n/a here.
       review rig (report: docs/active/investigations/2026-09-01-terminal-pty-column-count.md)
       `n/a` `confirmed` `P3` `checked 2026-09-02`
 
-- [ ] Workspace tooling friction: 7 things.
+- [ ] Workspace tooling friction: 8 things.
       (a) wanted: one-off scans with Fallow and React Doctor before anything is added; Destin: "optimize
       tf out of our workspace"; (b) the CI-red-vs-master script lists Windows-only failures as "NEW" on a
       Linux job; (c) a 526-line conversation-triage script sits on `chore/conversation-triage-script`:
@@ -96,8 +96,13 @@ seen-on is always n/a here.
       residue in the shared checkout; (e) the app's log is in Claude Code's folder, nobody finds it, and
       it keeps only 500 lines; (f) the harness evaluator has no CI gate and hand-written eval cases;
       (g) nothing refuses a commit that still holds merge-conflict markers: one landed in docs/wrap-ups.md
-      on 2026-10-07 (abdcb153) after a failed resolve script; the commit hooks could refuse `<<<<<<<` lines
-      `n/a` `confirmed` `P3` `checked 2026-10-07`
+      on 2026-10-07 (abdcb153) after a failed resolve script; the commit hooks could refuse `<<<<<<<` lines;
+      (h) workspace-start says "delete it and run npm ci" for a far-behind `node_modules`, but glob-guard
+      guard 8 refuses `npm ci` for any session whose cwd is under /worktrees/ — even after the hardlinks are
+      deleted, and even in a scratch folder; the working path (npm ci in a scratch copy of package*.json with
+      the shell outside /worktrees/, move node_modules in, run the postinstall patch scripts) took 6 calls on
+      2026-10-14. Wanted: a `fill-missing-deps.mjs --fresh` that does it, named in the message
+      `n/a` `confirmed` `P3` `checked 2026-10-15`
 
 - [ ] The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has
       never run end to end on a real feature. The first small UI feature Destin asks for is the trial;
