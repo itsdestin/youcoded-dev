@@ -13,5 +13,8 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       the old Kotlin app is deleted rather than migrated, and the newest Claude Code replaces the
       frozen 2.1.112. A0 phone experiments passed inside a real app sandbox on 2026-10-14.
       Destin 2026-10-14: "nobody is using the app rn … i don't want to build any intermediate
-      fixes that we know we will rebuild later." Next: P1, the headless backend (desktop code).
-      `android` `in-flight` `P2` `checked 2026-10-14` → docs/active/plans/2026-10-14-android-clean-rebuild-plan.md
+      fixes that we know we will rebuild later." P1–P3 merged 2026-10-15 (the backend runs on the
+      phone, the Kotlin shell, the bundled programs). Next: P4, "not on this device" for desktop-only
+      features (the sign-in screen still offers local models and says "this computer"), then P5
+      phone-native features and the P6 Play listing.
+      `android` `in-flight` `P2` `checked 2026-10-15` → docs/active/plans/2026-10-14-android-clean-rebuild-plan.md

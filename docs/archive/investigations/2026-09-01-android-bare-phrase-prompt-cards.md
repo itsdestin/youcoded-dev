@@ -1,17 +1,19 @@
 ---
 date: 2026-09-01
-status: active
+status: closed
 type: investigation
 topic: Android ManagedSession bare-phrase screen scans can false-fire prompt cards
 ---
+> **Closed 2026-10-15:** the Kotlin code this describes was deleted by the Android clean rebuild (the phone runs the desktop backend); see `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`.
+
 
 > **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 21 in the
-> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> appendix of `docs/archive/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
 > part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
 
 # Android bare-phrase screen scans false-fire prompt cards
 
-> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/active/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
+> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/archive/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
 
 **Symptom.** On Android, Claude's ordinary reply text can pop a phantom prompt card — the
 paste-your-sign-in-code card, or the Continue / "Ready" card — when the reply merely contains

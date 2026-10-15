@@ -2,7 +2,7 @@
 date: 2026-10-14
 status: active
 type: plan
-supersedes: docs/active/plans/2026-09-24-android-rebuild-plan.md
+supersedes: docs/archive/plans/2026-09-24-android-rebuild-plan.md
 topic: Android clean rebuild — the phone runs the desktop's own backend as a headless Node server inside the app; the Kotlin layer is rewritten small; no migration, no existing users
 ---
 

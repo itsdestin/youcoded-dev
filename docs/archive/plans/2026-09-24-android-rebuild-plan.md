@@ -13,7 +13,7 @@ topic: Android rebuild — the phone runs the same assistant core and socket doo
 > **Status.** The plan of record for the Android rebuild (written 2026-09-24). **Entry
 > point:** `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`, which has the one ordered
 > list of every phase, remote and Android together. Decisions already made are recorded in
-> `docs/active/investigations/2026-09-10-android-parity-audit.md` §8 (still the record of
+> `docs/archive/investigations/2026-09-10-android-parity-audit.md` §8 (still the record of
 > findings and the bug appendix). This plan replaces the audit's §7 step list and the
 > 2026-09-10 Android handoff (archived). It depends on R1–R5 of
 > `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md`. The decisions table at the end
