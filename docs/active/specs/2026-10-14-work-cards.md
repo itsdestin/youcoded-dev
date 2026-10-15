@@ -41,6 +41,22 @@ isn't this done" because these facts are recorded nowhere.
 | S-1 | Copy ideas from Beads / Spec Kit / Claude agent teams; adopt none of the tools |
 | Q-13 | **Not yet agreed** — Destin was confused by "one card = one session = one branch = one merge". Show the worked example |
 
+## What the management page needs from every card (decided 2026-10-14)
+
+Destin approved the Today tab built from these facts (branch `session/management-surface-20261012`,
+`docs/active/design/2026-10-12-management-surface/today_tab.py`; decks `today-review.questions`,
+`today-rebuild*.review` with their answers). A card must record or let the page derive:
+
+| Fact | Values | Notes |
+|---|---|---|
+| **Stage** | Planning · Agentic buildout · Human polish & review · Merged | Destin's four words. No "ready to merge" stage: "something ready to merge should just be merged when ready". Merged is set automatically when the branch merges |
+| **Problem markers** | Checks failing · Not backed up · Paused (with reason) · Working (a chat running now) | Separate from the stage; any stage can carry them. "Not backed up" = its copy has changes not committed or not pushed. "Working" only from a live signal, never guessed |
+| **Chats** | every conversation that worked on it, with date, and a one-line result when one was written | Several chats per card, in turn or at once. Shown as a list under "View chats", with "Start another chat on this card" |
+| **Next step** | derived: Unpause · Go to chat · Fix failing checks · Merge to master · Open review deck · Resume latest chat | The page's filled button; its hover says why |
+| **Pause / Close** | Pause = mark paused with a reason, nothing else changes. Close = back up unsaved changes, close its pull request, remove its copy, mark closed; branch stays on GitHub | The only two stopping actions |
+
+Copy rule from the same answers: plain words, but keep real terms when clearest ("Merge to master").
+
 ## Worked example to confirm with him first
 
 Destin says "add project skills". A file `cards/142-project-skills.md` appears with the finish line
