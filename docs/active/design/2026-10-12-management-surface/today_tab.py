@@ -35,7 +35,64 @@ STATES = {
     'paused':   ('Paused',          '',       'Unpause',            'Stopped on purpose; the reason is on the row.', 'rest',
                  'Clears the pause, so it shows as active again. Nothing else changes.'),
 }
-ORDER = ['failing', 'review', 'ready', 'working', 'nofinish', 'idle', 'paused']  # urgency, when two apply (Q-1)
+ORDER = ['failing', 'review', 'ready', 'working', 'nofinish', 'idle', 'paused']  # superseded by STAGES below; kept for the old card 'state' tags
+
+# WHY four stages (Destin, 2026-10-14, after today-rebuild-2: "planning, agentic buildout, human polish & review,
+# merged. … 'ready to merge' is a wasted state. something ready to merge should just be merged when ready. your
+# turn marker is wasted space … fine with problems as separate marker"): the label is WHERE the work is in its
+# life, the same four steps for everything; a problem is a separate marker beside it; the filled button is the
+# next step (next_step below), and its hover says why.
+STAGES = {
+    'planning': ('Planning', 'Deciding what to build: questions, plans and designs. Nothing built yet.'),
+    'build':    ('Agentic buildout', 'Chats are building it.'),
+    'polish':   ('Human polish & review', 'Built; now you review it, ask for polish, and merge it when it is right.'),
+    'merged':   ('Merged', 'In master. It ships with the next release.'),
+}
+STAGE_OF = {
+    'plugin-project-controls': 'polish', 'sync-safety-audit-20260908': 'polish', 'sync-retry-feedback': 'build',
+    'ui-consistency-audit': 'polish', 'management-surface-20261012': 'polish', 'dev-xray-tools': 'polish',
+    'fix-permission-approve-flake': 'build', 'usage-visibility-20260929': 'polish', 'specialists-plans': 'build',
+    'theme-plugin-update': 'build', 'offline-auth-bypass': 'planning', 'agent-lint-tooling': 'build',
+    'files-drawer-honesty': 'polish', 'model-picker-tags': 'polish', 'permission-ask-timeout': 'build',
+    'ask-claude-reference-ux': 'build', 'onedrive-no-auto-download': 'build',
+}
+FAILING = {'sync-retry-feedback', 'onedrive-no-auto-download'}   # checks fail on its pull request
+DECK = {'plugin-project-controls'}                               # a review deck waits for your answers
+MERGEABLE = {'sync-safety-audit-20260908'}                       # reviewed, checks pass: just merge it
+
+
+def next_step(c):
+    """The filled button: the next step, and why it is this one (shown on hover)."""
+    if c.get('paused'):
+        return 'Unpause', 'Paused on purpose. Unpause clears the pause, so it shows as active again; nothing else changes.'
+    if c['state'] == 'working':
+        return 'Go to chat', 'A chat is working on it now. Switches to that conversation.'
+    if c['id'] in FAILING:
+        return 'Fix failing checks', 'Its checks fail. Starts a chat on its branch with the failing checks\' output, to fix them.'
+    if c['id'] in MERGEABLE:
+        return 'Merge to master', 'Reviewed and its checks pass. Merges its pull request into master, then deletes the branch.'
+    if c['id'] in DECK:
+        return 'Open review deck', 'Its review deck waits for your answers. Opens it, where you approve or reject each screen.'
+    return 'Resume latest chat', 'Reopens its most recent conversation where it left off.'
+
+
+def stage_pill(c):
+    w, why = STAGES[c['stage']]
+    return f'<span class="spill stage" data-tip="{E(w)}: {E(why)}">{E(w)}</span>'
+
+
+def markers(c):
+    """Problems, beside the stage: a separate marker each (any stage can have them)."""
+    m = []
+    if c['id'] in FAILING:
+        m.append('<span class="spill danger" data-tip="Its automatic checks fail, so it cannot be merged until they are fixed.">Checks failing</span>')
+    if c.get('unsaved'):
+        m.append(NOT_BACKED)
+    if c.get('paused'):
+        m.append('<span class="spill" data-tip="Stopped on purpose; the line under the name says why.">Paused</span>')
+    if c['state'] == 'working':
+        m.append('<span class="spill info" data-tip="A chat is working on it now. (On this mockup: a chat worked on it in the last 24 hours.)"><span class="dot" aria-hidden="true"></span>Working</span>')
+    return ''.join(m)
 
 # One card per piece of work. Facts from build.py's EFFORTS (Oct 12 snapshot); chats are the separate
 # copies of the work found for it, with a result only where a note or pull request records one.
@@ -168,10 +225,11 @@ def body(c, pic):
     return ''.join(h)
 
 
-def row(c, pic):
-    w, tone, main, why, _, does = STATES[c['state']]
-    nxt = ('Paused because: ' + c['paused']) if c['state'] == 'paused' else ('Next: ' + c['next'] if c['state'] in ('review',) else c['next'])
-    return (f'<div class="row crow" data-card="{E(c["id"])}"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">{E(c["title"])}</span>{pill(c["state"])}{NOT_BACKED if c.get("unsaved") else ""}</div>'
+def row(c, pic, show_stage=False):
+    # WHY show_stage is off inside a stage's own section: the heading already says it (guide: show a state only once)
+    main, does = next_step(c)
+    nxt = ('Paused because: ' + c['paused']) if c.get('paused') else c['next']
+    return (f'<div class="row crow" data-card="{E(c["id"])}"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">{E(c["title"])}</span>{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
             f'<div class="t-xs dim cnext">{E(nxt)}</div></div>'
             f'<div class="acts">{menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this row, its progress, every conversation that worked on it, and its screens.">View chats</button>'
             f'<button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></div>'
@@ -184,33 +242,35 @@ def render(efforts, dev_only, leftovers, suggest, pic, T, sechead, fold):
     eidx = {e['id']: i for i, e in enumerate(efforts)}
     for c in CARDS:
         e = efforts[eidx[c['id']]]
-        c['screens'] = e['screens']; c['eidx'] = eidx[c['id']]
+        c['screens'] = e['screens']; c['eidx'] = eidx[c['id']]; c['stage'] = STAGE_OF[c['id']]
     hero_id = 'plugin-project-controls'
     hero = next(c for c in CARDS if c['id'] == hero_id)
     out = []
     # ---- Start here: the top card drawn large, same label and buttons as its row (Q-7)
     S = suggest
-    w, tone, main, why, _, does = STATES[hero['state']]
+    main, does = next_step(hero)
     out.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
-<div class="herobody"><div class="herotext"><div class="ctl"><span class="t-lg">{E(hero['title'])}</span>{pill(hero['state'])}{NOT_BACKED if hero.get('unsaved') else ''}</div><p class="t-sm dim">{E(S['why'])}</p>
+<div class="herobody"><div class="herotext"><div class="ctl"><span class="t-lg">{E(hero['title'])}</span>{stage_pill(hero)}{markers(hero)}</div><p class="t-sm dim">{E(S['why'])}</p>
 <div class="cchips">{chips(hero)}</div></div>{pic(['projects', 'marketplace'])}</div>
 <div class="acts heroacts">{menu()}<button class="btn sm" data-does data-tip="Shows its progress and every conversation that worked on it (the same list as its row's View chats).">View chats</button><button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div>
 <div class="herofolds"><details class="fold"><summary class="foldrow" data-tip="{T('today.why')}"><span class="t-xs">Why this one</span><span class="chev">›</span></summary>
 <div class="two"><div><div class="eyebrow">How it connects</div><ul class="t-xs">{''.join(f'<li>{E(x)}</li>' for x in S['connects'])}</ul></div>
 <div><div class="eyebrow">What should be adjustable</div><ul class="t-xs">{''.join(f'<li>{E(x)}</li>' for x in S['config'])}</ul></div></div></details></div></section>''')
     hero['suggested'] = True
-    groups = {'needs': [], 'working': [], 'rest': []}
-    for c in sorted(CARDS, key=lambda c: (ORDER.index(c['state']), c['days'])):
-        groups[STATES[c['state']][4]].append(c)
-    # ---- Needs you (Q-5): needs your look, checks failing, ready to merge
-    out.append('<section class="sec">' + sechead('Needs you', len(groups['needs']), 'Only you can decide these. The label on each row decides its main button.', 'today.needs', 'today.needs.count'))
-    out += [row(c, pic) for c in groups['needs']]
+    # WHY sections are the stages (Destin's four labels): your stage first, then the chats', then planning;
+    # paused work is folded apart with its reason. Newest first inside each.
+    by = {k: [c for c in sorted(CARDS, key=lambda c: c['days']) if c['stage'] == k and not c.get('paused')] for k in STAGES}
+    paused = [c for c in CARDS if c.get('paused')]
+    out.append('<section class="sec">' + sechead('Human polish & review', len(by['polish']), 'Built, and waiting on you: review it, ask for polish, or merge it. The filled button is the next step.', 'today.needs', 'today.needs.count'))
+    out += [row(c, pic) for c in by['polish']]
     out.append('</section>')
-    out.append('<section class="sec">' + sechead('Being worked on', len(groups['working']), 'A chat worked on these in the last 24 hours.', 'today.inprog', 'today.inprog.count'))
-    out += [row(c, pic) for c in groups['working']]
+    out.append('<section class="sec">' + sechead('Agentic buildout', len(by['build']), 'Chats are building these. A red marker means something needs fixing.', 'today.inprog', 'today.inprog.count'))
+    out += [row(c, pic) for c in by['build']]
     out.append('</section>')
-    out.append(fold('Everything else', len(groups['rest']), 'No finish line, idle, or paused. Paused work is last, with its reason.',
-                    '<div class="cstack">' + ''.join(row(c, pic) for c in groups['rest']) + '</div>', 'today.waiting', 'today.waiting.count'))
+    out.append(fold('Planning', len(by['planning']), 'Being decided: questions, plans and designs. Nothing built yet.',
+                    '<div class="cstack">' + ''.join(row(c, pic) for c in by['planning']) + '</div>', 'today.planning', 'today.planning.count'))
+    out.append(fold('Paused', len(paused), 'Stopped on purpose, each with its reason.',
+                    '<div class="cstack">' + ''.join(row(c, pic, show_stage=True) for c in paused) + '</div>', 'today.paused', 'today.paused.count'))
     # ---- Tidy up (Q-5): housekeeping that never changes the app
     nocard = [w for w in leftovers['worktrees'] if not any(w.startswith(c['id']) for c in CARDS)]
     nocard = [w for w in nocard if not w.startswith('specialists-plans')]
@@ -254,6 +314,7 @@ CSS = '''
 .hero .cchips{margin-top:8px}
 .spill.danger{background:color-mix(in srgb,var(--status-error) 15%,transparent);border-color:color-mix(in srgb,var(--status-error) 30%,transparent)}
 .spill.info .dot{background:var(--accent)}
+.spill.stage{background:var(--panel);border-color:var(--edge-strong);color:var(--fg)}  /* the stage: neutral, a step stronger than the markers' tint */
 /* the ⋯ menu: the app's shared Menu, hanging under its button */
 .mwrap{position:relative;display:inline-flex}
 .mhint{font-size:11px;color:var(--fg-muted);line-height:1.35}
