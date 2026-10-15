@@ -330,3 +330,5 @@ Deck `vocab-chips-2` (2026-10-14) — answers:
 | Quick chips | **Tag-shaped chips** — and "the spacing on the right side of these looks odd. and the add surface is still odd compared to tags/voice": the pencil now always shows (no hidden gap), and adding is an "Add a chip" box (Enter opens the add page with the name filled), the how-to line under it like Voice's. | Today; hint moved only. | `vocab-chips-2#D-3` |
 
 Deck `vocab-chips-3` (2026-10-14): both built editors approved as built (`#B-1` Voice vocabulary, `#B-2` Quick chips).
+
+Deck `browser-fit-1` (2026-10-15), the Browser screens new on master: `#N-2` (download progress and the two confirm popups) and `#N-3` (Browser panel and hand-off card) approved as built. `#N-1` (the Browser settings) — "where is this settings panel? it should probably be hidden under assistant settings i think": the Browser row leaves Settings and its settings become the last page of Assistant settings (computer only), shown on `browser-fit-2`.

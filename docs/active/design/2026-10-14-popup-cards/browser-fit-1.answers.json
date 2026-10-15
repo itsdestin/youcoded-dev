@@ -1,0 +1,30 @@
+{
+ "deck": "browser-fit-1",
+ "started": "2026-10-15T01:05:50.146Z",
+ "submitted": "2026-10-15T01:07:27Z",
+ "cur": 2,
+ "answers": {
+  "N-1": {
+   "note": "where is this settings panel? it should probably be hidden under assistant settings i think",
+   "t": 1792026426443,
+   "v": "other",
+   "seconds": 76,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N-2": {
+   "v": "yes",
+   "t": 1792026434015,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N-3": {
+   "v": "yes",
+   "t": 1792026446373,
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
