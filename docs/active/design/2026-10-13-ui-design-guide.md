@@ -92,8 +92,12 @@ A job none of these does needs a new shared piece and Destin's look for it — n
    keeps it together; never split one idea into separate boxes.
 6. **Actions live on the right — or span the full width**, with one filled button per view (see
    Buttons). A filled button, switch or selection never sits alone at the bottom-left — only when
-   balanced by something on the right of the same line.
-7. **Tight, even spacing** from one scale (below).
+   balanced by something on the right of the same line. **Every control sits flush left, flush right
+   or full width** — never floating mid-row (a New/Used switch in the middle of a part row,
+   gt-r1#D-1).
+7. **Tight, even spacing** from one scale (below), and **no dead space**: a row is as tall as what is
+   in it, a label sits on its row, not above a gap (gt-r1#D-1: "we should always optimize to reduce
+   dead space").
 8. **Every theme, every width.** Check light, a dark theme, a wallpaper theme and 390px phone width
    before showing anyone.
 
@@ -112,6 +116,15 @@ A job none of these does needs a new shared piece and Destin's look for it — n
   description under it, never beside it), its tools right. Every tab of a screen opens with the same
   heading row (the Projects view's tabs). Lists scroll under a see-through fade at both edges, tall
   enough to fade a whole card edge.
+- **Where something new opens from** (gt-r1#C-1): a **top-bar button opens a side panel or a full
+  screen**, never a popup. **A popup over the chat opens only from Settings or a status-bar chip.** So a
+  new feature is one of: a Settings row (opening a popup), a status-bar chip (a menu or popup), or a
+  top-bar button (a side panel, or a full screen with the band).
+- **When a whole screen cannot load** (nothing on it to show), the screen shows **the full-screen error**
+  (`ScreenError`), centred across the screen a little below its top — never only the small notice box at the top of
+  an empty screen (gt-r1#B-3). One plain sentence saying what couldn't load, Try again filled and full
+  width, the raw message under Details. A screen that loaded but has one failing part keeps the normal
+  rule (Status and notices: the notice replaces that part).
 - Known deviation: **at phone width the band shows no title** — the lit Pages or Projects button says
   where you are, and pinned pages hide (they stay in Pages).
 
@@ -203,6 +216,11 @@ Every small label is plain (final-review#ST-21).
   effect — "downloads YouCoded's code (about 1 GB, the first time)", "opens a new conversation" —
   never by its mechanism ("a working copy", "set up a development workspace"). Size and time come with
   any download.
+- **Never light text directly beside bold text on one line** ("Graphics card · GeForce RTX…"): a
+  secondary label goes **above or below** the main text, or after it in a separate column — the name
+  leads (gt-r1#D-1).
+- **No bare number to the right of a right-aligned control.** A value belongs to its row's text column
+  or sits left of the control; the control is the last thing on the line (gt-r1#D-1).
 - **A button names what it does.** "Keep editing", not "OK", which could read as "OK, quit"
   (close-session-6#CS6-4).
 - **Every retry button reads exactly "Try again"** — no "Retry", no "Try again now", no "Try installing
@@ -235,7 +253,11 @@ Every small label is plain (final-review#ST-21).
   pushed to the right under the text.
 - Shape follows the theme's control roundness (built-in themes: Round, 14px).
 - **Main action:** filled — and only when there is one; a card of settings may have no filled button
-  at all. **An action that only opens more** ("See full history", "Manage…") is outlined.
+  at all. **But a row of buttons that ends a step always has one filled** — the next thing most people
+  do (Done, after an import) — never two equal outlined buttons with nothing filled (gt-r1#E-2). A
+  notice's own Try again doesn't count: it is the notice's main action, not the step's.
+- **While something runs, its Stop is the main action**: filled in the theme colour, or red when
+  stopping throws work away — never outlined (gt-r1#E-1). **An action that only opens more** ("See full history", "Manage…") is outlined.
   **Everything less important beside it** (Cancel, Preview, Not now, Dismiss):
   **outlined** with the full-strength outline, never bare text.
 - **One button:** any lone button is full width, unless it fits on one line beside its text — then it
@@ -448,6 +470,11 @@ box for its opened list.
   Marketplace) use the **shared small menu** (`Menu`): it hangs under its trigger, closes on a click
   outside or Escape, and works with the arrow keys. Never a hand-made popover. A list's manage action
   is its last row ("Manage models…").
+- **The same kind of item always has the same box**, whatever its state: new and already-read
+  notifications are both boxed rows (or both plain rows) — a state is shown by a pill, a dot or its
+  group, never by giving some items a box and others none (gt-r1#C-1).
+- **An action at the foot of a pick list** ("Add another option…", "Manage models…") is separated from
+  the choices by the tapered line, so it never reads as one of them (gt-r1#D-1).
 - A list that can grow long shows a fixed number of rows (the sessions menu shows about 6½, so the cut
   row says "there is more") and fades see-through at the edge that has more.
 
@@ -481,9 +508,14 @@ box for its opened list.
   the notice box takes the buttons' place — **one plain sentence saying what happened and what still
   holds** ("Your draft is still here"), and its own buttons inside it (the way back outlined, Try again
   filled at the right). What the user wrote stays as it was. **Machine words** (an installer's or a
-  server's raw message) go only under a **Details** fold inside the box, never in the sentence
+  server's raw message) go only under a **Details** fold inside the box, never in the sentence; **when
+  the box has a Details fold, its buttons sit below the fold**, at the right of their own line —
+  sentence, Details, buttons (gt-r1#E-2, #E-3; `Callout` does this)
   (decisions "Contribute: conversation won't open", "Failed install on a detail page"). Reference:
   Submit a ticket's failed send; Contribute's failed download.
+- **A wrong input that trying again can't fix** (a file that isn't the right kind) offers the way to
+  fix it ("Choose another file") as the notice's filled button instead of Try again (gt-r1 import
+  builder; Destin did not object).
 - **"No internet" only when the computer reports no network** (amber); otherwise say the server could
   not be reached (red). Never guess the cause (`docs/error-message-standards.md`).
 - **When an action finishes, keep its subject.** The card the action was about stays on screen, tagged
@@ -502,7 +534,8 @@ box for its opened list.
   line of normal grey text in a small red-tinted box with a red border. Never red text.
 - **An error with a button is built with `ErrorState`** (`components/ui/states.tsx`) — it draws this
   notice box (red tint, red border) with its buttons inside at the right; never hand-draw one. **Every
-  error box has something to press**: Try again where trying again can help, Report bug where it can't;
+  error box has something to press**: Try again where trying again can help, the fix itself where the
+  input was wrong ("Choose another file"), Report bug where nothing is known;
   the first of them is filled, the rest outlined (`ErrorState` does this). **Which shape:** when you
   can say what went wrong ("Usage couldn't be loaded — the server didn't answer"), one plain sentence
   and Try again, no title; only when nothing is known is it a "we don't know why" error, which keeps a
@@ -543,6 +576,11 @@ Reference: the first-run screens (`components/FirstRunView.tsx`, `components/fir
 Pages use the page kit's classes (`.yc-button`, `.yc-card`, `.yc-title`, `.yc-muted`…), which carry
 these recipes; theme colour and shape reach the page automatically, and the kit's slider has the shared
 slider's look. Follow this guide where a class leaves a choice open, and never restyle a kit class.
+- **Never the browser's own dropdown.** A bare `<select>` opens the browser's white list, which no theme
+  reaches (gt-r1 purchases, Destin: "these bare native browser dropdowns"). Use the kit's dropdown
+  (`.yc-menu`, see `page-kit.ts`), which opens the app's own menu look.
+- A Page is held to the same recipes as the app: labels, card levels, buttons, status words. Where an
+  existing sample Page disagrees with this guide, the guide wins — the samples are not reviewed.
 
 ## Parts of the app documented as they are today
 
