@@ -5,7 +5,7 @@ message: >-
   In remote-server.ts, the http.createServer((req, res) => { … }) handler must
   try the download route — this.downloads.handleHttpRequest(req, res) — BEFORE
   the static handler (this.handleHttpRequest(req, res, staticDir)) and the Vite
-  proxy (this.proxyToVite(req, res, viteDevUrl)). Otherwise the SPA fallback
+  proxy (proxyHttpToVite(req, res, viteDevUrl)). Otherwise the SPA fallback
   answers an expired download link with index.html and a 200, and in dev the
   proxy hands it to Vite (remote access batch 3, §10).
 note: |
@@ -46,7 +46,7 @@ utils:
   static-call:
     pattern: "this.handleHttpRequest(req, res, staticDir)"
   proxy-call:
-    pattern: "this.proxyToVite(req, res, viteDevUrl)"
+    pattern: "proxyHttpToVite(req, res, viteDevUrl)"
   route-or-holder:
     any:
       - matches: route-call
