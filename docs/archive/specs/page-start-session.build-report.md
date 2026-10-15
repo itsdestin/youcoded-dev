@@ -1,9 +1,9 @@
 ---
 date: 2026-10-14
-status: active
+status: shipped (youcoded#623 b58a0acae, 2026-10-14)
 type: build-report
 topic: Page start session — build report
-spec: docs/active/specs/2026-10-14-page-start-session-design.md
+spec: docs/archive/specs/2026-10-14-page-start-session-design.md
 app_branch: session/page-start-session (itsdestin/youcoded), commit 70b5e781b, pushed
 ---
 

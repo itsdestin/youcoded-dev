@@ -87,7 +87,8 @@ has passed ~8 items — graduate it to its own file.
       (record: docs/archive/handoffs/2026-10-05-home-page-state.md). Next: Phases 3–4 (model tasks, files, marketplace); later,
       chat-alongside visual editing and durable automation. 2026-10-08: the Money page (Plaid bank
       connection for pages, bills and subscription review) merged (youcoded#615), kept as Destin's
-      personal page, not for the marketplace.
+      personal page, not for the marketplace. 2026-10-14: a page can open the new-session window
+      with a message waiting (youcoded#623; spec docs/archive/specs/2026-10-14-page-start-session-design.md).
       Destin 2026-10-05 triage (roadmap-triage-2026-10-05#16): next phases postponed — "finsih in 1.3.2/1.3.3"
       `window-chrome` `all` `in-flight` `P2` `checked 2026-09-23` `v1.3.2` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
@@ -95,7 +96,8 @@ has passed ~8 items — graduate it to its own file.
       (a) The page-builder skill's connections update (plugin 0.2.0) is finished and held until an
       app release carries Pages Phase 2; merge it in the same step. It must also learn the home-device
       connection, the live connection, camera video and the see-through background (merged 2026-10-07)
-      before that release. (b) Home page (Home Assistant) follow-ups deferred at the 2026-10-07 merge,
+      before that release. The skill's startSession section (wecoded-marketplace branch
+      `session/page-skill-start-session`) is held until a release carries youcoded#623. (b) Home page (Home Assistant) follow-ups deferred at the 2026-10-07 merge,
       never designed: search across devices; selecting several devices at once in Edit; a scenes button
       on rooms with a single light; see-through glass for Framed-layout themes such as Golden Sunbreak
       ("i want it to peek through to the real theme background"; only Floating/Minimalist frost today).

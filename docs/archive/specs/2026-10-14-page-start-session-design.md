@@ -1,6 +1,6 @@
 ---
 date: 2026-10-14
-status: draft (rewritten after Destin's answers, page-start-session.questions.answers.json)
+status: shipped (youcoded#623 b58a0acae, 2026-10-14); rewritten after Destin's answers, page-start-session.questions.answers.json
 type: spec
 topic: YouCoded Pages — any page can open the normal new-session window with a message waiting
 origin: Frontier Lab redesign spec §6 ("Update now" button)
