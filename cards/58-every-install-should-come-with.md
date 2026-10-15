@@ -1,11 +1,11 @@
 ---
 id: 58
-title: **v1.3.1 release blocker.** Every install should come with a built-in project, "Your
-stage: explore
+title: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
+stage: planning
 priority: P1
-tags: native-harness, sessions, projects
+tags: native-harness, sessions, projects, release-blocker
 release: v1.3.1
-branch: 58-v1-3-1-release-blocker
+branch: 58-every-install-should-come-with
 roadmap: native-harness: **v1.3.1 release blocker.** Every install should come with a
 created: 2026-10-15
 ---

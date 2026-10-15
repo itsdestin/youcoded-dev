@@ -1,6 +1,6 @@
 ---
 id: 44
-title: Idea: bind the dedicated Copilot/AI key on Windows laptops (and others) to open and close the
+title: Idea: bind the dedicated Copilot/AI key on Windows laptops (and others) to open and close the games panel;…
 stage: explore
 priority: P3
 tags: games, arcade, desktop

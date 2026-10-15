@@ -1,6 +1,6 @@
 ---
 id: 111
-title: On Android the phone app may be slow while a reply streams, and phones get full glass blur by default with nothing tu…
+title: On Android the phone app may be slow while a reply streams, and phones get full glass blur by default with…
 stage: planning
 priority: P3
 tags: perf, android, performance

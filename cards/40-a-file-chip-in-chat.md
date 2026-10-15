@@ -1,6 +1,6 @@
 ---
 id: 40
-title: A file chip in chat for a file outside the project folder fails with "Couldn't open README.md — the file
+title: A file chip in chat for a file outside the project folder fails with "Couldn't open README.md — the file…
 stage: planning
 priority: P3
 tags: files, chat, desktop

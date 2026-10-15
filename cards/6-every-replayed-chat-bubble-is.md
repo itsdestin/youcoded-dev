@@ -1,6 +1,6 @@
 ---
 id: 6
-title: Every replayed chat bubble is stamped with the moment you opened the session, not when it was said, so
+title: Every replayed chat bubble is stamped with the moment you opened the session, not when it was said, so with…
 stage: explore
 priority: P3
 tags: chat-data, chat

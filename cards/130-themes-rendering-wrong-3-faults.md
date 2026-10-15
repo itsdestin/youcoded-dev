@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #51: Both are about theme preview pictures being unreliable (51b in the marketplace, 130a for themes you build yourself), and Destin asked to fix the whole class.
+
 Chats
 
 From the old roadmap (themes, status confirmed, seen on all, last checked 2026-09-01)

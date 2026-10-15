@@ -1,6 +1,6 @@
 ---
 id: 21
-title: Session-strip motion review: re-author as live pick-one steps. The four before/after clip steps
+title: Session-strip motion review: re-author as live pick-one steps
 stage: build
 priority: P3
 tags: dev-workspace, rigs
@@ -12,6 +12,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #103: Both are about the motion of the session strip when switching sessions: 21 redesigns how it is reviewed, 103 asks whether a cheaper-looking version is acceptable.
 
 Chats
 

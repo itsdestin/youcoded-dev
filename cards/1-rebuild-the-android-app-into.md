@@ -1,6 +1,6 @@
 ---
 id: 1
-title: Rebuild the Android app into a premium, complete mobile equivalent of desktop: the same
+title: Rebuild the Android app into a premium, complete mobile equivalent of desktop: the same built-in assistant,…
 stage: build
 priority: P2
 tags: android-only, android
@@ -14,6 +14,10 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #31: The Android rebuild in 1 aims at a Google Play listing; 31 is the Play account and store paperwork that listing needs.
+
+See also #112: 112's remaining item (a), Android joining the shared phone protocol, is phases A2 to A4 of the Android rebuild in 1.
 
 Chats
 

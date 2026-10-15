@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #1: 112's remaining item (a), Android joining the shared phone protocol, is phases A2 to A4 of the Android rebuild in 1.
+
 Chats
 
 From the old roadmap (remote-access › one-core, status confirmed, seen on remote, last checked 2026-09-11)

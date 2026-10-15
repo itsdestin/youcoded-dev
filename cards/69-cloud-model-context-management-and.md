@@ -1,6 +1,6 @@
 ---
 id: 69
-title: Cloud model context management and cache/token efficiency — one item so the fixes are
+title: Cloud model context management and cache and cost efficiency — one item so the fixes are specced together
 stage: planning
 priority: P2
 tags: native-harness, cost, desktop

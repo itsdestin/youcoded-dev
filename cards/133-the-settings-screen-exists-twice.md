@@ -1,12 +1,12 @@
 ---
 id: 133
-title: **v1.3.1 release blocker.** The settings screen exists twice, once for desktop and once for phone
+title: The settings screen exists twice, once for desktop and once for phone
 stage: planning
 priority: P1
-tags: user-interface, settings
+tags: user-interface, settings, release-blocker
 release: v1.3.1
 report: docs/active/plans/2026-09-16-simplification-phases.md
-branch: 133-v1-3-1-release-blocker
+branch: 133-the-settings-screen-exists-twice
 roadmap: user-interface: **v1.3.1 release blocker.** The settings screen exists twice
 created: 2026-10-15
 ---

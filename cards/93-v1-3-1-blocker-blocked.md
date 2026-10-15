@@ -1,6 +1,6 @@
 ---
 id: 93
-title: **v1.3.1 blocker, blocked on simplification phase 5:** leftover whole-file reads and memory waste
+title: v1.3.1 blocker, blocked on simplification phase 5: leftover whole-file reads and memory waste
 stage: planning
 priority: P1
 tags: perf, chat, desktop, performance

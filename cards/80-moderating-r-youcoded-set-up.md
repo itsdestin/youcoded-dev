@@ -1,6 +1,6 @@
 ---
 id: 80
-title: Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from new
+title: Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from new accounts,…
 stage: explore
 priority: P3
 tags: operations

@@ -1,6 +1,6 @@
 ---
 id: 82
-title: Free "Z13 tablet kit" as a marketing post: package Destin's ROG Flow Z13 setup so any Z13 owner
+title: Free "Z13 tablet kit" as a marketing post: package Destin's ROG Flow Z13 setup so any Z13 owner on…
 stage: explore
 priority: P3
 tags: operations

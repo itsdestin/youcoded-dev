@@ -1,6 +1,6 @@
 ---
 id: 78
-title: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing. Signed
+title: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
 stage: build
 priority: P1
 tags: operations

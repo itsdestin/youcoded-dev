@@ -1,6 +1,6 @@
 ---
 id: 105
-title: Themes may cost more graphics work than they should; all found by reading except the first real-GPU readings of 2026-…
+title: Themes may cost more graphics work than they should; all found by reading except the first real-GPU readings…
 stage: explore
 priority: P3
 tags: perf, themes-screen, performance

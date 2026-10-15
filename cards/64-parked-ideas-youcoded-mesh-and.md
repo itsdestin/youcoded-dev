@@ -5,6 +5,7 @@ stage: explore
 priority: P3
 tags: native-harness, sessions
 release: v1.4
+needs: 61
 branch: 64-parked-ideas-youcoded-mesh-and
 roadmap: native-harness: Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not
 created: 2026-10-15
@@ -12,7 +13,9 @@ created: 2026-10-15
 Progress
 Done: nothing recorded.
 Next: not decided.
-Blocked: nothing recorded.
+Blocked: waits on #61 — Mesh and Cloud decide where scheduled duties and automations run, so the automations themselves must exist first.
+
+See also #119: Reaching your computer through a YouCoded account without Tailscale (119) is part of the same long-term Mesh and Cloud idea as 64.
 
 Chats
 

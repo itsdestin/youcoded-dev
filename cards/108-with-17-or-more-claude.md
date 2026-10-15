@@ -1,6 +1,6 @@
 ---
 id: 108
-title: With 17 or more Claude Code sessions open, terminals fight over graphics. Every session builds a graphics-accelerated…
+title: With 17 or more Claude Code sessions open, terminals fight over graphics
 stage: planning
 priority: P3
 tags: perf, terminal, desktop, performance

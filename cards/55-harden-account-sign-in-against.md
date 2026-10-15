@@ -1,7 +1,7 @@
 ---
 id: 55
-title: Harden account sign-in against link-based account takeover. The GitHub device-flow can be
-stage: explore
+title: Harden account sign-in against link-based account takeover
+stage: planning
 priority: P2
 tags: marketplace, backend, security
 branch: 55-harden-account-sign-in-against

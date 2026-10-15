@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
+
 Chats
 
 From the old roadmap (claude-code-integration, status confirmed, seen on all, last checked 2026-09-16)

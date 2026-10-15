@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #137: 71's unreadable amber 'Needs you' label on pale themes is one instance of 137's fixed-amber warning text that vanishes on pale themes.
+
 Chats
 
 From the old roadmap (native-harness › specialists, status confirmed, seen on desktop, last checked 2026-09-05)

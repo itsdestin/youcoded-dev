@@ -1,6 +1,6 @@
 ---
 id: 107
-title: Windows, macOS and phone verification before release: the terminal speed brake was checked by reading only on Windows…
+title: Windows, macOS and phone verification before release: the terminal speed brake was checked by reading only on…
 stage: planning
 priority: P3
 tags: perf, performance
@@ -13,6 +13,8 @@ Progress
 Done: nothing recorded.
 Next: check it still happens.
 Blocked: nothing recorded.
+
+See also #104: Both note the hitch recorder does not exist on phones and remote browsers and was checked on Linux only.
 
 Chats
 

@@ -1,6 +1,6 @@
 ---
 id: 45
-title: Gemma models download with no licence notice, and Google's Gemma terms require passing their
+title: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
 stage: planning
 priority: P1
 tags: local-models, local-models-screen

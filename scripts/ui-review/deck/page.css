@@ -357,7 +357,7 @@ figcaption .key{color:var(--mark);font-weight:700}
 .what{font-size:clamp(15px,1.15vw,19px);font-weight:500;margin:0;line-height:1.35}
 .cards{display:grid;gap:10px} .row-below .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .col-right .cards{grid-template-columns:1fr} .compact .cards{grid-template-columns:1fr}
 .card{background:var(--inset);border:1px solid var(--edge);border-radius:var(--radius-md);padding:10px 12px} .card h3{margin:0 0 6px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);display:flex;align-items:center;gap:7px}
-.card h3 svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} .card p{margin:0;font-size:13px;color:var(--fg);line-height:1.45} .card .num{margin-top:6px;font-size:11px;color:var(--fg-dim)}
+.card h3 svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} .card p{margin:0;font-size:13px;color:var(--fg);line-height:1.45;white-space:pre-line} .card .num{margin-top:6px;font-size:11px;color:var(--fg-dim)}
 .card.risk{border-color:color-mix(in srgb, var(--mark) 45%, var(--edge))} .card.risk h3{color:var(--mark)}
 /* Fix (2026-08-27): a DECIDE step's buttons carry the option's own words, which are far longer
    than "Yes, build it" — at three options they overran each other and the labels collided. The
@@ -445,3 +445,5 @@ body[data-served="1"] .opendev{display:inline-flex}
 /* A frame whose picture could not be fetched — see the onerror in page.js for which of the
    two reasons it prints. Bordered so it reads as a message, not as a design with no content. */
 .frame.gone .pic{display:grid;place-items:center;min-height:120px;padding:16px;border:1px dashed var(--edge);border-radius:var(--radius-md);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}
+
+/* WHY pre-line on card text (2026-10-15): a field listing many items (the roadmap-move deck, one line per item) ran together into one wall; a line break the author wrote now shows. Ordinary prose has none, so it is unchanged. */

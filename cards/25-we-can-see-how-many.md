@@ -1,7 +1,7 @@
 ---
 id: 25
-title: We can see how many people open the app and nothing else. The daily ping carries a device,
-stage: planning
+title: We can see how many people open the app and nothing else
+stage: explore
 priority: P2
 tags: dev-workspace, knowledge
 branch: 25-we-can-see-how-many

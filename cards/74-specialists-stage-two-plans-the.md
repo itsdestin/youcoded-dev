@@ -1,6 +1,6 @@
 ---
 id: 74
-title: Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
+title: Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user approves a card, the…
 stage: explore
 priority: P2
 tags: native-harness, specialists, desktop

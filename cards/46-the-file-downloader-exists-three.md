@@ -1,6 +1,6 @@
 ---
 id: 46
-title: The file downloader exists three times (model files, engine, voice assets) and the checksum
+title: The file downloader exists three times (model files, engine, voice assets) and the checksum helper four…
 stage: planning
 priority: P1
 tags: local-models, desktop

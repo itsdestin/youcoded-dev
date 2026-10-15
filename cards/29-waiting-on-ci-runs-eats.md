@@ -1,6 +1,6 @@
 ---
 id: 29
-title: Waiting on CI runs eats whole sessions. Destin, 2026-09-20: "just fixing a few minor test
+title: Waiting on CI runs eats whole sessions
 stage: planning
 priority: P1
 tags: dev-workspace, release

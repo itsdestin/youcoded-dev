@@ -13,6 +13,10 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #97: Both ask for an automatic size limit on the app's main script, which has none today.
+
+See also #95: Both work from the same report on blocking calls in the app's main process: 14 sorts them in a test, 95 fixes the ones that freeze windows.
+
 Chats
 
 From the old roadmap (dev-workspace › tests, status confirmed, seen on n/a, last checked 2026-09-01)

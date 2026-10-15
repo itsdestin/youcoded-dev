@@ -1,6 +1,6 @@
 ---
 id: 54
-title: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets
+title: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
 stage: planning
 priority: P2
 tags: marketplace, backend, marketplace-screen

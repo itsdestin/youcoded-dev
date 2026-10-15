@@ -1,6 +1,6 @@
 ---
 id: 92
-title: A plain "Terminal" choice when starting a new session — a bare terminal as a YouCoded session,
+title: A plain "Terminal" choice when starting a new session — a bare terminal as a YouCoded session, no assistant…
 stage: build
 priority: P3
 tags: other-features, misc

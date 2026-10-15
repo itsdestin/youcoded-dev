@@ -1,6 +1,6 @@
 ---
 id: 73
-title: Helper (specialist) transcripts pile up in the sessions folder forever — no way to delete
+title: Helper (specialist) transcripts pile up in the sessions folder forever — no way to delete one, and closing…
 stage: planning
 priority: P2
 tags: native-harness, specialists, desktop

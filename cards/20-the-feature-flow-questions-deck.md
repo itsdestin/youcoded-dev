@@ -1,7 +1,7 @@
 ---
 id: 20
-title: The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has
-stage: build
+title: The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has never run end…
+stage: planning
 priority: P3
 tags: dev-workspace, rigs
 report: docs/active/plans/2026-09-01-feature-flow-plan.md

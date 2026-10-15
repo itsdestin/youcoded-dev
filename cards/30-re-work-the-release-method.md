@@ -1,6 +1,6 @@
 ---
 id: 30
-title: Re-work the release method: releases tag master directly, so each ships all ~3,200 commits since
+title: Re-work the release method: releases tag master directly, so each ships all ~3,200 commits since v1.2.4 and…
 stage: planning
 priority: P2
 tags: dev-workspace, release

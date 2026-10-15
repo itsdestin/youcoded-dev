@@ -1,11 +1,11 @@
 ---
 id: 65
-title: **v1.3.1 release blocker.** The assistant cannot search the WeCoded marketplace, so when it
+title: The assistant cannot search the WeCoded marketplace, so when it lacks a capability it reaches for a script or…
 stage: planning
 priority: P1
-tags: native-harness, tools, marketplace-screen, desktop
+tags: native-harness, tools, marketplace-screen, desktop, release-blocker
 release: v1.3.1
-branch: 65-v1-3-1-release-blocker
+branch: 65-the-assistant-cannot-search-the
 roadmap: native-harness: **v1.3.1 release blocker.** The assistant cannot search the
 created: 2026-10-15
 ---

@@ -4,6 +4,7 @@ title: Phone voice and mic: three gaps
 stage: planning
 priority: P3
 tags: remote-access, standalone, input-bar
+needs: 115
 branch: 117-phone-voice-and-mic-three
 roadmap: remote-access: Phone voice and mic: three gaps.
 created: 2026-10-15
@@ -11,7 +12,9 @@ created: 2026-10-15
 Progress
 Done: nothing recorded.
 Next: not decided.
-Blocked: nothing recorded.
+Blocked: waits on #115 — A phone browser can only use the microphone on an encrypted connection, which 115 builds.
+
+See also #115: 115's encrypted browser connection is exactly what would give a phone browser the microphone that 117(a) is missing.
 
 Chats
 

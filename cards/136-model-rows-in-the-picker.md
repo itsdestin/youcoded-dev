@@ -1,7 +1,7 @@
 ---
 id: 136
 title: Model rows in the picker carry no cost or intelligence tags, so choosing means knowing the names
-stage: planning
+stage: explore
 priority: P2
 tags: user-interface, model-picker
 release: v1.3.2

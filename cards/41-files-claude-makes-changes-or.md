@@ -1,6 +1,6 @@
 ---
 id: 41
-title: Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or
+title: Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or…
 stage: planning
 priority: P3
 tags: files, files-panel

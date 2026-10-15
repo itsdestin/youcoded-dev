@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #70: Both want the app's list of recommended models kept current instead of going stale (32a a scheduled check, 70b one maintained recommendation system).
+
 Chats
 
 From the old roadmap (dev-workspace › release, status confirmed, seen on n/a, last checked 2026-09-01)

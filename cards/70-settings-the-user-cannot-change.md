@@ -13,6 +13,10 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #32: Both want the app's list of recommended models kept current instead of going stale (32a a scheduled check, 70b one maintained recommendation system).
+
+See also #72: Both are about the fixed limits on how many helpers the assistant may use in a session.
+
 Chats
 
 From the old roadmap (native-harness › cost, status confirmed, seen on all, last checked 2026-09-05)

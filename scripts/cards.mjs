@@ -191,11 +191,20 @@ export function importRoadmap(root, today = new Date().toISOString().slice(0, 10
     if (have.has(ref)) continue;
     const tags = [e.area, e.section, e.surface, ['all', 'n/a'].includes(e.seenOn) ? null : e.seenOn, ...(e.flags || [])]
       .filter(Boolean).map(t => String(t).toLowerCase());
-    const title = e.firstLine.replace(/[.:]\s*$/, '').replace(/\s+/g, ' ').trim();
+    // WHY the first sentence, not the first line (2026-10-15): entries wrap mid-sentence, so the first line
+    // cut titles off ("…so the fixes are"); bold marks and the "vX release blocker." lead-in are stripped
+    // (the blocker becomes a tag, the release is kept in its own field).
+    const plain = e.symptom.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+    const blocker = /^v\d+(\.\d+)+ release blocker\.\s*/i.exec(plain);
+    const rest = blocker ? plain.slice(blocker[0].length) : plain;
+    const first = (rest.match(/^.*?[.!?](?=\s|$)/) || [rest])[0];
+    let title = first.replace(/[.:]\s*$/, '').trim();
+    if (title.length > 110) title = title.slice(0, 110).replace(/\s+\S*$/, '') + '…';
+    if (blocker) tags.push('release-blocker');
     const blocked = e.status === 'blocked' ? 'yes — the old roadmap marked it blocked; see below.' : 'nothing recorded.';
     const body = `Progress\nDone: nothing recorded.\nNext: ${e.status === 'needs-verify' ? 'check it still happens.' : 'not decided.'}\nBlocked: ${blocked}\n\nChats\n\n` +
       `From the old roadmap (${e.area}${e.section ? ' › ' + e.section : ''}, status ${e.status}, seen on ${e.seenOn}, last checked ${e.checked})\n${e.symptom}\n`;
-    const path_ = createCard(root, { title: title.length > 120 ? title.slice(0, 117).trimEnd() + '…' : title, stage: STAGE_FROM_STATUS[e.status] || 'explore',
+    const path_ = createCard(root, { title, stage: STAGE_FROM_STATUS[e.status] || 'explore',
       tags: tags.join(','), roadmap: ref, priority: e.priority, release: e.release, report: e.link, body }, today);
     written.push(path_); have.add(ref);
   }

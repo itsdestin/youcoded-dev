@@ -1,6 +1,6 @@
 ---
 id: 83
-title: Parked: landing copy note, recorded so it is not re-derived. Conversation tags, private notes
+title: Parked: landing copy note, recorded so it is not re-derived
 stage: explore
 priority: P3
 tags: operations

@@ -1,6 +1,6 @@
 ---
 id: 115
-title: Browser encryption (the optional second level) is an approved design with nothing behind it. Destin
+title: Browser encryption (the optional second level) is an approved design with nothing behind it
 stage: planning
 priority: P2
 tags: remote-access, standalone, remote
@@ -13,6 +13,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #117: 115's encrypted browser connection is exactly what would give a phone browser the microphone that 117(a) is missing.
 
 Chats
 

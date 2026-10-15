@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #127: 127's item (d), a dev copy of the app syncing the same Personal folder as the real app, is one of the dev-instance-touches-the-real-app faults listed in 17.
+
 Chats
 
 From the old roadmap (dev-workspace › rigs, status confirmed, seen on n/a, last checked 2026-09-05)

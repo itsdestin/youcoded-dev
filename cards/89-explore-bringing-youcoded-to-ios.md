@@ -1,6 +1,6 @@
 ---
 id: 89
-title: Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari pointed
+title: Explore bringing YouCoded to iOS
 stage: explore
 priority: P2
 tags: other-features, misc

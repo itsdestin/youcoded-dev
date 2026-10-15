@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #14: Both ask for an automatic size limit on the app's main script, which has none today.
+
 Chats
 
 From the old roadmap (perf, status confirmed, seen on all, last checked 2026-08-28)

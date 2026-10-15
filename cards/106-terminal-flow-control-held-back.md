@@ -1,6 +1,6 @@
 ---
 id: 106
-title: Terminal flow control (held-back program output), long-chat and other perf work from the 2026-10-04 review shipped 20…
+title: Terminal flow control (held-back program output), long-chat and other perf work from the 2026-10-04 review…
 stage: planning
 priority: P3
 tags: perf, terminal, desktop, performance

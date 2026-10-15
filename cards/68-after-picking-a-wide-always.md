@@ -1,12 +1,12 @@
 ---
 id: 68
-title: **v1.3.1 release blocker.** After picking a wide "Always allow" (any `npm run`, pushing to
+title: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
 stage: planning
 priority: P1
-tags: native-harness, permissions, tool-cards, desktop
+tags: native-harness, permissions, tool-cards, desktop, release-blocker
 release: v1.3.1
 report: docs/active/investigations/2026-09-01-permission-near-miss-silent.md
-branch: 68-v1-3-1-release-blocker
+branch: 68-after-picking-a-wide-always
 roadmap: native-harness: **v1.3.1 release blocker.** After picking a wide "Always all
 created: 2026-10-15
 ---

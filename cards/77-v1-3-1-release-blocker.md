@@ -1,6 +1,6 @@
 ---
 id: 77
-title: **v1.3.1 release blocker — native-only users need a YouCoded-owned skills home.** The only
+title: v1.3.1 release blocker — native-only users need a YouCoded-owned skills home
 stage: planning
 priority: P1
 tags: native-harness, skills-mcp
@@ -13,6 +13,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: yes — the old roadmap marked it blocked; see below.
+
+See also #75: Both decide where a project's skills live and which ones the assistant uses; Destin wants them done together.
 
 Chats
 

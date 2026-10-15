@@ -1,6 +1,6 @@
 ---
 id: 109
-title: Launch takes about 1.3 s and the single 3.19 MB main script costs roughly 0.31 s of it to evaluate. Settings, Marketp…
+title: Launch takes about 1.3 s and the single 3.19 MB main script costs roughly 0.31 s of it to evaluate
 stage: planning
 priority: P3
 tags: perf, window-chrome, desktop, performance

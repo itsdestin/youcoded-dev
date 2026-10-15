@@ -1,6 +1,6 @@
 ---
 id: 120
-title: The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that joins late m…
+title: The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that…
 stage: planning
 priority: P3
 tags: remote-access, standalone, remote, performance

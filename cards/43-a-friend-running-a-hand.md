@@ -1,6 +1,6 @@
 ---
 id: 43
-title: A friend running a hand-written client can post a forfeit "win" against you the moment you go
+title: A friend running a hand-written client can post a forfeit "win" against you the moment you go offline, and it…
 stage: planning
 priority: P3
 tags: games, security

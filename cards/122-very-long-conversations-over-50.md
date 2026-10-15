@@ -1,6 +1,6 @@
 ---
 id: 122
-title: Very long conversations (over 50 MB) stop updating on your other devices. The device that has them keeps
+title: Very long conversations (over 50 MB) stop updating on your other devices
 stage: explore
 priority: P2
 tags: sync, settings/sync

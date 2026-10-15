@@ -1,6 +1,6 @@
 ---
 id: 47
-title: The model list says whether a model FITS and nothing about whether it will be fast. Destin
+title: The model list says whether a model FITS and nothing about whether it will be fast
 stage: planning
 priority: P2
 tags: local-models, model-picker, performance

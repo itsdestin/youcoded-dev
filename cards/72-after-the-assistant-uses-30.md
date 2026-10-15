@@ -1,6 +1,6 @@
 ---
 id: 72
-title: After the assistant uses 30 specialists in one session, let the user approve just the next
+title: After the assistant uses 30 specialists in one session, let the user approve just the next helper or waive…
 stage: build
 priority: P3
 tags: native-harness, specialists, tool-cards, desktop
@@ -13,6 +13,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #70: Both are about the fixed limits on how many helpers the assistant may use in a session.
 
 Chats
 

@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #52: 52(a)'s installable packs that replace the assistant's prompt and tools are close to 63(i)'s custom harness builder with a shareable manifest.
+
 Chats
 
 From the old roadmap (native-harness › sessions, status parked, seen on all, last checked 2026-08-16)

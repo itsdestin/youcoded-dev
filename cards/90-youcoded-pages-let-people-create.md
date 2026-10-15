@@ -1,6 +1,6 @@
 ---
 id: 90
-title: YouCoded Pages: let people create and install their own native-looking pages, from dashboards
+title: YouCoded Pages: let people create and install their own native-looking pages, from dashboards and paint…
 stage: build
 priority: P2
 tags: other-features, misc, window-chrome
@@ -14,6 +14,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
 

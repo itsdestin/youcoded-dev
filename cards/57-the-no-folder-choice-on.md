@@ -1,11 +1,11 @@
 ---
 id: 57
-title: **v1.3.1 release blocker.** The "No folder" choice on the new-session form (shipped
+title: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested or thought through…
 stage: planning
 priority: P1
-tags: native-harness, sessions
+tags: native-harness, sessions, release-blocker
 release: v1.3.1
-branch: 57-v1-3-1-release-blocker
+branch: 57-the-no-folder-choice-on
 roadmap: native-harness: **v1.3.1 release blocker.** The "No folder" choice on the ne
 created: 2026-10-15
 ---

@@ -14,6 +14,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #102: 94's chat-switch pauses (item c) are the same slow session-switch clicks that 102 measures in detail.
+
 Chats
 
 From the old roadmap (perf, status confirmed, seen on all, last checked 2026-09-29)

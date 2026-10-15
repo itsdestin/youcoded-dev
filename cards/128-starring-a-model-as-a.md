@@ -1,6 +1,6 @@
 ---
 id: 128
-title: Starring a model as a favourite on one device leaves the model picker on your other device empty until you
+title: Starring a model as a favourite on one device leaves the model picker on your other device empty until you…
 stage: planning
 priority: P3
 tags: sync, model-picker

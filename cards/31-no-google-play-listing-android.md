@@ -1,7 +1,7 @@
 ---
 id: 31
-title: No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
-stage: explore
+title: No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires a verified…
+stage: planning
 priority: P2
 tags: dev-workspace, release, android
 release: v1.3.2
@@ -14,6 +14,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #1: The Android rebuild in 1 aims at a Google Play listing; 31 is the Play account and store paperwork that listing needs.
 
 Chats
 

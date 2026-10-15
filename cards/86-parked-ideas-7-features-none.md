@@ -4,6 +4,7 @@ title: Parked ideas: 7 features, none started
 stage: explore
 priority: P3
 tags: other-features, misc, security
+needs: 61
 branch: 86-parked-ideas-7-features-none
 roadmap: other-features: Parked ideas: 7 features, none started.
 created: 2026-10-15
@@ -11,7 +12,7 @@ created: 2026-10-15
 Progress
 Done: nothing recorded.
 Next: not decided.
-Blocked: nothing recorded.
+Blocked: waits on #61 — Item (f), sending automation results to Telegram, Discord or email, says it waits until Agents and Automations exists.
 
 Chats
 

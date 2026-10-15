@@ -1,6 +1,6 @@
 ---
 id: 104
-title: Hitch recorder, owner decisions: (a) the recorder is always on (`YOUCODED_HITCH_LOG=0` is the only off switch) - deci…
+title: Hitch recorder, owner decisions: (a) the recorder is always on (`YOUCODED_HITCH_LOG=0` is the only off…
 stage: explore
 priority: P3
 tags: perf, performance
@@ -13,6 +13,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #107: Both note the hitch recorder does not exist on phones and remote browsers and was checked on Linux only.
 
 Chats
 

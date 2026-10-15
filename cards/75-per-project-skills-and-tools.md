@@ -1,6 +1,6 @@
 ---
 id: 75
-title: Per-project skills and tools: each project chooses which skills, plugins and tool connections
+title: Per-project skills and tools: each project chooses which skills, plugins and tool connections the assistant…
 stage: build
 priority: P1
 tags: native-harness, skills-mcp, projects, desktop
@@ -12,6 +12,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #77: Both decide where a project's skills live and which ones the assistant uses; Destin wants them done together.
 
 Chats
 

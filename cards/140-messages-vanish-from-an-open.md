@@ -1,6 +1,6 @@
 ---
 id: 140
-title: Messages vanish from an open chat: the chat panel emptied behind "Start a conversation"
+title: Messages vanish from an open chat: the chat panel emptied behind "Start a conversation" mid-conversation for…
 stage: planning
 priority: P2
 tags: user-interface, chat, desktop, needs-repro

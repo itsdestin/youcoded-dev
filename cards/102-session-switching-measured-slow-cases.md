@@ -14,6 +14,8 @@ Done: nothing recorded.
 Next: check it still happens.
 Blocked: nothing recorded.
 
+See also #94: 94's chat-switch pauses (item c) are the same slow session-switch clicks that 102 measures in detail.
+
 Chats
 
 From the old roadmap (perf, status needs-verify, seen on desktop, last checked 2026-10-08)

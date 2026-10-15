@@ -1,12 +1,12 @@
 ---
 id: 60
-title: **v1.3.1 release blocker.** The one object that runs a native conversation is 4,756 lines
+title: The one object that runs a native conversation is 4,756 lines because it also runs the helper agents…
 stage: planning
 priority: P1
-tags: native-harness, sessions, desktop
+tags: native-harness, sessions, desktop, release-blocker
 release: v1.3.1
 report: docs/active/plans/2026-09-16-simplification-phases.md
-branch: 60-v1-3-1-release-blocker
+branch: 60-the-one-object-that-runs
 roadmap: native-harness: **v1.3.1 release blocker.** The one object that runs a nativ
 created: 2026-10-15
 ---

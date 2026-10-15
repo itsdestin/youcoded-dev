@@ -13,6 +13,8 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
+See also #14: Both work from the same report on blocking calls in the app's main process: 14 sorts them in a test, 95 fixes the ones that freeze windows.
+
 Chats
 
 From the old roadmap (perf, status confirmed, seen on desktop, last checked 2026-09-01)

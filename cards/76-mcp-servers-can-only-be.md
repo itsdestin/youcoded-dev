@@ -1,6 +1,6 @@
 ---
 id: 76
-title: MCP servers can only be set up by hand-editing a config file — no settings screen to add,
+title: MCP servers can only be set up by hand-editing a config file — no settings screen to add, edit or remove one,…
 stage: planning
 priority: P2
 tags: native-harness, skills-mcp, settings, desktop
@@ -13,6 +13,8 @@ Progress
 Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
+
+See also #59: The native parity program in 59 includes 'MCP phase 2', which is likely the same unbuilt MCP settings screen and Claude Code server sharing that 76 describes.
 
 Chats
 
