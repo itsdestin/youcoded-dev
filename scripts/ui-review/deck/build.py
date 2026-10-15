@@ -261,7 +261,10 @@ def _still_step(spec, st, boxes):
         # A NEW state of something built: one picture, but keep-or-remove, not build-or-leave.
         # page.js already prefers a step's own yes/no over its one-picture brief wording, so the
         # words are decided here and the page needed no change (games-social friction, 5).
-        **({'yes': 'Yes, keep it', 'no': 'No, remove it'} if st.get('new') is True else {}),
+        # WHY `st.get(...) or`: a step's own yes/no (already validated for length and banned
+        # words) used to be silently replaced here — a judging deck asking "Good first try /
+        # Needs work" showed "Yes, keep it" instead (guide test, 2026-10-15).
+        **({'yes': st.get('yes') or 'Yes, keep it', 'no': st.get('no') or 'No, remove it'} if st.get('new') is True else {}),
     }
 
 

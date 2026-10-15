@@ -32,6 +32,13 @@ class BuildTests(unittest.TestCase):
         out = [x for x in d['steps'] if x['id'] == 'S-9'][0]
         self.assertEqual((out['yes'], out['no']), ('Yes, keep it', 'No, remove it'))
         self.assertNotIn('yes', d['steps'][1])   # an ordinary slide keeps the page's own wording
+    def test_a_new_state_slide_keeps_its_own_answer_words(self):
+        # The step's own yes/no win over keep-or-remove (a judging deck: "Good first try").
+        st = dict(self.spec['steps'][1]); st['id'] = 'S-8'; st['new'] = True; st['runs'] = ['after']
+        st['yes'] = 'Good first try'; st['no'] = 'Needs work'
+        self.spec['steps'].append(st)
+        out = [x for x in deck_data(self.spec, self.boxes)['steps'] if x['id'] == 'S-8'][0]
+        self.assertEqual((out['yes'], out['no']), ('Good first try', 'Needs work'))
     def test_refuses_when_a_picture_is_missing(self):
         os.remove(os.path.join(self.spec['_base'], 'images', 'deck', 'c--light--after.png'))
         with self.assertRaises(SpecError) as cm: build_page(self.spec, self.boxes)
