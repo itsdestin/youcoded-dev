@@ -1,0 +1,22 @@
+{
+ "deck": "browser-fit-2",
+ "started": "2026-10-15T01:21:12.888Z",
+ "submitted": "2026-10-15T01:21:37Z",
+ "cur": 1,
+ "answers": {
+  "M-1": {
+   "v": "yes",
+   "t": 1792027279310,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "t": 1792027295758,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
