@@ -41,6 +41,30 @@ isn't this done" because these facts are recorded nowhere.
 | S-1 | Copy ideas from Beads / Spec Kit / Claude agent teams; adopt none of the tools |
 | Q-13 | **Not yet agreed** — Destin was confused by "one card = one session = one branch = one merge". Show the worked example |
 
+## Destin never thinks in cards (decided 2026-10-14)
+
+"i dont necessarily want to have to think in terms of cards. i just want to be able to dump ideas as i have
+done previously, and you figure out how to group/organize/rearrange things as cards and such and make
+suggestions." Cards are the assistant's bookkeeping. The interface is **idea intake**:
+
+1. Destin talks as he does now: an idea, what it probably needs, what it might unlock later.
+2. The chat recognises an idea dump and checks it against existing cards, the roadmap and the Big
+   picture items (by meaning, not wording).
+3. It replies with ONE short filing proposal: what becomes which card(s) and stage; what already
+   exists and gets linked instead of duplicated; "needs" / "needed by" links; the order; overlaps it
+   noticed. Later ideas the dump mentions become Big picture items that need the main one.
+4. Destin says yes / changes it / says nothing. Silence keeps it as a suggestion, never filed.
+5. Once filed it appears in Big picture at once, and in Today when a chat starts building it.
+   Anything can be regrouped later.
+
+Worked example he accepted: "agents that run overnight on whatever device is on; needs saved agent setups
+and a scheduler; later a self-updating research page" → 3 linked items (one already being built, so
+linked), the research page saved as an idea needing them, and a note that "work runs on whichever
+device is on" already exists under Sync & Mesh.
+
+Build order: idea intake first (the habit every chat follows), then the cards underneath, then the page
+reading the cards, then moving the roadmap over.
+
 ## What the management page needs from every card (decided 2026-10-14)
 
 Destin approved the Today tab built from these facts (branch `session/management-surface-20261012`,
