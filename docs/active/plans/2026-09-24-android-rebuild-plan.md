@@ -1,11 +1,14 @@
 ---
 date: 2026-09-24
-status: active
+status: superseded
 type: plan
 topic: Android rebuild — the phone runs the same assistant core and socket door as the computer, Kotlin shrinks to a thin phone shell, every program ships inside the app for Google Play, then the phone-native product work
 ---
 
 # Android rebuild — plan
+
+> **Superseded 2026-10-14** by `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`
+> (no existing users, so no migration; A0 results recorded there).
 
 > **Status.** The plan of record for the Android rebuild (written 2026-09-24). **Entry
 > point:** `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`, which has the one ordered
