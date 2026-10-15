@@ -298,10 +298,13 @@ async function makeTab(b, targetId) {
     on: (f) => { listeners.add(f); return () => listeners.delete(f); },
     still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
     takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
-    async prepare({ theme, width: w, height: h }) {
+    /** `reducedEffects`: turn on the app's own Reduce visual effects setting (its localStorage key)
+     *  before the page loads — journeys only; pictures leave it alone so they keep showing the glass. */
+    async prepare({ theme, width: w, height: h, reducedEffects = false }) {
       if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
-      themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` })).identifier;
+      const effects = reducedEffects ? `localStorage.setItem('youcoded-reduced-effects','1');` : '';
+      themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});${effects}}catch{}` })).identifier;
     },
     navigate: (url) => send('Page.navigate', { url }),
     png: async (params = {}) => Buffer.from((await send('Page.captureScreenshot', { format: 'png', ...params }, 30_000)).data, 'base64'),

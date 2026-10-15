@@ -22,9 +22,10 @@ export function appUrl(base, start) {
   return `${base}?${q}`;
 }
 
-/** Loads the practice app in `tab` as `start` describes, ready for the first step. */
-export async function openApp(tab, base, start) {
-  await tab.prepare({ theme: start.theme ?? 'meadow-mist', width: start.width ?? 1440, height: start.height ?? 900 });
+/** Loads the practice app in `tab` as `start` describes, ready for the first step.
+ *  `reducedEffects` turns on the app's Reduce visual effects setting first (see journeys.mjs). */
+export async function openApp(tab, base, start, { reducedEffects = false } = {}) {
+  await tab.prepare({ theme: start.theme ?? 'meadow-mist', width: start.width ?? 1440, height: start.height ?? 900, reducedEffects });
   await tab.navigate(appUrl(base, start));
   for (const t0 = Date.now(); ; await sleep(50)) {
     if (await tab.evaluate('!!window.__youcodedScreens && document.body.innerText.trim().length > 20', 5000).catch(() => false)) break;

@@ -51,7 +51,13 @@ const results = await runQueue(pool, chosen, async (tab, name) => {
   const r = { name, ok: false, steps: journey.steps.length };
   let i = -1;
   try {
-    await openApp(tab, base, start);
+    // WHY reduced effects (2026-10-14): a journey checks what the app DOES, not how it looks, and
+    // the headless browser draws without a GPU. Each mouse event is answered only after the next
+    // frame, and over a glass theme (every journey starts on Meadow Mist) with a blurred dialog on
+    // top a frame cost ~110 ms instead of ~16 — so under a loaded verify run one step outlasted the
+    // 15 s command limit (change-theme, "Input.dispatchMouseEvent timed out"). The app's own Reduce
+    // visual effects setting drops the blur. Pictures (shoot) keep the full look; explore too.
+    await openApp(tab, base, start, { reducedEffects: true });
     const driver = makeDriver(tab, start);
     for (i = 0; i < journey.steps.length; i++) await driver.perform(journey.steps[i]);
     r.ok = true;
