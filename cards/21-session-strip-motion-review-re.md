@@ -13,7 +13,7 @@ Done: nothing recorded.
 Next: not decided.
 Blocked: nothing recorded.
 
-See also #103: Both are about the motion of the session strip when switching sessions: 21 redesigns how it is reviewed, 103 asks whether a cheaper-looking version is acceptable.
+See also #102: Both are about the motion of the session strip when switching sessions: 21 redesigns how it is reviewed, 103 asks whether a cheaper-looking version is acceptable.
 
 Chats
 
