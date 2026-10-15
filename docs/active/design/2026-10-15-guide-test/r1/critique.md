@@ -18,3 +18,5 @@ Purchases skipped (A-1, A-2 — reviewed live instead; see chat note 1). Good fi
 5. **E-1 Import** — "Stop import" is the main action while running: theme-filled, or destructive styling — not outlined.
 6. **E-2 Import partial** — Try again goes **below the Details line**; and Done / Show my conversations: **two outlined buttons with no filled one is bad**.
 7. **E-3 Import wrong file** — buttons below the Details fold, not above.
+
+## Fixes page `gt-r1-fixes` (2026-10-15 04:51): all approved — F-1–F-3 full-screen error (Marketplace, Library, Pages), F-4 the Pages kit dropdown.
