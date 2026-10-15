@@ -1,0 +1,19 @@
+---
+id: 21
+title: Session-strip motion review: re-author as live pick-one steps. The four before/after clip steps
+stage: build
+priority: P3
+tags: dev-workspace, rigs
+branch: 21-session-strip-motion-review-re
+roadmap: dev-workspace: Session-strip motion review: re-author as live pick-one step
+created: 2026-10-15
+---
+Progress
+Done: nothing recorded.
+Next: not decided.
+Blocked: nothing recorded.
+
+Chats
+
+From the old roadmap (dev-workspace › rigs, status in-flight, seen on n/a, last checked 2026-09-02)
+Session-strip motion review: re-author as live pick-one steps. The four before/after clip steps were "just rough to compare"; needs a design session naming the built behaviour as one real candidate among alternatives. In progress in another session on branch feat/session-strip-motion (Destin, 2026-09-02)

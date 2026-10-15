@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseCard, renderCard, createCard, loadCards, check, neededBy, slug, index } from './cards.mjs';
+import { parseCard, renderCard, createCard, loadCards, check, neededBy, slug, index, importRoadmap } from './cards.mjs';
 
 function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'cards-')); }
 
@@ -67,4 +67,23 @@ test('exploration items may overlap; planning items may not', () => {
   const a = parseCard('---\nid: 1\ntitle: a\nstage: planning\n---\n', 'cards/1-a.md');
   const b = parseCard('---\nid: 2\ntitle: b\nstage: planning\nrelated: 1\n---\n', 'cards/2-b.md');
   assert.match(check([a, b]).join(), /consolidate them into one card/);
+});
+
+test('import-roadmap makes one card per entry, keeps its facts, and is safe to re-run', () => {
+  const root = tmp();
+  fs.mkdirSync(path.join(root, 'docs/roadmap'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs/roadmap/sync.md'), [
+    '# sync — moving your stuff between devices', 'Filing test: sync.', '',
+    '- [ ] Very long conversations stop updating on your other devices.',
+    '      Needs a way to sync in pieces.',
+    '      `settings/sync` `all` `decision` `P2` `checked 2026-09-16`', '',
+    '- [ ] Sync security gaps: three things.',
+    '      `settings/sync` `desktop` `confirmed` `P1` `checked 2026-09-21` `security`', ''].join('\n'));
+  assert.equal(importRoadmap(root, '2026-10-15').length, 2);
+  const [a, b] = loadCards(root);
+  assert.equal(a.stage, 'explore'); assert.equal(a.priority, 'P2');
+  assert.equal(b.stage, 'planning'); assert.deepEqual(b.tags, ['sync', 'settings/sync', 'desktop', 'security']);
+  assert.match(a.body, /Needs a way to sync in pieces/);
+  assert.equal(importRoadmap(root, '2026-10-15').length, 0);
+  assert.match(index(root), /Open roadmap entries \(0\)/);
 });

@@ -11,6 +11,7 @@
 //   node scripts/cards.mjs new --title "<t>" [--stage explore] [--tags a,b] [--needs 3,7] [--related 4]
 //                              [--finish "<1-3 sentences>"] [--roadmap "<area>: <first words>"] [--why "<his words>"]
 //                                                creates cards/<n>-<slug>.md with the next number; prints its path
+//   node scripts/cards.mjs import-roadmap        one card per open roadmap entry not yet imported (re-runnable)
 //   node scripts/cards.mjs check                 every card parses, every stage is one of the four, every
 //                                                "needs" names a card that exists; exit 1 otherwise
 //   node scripts/cards.mjs --root <dir> …        workspace root; defaults to the git checkout you are IN
@@ -38,7 +39,9 @@ export const CARDS_DIR = 'cards';
 // The words he sees are STAGE_WORD; the file stores the short key.
 export const STAGES = ['explore', 'planning', 'build', 'polish', 'merged'];
 export const STAGE_WORD = { explore: 'Preliminary exploration', planning: 'Planning', build: 'Agentic buildout', polish: 'Human polish & review', merged: 'Merged' };
-export const KEYS = ['id', 'title', 'stage', 'tags', 'needs', 'related', 'branch', 'finish', 'roadmap', 'created', 'why'];
+// WHY priority / release / report (2026-10-15, moving the roadmap over): an old entry's priority, target
+// release and linked report are facts Destin set; a card keeps them rather than losing them in the move.
+export const KEYS = ['id', 'title', 'stage', 'priority', 'tags', 'needs', 'related', 'release', 'report', 'branch', 'finish', 'roadmap', 'created', 'why'];
 const LISTS = new Set(['tags', 'needs', 'related']);
 
 export function slug(title) {
@@ -70,7 +73,7 @@ export function parseCard(text, file) {
 }
 
 export function renderCard(c) {
-  const head = KEYS.filter(k => c[k] !== undefined && c[k] !== '' && !(Array.isArray(c[k]) && !c[k].length))
+  const head = KEYS.filter(k => c[k] !== undefined && c[k] !== null && c[k] !== '' && !(Array.isArray(c[k]) && !c[k].length))  // WHY null too: an entry with no linked report wrote 'report: null'
     .map(k => `${k}: ${Array.isArray(c[k]) ? c[k].join(', ') : c[k]}`);
   return `---\n${head.join('\n')}\n---\n${c.body ? c.body.trim() + '\n' : ''}`;
 }
@@ -126,11 +129,13 @@ export function index(root) {
       (c.needs.length ? ` · needs: ${c.needs.map(n => '#' + n).join(', ')}` : '') +
       (c.related.length ? ` · overlaps: ${c.related.map(n => '#' + n).join(', ')}` : '') +
       (nb.length ? ` · needed by: ${nb.map(n => '#' + n).join(', ')}` : '') +
-      (c.roadmap ? ` · from roadmap: ${c.roadmap}` : ''));
+      (c.priority ? ` · ${c.priority}` : ''));
   }
   if (!cards.length) out.push('(none yet)');
   const rm = loadRoadmap(root);
-  const entries = rm ? rm.areas.flatMap(a => a.entries) : [];
+  // WHY skip imported entries: once an old entry has a card, listing it twice would invite a duplicate
+  const done = new Set(cards.map(c => c.roadmap).filter(Boolean));
+  const entries = (rm ? rm.areas.flatMap(a => a.entries) : []).filter(e => !done.has(roadmapRef(e)));
   out.push('', `# Open roadmap entries (${entries.length}) — area: headline · status · priority`);
   for (const e of entries) out.push(`${e.area}: ${headline(e, 140)} · ${e.status ?? ''} · ${e.priority ?? ''}`);
   return out.join('\n');
@@ -146,7 +151,8 @@ export function createCard(root, opts, today = new Date().toISOString().slice(0,
     needs: (opts.needs || '').split(',').map(s => s.trim().replace(/^#/, '')).filter(Boolean),
     related: (opts.related || '').split(',').map(s => s.trim().replace(/^#/, '')).filter(Boolean),
     finish: opts.finish, roadmap: opts.roadmap, created: today, why: opts.why,
-    body: 'Progress\nDone: nothing yet.\nNext: ' + (opts.next || 'plan it.') + '\nBlocked: ' +
+    priority: opts.priority, release: opts.release, report: opts.report,
+    body: opts.body ?? 'Progress\nDone: nothing yet.\nNext: ' + (opts.next || 'plan it.') + '\nBlocked: ' +
       ((opts.needs || '').trim() ? 'waits on ' + opts.needs.split(',').map(n => '#' + n.trim().replace(/^#/, '')).join(', ') + '.' : 'nothing.') +
       '\n\nChats\n',
   };
@@ -162,6 +168,38 @@ export function createCard(root, opts, today = new Date().toISOString().slice(0,
     try { fs.writeFileSync(file, renderCard(card), { flag: 'wx' }); return path.join(CARDS_DIR, `${card.branch}.md`); }
     catch (e) { if (e.code !== 'EEXIST') throw e; }
   }
+}
+
+/** "<area>: <first words>" — how a card names the old roadmap entry it came from. */
+export function roadmapRef(e) {
+  return `${e.area}: ${e.firstLine.replace(/\s+/g, ' ').slice(0, 60).trim()}`;
+}
+
+// WHY this mapping (Destin's stages, 2026-10-14/15): "decision" and "parked" entries are ideas nobody has
+// settled — exploration. Confirmed, blocked and needs-verify entries are known work ready to plan. In-flight
+// entries have a branch: a chat is building them.
+export const STAGE_FROM_STATUS = { 'in-flight': 'build', confirmed: 'planning', blocked: 'planning', 'needs-verify': 'planning', decision: 'explore', parked: 'explore' };
+
+/** One card per open roadmap entry not yet imported. Returns the paths written. Re-running adds only new entries. */
+export function importRoadmap(root, today = new Date().toISOString().slice(0, 10)) {
+  const rm = loadRoadmap(root);
+  if (!rm) return [];
+  const have = new Set(loadCards(root).map(c => c.roadmap).filter(Boolean));
+  const written = [];
+  for (const e of rm.areas.flatMap(a => a.entries)) {
+    const ref = roadmapRef(e);
+    if (have.has(ref)) continue;
+    const tags = [e.area, e.section, e.surface, ['all', 'n/a'].includes(e.seenOn) ? null : e.seenOn, ...(e.flags || [])]
+      .filter(Boolean).map(t => String(t).toLowerCase());
+    const title = e.firstLine.replace(/[.:]\s*$/, '').replace(/\s+/g, ' ').trim();
+    const blocked = e.status === 'blocked' ? 'yes — the old roadmap marked it blocked; see below.' : 'nothing recorded.';
+    const body = `Progress\nDone: nothing recorded.\nNext: ${e.status === 'needs-verify' ? 'check it still happens.' : 'not decided.'}\nBlocked: ${blocked}\n\nChats\n\n` +
+      `From the old roadmap (${e.area}${e.section ? ' › ' + e.section : ''}, status ${e.status}, seen on ${e.seenOn}, last checked ${e.checked})\n${e.symptom}\n`;
+    const path_ = createCard(root, { title: title.length > 120 ? title.slice(0, 117).trimEnd() + '…' : title, stage: STAGE_FROM_STATUS[e.status] || 'explore',
+      tags: tags.join(','), roadmap: ref, priority: e.priority, release: e.release, report: e.link, body }, today);
+    written.push(path_); have.add(ref);
+  }
+  return written;
 }
 
 function args(argv) {
@@ -184,6 +222,7 @@ function main() {
     console.log(`cards: ${loadCards(root).length} ok`); return;
   }
   if (cmd === 'new') { console.log(createCard(root, o)); return; }
+  if (cmd === 'import-roadmap') { const w = importRoadmap(root); console.log(`imported ${w.length} roadmap entr${w.length === 1 ? 'y' : 'ies'} as cards`); return; }
   console.error('usage: node scripts/cards.mjs index | check | new --title "<t>" [--stage explore|planning|build|polish|merged] [--related 4] [--tags a,b] [--needs 3,7] [--finish "…"] [--roadmap "<area>: …"] [--why "…"]');
   process.exit(2);
 }

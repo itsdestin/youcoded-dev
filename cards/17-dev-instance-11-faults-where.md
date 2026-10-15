@@ -1,0 +1,19 @@
+---
+id: 17
+title: Dev instance: 11 faults where it touches the real app or its launcher fails
+stage: planning
+priority: P2
+tags: dev-workspace, rigs
+branch: 17-dev-instance-11-faults-where
+roadmap: dev-workspace: Dev instance: 11 faults where it touches the real app or its
+created: 2026-10-15
+---
+Progress
+Done: nothing recorded.
+Next: not decided.
+Blocked: nothing recorded.
+
+Chats
+
+From the old roadmap (dev-workspace › rigs, status confirmed, seen on n/a, last checked 2026-09-05)
+Dev instance: 11 faults where it touches the real app or its launcher fails. (a) a dev instance writes its pinned-pages list into the real Personal folder under a fake device id, which can sync to other devices; (b) removing a provider in a dev window removes it from the real app; (c) picking a theme in a dev window (or a connected phone) changes the live app's next theme; (d) the cross-device sync state file is shared, so two apps can write it at once; (e) a dev window silently rewrote the real app's engine settings (backend flipped to "rocm" overnight); Destin decides which files a dev instance shares before any build; (f) wanted: a dev instance that starts signed in with the real app's keys and a borrowed ChatGPT sign-in; Destin: "it's sometimes annoying to add separate api keys and such for a quick test"; (g) Stop lists the dev instance's own `claude` children without marking them; (h) the launcher has no reliable stop and leaves its Vite server (even on port 5173) holding a port, so the next launch dies; (i) a bad `--offset` fails late with a bare "Port in use" naming nobody; (j) three copies of "which checkout?" each know different layouts; the launcher's own copy is the odd one
