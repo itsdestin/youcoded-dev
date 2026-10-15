@@ -24,5 +24,5 @@ Binaries are not committed; rebuild them with the steps below (all ran on the z1
   run as `files/ld <native-lib-dir>/libclaude.so`.
 - DNS in the spike used a test-only patch (`/etc/resolv.conf` → cwd-relative `etc/resolv.conf`
   in musl and libcares); production builds them with an absolute in-app path.
-- `app/` — the throwaway app (Java, AGP 8.7.0, `useLegacyPackaging`); copies `test.sh` from assets
+- `app/` — the throwaway app (`MainActivity.java` sits flat in `app/` because the workspace `.gitignore` ignores any `youcoded` path component; it belongs in `src/main/java/com/youcoded/a0spike/`) (Java, AGP 8.7.0, `useLegacyPackaging`); copies `test.sh` from assets
   and runs it, logging to logcat tag `A0`. `t.js` — node-pty test driver.
