@@ -1,0 +1,79 @@
+{
+  "title": "Reading list (round 2, design C)",
+  "key": "gt-r2-reading-list.live",
+  "out": "gt-r2-reading-list.live.html",
+  "live": {
+    "worktree": "sessions/gt-r2-reading-list/youcoded"
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Reading list (new screen)",
+      "path": "Top bar → open-book button → Saved for later",
+      "headline": "Reading list: links and files you saved, with tags, search and \"Ask about this\".",
+      "hint": "Click the new open-book button in the top bar (after Projects). Try search, a tag chip, the tag icon on a card, the bin (then Undo), Ask about this, and + Save a link or file.",
+      "notice": "Builder's main gaps: is a grid of cards \"a list of actions\" (so every card gets a filled button)? — it said yes, giving seven bright buttons; removing with Undo has no rule; it felt a fourth permanent top-bar icon was the only way in allowed.",
+      "risk": "Adds a button to everyone's top bar.",
+      "live": {
+        "app": "default",
+        "params": {
+          "reading": "open"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-2",
+      "surface": "Reading list (new screen)",
+      "path": "Reading list, first time",
+      "headline": "Reading list before anything is saved.",
+      "hint": "Open-book button in the top bar.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "empty",
+        "params": {
+          "reading": "open"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-3",
+      "surface": "Reading list (new screen)",
+      "path": "Reading list → Save for later, failed",
+      "headline": "Saving a link that failed.",
+      "hint": "It opens on the Save popup.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "reading": "add-failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-4",
+      "surface": "Reading list (new screen)",
+      "path": "Reading list, couldn't load",
+      "headline": "Reading list when the list couldn't load.",
+      "hint": "Open-book button in the top bar.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "reading": "open",
+          "fail": "readingList.list"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

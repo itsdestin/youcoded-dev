@@ -1,0 +1,82 @@
+{
+  "title": "News headlines dashboard (round 2, design B)",
+  "key": "gt-r2-news-page.live",
+  "out": "gt-r2-news-page.live.html",
+  "live": {
+    "worktree": "sessions/gt-r2-news-page/youcoded"
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "News (a built-in Page)",
+      "path": "Pages → News (under Built in)",
+      "headline": "News: headlines by topic from the sites you pick, as a built-in Page you can pin.",
+      "hint": "Click Pages (grid button in the top bar), then News under Built in. Try Topics and sources, Show 3 more, and the pin on the News row.",
+      "notice": "Builder's main gaps: nowhere says a built-in Page is a place a feature can live; no spot for a whole-screen tool button; \"date bottom right\" adds dead space on grid cards; first-run card's filled button competes with Pages' own filled Create a page.",
+      "risk": "Stories are made up; clicking one would open the real site.",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "builtin:news"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-2",
+      "surface": "News (a built-in Page)",
+      "path": "News, first time",
+      "headline": "News the first time, before you've picked topics.",
+      "hint": "Pages → News.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "builtin:news",
+          "news": "first-run"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-3",
+      "surface": "News (a built-in Page)",
+      "path": "News, one site didn't answer",
+      "headline": "News when one source (Politico) didn't answer.",
+      "hint": "Pages → News.",
+      "notice": "Builder: stories are grouped by topic, not source, so there was no single part for the notice to replace; it put one notice above all topics.",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "builtin:news",
+          "news": "source-failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-4",
+      "surface": "News (a built-in Page)",
+      "path": "News, offline",
+      "headline": "News while offline, showing older headlines.",
+      "hint": "Pages → News.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "builtin:news",
+          "news": "offline",
+          "network": "offline"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}
