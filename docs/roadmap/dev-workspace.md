@@ -101,7 +101,8 @@ seen-on is always n/a here.
       guard 8 refuses `npm ci` for any session whose cwd is under /worktrees/ — even after the hardlinks are
       deleted, and even in a scratch folder; the working path (npm ci in a scratch copy of package*.json with
       the shell outside /worktrees/, move node_modules in, run the postinstall patch scripts) took 6 calls on
-      2026-10-14. Wanted: a `fill-missing-deps.mjs --fresh` that does it, named in the message
+      2026-10-14; the guard also matches the words in a commit MESSAGE that mentions the command (2026-10-15).
+      Wanted: a `fill-missing-deps.mjs --fresh` that does it, named in the message; the guard to match commands only
       `n/a` `confirmed` `P3` `checked 2026-10-15`
 
 - [ ] The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has
