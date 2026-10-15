@@ -92,13 +92,13 @@ Target: `v1.3.1`
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 19 | 2 | 0 | 17 | 6 | 3 | 0 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 14 | 2 | 3 | 9 | 5 | 0 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 10 | 2 | 1 | 7 | 1 | 0 | 1 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 9 | 0 | 3 | 6 | 2 | 1 | 1 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 9 | 0 | 3 | 6 | 1 | 0 | 2 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 9 | 0 | 4 | 5 | 2 | 2 | 1 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 8 | 0 | 3 | 5 | 2 | 1 | 1 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 7 | 1 | 0 | 6 | 2 | 1 | 1 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 6 | 2 | 1 | 3 | 0 | 1 | 1 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 6 | 0 | 2 | 4 | 0 | 0 | 2 |
-| [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 5 | 1 | 0 | 4 | 1 | 1 | 1 |
+| [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 6 | 1 | 0 | 5 | 1 | 2 | 1 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 4 | 0 | 0 | 4 | 1 | 0 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 3 | 0 | 0 | 3 | 1 | 0 | 1 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 0 | 0 | 2 | 1 | 0 | 1 |

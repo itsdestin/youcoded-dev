@@ -1,0 +1,182 @@
+{
+  "title": "The assistant's own Browser — built, tested, ready for your look",
+  "key": "assistant-browser-review",
+  "out": "browser.review.html",
+  "images": "images/browser.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "The right side of a chat, once the assistant uses the browser",
+      "crop": "chat/browser",
+      "headline": "A Browser panel shows what the assistant's hidden browser is doing, live.",
+      "changed": "When the assistant browses, a panel opens beside the chat with a live picture of the page, its address, and Show window.",
+      "notice": "Nothing pops up on your screen: the browser works out of sight unless you press Show window. A globe button in the top bar reopens the panel.",
+      "risk": "The panel takes the same right-hand space as Session Files and Games, so opening one closes the others."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Under the latest message, the first time the assistant clicks or types on a site",
+      "crop": "chat#browser-site",
+      "headline": "Before clicking or typing on a new site, the assistant asks you once for that chat.",
+      "changed": "A card asks to let the assistant use that site: Allow for this chat, Always allow the site, or Not now.",
+      "notice": "The same card appears in Claude Code chats and in chats with other models — one set of rules for both.",
+      "risk": "Browsing several new sites means one card per site; reading pages never asks."
+    },
+    {
+      "id": "S-3",
+      "surface": "Chat",
+      "path": "Under the latest message, when the next click looks like buying, sending or deleting",
+      "crop": "chat#browser-final",
+      "headline": "Anything that looks like buying, sending, posting or deleting asks every time.",
+      "changed": "A final-step card names the exact button and site, and only offers Allow this once or Don't allow.",
+      "notice": "This asks even on a site you chose Always allow for, and even when the chat is set not to ask about anything.",
+      "risk": "It judges from button words and how forms submit, so an oddly named button can slip by; the assistant is also told to confirm such steps with you in chat."
+    },
+    {
+      "id": "S-4",
+      "surface": "Chat",
+      "path": "Under the latest message, when the assistant needs you to sign in or solve a captcha",
+      "crop": "chat#browser-handoff",
+      "headline": "When a site needs you — a sign-in or a captcha — the assistant asks and waits.",
+      "changed": "A card shows the assistant's request with Show window (sign in in a real window), Show the browser, I can't do this and I'm done.",
+      "notice": "Sign-ins you make in the assistant's browser are remembered next time; it never uses your own browser's sign-ins unless you turn on My Chrome.",
+      "risk": "Showing the window restarts the browser; pages reopen, but anything typed and not yet sent is lost."
+    },
+    {
+      "id": "S-5",
+      "surface": "Settings",
+      "path": "Settings, then Browser",
+      "crop": "settings/browser",
+      "headline": "Settings → Browser: which browser, show a window, allowed sites and saved sign-ins.",
+      "changed": "A new Settings row opens the Browser's choices: the assistant's own browser or My Chrome, a Show a browser window switch, the sites you've always allowed, and Clear saved sign-ins.",
+      "notice": "It finds the Chrome, Edge, Chromium or Brave you already have; with none, it offers a one-time download of about 150 MB.",
+      "risk": "My Chrome is marked Experimental: it works with your real sign-ins and was tested only against a separately started Chrome, not your own."
+    },
+    {
+      "id": "T-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "A new chat in the dev window",
+      "headline": "Ask the assistant to look something up on a real website — does it browse, ask you, and answer?",
+      "dev": {
+        "worktree": "session/browser-automation-20261013",
+        "label": "Browser feature",
+        "offset": 150,
+        "profile": "browserdev"
+      },
+      "changed": "The window runs this branch end to end: a real model, a real browser on your computer, and the Browser's cards and panel.",
+      "notice": "Try both kinds of chat if you can: a Claude Code chat and a chat with another model. Both should show the same cards and panel.",
+      "risk": "It is a second window on your desktop; the browser it opens is separate from your own and from your installed YouCoded."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Browser",
+      "path": "What happens the first time the assistant browses",
+      "headline": "Should the browser work hidden by default, with the panel to watch it?",
+      "today": "The assistant browses out of sight; a panel beside the chat shows the page live, and Show window opens a real window.",
+      "problem": "A real window on top of your work is distracting, but some people want to watch every click.",
+      "proposal": "Keep hidden as the default and let anyone switch on Show a browser window in Settings.",
+      "options": [
+        {
+          "id": "hidden",
+          "label": "Hidden by default",
+          "pros": [
+            "Never takes your screen; you can still watch in the panel."
+          ],
+          "cons": [
+            "A first-time user may not notice the panel unless it opens."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "window",
+          "label": "A window by default",
+          "pros": [
+            "Obvious what the assistant is doing."
+          ],
+          "cons": [
+            "Covers what you were working on every time it browses."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Browser",
+      "path": "Settings, then Browser, then My Chrome",
+      "headline": "Should My Chrome ship now as Experimental, or stay hidden until tested on your own Chrome?",
+      "today": "My Chrome lets the assistant open tabs in your running Chrome with your sign-ins, after you switch it on in Chrome and click Allow.",
+      "problem": "It is the riskiest option — the assistant can act as you on any site you're signed into — and it has only been tested against a separate Chrome, not yours.",
+      "proposal": "Ship it marked Experimental and off by default; it asks before every new site and never offers Always allow.",
+      "options": [
+        {
+          "id": "ship",
+          "label": "Ship as Experimental",
+          "pros": [
+            "You get your real sign-ins when you want them."
+          ],
+          "cons": [
+            "Untested on your own Chrome's switch until you try it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hide",
+          "label": "Hide it for now",
+          "pros": [
+            "No way to act as you by accident."
+          ],
+          "cons": [
+            "Every site needs signing in again inside the assistant's browser."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Browser",
+      "path": "Any chat set to never ask (full auto / skip permissions)",
+      "headline": "Should the Browser's cards still ask in chats set to never ask?",
+      "today": "In a chat set to never ask, other tools run freely, but the Browser still asks per site and before final steps.",
+      "problem": "That breaks the never-ask promise, but a never-ask chat browsing with your sign-ins could buy or delete without you.",
+      "proposal": "Keep the final-step card in every mode; you choose whether the once-per-site card also stays.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Keep both cards",
+          "pros": [
+            "Same safety everywhere; one rule to learn."
+          ],
+          "cons": [
+            "Never-ask chats still pause once per new site."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "final-only",
+          "label": "Only final steps ask",
+          "pros": [
+            "Never-ask chats browse without pauses."
+          ],
+          "cons": [
+            "A never-ask chat can type into any site without asking."
+          ]
+        }
+      ]
+    }
+  ],
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ]
+}
