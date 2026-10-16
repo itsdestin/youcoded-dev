@@ -201,7 +201,7 @@ def menu():
 
 
 def chips(c):
-    out = ['<span class="badge" data-tip="This is the suggested next step at the top of the page.">Suggested above</span>'] if c.get('suggested') else []
+    out = []   # WHY no "Suggested above" chip (Destin, 2026-10-16: remove it)
     # WHY first and teal (Destin, 2026-10-16: like the status bar's branch chip, "with the same teal tint"): the
     # status bar's icon and teal (#0D9488), with the colour in the tint, outline and icon only (guide: never in words)
     if c.get('branches'):
@@ -276,12 +276,15 @@ def row(c, pic, show_stage=False, live=False):
     # consistency branch design principles"): name with its status on the top line, quick actions at its top
     # right → one row of fact chips right under the name → the description (two lines at most) → the date at
     # the bottom right, at the end of the details line.
-    return (f'<div class="crow{" lrow" if live else ""}" data-card="{E(c["id"])}"{attrs}><div class="ctop">{tick}<div class="cmain">'
-            f'<div class="ctl">{name}{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
-            f'<div class="cchips">{chips(c)}</div>'
-            f'<div class="cdesc"><span class="t-xs dim cnext">{E(nxt)}</span>{date(c)}</div></div>'
+    # WHY this layout (Destin, 2026-10-16: "make the date sit in the bottom right, and allow the tags/descriptions
+    # to take more space"): the name and the actions share the top line; the chip row and the description then run
+    # the card's full width under both, and the date sits at the card's bottom right (guide "Cards" order kept).
+    return (f'<div class="crow{" lrow" if live else ""}" data-card="{E(c["id"])}"{attrs}>'
+            f'<div class="ctop">{tick}<div class="ctl">{name}{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
             f'<div class="acts">{menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this card, the chats that worked on it.">View chats</button>'
             f'<button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></div>'
+            f'<div class="cfull"><div class="cchips">{chips(c)}</div>'
+            f'<div class="cdesc"><span class="t-xs dim cnext">{E(nxt)}</span>{date(c)}</div></div>'
             f'<div class="cbody" hidden>{body(c, pic)}</div></div>')
 
 
@@ -346,8 +349,11 @@ CSS = '''
 /* Today rows (today_tab.py): one anatomy for every card (Q-6) — name + label, one line, chips + date, buttons right */
 .crow{display:block;padding:12px 16px;margin-bottom:12px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:0 4px 16px rgba(0,0,0,calc(var(--shadow-strength) * .8))}
 .gitchip{background:color-mix(in srgb,#0D9488 12%,transparent);border-color:rgba(13,148,136,.35)} .gitchip .gicon{color:#0D9488;flex:none} .gitchip .bmore{color:var(--fg-muted)}
-.cdesc{display:flex;align-items:flex-end;gap:12px} .cdesc .cnext{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ctop > .cmain{gap:6px}
+.ctop > .ctl{flex:1;min-width:0}
+.cfull{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.lrow .cfull{padding-left:28px}  /* the tick box's width, so chips and text line up under the name */
+.cdesc{display:flex;align-items:flex-end;gap:16px} .cdesc .cnext{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cdesc .cdate{margin-left:auto}
 .ctop{display:flex;gap:12px;align-items:flex-start}
 .cmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
