@@ -591,8 +591,14 @@ slider's look. Follow this guide where a class leaves a choice open, and never r
 - **Never the browser's own dropdown.** A bare `<select>` opens the browser's white list, which no theme
   reaches (gt-r1 purchases, Destin: "these bare native browser dropdowns"). Use the kit's dropdown
   (`.yc-menu`, see `page-kit.ts`), which opens the app's own menu look.
-- A Page is held to the same recipes as the app: labels, card levels, buttons, status words. Where an
-  existing sample Page disagrees with this guide, the guide wins — the samples are not reviewed.
+- A Page is held to the same recipes as the app: labels, card levels, buttons, status words — **unless
+  the person asks for something else.** The kit and this guide are the starting point for a good first
+  try; a user's own direction for their Page wins, even against these rules (Destin, pages-kit-questions
+  #K-5). The sample Pages are not reviewed and stay as they are; don't copy their deviations unasked.
+- The kit carries the app's own pieces (pages-kit-questions #K-1–#K-3): status label, notice box with
+  Details then buttons, loading line, full-screen error, on/off switch, search box with filter chips of
+  the same height, fold-out row (long sections fold at phone width), inner box, the sideways chip row,
+  and the app's scroll fade on every scrolling area. Use them before hand-making anything.
 
 ## Parts of the app documented as they are today
 

@@ -102,7 +102,7 @@ has passed ~8 items — graduate it to its own file.
       doesn't drift. i also want to provide more pre-built sets of buttons, menus, etc."
       `window-chrome` `all` `in-flight` `P2` `checked 2026-09-23` `v1.3.2` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
-- [ ] YouCoded Pages follow-ups: 7 decisions and sightings.
+- [ ] YouCoded Pages follow-ups: 8 decisions and sightings.
       (a) The page-builder skill's connections update (plugin 0.2.0) is finished and held until an
       app release carries Pages Phase 2; merge it in the same step. It must also learn the home-device
       connection, the live connection, camera video and the see-through background (merged 2026-10-07)
@@ -114,11 +114,15 @@ has passed ~8 items — graduate it to its own file.
       name server; the fix adds a package, so it waits for Destin's OK. (d) A web browser as a page:
       most big sites refuse to show inside another page, so the app would need a website view.
       (e) Pages on a phone: nobody designed the narrow layout, and connected pages were never tried
-      over remote access. (f) Pages once turned accent-coloured (Golden Sunbreak, Halftone: "a weird
+      over remote access. Found by three guide-test builders (2026-10-15): at phone width, opening a
+      Page from the Pages list keeps the list beside it and squeezes the Page to ~170px; the pinned
+      view works (Destin: "roadmap item"). (f) Pages once turned accent-coloured (Golden Sunbreak, Halftone: "a weird
       yellow shade") and "its fine now. idk what happened"; not reproduced. (g) Page icons: "page
       builder skill needs better instructions to build a unique icon for each page that matches its
       purpose at-a-glance. users utilize these to tell pages apart." The set is nine glyphs, money included; it needs
-      many more, and the skill a rule to pick one no other page uses.
+      many more, and the skill a rule to pick one no other page uses. (h) Charts in Pages: no guide
+      recipe or kit colours; the guide-test PC-build and trip pages each invented one (Destin,
+      2026-10-16: "will want eventually, add to roadmap for now").
       `window-chrome` `all` `needs-verify` `P2` `checked 2026-10-08` `needs-repro`
 
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal as a YouCoded session,
