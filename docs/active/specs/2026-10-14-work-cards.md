@@ -1,6 +1,6 @@
 ---
 date: 2026-10-14
-status: draft
+status: active — built (cards/, cards.mjs, idea intake, Work board); merges with session/work-cards-20261014
 type: spec
 topic: Work cards — one small file per piece of work, tied to one branch, done when that branch merges. The facts layer the management page reads.
 origin: Destin's answers to the management-surface independent review deck, 2026-10-14
@@ -102,9 +102,22 @@ Destin says "add project skills". A file `cards/142-project-skills.md` appears w
 ("each project can turn skills on and off; checks pass"), tags, and a progress note. Any chat
 working on it uses branch `142-project-skills` (several chats may). A chat about to start the same
 thing finds 142 already exists and joins it. When the branch merges, the card is marked done
-automatically. The management page reads all cards.
+(by the merging chat, 2026-10-16 — see Resolved since). The management page reads all cards.
 
-## Open, for the building session
+## Resolved since (2026-10-15/16) — read this before the list below
+
+- Cards live in `cards/<id>-<slug>.md` at the workspace root; fields in `scripts/cards.mjs` (`KEYS`). The roadmap
+  was moved over and deleted (2026-10-15); priority and version tags were dropped from the page for now (#147).
+- Numbers: `cards.mjs new` takes the next free number with an exclusive file write; once master carries the cards,
+  every change saves straight to master (`cards-master.mjs`), so two chats cannot hand out the same number twice.
+- Cross-repo: an item lists its branches under `work:`; the page reads both repos' branches and pull requests.
+- Chats map onto items with `workspace-start --item <id>` (records the branch and a line under Chats);
+  "Working" comes from the app's open-chat signal, never a guess.
+- "Finish line" (Q-19) is NOT filled on any item yet; the page shows it when present.
+- Closing on merge: done by the merging chat (`cards.mjs close`), not automatically (multi-phase items).
+- Plan for the rest: `docs/active/specs/2026-10-16-pages-chats-and-programs.md`.
+
+## Open, for the building session (as written 2026-10-14; see "Resolved since" above)
 
 - Where cards live (`cards/` at the workspace root?) and their exact fields; reuse
   `scripts/roadmap-check.mjs`'s parser and `--vocab` lists rather than parsing markdown anew.

@@ -1,6 +1,6 @@
 ---
 date: 2026-10-16
-status: draft
+status: active — built on session/work-cards-20261014 (both repos), not merged (as of 2026-10-16)
 type: spec
 topic: Pages read and change chats, pages run approved programs, and the management page becomes Destin's own page kept true by chats
 origin: Destin's goals (2026-10-16 chat) and work-cards-next.questions.answers.json; Pages scope §5/§9 (docs/archive/specs/2026-09-15-youcoded-pages-scope.md)
@@ -8,6 +8,22 @@ related: docs/active/specs/2026-10-14-work-cards.md, docs/active/design/2026-10-
 ---
 
 # Pages that read chats and run programs; the management page as a page
+
+## Where it stands (2026-10-16, end of the building session)
+
+| Part | State |
+|---|---|
+| Triage (goal 1) | Done: 143 → 93 open items, merged to the branch (`docs/active/design/2026-10-16-manage-page/work-items-triage.*`) |
+| Approval cards for `chats` and `program` | Approved by Destin (`docs/active/design/2026-10-16-pages-chats-programs/approval-cards.review.answers.json`) |
+| App: `chats` and `program` abilities | Built (youcoded `page-chats.ts`, `page-program.ts`, `03d9a79d8`); verify.sh green; tried in a dev window with a scratch HOME: approval card, chat list, Resume after a real click, Start a chat, Working, bulk edit all worked |
+| Programs from a phone | Refused (desktop-only channels) — Destin's call; recommended to keep it so for now |
+| Workspace: items save straight to master, `--item`, link/progress/pause | Built and tested; saving to master switches on by itself once master carries `cards/` |
+| Work board page | Built (`pages/work-board/`); NOT installed in Destin's real Pages folder — waits for a release carrying the abilities and his yes |
+| Big picture, Tidy up live | Built (`vision:` on items; live scan) |
+| Merging an item closes it | By the merging chat (the "Merge to master" request includes `cards.mjs close`), not blindly: multi-phase items (the Android rebuild) would close early |
+| Status bar branch chip names the repo | Built and unit-tested; not yet seen in a running app |
+| Page-builder skill learns `chats`/`program` | Held on a marketplace branch until a release carries the abilities (see #90) |
+| Not verified | GitHub facts inside a dev window (private message bus → no keyring); the same program shows them when run outside |
 
 ## Destin's three goals, in order (2026-10-16)
 
