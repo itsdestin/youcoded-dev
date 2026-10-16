@@ -1,264 +1,338 @@
 {
-  "title": "Work items and the management page: how to finish them",
+  "title": "Pages that read chats, and the management page inside the app",
   "key": "work-cards-next-questions",
   "out": "work-cards-next.questions.html",
   "themes": ["midnight", "light"],
   "steps": [
     {
+      "id": "P-1",
+      "page": "Pages that can read your chats",
+      "intro": "Your goal 2: any page can list chats and offer a Resume button, behind the usual approval card."
+    },
+    {
       "id": "Q-1",
       "words": true,
-      "surface": "Work items",
-      "path": "The cards/ folder, and the management page's bulk edit",
-      "headline": "Where should changes to the work items be saved?",
-      "today": "The 144 work items live on this session's branch. The page saves each bulk edit (Combine, Move to stage, Delete) to whatever branch the copy it runs from is on, then commits and pushes.",
-      "problem": "After merging, the only copy on master is the shared folder, and it refuses all commits by design, so bulk edit would fail with 'commit failed'. And while chats edit items on their own branches, each one sees a different list until it merges: two chats can move the same item two ways, and the page shows only one of them.",
-      "proposal": "Pick where item changes are saved. This decides whether the page and every chat always see the same list.",
+      "surface": "YouCoded Pages",
+      "path": "A page's approval card, and what the page can see",
+      "headline": "When you approve a page to read your chats, how much should it see?",
+      "today": "Pages can keep their own small data file, call approved web services, and since Oct 14 open the new-chat window. They cannot see any of your chats. Each chat already has a name, last-active date, tags, a note, its project folder, its model, and pinned/complete marks.",
+      "problem": "A page that can't see chats can't show 'which chats worked on this' or offer Resume. But a chat list is personal: a page from the marketplace could show your chat names to whatever web service it's also approved to reach.",
+      "proposal": "The page names what it wants in its settings file; the approval card says it in plain words ('Read your chat list: names, dates, tags, notes and projects'), like the existing cards. Pick how wide one approval reaches.",
       "options": [
         {
-          "id": "master-direct",
-          "label": "Straight to master",
-          "summary": "One dedicated copy of master saves item changes and pushes them at once, without a pull request. The page and every chat save through it.",
+          "id": "page-says",
+          "label": "The page names its scope",
+          "summary": "A page asks for all chats, chats in named projects, or chats with a named tag. The card shows exactly that, and you approve or refuse it.",
           "pros": [
-            "The page and every chat see the same list within seconds.",
-            "Item changes never clash when a branch merges.",
-            "Bulk edit keeps working after merge."
+            "The management page asks for everything; a small project page asks for just its project.",
+            "You see the exact reach before saying yes."
           ],
-          "cons": [
-            "Item edits skip the pull request step (they are bookkeeping, not app code).",
-            "A wrong bulk Delete lands on master at once; it can be undone from history, but not by a button yet."
-          ],
+          "cons": ["Slightly more wording on the approval card."],
           "recommended": true
         },
         {
-          "id": "per-branch",
-          "label": "On each chat's branch",
-          "summary": "As now: an item change rides along with that chat's work and reaches master when it merges.",
-          "pros": ["Item changes are reviewed with the work they belong to."],
-          "cons": [
-            "The page shows a stale or partial list.",
-            "Two chats editing the same item clash at merge.",
-            "Bulk edit fails when run from master; it only works from a chat's copy."
-          ]
-        },
-        {
-          "id": "outside-git",
-          "label": "A file outside git",
-          "summary": "Items live in a plain folder on this computer, not in any repo.",
-          "pros": ["Instant, nothing to commit or push."],
-          "cons": [
-            "No history: a bad edit cannot be undone.",
-            "Not backed up, and your other computer never sees them."
-          ]
+          "id": "all-or-nothing",
+          "label": "All chats or none",
+          "summary": "One approval lets the page see every chat.",
+          "pros": ["Simplest card and simplest to build."],
+          "cons": ["A page that only needs one project still sees everything."]
         }
       ]
     },
     {
       "id": "Q-2",
       "words": true,
-      "surface": "Work items",
-      "path": "Merging this session's two branches",
-      "headline": "Should the foundation merge soon, with the rest built afterwards on new branches?",
-      "today": "Nothing is merged. Master has moved on 34 commits, changing the old roadmap files three times; this branch deletes those files. 14 other branches also edit the old roadmap, mostly old and idle. Trial merge: 3 old-roadmap clashes plus 1 clash in a check rule, all small.",
-      "problem": "Every day unmerged, chats on master keep writing to the old roadmap, and each of those entries must be moved into items again by hand. When an old branch later merges, it would quietly bring the old roadmap files back.",
-      "proposal": "Two ways to sequence it.",
+      "surface": "YouCoded Pages",
+      "path": "What a chat-reading page can do",
+      "headline": "Should an approved page also be able to change chats, or only read them and offer Resume?",
+      "today": "In the app you can rename a chat, tag it, write a note, and mark it pinned or complete. Resume opens a past chat, or jumps to it if it's already open.",
+      "problem": "Letting pages change chats is more powerful, but a faulty page could rename or retag many chats at once.",
+      "proposal": "Two levels.",
       "options": [
         {
-          "id": "merge-foundation",
-          "label": "Merge the foundation soon",
-          "summary": "Bring master's changes in, turn its 2 new roadmap edits into items, fix the clashing check, add a check that refuses old-roadmap files coming back, verify, then ask you 'ready to merge?'. Buttons, chat recording and cleanup follow on new branches.",
+          "id": "read-resume",
+          "label": "Read and Resume only",
+          "summary": "Pages see chats and can offer Resume, which only works after a real click, the same rule as Start a chat. Nothing on a chat can be changed.",
           "pros": [
-            "Clashes stop growing; every chat starts filing items instead of roadmap entries.",
-            "Each later piece is a small, separate merge you can judge on its own."
+            "Nothing a page does can damage your chat list.",
+            "Enough for the management page: items record which chats belong to them, not the other way round."
           ],
-          "cons": [
-            "Until the later pieces land, the page still has 'not built yet' buttons and Oct 12 snapshot sections. Only you see the page."
-          ],
+          "cons": ["Tagging or noting a chat from a page waits for a later round."],
           "recommended": true
         },
         {
-          "id": "finish-first",
-          "label": "Finish everything first",
-          "summary": "Build the buttons, chat recording and cleanup on this branch, then merge once.",
-          "pros": ["One merge, and the page is complete the day it lands."],
+          "id": "read-write",
+          "label": "Also change tags and notes",
+          "summary": "A second, separate approval lets a page set tags, notes and marks.",
+          "pros": ["A page could tag chats by work item for you."],
           "cons": [
-            "Clashes grow daily; roadmap entries written meanwhile must be moved again.",
-            "A very large merge is harder to check and harder to undo."
+            "More to build and test now.",
+            "A faulty page could mislabel many chats."
           ]
         }
       ]
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "YouCoded Pages",
+      "path": "The chat list a page sees",
+      "headline": "Two facts the chat list lacks today get added: the branch a chat worked on, and whether it is open right now.",
+      "changed": "Stated, not asked: the app records each chat's branch in its files but never shows it, and the past-chats list leaves out chats that are open. Both get added so a page can match chats to work items and show 'Working' only when a chat is really open.",
+      "notice": "The management page's 'Working' marker stops guessing from recent saves and becomes true only while a chat on that item is open. The app's own past-chats screen looks the same.",
+      "yes": "Agreed",
+      "no": "Not needed"
     },
     {
       "id": "P-2",
-      "page": "Making the buttons work",
-      "intro": "Seven buttons on the page only say 'not built yet'. These two questions decide how they get built."
-    },
-    {
-      "id": "Q-3",
-      "words": true,
-      "surface": "Management page",
-      "path": "Where the page runs",
-      "headline": "Should the management page become a page inside the YouCoded app?",
-      "today": "The page is a browser tab that exists only while a chat runs 'node manage.mjs'. Separately, since Oct 14, YouCoded Pages (small apps inside YouCoded) can open the normal new-chat window with a message already filled in; you still pick the project and press Start.",
-      "problem": "A browser tab cannot start, resume or switch to a chat in the app, so 'Start a chat on this', 'Resume latest chat' and 'Go to chat' have nothing to call. And the page vanishes when its chat ends.",
-      "proposal": "Two homes for the page. Not yet checked: whether a Page can already save files (needed for bulk edit) and open a specific older chat; both may need a small new app ability, tested in a dev window, never your installed app.",
-      "options": [
-        {
-          "id": "app-page",
-          "label": "A page inside the app",
-          "summary": "The management page becomes a YouCoded Page, always one click away in the app.",
-          "pros": [
-            "Always available, no chat needed to run it.",
-            "'Start a chat on this' uses the ability that shipped Oct 14.",
-            "Follows your app theme automatically."
-          ],
-          "cons": [
-            "App changes; your installed app only gets them with the next release.",
-            "Resume and Go to chat probably need a new Page ability first.",
-            "Desktop only at first; the phone app has no Pages yet."
-          ],
-          "recommended": true
-        },
-        {
-          "id": "browser-copy",
-          "label": "Stay a browser tab",
-          "summary": "Buttons copy a ready-made message (for example 'Resume item #75') that you paste into a chat.",
-          "pros": ["Small and quick; no app changes or release needed."],
-          "cons": [
-            "You paste every time.",
-            "The page still needs a chat running to exist."
-          ]
-        }
-      ]
+      "page": "Keeping the management page up to date",
+      "intro": "Your goal 3: chats keep the page true as they start, pause and finish work."
     },
     {
       "id": "Q-4",
       "words": true,
+      "surface": "Chats",
+      "path": "The start and end of every work chat",
+      "headline": "Should every work chat join an item at its start and close it automatically at merge?",
+      "today": "Chats don't record themselves on items. Only 11 of 144 items are linked to any branch, by hand. Marking an item Merged is a command someone has to remember to run.",
+      "problem": "'Several chats on one item' can't be tracked if chats don't say which item they're on, and an item stays unfinished after its work merges unless someone remembers.",
+      "proposal": "Yes: at its start a work chat finds the matching item (or proposes a new one the idea-intake way and waits for your yes), names its branch after it (for example 75-project-skills) and records itself on it. Wrap-up writes the item's progress note (done / next / blocked). Pausing records the reason. Merging moves the item to Merged on its own. No: items stay hand-linked.",
+      "yes": "Yes, record it",
+      "no": "No, keep it manual"
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Work items",
+      "path": "Where item changes are saved",
+      "headline": "Where should changes to the work items be saved?",
+      "today": "Items live on this session's branch. The page saves each bulk edit to whatever branch the copy it runs from is on.",
+      "problem": "After merging, the only copy on master is the shared folder, which refuses all saves by design, so bulk edit would fail. And while chats edit items on their own branches, each sees a different list until it merges.",
+      "proposal": "Pick where item changes are saved.",
+      "options": [
+        {
+          "id": "master-direct",
+          "label": "Straight to master",
+          "summary": "One dedicated copy of master saves item changes and pushes them at once, with no pull request. The page and every chat save through it.",
+          "pros": [
+            "The page and every chat see the same list within seconds.",
+            "Item changes never clash when work merges.",
+            "Bulk edit keeps working after merge."
+          ],
+          "cons": [
+            "Item edits skip the pull request step (they are bookkeeping, not app code).",
+            "A wrong bulk Delete reaches master at once; history can undo it, but no button does yet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "per-branch",
+          "label": "On each chat's branch",
+          "summary": "As now: an item change travels with that chat's work.",
+          "pros": ["Item changes are reviewed with their work."],
+          "cons": [
+            "The page shows a stale or partial list.",
+            "Bulk edit fails from master."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
       "surface": "Management page",
       "path": "The 'Merge to master' button on an item",
-      "headline": "What should 'Merge to master' actually do when pressed?",
-      "today": "The button shows on an item whose pull request passes its checks, and only says 'not built yet'. A real merge here means: merge, push, run the close-out checks, archive the item's plan documents, mark the item Merged, and remove its copies and branches.",
-      "problem": "Done half-way (merged but not cleaned up), it leaves stale copies of work and an item still showing as unfinished.",
-      "proposal": "Two ways the button could work.",
+      "headline": "What should 'Merge to master' do when pressed?",
+      "today": "The button shows when an item's pull request passes its checks, and only says 'not built yet'. A real merge means: merge, push, run the close-out checks, archive the plan documents, mark the item Merged, and remove its copies and branches.",
+      "problem": "Done half-way, it leaves stale copies of work and an item still showing as unfinished.",
+      "proposal": "Two ways.",
       "options": [
         {
           "id": "via-chat",
           "label": "Opens a chat that merges",
-          "summary": "Opens the new-chat window with 'Merge item #75 to master' filled in; you press Start and the chat does every step and reports back.",
+          "summary": "Opens the new-chat window with 'Merge item #75 to master' filled in. You press Start, and the chat does every step and reports back.",
           "pros": [
             "Every step runs, with the same checks as when you ask in chat.",
-            "If something fails, the chat explains it and can fix it."
+            "If something fails, the chat explains and can fix it."
           ],
-          "cons": ["One extra click (Start), and about a minute instead of seconds."],
+          "cons": ["One extra click, and about a minute."],
           "recommended": true
         },
         {
           "id": "direct",
           "label": "The page merges itself",
-          "summary": "The page merges the pull request directly, after a 'Merge to master?' confirmation.",
+          "summary": "The page merges directly after a confirmation.",
           "pros": ["One click, seconds."],
           "cons": [
-            "Cleanup and checks would be rebuilt in the page, a second copy that can drift.",
-            "A failure mid-way leaves a half-done state with no chat to explain it."
+            "Cleanup gets rebuilt in the page, a second copy that can drift.",
+            "A failure mid-way leaves a half-done state."
           ]
         }
       ]
     },
     {
       "id": "P-3",
-      "page": "Keeping the list true",
-      "intro": "The page is only as good as its facts. These decide how items stay accurate."
-    },
-    {
-      "id": "Q-5",
-      "words": true,
-      "surface": "Chats",
-      "path": "The start and end of every work chat",
-      "headline": "Should every work chat join an item at its start and close it automatically at merge?",
-      "today": "Chats don't record themselves on items. Only 11 of 144 items are linked to any branch, by hand. 'cards.mjs close' marks an item Merged but is run by hand. The 'Working' marker is a guess: any linked branch with a commit in the last 24 hours shows as Working, though you decided Working comes only from a live signal.",
-      "problem": "'Several chats on one item' can't be tracked if chats don't say which item they're on, and an item stays unfinished after its work merges unless someone remembers.",
-      "proposal": "Yes: at its start, a work chat finds the matching item (or proposes a new one the idea-intake way and waits for your yes), names its branch after it (for example 75-project-skills), and records itself on it; merging moves the item to Merged on its own; 'Working' shows only while a chat is actually open on it. No: items stay hand-linked and the Working guess stays.",
-      "yes": "Yes, record it",
-      "no": "No, keep it manual"
-    },
-    {
-      "id": "Q-6",
-      "words": true,
-      "surface": "Work items",
-      "path": "The 143 items moved over from the old roadmap",
-      "headline": "How should the moved-over items be sorted into their real stages?",
-      "today": "113 items sit in Planning, 28 in Preliminary exploration, 2 in Agentic buildout, 1 in Human polish & review. None has a finish line (the 1 to 3 sentences saying when it's done), which the plan said each would carry.",
-      "problem": "You defined Planning as 'thought through, no overlaps', but the move put almost the whole old roadmap there. Some of it is loose ideas, some is probably already done in merged work, and some overlaps.",
-      "proposal": "Three ways to sort it.",
-      "options": [
-        {
-          "id": "batches",
-          "label": "Proposals in batches",
-          "summary": "I check each item against merged history and the others, then show you batches of about 20 on a deck: back to Exploration, already done (Merged, with what shipped it), or combine. You approve each batch.",
-          "pros": [
-            "Nothing moves without your yes.",
-            "Each batch is small enough to judge."
-          ],
-          "cons": ["About 6 decks of your time."],
-          "recommended": true
-        },
-        {
-          "id": "do-then-check",
-          "label": "I sort, you check",
-          "summary": "I move them all, with a note on each, and you review with the page's bulk edit afterwards.",
-          "pros": ["Fastest for you up front."],
-          "cons": ["Changes you didn't approve: you'd have to find what moved and why."]
-        },
-        {
-          "id": "leave",
-          "label": "Leave as is",
-          "summary": "Sort each item only when a chat starts work on it.",
-          "pros": ["No time spent now."],
-          "cons": ["Planning stays crowded and partly wrong, so the page overstates what's ready."]
-        }
-      ]
+      "page": "A built-in page",
+      "intro": "You asked for the management page to be built into YouCoded. These two decide what that means."
     },
     {
       "id": "Q-7",
       "words": true,
-      "surface": "Management page",
-      "path": "The Screens, Big picture and Tidy up sections, and the 'Facts as of Oct 12' header",
-      "headline": "What should happen to the sections still showing the Oct 12 snapshot?",
-      "today": "Today is live from the items. Screens, Big picture and Tidy up still show a copy made Oct 12, and the header says 'Facts as of Oct 12' for the whole page. Item #147 already covers redoing Screens.",
-      "problem": "A page that mixes live and three-day-old facts, with one date in the header, can't be trusted at a glance.",
-      "proposal": "Two ways to handle it until #147.",
+      "surface": "YouCoded Pages",
+      "path": "The Pages list in the app",
+      "headline": "Who should see the built-in management page?",
+      "today": "The app has one built-in page, Office, listed only when Office is set up. Everyone else's pages are folders they made. The management page reads the cards/ folder of your YouCoded workspace, its branches and its pull requests.",
+      "problem": "YouCoded is for students and everyday users too. Shipped to everyone as-is, they'd see a page about YouCoded's own development, or an empty one.",
+      "proposal": "Three ways to ship it.",
       "options": [
         {
-          "id": "live-now",
-          "label": "Make two live now",
-          "summary": "Big picture reads the items directly (it was designed from the same facts); Tidy up reads the idle copies of work live. Screens keeps its pictures with its own 'Pictures from Oct 12' date, until #147. The header date goes.",
-          "pros": ["Everything except Screens is current every time you open it."],
-          "cons": ["More work before the page is done."],
+          "id": "when-cards",
+          "label": "Shown where items exist",
+          "summary": "Built in, but listed only for a project that has a cards/ folder, as Office is listed only when set up. Today that's just your workspace.",
+          "pros": [
+            "Ships with the app, as you asked.",
+            "Invisible to everyone else until a project of theirs uses items.",
+            "A later step could let any project use items."
+          ],
+          "cons": ["Checks for the folder on each project."],
           "recommended": true
         },
         {
-          "id": "label-only",
-          "label": "Label them, wait for #147",
-          "summary": "Each snapshot section gets its own 'as of Oct 12' line; nothing else changes.",
-          "pros": ["Quick and honest."],
-          "cons": ["Big picture and Tidy up drift further out of date each day."]
+          "id": "everyone",
+          "label": "Shown to everyone",
+          "summary": "Every install lists it.",
+          "pros": ["Simplest."],
+          "cons": ["Most people see a page that means nothing to them."]
+        },
+        {
+          "id": "your-page",
+          "label": "Your own page, not built in",
+          "summary": "It lives in your Pages folder only; the app ships only the abilities it uses.",
+          "pros": ["Nothing new in the app for other people."],
+          "cons": [
+            "Not what you asked for.",
+            "Only on computers where that folder syncs."
+          ]
         }
       ]
     },
     {
       "id": "Q-8",
       "words": true,
+      "surface": "YouCoded Pages",
+      "path": "How the built-in page is made",
+      "headline": "Should the built-in page use the same abilities as any other page, or be part of the app's own screens?",
+      "today": "Office, the one built-in page, is part of the app's own screens. The management page today is a separate web page drawn by a small program, in the app's look.",
+      "problem": "Built into the app's own screens, it can do anything but proves nothing about what other pages can do. Made as a normal page, it needs abilities pages don't have yet: reading chats (goal 2) and reading and saving work items.",
+      "proposal": "Two ways to build it.",
+      "options": [
+        {
+          "id": "like-a-page",
+          "label": "A page, using page abilities",
+          "summary": "It ships with the app but runs like any page: it reads chats with the new ability, and items and their branches with a second new one limited to the cards/ folder. Your approved design carries over.",
+          "pros": [
+            "Every ability it needs becomes available to any page, as you want for goal 2.",
+            "It is the first real test of those abilities.",
+            "The approved design carries over almost as-is."
+          ],
+          "cons": [
+            "Two new abilities to build, approve and test.",
+            "Saving items still needs the app to save and push to GitHub on the page's behalf."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "app-screen",
+          "label": "Part of the app's own screens",
+          "summary": "Rebuilt in the app's own screen code, like Office.",
+          "pros": ["No new page abilities needed for it."],
+          "cons": [
+            "The whole design is rebuilt from scratch.",
+            "Goal 2's chat ability gets no real user."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Order and loose ends",
+      "intro": "When things merge, and what to do with the snapshot sections and old copies of work."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Work items",
+      "path": "Merging this session's branches",
+      "headline": "Should the items and the current page merge soon, with goals 2 and 3 built afterwards on new branches?",
+      "today": "Nothing is merged. Master has changed the old roadmap files three times since this branch started; this branch deletes them. 14 other branches still edit the old roadmap. A trial merge shows 4 small clashes.",
+      "problem": "Every day unmerged, chats keep writing roadmap entries that must be moved into items again, and an old branch merging later would quietly bring the roadmap files back.",
+      "proposal": "Two ways to sequence it.",
+      "options": [
+        {
+          "id": "merge-foundation",
+          "label": "Merge items soon",
+          "summary": "After you approve the sorting deck: bring master's changes in, move its 2 new roadmap entries into items, add a check that refuses roadmap files coming back, verify, then ask you 'ready to merge?'. Goals 2 and 3 follow as separate merges.",
+          "pros": [
+            "Clashes stop growing; every chat starts filing items.",
+            "Each later piece is small enough to judge on its own."
+          ],
+          "cons": ["Until goals 2 and 3 land, the page keeps its 'not built yet' buttons. Only you see it."],
+          "recommended": true
+        },
+        {
+          "id": "finish-first",
+          "label": "Finish everything first",
+          "summary": "Build goals 2 and 3 on this branch, then merge once.",
+          "pros": ["One merge."],
+          "cons": [
+            "Clashes grow daily.",
+            "A very large merge is harder to check and to undo."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Management page",
+      "path": "Screens, Big picture and Tidy up, and the 'Facts as of Oct 12' header",
+      "headline": "What should happen to the sections still showing the Oct 12 snapshot?",
+      "today": "Today is live from the items. Screens, Big picture and Tidy up still show a copy made Oct 12, and the header dates the whole page Oct 12. Item #147 already covers redoing Screens.",
+      "problem": "A page mixing live and old facts under one date can't be trusted at a glance.",
+      "proposal": "Two ways, as part of building the in-app page.",
+      "options": [
+        {
+          "id": "live-now",
+          "label": "Make two live",
+          "summary": "Big picture reads the items directly; Tidy up reads idle copies of work live. Screens keeps its own 'Pictures from Oct 12' date until #147. The header date goes.",
+          "pros": ["Everything but Screens is current every time you open it."],
+          "cons": ["More work before the page is done."],
+          "recommended": true
+        },
+        {
+          "id": "label-only",
+          "label": "Label them, wait for #147",
+          "summary": "Each snapshot section gets its own date line; nothing else changes.",
+          "pros": ["Quick and honest."],
+          "cons": ["Big picture and Tidy up drift further out of date."]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
       "surface": "Copies of work on this computer",
       "path": "worktrees/ in the workspace",
       "headline": "What should happen to the 9 copies of work idle 2+ weeks and never merged?",
-      "today": "9 folders (model picker tags, per-project skills, specialists plans x3, theme plugin update, usage visibility, two old plan comparisons) were last touched Sept 11 to Sept 29. All have unsaved changes, and most hold work never merged.",
-      "problem": "They take space and show up as unfinished work, but some may hold the only copy of something you'd want.",
-      "proposal": "Three ways to handle them.",
+      "today": "9 folders (model picker tags, per-project skills, three specialist-plan copies, theme plugin update, usage visibility, two old plan comparisons) were last touched Sept 11 to 29. All have unsaved changes; most hold work never merged.",
+      "problem": "They show up as unfinished work every chat, but some may hold the only copy of something you'd want.",
+      "proposal": "Three ways.",
       "options": [
         {
           "id": "one-by-one",
           "label": "Decide one by one",
-          "summary": "A deck with one row per copy: what it was, what's unsaved, which item it belongs to. You pick keep or clean for each; clean means back up every change to GitHub first, then remove the folder.",
-          "pros": ["Nothing is lost by accident."],
+          "summary": "A deck, one row per copy: what it was, what's unsaved, which item it belongs to. Clean means back up every change to GitHub first, then remove the folder.",
+          "pros": ["Nothing lost by accident."],
           "cons": ["One more deck."],
           "recommended": true
         },
@@ -266,13 +340,13 @@
           "id": "backup-all",
           "label": "Back up and clean all",
           "summary": "Every unsaved change is pushed to GitHub on its branch, then all 9 folders are removed.",
-          "pros": ["Done in one step; the work stays on GitHub."],
-          "cons": ["Old half-done changes get pushed as-is, without anyone looking."]
+          "pros": ["One step; the work stays on GitHub."],
+          "cons": ["Old half-done changes get pushed unread."]
         },
         {
           "id": "keep",
           "label": "Keep them all",
-          "summary": "Leave them; the start-of-chat warning keeps listing them.",
+          "summary": "Leave them.",
           "pros": ["No risk."],
           "cons": ["The warning keeps appearing every chat."]
         }
