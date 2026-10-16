@@ -411,6 +411,10 @@ $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 {uic.JS}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
+# WHY (Destin, 2026-10-16, plan deck Q-7/Q-8): the same approved page, made to run as his own YouCoded page
+if '--page-mode' in sys.argv:
+    import page_mode
+    page = page_mode.apply(page)
 check_tips(page)
 open(_arg('--out') or os.path.join(HERE, 'mockup.html'), 'w').write(page)
 print('screens', len(names), 'base', len(base), 'places', {p: len(v) for p, v in by_place.items()})

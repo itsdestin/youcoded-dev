@@ -467,10 +467,10 @@ function main(args) {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--help') {
-      console.log('Usage: node scripts/workspace-start.mjs --session <stable-key> [workspace|youcoded|youcoded-core|youcoded-admin|wecoded-themes|wecoded-marketplace] [--root <workspace>] [--json]\nRe-use the same key to resume; add repository names as work expands. Startup fetches workspace guidance, and a guarded fast-forward may update the shared workspace when preservation is proven. No manual pull, stash, clean, commit, push or publish is performed.');
+      console.log('Usage: node scripts/workspace-start.mjs --session <stable-key> [workspace|youcoded|youcoded-core|youcoded-admin|wecoded-themes|wecoded-marketplace] [--item <id>] [--root <workspace>] [--json]\n--item records this chat on that work item (its branch, and a line under Chats); name the session after the item, e.g. --session 75-project-skills.\nRe-use the same key to resume; add repository names as work expands. Startup fetches workspace guidance, and a guarded fast-forward may update the shared workspace when preservation is proven. No manual pull, stash, clean, commit, push or publish is performed.');
       return;
     }
-    if (arg === '--session' || arg === '--root') {
+    if (arg === '--session' || arg === '--root' || arg === '--item') {
       if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${arg}`);
       opts[arg.slice(2)] = args[++i];
     } else if (arg === '--json') json = true;
@@ -494,6 +494,21 @@ function main(args) {
     console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. Only merged, clean, unused worktrees idle 3+ days are removed automatically. This is not a sandbox.`);
   }
   runWorktreeSweep(opts.root, result.session, json);
+  if (opts.item) linkItem(result.workspace, opts.item, result.session, json);
+}
+
+// WHY (Destin, plan deck Q-4, 2026-10-16: "several chats on one item" must be tracked): a chat that starts
+// work on an item records itself there — its branch under `work:` and a dated line under Chats — so the
+// management page can show every chat on the item and its live markers. It goes through cards.mjs, which
+// saves straight to master once master carries the items. A failure only prints: starting work matters more.
+function linkItem(workspace, item, session, json) {
+  try {
+    const out = execFileSync(process.execPath, [path.join(workspace, 'scripts', 'cards.mjs'), 'link', String(item).replace(/^#/, ''), '--branch', `session/${session}`, '--line', 'chat started'],
+      { cwd: workspace, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+    (json ? console.error : console.log)(`\nwork item: ${out}`);
+  } catch (error) {
+    console.error(`\nwork item: not recorded — ${String(error.stderr || error.message).trim().split('\n')[0]}`);
+  }
 }
 
 // WHY at session start (2026-10-08): cleanup used to happen only when a branch merged, so

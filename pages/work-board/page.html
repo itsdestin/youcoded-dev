@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Work board</title>
+<!-- WHY a shell (2026-10-16): the board is drawn by its program from the live work items each time it opens, so
+     this file never goes stale. -->
+<style>body{margin:0;font:13px/1.5 var(--font-sans,system-ui);color:var(--fg,#1a1a1a);background:var(--canvas,#f2f2f2)}
+.boot{max-width:28rem;margin:20vh auto;padding:16px;text-align:center;color:var(--fg-muted,#5e5e5e)}</style></head>
+<body><div class="boot" id="boot">Loading your work items…</div>
+<script>
+(async () => {
+  const say = (t) => { document.getElementById('boot').textContent = t; };
+  try {
+    if (!window.youcoded || !window.youcoded.program) { say('This page needs a YouCoded version that lets pages run their program.'); return; }
+    const r = await window.youcoded.program.run('work-items.mjs', JSON.stringify({ op: 'page' }));
+    if (!r.ok) { say(r.reason || 'The page\'s program did not run.'); return; }
+    const j = JSON.parse(r.output || '{}');
+    if (j.error) { say(j.error); return; }
+    // WHY move the parts in, not document.write: the app put its security rules, theme and page tools in this
+    // document's head; replacing the document would drop them. So the board's styles join the head, its body
+    // replaces this one, and its scripts run in order, as they would have in their own file.
+    const doc = new DOMParser().parseFromString(j.html, 'text/html');
+    for (const s of doc.head.querySelectorAll('style')) { const n = document.createElement('style'); n.textContent = s.textContent; document.head.appendChild(n); }
+    const scripts = [...doc.body.querySelectorAll('script')].map((s) => s.textContent);
+    doc.body.querySelectorAll('script').forEach((s) => s.remove());
+    document.body.innerHTML = doc.body.innerHTML;
+    for (const code of scripts) { const n = document.createElement('script'); n.textContent = code; document.body.appendChild(n); }
+    // The board's scripts wait for the page to finish loading, which already happened.
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+  } catch (e) { say('The Work board could not load: ' + (e && e.message || e)); }
+})();
+</script></body></html>

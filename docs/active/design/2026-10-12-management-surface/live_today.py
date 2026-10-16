@@ -186,14 +186,16 @@ function filter(){const q=$('#lq').value.trim().toLowerCase(),t=$('#ltag').value
   $('#lnone').hidden=!!any||!(q||t);fades()}
 $('#lq').addEventListener('input',filter);$('#ltag').addEventListener('change',filter);
 async function send(url,body){
+  // WHY (2026-10-16): inside YouCoded the page saves through its program (page_mode.py), not this server
+  if(window.boardRun)return await window.boardRun({op:url.replace('/api/',''),...body});
   if(!LIVE)throw new Error('This copy of the page was opened as a file, so it cannot save. Start it with: node scripts/manage.mjs');
   const r=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();
   if(!r.ok)throw new Error(j.error||'Something went wrong.');return j}
-function done(msg){sessionStorage.setItem('ltoast',msg);location.reload()}
+function done(msg){if(window.boardDone)return window.boardDone(msg);sessionStorage.setItem('ltoast',msg);location.reload()}
 const m0=sessionStorage.getItem('ltoast');if(m0){sessionStorage.removeItem('ltoast');setTimeout(()=>toast(m0),300)}
 const link=id=>{const c=C[id];return c?`<button class="row rowbtn" data-card-open="${id}" data-tip="Opens this item."><span class="body"><span class="t-xs rt">#${id} ${e_(c.title)}</span></span><span class="spill stage" data-tip="Its stage.">${e_(W[c.stage])}</span></button>`:''};
 let HIST=[],CUR=null;
-function openCard(id,back){const c=C[id];if(!c)return;if(!back&&CUR&&CUR!==id&&!$('#iwrap').hidden)HIST.push(CUR);CUR=id;
+function openCard(id,back){const c=C[id];if(!c)return;if(!back&&CUR&&CUR!==id&&!$('#iwrap').hidden)HIST.push(CUR);CUR=id;window.LCUR=id;
   const g=(l,tip,ids)=>ids.length?`<section class="dgroup"><div class="eyebrow" data-tip="${tip}">${l}</div><div class="card dcard">${ids.map(link).join('')}</div></section>`:'';
   const right=g('Needs first','Must exist before this one can be built.',c.needs)+g('Needed by','Cannot be built until this one exists.',c.neededBy)+g('Overlaps','Exploration items covering some of the same ground.',c.related);
   openPanel('','Work item #'+c.id,`<div class="card dtop"><div class="dtl"><span class="t-base fw">${e_(c.title)}</span><span class="spill stage" data-tip="Its stage.">${e_(W[c.stage])}</span></div>

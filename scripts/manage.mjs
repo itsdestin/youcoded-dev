@@ -34,14 +34,16 @@ const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'
 
 /** Build the full page from the cards. Cached until a card file changes. */
 let cache = { key: '', html: '' };
-export function buildPage(root) {
+export function buildPage(root, { pageMode = false } = {}) {
   const dir = path.join(root, 'cards');
-  const key = fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '';
+  const key = (pageMode ? 'page|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {
-    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify(cardsPayload(root)));
-    execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html')], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
+    // WHY no guessed "Working" in page mode (Destin, plan deck S-3): inside YouCoded the page asks the app which
+    // chats are open right now, so a branch saved in the last day must not pass for a chat that is working
+    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify(cardsPayload(root, { guessWorking: !pageMode })));
+    execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html'), ...(pageMode ? ['--page-mode'] : [])], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
     cache = { key, html: fs.readFileSync(path.join(tmp, 'page.html'), 'utf8') };
     return cache.html;
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
@@ -162,11 +164,11 @@ export function liveFacts(root, { now = Date.now(), useGh = true } = {}) {
 }
 
 /** The live facts for one card, from the branches it lists under `work`. */
-export function factsFor(card, f) {
+export function factsFor(card, f, { guessWorking = true } = {}) {
   const chats = []; const pulls = []; let unsaved = false; let working = false;
   for (const b of card.work || []) {
     const br = f.branches.get(b);
-    const live = br && !br.merged ? f.now - Date.parse(br.date) < 24 * 3600_000 : false;
+    const live = guessWorking && br && !br.merged ? f.now - Date.parse(br.date) < 24 * 3600_000 : false;
     working ||= live;
     if (br) chats.push({ date: br.date.slice(0, 10), name: b, result: (br.merged ? `Merged (${br.mergedAs.join(', ')}): ` : '') + (br.subject || ''), live, merged: !!br.merged });
     if (f.unsaved.has(b)) unsaved = true;
@@ -187,7 +189,7 @@ export function factsFor(card, f) {
   };
 }
 
-export function cardsPayload(root, { live = true } = {}) {
+export function cardsPayload(root, { live = true, guessWorking = true } = {}) {
   const cards = loadCards(root);
   const nb = neededBy(cards);
   // WHY (approved Today: one date per row, at the far right): a card's last commit is when it was last worked on
@@ -196,7 +198,7 @@ export function cardsPayload(root, { live = true } = {}) {
   return {
     stages: STAGES.map(s => ({ id: s, word: STAGE_WORD[s] })),
     cards: cards.map(c => {
-      const live_ = f ? factsFor(c, f) : { chats: [], unsaved: false, working: false, prs: [], failing: false, mergeable: false, lastWork: '' };
+      const live_ = f ? factsFor(c, f, { guessWorking }) : { chats: [], unsaved: false, working: false, prs: [], failing: false, mergeable: false, lastWork: '' };
       return { id: c.id, title: c.title, stage: c.stage, priority: c.priority || '', summary: c.summary || '', area: c.area || '', side: c.side || '',
         platform: c.platform || '', paused: c.paused || '', tags: c.tags, needs: c.needs.map(Number), related: c.related.map(Number), work: c.work,
         neededBy: nb.get(String(c.id)) || [], release: c.release || '', created: c.created || '', branch: c.branch || '', finish: c.finish || '',

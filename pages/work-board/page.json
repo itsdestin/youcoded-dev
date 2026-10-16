@@ -1,0 +1,10 @@
+{
+  "name": "Work board",
+  "description": "Every piece of YouCoded work, the chats on each, and buttons to start, resume or merge.",
+  "icon": "list",
+  "connections": [
+    { "id": "chats", "kind": "chats", "access": "full", "scope": "all" },
+    { "id": "board", "kind": "program", "file": "work-items.mjs" },
+    { "id": "start", "kind": "session" }
+  ]
+}
