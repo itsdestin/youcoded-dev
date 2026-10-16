@@ -281,6 +281,9 @@ export function combineCards(root, idList, keep, title) {
     t = setLine(t, 'stage', stage); t = setLine(t, 'priority', pri ?? '');
     t = setLine(t, 'tags', [...new Set(group.flatMap(c => c.tags))].join(', '));
     t = setLine(t, 'needs', union('needs').join(', ')); t = setLine(t, 'related', union('related').join(', '));
+    // WHY (2026-10-16 triage): a folded-in card's branches are its live facts on the page (chats, checks, backup);
+    // dropping them lost #138's link to session/ui-consistency-audit when it was combined into #135
+    t = setLine(t, 'work', [...new Set(group.flatMap(c => c.work))].join(', '));
     for (const c of others) t = t.replace(/\n*$/, '') + `\n\nMerged in #${c.id} "${c.title}"\n${c.body}\n`;
     fs.writeFileSync(f, t);
     for (const c of others) fs.rmSync(path.join(root, c.file));

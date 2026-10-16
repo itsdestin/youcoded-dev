@@ -3,7 +3,7 @@ id: 18
 title: Screenshot and review-page tools: ten faults
 stage: planning
 priority: P3
-tags: dev-workspace, rigs
+tags: dev-workspace, rigs, bug
 branch: 18-screenshot-review-deck-and-workbench
 roadmap: dev-workspace: Screenshot, review-deck and workbench tooling: 10 faults.
 created: 2026-10-15

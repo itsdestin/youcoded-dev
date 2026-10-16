@@ -3,7 +3,7 @@ id: 62
 title: Chat on YouCoded's own engine: eight small faults
 stage: planning
 priority: P3
-tags: native-harness, sessions, desktop, needs-repro
+tags: native-harness, sessions, desktop, needs-repro, bug
 branch: 62-native-chat-small-faults-and
 roadmap: native-harness: Native chat: small faults and polish — 8 things.
 created: 2026-10-15

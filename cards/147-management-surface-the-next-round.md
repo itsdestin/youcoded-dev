@@ -2,7 +2,7 @@
 id: 147
 title: Management surface: the next round
 stage: planning
-tags: management-surface, dev-workspace
+tags: management-surface, dev-workspace, housekeeping
 branch: 147-management-surface-the-next-round
 created: 2026-10-16
 why: Destin, 2026-10-16: three follow-ups for the management page

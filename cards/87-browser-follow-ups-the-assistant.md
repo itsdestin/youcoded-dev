@@ -3,7 +3,7 @@ id: 87
 title: Assistant's web browser: eight follow-ups
 stage: planning
 priority: P3
-tags: other-features, misc
+tags: other-features, misc, feature
 branch: 87-browser-follow-ups-the-assistant
 roadmap: other-features: Browser follow-ups (the assistant's own browser, shipped 202
 created: 2026-10-15

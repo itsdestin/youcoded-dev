@@ -3,7 +3,7 @@ id: 82
 title: Share Destin's Z13 tablet setup as a free kit
 stage: explore
 priority: P3
-tags: operations
+tags: operations, feature
 branch: 82-free-z13-tablet-kit-as
 roadmap: operations: Free "Z13 tablet kit" as a marketing post: package Destin's
 created: 2026-10-15

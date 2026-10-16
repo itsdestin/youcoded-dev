@@ -3,7 +3,7 @@ id: 85
 title: Buddy window: three open items
 stage: planning
 priority: P3
-tags: other-features, buddy, buddy-window, desktop
+tags: other-features, buddy, buddy-window, desktop, bug
 branch: 85-buddy-window-3-open-items
 roadmap: other-features: Buddy window: 3 open items.
 created: 2026-10-15

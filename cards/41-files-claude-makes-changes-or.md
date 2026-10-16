@@ -3,7 +3,7 @@ id: 41
 title: Track files Claude changes by running commands
 stage: planning
 priority: P3
-tags: files, files-panel
+tags: files, files-panel, feature
 report: docs/active/investigations/2026-10-13-command-file-tracking.md
 branch: 41-files-claude-makes-changes-or
 roadmap: files: Files Claude makes, changes or deletes by running a command

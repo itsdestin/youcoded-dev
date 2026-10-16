@@ -3,7 +3,7 @@ id: 145
 title: Motion, voice and chat images: five parked ideas
 stage: explore
 priority: P3
-tags: user-interface
+tags: user-interface, feature
 branch: 145-parked-ideas-motion-voice-and
 roadmap: user-interface: Parked ideas: motion, voice and chat images (5 things).
 created: 2026-10-15

@@ -141,3 +141,14 @@ test('combineCards keeps one, folds the rest in, and repoints links', () => {
   assert.deepEqual(cards.find(c => c.id === 3).needs, ['1']);
   assert.deepEqual(check(cards), []);
 });
+
+test('combineCards keeps every branch the folded-in cards were linked to', () => {
+  const root = tmp();
+  createCard(root, { title: 'A' }); createCard(root, { title: 'B' });
+  for (const [id, w] of [[1, 'session/a'], [2, 'session/b, session/a']]) {
+    const f = path.join(root, loadCards(root).find(c => c.id === id).file);
+    fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace(/\n---\n/, `\nwork: ${w}\n---\n`));
+  }
+  combineCards(root, [1, 2], 1);
+  assert.deepEqual(loadCards(root)[0].work, ['session/a', 'session/b']);
+});

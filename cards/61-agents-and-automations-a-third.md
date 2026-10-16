@@ -3,7 +3,7 @@ id: 61
 title: Agents & Automations: work that runs on a schedule
 stage: explore
 priority: P2
-tags: native-harness, sessions
+tags: native-harness, sessions, feature
 release: v1.3.2
 report: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 needs: 63

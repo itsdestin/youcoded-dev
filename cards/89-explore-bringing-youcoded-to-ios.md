@@ -3,7 +3,7 @@ id: 89
 title: Explore a YouCoded app for iPhone
 stage: explore
 priority: P2
-tags: other-features, misc
+tags: other-features, misc, feature
 branch: 89-explore-bringing-youcoded-to-ios
 roadmap: other-features: Explore bringing YouCoded to iOS. Today an iPhone only reach
 created: 2026-10-15

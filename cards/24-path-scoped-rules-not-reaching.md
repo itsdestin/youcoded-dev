@@ -3,7 +3,7 @@ id: 24
 title: Project rules don't always reach work sessions
 stage: planning
 priority: P3
-tags: dev-workspace, knowledge
+tags: dev-workspace, knowledge, bug
 branch: 24-path-scoped-rules-not-reaching
 roadmap: dev-workspace: Path-scoped rules not reaching sessions: 2 findings.
 created: 2026-10-15

@@ -3,7 +3,7 @@ id: 113
 title: Remote access: three ideas left as they are
 stage: explore
 priority: P3
-tags: remote-access, one-core, remote, security
+tags: remote-access, one-core, remote, security, polish
 branch: 113-parked-ideas-remote-access-decided
 roadmap: remote-access: Parked ideas: remote access, decided to leave as is (three t
 created: 2026-10-15

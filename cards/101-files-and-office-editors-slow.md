@@ -3,7 +3,7 @@ id: 101
 title: Files and Office editors: slow cases
 stage: planning
 priority: P3
-tags: perf, files-panel, desktop, performance
+tags: perf, files-panel, desktop, performance, polish
 branch: 101-files-and-office-editors-slow
 roadmap: perf: Files and Office editors: slow and memory-hungry cases (6 th
 created: 2026-10-15

@@ -1,9 +1,9 @@
 ---
 id: 21
 title: Redo the review of the session-switch animation
-stage: planning
+stage: merged
 priority: P3
-tags: dev-workspace, rigs
+tags: dev-workspace, rigs, polish
 branch: 21-session-strip-motion-review-re
 roadmap: dev-workspace: Session-strip motion review: re-author as live pick-one step
 created: 2026-10-15

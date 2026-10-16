@@ -3,7 +3,7 @@ id: 69
 title: Cut cloud model costs in long chats
 stage: planning
 priority: P2
-tags: native-harness, cost, desktop
+tags: native-harness, cost, desktop, polish
 report: docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 branch: 69-cloud-model-context-management-and
 roadmap: native-harness: Cloud model context management and cache/token efficiency —

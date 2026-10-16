@@ -3,7 +3,7 @@ id: 15
 title: Eight behaviors no automatic test protects
 stage: planning
 priority: P3
-tags: dev-workspace, tests, regression
+tags: dev-workspace, tests, regression, housekeeping
 branch: 15-test-and-check-gaps-8
 roadmap: dev-workspace: Test and check gaps: 8 places where nothing guards a behavio
 created: 2026-10-15

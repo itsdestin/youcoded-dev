@@ -3,7 +3,7 @@ id: 44
 title: Idea: a laptop's AI key opens the games panel
 stage: explore
 priority: P3
-tags: games, arcade, desktop
+tags: games, arcade, desktop, feature
 branch: 44-idea-bind-the-dedicated-copilot
 roadmap: games: Idea: bind the dedicated Copilot/AI key on Windows laptops (
 created: 2026-10-15

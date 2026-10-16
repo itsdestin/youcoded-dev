@@ -3,7 +3,7 @@ id: 16
 title: First-time setup untested on Linux, Windows, Mac
 stage: planning
 priority: P3
-tags: dev-workspace, tests
+tags: dev-workspace, tests, housekeeping
 branch: 16-cross-platform-first-run-testing
 roadmap: dev-workspace: Cross-platform first-run testing: 5 open pieces.
 created: 2026-10-15

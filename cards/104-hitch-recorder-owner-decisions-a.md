@@ -3,7 +3,7 @@ id: 104
 title: Slowdown recorder: settings and privacy choices
 stage: explore
 priority: P3
-tags: perf, performance
+tags: perf, performance, feature
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 104-hitch-recorder-owner-decisions-a
 roadmap: perf: Hitch recorder, owner decisions: (a) the recorder is always

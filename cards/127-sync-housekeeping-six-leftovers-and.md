@@ -3,7 +3,7 @@ id: 127
 title: Sync: six leftover cleanups and rare edge cases
 stage: planning
 priority: P3
-tags: sync, desktop
+tags: sync, desktop, bug
 branch: 127-sync-housekeeping-six-leftovers-and
 roadmap: sync: Sync housekeeping: six leftovers and rare edge cases.
 created: 2026-10-15

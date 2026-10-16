@@ -3,7 +3,7 @@ id: 118
 title: Phone browser: missing theme pictures and blank loads
 stage: planning
 priority: P3
-tags: remote-access, standalone, remote
+tags: remote-access, standalone, remote, bug
 branch: 118-phone-browser-two-display-and
 roadmap: remote-access: Phone browser: two display and loading faults.
 created: 2026-10-15

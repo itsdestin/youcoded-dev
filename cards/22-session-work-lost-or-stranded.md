@@ -3,7 +3,7 @@ id: 22
 title: Six ways a work session's progress can go missing
 stage: planning
 priority: P1
-tags: dev-workspace, knowledge, regression
+tags: dev-workspace, knowledge, regression, bug
 branch: 22-session-work-lost-or-stranded
 roadmap: dev-workspace: Session work lost or stranded: 6 ways a session's work or wo
 created: 2026-10-15

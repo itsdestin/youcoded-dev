@@ -3,7 +3,7 @@ id: 109
 title: Make the app open faster
 stage: planning
 priority: P3
-tags: perf, window-chrome, desktop, performance
+tags: perf, window-chrome, desktop, performance, polish
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 109-launch-takes-about-1-3
 roadmap: perf: Launch takes about 1.3 s and the single 3.19 MB main script

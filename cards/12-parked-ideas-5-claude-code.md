@@ -3,7 +3,7 @@ id: 12
 title: Ideas: five more Claude Code features
 stage: explore
 priority: P3
-tags: claude-code-integration
+tags: claude-code-integration, feature
 branch: 12-parked-ideas-5-claude-code
 roadmap: claude-code-integration: Parked ideas: 5 Claude Code ideas.
 created: 2026-10-15

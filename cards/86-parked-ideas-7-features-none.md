@@ -3,7 +3,7 @@ id: 86
 title: Parked ideas: seven features not started
 stage: explore
 priority: P3
-tags: other-features, misc, security
+tags: other-features, misc, security, feature
 needs: 61
 branch: 86-parked-ideas-7-features-none
 roadmap: other-features: Parked ideas: 7 features, none started.

@@ -3,7 +3,7 @@ id: 80
 title: Automate moderating the r/youcoded subreddit
 stage: explore
 priority: P3
-tags: operations
+tags: operations, feature
 branch: 80-moderating-r-youcoded-set-up
 roadmap: operations: Moderating r/youcoded (set up 2026-09-10) is all by hand: De
 created: 2026-10-15

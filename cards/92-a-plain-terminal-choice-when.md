@@ -3,7 +3,7 @@ id: 92
 title: Offer a plain terminal when starting a session
 stage: planning
 priority: P3
-tags: other-features, misc
+tags: other-features, misc, feature
 report: docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json
 branch: 92-a-plain-terminal-choice-when
 roadmap: other-features: A plain "Terminal" choice when starting a new session — a ba

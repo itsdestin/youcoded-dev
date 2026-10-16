@@ -3,7 +3,7 @@ id: 143
 title: Small missing conveniences and wording fixes
 stage: planning
 priority: P3
-tags: user-interface
+tags: user-interface, feature
 branch: 143-small-missing-conveniences-and-copy
 roadmap: user-interface: Small missing conveniences and copy fixes (4 things).
 created: 2026-10-15

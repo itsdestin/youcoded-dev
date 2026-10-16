@@ -3,7 +3,7 @@ id: 25
 title: Learn which features people actually use
 stage: explore
 priority: P2
-tags: dev-workspace, knowledge
+tags: dev-workspace, knowledge, feature
 branch: 25-we-can-see-how-many
 roadmap: dev-workspace: We can see how many people open the app and nothing else. Th
 created: 2026-10-15

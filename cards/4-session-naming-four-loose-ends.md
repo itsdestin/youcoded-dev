@@ -3,7 +3,7 @@ id: 4
 title: Conversation names: four loose ends
 stage: planning
 priority: P3
-tags: chat-data, session-drawer, desktop, needs-repro
+tags: chat-data, session-drawer, desktop, needs-repro, bug
 branch: 4-session-naming-four-loose-ends
 roadmap: chat-data: Session naming: four loose ends.
 created: 2026-10-15

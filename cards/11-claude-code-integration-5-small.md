@@ -3,7 +3,7 @@ id: 11
 title: Claude Code connection: five small faults
 stage: planning
 priority: P3
-tags: claude-code-integration, regression
+tags: claude-code-integration, regression, bug
 branch: 11-claude-code-integration-5-small
 roadmap: claude-code-integration: Claude Code integration: 5 small faults.
 created: 2026-10-15

@@ -3,7 +3,7 @@ id: 124
 title: Sync security: three gaps that could expose secrets
 stage: planning
 priority: P2
-tags: sync, settings/sync, security
+tags: sync, settings/sync, security, bug
 branch: 124-sync-security-gaps-three-things
 roadmap: sync: Sync security gaps: three things that could expose secrets o
 created: 2026-10-15

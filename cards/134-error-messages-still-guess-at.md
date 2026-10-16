@@ -3,7 +3,7 @@ id: 134
 title: Error messages still guess at causes
 stage: planning
 priority: P1
-tags: user-interface
+tags: user-interface, bug
 release: v1.3.1
 report: docs/active/investigations/2026-09-10-error-inventory/README.md
 branch: 134-error-messages-still-guess-at

@@ -3,7 +3,7 @@ id: 146
 title: Reload returns to the wrong chat
 stage: planning
 priority: P3
-tags: user-interface
+tags: user-interface, bug
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 146-after-the-window-reloads-it
 roadmap: user-interface: After the window reloads it returns to the first session ins

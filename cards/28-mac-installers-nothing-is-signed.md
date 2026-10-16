@@ -3,7 +3,7 @@ id: 28
 title: Sign the Mac app so it opens without warnings
 stage: planning
 priority: P1
-tags: dev-workspace, release, regression
+tags: dev-workspace, release, regression, bug
 release: v1.3.1
 report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 28-mac-installers-nothing-is-signed

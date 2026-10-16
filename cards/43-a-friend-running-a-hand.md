@@ -3,7 +3,7 @@ id: 43
 title: Games: a cheater can fake a win when you go offline
 stage: planning
 priority: P3
-tags: games, security
+tags: games, security, bug
 report: docs/active/investigations/2026-09-01-game-forfeit-unattested-record.md
 branch: 43-a-friend-running-a-hand
 roadmap: games: A friend running a hand-written client can post a forfeit "w

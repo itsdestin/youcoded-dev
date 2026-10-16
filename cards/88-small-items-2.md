@@ -3,7 +3,7 @@ id: 88
 title: Two small items: a warning and a community link
 stage: planning
 priority: P3
-tags: other-features, misc
+tags: other-features, misc, bug
 branch: 88-small-items-2
 roadmap: other-features: Small items: 2.
 created: 2026-10-15

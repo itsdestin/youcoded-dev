@@ -3,7 +3,7 @@ id: 139
 title: Phone-width and touch screen polish: three groups
 stage: planning
 priority: P3
-tags: user-interface
+tags: user-interface, polish
 branch: 139-phone-width-and-touch-polish
 roadmap: user-interface: Phone-width and touch polish (3 groups).
 created: 2026-10-15

@@ -3,7 +3,7 @@ id: 112
 title: Phone and computer parity: four gaps left
 stage: planning
 priority: P2
-tags: remote-access, one-core, remote
+tags: remote-access, one-core, remote, feature
 branch: 112-phone-and-computer-parity-what
 roadmap: remote-access: Phone and computer parity: what is still missing after one-c
 created: 2026-10-15

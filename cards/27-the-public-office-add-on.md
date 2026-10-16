@@ -3,7 +3,7 @@ id: 27
 title: Remove a personal memo from the Office add-on history
 stage: planning
 priority: P2
-tags: dev-workspace, release, security
+tags: dev-workspace, release, security, housekeeping
 branch: 27-the-public-office-add-on
 roadmap: dev-workspace: The public Office add-on repo (youcoded-office) once held a
 created: 2026-10-15

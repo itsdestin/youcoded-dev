@@ -3,7 +3,7 @@ id: 100
 title: Themes and animations may cost too much power
 stage: planning
 priority: P3
-tags: perf, performance, themes-screen
+tags: perf, performance, themes-screen, polish
 branch: 100-theme-and-animation-costs-on
 roadmap: perf: Theme and animation costs on screen (3 things).
 created: 2026-10-15

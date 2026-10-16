@@ -3,7 +3,7 @@ id: 142
 title: Dialogs, help bubbles and window drag: three fixes
 stage: planning
 priority: P3
-tags: user-interface, desktop
+tags: user-interface, desktop, bug
 branch: 142-dialogs-help-bubbles-and-window
 roadmap: user-interface: Dialogs, help bubbles and window drag (3 things).
 created: 2026-10-15

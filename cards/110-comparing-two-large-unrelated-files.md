@@ -3,7 +3,7 @@ id: 110
 title: Comparing two big, different files freezes the app
 stage: planning
 priority: P3
-tags: perf, tool-cards, desktop, performance
+tags: perf, tool-cards, desktop, performance, bug
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 110-comparing-two-large-unrelated-files
 roadmap: perf: Comparing two large, unrelated files in an edit card freezes

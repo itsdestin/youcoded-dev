@@ -3,7 +3,7 @@ id: 33
 title: Release blocker: search stops early in big projects
 stage: planning
 priority: P1
-tags: files, projects, desktop
+tags: files, projects, desktop, bug
 release: v1.3.1
 report: docs/active/specs/2026-09-18-project-files-background-index.md
 branch: 33-v1-3-1-release-blocker

@@ -3,7 +3,7 @@ id: 117
 title: Phone voice and microphone: three gaps
 stage: planning
 priority: P3
-tags: remote-access, standalone, input-bar
+tags: remote-access, standalone, input-bar, feature
 needs: 115
 branch: 117-phone-voice-and-mic-three
 roadmap: remote-access: Phone voice and mic: three gaps.

@@ -3,7 +3,7 @@ id: 39
 title: Document comments: two small gaps
 stage: planning
 priority: P3
-tags: files, files-panel
+tags: files, files-panel, polish
 branch: 39-document-comments-two-gaps
 roadmap: files: Document comments: two gaps.
 created: 2026-10-15

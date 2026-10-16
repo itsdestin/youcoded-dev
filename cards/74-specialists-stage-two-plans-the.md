@@ -3,7 +3,7 @@ id: 74
 title: Helper plans: approve a multi-step job up front
 stage: explore
 priority: P2
-tags: native-harness, specialists, desktop
+tags: native-harness, specialists, desktop, feature
 branch: 74-specialists-stage-two-plans-the
 roadmap: native-harness: Specialists stage two — plans: the model proposes a multi-st
 created: 2026-10-15

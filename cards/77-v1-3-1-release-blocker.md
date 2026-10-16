@@ -3,7 +3,7 @@ id: 77
 title: A home for skills when you don't use Claude Code
 stage: planning
 priority: P1
-tags: native-harness, skills-mcp
+tags: native-harness, skills-mcp, feature
 release: v1.3.1
 branch: 77-v1-3-1-release-blocker
 roadmap: native-harness: **v1.3.1 release blocker — native-only users need a YouCoded

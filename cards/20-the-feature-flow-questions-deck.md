@@ -3,7 +3,7 @@ id: 20
 title: Try the full new-feature process on a real feature
 stage: planning
 priority: P3
-tags: dev-workspace, rigs
+tags: dev-workspace, rigs, housekeeping
 report: docs/active/plans/2026-09-01-feature-flow-plan.md
 branch: 20-the-feature-flow-questions-deck
 roadmap: dev-workspace: The feature flow (questions deck, review rounds, contract, g

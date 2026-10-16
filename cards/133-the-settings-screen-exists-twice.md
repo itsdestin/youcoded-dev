@@ -3,7 +3,7 @@ id: 133
 title: Make one settings screen for desktop and phone
 stage: planning
 priority: P1
-tags: user-interface, settings, release-blocker
+tags: user-interface, settings, release-blocker, housekeeping
 release: v1.3.1
 report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 133-the-settings-screen-exists-twice

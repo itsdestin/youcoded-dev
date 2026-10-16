@@ -3,7 +3,7 @@ id: 40
 title: File links in chat fail for files outside the project
 stage: planning
 priority: P3
-tags: files, chat, desktop
+tags: files, chat, desktop, bug
 branch: 40-a-file-chip-in-chat
 roadmap: files: A file chip in chat for a file outside the project folder fa
 created: 2026-10-15
