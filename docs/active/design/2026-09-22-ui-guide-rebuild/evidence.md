@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-09-22
-related: docs/active/plans/2026-09-21-ui-ux-consistency-audit.md
+related: docs/archive/plans/2026-09-21-ui-ux-consistency-audit.md
 ---
 
 # UI guide rebuild — evidence inventory

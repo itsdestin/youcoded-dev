@@ -66,14 +66,6 @@ has passed ~8 items — graduate it to its own file.
       Settings and the site footer once the subreddit has a few posts (not yet answered).
       `all` `confirmed` `P3` `checked 2026-09-10`
 
-- [ ] Revisit the "Submit a ticket" screen (Settings → Help & feedback → Report a bug). Destin, 2026-09-28,
-      after its regrouping was approved: "i want to come back to this page specifically, i think some of the
-      ux is still a bit odd" (earlier: "some of these should maybe be grouped/arranged/displayed differently.
-      it just looks off"). The review step after "Review ticket" was not regrouped yet.
-      2026-10-08: redesigned over six review rounds (submit-ticket-1…6, all approved) on branch
-      `session/ui-consistency-audit`; closes when that branch merges
-      `settings/development` `all` `in-flight` `P3` `checked 2026-10-08`
-
 - [ ] Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari pointed
       at another device. Options: a native app around the shared interface (minus on-device runtime,
       which App Store rules refuse), a pair-to-desktop-only app, or a web client over an encrypted
