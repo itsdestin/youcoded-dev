@@ -1,0 +1,116 @@
+{
+  "title": "The Pages kit gets the app's own pieces",
+  "key": "pages-kit-1",
+  "out": "pages-kit-1.review.html",
+  "images": "images/pages-kit-1.review",
+  "runs": {
+    "kit": "runs/kit-pieces",
+    "before": "runs/kit-fixes/before",
+    "after": "runs/kit-fixes/after"
+  },
+  "labels": {
+    "kit": "Kit",
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "PK-1",
+      "new": true,
+      "runs": [
+        "kit"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages kit",
+      "path": "A practice Page showing every kit piece (practice app only)",
+      "crop": "pages/page/page-kit-pieces",
+      "headline": "The kit's new pieces, all on one Page.",
+      "changed": "Status labels (with dots for live states), info/warning/error notice boxes with Details folding inside and buttons below it, the loading line, on/off switches, a search box with filter chips at the same height, an inner box, fold-out rows, the sideways chip row, the full-screen error, and the scroll fade on every scrolling area.",
+      "notice": "Each matches the app's own piece. The page-builder skill now tells the assistant to use these before hand-making anything — and that your own direction for a Page always wins.",
+      "risk": "In Halftone, info pieces come out pink, as they do in the app itself.",
+      "yes": "Keep it",
+      "no": "Remove it"
+    },
+    {
+      "id": "PK-2",
+      "new": true,
+      "runs": [
+        "kit"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages kit",
+      "path": "The same Page at phone width",
+      "crop": "pages/focus/page-kit-pieces#phone",
+      "headline": "At phone width, long sections fold, the first one open.",
+      "changed": "Sections marked as foldable show as plain headings on wide screens and fold on a phone.",
+      "notice": "—",
+      "risk": "—",
+      "yes": "Keep it",
+      "no": "Remove it"
+    },
+    {
+      "id": "PK-3",
+      "new": true,
+      "runs": [
+        "kit"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages kit",
+      "path": "Phone width, the Controls section open",
+      "crop": "pages/focus/page-kit-pieces#phone-controls",
+      "headline": "Phone: the controls section open.",
+      "changed": "The chip row scrolls sideways instead of wrapping.",
+      "notice": "—",
+      "risk": "—",
+      "yes": "Keep it",
+      "no": "Remove it"
+    },
+    {
+      "id": "PK-4",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages kit",
+      "path": "Week planner (an existing sample Page)",
+      "crop": "pages/page/page-week-planner",
+      "highlight": "auto",
+      "headline": "Existing Pages: the kit's own pieces now follow the guide.",
+      "changed": "The bare-text arrows and Cancel are now outlined buttons; cards get the app's padding and shadow; dividers are the tapered line; corners follow the theme.",
+      "notice": "The sample Pages' own code is unchanged — only the shared kit changed.",
+      "risk": "Every Page made with the kit gets this slightly different look."
+    },
+    {
+      "id": "PK-5",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages kit",
+      "path": "Focus timer (an existing sample Page)",
+      "crop": "pages/focus/page-focus-timer",
+      "highlight": "auto",
+      "headline": "Focus timer: Reset is an outlined button now.",
+      "changed": "The bare-text Reset becomes outlined; buttons are slightly rounder, following the theme.",
+      "notice": "—",
+      "risk": "—"
+    }
+  ]
+}
