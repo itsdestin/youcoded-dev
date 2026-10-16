@@ -158,8 +158,10 @@ CARDS = [
          date='Sept 15', days=27, prs=['#476'], paused='known regressions; a hand-off note says where it stopped.',
          chats=[('Sept 15', 'onedrive-no-auto-download', 'Wrote a hand-off note; pull request #476 waits, checks fail.')]),
 ]
-SIDE = {'screens': ('On screen', 'It changes what you see.'), 'behind': ('Behind the scenes', 'It changes how the app works, not what you see.'),
-        'both': ('On screen and behind', 'It changes both what you see and how the app works.')}
+# WHY these words (Destin, 2026-10-16: "UI/UX Only", "Backend Only", or "UI/UX and Backend")
+SIDE = {'screens': ('UI/UX Only', 'It changes what you see and how you use it, not how the app works underneath.'),
+        'behind': ('Backend Only', 'It changes how the app works underneath, not what you see.'),
+        'both': ('UI/UX and Backend', 'It changes both what you see and how the app works underneath.')}
 
 MENU_TIP = 'More: pause or close this work.'
 PAUSE = ('Pause…', 'Marks it paused on its card, with your reason. Its branch, copy and pull request stay exactly as they are.')
@@ -192,7 +194,7 @@ def chips(c):
     out += [f'<span class="badge" data-tip="The part of the app it lands in.">{E(a)}</span>' for a in c['area']]
     if c.get('platform'):
         out.append(f'<span class="badge" data-tip="It only applies on this platform.">{E(c["platform"])}</span>')
-    # WHY skip the side chip for behind-the-scenes work: its area already says "Behind the scenes" (seen twice, 2026-10-16)
+    # WHY skip it for behind-the-scenes work: that is workspace or business work outside the app, so "Backend Only" would mislead
     if c.get('side') and 'Behind the scenes' not in c.get('area', []):
         lab, tip = SIDE[c['side']]
         out.append(f'<span class="badge" data-tip="{E(tip)}">{E(lab)}</span>')
