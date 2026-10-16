@@ -249,7 +249,7 @@ def _arg(k):
     return sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
 LIVE_CARDS = _arg('--cards-json')
 if LIVE_CARDS:
-    today = ltab.render(json.load(open(LIVE_CARDS))['cards'], LEFTOVERS, DEV_ONLY, T, sechead, fold)
+    today = ltab.render(json.load(open(LIVE_CARDS))['cards'], LEFTOVERS, DEV_ONLY, T, sechead, fold, pic)
 else:
     today = ttab.render(EFFORTS, DEV_ONLY, LEFTOVERS, SUGGEST, pic, T, sechead, fold)
 

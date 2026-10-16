@@ -23,7 +23,6 @@ HINT = {'polish': 'Built, and waiting on you: review it, ask for polish, or merg
         'planning': 'Agreed, ready to plan the build. Planning items never overlap.',
         'explore': 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.',
         'merged': 'In master; ships with the next release.'}
-PRI_TIP = {'P1': 'P1: urgent — a release blocker or a top-priority feature.', 'P2': 'P2: major, but not the next thing.', 'P3': 'P3: at leisure.'}
 
 
 def next_line(c):
@@ -43,39 +42,27 @@ def next_line(c):
     return (text[:180].rsplit(' ', 1)[0] + '…') if len(text) > 180 else text
 
 
-def pri(c):
-    p = c.get('priority')
-    return f'<span class="spill {"danger" if p == "P1" else ""}" data-tip="{E(PRI_TIP.get(p, p))}">{E(p)}</span>' if p else ''
+MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
 
 
-def chips(c, suggested=False):
-    out = ['<span class="badge" data-tip="This is the suggested next step at the top of the page.">Suggested above</span>'] if suggested else []
-    out += [f'<span class="badge" data-tip="A tag. Search for it to see only these.">{E(t)}</span>' for t in c['tags'][:4]]
-    if c.get('release'): out.append(f'<span class="badge" data-tip="The release this is aimed at.">{E(c["release"])}</span>')
-    if c['needs']: out.append(f'<span class="badge" data-tip="Must exist before this one can be built.">needs {", ".join("#" + str(n) for n in c["needs"])}</span>')
-    if c['related']: out.append(f'<span class="badge" data-tip="Overlaps these exploration items.">overlaps {", ".join("#" + str(n) for n in c["related"])}</span>')
-    return ''.join(out)
-
-
-MAIN = ('Start a chat on this', 'Starts a chat that already knows this item: its text, what it needs and what needs it. (No chats are recorded on items yet, so this is always the next step for now.)')
-
-
-def row(c, show_stage=False, suggested=False):
-    stage = f'<span class="spill stage" data-tip="{E(WORD[c["stage"]] + ": " + HINT[c["stage"]])}">{E(WORD[c["stage"]])}</span>' if show_stage else ''
+def as_row(c, today):
+    """A card in the shape today_tab.row draws, so the live rows ARE the approved rows."""
+    import datetime
+    d = c.get('updated') or c.get('created') or ''
+    try:
+        dt = datetime.date.fromisoformat(d); days = (today - dt).days; nice = f'{MONTHS[dt.month - 1]} {dt.day}'
+    except ValueError:
+        days, nice = 0, d
     search = ' '.join([str(c['id']), c['title'], ' '.join(c['tags']), c['body']]).lower()
-    return (f'<div class="row crow lrow" data-cid="{c["id"]}" data-stage="{c["stage"]}" data-tags="{E(" ".join(c["tags"]))}" data-search="{E(search)}">'
-            f'<div class="ctop"><input type="checkbox" class="ltick" aria-label="Tick #{c["id"]}" data-tip="Tick to edit several items at once.">'
-            f'<div class="cmain"><div class="ctl"><button class="ltitle" data-card-open="{c["id"]}" data-tip="Opens everything on this item."><span class="lid">#{c["id"]}</span> {E(c["title"])}</button>{stage}{pri(c)}</div>'
-            f'<div class="t-xs dim cnext">{E(next_line(c))}</div></div>'
-            f'<div class="acts">{tt.menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this row, the chats that worked on it.">View chats</button>'
-            f'<button class="btn sm primary" data-does data-tip="{E(MAIN[1])}">{E(MAIN[0])}</button></div></div>'
-            f'<div class="cmeta"><div class="cchips">{chips(c, suggested)}</div></div>'
-            f'<div class="cbody" hidden><div class="eyebrow" data-tip="Every chat that worked on this item.">Chats <span class="cnt" data-tip="How many chats.">0</span></div>'
-            f'<p class="t-xs muted" style="margin:0">No chats are recorded on this item yet. From now on, a chat that works on it adds itself here.</p>'
-            f'<button class="btn bpfull" data-does data-tip="Starts a new chat that already knows this item, so it continues instead of starting over.">Start another chat on this card</button></div></div>')
+    return dict(id=str(c['id']), title=c['title'], stage=c['stage'], state='', area=c['tags'][:4], tags=c['tags'], side=None,
+                priority=c.get('priority'), release=c.get('release'), needs=c['needs'], related=c['related'],
+                chats=[], prs=[], unsaved=False, paused=None, next=next_line(c), date=nice, days=days, search=search, screens=[])
 
 
-def render(cards, leftovers, dev_only, T, sechead, fold):
+def render(cards, leftovers, dev_only, T, sechead, fold, pic):
+    import datetime
+    today = datetime.date.today()
+    rows = [as_row(c, today) for c in cards]
     out = []
     # ---- the controls in the fixed head: search and tag (143 items need finding)
     tags = sorted({t for c in cards for t in c['tags']})
@@ -83,31 +70,36 @@ def render(cards, leftovers, dev_only, T, sechead, fold):
                '<select class="field" id="ltag" aria-label="Tag" data-tip="Shows only items with this tag."><option value="">All tags</option>'
                + ''.join(f'<option>{E(t)}</option>' for t in tags) + '</select>'
                '<span class="t-2xs muted" data-tip="Tick items to combine them, move them to a stage, or delete them.">Tick items to edit several at once.</span></div>')
-    # ---- Start here: the most urgent item in the latest stage that has one
-    rank = lambda c: (-ORDER[::-1].index(c['stage']) if c['stage'] in ORDER[:3] else 9, c.get('priority') or 'P9', c['id'])
-    pool = [c for c in cards if c['stage'] in ('polish', 'build', 'planning')]
-    hero = min(pool, key=lambda c: (ORDER.index(c['stage']), c.get('priority') or 'P9', c['id'])) if pool else None
+    # ---- Start here: the approved top card (today_tab, Q-7), its item picked as the most urgent in the furthest-along stage
+    pool = [r for r in rows if r['stage'] in ('polish', 'build', 'planning')]
+    hero = min(pool, key=lambda r: (ORDER.index(r['stage']), r.get('priority') or 'P9', int(r['id']))) if pool else None
     if hero:
+        main, does = tt.next_step(hero)
         out.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
-<div class="ctl"><button class="ltitle t-lg" data-card-open="{hero['id']}" data-tip="Opens everything on this item."><span class="lid">#{hero['id']}</span> {E(hero['title'])}</button><span class="spill stage" data-tip="{E(HINT[hero['stage']])}">{E(WORD[hero['stage']])}</span>{pri(hero)}</div>
-<p class="t-sm dim">{E(next_line(hero))}</p><div class="cchips">{chips(hero)}</div>
-<p class="t-2xs muted">Picked because it is the most urgent item in the furthest-along stage.</p>
-<div class="acts heroacts">{tt.menu()}<button class="btn sm" data-card-open="{hero['id']}" data-tip="Opens everything on this item.">Open item</button><button class="btn sm primary" data-does data-tip="{E(MAIN[1])}">{E(MAIN[0])}</button></div></section>''')
-    by = {s: sorted([c for c in cards if c['stage'] == s], key=lambda c: (c.get('priority') or 'P9', c['id'])) for s in ORDER}
-    for s in ORDER:
+<div class="ctl"><button class="ltitle t-lg" data-card-open="{hero['id']}" data-tip="Opens everything on this item."><span class="lid">#{hero['id']}</span> {E(hero['title'])}</button>{tt.stage_pill(hero)}{tt.markers(hero)}</div>
+<p class="t-sm dim">{E(hero['next'])}</p><div class="cchips">{tt.chips(hero)}</div>
+<p class="t-2xs muted">Suggested because it is the most urgent item in the furthest-along stage.</p>
+<div class="acts heroacts">{tt.menu()}<button class="btn sm" data-card-open="{hero['id']}" data-tip="Opens everything on this item.">Open item</button><button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></section>''')
+        hero['suggested'] = True
+    by = {s: sorted([r for r in rows if r['stage'] == s], key=lambda r: (r.get('priority') or 'P9', r['days'], int(r['id']))) for s in ORDER}
+    tickall = lambda s: f'<button class="selall" data-tickall="{s}" data-tip="Ticks every item shown in this group.">tick all</button>'
+    def sec(s, title, hint, tip, ctip):
         lst = by[s]
-        if not lst and s != 'polish': continue
-        tickall = f'<button class="selall" data-tickall="{s}" data-tip="Ticks every item shown in this group.">tick all</button>'
-        rows = ''.join(row(c, suggested=hero is not None and c['id'] == hero['id']) for c in lst) or f'<p class="t-xs muted">Nothing is in this stage yet.</p>'
-        if s in OPEN:
-            out.append(f'<section class="sec lsec" data-stage="{s}"><div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="{E(HINT[s])}">{E(WORD[s])}</span>'
-                       f'<span class="cnt" data-tip="How many items.">{len(lst)}</span>{tickall if lst else ""}</h2><p class="gdesc">{E(HINT[s])}</p></div></div>{rows}</section>')
-        else:
-            out.append(f'<details class="fold sec lsec" data-stage="{s}"><summary class="foldrow big" data-tip="Shows or hides this group."><span class="fbody"><span class="gh">{E(WORD[s])} '
-                       f'<span class="cnt" data-tip="How many items.">{len(lst)}</span></span><span class="t-xs muted">{E(HINT[s])}</span></span><span class="chev" aria-hidden="true">›</span></summary>'
-                       f'<div class="foldbody">{tickall}<div class="cstack">{rows}</div></div></details>')
+        body = ''.join(tt.row(r, pic, live=True) for r in lst) or '<p class="t-xs muted">Nothing is in this stage yet.</p>'
+        return f'<section class="sec lsec" data-stage="{s}">' + sechead(title, len(lst), hint, tip, ctip).replace('</h2>', (tickall(s) if lst else '') + '</h2>', 1) + body + '</section>'
+    def fsec(s, title, hint, tip, ctip):
+        lst = by[s]
+        return fold(title, len(lst), hint, (tickall(s) if lst else '') + '<div class="cstack">' + ''.join(tt.row(r, pic, live=True) for r in lst) + '</div>', tip, ctip).replace('<details class="fold sec"', f'<details class="fold sec lsec" data-stage="{s}"', 1)
+    # WHY these headings and lines: copied from the approved Today (today_tab.render, round 3)
+    out.append(sec('polish', 'Human polish & review', 'Built, and waiting on you: review it, ask for polish, or merge it. The filled button is the next step.', 'today.needs', 'today.needs.count'))
+    out.append(sec('build', 'Agentic buildout', 'Chats are building these. A red marker means something needs fixing.', 'today.inprog', 'today.inprog.count'))
+    out.append(fsec('planning', 'Planning', 'Being decided: questions, plans and designs. Nothing built yet.', 'today.planning', 'today.planning.count'))
+    # WHY exploration and merged appear here too (2026-10-16): bulk edit has to reach every item, and exploring items are the ones most often combined
+    out.append(fsec('explore', 'Preliminary exploration', 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.', 'today.explore', 'today.explore.count'))
+    if by['merged']:
+        out.append(fsec('merged', 'Merged', 'In master; ships with the next release.', 'today.merged', 'today.merged.count'))
     out.append('<p class="t-xs muted lnone" id="lnone" hidden>Nothing matches.</p>')
-    # ---- the bulk bar and its two popups' data
+    # ---- the bulk bar (Destin, 2026-10-15: bulk edit in v1)
     out.append('''<div class="lbulk layer" id="lbulk" hidden role="toolbar" aria-label="Edit ticked items"><span class="n" id="lbn"></span>
 <span class="mwrap"><button class="btn sm" id="lbstage" aria-haspopup="menu" data-tip="Moves every ticked item to one stage.">Move to stage…</button><span class="menu layer lup" id="lstagemenu" role="menu" hidden>'''
                + ''.join(f'<button class="mitem" role="menuitem" data-lstage="{s}" data-tip="{E(HINT[s])}"><span>{E(WORD[s])}</span><span class="mhint">{E(HINT[s])}</span></button>' for s in ORDER if s != 'merged')
@@ -116,13 +108,8 @@ def render(cards, leftovers, dev_only, T, sechead, fold):
 <button class="btn sm" id="lbdelete" data-tip="Removes the ticked items. Asks first.">Delete…</button>
 <button class="closebtn" id="lbclear" aria-label="Clear the ticks" data-tip="Clears the ticks."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>''')
     out.append('<script>window.LCARDS=' + json.dumps({str(c['id']): {k: c[k] for k in ('id', 'title', 'stage', 'priority', 'tags', 'needs', 'related', 'neededBy', 'release', 'branch', 'finish', 'body', 'file')} for c in cards}).replace('</', '<\\/') + ';</script>')
-    # ---- the snapshot sections the cards do not cover yet stay as they were, labelled
-    nocard = [w for w in leftovers['worktrees']]
-    out.append(fold('Tidy up', 2, 'Housekeeping from the Oct 12 snapshot: nothing here changes the app.',
-                    f'<div class="cstack"><div class="row crow"><div class="ctop"><div class="cmain"><span class="t-sm fw">7 automatic dependency updates fail their checks</span>'
-                    f'<div class="t-xs dim cnext">Five for Android from Sept 3, two for desktop from Oct 5 and 8.</div></div></div></div>'
-                    f'<div class="row crow"><div class="ctop"><div class="cmain"><span class="t-sm fw">{len(nocard)} leftover copies with unsaved changes</span>'
-                    f'<div class="t-xs dim cnext">{E(", ".join(nocard))}.</div></div></div></div></div>', 'today.tidy', 'today.tidy.count'))
+    # ---- Tidy up: the approved section, unchanged (its facts are still the Oct 12 snapshot)
+    out.append(tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards]))
     return out
 
 

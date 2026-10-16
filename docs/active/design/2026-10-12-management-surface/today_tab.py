@@ -73,6 +73,9 @@ def next_step(c):
         return 'Merge to master', 'Reviewed and its checks pass. Merges its pull request into master, then deletes the branch.'
     if c['id'] in DECK:
         return 'Open review deck', 'Its review deck waits for your answers. Opens it, where you approve or reject each screen.'
+    if not c.get('chats'):
+        # WHY (live page, 2026-10-16): a work card with no chat recorded has nothing to resume; its next step is a first chat
+        return 'Start a chat on this', 'No chat has worked on this yet. Starts one that already knows this item: its text, what it needs and what needs it.'
     return 'Resume latest chat', 'Reopens its most recent conversation where it left off.'
 
 
@@ -158,6 +161,7 @@ SIDE = {'screens': ('On screen', 'It changes what you see.'), 'behind': ('Behind
         'both': ('On screen and behind', 'It changes both what you see and how the app works.')}
 
 MENU_TIP = 'More: pause or close this work.'
+PRI_TIP = {'P1': 'P1: urgent — a release blocker or a top-priority feature.', 'P2': 'P2: major, but not the next thing.', 'P3': 'P3: at leisure.'}
 PAUSE = ('Pause…', 'Marks it paused on its card, with your reason. Its branch, copy and pull request stay exactly as they are.')
 CLOSE = ('Close…', 'Saves any unsaved changes to a backup branch, closes its pull request, removes its copy from this computer and marks the card closed. The branch stays on GitHub.')
 
@@ -186,10 +190,19 @@ def menu():
 def chips(c):
     out = ['<span class="badge" data-tip="This is the suggested next step at the top of the page.">Suggested above</span>'] if c.get('suggested') else []
     out += [f'<span class="badge" data-tip="The part of the app it lands in.">{E(a)}</span>' for a in c['area']]
-    lab, tip = SIDE[c['side']]
-    out.append(f'<span class="badge" data-tip="{E(tip)}">{E(lab)}</span>')
+    if c.get('side'):
+        lab, tip = SIDE[c['side']]
+        out.append(f'<span class="badge" data-tip="{E(tip)}">{E(lab)}</span>')
+    # WHY a plain chip, not a tinted pill (live page): priority is a fact about the item; tint means a problem (design guide)
+    if c.get('priority'):
+        out.append(f'<span class="badge" data-tip="{E(PRI_TIP.get(c["priority"], c["priority"]))}">{E(c["priority"])}</span>')
+    if c.get('release'):
+        out.append(f'<span class="badge" data-tip="The release this is aimed at.">{E(c["release"])}</span>')
     n = len(c['chats']); live = sum(1 for x in c['chats'] if len(x) > 3 and x[3])
-    out.append(f'<span class="badge" data-tip="How many chats have worked on this. Open lists them.">{n} chat{"s" if n != 1 else ""}{f" · {live} working now" if live else ""}</span>')
+    out.append(f'<span class="badge" data-tip="How many chats have worked on this. View chats lists them.">{f"{n} chat" + ("s" if n != 1 else "") if n else "No chats yet"}{f" · {live} working now" if live else ""}</span>')
+    for k, word, tip in (('needs', 'needs', 'Must exist before this one can be built.'), ('related', 'overlaps', 'Exploration items covering some of the same ground.')):
+        if c.get(k):
+            out.append(f'<span class="badge" data-tip="{tip}">{word} {", ".join("#" + str(x) for x in c[k])}</span>')
     for p in c.get('prs', []):
         out.append(f'<span class="badge" data-tip="A change waiting to be merged into master.">Pull request {E(p)}</span>')
     return ''.join(out)
@@ -210,6 +223,8 @@ def body(c, pic):
                  ''.join(f'<div><span class="muted">{E(k.capitalize())}:</span> {E(v)}</div>' for k, v in note) + '</div>')
     n = len(c['chats'])
     h.append(f'<div class="eyebrow" data-tip="Every chat that worked on this, newest first.">Chats <span class="cnt" data-tip="How many chats.">{n}</span></div><div class="tline">')
+    if not n:
+        h.append('<p class="t-xs muted" style="margin:0">No chats are recorded on this item yet. From now on, a chat that works on it adds itself here.</p>')
     for x in c['chats']:
         d, name, res = x[0], x[1], x[2]; live = len(x) > 3 and x[3]
         lp = '<span class="spill info" data-tip="This chat is working on it now. (On this mockup: in the last 24 hours.)"><span class="dot" aria-hidden="true"></span>Working</span>' if live else ''
@@ -220,16 +235,22 @@ def body(c, pic):
     h.append('</div><button class="btn bpfull" data-does data-tip="Starts a new chat that already knows this work\'s finish line and progress, so it continues instead of starting over.">Start another chat on this card</button>')
     p = pic(c.get('screens') or [])
     if p:
-        h.append(f'<div class="eyebrow" data-tip="Screens this work touches. Click the picture to open it.">Screens</div><div class="cshots">{p}'
-                 f'<button class="btn sm" data-effscreens="{c["eidx"]}" data-tip="Shows every screen it touches, in the Screens tab.">See its screens</button></div>')
+        see = f'<button class="btn sm" data-effscreens="{c["eidx"]}" data-tip="Shows every screen it touches, in the Screens tab.">See its screens</button>' if c.get('eidx') is not None else ''
+        h.append(f'<div class="eyebrow" data-tip="Screens this work touches. Click the picture to open it.">Screens</div><div class="cshots">{p}{see}</div>')
     return ''.join(h)
 
 
-def row(c, pic, show_stage=False):
+def row(c, pic, show_stage=False, live=False):
     # WHY show_stage is off inside a stage's own section: the heading already says it (guide: show a state only once)
+    # WHY `live` (2026-10-16): the live page draws its rows with THIS function, adding only a tick box and a
+    # clickable name, so the approved anatomy can never drift from the mockup again.
     main, does = next_step(c)
     nxt = ('Paused because: ' + c['paused']) if c.get('paused') else c['next']
-    return (f'<div class="row crow" data-card="{E(c["id"])}"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">{E(c["title"])}</span>{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
+    tick = f'<input type="checkbox" class="ltick" aria-label="Tick #{E(c["id"])}" data-tip="Tick to edit several items at once.">' if live else ''
+    name = (f'<button class="ltitle" data-card-open="{E(c["id"])}" data-tip="Opens everything on this item."><span class="lid">#{E(c["id"])}</span> {E(c["title"])}</button>'
+            if live else f'<span class="t-sm fw">{E(c["title"])}</span>')
+    attrs = (f' data-cid="{E(c["id"])}" data-stage="{E(c["stage"])}" data-tags="{E(" ".join(c.get("tags", [])))}" data-search="{E(c.get("search", ""))}"' if live else '')
+    return (f'<div class="row crow{" lrow" if live else ""}" data-card="{E(c["id"])}"{attrs}><div class="ctop">{tick}<div class="cmain"><div class="ctl">{name}{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
             f'<div class="t-xs dim cnext">{E(nxt)}</div></div>'
             f'<div class="acts">{menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this row, its progress, every conversation that worked on it, and its screens.">View chats</button>'
             f'<button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></div>'
@@ -271,8 +292,13 @@ def render(efforts, dev_only, leftovers, suggest, pic, T, sechead, fold):
                     '<div class="cstack">' + ''.join(row(c, pic) for c in by['planning']) + '</div>', 'today.planning', 'today.planning.count'))
     out.append(fold('Paused', len(paused), 'Stopped on purpose, each with its reason.',
                     '<div class="cstack">' + ''.join(row(c, pic, show_stage=True) for c in paused) + '</div>', 'today.paused', 'today.paused.count'))
-    # ---- Tidy up (Q-5): housekeeping that never changes the app
-    nocard = [w for w in leftovers['worktrees'] if not any(w.startswith(c['id']) for c in CARDS)]
+    out.append(tidy(leftovers, dev_only, fold, [c['id'] for c in CARDS]))
+    return out
+
+
+def tidy(leftovers, dev_only, fold, card_ids):
+    """Tidy up (Q-5): housekeeping that never changes the app. Shared by the mockup and the live page."""
+    nocard = [w for w in leftovers['worktrees'] if not any(w.startswith(str(i)) for i in card_ids)]
     nocard = [w for w in nocard if not w.startswith('specialists-plans')]
     t = []
     t.append(f'''<div class="row crow"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">7 automatic dependency updates fail their checks</span></div>
@@ -285,8 +311,7 @@ def render(efforts, dev_only, leftovers, suggest, pic, T, sechead, fold):
 <div class="t-xs dim cnext">{E("; ".join(d["title"] for d in dev_only))}.</div></div>
 <div class="acts">{menu()}<button class="btn sm primary" data-does data-tip="Keeps the notes in the workspace and closes the copies.">Keep the notes, close the copies</button></div></div></div>''')
     t.append(f'<div class="t-xs muted note">Cleaned up automatically, nothing to do: {E(leftovers["backups"])}; {E(leftovers["diag"])}.</div>')
-    out.append(fold('Tidy up', 3, 'Housekeeping: nothing here changes the app.', '<div class="cstack">' + ''.join(t) + '</div>', 'today.tidy', 'today.tidy.count'))
-    return out
+    return (fold('Tidy up', 3, 'Housekeeping: nothing here changes the app.', '<div class="cstack">' + ''.join(t) + '</div>', 'today.tidy', 'today.tidy.count'))
 
 
 CSS = '''

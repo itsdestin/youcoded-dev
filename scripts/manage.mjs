@@ -67,14 +67,29 @@ function save(root, message) {
   catch (e) { return 'Saved and committed, but the push failed: ' + String(e.stderr || e.message).split('\n')[0]; }
 }
 
+/** The last day each card file was committed, from one `git log` (empty when root is not a git checkout). */
+function lastTouched(root) {
+  const out = new Map();
+  try {
+    let day = '';
+    for (const line of git(root, ['log', '--format=@%cs', '--name-only', '--', 'cards']).split('\n')) {
+      if (line.startsWith('@')) day = line.slice(1);
+      else if (line && !out.has(line)) out.set(line, day);
+    }
+  } catch { /* not a checkout: rows fall back to the card's created date */ }
+  return out;
+}
+
 export function cardsPayload(root) {
   const cards = loadCards(root);
   const nb = neededBy(cards);
+  // WHY (approved Today: one date per row, at the far right): a card's last commit is when it was last worked on
+  const touched = lastTouched(root);
   return {
     stages: STAGES.map(s => ({ id: s, word: STAGE_WORD[s] })),
     cards: cards.map(c => ({ id: c.id, title: c.title, stage: c.stage, priority: c.priority || '', tags: c.tags, needs: c.needs.map(Number),
       related: c.related.map(Number), neededBy: nb.get(String(c.id)) || [], release: c.release || '', created: c.created || '',
-      branch: c.branch || '', finish: c.finish || '', report: c.report || '', why: c.why || '', body: c.body || '', file: c.file })),
+      branch: c.branch || '', finish: c.finish || '', updated: touched.get(c.file) || '', report: c.report || '', why: c.why || '', body: c.body || '', file: c.file })),
   };
 }
 
