@@ -1,0 +1,44 @@
+{
+ "deck": "pages-kit-1",
+ "started": "2026-10-16T15:08:14.505Z",
+ "submitted": "2026-10-16T15:09:24Z",
+ "cur": 4,
+ "answers": {
+  "PK-1": {
+   "v": "yes",
+   "t": 1792163322973,
+   "seconds": 28,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PK-2": {
+   "v": "yes",
+   "t": 1792163330124,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PK-3": {
+   "v": "yes",
+   "t": 1792163332621,
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PK-4": {
+   "v": "yes",
+   "t": 1792163338310,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PK-5": {
+   "v": "yes",
+   "t": 1792163362152,
+   "note": "i want you to list all practice/mockup pages. i'm just delete some of these tbh",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
