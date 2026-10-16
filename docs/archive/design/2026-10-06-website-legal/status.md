@@ -1,5 +1,5 @@
 ---
-status: shipped
+status: shipped (2d01f74f3; the pages are live) — archived 2026-10-16
 ---
 
 # Website legal pages — approved and published

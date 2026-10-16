@@ -463,7 +463,7 @@
    "lost_followups": []
   },
   {
-   "path": "docs/active/prototypes/2026-08-26-permission-copy-review.html",
+   "path": "docs/archive/prototypes/2026-08-26-permission-copy-review.html",
    "verdict": "unsure",
    "evidence": "Static copy-review page for permission cards. Only found references in the 08-27/08-31 inventories; recent permission-card work merged (session/always-allow-card), but I did not confirm this copy was adopted.",
    "fix": "Ask whether the copy was applied; archive if so.",
@@ -1320,7 +1320,7 @@
    "lost_followups": []
   },
   {
-   "path": "docs/active/design/2026-10-06-website-legal",
+   "path": "docs/archive/design/2026-10-06-website-legal",
    "verdict": "active-stale",
    "evidence": "status.md says 'status: active ... Nothing is published ... saved locally in app commit 2d01f74f3'. 2d01f74f3 is now on origin/master, docs/privacy.html and docs/terms.html are in the repo, and https://youcoded.ai/privacy.html returns 200.",
    "fix": "Rewrite status.md (or archive) as shipped (2d01f74f3); remove the 'not published' and 'do not treat entire branch' warnings.",
