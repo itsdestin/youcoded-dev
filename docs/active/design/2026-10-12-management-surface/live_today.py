@@ -153,7 +153,8 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic, tidy=None):
 <button class="btn sm" id="lbcombine" data-tip="Pulls the ticked items into one, so one branch and one chat can do them all. Nothing is lost: their text, links and tags are kept.">Combine into one…</button>
 <button class="btn sm" id="lbdelete" data-tip="Removes the ticked items. Asks first.">Delete…</button>
 <button class="closebtn" id="lbclear" aria-label="Clear the ticks" data-tip="Clears the ticks."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>''')
-    out.append('<script>window.LCARDS=' + json.dumps({str(c['id']): {k: c[k] for k in ('id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'live', 'tags', 'needs', 'related', 'neededBy', 'release', 'branch', 'finish', 'body', 'file')} for c in cards}).replace('</', '<\\/') + ';</script>')
+    # WHY work in the table: the Work board matches open chats to items by these branches
+    out.append('<script>window.LCARDS=' + json.dumps({str(c['id']): {k: c[k] for k in ('id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'live', 'tags', 'needs', 'related', 'neededBy', 'release', 'branch', 'finish', 'body', 'file', 'work')} for c in cards}).replace('</', '<\\/') + ';</script>')
     # ---- Tidy up: the approved content, in the same group look (live inside YouCoded; the Oct 12 snapshot under manage.mjs)
     out.append(group(T, 'tidy', 'Tidy up', 'Housekeeping: nothing here changes the app.', 'today.tidy', 'today.tidy.count', n_tidy, tidy_html, tick=False))
     return out
@@ -223,7 +224,9 @@ async function send(url,body){
   const r=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();
   if(!r.ok)throw new Error(j.error||'Something went wrong.');return j}
 function done(msg){if(window.boardDone)return window.boardDone(msg);sessionStorage.setItem('ltoast',msg);location.reload()}
-const m0=sessionStorage.getItem('ltoast');if(m0){sessionStorage.removeItem('ltoast');setTimeout(()=>toast(m0),300)}
+// WHY try (2026-10-16, found running it in a test copy of the app): a YouCoded page's sandbox forbids storage,
+// and the throw stopped every handler below — ticking showed no edit bar. Inside the app boardDone carries the message.
+try{const m0=sessionStorage.getItem('ltoast');if(m0){sessionStorage.removeItem('ltoast');setTimeout(()=>toast(m0),300)}}catch{}
 const link=id=>{const c=C[id];return c?`<button class="row rowbtn" data-card-open="${id}" data-tip="Opens this item."><span class="body"><span class="t-xs rt">#${id} ${e_(c.title)}</span></span><span class="spill stage" data-tip="Its stage.">${e_(W[c.stage])}</span></button>`:''};
 let HIST=[],CUR=null;
 function openCard(id,back){const c=C[id];if(!c)return;if(!back&&CUR&&CUR!==id&&!$('#iwrap').hidden)HIST.push(CUR);CUR=id;window.LCUR=id;
