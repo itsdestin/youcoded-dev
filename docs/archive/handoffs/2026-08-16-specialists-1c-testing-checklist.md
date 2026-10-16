@@ -1,5 +1,5 @@
 ---
-status: active
+status: dropped (Destin, 2026-10-16; the 15 hands-on checks were never run) — archived 2026-10-16
 created: 2026-08-16
 related:
   - docs/archive/specs/2026-08-16-native-specialists-plan-1c-design.md

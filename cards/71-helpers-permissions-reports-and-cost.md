@@ -37,6 +37,6 @@ From the old roadmap (native-harness › specialists, status blocked, seen on de
 Helper (specialist) transcripts pile up in the sessions folder forever — no way to delete one, and closing the parent conversation leaves its helpers' files behind. Blocked on a general delete-conversation feature, which does not exist yet Destin 2026-10-05 triage (roadmap-triage-2026-10-05#17): postponed with the delete-a-conversation feature it waits on; no longer a 1.3.1 item
 
 From the 2026-10-16 document sweep
-- Run the 15 hands-on helper checks, starting with 9b (a helper permission leak). Source: docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md
+- Run the 15 hands-on helper checks, starting with 9b (a helper permission leak). Source: docs/archive/handoffs/2026-08-16-specialists-1c-testing-checklist.md
 - Deleting helper transcripts needs a general delete-conversation feature first. Source: docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 - A replay race found in review (F3) was filed on the old roadmap and nowhere since. Source: docs/archive/reviews/2026-09-04-specialists-ledger-bugs-code-review.md

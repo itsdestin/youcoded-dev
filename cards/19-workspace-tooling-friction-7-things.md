@@ -87,5 +87,5 @@ session's working folder, not where the install runs; it took a script file to i
 
 From the 2026-10-16 document sweep
 - When a guard is added, prove it fails without the fix (a workspace habit not yet written down). Source: docs/archive/investigations/2026-08-31-session-retrospective-workspace-friction.md
-- Run the public-truth / cleanup audit of the repositories itself (it was designed but never run). Source: docs/active/specs/2026-09-08-repository-public-truth-audit-design.md
+- Run the public-truth / cleanup audit of the repositories itself (it was designed but never run). Source: docs/archive/specs/2026-09-08-repository-public-truth-audit-design.md
 - Harness evaluator ideas never built: a rule to run a control case, a trend archive of eval results, and automatic test isolation. Source: docs/active/investigations/2026-09-03-jlbc-tooling-cross-pollination.md (Part 2)

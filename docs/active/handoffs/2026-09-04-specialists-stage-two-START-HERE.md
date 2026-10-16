@@ -59,7 +59,7 @@ question deck and then starts the design.
 |---|---|---|
 | 1 | `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` | The single doc for the whole program. §5.3 is specialists; §6.1 is where this is heading; §9 is what Destin still owes. Read §5.3 + §9 at minimum. |
 | 2 | `docs/active/specs/2026-08-11-native-specialists-design.md` | The specialists spec itself. §4 is the plan schema, §7–§8 the executor and budgets. This is the stage-two design. |
-| 3 | `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md` | 17 hands-on checks of **shipped** behaviour. All 17 result tables are still empty (verified 2026-09-04). Check 9b — a permission grant leaking between helpers — is the one to run first and needs a real model. |
+| 3 | `docs/archive/handoffs/2026-08-16-specialists-1c-testing-checklist.md` | 17 hands-on checks of **shipped** behaviour. All 17 result tables are still empty (verified 2026-09-04). Check 9b — a permission grant leaking between helpers — is the one to run first and needs a real model. |
 | 4 | cards #71 and #74 (formerly the roadmap's specialists section) | The open items, in Destin's words. |
 | 5 | `youcoded/docs/native-runtime.md` | Depth on everything already shipped. Read when you need mechanism, not before. |
 

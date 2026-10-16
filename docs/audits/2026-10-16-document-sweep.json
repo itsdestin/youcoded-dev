@@ -3,7 +3,7 @@
  "checked": 198,
  "findings": [
   {
-   "path": "docs/active/specs/2026-05-20-floating-glass-theme-design.md",
+   "path": "docs/archive/specs/2026-05-20-floating-glass-theme-design.md",
    "verdict": "unsure",
    "evidence": "Draft since 2026-05-20. git grep on youcoded origin/master for floating-glass / OS-wallpaper-read (getDesktopWallpaper, desktopWallpaper) finds nothing; the only 'glass' hits are unrelated glassmorphism flags and the 'Meadow Mist' glass theme. No card in cards/ mentions it. Could not tell whether it was dropped or just never built.",
    "fix": "Ask Destin: build it (file a card) or archive as dropped; either way flip status from draft.",
@@ -113,7 +113,7 @@
    ]
   },
   {
-   "path": "docs/active/specs/2026-09-08-repository-public-truth-audit-design.md",
+   "path": "docs/archive/specs/2026-09-08-repository-public-truth-audit-design.md",
    "verdict": "unsure",
    "evidence": "Design merged as youcoded-dev#71 (2209809b). No resulting audit report found in docs/audits/, docs/active/investigations/, docs/archive/investigations/, and no card mentions it. Cannot tell if the audit was never run or its report was lost.",
    "fix": "Ask Destin whether the audit is still wanted: run it (card) or archive as dropped.",
@@ -326,7 +326,7 @@
    ]
   },
   {
-   "path": "docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md",
+   "path": "docs/archive/handoffs/2026-08-16-specialists-1c-testing-checklist.md",
    "verdict": "unsure",
    "evidence": "Header says none of the 15 checks were run as of 2026-08-26 (agent did a partial boot-only pass). No result tables checked for later fill-in and no card references it; specialists plan 1c itself merged. I did not find evidence either way that the checks were run later.",
    "fix": "Ask Destin whether to run it (check 9b first) or retire it; if retired, archive with a note that the checks were never run.",

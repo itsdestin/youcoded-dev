@@ -1,5 +1,5 @@
 ---
-status: active
+status: dropped (Destin, 2026-10-16; the audit was never run) — archived 2026-10-16
 ---
 
 # Repository public-truth and cleanup audit

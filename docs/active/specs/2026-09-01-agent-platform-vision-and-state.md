@@ -216,7 +216,7 @@ once §9 items 1–3 are ruled (`docs/active/handoffs/2026-09-04-stage-two-decis
 needs a `bin` entry the app has never shipped.
 
 **Verification debt:** the 1c hands-on checklist
-(`docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`) has **fifteen empty
+(`docs/archive/handoffs/2026-08-16-specialists-1c-testing-checklist.md`) has **fifteen empty
 result tables**. Check 9b — a permission grant leaking between helpers — is the one to run
 first, and it needs a real model.
 
@@ -427,7 +427,7 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 - Superseded: `docs/archive/specs/2026-08-05-project-scoped-skills-design.md` + plan — narrow Claude Code compatibility shipped in YouCoded PR #424; the v1.3 native-first replacement is tracked in cards #75 and #77.
 - `docs/active/specs/2026-08-17-search-scope-and-timeout-design.md`.
 - `docs/archive/handoffs/2026-09-09-session-context-panel-handoff.md` (shipped 2026-09-10).
-- `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.
+- `docs/archive/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.
 - `docs/archive/design/2026-08-17-assistant-settings-panel-design.md` (the React mockup supersedes its HTML prototype).
 - `docs/active/specs/2026-08-31-codex-session-provider-design.md`.
 - `docs/active/investigations/2026-08-09-native-skip-permissions.md`, `2026-07-28-agent-harness-frontier-research.md` — still carry open findings.

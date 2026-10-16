@@ -56,5 +56,5 @@ outline nearly vanished on three glass themes, so the app now forces a stronger 
 `settings/themes` `all` `confirmed` `P3` `checked 2026-09-28`
 
 From the 2026-10-16 document sweep
-- The Floating Glass theme (the computer's wallpaper as the app background) was designed and never built. Source: docs/active/specs/2026-05-20-floating-glass-theme-design.md
+- The Floating Glass theme (the computer's wallpaper as the app background) was designed and never built. Source: docs/archive/specs/2026-05-20-floating-glass-theme-design.md
 - Theme builder: check the "float" Kit preset and manifest template exist (unverified). Source: docs/archive/investigations/2026-09-01-chrome-style-bare.md

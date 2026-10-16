@@ -1,6 +1,6 @@
 ---
 date: 2026-05-20
-status: draft
+status: dropped (Destin, 2026-10-16: replaced by the simpler exploration item 'App background follows the desktop wallpaper') — archived 2026-10-16
 type: spec
 topic: Floating Glass theme — desktop-only glass chrome design
 ---
