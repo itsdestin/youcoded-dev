@@ -50,7 +50,7 @@ added to it when the deck's pictures already exist in that theme. `--theme <slug
 `"theme": "fixed"` in the spec keeps the spec's own order, for a deck about one theme.
 
 A CONTRACT step ("rows") is the definition of done signed off as one step; see
-docs/active/specs/2026-09-01-feature-flow-design.md.
+docs/archive/specs/2026-09-01-feature-flow-design.md.
 
 Run `serve` in the background: its exit is the "review finished" signal and it prints the
 feedback summary. There is deliberately no separate crop step — a stale intermediate file drew

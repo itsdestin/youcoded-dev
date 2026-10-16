@@ -20,7 +20,7 @@ Short route for small work.
 
 ## Before drawing anything: the questions deck
 
-Step 2 of the feature flow (`docs/active/specs/2026-09-01-feature-flow-design.md` §5) is a
+Step 2 of the feature flow (`docs/archive/specs/2026-09-01-feature-flow-design.md` §5) is a
 deck, not a chat. Copy `scripts/ui-review/templates/questions.json` to
 `docs/active/design/<date>-<feature>/<feature>.questions.json` — one `"words": true` step per
 question, each saying what exists today, what goes wrong (`problem`) and what would change

@@ -8,7 +8,7 @@ description: Autonomous whole-app UI review — screenshot every YouCoded surfac
 Pictures come from `shoot` and click-throughs from `explore` (`scripts/shoot/README.md`);
 decks from `scripts/ui-review/` (README there). This skill is the procedure around them.
 Standard: `docs/active/design/2026-10-13-ui-design-guide.md`. Last full review and its
-ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
+ledger: `docs/archive/design/2026-08-25-ui-audit-findings.md`.
 
 ## 1. Capture (no judgement yet)
 

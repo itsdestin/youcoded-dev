@@ -265,7 +265,7 @@ fi
 
 echo
 echo "Contract"
-# The contract is the definition of done for a feature (docs/active/specs/2026-09-01-feature-flow-design.md).
+# The contract is the definition of done for a feature (docs/archive/specs/2026-09-01-feature-flow-design.md).
 # It names its branch, so this is the ONLY lookup — no "branch" field, no contract, and the
 # note below says so rather than guessing which deck folder this work came from.
 # Fix: a fixed-string match on `"branch": "$BRANCH"` missed a contract written without the

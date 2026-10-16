@@ -4,7 +4,7 @@ Measures how much earlier input each client gets back from the provider's prompt
 **real ChatGPT-plan requests** (`gpt-5.6-luna`), YouCoded against an isolated OpenCode 1.18.31.
 It answered the 2026-09-23 questions: why YouCoded missed more than OpenCode (no `session-id`
 header), whether tool loops, a full restart + resume, and compaction keep the cache.
-Findings: `docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md`.
+Findings: `docs/archive/investigations/2026-09-23-chatgpt-cache-affinity.md`.
 
 ## Runners (each spends ChatGPT-plan quota — ask Destin first, state the cap)
 

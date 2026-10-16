@@ -1,6 +1,6 @@
 """Words-only steps: a question or a statement with NO picture. Validation, the data the page
 gets, and the runs/images rule. Picture-free like test_live.py — this is what CI runs.
-Plan: docs/active/plans/2026-09-01-feature-flow-plan.md Task 1."""
+Plan: docs/archive/plans/2026-09-01-feature-flow-plan.md Task 1."""
 import json
 import os
 import sys

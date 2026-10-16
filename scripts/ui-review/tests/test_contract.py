@@ -1,5 +1,5 @@
 """The contract step (rows Destin signs off) and, from Task 4, contract-check + the acceptance
-deck. Picture-free like test_live.py. Design: docs/active/specs/2026-09-01-feature-flow-design.md §3–§7."""
+deck. Picture-free like test_live.py. Design: docs/archive/specs/2026-09-01-feature-flow-design.md §3–§7."""
 import json
 import os
 import sys
