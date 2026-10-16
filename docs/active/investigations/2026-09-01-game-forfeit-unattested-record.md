@@ -7,7 +7,7 @@ topic: Head-to-head relay — a forfeit is recorded on one client's word, and ne
 
 # `game-forfeit` records a permanent match on one client's say-so; `game-result`/`game-forfeit` are uncapped
 
-**Roadmap entry:** `docs/roadmap/games.md`.
+**Tracked as:** card #43 (the old roadmap entry was retired 2026-10-15).
 **History:** added 2026-08-31 (found reviewing wecoded-marketplace#78); re-verified against
 today's code 2026-09-01.
 

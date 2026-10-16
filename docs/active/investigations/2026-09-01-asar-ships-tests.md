@@ -7,6 +7,8 @@ topic: Every tsc-emitted file ships inside app.asar, tests and workbench include
 
 # The installer packs every `tsc` output, tests included
 
+> **Status 2026-10-16:** partly fixed: `desktop/tsconfig.json` on master now excludes `src/**/*.test.ts(x)` (commit b1840ab34), so test files no longer compile into `dist/` and the 47 `.test.js` files should no longer ship. `electron-builder` still packs `dist/**/*` (only `dist/main/harness/eval` is excluded), so the 19 `dist/renderer/dev/workbench` files probably still ship; the installer has not been re-measured. Card #29 (release pipeline upkeep) links this report.
+
 **Measured.** On the 1.2.4 Linux build (re-measured 2026-08-12): **47 `.test.js` files**
 (`dist/main/__tests__/*`, `dist/main/analytics-service.test.js`, …) plus **19
 `dist/renderer/dev/workbench/*.js`** files, including `fixture-loader.test.js`, are inside

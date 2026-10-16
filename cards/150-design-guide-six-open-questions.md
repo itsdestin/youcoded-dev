@@ -41,3 +41,7 @@ now, we should just continue to focus on current app design and the ui guide."
 `n/a` `parked` `P3` `checked 2026-10-12`
 
 ## knowledge
+
+From the 2026-10-16 document sweep
+- COUNT-1: reconcile the accepted "Session Files (12)" screen with the guide's no-parentheses count rule (not confirmed settled). Source: docs/active/reviews/2026-09-23-ui-guide-wording-round2.md
+- Buttons beside text: the top / centre / bottom alignment review. Source: docs/active/design/2026-09-23-ui-element-review/decisions.md

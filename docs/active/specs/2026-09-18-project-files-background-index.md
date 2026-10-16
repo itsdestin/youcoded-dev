@@ -1,6 +1,6 @@
 ---
 date: 2026-09-18
-status: draft
+status: active
 type: spec
 topic: Project View Files — every folder just works at any size. Direct folder browsing from disk, backed by a shared, recoverable background index for search and counts. No "large folder" gate, no "first batch" note, no silently missing files.
 origin: Destin, 2026-09-18 — "i just want everything to work, even if it requires a smidge more backend work"
@@ -9,6 +9,8 @@ related: docs/archive/plans/2026-09-18-render-cost-consolidation.md, docs/archiv
 ---
 
 # Project Files at any size — revised design (build brief)
+
+> **Status 2026-10-16:** stage one shipped: browsing one folder at a time, any size, any depth, no gate (youcoded#536, 2026-09-19). What remains is the shared background index that makes search and counts complete; that is card #33 (release blocker: search stops early in big projects), which cites this spec.
 
 **For the building session.** This is the agreed direction, not a finished contract. Before
 building: (1) read "Process" and ask Destin the route question; (2) run "Stage 0 —
@@ -172,7 +174,7 @@ and provisional counts while the first index runs.
 
 **Status:** Stages 0–1 shipped 2026-09-18 (youcoded#536; review deck and code review in
 `docs/archive/design/2026-09-18-project-files-any-size/` and `docs/archive/reviews/`). Stages 2–3
-are open in `docs/roadmap/files.md` as v1.3.1 release blockers.
+are open as card #33 (v1.3.1 release blocker).
 
 **Stage 0 — measure first (no product code).** On a large real project, the home folder and a
 whole drive: time and memory of a full walk (Node walk vs `rg --files`); first index vs warm

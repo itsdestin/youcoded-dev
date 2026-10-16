@@ -7,6 +7,8 @@ topic: macOS 1.3.0-beta.72 is unopenable (unsigned bundle, no Gatekeeper overrid
 
 # macOS beta.72: what a tester's postmortem got right, and what it got wrong
 
+> **Status 2026-10-16:** incident fixed: ad-hoc signing plus `verify-mac-signature.sh` merged 2026-09-04 (youcoded 2c369762). What remains (a real Apple Developer ID with notarization, and the updater re-quarantining a downloaded update) is card #28. Left in `active` only as the reference for that card.
+
 A Mac tester (macOS 26.5.2, Apple Silicon) could not launch `1.3.0-beta.72`, and their
 Claude session produced two reports: a Gatekeeper diagnosis and a fuller postmortem of a
 force-quit. This document records which claims survived verification **against the exact
@@ -171,7 +173,7 @@ is the pattern the updater should follow.
 <!-- claim: {"path": "youcoded/desktop/src/main/engine/engine-acquisition.ts", "contains": "hash !== asset.sha256"} -->
 
 **Already filed separately:** the announcement banner is fetched unsigned and uncapped
-(`docs/roadmap/other-features.md`).
+(it was on the old roadmap; now filed in card #28).
 
 ## The other error class: a confident answer from a command that measured something else
 

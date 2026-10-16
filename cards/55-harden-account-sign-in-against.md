@@ -32,3 +32,6 @@ Chats
 
 From the old roadmap (other-features › accounts, status needs-verify, seen on all, last checked 2026-09-01)
 Accounts: silent sign-out and Phase 2 leftovers (2 items). (a) One rejected server call quietly signs you out with no notice; friends then see you offline forever and you only find out by opening the friends panel. The log half shipped; the on-screen notice still needs a copy and surface decision (report: docs/active/investigations/2026-09-01-social-401-silent-signout.md). (b) Phase 2 leftovers: the two-person sign-in checklist never ran on a released build; a phone browser can't make account or social calls through remote access; the old PartyKit lobby room is still deployed; "Last seen Xm ago" never ticks while you watch; the friends screen is still buried inside the game lobby's code.
+
+From the 2026-10-16 document sweep
+- Friends panel: add the status line (Part 3 of the presence design). Source: docs/active/specs/2026-08-11-presence-self-healing-design.md

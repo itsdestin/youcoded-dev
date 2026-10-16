@@ -7,6 +7,8 @@ topic: specialists — stage one shipped, stage two (plans) not started; the rea
 
 # Specialists / plans — start here
 
+> **Status 2026-10-16:** stage two (plans) still has no code on master; card #74 ("Helper plans: approve a multi-step job up front") is the live item and owns the decisions still owed by Destin. This file stays as the reading list. References to the roadmap below mean the cards.
+
 Hand this file to a new session. It is a map, not a plan: it says what is built,
 what is not, what to read in what order, and what the next real action is.
 
@@ -45,7 +47,7 @@ their design consequences are in `youcoded/docs/engine-dependencies.md` →
 The probes also found a shipped bug: the app could not read the engine's slot
 count on this build, so every local model was capped at one helper. Fixed and
 merged 2026-09-05; a follow-on (the count is read before the model loads) is
-on the local-models roadmap.
+in the local-models cards (#47, #48).
 
 What blocks stage two now is Destin's decisions — the prompt at
 `docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md` puts them on a
@@ -58,7 +60,7 @@ question deck and then starts the design.
 | 1 | `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md` | The single doc for the whole program. §5.3 is specialists; §6.1 is where this is heading; §9 is what Destin still owes. Read §5.3 + §9 at minimum. |
 | 2 | `docs/active/specs/2026-08-11-native-specialists-design.md` | The specialists spec itself. §4 is the plan schema, §7–§8 the executor and budgets. This is the stage-two design. |
 | 3 | `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md` | 17 hands-on checks of **shipped** behaviour. All 17 result tables are still empty (verified 2026-09-04). Check 9b — a permission grant leaking between helpers — is the one to run first and needs a real model. |
-| 4 | `docs/roadmap/native-harness.md` → `## specialists` | The five open items, in Destin's words. |
+| 4 | cards #71 and #74 (formerly the roadmap's specialists section) | The open items, in Destin's words. |
 | 5 | `youcoded/docs/native-runtime.md` | Depth on everything already shipped. Read when you need mechanism, not before. |
 
 Background, only if you need the reasoning behind a settled decision — do not
@@ -79,7 +81,7 @@ re-derive from these:
 
 Two more (a stale run update rewinding a finished card; missed steers stored
 unclamped) were fixed on master on 2026-09-02 (`96d82393`, `5f759d8a`) without
-closing their roadmap items — closed and archived 2026-09-04. The note-order bug
+closing their cards — closed and archived 2026-09-04. The note-order bug
 was fixed and merged 2026-09-05 (`f0ac766d`, `7d3cc64d`); the same branch pinned
 checklist 9b's security half as a unit test.
 

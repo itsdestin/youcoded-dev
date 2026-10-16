@@ -45,3 +45,6 @@ Chats
 
 From the old roadmap (dev-workspace › release, status confirmed, seen on n/a, last checked 2026-09-01)
 Release and build upkeep: 6 loose ends. (a) wanted: a scheduled check that every id in the model switcher's recommended list is still current, reporting renames and new "latest" aliases (Destin 2026-09-20: roadmapped, not built); (b) a one-line `announcements.txt` change runs the full ~20-minute Linux build; widen the skip gate to files no build step reads; (c) installers ship test and workbench files (47 + 19 in 1.2.4; weight only; report: docs/active/investigations/2026-09-01-asar-ships-tests.md); (d) PDF reading needs one smoke test in a packaged build; (e) dependency majors that are real work: TypeScript 7, okhttp 5.5, org.json; (f) Android toolchain: AGP 9.4 and compose-bom 2026.08 are open and red; re-run them together now that Kotlin is in
+
+From the 2026-10-16 document sweep
+- Phase 2 of retiring youcoded-core: delete the app's dead youcoded-core branches in 1.3.1. Source: docs/active/plans/2026-04-21-deprecate-youcoded-core.md

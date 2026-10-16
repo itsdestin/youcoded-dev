@@ -7,11 +7,12 @@ scope: youcoded/desktop — native harness permissions, Claude Code bypass parit
 
 # Skip Permissions for native sessions
 
-> **STATUS 2026-08-26 — NOTHING FROM THIS DOCUMENT HAS BEEN BUILT OR TRACKED, 17 days on.**
+> **Status 2026-10-16:** the Skip Permissions tooltip falsehood is fixed (youcoded#376, 2026-09-01; see `docs/shipped.md`). Step 1 (a bypass mode for native sessions) is tracked in card #66(e); the sandbox / scratch-workspace idea is card #63(i). Steps 2-4 other than the tooltip (an `rm` analyzer and retiring the stale `PermissionOverrides` categories) are filed in card #66. `NativePermissionMode` on master still has no `'bypass'`. The "file on the roadmap" instructions below are done and retired.
+
+> **OLDER STATUS 2026-08-26 (superseded by the 2026-10-16 status above) — NOTHING FROM THIS DOCUMENT HAD BEEN BUILT OR TRACKED, 17 days on.**
 > - Step 1 unbuilt: `NativePermissionMode` on `origin/master` is still
 >   `'ask' | 'auto-edit' | 'full-auto'` (`shared/permission-types.ts:7`) — no `'bypass'`.
-> - Steps 2–4 unbuilt and **absent from `ROADMAP.md`**: `grep -ni "sandbox|scratch workspace|rm
->   analyzer|PermissionOverrides|landlock" ROADMAP.md` returns no matching item.
+> - Steps 2–4 unbuilt and **absent from the old roadmap**.
 > - **No document anywhere references this one** (`rg -l 2026-08-09-native-skip-permissions
 >   --glob '*.md'` → only itself). Its source conversation `d964c1da` is tagged
 >   `Follow-Up Needed` and has been idle since 2026-08-10.
@@ -20,7 +21,7 @@ scope: youcoded/desktop — native harness permissions, Claude Code bypass parit
 >   "Even with the toggle on, Claude will still stop and ask before doing the really risky stuff…",
 >   which measurement against CC v2.1.226 showed to be false on the Claude Code path. That is a
 >   `bug`, independent of the native feature, and it is on no list. **This is the single highest-
->   priority item in this document and should be filed on `ROADMAP.md` immediately.**
+>   priority item in this document and was to be filed immediately (fixed since, #376).**
 > - Not superseded by the full-auto external-read work
 >   (`docs/archive/plans/2026-08-21-full-auto-external-read-bypass.md`) — that plan lifts the
 >   external-directory ask for three READ tools inside `full-auto`; it does not add a bypass mode,
@@ -235,7 +236,7 @@ plainly that it is unavailable rather than pretending.
    platform-independent. *Open: same piece of work, or a follow-up?*
 3. **Fix or retire the stale `PermissionOverrides` categories** and the tooltip copy they back. This
    is a correctness bug on the shipping Claude Code path, independent of the native work.
-4. **ROADMAP** the sandbox and the scratch-workspace idea as separate design passes. Neither belongs
+4. **File as cards** the sandbox and the scratch-workspace idea as separate design passes. Neither belongs
    in this branch.
 
 ## 5. Open questions

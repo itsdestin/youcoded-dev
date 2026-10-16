@@ -1,10 +1,12 @@
 ---
 title: Hidden-history rendering and intermittent switch/resize stalls
-status: active
+status: paused
 date: 2026-09-29
 ---
 
 # Paused renderer experiments — not accepted fixes
+
+> **Status 2026-10-16:** paused. These renderer experiments were never accepted as fixes (Destin requested the pause). Restart authority is `docs/active/investigations/2026-09-29-performance-status.md`; the live trackers for the open slowdowns are cards #93, #94 and #96.
 
 This implementation attempt was interrupted, then Destin requested a pause, documentation cleanup and merge of verified fixes. These renderer experiments are preserved separately, not accepted into the integration source. Current status and restart authority: `docs/active/investigations/2026-09-29-performance-status.md`. The earlier continuous-investigation/no-shipping instructions below describe that historical phase; the later merge authorization does not establish performance acceptance for unfinished candidates.
 

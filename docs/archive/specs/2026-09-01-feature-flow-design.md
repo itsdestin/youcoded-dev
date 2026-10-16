@@ -11,6 +11,8 @@ measured_at:
 
 # Feature flow — design
 
+> **Status 2026-10-16:** follow-ups reviewed in the 2026-10-16 sweep: the P5 interpretation step and the "You pick" option are filed in card #20; the goal "review the roadmap, pick 10 things, fix them" is dropped as moot (the roadmap was retired 2026-10-15).
+
 Destin's target: **"here's my idea" → (autonomous plan/build/verify) → UI review deck → (autonomous feedback processing) → approve.** A second goal, "review the roadmap, pick 10 things, fix them," is scoped in §8 and is not built by this design.
 
 Four assumptions are made here so the plan can be written; each is a one-line veto in §9.

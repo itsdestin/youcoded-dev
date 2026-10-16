@@ -84,3 +84,8 @@ private message bus, so it cannot reach the keyring and `gh` gets 401 (no pull-r
 rewritten to <HOME>/.config. (iv) glob-guard guard 8 refuses `npm ci` in a SCRATCH folder because it judges by the
 session's working folder, not where the install runs; it took a script file to install fresh packages safely
 (0 shared files after). Wanted: run-dev.sh --isolated-home that sets this up, and guard 8 judging the real target.
+
+From the 2026-10-16 document sweep
+- When a guard is added, prove it fails without the fix (a workspace habit not yet written down). Source: docs/archive/investigations/2026-08-31-session-retrospective-workspace-friction.md
+- Run the public-truth / cleanup audit of the repositories itself (it was designed but never run). Source: docs/active/specs/2026-09-08-repository-public-truth-audit-design.md
+- Harness evaluator ideas never built: a rule to run a control case, a trend archive of eval results, and automatic test isolation. Source: docs/active/investigations/2026-09-03-jlbc-tooling-cross-pollination.md (Part 2)

@@ -2,6 +2,9 @@
 status: active
 ---
 
+> **Status 2026-10-16:** Finding 1 is now fully fixed (`chat-reducer.ts` builds group- and turn- ids with the per-boot `ID_EPOCH`, with WHY comments), so the "only half fixed" note below is out of date. Still open: Finding 4 (remote hydration, no `hydrationPending` anywhere in `desktop/src`; the phone-side symptoms are in card #99) and Finding 5 (`transcript-watcher.ts:97` still uses a bare `Date.now()`). Finding 2's cited lines are gone (`PTY_BUFFER_SIZE` no longer exists in `desktop/src`; whether the buffer problem moved was not checked). Findings 3 and 5 are filed in card #151 ("Code tidy-ups left from older reviews"). The old roadmap references below are retired.
+
+
 > **Status re-verified 2026-08-26 against `origin/master` `dbbb9139` — 47 days after this
 > doc was written, four and a half findings are still open verbatim.** Every line number
 > below was re-read off master, not inferred.
@@ -21,7 +24,7 @@ status: active
 > - **Finding 3 — OPEN, and now WORSE.** `defaults:get`/`defaults:set` still build a
 >   3-key `DEFAULTS_INITIAL` inline (`:1510`, `:1521`); `folders:list`/`folders:add` still
 >   read/parse/write `~/.claude/youcoded-folders.json` by hand with a plain `writeFile`
->   (`:1604-1643`) instead of importing `saved-folders.ts`. `ROADMAP.md:91` records that a
+>   (`:1604-1643`) instead of importing `saved-folders.ts`. the old roadmap recorded that a
 >   THIRD inline copy has since appeared (`folders:set-description`) and that Destin
 >   deliberately deferred the unification on 2026-08-06 because `folders:rename` over the
 >   WebSocket has zero test coverage — **write that test first**.
@@ -29,8 +32,8 @@ status: active
 >   `docs/archive/plans/2026-07-20-remote-hydration-pr-spec.md`; nothing shipped
 >   (no `hydrates` flag, no `hydrationPending`, 500 ms timer still at `remote-server.ts:758`).
 > - **Finding 5 — OPEN and tracked nowhere.** `transcript-watcher.ts:35` is still a bare
->   `const timestamp = Date.now();`. This is the only finding in this doc with no ROADMAP
->   entry — see the ROADMAP patch in the 2026-08-26 review.
+>   `const timestamp = Date.now();`. This was the only finding in this doc with no tracker
+>   entry; it is now in card #151.
 >
 > The "Coordination" section's three items all landed long ago. Keep this doc `active`:
 > it is the only place Findings 2, 3 and 5 are written down in fix-shape detail.

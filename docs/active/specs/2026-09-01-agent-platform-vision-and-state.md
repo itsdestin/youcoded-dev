@@ -11,14 +11,16 @@ tags: [native-runtime, specialists, agents, automations, vision]
 
 # Native sessions, specialists, and assistants — the vision and where it stands
 
+> **Status 2026-10-16:** open items are now work cards, not a roadmap (retired 2026-10-15): run `node scripts/cards.mjs index`. Mapping: native engine matches Claude Code and tool-connections screen = #59; Agents & Automations = #61; ideas for assistants and tools = #63; Mesh and Cloud = #64; helper plans = #74; per-project skills and tools = #75; skills home = #77; Android = #1. Statements below about Android code (`SessionService.kt`, the Kotlin runtime) describe code deleted in the 2026-10-14/15 Android rebuild, which now runs the desktop backend; the state claims were last verified 2026-09-04 and need re-checking before use.
+
 **What this is.** One document for the whole "YouCoded runs its own agents" family: native
 (non-Claude-Code) sessions, the harness and its tools, permissions, specialists, and the
 Agents & Automations surface that has not been built yet. It replaces three documents that
 each called themselves a roadmap (the 2026-07-09 platform vision, the 2026-08-11 parity
 program, the 2026-08-11 super-agent sequence) and were drifting apart.
 
-**What this is not.** It is not the tracker. `ROADMAP.md` stays the only list of open items;
-every open item named here exists there under the same title. Per-feature specs stay
+**What this is not.** It is not the tracker. The work cards (`cards/`, `node scripts/cards.mjs index`) are the only list of open items;
+every open item named here has a card. Per-feature specs stay
 authoritative for their feature (§11 lists the live ones). This document is the WHY, the
 shipped end state, the long-term shape, the recorded order of work, and the decisions —
 settled and owed.
@@ -151,7 +153,7 @@ concepts in code.
 
 ## 5. Where each workstream stands
 
-Every item below is an open `ROADMAP.md` entry unless marked otherwise; titles match.
+Every item below is an open card (`cards/`) unless marked otherwise.
 
 ### 5.1 Parity — "no obvious difference beyond model choice"
 
@@ -195,7 +197,7 @@ cross-project bucket for specialist charters. Open:
 
 ### 5.3 Specialists — stage one done, stage two not started
 
-Shipped (§4). Open, in the roadmap (re-verified 2026-09-04): child-transcript GC (blocked
+Shipped (§4). Open, as cards (re-verified 2026-09-04): child-transcript GC (blocked
 on a general delete-conversation feature) and six named follow-on ideas — the stale-resend and
 unclamped-missed-steers bugs were fixed on 2026-09-02, the note-order bug on 2026-09-05 (promote a foreground hire to background
 mid-run, open a helper's own transcript, …).
@@ -345,7 +347,7 @@ Memory that compounds (the super-agent memory system is its first slice); multi-
 (Telegram/Discord/email bridges for automation results, each a plugin); Cowork-grade
 deliverables through the existing artifact viewer; an exploratory fine-tuning bridge; a
 browser-use tool for harnesses; harness and agent templates as marketplace items. Only memory
-has a roadmap entry today.
+has a card today.
 
 ---
 
@@ -422,14 +424,14 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 - `docs/active/plans/2026-07-18-multi-model-cwd-contract.md` — awaiting §9 item 6.
 - `docs/archive/specs/2026-07-30-permission-ask-timeout-design.md` + plan — PR #278.
 - `docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md` + plan `2026-08-21-full-auto-external-read-bypass.md` — 0/37.
-- Superseded: `docs/archive/specs/2026-08-05-project-scoped-skills-design.md` + plan — narrow Claude Code compatibility shipped in YouCoded PR #424; the v1.3 native-first replacement is tracked in `docs/roadmap/native-harness.md`.
+- Superseded: `docs/archive/specs/2026-08-05-project-scoped-skills-design.md` + plan — narrow Claude Code compatibility shipped in YouCoded PR #424; the v1.3 native-first replacement is tracked in cards #75 and #77.
 - `docs/active/specs/2026-08-17-search-scope-and-timeout-design.md`.
 - `docs/archive/handoffs/2026-09-09-session-context-panel-handoff.md` (shipped 2026-09-10).
 - `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.
 - `docs/archive/design/2026-08-17-assistant-settings-panel-design.md` (the React mockup supersedes its HTML prototype).
 - `docs/active/specs/2026-08-31-codex-session-provider-design.md`.
 - `docs/active/investigations/2026-08-09-native-skip-permissions.md`, `2026-07-28-agent-harness-frontier-research.md` — still carry open findings.
-- `docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md` — **closed and archived 2026-09-04**; its ledger shipped or moved to `docs/roadmap/native-harness.md`. Still the reference for how YouCoded's tools compare with the other harnesses (§2–§7).
+- `docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md` — **closed and archived 2026-09-04**; its ledger shipped or moved to cards (#59, #63, #66). Still the reference for how YouCoded's tools compare with the other harnesses (§2–§7).
 - Depth: `youcoded/docs/native-runtime.md`; rules: `.claude/rules/native-runtime.md`, `native-specialists.md`, `native-permissions.md`, `harness-tools.md`, `harness-evaluator.md`.
 
 **Archived 2026-09-01 by this consolidation** (history and research only):
@@ -438,5 +440,5 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 - `docs/archive/plans/2026-08-11-super-agent-roadmap.md` — the capability sequence (§5.4 here).
 - `docs/archive/specs/2026-07-15-phase2-native-harness-design.md` — shipped; its §0 decisions are in §8.
 - `docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md` — superseded by the specialists spec; §1–§5 are citable research.
-- `docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md` — mirrored in the roadmap.
+- `docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md` — mirrored in card #63(g).
 - `docs/archive/investigations/`: `2026-07-10-harness-design-ideas`, `2026-07-28-agentic-frontier-reading-list`, `2026-08-01-native-agent-harness-reviews`, `2026-08-11-subagent-platform-research`, `2026-08-10-harness-mutation-safety-prior-art`.

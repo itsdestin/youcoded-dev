@@ -21,3 +21,6 @@ Chats
 
 From the old roadmap (dev-workspace › tests, status confirmed, seen on n/a, last checked 2026-10-01)
 Cross-platform first-run testing: 5 open pieces. (a) the full first-run, setup and sign-in pass is untested on the Ubuntu guest, its deb/rpm/pacman installers, and the winget-only flows (Tailscale, rclone, `gh`) on Windows without App Installer; (b) Linux AppImage needs libfuse2 (stock Ubuntu 22.04+ lacks it) and taskbars may not tie the window to YouCoded's icon; (c) the Linux app catalog page (request #8053) needs a `/retest` and a reply in Destin's name after the next release; ask him first; (d) the VM helper's Mac `load` answers "nothing matched" for some builds and fails on file names with spaces; (e) the macOS 26 VM has no saved "ready" state, so every start is a ~5 minute cold boot
+
+From the 2026-10-16 document sweep
+- First real push from a fresh machine with no `gh` installed, on build 647bd242 or later (it also checks the in-app GitHub sign-in). Source: docs/active/handoffs/2026-07-10-sync-completion-handoff.md

@@ -7,6 +7,8 @@ topic: Audit of conversation sync/lease handoff — device A live → device B r
 
 # Conversation lease & handoff audit (cross-device resume)
 
+> **Status 2026-10-16:** conversation handoff with confirmed transfer shipped (youcoded#557, 2026-09-24) and addresses the final-flush findings (H2 and H3 type; not re-verified line by line). Still open, per the cards: hub-down no-warning (F1/F4), two resumes passing the gate before a lease is claimed (H1/H4), lease-expiry split-brain (H5) are in card #125; unauthenticated lease identity (M2) is in card #124. H6 (Android in cross-device sync) is moot as a separate item: the Android app was rebuilt 2026-10-14/15 on the desktop backend, so it uses the same sync code.
+
 **Request.** Destin asked for a thorough investigation of the sync/lease logic for conversations: find errors in the handoff between a live app holding a conversation on device 1 and a different device resuming it while live; ensure there is always a proper warning and handoff; ensure files are correctly/safely synced and reconciled; and make the behaviour transparent in the Backup & Sync (i) popup.
 
 **Scope.** `youcoded/desktop` (main + renderer), the SyncGroupRoom worker (`wecoded-marketplace/worker/src/sync/room.ts`), and the Backup & Sync settings surfaces. No code changed — this is a findings report.
@@ -33,9 +35,9 @@ topic: Audit of conversation sync/lease handoff — device A live → device B r
 
 ## Original findings (F1–F7) — retained, with corrections
 
-### F1 / F4 — Hub down = no warning at all (cross-device silent dual-writer) — open, on roadmap
+### F1 / F4 — Hub down = no warning at all (cross-device silent dual-writer) — open, card #125
 
-**Severity: High (data-integrity in a specific window).** RETAINED: `leaseQuery` returns `{held:false, source:'none'}` and the gate checks only `held` (lease-client.ts:469–503; resume-lease-gate.ts:45–46), so a hub outage produces no warning. Both the second session and the reviewer confirmed the mechanics; the roadmap item stands (`docs/roadmap/sync.md:40-54`). Never-block is a deliberate choice; never-warn is the oversight. Fix direction unchanged: surface a non-blocking "couldn't check your other devices" warning on a hub-down query.
+**Severity: High (data-integrity in a specific window).** RETAINED: `leaseQuery` returns `{held:false, source:'none'}` and the gate checks only `held` (lease-client.ts:469–503; resume-lease-gate.ts:45–46), so a hub outage produces no warning. Both the second session and the reviewer confirmed the mechanics; the item stands (now card #125). Never-block is a deliberate choice; never-warn is the oversight. Fix direction unchanged: surface a non-blocking "couldn't check your other devices" warning on a hub-down query.
 
 ### F2 — Hub-down force leaves holder live — correct, scope corrected
 
@@ -51,7 +53,7 @@ topic: Audit of conversation sync/lease handoff — device A live → device B r
 
 ### F6 — Over-50 MB conversations never reach peers — correct, already tracked
 
-**Severity: Medium (availability).** RETAINED. Roadmap sync.md:4-7; the second session additionally notes the related merge-failure risk already on the roadmap (sync.md:18-21).
+**Severity: Medium (availability).** RETAINED. Tracked in cards #121 and #125; the second session additionally notes the related merge-failure risk, card #121.
 
 ### F7 — Copy/UX asymmetries — correct
 

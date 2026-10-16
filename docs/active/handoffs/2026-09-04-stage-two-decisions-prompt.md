@@ -7,6 +7,8 @@ topic: the prompt Destin pastes into a fresh session to settle what gates specia
 
 # Prompt: settle what gates plans, then start designing them
 
+> **Status 2026-10-16:** still valid as a paste-in prompt; the live item is card #74, still gated on Destin's decisions. Where the prompt says to serve the question deck, use the current flow: build with `preview`, read the contact sheet, then `serve` it in the background (see `.claude/rules/review-deck.md`); the old `review-cards.py serve` wording is out of date.
+
 Paste everything below the line into a new session. It is written for a session
 with no context. It leads with a question deck because five decisions are owed,
 and four or more questions never go in chat.

@@ -7,6 +7,8 @@ topic: Any 401 from a social or marketplace call silently signs the account out 
 
 # Any 401 silently destroys the local account session
 
+> **Status 2026-10-16:** a log line on sign-out now exists (`makeClearSessionOn401` in `handler-utils.ts` logs a WARN, youcoded#386). Still owed: the on-screen notice to the user; that is card #55(a).
+
 **Symptom.** The user is unhooked from their account with zero feedback; presence drops with
 it, so friends see them offline forever (frozen `last_seen_at`) and the user only finds out by
 opening the friends panel. Indistinguishable from the presence latch wedge
@@ -21,7 +23,7 @@ now opens a block that reads `store.getToken()` before calling `signOut()`, rath
 one inline expression) — the anchor below was updated to match the current shape.
 <!-- claim: {"path": "youcoded/desktop/src/main/handler-utils.ts", "contains": "result\\.status === 401\\) \\{"} -->
 
-Nothing announces it: no toast, no log line, no renderer event beyond the sign-in state
+At the time of writing nothing announced it (a log line was added later, #386; the on-screen notice is still owed, card #55): no toast, no log line, no renderer event beyond the sign-in state
 flipping. `usePresence` then drops presence because `signedIn` went false.
 
 **Deleting the sign-out would be worse** — the UI would claim signed-in while every call
@@ -49,5 +51,5 @@ comment at the edit site records this so a later reader does not mistake the log
 whole fix. Four tests cover the decorator, which previously had none.
 
 ## History
-Added 2026-08-11 (old ROADMAP.md L365). Re-verified 2026-09-01: `handler-utils.ts` has had no
+Added 2026-08-11 (old roadmap entry, retired; now card #55). Re-verified 2026-09-01: `handler-utils.ts` has had no
 commits since 2026-07-09; the silent `signOut()` is unchanged.

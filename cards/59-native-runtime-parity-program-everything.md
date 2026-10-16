@@ -38,3 +38,7 @@ Chats
 
 From the old roadmap (native-harness › skills-mcp, status confirmed, seen on desktop, last checked 2026-09-01)
 MCP servers can only be set up by hand-editing a config file — no settings screen to add, edit or remove one, and servers Claude Code already knows stay invisible to the app's own agent (deferred from phase 1, 2026-08-05; still unbuilt 2026-09-01) Destin 2026-10-05 triage (roadmap-triage-2026-10-05#10): postponed until after 1.3.1
+
+From the 2026-10-16 document sweep
+- Native Bash tool: a working-directory parameter, one standard block of folder rules, and a loud error for relative paths. Source: docs/active/plans/2026-07-18-multi-model-cwd-contract.md
+- Before the MCP settings screen ships, fix `upsert()` / `fromStored` deleting hand-edited entries. Source: docs/active/investigations/2026-09-01-native-mcp-phase-2.md

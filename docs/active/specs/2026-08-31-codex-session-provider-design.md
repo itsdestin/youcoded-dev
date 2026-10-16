@@ -3,11 +3,13 @@ status: draft
 date: 2026-08-31
 updated: 2026-08-31
 tags: [codex, openai, chatgpt, sessions, providers, permissions, native-runtime, marketplace]
-roadmap: ROADMAP.md:1280 ("Third-party agent CLIs as session providers")
-supersedes_cost_shape: ROADMAP.md:1280 (the terminal-wrap cost estimate, for Codex only)
+roadmap: card #63 (formerly ROADMAP.md "Third-party agent CLIs as session providers", retired 2026-10-15)
+supersedes_cost_shape: the old roadmap entry's terminal-wrap cost estimate, for Codex only (roadmap retired; see card #63)
 ---
 
 # Codex as a session provider
+
+> **Status 2026-10-16:** still parked, no Codex provider code on master. The idea ("Codex-the-agent as a session provider") is tracked inside card #63 (ideas for the assistant, its helpers and its tools). The old roadmap entry this spec pointed at was retired 2026-10-15.
 
 > **Parked 2026-09-04.** The ChatGPT-plan goal this spec was written for is now met the
 > direct way — OpenAI publicly welcomed plans inside third-party apps in July 2026, which
@@ -43,7 +45,7 @@ where that principle points the other way, and the distinguishing fact is billin
 
 **The rule this sets:** wrap a third-party harness only when it is the sole path to
 capacity the user has already paid for. "It has a nice agent loop" is not a reason.
-(§9 Q6 asks whether this becomes a standing ROADMAP rule.)
+(§9 Q6 asks whether this becomes a standing workspace rule.)
 
 ### Three approaches that must not be re-proposed
 
@@ -518,7 +520,7 @@ the Claude Code plugin ecosystem, and must not ride along with this.
    support burden we take on permanently, and `codex login` needs a browser round-trip we
    do not control anyway.
 6. **Does §1's test become a standing rule?** "Wrap a third-party harness only when it is
-   the sole path to capacity the user already paid for." If yes, it belongs in the ROADMAP
+   the sole path to capacity the user already paid for." If yes, it belongs in card #63
    entry so the next CLI request is answered before it is written up.
 7. **Marketplace bridge now, or after the ADR 008 inversion?** Recommendation: now, as the
    §4.6 adapter. One week puts four catalog items in five into Codex; the inversion later

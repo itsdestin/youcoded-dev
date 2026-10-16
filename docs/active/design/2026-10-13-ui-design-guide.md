@@ -860,14 +860,14 @@ recipe and ask.
 
 | # | Question | Where it came from |
 |---|---|---|
-| Q1 | **Buttons beside text: top, centre or bottom?** Setting rows and one-line notices centre their buttons; provider cards, downloadable model rows and titled notices put them level with the first line; long errors put them on their own line at the bottom right. | Destin: "just leave this for now, but keep a future roadmap item to do a full review" (small-fixes-3#SF3-9); `button-alignment-survey.md` |
+| Q1 | **Buttons beside text: top, centre or bottom?** Setting rows and one-line notices centre their buttons; provider cards, downloadable model rows and titled notices put them level with the first line; long errors put them on their own line at the bottom right. | Destin: "just leave this for now, but keep a future work item (card #150) to do a full review" (small-fixes-3#SF3-9); `button-alignment-survey.md` |
 | Q2 | **A status at the top of a popup** (Remote Access's connection state): no look chosen; every option was "cluttered". | decisions "Status at the top of a popup" (P-7) |
 | Q3 | **A plain empty list** (Library "Nothing installed"): the first-time card was inferred, never confirmed. | decisions "Empty states" |
 | Q4 | **When an explanation hides behind an (i) and when it is a plain line.** Ticket choices dropped the (i) for plain lines; on Backup & sync Destin wanted the opposite — "too much bare text. should all just be hidden behind the i popup". | submit-ticket-2#ST2-1 vs small-fixes-3#SF3-7 |
 | Q5 | **First-time explanations**: when to use a tour stop, a tip, a once-only popup or a notice inside the thing. | backup-warning-friction proposal 1 |
 | Q6 | **Explanations on permission cards**: permission prompts are not covered, so nothing says where a note on one goes. | backup-warning-friction proposal 2 |
 | Q7 | **A lone button inside a notice at phone width**: full width like any lone button, or kept beside its sentence. | backup-warning-friction proposal 11 |
-| Q8 | **Popup titles name the popup** (no sentences, counts or full stops in a title). Proposed, then deferred with the guide tooling. | close-session-friction proposal 23; dev-workspace roadmap |
+| Q8 | **Popup titles name the popup** (no sentences, counts or full stops in a title). Proposed, then deferred with the guide tooling. | close-session-friction proposal 23; card #150 |
 | Q9 | **A filterable list in a popup** (search first, one card of plain rows that alone scrolls, follow-up action pinned below, height kept while filtering). Only the quick picker is ruled. | project-switcher-friction proposal 1 |
 | Q11 | **Steps of a multi-step popup** in general (Add a backup's choose-where step and its dropped done page are decided). | small-fixes-3#SF3-1, #SF3-5 |
 | Q12 | **The number on the header's Session Files button**: "decide with status/badges", never decided. | decisions "Counts beside a label or tab" |

@@ -5,8 +5,8 @@ status: active
 
 **Status (2026-09-26): the fixes below SHIPPED** — youcoded#573 (launch, Resume, the 30/s
 mascot) and youcoded-dev#205/#206. "What this changes in the plan" is the record of what was
-planned, not open work. This report stays active only because two roadmap items point here:
-"Resume loads forever" (needs-repro, chat-data) and mascot companions at full refresh (themes).
+planned, not open work. This report stays active only because cards point here:
+"Resume loads forever" (cards #7 and #96) and mascot companions at full refresh (card #100).
 
 **Asked (Destin, 2026-09-25):** "the app sometimes really lags on startup, and the first
 launch of the resume browser can seemingly load indefinitely."
@@ -45,7 +45,7 @@ not kept (it names real conversations); rerun the script to regenerate.
    inference: the indefinite case is still unexplained.
 2. **Every Resume open re-reads all 1,018 native session files first** (256 KB head each,
    children included only to be filtered out) — 0.8–2.1 s, nothing cached. This is the
-   largest single cost of an open and is NOT in the roadmap's Resume item, which names
+   largest single cost of an open and is NOT in the Resume cards (#7, #96), which names
    only the Claude Code half.
 3. **Two full scans run at once when Resume opens.** `App.tsx`'s first-run probe
    (`setHasResumable`, ~line 3468) calls `session.browse()` just to learn whether ANY

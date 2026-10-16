@@ -11,6 +11,8 @@ related:
 
 # Session handoff — 2026-08-27, OOM read-side class
 
+> **Status 2026-10-16:** follow-ups reviewed in the 2026-10-16 sweep: the Android artifact-store write queue / read guard is dropped as moot (that Kotlin code was deleted in the 2026-10-14/15 Android rebuild); paged conversation history shipped (youcoded#349).
+
 One session, one afternoon. Written so another device can pick this up cold.
 
 ## What was asked, in order

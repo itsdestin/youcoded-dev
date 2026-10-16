@@ -34,3 +34,7 @@ Chats
 
 From the old roadmap (perf, status confirmed, seen on desktop, last checked 2026-10-04)
 With 17 or more Claude Code sessions open, terminals fight over graphics. Every session builds a graphics-accelerated terminal at start even if you never leave chat view, and the system allows only 16. At 20 sessions (software-drawn rig, one run) 4 terminals ended with no working graphics and chat switching showed 12 freezes (worst 173 ms). Fine up to 16. Options: build the terminal only when first shown, or share one
+
+From the 2026-10-16 document sweep
+- Hidden terminals keep their graphics layer; detach it when a terminal is hidden. Source: docs/active/handoffs/2026-07-10-review-followups.md
+- Prove or disprove the terminal-width theory with a resize log. Source: docs/active/investigations/2026-09-01-terminal-pty-column-count.md

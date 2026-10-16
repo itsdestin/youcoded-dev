@@ -7,6 +7,8 @@ scope: Inventory of both repos' dev tooling, ranked transfer list. No code chang
 
 # Dev tooling: youcoded-dev ↔ JLBC Search
 
+> **Status 2026-10-16:** mostly moot. Part 3 (shrink `ROADMAP.md`, 714 KB) is moot: the roadmap was retired 2026-10-15 into one card per item. Part 1 items are for the other repo (JLBC Search), outside YouCoded: dropped, not filed. Part 2 items for this workspace (a run-a-control rule, an evaluation trend archive, automatic test isolation) were not built and are filed in card #19. Stays `draft`; archive as declined once card #19 is worked.
+
 ## How to read this
 
 Two inventories were taken on 2026-09-03 (subagent sweeps, spot-checked by hand).

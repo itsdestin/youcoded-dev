@@ -36,3 +36,5 @@ connection, so a client in your account could act as another of your devices (de
 as a potential issue, not fix now; report: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md).
 `settings/sync` `all` `needs-verify` `P2` `checked 2026-09-21` `security`
 
+From the 2026-10-16 document sweep
+- Check that the sync security fixes cover the lease-identity gap (M2: lease identity is not authenticated). Source: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md

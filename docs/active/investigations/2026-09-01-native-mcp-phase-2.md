@@ -7,7 +7,7 @@ topic: Native MCP phase 2 — settings UI, adopt flow, IPC (still unbuilt)
 
 # Native MCP phase 2 — settings UI, the adopt flow, and IPC
 
-**Roadmap entry:** `docs/roadmap/native-harness.md` → `## skills-mcp`.
+**Tracked as:** card #59 (names "MCP phase 2"; see also #75 and #77). The old roadmap entry was retired 2026-10-15. Status 2026-10-16: still unbuilt (no `mcp:*` IPC on master; `mcp-registry.ts` still says `upsert()` has no caller). The latent deletion of hand-edited entries by `upsert()`/`fromStored` must be fixed before the screen ships; it is filed in card #59.
 **History:** added 2026-08-05 (deferred by phase 1, which merged as youcoded#280); re-verified
 unbuilt 2026-09-01.
 

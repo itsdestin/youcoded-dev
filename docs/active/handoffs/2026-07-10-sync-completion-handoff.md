@@ -2,6 +2,9 @@
 status: active
 ---
 
+> **Status 2026-10-16:** sync is shipped: Phase 2 (2a/2b/2c: #116, #121, #126), credential rework (#201-#203), native sync parity (#212) and native-session safety (#177); Gate D closed 2026-07-30. The body below describing "remaining before v1.3" is history. Two checks remain, and they are asks, not build work: (1) Destin confirms the GitHub row in Account > Connected accounts shows an in-app sign-in (Gate C); (2) a fresh machine with no `gh` installed does its first real push (build 647bd242 or later), which fits card #16. Both, plus the deferred manual compaction of the remote `.git` history, are filed in card #127. The `ROADMAP.md` line references below are retired.
+
+
 > **Update 2026-08-26 — READ BEFORE §C. Gate C as written below is unanswerable, because
 > the thing it gated no longer exists.** §C says *"do NOT auto-merge #122 until Destin does
 > one live GitHub sign-in"*. PR #122 merged 2026-07-14 (`6910efbc`), so that instruction is

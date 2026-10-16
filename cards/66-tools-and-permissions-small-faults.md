@@ -33,3 +33,8 @@ Chats
 
 From the old roadmap (native-harness › permissions, status confirmed, seen on desktop, last checked 2026-09-23)
 **v1.3.1 release blocker.** After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks covered still raises the permission card with no reason — it reads as the app forgetting the approval. Re-checked 2026-09-23: the menu now states its limits up front, but the card raised later still gives no reason
+
+From the 2026-10-16 document sweep
+- Bare Grep/Glob should not start from a huge non-git home folder; default to the project root (the 180-second deadline already shipped, #562). Sources: docs/active/specs/2026-08-17-search-scope-and-timeout-design.md, docs/active/plans/2026-08-17-search-scope-timeout-chunk-a.md
+- An `rm` command analyzer, and retiring the stale `PermissionOverrides` categories. Source: docs/active/investigations/2026-08-09-native-skip-permissions.md
+- Decide whether the native permission clocks (root ask: no timeout; helper ask: 5 minutes) should match the 2-hour Claude Code policy. Source: docs/archive/specs/2026-07-30-permission-ask-timeout-design.md

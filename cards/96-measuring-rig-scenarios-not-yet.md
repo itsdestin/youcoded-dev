@@ -48,3 +48,6 @@ Chats
 
 From the old roadmap (perf, status needs-verify, seen on all, last checked 2026-10-07)
 Windows, macOS and phone verification before release: the terminal speed brake was checked by reading only on Windows (ConPTY) and macOS and a real minimise there was never measured (Chromium may slow a minimised window's timers to ~1 per second); trackpad pinch must zoom the app, not the page, on Windows and macOS; the hitch recorder and switch marks were checked on Linux only; Destin's hand trial was Linux only; phones and remote browsers have no recorder
+
+From the 2026-10-16 document sweep
+- The speed-test rig is blind to the per-token streaming path; file the rig fix. Source: docs/archive/handoffs/2026-08-27-perf-cycle-1-handoff.md

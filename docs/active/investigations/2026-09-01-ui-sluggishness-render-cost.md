@@ -7,6 +7,8 @@ topic: Sustained UI sluggishness — the transcript is rendered all at once, and
 
 # Sustained UI sluggishness: hiccups, lagging animations, freezes
 
+> **Status 2026-10-16:** cycles 1-3 shipped (cycle 1 per-token costs #342, cycle 2 paged history #349, cycle 3 park hidden views #398). Ongoing sluggishness is tracked in card #94.
+
 **Destin, 2026-08-27:** frequent freezes, stutter and sluggishness in daily use — on all four
 surfaces (streaming, session switching, scrolling long conversations, opening panels);
 noticeable from launch, worse over hours, worse with more open sessions; **equally present on
@@ -40,7 +42,7 @@ Open a 5,000-entry conversation **14.8 s**, 7,000 entries **22.0 s**; switch int
 one with six sessions open **11.1 s**; switch into an *empty* session while two others stream
 **1.7 s**; six sessions **7.0 GB** PSS. Calibrated against Destin's real screen the same day
 (first messages immediately, then ~22 s unscrollable). Earlier numbers in the old roadmap
-entry came from an empty-session fixture and are superseded.
+entry (retired) came from an empty-session fixture and are superseded.
 
 ## Plan and progress
 
@@ -48,9 +50,9 @@ Destin approved three cards 2026-08-27, in order: per-token streaming costs → 
 park hidden views.
 - **Cycle 1 (per-token costs) SHIPPED** 2026-08-28 — youcoded #342 (`97600ddd`), on pinning
   tests; the rig is blind to the per-token path by construction (it streams whole turns).
-- **Cycles 2 and 3** (paged history, park hidden views) are next:
+- **Cycles 2 and 3** (paged history #349, park hidden views #398) SHIPPED (older text: "are next"); handoffs:
   `docs/archive/handoffs/2026-08-27-perf-cycle-1-handoff.md`,
-  `docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md`. No branch open on 2026-09-01.
+  `docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md`. Remaining work: card #94.
 
 The rig still **understates** real use: fixtures are lighter than real transcripts (code
 blocks, diffs, tool cards) and no scenario runs longer than ~45 s, so accumulation over hours

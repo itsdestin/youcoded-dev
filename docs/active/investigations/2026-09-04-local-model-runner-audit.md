@@ -8,6 +8,8 @@ tags: [local-models, engine, performance, parity]
 
 # Local model runner audit (2026-09-04)
 
+> **Status 2026-10-16:** sections 1-3 are dated and mostly built (feat/local-engine-upgrades). What is still open is the dual-model decision and the engine parity gaps, which are cards #48 and #47.
+
 Asked by Destin: how do we maximize local-model performance across model types, what
 easy wins exist, and what is missing for parity with LM Studio / Ollama / Jan.
 
@@ -20,7 +22,7 @@ the pinned binary on an isolated port, never against the live app.
 > **DATED 2026-09-04. Sections 1-3 describe the app BEFORE the local-engine upgrades, and
 > most of §5's recommended order has since been built on `feat/local-engine-upgrades`.**
 > This report stays live for what is still OPEN: the dual-model decision and the remaining
-> §4 parity gaps, which two roadmap items link here. Read the current spawn shape, preset
+> §4 parity gaps, which cards #48 and #47 link here. Read the current spawn shape, preset
 > file and asset table from `youcoded/docs/engine-dependencies.md`, never from this report.
 
 One `llama-server` process in **router mode**. The spawn shape AS IT WAS on 2026-09-04:
@@ -112,8 +114,8 @@ rebuilt to compute KV cache from the model's own GGUF header — layer count, pe
 KV head count/width, sliding-window and recurrent-layer exceptions — times the
 configured context length (`kvCacheBytes()`), which is exactly what this finding asked
 for. The flat `2 GB` constant is gone from the file (`rg` returns 0 hits, re-verified
-2026-09-23); this passage is now historical and does not gate either roadmap item
-linking here (`local-models:38`, `local-models:49` — both are about the remaining
+2026-09-23); this passage is now historical and does not gate either card
+linking here (#48 and #47 — both are about the remaining
 engine-parity gaps in §4, not this arithmetic).
 
 ### 2c. Not measured here but cheap
@@ -165,7 +167,7 @@ What all three have and we do not (features, not code):
 - **Embeddings / reranking** — needed for any local RAG or "search my files" feature;
   `llama-server` serves `/v1/embeddings` today, we expose nothing.
 - **Hardware page**: which GPU, how much memory, what is loaded where, live tok/s + TTFT.
-- **Serve to other apps** ("Run in background" is already parked on the roadmap; LM Studio
+- **Serve to other apps** ("Run in background" is already parked, card #48; LM Studio
   and Ollama are used as backends by other tools).
 - **Apple MLX** (LM Studio, Ollama) — faster than llama.cpp on Apple Silicon for many
   models; a second engine, not a flag. Park.

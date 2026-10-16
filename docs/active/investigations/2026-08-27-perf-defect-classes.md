@@ -6,6 +6,8 @@ tags: [performance, perf-lab, main-process, renderer, stress-testing]
 
 # Performance defect classes, and the register of instances (2026-08-27)
 
+> **Status 2026-10-16:** the verification states below are as of 2026-08-27. Since then the performance program ran (youcoded#342, #591) and the open items moved to cards #93, #94, #96, #98, #99, #101, #106, #109 and #110. Individual register instances were not each carded; re-verify an instance against master before acting on it.
+
 Companion to `docs/active/handoffs/2026-08-27-perf-lab-session-status.md`. That document
 records what the perf lab *measures*; this one records what there is *to* measure — the
 mechanism taxonomy the stress suite is being built against, and every instance found so

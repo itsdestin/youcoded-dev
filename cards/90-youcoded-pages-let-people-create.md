@@ -85,3 +85,10 @@ recipe or kit colours; the guide-test PC-build and trip pages each invented one 
 2026-10-16: "will want eventually, add to roadmap for now").
 `window-chrome` `all` `needs-verify` `P2` `checked 2026-10-08` `needs-repro`
 
+Held for the next app release (2026-10-16): the page-builder skill's chats/program section is on wecoded-marketplace
+branch `session/page-skill-chats-programs`, built on top of the held `session/page-skill-start-session`; merge that
+one branch (it carries both) once a release carries youcoded's chats/program abilities and startSession.
+
+From the 2026-10-16 document sweep
+- Pages on a phone (phone width, pages over the remote connection) and a page deleted while open. Source: docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+- Publish the page-builder skill's connections update. Source: docs/active/plans/2026-09-16-youcoded-pages-phasing.md

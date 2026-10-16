@@ -3,12 +3,14 @@ status: active
 date: 2026-08-25
 owner: Destin (decisions) / Claude (audit)
 related: ../archive/design/2026-08-25-ui-design-guide.md (superseded by 2026-10-13-ui-design-guide.md), 2026-08-25-ui-audit/gallery.html
-roadmap: "Whole-UI review pass once the consistency migration is complete" (ROADMAP.md, added 2026-07-24)
+roadmap: card #139 (phase F). The old roadmap item "Whole-UI review pass" was retired 2026-10-15; phases A-E are shipped
 ---
 
 # Whole-UI review — what the app looks like today, surface by surface
 
-This is the review pass the ROADMAP has been waiting on since the consistency migration
+> **Status 2026-10-16:** phases A-E are shipped (youcoded #327, #328, #332, #339, #347). Phase F (P-17: phone-width clipping, edge fade and hit areas) has no shipped mark or PR found; it is filed in card #139 (phone-width and touch polish). The superseded guide named in `related:` was replaced by `2026-10-13-ui-design-guide.md`.
+
+This is the review pass the old roadmap had been waiting on since the consistency migration
 finished (2026-07-24). It answers three questions: **which surfaces look worst or least like
 the rest of the app**, **where the same control is drawn more than one way**, and **where
 themes break** (unreadable text, colours that ignore the theme, glass that hides things).
@@ -480,7 +482,7 @@ Findings from this pass (numbered on from §1; same ledger rules):
 Side-finding (not UI): the dev instance's Claude Code session logged `SessionStart:startup
 hook error — bash: ~/.claude/plugins/youcoded-core/hooks/session-start.sh: No such file or
 directory` (`live-terminal-view`). The youcoded-core clone is gone (deprecation plan) but a
-hook still points at it in shared settings. Worth a ROADMAP bug.
+hook still points at it in shared settings. Worth a card (idea-intake skill).
 
 ## 6c. Marketplace and Library with real cards, six themes (2026-08-25, after PR #326)
 

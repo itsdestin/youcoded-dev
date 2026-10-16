@@ -23,3 +23,6 @@ Chats
 
 From the old roadmap (perf, status confirmed, seen on desktop, last checked 2026-10-04)
 Launch takes about 1.3 s and the single 3.19 MB main script costs roughly 0.31 s of it to evaluate. Settings, Marketplace, chess and the QR code are still inside it rather than loaded on first use, and the window sits blank about 0.45 s. Splitting means a brief first-open pause for those screens
+
+From the 2026-10-16 document sweep
+- First paint waits on a `claude auth status` call (3-second cap); check and remove the wait (unverified). Source: docs/archive/investigations/2026-08-26-perf-lab-plan-corrections.md

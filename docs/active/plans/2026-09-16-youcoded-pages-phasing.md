@@ -6,6 +6,8 @@ related: docs/active/specs/2026-09-15-youcoded-pages-scope.md (the approved scop
 
 # YouCoded Pages — the phasing plan
 
+> **Status 2026-10-16:** phases 1 and 2 are built and on master; the home-network connection (the old "next build") merged as youcoded#611. Phases 3 and 4 remain; live work is cards #90 (next phases and follow-ups) and #91. The "Where to pick up (2026-09-23)" block near the end is out of date.
+
 **What this is.** The approved scope (2026-09-15) says everything Pages should eventually
 include. This plan puts it in build order. Each phase ends with something a person can use.
 Phases 1 and 2 are built and on master; Phases 3 and 4 are directions, not decisions — their
@@ -21,17 +23,10 @@ Office also frost over the theme wallpaper (Appearance switch "Show theme backgr
 are still open. State and unverified items: `docs/archive/handoffs/2026-10-05-home-page-state.md`. The "Next build"
 bullet below is done.
 
-## Where to pick up (2026-09-23)
+## Where to pick up
 
-- **Released?** Phase 2 is on master (youcoded#552) but in no app release yet. When the release
-  that carries it ships, merge the held page-builder skill update in the same step
-  (wecoded-marketplace branch `session/youcoded-pages-phase2`, plugin 0.2.0 — bring it up to
-  master first). Roadmap: "Publish the page-builder skill's connections update".
-- **Next build, chosen by Destin:** a home-network connection so a Home Assistant style page can
-  reach one named device (roadmap: "A page that manages a device on the home network"). Starts
-  with a short deck for its approval wording.
-- **Then:** Pages on a phone (never designed at phone width; connected pages over remote access
-  never tried) with the small leftover of a page deleted while open; then Phase 3 below.
+Superseded 2026-10-16: the old 2026-09-23 "where to pick up" list (release check, home-network connection as next build, Pages on a phone) is out of date; the connection merged (youcoded#611) and the live open items are cards #90 and #91. Publishing the page-builder skill's connections update is carried in card #90.
+
 - **Depth:** Phase 1 and Phase 2 technical designs and the Phase 2 security review are in
   `docs/archive/specs/` and `docs/archive/reviews/`; code and tests are listed on the MAP row.
 - **Destin's working preferences for this feature:** he reviews decks himself (no UX tester,
@@ -177,8 +172,8 @@ window passed. He chose to skip the contract and the round-10 / acceptance decks
 already built basically, and i have done most of the reviews myself") — so the decisions of
 this phase live in the nine answered decks, the floating-theme choice deck and this plan, not
 in a signed contract. Both branches were brought up to master (255 / 343 commits) and the
-full desktop verification is green on master's toolchain. Left open, filed on the roadmap
-(`docs/roadmap/other-features.md`): the page view at phone width, a page deleted while open,
+full desktop verification is green on master's toolchain. Left open, filed then on the roadmap
+(now card #90): the page view at phone width, a page deleted while open,
 and a one-off accent-coloured tint over pages in two wallpaper themes that cleared on its own.
 
 **How a skill change is tried before it ships:** the installed plugin in Destin's everyday app
@@ -249,7 +244,7 @@ touched: look-up lines say "Cannot change anything there. The page decides what 
 address."; the whole-internet card names the home network; a page whose code changed since it was
 allowed shows a quiet, dismissible note in the band and is not blocked; opening links in the
 browser stays allowed. Destin asked whether home-network access should ever be allowed — filed
-as a separate connection kind for a Home Assistant style page (`docs/roadmap/other-features.md`).
+as a separate connection kind for a Home Assistant style page (old roadmap entry, now in card #90).
 A key now goes as `Authorization: Bearer <key>` unless the manifest says otherwise, and the
 page-builder skill (wecoded-marketplace, 0.2.0) teaches connections. The screens took four review
 rounds (`youcoded-pages-connections-r1…r4.review.answers.json`); the biggest change was splitting

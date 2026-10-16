@@ -1,10 +1,12 @@
 ---
 status: active
 date: 2026-09-03
-roadmap: docs/roadmap/dev-workspace.md → "The 'formalization' push after 1.3"
+roadmap: cards #28 (Apple signing), #31 (company paperwork, Play listing, trademark) and #45; the old roadmap section was retired 2026-10-15
 ---
 
 # Making YouCoded a real public product: costs, logistics, and legal exposure
+
+> **Status 2026-10-16:** the 2026-10-01 status block below is the current one; the "Destin next" list dated 2026-09-03 further down is historical. Open items now live in cards #28 (Apple signing), #31 (Play listing, trademark, company paperwork) and #45. Two small loose items (moving Stripe / Buy Me a Coffee to the company and rolling the Cloudflare token) are filed in card #31.
 
 Written for Destin, 2026-09-03, before buying `youcoded.ai`. Every fact about the
 repo below was checked against the code on that date; every price and rule about
@@ -45,7 +47,7 @@ more setup), or staying unsigned.
 **Store rules on downloaded code (found 2026-09-23).** Google Play bans downloading compiled
 programs after install, which the phone's first-run Termux setup does; Apple bars starting other
 programs at all. Both are recorded as design constraints for the mobile rebuild: the Android
-rebuild item and the iOS item in `docs/roadmap/other-features.md`.
+rebuild item (card #1) and the iOS item (card #89).
 
 ## Status as of 2026-09-03, evening (superseded above where they differ)
 
@@ -76,7 +78,7 @@ Android CC-pin wording once Destin decides (open questions below, items 2–6).
 `2026-09-03-arizona-llc-formation-guide.md` (this folder). Destin's exact values, EIN, the
 signed-document drafts and per-service answers (Azure, D-U-N-S, DMCA): private brain,
 `~/system/legal/` (`README.md` = situation, done, remaining, calendar; `filing-worksheet.md` = values). Company PDFs (Articles, CP 575, ACC record):
-`~/Documents/destins-adventures-llc/`. Every remaining launch item: roadmap `v1.3` flag.
+`~/Documents/destins-adventures-llc/`. Every remaining launch item: cards #28, #31 and #45.
 
 ---
 
@@ -292,7 +294,7 @@ LLC franchise tax.
 - `youcoded/TERMS.md` names "YouCoded, its maintainer, and its contributors" as the
   indemnified party. Name the LLC.
 - The OpenRouter attribution header says `https://youcoded.app`
-  (`provider-registry.ts:30`). The roadmap says the domain being bought is `youcoded.ai`.
+  (`provider-registry.ts:30`). The old roadmap said the domain being bought is `youcoded.ai`.
   Pick one and fix the header.
 
 ---
@@ -453,11 +455,11 @@ already recorded this rule.
   secrets and file shapes; nothing evaluates what a plugin *does*. A badge that reads as
   a safety verdict can be argued as a representation. `type-icons.tsx:73` already warns
   that an icon implies "a publisher check that has never existed", and
-  `docs/roadmap/marketplace.md:44` records that the scan follows the wrong git ref so 13
+  the old marketplace roadmap (now card #51) recorded that the scan follows the wrong git ref so 13
   entries read "Not checked … forever". Rename the badge to what was checked ("No leaked
   secrets found") and fix the ref before launch. `TERMS.md` section 4 already disclaims
   pre-screening, which helps.
-- The Worker has **no working rate limit** (`docs/roadmap/marketplace.md:56`). Not a legal
+- The Worker has **no working rate limit** (old marketplace roadmap, now cards #51 and #55). Not a legal
   item, but an abuse item that becomes one when a public product is spammed.
 
 ### 6. The agent can destroy user data
@@ -479,8 +481,7 @@ responsible for backups. Cheap, and it is what a court asks about first.
   libraries." Every other Android dependency is Apache/BSD/MIT-family, and the Termux
   packages fetched at run time from `packages.termux.dev` run as separate programs, which is
   not linking. Destin is the sole author of `app/`. Relicensing to MIT is a documentation
-  change with no runtime effect; PR opened 2026-09-03. Roadmap item
-  `docs/roadmap/dev-workspace.md:261` (`needs-verify`) closes when it merges.
+  change with no runtime effect; PR opened 2026-09-03. Old roadmap item (`needs-verify`; the roadmap is retired, see card #29) closes when it merges.
 - Desktop dependencies: **no GPL/AGPL/LGPL.** 333 MIT, 23 ISC, 19 BSD-2, 14 Apache-2.0,
   8 BSD-3, plus a handful of dual-licensed ones where the permissive option applies.
   One package, `buffers@0.1.1`, declares **no license** in its package.json (its GitHub
@@ -549,12 +550,12 @@ mix is fine. Switching later is one commit as long as the DCO sign-off is in pla
   `youcoded.com` too if it is available; a `.ai` alone invites a `.com` squatter once
   the trademark is public. Set up a mailbox on the domain before enrolling with Apple,
   Google and Microsoft; all three want a business email. Move the Worker off
-  `*.workers.dev` onto the domain (`docs/roadmap/marketplace.md:48`).
+  `*.workers.dev` onto the domain (old marketplace roadmap, now card #51).
 - **Payments, when they come.** Use a "merchant of record" (Paddle, Lemon Squeezy) so
   sales tax and VAT in fifty states and forty countries are their problem, not yours.
 - **Insurance.** Not yet. When there is revenue, general liability plus technology E&O
   runs $500 to $1,500 a year.
-- **Release method.** `docs/roadmap/dev-workspace.md:216` — releases are cut by tagging
+- **Release method.** the old dev-workspace roadmap (now card #29) — releases are cut by tagging
   master, so a bug-fix release cannot be made without shipping everything. Store
   listings make hot-fixes a normal need. Fix before the first store submission.
 
@@ -612,7 +613,7 @@ switch SSL mode to Full (strict) and re-proxy, or simply stay as is.
 
 ## Destin's to-do, in order (the things only you can do)
 
-Tick these off here; each unblocks a Claude session listed in the roadmap (`v1.3` flag).
+Tick these off here; each unblocks a Claude session listed in the cards (#28, #31).
 
 - [x] **Form the LLC** — done 2026-09-03: **Destin's Adventures, LLC**, Arizona Business ID 25117372,
       Active / In Good Standing. Trade name "YouCoded" applied for at azsos.gov the same night

@@ -30,3 +30,6 @@ What it covers (Destin, 2026-10-16)
 
 Seen 2026-10-16 running the Work board in a dev window: Big picture's "What's blocked · Built twice · Shipped this
 month" are clickable bare text (Destin dislikes clickable bare text); left as approved Oct 12 for this review.
+
+From the 2026-10-16 document sweep
+- Dev dashboard idea (decided 2026-09-05, never built): launch dev copies, run the check suites and show saved/pushed/merged per branch from one screen. The Work board covers the branch part only. Source: docs/archive/design/2026-09-05-dev-dashboard/STATUS.md
