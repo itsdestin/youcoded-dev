@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-09-24
-related: docs/active/plans/2026-09-21-ui-ux-consistency-audit.md
+related: docs/archive/plans/2026-09-21-ui-ux-consistency-audit.md
 ---
 
 # UI element review — Destin's decisions

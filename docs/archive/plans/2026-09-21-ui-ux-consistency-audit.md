@@ -1,5 +1,5 @@
 ---
-status: active
+status: done
 date: 2026-09-21
 revised: 2026-10-04
 owner: Destin (taste and acceptance) / assistant (research, proposals and implementation)

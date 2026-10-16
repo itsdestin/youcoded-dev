@@ -1,5 +1,5 @@
 ---
-status: active
+status: done
 date: 2026-10-13
 branch: session/ui-consistency-audit
 reviewed: app e57a88f97 · workspace 56a8ab9c · wecoded-marketplace 4b95e65
