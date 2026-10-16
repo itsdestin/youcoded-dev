@@ -928,3 +928,12 @@ recurred — the repetition is the data.
 - Destin said: "nobody is using the app rn … no intermediate fixes"; licensing: company must accept Anthropic Commercial Terms before distribution → roadmap: android-only entry (P4 next, terms note)
 - Phone testing needed the screen unlocked; a locked phone was worked around by loading the bundled page in a laptop browser over `adb forward` against the phone's backend → applied: recipe in `youcoded/docs/android-runtime.md` → Developing
 - deleted/merged: ~30,500 lines of Android Kotlin, the vendored Termux terminal and duplicated hook assets; the superseded 2026-09-24 plan and 8 Kotlin-era investigations archived; Kotlin parity tests retired (3 files deleted, ~20 reduced)
+
+## 2026-10-16 — UI consistency: popups, guide test (2 rounds), one scroll fade, Pages kit (youcoded#626, wecoded-marketplace#108, youcoded-dev#261)
+- Review pages shut down after 240 min unanswered; Destin had to ask for a relaunch 3× → applied: `review-cards.py serve`/`wait` default timeout 1440 min (WHY at the flag)
+- A multi-picture step rendered each shot at half width ("hard to review cuz the images are small") → applied: review-deck rule "One picture per step, live alongside"
+- A trivial fixture edit was delegated to a subagent with full verify (~11 min; "should've taken like 5 seconds") → applied: `~/system/me/preferences.md` bullet
+- Guide test (fresh builders, not told it's a test, critiqued on decks): round 1 4/10 good, round 2 31/32 → applied: ~15 guide rules; procedure + setup script archived with the round notes
+- Flaky tests met by builders under load (LocalModelsSection, prompt-assembly, switch-marks, ipc-handlers status + real GitHub calls, wheel-scroll scan, journeys on glass) → applied: each fixed with break-it proof; journeys run with Reduce effects; ipc-handlers fails on any network use
+- Destin said: Pages chart recipe "add to roadmap"; phone Pages squeeze "roadmap item" → roadmap: other-features.md Pages follow-ups (e), (h)
+- deleted/merged: the old painted scroll-fade band and 5 private fade copies (one CSS-only fade); Focus timer and Week planner samples; the PITFALLS pre-merge incognito note (checked at merge instead)

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "pages/page/page-week-planner",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-fixes/after/pages/page/page-week-planner/meadow-mist.png",
+    "ms": 2867,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-focus-timer",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-fixes/after/pages/focus/page-focus-timer/meadow-mist.png",
+    "ms": 2911,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 1420,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-focus-timer",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-fixes/after/pages/focus/page-focus-timer/halftone-dimension.png",
+    "ms": 3396,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 54,
+      "w": 1424,
+      "h": 838
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-week-planner",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-fixes/after/pages/page/page-week-planner/halftone-dimension.png",
+    "ms": 3598,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 256,
+      "y": 54,
+      "w": 1176,
+      "h": 838
+    },
+    "parts": []
+  }
+]

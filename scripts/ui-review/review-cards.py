@@ -127,7 +127,9 @@ def main(argv):
     # One argument or stdin; newlines optional (a chat paste flattens them — see parse_pasted).
     sub.choices['record'].add_argument('text', nargs='?', help='the pasted summary; omit to read stdin')
     for c in ('serve', 'wait'):
-        sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
+        # WHY 1440 (24 h), not 240: Destin opens review pages hours later; on 2026-10-15/16 three
+        # served pages shut down unanswered and had to be relaunched by hand.
+        sub.choices[c].add_argument('--timeout', type=float, default=1440, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
     sv.add_argument('--no-live', action='store_true',
                     help="don't build or serve /app/* for live panes — for a spec whose live.base "

@@ -1,0 +1,546 @@
+[
+  {
+    "name": "library",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/library/halftone-dimension.png",
+    "ms": 9812,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/marketplace/halftone-dimension.png",
+    "ms": 10759,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/resume",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/resume/halftone-dimension.png",
+    "ms": 10845,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 220,
+      "y": 77,
+      "w": 1000,
+      "h": 486
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/resume/preview",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/resume/preview/halftone-dimension.png",
+    "ms": 11703,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 220,
+      "y": 77,
+      "w": 1000,
+      "h": 486
+    },
+    "parts": []
+  },
+  {
+    "name": "pages",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/pages/halftone-dimension.png",
+    "ms": 12536,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 256,
+      "y": 54,
+      "w": 1176,
+      "h": 578
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/files",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/projects/files/halftone-dimension.png",
+    "ms": 12964,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 396,
+      "w": 1100,
+      "h": 236
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/settings/sync/halftone-dimension.png",
+    "ms": 13460,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 48,
+      "w": 420,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/marketplace/meadow-mist.png",
+    "ms": 13562,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "library",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/library/meadow-mist.png",
+    "ms": 15098,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/resume",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/resume/meadow-mist.png",
+    "ms": 16309,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 220,
+      "y": 77,
+      "w": 1000,
+      "h": 486
+    },
+    "parts": []
+  },
+  {
+    "name": "pages",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/pages/meadow-mist.png",
+    "ms": 16503,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 590
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/resume/preview",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/resume/preview/meadow-mist.png",
+    "ms": 16830,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 220,
+      "y": 77,
+      "w": 1000,
+      "h": 486
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/settings/sync/meadow-mist.png",
+    "ms": 18440,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 48,
+      "w": 420,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/files",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/projects/files/meadow-mist.png",
+    "ms": 18909,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 381,
+      "w": 1100,
+      "h": 249
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#walkthrough",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/settings/development/contribute#walkthrough/halftone-dimension.png",
+    "ms": 24086,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 48,
+      "w": 420,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#bubbles-mix",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat#bubbles-mix/meadow-mist.png",
+    "ms": 10762,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/voice/vocabulary#stress",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/voice/vocabulary#stress/halftone-dimension.png",
+    "ms": 11577,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 79,
+      "w": 420,
+      "h": 483
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/voice/vocabulary#stress",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/voice/vocabulary#stress/meadow-mist.png",
+    "ms": 12650,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 89,
+      "w": 420,
+      "h": 463
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#bubbles-mix",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat#bubbles-mix/halftone-dimension.png",
+    "ms": 11489,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#walkthrough",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/settings/development/contribute#walkthrough/meadow-mist.png",
+    "ms": 34507,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 48,
+      "w": 420,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/sessions/halftone-dimension.png",
+    "ms": 9624,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 528,
+      "y": 40,
+      "w": 384,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/session-context/halftone-dimension.png",
+    "ms": 12986,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 48,
+      "w": 420,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace/detail",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/marketplace/detail/halftone-dimension.png",
+    "ms": 12528,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 48,
+      "w": 820,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "first-run#authenticate",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/first-run#authenticate/meadow-mist.png",
+    "ms": 8554,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/model-picker",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/model-picker/meadow-mist.png",
+    "ms": 10493,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 12,
+      "y": 305,
+      "w": 384,
+      "h": 303
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/session-context/meadow-mist.png",
+    "ms": 14830,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 48,
+      "w": 420,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/sessions/meadow-mist.png",
+    "ms": 12572,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 528,
+      "y": 34,
+      "w": 384,
+      "h": 376
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace/detail",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/marketplace/detail/meadow-mist.png",
+    "ms": 14567,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 48,
+      "w": 820,
+      "h": 544
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/model-picker",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/model-picker/halftone-dimension.png",
+    "ms": 12517,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 443,
+      "y": 296,
+      "w": 384,
+      "h": 303
+    },
+    "parts": []
+  },
+  {
+    "name": "first-run#authenticate",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/first-run#authenticate/halftone-dimension.png",
+    "ms": 12145,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 640
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files/open/a-launch-brief#git-review",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/files/open/a-launch-brief#git-review/halftone-dimension.png",
+    "ms": 9375,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 953,
+      "y": 53,
+      "w": 480,
+      "h": 714
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files/open/a-launch-brief#git-review",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/scroll-fade/before/chat/files/open/a-launch-brief#git-review/meadow-mist.png",
+    "ms": 22499,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 950,
+      "y": 40,
+      "w": 480,
+      "h": 748
+    },
+    "parts": []
+  }
+]
