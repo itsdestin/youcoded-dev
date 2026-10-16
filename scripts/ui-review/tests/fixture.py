@@ -86,7 +86,14 @@ def shoot_run(root, entries):
             # `scale`: a picture taken at a screen density (shoot's 1.5× review default) is that
             # many times larger; its `panel` stays in CSS pixels, as shoot records it.
             k = e.get('scale', 1)
-            cmd = ['magick', '-size', f'{round(1440 * k)}x{round(900 * k)}', f'xc:{color}']
+            # WHY the fallback and the skip: CI's runner has no ImageMagick 7 `magick` (the
+            # workspace check failed on it, 2026-10-16); IM6 calls the same tool `convert`. With
+            # neither, the picture cannot be drawn, so the test is skipped, not failed.
+            import shutil, unittest
+            im = shutil.which('magick') or shutil.which('convert')
+            if not im:
+                raise unittest.SkipTest('needs ImageMagick (magick or convert) to draw fixture pictures')
+            cmd = [im, '-size', f'{round(1440 * k)}x{round(900 * k)}', f'xc:{color}']
             if e.get('rect'):
                 x, y, w, h = (round(v * k) for v in e['rect'])
                 cmd += ['-fill', 'red', '-draw', f'rectangle {x},{y} {x + w - 1},{y + h - 1}']
