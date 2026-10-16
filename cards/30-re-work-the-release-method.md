@@ -1,12 +1,15 @@
 ---
 id: 30
-title: Re-work the release method: releases tag master directly, so each ships all ~3,200 commits since v1.2.4 and…
+title: Let small bug-fix releases ship on their own
 stage: planning
 priority: P2
 tags: dev-workspace, release
 branch: 30-re-work-the-release-method
 roadmap: dev-workspace: Re-work the release method: releases tag master directly, so
 created: 2026-10-15
+summary: Every release ships everything on master, so a quick fix can't go out while a bigger update is still unfinished.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

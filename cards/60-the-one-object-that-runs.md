@@ -1,6 +1,6 @@
 ---
 id: 60
-title: The one object that runs a native conversation is 4,756 lines because it also runs the helper agents…
+title: Split up the oversized chat engine code
 stage: planning
 priority: P1
 tags: native-harness, sessions, desktop, release-blocker
@@ -9,6 +9,11 @@ report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 60-the-one-object-that-runs
 roadmap: native-harness: **v1.3.1 release blocker.** The one object that runs a nativ
 created: 2026-10-15
+summary: The code running each chat on YouCoded's own engine also runs helpers and terminals, making it huge and hard to change safely.
+area: Behind the scenes
+side: behind
+platform: Desktop only
+paused: On hold since 2026-09-18 until other cleanup lands
 ---
 Progress
 Done: nothing recorded.

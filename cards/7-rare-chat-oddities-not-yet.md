@@ -1,12 +1,16 @@
 ---
 id: 7
-title: Rare chat oddities, not yet reproduced (three things)
+title: Rare chat glitches that can't be reproduced yet
 stage: planning
 priority: P3
 tags: chat-data, desktop, needs-repro
 branch: 7-rare-chat-oddities-not-yet
 roadmap: chat-data: Rare chat oddities, not yet reproduced (three things).
 created: 2026-10-15
+summary: A reply once split across two bubbles, and the first reopen after launch once seemed to load forever; neither has happened again on demand.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

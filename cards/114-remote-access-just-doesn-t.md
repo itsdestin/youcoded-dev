@@ -1,12 +1,16 @@
 ---
 id: 114
-title: Remote access "just doesn't work sometimes" and the phone gives nothing to act on
+title: Explain why the phone cannot reach the computer
 stage: planning
 priority: P2
 tags: remote-access, standalone, remote
 branch: 114-remote-access-just-doesn-t
 roadmap: remote-access: Remote access "just doesn't work sometimes" and the phone gi
 created: 2026-10-15
+summary: When remote access fails the phone shows a blank browser error instead of saying what is wrong and how to fix it.
+area: Devices & sync
+side: screens
+platform: Phone and web
 ---
 Progress
 Done: nothing recorded.

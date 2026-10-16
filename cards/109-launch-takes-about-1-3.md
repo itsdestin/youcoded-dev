@@ -1,6 +1,6 @@
 ---
 id: 109
-title: Launch takes about 1.3 s and the single 3.19 MB main script costs roughly 0.31 s of it to evaluate
+title: Make the app open faster
 stage: planning
 priority: P3
 tags: perf, window-chrome, desktop, performance
@@ -8,6 +8,10 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 109-launch-takes-about-1-3
 roadmap: perf: Launch takes about 1.3 s and the single 3.19 MB main script
 created: 2026-10-15
+summary: The app takes about 1.3 seconds to open with a blank window, partly because rarely used screens load up front.
+area: Getting started
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

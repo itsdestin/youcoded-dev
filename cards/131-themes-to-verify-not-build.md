@@ -1,12 +1,15 @@
 ---
 id: 131
-title: Themes to verify, not build: 3 checks
+title: Themes: three things to check
 stage: planning
 priority: P3
 tags: themes
 branch: 131-themes-to-verify-not-build
 roadmap: themes: Themes to verify, not build: 3 checks.
 created: 2026-10-15
+summary: Check theme icons on Ubuntu, session switcher corners, and theme pictures cut off at the top of Settings, Appearance.
+area: Settings
+side: screens
 ---
 Progress
 Done: nothing recorded.

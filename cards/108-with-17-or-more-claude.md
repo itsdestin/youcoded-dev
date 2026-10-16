@@ -1,6 +1,6 @@
 ---
 id: 108
-title: With 17 or more Claude Code sessions open, terminals fight over graphics
+title: Lag with 17 or more Claude Code sessions open
 stage: planning
 priority: P3
 tags: perf, terminal, desktop, performance
@@ -8,6 +8,10 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 108-with-17-or-more-claude
 roadmap: perf: With 17 or more Claude Code sessions open, terminals fight o
 created: 2026-10-15
+summary: Past 16 Claude Code sessions, terminals lose graphics speed and switching chats can freeze briefly.
+area: Chat
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

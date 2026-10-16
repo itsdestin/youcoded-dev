@@ -1,6 +1,6 @@
 ---
 id: 117
-title: Phone voice and mic: three gaps
+title: Phone voice and microphone: three gaps
 stage: planning
 priority: P3
 tags: remote-access, standalone, input-bar
@@ -8,6 +8,10 @@ needs: 115
 branch: 117-phone-voice-and-mic-three
 roadmap: remote-access: Phone voice and mic: three gaps.
 created: 2026-10-15
+summary: A phone browser cannot use voice input, and pairing a phone mid-dictation leaves the microphone in a confusing state.
+area: Devices & sync
+side: both
+platform: Phone and web
 ---
 Progress
 Done: nothing recorded.

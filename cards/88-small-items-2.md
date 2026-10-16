@@ -1,12 +1,15 @@
 ---
 id: 88
-title: Small items: 2
+title: Two small items: a warning and a community link
 stage: planning
 priority: P3
 tags: other-features, misc
 branch: 88-small-items-2
 roadmap: other-features: Small items: 2.
 created: 2026-10-15
+summary: A harmless warning appears when many chats arrive at once, and nothing in the app or website links to r/youcoded.
+area: Settings
+side: both
 ---
 Progress
 Done: nothing recorded.

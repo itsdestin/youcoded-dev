@@ -1,12 +1,15 @@
 ---
 id: 141
-title: Chat view glitches (2 things)
+title: Chat view: two display glitches
 stage: planning
 priority: P3
 tags: user-interface, chat
 branch: 141-chat-view-glitches-2-things
 roadmap: user-interface: Chat view glitches (2 things).
 created: 2026-10-15
+summary: Pop-up notices in a chat may stack on top of each other, and an empty bubble can appear above a permission card.
+area: Chat
+side: screens
 ---
 Progress
 Done: nothing recorded.

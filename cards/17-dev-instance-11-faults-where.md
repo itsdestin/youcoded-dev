@@ -1,12 +1,15 @@
 ---
 id: 17
-title: Dev instance: 11 faults where it touches the real app or its launcher fails
+title: Test copies of the app can change the real one
 stage: planning
 priority: P2
 tags: dev-workspace, rigs
 branch: 17-dev-instance-11-faults-where
 roadmap: dev-workspace: Dev instance: 11 faults where it touches the real app or its
 created: 2026-10-15
+summary: A test copy of the app can change your real app's themes, providers, pinned pages and settings, and its launcher often fails to start.
+area: Developer tools
+side: behind
 ---
 Progress
 Done: nothing recorded.

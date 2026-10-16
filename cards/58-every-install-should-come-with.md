@@ -1,6 +1,6 @@
 ---
 id: 58
-title: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
+title: A built-in "Your Assistant" project on every install
 stage: planning
 priority: P1
 tags: native-harness, sessions, projects, release-blocker
@@ -8,6 +8,9 @@ release: v1.3.1
 branch: 58-every-install-should-come-with
 roadmap: native-harness: **v1.3.1 release blocker.** Every install should come with a
 created: 2026-10-15
+summary: Every install should include a project holding the assistant's own rules, memory about you, and odd requests.
+area: Projects
+side: both
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,16 @@
 ---
 id: 47
-title: The model list says whether a model FITS and nothing about whether it will be fast
+title: Model picker: speed, cost and smarts tags
 stage: planning
 priority: P2
 tags: local-models, model-picker, performance, user-interface
 branch: 47-the-model-list-says-whether
 roadmap: local-models: The model list says whether a model FITS and nothing about w
 created: 2026-10-15
+summary: The model list says whether a model fits but not how fast, costly or smart it is, so picking means knowing the names.
+area: Chat
+side: screens
+work: session/model-picker-tags
 ---
 Progress
 Done: nothing recorded.

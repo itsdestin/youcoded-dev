@@ -1,12 +1,16 @@
 ---
 id: 48
-title: Local engine: 3 open decisions
+title: Local models: three open decisions
 stage: explore
 priority: P3
 tags: local-models, settings/local-models, desktop, performance
 branch: 48-local-engine-3-open-decisions
 roadmap: local-models: Local engine: 3 open decisions.
 created: 2026-10-15
+summary: What to do when two big models won't fit together, whether to offer faster engine versions, and features other local-model apps have.
+area: Settings
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

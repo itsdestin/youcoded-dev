@@ -1,6 +1,6 @@
 ---
 id: 125
-title: Same conversation on two computers: four gaps in warnings and takeover
+title: Same chat open on two computers: four warning gaps
 stage: planning
 priority: P3
 tags: sync
@@ -8,6 +8,9 @@ report: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.m
 branch: 125-same-conversation-on-two-computers
 roadmap: sync: Same conversation on two computers: four gaps in warnings an
 created: 2026-10-15
+summary: Opening or taking over a chat another computer is using can happen with no warning, and both may keep writing to it.
+area: Devices & sync
+side: both
 ---
 Progress
 Done: nothing recorded.

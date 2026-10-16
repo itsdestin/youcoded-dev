@@ -1,6 +1,6 @@
 ---
 id: 135
-title: Browser-default hover tooltips look foreign to the app
+title: Replace plain browser hover hints with the app's own
 stage: planning
 priority: P2
 tags: user-interface
@@ -9,6 +9,9 @@ report: docs/archive/investigations/2026-09-01-app-native-tooltips.md
 branch: 135-browser-default-hover-tooltips-look
 roadmap: user-interface: Browser-default hover tooltips look foreign to the app.
 created: 2026-10-15
+summary: Hover hints in settings, the marketplace and projects still use the plain browser style that looks out of place.
+area: Settings
+side: screens
 ---
 Progress
 Done: nothing recorded.

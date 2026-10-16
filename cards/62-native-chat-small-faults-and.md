@@ -1,12 +1,16 @@
 ---
 id: 62
-title: Native chat: small faults and polish — 8 things
+title: Chat on YouCoded's own engine: eight small faults
 stage: planning
 priority: P3
 tags: native-harness, sessions, desktop, needs-repro
 branch: 62-native-chat-small-faults-and
 roadmap: native-harness: Native chat: small faults and polish — 8 things.
 created: 2026-10-15
+summary: Queued-message edits lose attachments, failed replies lack Try again, the thinking bubble flickers, and other small glitches.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

@@ -1,6 +1,6 @@
 ---
 id: 133
-title: The settings screen exists twice, once for desktop and once for phone
+title: Make one settings screen for desktop and phone
 stage: planning
 priority: P1
 tags: user-interface, settings, release-blocker
@@ -9,6 +9,10 @@ report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 133-the-settings-screen-exists-twice
 roadmap: user-interface: **v1.3.1 release blocker.** The settings screen exists twice
 created: 2026-10-15
+summary: Settings is built twice, once per platform, so every change is made twice and the two can disagree.
+area: Settings
+side: both
+paused: On hold since 2026-09-18; resumes with the wider simplification work
 ---
 Progress
 Done: nothing recorded.

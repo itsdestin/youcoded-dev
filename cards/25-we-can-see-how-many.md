@@ -1,12 +1,15 @@
 ---
 id: 25
-title: We can see how many people open the app and nothing else
+title: Learn which features people actually use
 stage: explore
 priority: P2
 tags: dev-workspace, knowledge
 branch: 25-we-can-see-how-many
 roadmap: dev-workspace: We can see how many people open the app and nothing else. Th
 created: 2026-10-15
+summary: Today we only see who opens the app, not which features they use, where setup loses them, or why they stop coming back.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 56
-title: Installing and library: 3 faults
+title: Installing and library: three faults
 stage: planning
 priority: P3
 tags: marketplace, install, security
 branch: 56-installing-and-library-3-faults
 roadmap: marketplace: Installing and library: 3 faults.
 created: 2026-10-15
+summary: 314 marketplace tool connections can't be installed, plugins can vanish after a refresh, and nothing warns when one turns unsafe.
+area: Marketplace & library
+side: both
 ---
 Progress
 Done: nothing recorded.

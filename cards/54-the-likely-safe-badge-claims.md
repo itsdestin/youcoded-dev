@@ -1,6 +1,6 @@
 ---
 id: 54
-title: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
+title: Make the "Likely safe" badge earn its name
 stage: planning
 priority: P2
 tags: marketplace, backend, marketplace-screen
@@ -9,6 +9,9 @@ report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 54-the-likely-safe-badge-claims
 roadmap: marketplace: The "Likely safe" badge claims more than the scan checks: it
 created: 2026-10-15
+summary: The "Likely safe" badge only checks for leaked passwords; an AI review against a safety checklist should back it.
+area: Marketplace & library
+side: behind
 ---
 Progress
 Done: nothing recorded.

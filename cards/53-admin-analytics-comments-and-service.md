@@ -1,12 +1,15 @@
 ---
 id: 53
-title: Admin analytics, comments and service upkeep: 6 small faults
+title: Marketplace admin and comments: six small faults
 stage: planning
 priority: P3
 tags: marketplace, backend
 branch: 53-admin-analytics-comments-and-service
 roadmap: marketplace: Admin analytics, comments and service upkeep: 6 small faults
 created: 2026-10-15
+summary: Admin stats lack regions and count Destin's phone; you can't delete or report a comment; an old web address must stay alive.
+area: Marketplace & library
+side: both
 ---
 Progress
 Done: nothing recorded.

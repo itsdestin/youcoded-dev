@@ -1,6 +1,6 @@
 ---
 id: 65
-title: The assistant cannot search the WeCoded marketplace, so when it lacks a capability it reaches for a script or…
+title: Let the assistant search the marketplace
 stage: planning
 priority: P1
 tags: native-harness, tools, marketplace-screen, desktop, release-blocker
@@ -8,6 +8,10 @@ release: v1.3.1
 branch: 65-the-assistant-cannot-search-the
 roadmap: native-harness: **v1.3.1 release blocker.** The assistant cannot search the
 created: 2026-10-15
+summary: When the assistant lacks a skill it builds a workaround instead of finding a marketplace plugin that already does the job.
+area: Marketplace & library
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

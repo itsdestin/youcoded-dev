@@ -1,12 +1,16 @@
 ---
 id: 35
-title: Office: four safety and privacy edge cases
+title: Office documents: four safety and privacy gaps
 stage: planning
 priority: P2
 tags: files, files-panel, desktop, security
 branch: 35-office-four-safety-and-privacy
 roadmap: files: Office: four safety and privacy edge cases.
 created: 2026-10-15
+summary: Pictures in documents can be downloaded without the app's checks, and bits of document text can end up in the app's log.
+area: Files & documents
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

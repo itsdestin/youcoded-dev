@@ -1,6 +1,6 @@
 ---
 id: 6
-title: Every replayed chat bubble is stamped with the moment you opened the session, not when it was said, so with…
+title: Old messages show the reopen time, not when sent
 stage: explore
 priority: P3
 tags: chat-data, chat
@@ -8,6 +8,9 @@ report: docs/active/investigations/2026-09-01-replayed-bubbles-stamped-with-repl
 branch: 6-every-replayed-chat-bubble-is
 roadmap: chat-data: Every replayed chat bubble is stamped with the moment you op
 created: 2026-10-15
+summary: Reopening an old conversation stamps every message with the current time, so it all looks like it happened just now.
+area: Chat
+side: screens
 ---
 Progress
 Done: nothing recorded.

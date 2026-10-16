@@ -1,12 +1,15 @@
 ---
 id: 12
-title: Parked ideas: 5 Claude Code ideas
+title: Ideas: five more Claude Code features
 stage: explore
 priority: P3
 tags: claude-code-integration
 branch: 12-parked-ideas-5-claude-code
 roadmap: claude-code-integration: Parked ideas: 5 Claude Code ideas.
 created: 2026-10-15
+summary: Possible additions: cards for more Claude Code pop-ups, hiding secrets in tool output, showing background sessions, and a goal banner.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

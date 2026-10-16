@@ -1,6 +1,6 @@
 ---
 id: 28
-title: Mac installers: nothing is signed or notarized, and a Mac download may open as "broken"
+title: Sign the Mac app so it opens without warnings
 stage: planning
 priority: P1
 tags: dev-workspace, release, regression
@@ -9,6 +9,11 @@ report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 28-mac-installers-nothing-is-signed
 roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Mac do
 created: 2026-10-15
+summary: Mac downloads aren't signed by Apple, so they can open as "broken"; Apple refused the company account and signing waits on that.
+area: Leaving & updating
+side: behind
+platform: Mac only
+work: session/auto-update-roadmap-20261014
 ---
 Progress
 Done: nothing recorded.

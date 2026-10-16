@@ -1,12 +1,15 @@
 ---
 id: 129
-title: Parked ideas: sync (four things)
+title: Sync: four parked ideas
 stage: explore
 priority: P3
 tags: sync
 branch: 129-parked-ideas-sync-four-things
 roadmap: sync: Parked ideas: sync (four things).
 created: 2026-10-15
+summary: Ideas for later: a YouCoded Cloud sync with no GitHub, a rethought restore-from-backup, and a per-device hardware summary.
+area: Devices & sync
+side: both
 ---
 Progress
 Done: nothing recorded.

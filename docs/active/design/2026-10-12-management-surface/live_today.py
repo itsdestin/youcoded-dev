@@ -46,17 +46,23 @@ MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct
 
 
 def as_row(c, today):
-    """A card in the shape today_tab.row draws, so the live rows ARE the approved rows."""
+    """A card in the shape today_tab.row draws, so the live rows ARE the approved rows — with the rebuilt content
+    (plain title, one-line summary, app area, side) and the live facts from its branches."""
     import datetime
     d = c.get('updated') or c.get('created') or ''
     try:
         dt = datetime.date.fromisoformat(d); days = (today - dt).days; nice = f'{MONTHS[dt.month - 1]} {dt.day}'
     except ValueError:
         days, nice = 0, d
-    search = ' '.join([str(c['id']), c['title'], ' '.join(c['tags']), c['body']]).lower()
-    return dict(id=str(c['id']), title=c['title'], stage=c['stage'], state='', area=c['tags'][:4], tags=c['tags'], side=None,
+    lv = c.get('live') or {}
+    search = ' '.join([str(c['id']), c['title'], c.get('summary', ''), c.get('area', ''), ' '.join(c['tags']), c['body']]).lower()
+    chats = [(x['date'], x['name'], x['result'], x['live']) for x in lv.get('chats', [])]
+    return dict(id=str(c['id']), title=c['title'], stage=c['stage'], state='working' if lv.get('working') else '',
+                area=[c['area']] if c.get('area') else [], tags=c['tags'], side=c.get('side') or None, platform=c.get('platform', ''),
                 priority=c.get('priority'), release=c.get('release'), needs=c['needs'], related=c['related'],
-                chats=[], prs=[], unsaved=False, paused=None, next=next_line(c), date=nice, days=days, search=search, screens=[])
+                chats=chats, prs=lv.get('prs', []), unsaved=lv.get('unsaved', False), failing=lv.get('failing', False),
+                mergeable=lv.get('mergeable', False), paused=c.get('paused') or None,
+                next=c.get('summary') or next_line(c), date=nice, days=days, search=search, screens=[])
 
 
 def render(cards, leftovers, dev_only, T, sechead, fold, pic):
@@ -107,7 +113,7 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
 <button class="btn sm" id="lbcombine" data-tip="Pulls the ticked items into one, so one branch and one chat can do them all. Nothing is lost: their text, links and tags are kept.">Combine into one…</button>
 <button class="btn sm" id="lbdelete" data-tip="Removes the ticked items. Asks first.">Delete…</button>
 <button class="closebtn" id="lbclear" aria-label="Clear the ticks" data-tip="Clears the ticks."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>''')
-    out.append('<script>window.LCARDS=' + json.dumps({str(c['id']): {k: c[k] for k in ('id', 'title', 'stage', 'priority', 'tags', 'needs', 'related', 'neededBy', 'release', 'branch', 'finish', 'body', 'file')} for c in cards}).replace('</', '<\\/') + ';</script>')
+    out.append('<script>window.LCARDS=' + json.dumps({str(c['id']): {k: c[k] for k in ('id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'live', 'tags', 'needs', 'related', 'neededBy', 'release', 'branch', 'finish', 'body', 'file')} for c in cards}).replace('</', '<\\/') + ';</script>')
     # ---- Tidy up: the approved section, unchanged (its facts are still the Oct 12 snapshot)
     out.append(tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards]))
     return out
@@ -165,9 +171,11 @@ let HIST=[],CUR=null;
 function openCard(id,back){const c=C[id];if(!c)return;if(!back&&CUR&&CUR!==id&&!$('#iwrap').hidden)HIST.push(CUR);CUR=id;
   const g=(l,tip,ids)=>ids.length?`<section class="dgroup"><div class="eyebrow" data-tip="${tip}">${l}</div><div class="card dcard">${ids.map(link).join('')}</div></section>`:'';
   const right=g('Needs first','Must exist before this one can be built.',c.needs)+g('Needed by','Cannot be built until this one exists.',c.neededBy)+g('Overlaps','Exploration items covering some of the same ground.',c.related);
-  openPanel('','Work item #'+c.id,`<div class="card dtop"><div class="dtl"><span class="t-base fw">${e_(c.title)}</span><span class="spill stage" data-tip="Its stage.">${e_(W[c.stage])}</span>${c.priority?`<span class="spill ${c.priority==='P1'?'danger':''}" data-tip="Its priority.">${c.priority}</span>`:''}</div>
-    <div class="dchips">${c.tags.map(t=>`<span class="badge" data-tip="A tag.">${e_(t)}</span>`).join('')}${c.release?`<span class="badge" data-tip="The release it is aimed at.">${e_(c.release)}</span>`:''}</div>${c.finish?`<p class="t-xs"><b>Finish line:</b> ${e_(c.finish)}</p>`:''}</div>
-    <div class="${right?'dcols':'dcol'}"><div class="dcol"><section class="dgroup"><div class="eyebrow" data-tip="Everything written on this item.">Details</div><div class="card dcard"><p class="dtext">${e_(c.body.replace(/\*\*/g,''))}</p></div></section></div>${right?`<div class="dcol">${right}</div>`:''}</div>
+  openPanel('','Work item #'+c.id,`<div class="card dtop"><div class="dtl"><span class="t-base fw">${e_(c.title)}</span><span class="spill stage" data-tip="Its stage.">${e_(W[c.stage])}</span></div>
+    <div class="dchips">${c.area?`<span class="badge" data-tip="The part of the app it lands in.">${e_(c.area)}</span>`:''}${c.platform?`<span class="badge" data-tip="It only applies on this platform.">${e_(c.platform)}</span>`:''}${c.priority?`<span class="badge" data-tip="Its priority.">${e_(c.priority)}</span>`:''}${c.release?`<span class="badge" data-tip="The release it is aimed at.">${e_(c.release)}</span>`:''}${(c.live?.prs||[]).map(p=>`<span class="badge" data-tip="A change waiting to be merged into master.">Pull request ${e_(p)}</span>`).join('')}</div>
+    ${c.summary?`<p class="t-sm dim">${e_(c.summary)}</p>`:''}${c.paused?`<p class="t-xs"><b>Paused because:</b> ${e_(c.paused)}</p>`:''}${c.finish?`<p class="t-xs"><b>Finish line:</b> ${e_(c.finish)}</p>`:''}</div>
+    <div class="${right?'dcols':'dcol'}"><div class="dcol">${(c.live?.chats||[]).length?`<section class="dgroup"><div class="eyebrow" data-tip="Every chat that worked on this, newest first.">Chats</div><div class="card dcard">${c.live.chats.map(x=>`<div class="row slim"><span class="body"><span class="t-xs rt">${e_(x.date)} · ${e_(x.name)}</span><span class="hint wrap">${e_(x.result)}</span></span>${x.live?'<span class="spill info" data-tip="Worked on in the last 24 hours."><span class="dot" aria-hidden="true"></span>Working</span>':''}</div>`).join('')}</div></section>`:''}
+      <details class="fold"><summary class="foldrow" data-tip="The original notes this item came from."><span class="t-xs">Original notes</span><span class="chev" aria-hidden="true">›</span></summary><div class="foldbody"><p class="dtext">${e_(c.body.replace(/\*\*/g,''))}</p></div></details></div>${right?`<div class="dcol">${right}</div>`:''}</div>
     <p class="t-2xs muted">Branch name when work starts: ${e_(c.branch)} · ${e_(c.file)}</p>`,
     `<button class="btn" data-ltickone="${c.id}" data-tip="Ticks this item, to combine or move it with others.">${SEL.has(c.id)?'Untick':'Tick'} this item</button><button class="btn primary" data-does data-tip="Starts a chat that already knows this item.">Start a chat on this</button>`);
   $('#pback').hidden=!HIST.length}

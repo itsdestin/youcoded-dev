@@ -1,12 +1,16 @@
 ---
 id: 95
-title: Main process: freezes and resource growth that can hit every window (5 things)
+title: Background freezes and memory growth
 stage: planning
 priority: P3
 tags: perf, desktop, needs-repro, performance
 branch: 95-main-process-freezes-and-resource
 roadmap: perf: Main process: freezes and resource growth that can hit every
 created: 2026-10-15
+summary: Some background work can briefly freeze every window, and memory can grow large over long busy sessions.
+area: Behind the scenes
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

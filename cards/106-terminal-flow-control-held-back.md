@@ -1,6 +1,6 @@
 ---
 id: 106
-title: Terminal flow control (held-back program output), long-chat and other perf work from the 2026-10-04 review…
+title: Terminal output: leftover rough edges
 stage: planning
 priority: P3
 tags: perf, terminal, desktop, performance
@@ -8,6 +8,10 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 106-terminal-flow-control-held-back
 roadmap: perf: Terminal flow control (held-back program output), long-chat
 created: 2026-10-15
+summary: Very fast terminal output can leave stale lines, big Excel files still freeze briefly, and a program's last lines can be lost.
+area: Chat
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

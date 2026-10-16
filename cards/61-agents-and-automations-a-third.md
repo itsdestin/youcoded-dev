@@ -1,6 +1,6 @@
 ---
 id: 61
-title: Agents & Automations — a third top-level view beside Chat and Projects where work runs on a schedule or…
+title: Agents & Automations: work that runs on a schedule
 stage: explore
 priority: P2
 tags: native-harness, sessions
@@ -10,6 +10,9 @@ needs: 63
 branch: 61-agents-and-automations-a-third
 roadmap: native-harness: Agents & Automations — a third top-level view beside Chat an
 created: 2026-10-15
+summary: A new main view beside Chat and Projects where tasks run on a schedule or trigger, with budgets and an inbox of results.
+area: Agents & automations
+side: both
 ---
 Progress
 Done: nothing recorded.

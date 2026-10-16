@@ -1,12 +1,15 @@
 ---
 id: 18
-title: Screenshot, review-deck and workbench tooling: 10 faults
+title: Screenshot and review-page tools: ten faults
 stage: planning
 priority: P3
 tags: dev-workspace, rigs
 branch: 18-screenshot-review-deck-and-workbench
 roadmap: dev-workspace: Screenshot, review-deck and workbench tooling: 10 faults.
 created: 2026-10-15
+summary: The tools that make before/after review pages sometimes send blank pages, cut off cards, or show viewers stuck loading.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

@@ -46,8 +46,11 @@ export const STAGES = ['explore', 'planning', 'build', 'polish', 'merged'];
 export const STAGE_WORD = { explore: 'Preliminary exploration', planning: 'Planning', build: 'Agentic buildout', polish: 'Human polish & review', merged: 'Merged' };
 // WHY priority / release / report (2026-10-15, moving the roadmap over): an old entry's priority, target
 // release and linked report are facts Destin set; a card keeps them rather than losing them in the move.
-export const KEYS = ['id', 'title', 'stage', 'priority', 'tags', 'needs', 'related', 'release', 'report', 'branch', 'finish', 'roadmap', 'created', 'why'];
-const LISTS = new Set(['tags', 'needs', 'related']);
+// WHY summary / area / side / platform / work / paused (Destin, 2026-10-16: "the point was to rebuild, not
+// copy-paste"): the management page's approved rows show a plain one-line description, the part of the app,
+// whether it changes what you see, and live facts worked out from the item's own branches (`work`).
+export const KEYS = ['id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'tags', 'needs', 'related', 'work', 'release', 'report', 'branch', 'finish', 'roadmap', 'created', 'why'];
+const LISTS = new Set(['tags', 'needs', 'related', 'work']);
 
 export function slug(title) {
   return title.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').split('-').slice(0, 5).join('-') || 'card';
@@ -70,7 +73,7 @@ export function parseCard(text, file) {
   if (!Number.isInteger(card.id) || card.id < 1) errors.push('id must be a whole number from 1');
   if (!card.title) errors.push('title is missing');
   if (!STAGES.includes(card.stage)) errors.push(`stage "${card.stage ?? ''}" is not one of ${STAGES.join(', ')}`);
-  card.tags ??= []; card.needs ??= []; card.related ??= [];
+  card.tags ??= []; card.needs ??= []; card.related ??= []; card.work ??= [];
   const want = `${card.id}-`;
   if (file && !path.basename(file).startsWith(want)) errors.push(`file name should start with "${want}"`);
   card.errors = errors;

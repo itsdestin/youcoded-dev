@@ -1,6 +1,6 @@
 ---
 id: 59
-title: Native Runtime Parity Program — everything that still separates a native session from a Claude Code one…
+title: Make YouCoded's own engine match Claude Code
 stage: build
 priority: P1
 tags: native-harness, sessions, release-blocker
@@ -9,6 +9,9 @@ report: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 branch: 59-native-runtime-parity-program-everything
 roadmap: native-harness: **v1.3.1 release blocker.** Native Runtime Parity Program —
 created: 2026-10-15
+summary: Close what still separates chats on YouCoded's own engine from Claude Code sessions, such as tool connections and context notices.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

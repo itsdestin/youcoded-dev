@@ -1,6 +1,6 @@
 ---
 id: 69
-title: Cloud model context management and cache and cost efficiency — one item so the fixes are specced together
+title: Cut cloud model costs in long chats
 stage: planning
 priority: P2
 tags: native-harness, cost, desktop
@@ -8,6 +8,10 @@ report: docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 branch: 69-cloud-model-context-management-and
 roadmap: native-harness: Cloud model context management and cache/token efficiency —
 created: 2026-10-15
+summary: Resumed cloud chats miss cheaper cached pricing, nothing is reloaded after a chat is summarized, and output limits are fixed.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

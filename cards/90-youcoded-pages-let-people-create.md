@@ -1,6 +1,6 @@
 ---
 id: 90
-title: YouCoded Pages: let people create and install their own native-looking pages, from dashboards and paint…
+title: Pages: the next phases
 stage: build
 priority: P2
 tags: other-features, misc, window-chrome
@@ -9,6 +9,9 @@ report: docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 branch: 90-youcoded-pages-let-people-create
 roadmap: other-features: YouCoded Pages: let people create and install their own nati
 created: 2026-10-15
+summary: Pages work today; next comes letting pages run assistant tasks, use files and be shared through the Marketplace.
+area: Pages
+side: both
 ---
 Progress
 Done: nothing recorded.

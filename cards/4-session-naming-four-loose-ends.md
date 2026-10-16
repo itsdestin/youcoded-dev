@@ -1,12 +1,16 @@
 ---
 id: 4
-title: Session naming: four loose ends
+title: Conversation names: four loose ends
 stage: planning
 priority: P3
 tags: chat-data, session-drawer, desktop, needs-repro
 branch: 4-session-naming-four-loose-ends
 roadmap: chat-data: Session naming: four loose ends.
 created: 2026-10-15
+summary: Names can't go back to automatic once typed by hand, all reset to "New Session" after a crash, and may briefly disagree.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

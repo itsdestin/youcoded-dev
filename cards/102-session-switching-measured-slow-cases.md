@@ -1,6 +1,6 @@
 ---
 id: 102
-title: Session switching: measured slow cases and decisions (6 things)
+title: Switching sessions: remaining slow cases
 stage: planning
 priority: P3
 tags: perf, chat, desktop, performance
@@ -8,6 +8,10 @@ report: docs/archive/investigations/2026-10-05-lab-realism.md
 branch: 102-session-switching-measured-slow-cases
 roadmap: perf: Session switching: measured slow cases and decisions (6 thin
 created: 2026-10-15
+summary: Clicking between sessions can still lag noticeably at times; read real-use data before choosing fixes.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

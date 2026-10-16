@@ -1,6 +1,6 @@
 ---
 id: 128
-title: Starring a model as a favourite on one device leaves the model picker on your other device empty until you…
+title: Model picker is empty on a new or second device
 stage: planning
 priority: P3
 tags: sync, model-picker
@@ -8,6 +8,9 @@ report: docs/active/investigations/2026-09-01-model-favourites-localstorage-only
 branch: 128-starring-a-model-as-a
 roadmap: sync: Starring a model as a favourite on one device leaves the mod
 created: 2026-10-15
+summary: Favourite models do not sync, and a fresh install's model picker shows nothing until you type a name.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

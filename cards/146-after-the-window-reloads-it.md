@@ -1,6 +1,6 @@
 ---
 id: 146
-title: After the window reloads it returns to the first session instead of the one you were on
+title: Reload returns to the wrong chat
 stage: planning
 priority: P3
 tags: user-interface
@@ -8,6 +8,9 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 146-after-the-window-reloads-it
 roadmap: user-interface: After the window reloads it returns to the first session ins
 created: 2026-10-15
+summary: After the window reloads it jumps to the first chat, so a message typed next can go to the wrong conversation.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

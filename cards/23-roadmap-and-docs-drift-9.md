@@ -1,12 +1,15 @@
 ---
 id: 23
-title: Roadmap and docs drift: 9 upkeep items
+title: Roadmap and docs upkeep: nine items
 stage: planning
 priority: P3
 tags: dev-workspace, knowledge
 branch: 23-roadmap-and-docs-drift-9
 roadmap: dev-workspace: Roadmap and docs drift: 9 upkeep items.
 created: 2026-10-15
+summary: Some roadmap items and notes have gone out of date with the app, and the roadmap file often causes merge conflicts.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

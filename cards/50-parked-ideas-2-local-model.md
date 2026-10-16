@@ -1,12 +1,16 @@
 ---
 id: 50
-title: Parked ideas: 2 local-model ideas
+title: Ideas for local models (two)
 stage: explore
 priority: P3
 tags: local-models, desktop
 branch: 50-parked-ideas-2-local-model
 roadmap: local-models: Parked ideas: 2 local-model ideas.
 created: 2026-10-15
+summary: Saved ideas: keep downloaded models serving other apps after YouCoded closes, and support the DiffusionGemma model.
+area: Settings
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

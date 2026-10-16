@@ -1,12 +1,16 @@
 ---
 id: 118
-title: Phone browser: two display and loading faults
+title: Phone browser: missing theme pictures and blank loads
 stage: planning
 priority: P3
 tags: remote-access, standalone, remote
 branch: 118-phone-browser-two-display-and
 roadmap: remote-access: Phone browser: two display and loading faults.
 created: 2026-10-15
+summary: Phones get theme colours but not wallpaper or mascot pictures, and the conversation list sometimes loads blank the first time.
+area: Devices & sync
+side: screens
+platform: Phone and web
 ---
 Progress
 Done: nothing recorded.

@@ -1,6 +1,6 @@
 ---
 id: 1
-title: Rebuild the Android app into a premium, complete mobile equivalent of desktop: the same built-in assistant,…
+title: Rebuild the Android app to match desktop
 stage: build
 priority: P2
 tags: android-only, android
@@ -9,6 +9,10 @@ report: docs/active/handoffs/2026-09-24-one-core-START-HERE.md
 branch: 1-rebuild-the-android-app-into
 roadmap: android-only: Rebuild the Android app into a premium, complete mobile equi
 created: 2026-10-15
+summary: The phone app would get the same built-in assistant, real file access, working updates and a Google Play listing, not a manual install.
+area: Devices & sync
+side: both
+platform: Android only
 ---
 Progress
 Done: nothing recorded.

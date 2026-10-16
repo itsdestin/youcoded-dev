@@ -1,12 +1,15 @@
 ---
 id: 26
-title: Parked ideas: 10 dev-workspace ideas
+title: Ideas: ten workspace improvements
 stage: explore
 priority: P3
 tags: dev-workspace, knowledge
 branch: 26-parked-ideas-10-dev-workspace
 roadmap: dev-workspace: Parked ideas: 10 dev-workspace ideas.
 created: 2026-10-15
+summary: Possible additions: testing new-user setup on real Windows, Mac and Linux machines, plus better review pages and tidier process docs.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

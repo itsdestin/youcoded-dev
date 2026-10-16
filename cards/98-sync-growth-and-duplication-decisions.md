@@ -1,12 +1,15 @@
 ---
 id: 98
-title: Sync: growth and duplication decisions (3 things; the history-size decision moved to sync)
+title: Sync: three growth and duplication questions
 stage: planning
 priority: P3
 tags: perf, settings/sync, performance
 branch: 98-sync-growth-and-duplication-decisions
 roadmap: perf: Sync: growth and duplication decisions (3 things; the histor
 created: 2026-10-15
+summary: Large synced projects may miss edits or keep a duplicate hidden history, and slow devices may fail to catch up.
+area: Devices & sync
+side: behind
 ---
 Progress
 Done: nothing recorded.

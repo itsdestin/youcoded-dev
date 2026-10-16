@@ -1,6 +1,6 @@
 ---
 id: 31
-title: No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires a verified…
+title: Put the Android app on Google Play
 stage: planning
 priority: P2
 tags: dev-workspace, release, android
@@ -9,6 +9,10 @@ report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 31-no-google-play-listing-android
 roadmap: dev-workspace: No Google Play listing — Android installs only from a GitHub
 created: 2026-10-15
+summary: Android installs only from a GitHub download, and from 2027 Google will require a verified developer even for that.
+area: Behind the scenes
+side: behind
+platform: Android only
 ---
 Progress
 Done: nothing recorded.

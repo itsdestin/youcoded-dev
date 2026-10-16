@@ -1,6 +1,6 @@
 ---
 id: 115
-title: Browser encryption (the optional second level) is an approved design with nothing behind it
+title: Build the approved secure phone connection option
 stage: planning
 priority: P2
 tags: remote-access, standalone, remote
@@ -8,6 +8,10 @@ report: docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json
 branch: 115-browser-encryption-the-optional-second
 roadmap: remote-access: Browser encryption (the optional second level) is an approve
 created: 2026-10-15
+summary: The optional encrypted phone connection was designed but never built, so phones show "Not secure" and lack the microphone.
+area: Devices & sync
+side: both
+platform: Phone and web
 ---
 Progress
 Done: nothing recorded.

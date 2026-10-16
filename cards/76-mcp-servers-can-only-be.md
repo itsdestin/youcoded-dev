@@ -1,6 +1,6 @@
 ---
 id: 76
-title: MCP servers can only be set up by hand-editing a config file — no settings screen to add, edit or remove one,…
+title: A settings screen for tool connections
 stage: planning
 priority: P2
 tags: native-harness, skills-mcp, settings, desktop
@@ -8,6 +8,10 @@ report: docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 branch: 76-mcp-servers-can-only-be
 roadmap: native-harness: MCP servers can only be set up by hand-editing a config file
 created: 2026-10-15
+summary: Tool connections can only be added by hand-editing a file, and ones Claude Code already has stay invisible to YouCoded's own engine.
+area: Settings
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

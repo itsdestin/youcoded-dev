@@ -1,6 +1,6 @@
 ---
 id: 93
-title: v1.3.1 blocker, blocked on simplification phase 5: leftover whole-file reads and memory waste
+title: Stop reading whole files and wasting memory
 stage: planning
 priority: P1
 tags: perf, chat, desktop, performance
@@ -9,6 +9,10 @@ report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 93-v1-3-1-blocker-blocked
 roadmap: perf: **v1.3.1 blocker, blocked on simplification phase 5:** lefto
 created: 2026-10-15
+summary: A few spots still load entire files or keep data too long, which can double memory on huge chats; needed before 1.3.1.
+area: Chat
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

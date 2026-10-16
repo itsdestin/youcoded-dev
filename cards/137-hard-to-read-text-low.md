@@ -1,12 +1,15 @@
 ---
 id: 137
-title: Hard-to-read text: low contrast and unclear marks (4 things)
+title: Hard-to-read text: four contrast problems
 stage: planning
 priority: P3
 tags: user-interface
 branch: 137-hard-to-read-text-low
 roadmap: user-interface: Hard-to-read text: low contrast and unclear marks (4 things)
 created: 2026-10-15
+summary: Some text is too faint: warning amber on pale themes, file comparison marks, busy buttons, and fields inside cards.
+area: Settings
+side: screens
 ---
 Progress
 Done: nothing recorded.

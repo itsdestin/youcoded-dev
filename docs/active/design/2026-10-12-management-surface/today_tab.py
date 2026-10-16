@@ -67,9 +67,9 @@ def next_step(c):
         return 'Unpause', 'Paused on purpose. Unpause clears the pause, so it shows as active again; nothing else changes.'
     if c['state'] == 'working':
         return 'Go to chat', 'A chat is working on it now. Switches to that conversation.'
-    if c['id'] in FAILING:
+    if c['id'] in FAILING or c.get('failing'):
         return 'Fix failing checks', 'Its checks fail. Starts a chat on its branch with the failing checks\' output, to fix them.'
-    if c['id'] in MERGEABLE:
+    if c['id'] in MERGEABLE or c.get('mergeable'):
         return 'Merge to master', 'Reviewed and its checks pass. Merges its pull request into master, then deletes the branch.'
     if c['id'] in DECK:
         return 'Open review deck', 'Its review deck waits for your answers. Opens it, where you approve or reject each screen.'
@@ -86,8 +86,9 @@ def stage_pill(c):
 
 def markers(c):
     """Problems, beside the stage: a separate marker each (any stage can have them)."""
+    # WHY the c.get(...) halves: on the live page these facts come from the item's branches (scripts/manage.mjs)
     m = []
-    if c['id'] in FAILING:
+    if c['id'] in FAILING or c.get('failing'):
         m.append('<span class="spill danger" data-tip="Its automatic checks fail, so it cannot be merged until they are fixed.">Checks failing</span>')
     if c.get('unsaved'):
         m.append(NOT_BACKED)
@@ -190,7 +191,10 @@ def menu():
 def chips(c):
     out = ['<span class="badge" data-tip="This is the suggested next step at the top of the page.">Suggested above</span>'] if c.get('suggested') else []
     out += [f'<span class="badge" data-tip="The part of the app it lands in.">{E(a)}</span>' for a in c['area']]
-    if c.get('side'):
+    if c.get('platform'):
+        out.append(f'<span class="badge" data-tip="It only applies on this platform.">{E(c["platform"])}</span>')
+    # WHY skip the side chip for behind-the-scenes work: its area already says "Behind the scenes" (seen twice, 2026-10-16)
+    if c.get('side') and 'Behind the scenes' not in c.get('area', []):
         lab, tip = SIDE[c['side']]
         out.append(f'<span class="badge" data-tip="{E(tip)}">{E(lab)}</span>')
     # WHY a plain chip, not a tinted pill (live page): priority is a fact about the item; tint means a problem (design guide)

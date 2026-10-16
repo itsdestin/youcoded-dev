@@ -1,6 +1,6 @@
 ---
 id: 45
-title: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
+title: Show Google's licence terms when downloading Gemma
 stage: planning
 priority: P1
 tags: local-models, local-models-screen
@@ -9,6 +9,9 @@ report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 45-gemma-models-download-with-no
 roadmap: local-models: Gemma models download with no licence notice, and Google's G
 created: 2026-10-15
+summary: Gemma models download with no licence notice, though Google's terms require passing their use rules on to the user.
+area: Settings
+side: screens
 ---
 Progress
 Done: nothing recorded.

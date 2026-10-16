@@ -1,6 +1,6 @@
 ---
 id: 2
-title: v1.3.1 release blocker: the replayed-turn record's type is ambiguous (D11 in the simplification plan)
+title: Release blocker: replayed chat turns are mislabeled
 stage: planning
 priority: P1
 tags: chat-data, desktop
@@ -9,6 +9,10 @@ report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 2-v1-3-1-release-blocker
 roadmap: chat-data: v1.3.1 release blocker: the replayed-turn record's type is a
 created: 2026-10-15
+summary: When an old chat is reopened, the app cannot reliably tell what kind of turn each replayed message is; this must be fixed before 1.3.1.
+area: Chat
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

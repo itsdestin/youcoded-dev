@@ -1,12 +1,15 @@
 ---
 id: 97
-title: Measuring rig: instruments that can mislead (8 things)
+title: Speed testing: eight tools that can mislead
 stage: planning
 priority: P3
 tags: perf, performance
 branch: 97-measuring-rig-instruments-that-can
 roadmap: perf: Measuring rig: instruments that can mislead (8 things).
 created: 2026-10-15
+summary: Several speed-testing tools can give false or noisy results, so their numbers can't yet be trusted.
+area: Developer tools
+side: behind
 ---
 Progress
 Done: nothing recorded.

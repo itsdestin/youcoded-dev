@@ -1,12 +1,15 @@
 ---
 id: 38
-title: File viewer gaps: four things Office and the viewer do not cover
+title: File viewer: four kinds of files it can't fully handle
 stage: planning
 priority: P3
 tags: files, files-panel
 branch: 38-file-viewer-gaps-four-things
 roadmap: files: File viewer gaps: four things Office and the viewer do not c
 created: 2026-10-15
+summary: Spreadsheets in .csv can't be edited in a grid, older Office formats don't open in Office, and Office lacks your own fonts.
+area: Files & documents
+side: both
 ---
 Progress
 Done: nothing recorded.

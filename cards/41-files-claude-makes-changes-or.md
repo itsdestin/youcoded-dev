@@ -1,6 +1,6 @@
 ---
 id: 41
-title: Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or…
+title: Track files Claude changes by running commands
 stage: planning
 priority: P3
 tags: files, files-panel
@@ -8,6 +8,9 @@ report: docs/active/investigations/2026-10-13-command-file-tracking.md
 branch: 41-files-claude-makes-changes-or
 roadmap: files: Files Claude makes, changes or deletes by running a command
 created: 2026-10-15
+summary: Files Claude creates, edits or deletes with a command or script never appear in the chat's files list; deletions are never recorded.
+area: Files & documents
+side: both
 ---
 Progress
 Done: nothing recorded.

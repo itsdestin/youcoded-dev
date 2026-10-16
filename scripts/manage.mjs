@@ -80,16 +80,102 @@ function lastTouched(root) {
   return out;
 }
 
-export function cardsPayload(root) {
+// ---------- live facts from each item's own branches ----------
+// WHY (Destin, 2026-10-16: "still missing the colored status chips we decided on"): the approved Today shows
+// Checks failing, Not backed up and Working markers and a next-step button. Nothing is typed in by hand: they
+// are worked out here from the branches a card lists under `work`, in both the workspace and the app repo.
+const LIVE_TTL = 60_000;
+let liveCache = { at: 0, root: '', facts: null };
+
+function sh(cmd, args, cwd) {
+  try { return execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 20_000 }).trim(); } catch { return ''; }
+}
+
+/** The main workspace folder (where youcoded/ lives), even when root is a session worktree. */
+function workspaceOf(root) {
+  const common = sh('git', ['-C', root, 'rev-parse', '--path-format=absolute', '--git-common-dir'], root);
+  return common ? path.dirname(common) : root;
+}
+
+export function liveFacts(root, { now = Date.now(), useGh = true } = {}) {
+  if (liveCache.facts && liveCache.root === root && now - liveCache.at < LIVE_TTL) return liveCache.facts;
+  const ws = workspaceOf(root);
+  const repos = [{ name: 'youcoded-dev', dir: ws }, { name: 'youcoded', dir: path.join(ws, 'youcoded') }].filter(r => fs.existsSync(path.join(r.dir, '.git')));
+  const branches = new Map();   // "session/x" → { date, subject, repo }
+  for (const r of repos) {
+    for (const line of sh('git', ['-C', r.dir, 'for-each-ref', '--format=%(committerdate:iso-strict)\t%(refname:lstrip=3)\t%(contents:subject)', 'refs/remotes/origin'], r.dir).split('\n')) {
+      const [date, name, subject] = line.split('\t');
+      if (!name || name === 'HEAD') continue;
+      const prev = branches.get(name);
+      if (!prev || prev.date < date) branches.set(name, { date, subject, repo: r.name });
+    }
+  }
+  // a copy of the work on this computer with changes not committed, or committed but not pushed
+  const unsaved = new Set();
+  for (const r of repos) {
+    let wt = null;
+    for (const line of sh('git', ['-C', r.dir, 'worktree', 'list', '--porcelain'], r.dir).split('\n')) {
+      if (line.startsWith('worktree ')) wt = line.slice(9);
+      else if (line.startsWith('branch refs/heads/') && wt) {
+        const b = line.slice(18);
+        const dirty = sh('git', ['-C', wt, 'status', '--porcelain', '--untracked-files=no'], wt);
+        const ahead = sh('git', ['-C', wt, 'rev-list', '--count', '@{u}..HEAD'], wt);
+        if (dirty || (ahead && ahead !== '0')) unsaved.add(b);
+      }
+    }
+  }
+  const prs = new Map();   // branch → { repo, number, failing, approved }
+  if (useGh) for (const repo of ['youcoded-dev', 'youcoded']) {
+    const out = sh('gh', ['pr', 'list', '-R', `itsdestin/${repo}`, '--state', 'open', '--limit', '100', '--json', 'number,headRefName,statusCheckRollup,reviewDecision'], ws);
+    let list = []; try { list = JSON.parse(out || '[]'); } catch { /* gh missing or offline: no pull-request facts */ }
+    for (const p of list) {
+      const states = (p.statusCheckRollup || []).map(c => c.conclusion || c.state);
+      const failing = states.some(s => ['FAILURE', 'ERROR', 'CANCELLED', 'TIMED_OUT'].includes(s));
+      const passing = states.length > 0 && !failing && states.every(s => ['SUCCESS', 'NEUTRAL', 'SKIPPED'].includes(s));
+      const arr = prs.get(p.headRefName) || [];
+      arr.push({ repo, number: p.number, failing, passing, approved: p.reviewDecision === 'APPROVED' });
+      prs.set(p.headRefName, arr);
+    }
+  }
+  liveCache = { at: now, root, facts: { branches, unsaved, prs, now } };
+  return liveCache.facts;
+}
+
+/** The live facts for one card, from the branches it lists under `work`. */
+export function factsFor(card, f) {
+  const chats = []; const pulls = []; let unsaved = false; let working = false;
+  for (const b of card.work || []) {
+    const br = f.branches.get(b);
+    const live = br ? f.now - Date.parse(br.date) < 24 * 3600_000 : false;
+    working ||= live;
+    if (br) chats.push({ date: br.date.slice(0, 10), name: b, result: br.subject || '', live });
+    if (f.unsaved.has(b)) unsaved = true;
+    for (const p of f.prs.get(b) || []) pulls.push(p);
+  }
+  chats.sort((a, b) => (a.date < b.date ? 1 : -1));
+  return {
+    chats, unsaved, working, prs: pulls.map(p => `${p.repo === 'youcoded' ? '' : 'workspace '}#${p.number}`),
+    failing: pulls.some(p => p.failing), mergeable: pulls.length > 0 && pulls.every(p => p.passing && p.approved),
+    lastWork: chats[0]?.date || '',
+  };
+}
+
+export function cardsPayload(root, { live = true } = {}) {
   const cards = loadCards(root);
   const nb = neededBy(cards);
   // WHY (approved Today: one date per row, at the far right): a card's last commit is when it was last worked on
   const touched = lastTouched(root);
+  const f = live ? liveFacts(root) : null;
   return {
     stages: STAGES.map(s => ({ id: s, word: STAGE_WORD[s] })),
-    cards: cards.map(c => ({ id: c.id, title: c.title, stage: c.stage, priority: c.priority || '', tags: c.tags, needs: c.needs.map(Number),
-      related: c.related.map(Number), neededBy: nb.get(String(c.id)) || [], release: c.release || '', created: c.created || '',
-      branch: c.branch || '', finish: c.finish || '', updated: touched.get(c.file) || '', report: c.report || '', why: c.why || '', body: c.body || '', file: c.file })),
+    cards: cards.map(c => {
+      const live_ = f ? factsFor(c, f) : { chats: [], unsaved: false, working: false, prs: [], failing: false, mergeable: false, lastWork: '' };
+      return { id: c.id, title: c.title, stage: c.stage, priority: c.priority || '', summary: c.summary || '', area: c.area || '', side: c.side || '',
+        platform: c.platform || '', paused: c.paused || '', tags: c.tags, needs: c.needs.map(Number), related: c.related.map(Number), work: c.work,
+        neededBy: nb.get(String(c.id)) || [], release: c.release || '', created: c.created || '', branch: c.branch || '', finish: c.finish || '',
+        // WHY the later of the two: work on its branches is when it was last worked on; the card's own edit counts too
+        updated: [touched.get(c.file) || '', live_.lastWork].sort().pop(), report: c.report || '', why: c.why || '', body: c.body || '', file: c.file, live: live_ };
+    }),
   };
 }
 

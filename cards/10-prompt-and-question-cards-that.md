@@ -1,12 +1,15 @@
 ---
 id: 10
-title: Prompt and question cards that stick or vanish: 3 faults
+title: Question and approval cards that stick or vanish
 stage: planning
 priority: P3
 tags: claude-code-integration, tool-cards
 branch: 10-prompt-and-question-cards-that
 roadmap: claude-code-integration: Prompt and question cards that stick or vanish: 3 faults.
 created: 2026-10-15
+summary: Some cards keep saying "running" after a resume, and reloading the window can hide a question Claude Code is still waiting on.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

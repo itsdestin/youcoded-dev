@@ -1,6 +1,6 @@
 ---
 id: 111
-title: On Android the phone app may be slow while a reply streams, and phones get full glass blur by default with…
+title: Android may lag while a reply streams and drain battery
 stage: planning
 priority: P3
 tags: perf, android, performance
@@ -8,6 +8,10 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 111-on-android-the-phone-app
 roadmap: perf: On Android the phone app may be slow while a reply streams,
 created: 2026-10-15
+summary: The phone app may stutter or seem frozen while a reply streams, stays awake too much, and uses costly blur effects by default.
+area: Behind the scenes
+side: behind
+platform: Android only
 ---
 Progress
 Done: nothing recorded.

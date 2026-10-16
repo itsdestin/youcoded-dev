@@ -1,6 +1,6 @@
 ---
 id: 72
-title: After the assistant uses 30 specialists in one session, let the user approve just the next helper or waive…
+title: Let you allow more helpers after the limit of 30
 stage: build
 priority: P3
 tags: native-harness, specialists, tool-cards, desktop
@@ -8,6 +8,10 @@ report: docs/active/specs/2026-09-15-specialist-budget-permission-design.md
 branch: 72-after-the-assistant-uses-30
 roadmap: native-harness: After the assistant uses 30 specialists in one session, let
 created: 2026-10-15
+summary: Once a chat has used 30 helpers every new one is refused; you should be able to approve the next one or lift the limit.
+area: Chat
+side: screens
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

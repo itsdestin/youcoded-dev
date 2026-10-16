@@ -1,12 +1,15 @@
 ---
 id: 5
-title: Search gaps: three things search cannot find or answer
+title: Search: three things it cannot find
 stage: planning
 priority: P3
 tags: chat-data
 branch: 5-search-gaps-three-things-search
 roadmap: chat-data: Search gaps: three things search cannot find or answer.
 created: 2026-10-15
+summary: Search can't find words said inside past chats or older parts of a long chat, and can't tell which conversations are still open.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

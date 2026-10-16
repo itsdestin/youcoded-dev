@@ -1,12 +1,15 @@
 ---
 id: 89
-title: Explore bringing YouCoded to iOS
+title: Explore a YouCoded app for iPhone
 stage: explore
 priority: P2
 tags: other-features, misc
 branch: 89-explore-bringing-youcoded-to-ios
 roadmap: other-features: Explore bringing YouCoded to iOS. Today an iPhone only reach
 created: 2026-10-15
+summary: iPhones can only use YouCoded through Safari pointed at another device; compare ways to offer a real iPhone app.
+area: Devices & sync
+side: both
 ---
 Progress
 Done: nothing recorded.

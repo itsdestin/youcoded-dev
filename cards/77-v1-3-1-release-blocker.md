@@ -1,6 +1,6 @@
 ---
 id: 77
-title: v1.3.1 release blocker — native-only users need a YouCoded-owned skills home
+title: A home for skills when you don't use Claude Code
 stage: planning
 priority: P1
 tags: native-harness, skills-mcp
@@ -8,6 +8,9 @@ release: v1.3.1
 branch: 77-v1-3-1-release-blocker
 roadmap: native-harness: **v1.3.1 release blocker — native-only users need a YouCoded
 created: 2026-10-15
+summary: People using only YouCoded's own engine have no obvious place to keep personal or project skills; must be fixed before 1.3.1.
+area: Agents & automations
+side: behind
 ---
 Progress
 Done: nothing recorded.

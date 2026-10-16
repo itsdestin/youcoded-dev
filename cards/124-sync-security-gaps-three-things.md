@@ -1,12 +1,15 @@
 ---
 id: 124
-title: Sync security gaps: three things that could expose secrets or let one device pose as another
+title: Sync security: three gaps that could expose secrets
 stage: planning
 priority: P2
 tags: sync, settings/sync, security
 branch: 124-sync-security-gaps-three-things
 roadmap: sync: Sync security gaps: three things that could expose secrets o
 created: 2026-10-15
+summary: Old password files may stay in sync history, Android backups copy service keys, and one device could pose as another.
+area: Devices & sync
+side: behind
 ---
 Progress
 Done: nothing recorded.

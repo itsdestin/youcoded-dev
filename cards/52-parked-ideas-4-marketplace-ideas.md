@@ -1,12 +1,15 @@
 ---
 id: 52
-title: Parked ideas: 4 marketplace ideas, none designed
+title: Ideas for the marketplace (four)
 stage: explore
 priority: P3
 tags: marketplace, catalog
 branch: 52-parked-ideas-4-marketplace-ideas
 roadmap: marketplace: Parked ideas: 4 marketplace ideas, none designed.
 created: 2026-10-15
+summary: Saved ideas: installable assistant personality packs, an open public registry, a tip jar for authors, and a broken Spotify entry.
+area: Marketplace & library
+side: both
 ---
 Progress
 Done: nothing recorded.

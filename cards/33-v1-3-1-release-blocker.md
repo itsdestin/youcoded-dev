@@ -1,6 +1,6 @@
 ---
 id: 33
-title: v1.3.1 release blocker: searching a big project stops early, for file names and for text inside files
+title: Release blocker: search stops early in big projects
 stage: planning
 priority: P1
 tags: files, projects, desktop
@@ -9,6 +9,10 @@ report: docs/active/specs/2026-09-18-project-files-background-index.md
 branch: 33-v1-3-1-release-blocker
 roadmap: files: v1.3.1 release blocker: searching a big project stops early,
 created: 2026-10-15
+summary: In big projects, file search stops at 2,000 files and text search at 200 matches, with no way to see the rest.
+area: Files & documents
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

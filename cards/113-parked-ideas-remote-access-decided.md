@@ -1,12 +1,17 @@
 ---
 id: 113
-title: Parked ideas: remote access, decided to leave as is (three things)
+title: Remote access: three ideas left as they are
 stage: explore
 priority: P3
 tags: remote-access, one-core, remote, security
 branch: 113-parked-ideas-remote-access-decided
 roadmap: remote-access: Parked ideas: remote access, decided to leave as is (three t
 created: 2026-10-15
+summary: Small remote-access quirks Destin chose to leave, like the blue reply-ready dot still showing on the phone after reading it.
+area: Devices & sync
+side: both
+platform: Phone and web
+paused: Destin decided to leave these as they are for now
 ---
 Progress
 Done: nothing recorded.

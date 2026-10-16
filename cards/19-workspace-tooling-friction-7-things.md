@@ -1,12 +1,16 @@
 ---
 id: 19
-title: Workspace tooling friction: 7 things
+title: Workspace tool annoyances: seven things
 stage: planning
 priority: P3
 tags: dev-workspace, rigs
 branch: 19-workspace-tooling-friction-7-things
 roadmap: dev-workspace: Workspace tooling friction: 7 things.
 created: 2026-10-15
+summary: Saving a doc takes six steps, the app's log is hard to find and short, and nothing blocks saving a half-merged file.
+area: Behind the scenes
+side: behind
+work: chore/conversation-triage-script
 ---
 Progress
 Done: nothing recorded.

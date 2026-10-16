@@ -1,12 +1,16 @@
 ---
 id: 85
-title: Buddy window: 3 open items
+title: Buddy window: three open items
 stage: planning
 priority: P3
 tags: other-features, buddy, buddy-window, desktop
 branch: 85-buddy-window-3-open-items
 roadmap: other-features: Buddy window: 3 open items.
 created: 2026-10-15
+summary: Typing in the buddy can accidentally confirm a menu choice, its Allow button may not work for questions, and it never idles on its own.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

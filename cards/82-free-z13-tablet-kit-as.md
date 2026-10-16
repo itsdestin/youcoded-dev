@@ -1,12 +1,15 @@
 ---
 id: 82
-title: Free "Z13 tablet kit" as a marketing post: package Destin's ROG Flow Z13 setup so any Z13 owner on…
+title: Share Destin's Z13 tablet setup as a free kit
 stage: explore
 priority: P3
 tags: operations
 branch: 82-free-z13-tablet-kit-as
 roadmap: operations: Free "Z13 tablet kit" as a marketing post: package Destin's
 created: 2026-10-15
+summary: Package Destin's tablet setup and swipe keyboard as a free download for other Z13 owners, as a post that points to YouCoded.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 37
-title: Office saving: four leftovers and stale warnings
+title: Office saving: leftover copies and stale warnings
 stage: planning
 priority: P3
 tags: files, files-panel
 branch: 37-office-saving-four-leftovers-and
 roadmap: files: Office saving: four leftovers and stale warnings.
 created: 2026-10-15
+summary: Backup copies pile up, "open in another app" warnings linger after a crash, and documents can stay open in the background.
+area: Files & documents
+side: both
 ---
 Progress
 Done: nothing recorded.

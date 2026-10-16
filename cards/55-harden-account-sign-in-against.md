@@ -1,12 +1,15 @@
 ---
 id: 55
-title: Harden account sign-in against link-based account takeover
+title: Close a sign-in loophole that can hijack accounts
 stage: planning
 priority: P2
 tags: marketplace, backend, security
 branch: 55-harden-account-sign-in-against
 roadmap: marketplace: Harden account sign-in against link-based account takeover.
 created: 2026-10-15
+summary: A trick link during sign-in could take over someone's YouCoded account (comments, friends, sync), not their GitHub or files.
+area: Settings
+side: behind
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 122
-title: Very long conversations (over 50 MB) stop updating on your other devices
+title: Very long conversations stop syncing to other devices
 stage: explore
 priority: P2
 tags: sync, settings/sync
 branch: 122-very-long-conversations-over-50
 roadmap: sync: Very long conversations (over 50 MB) stop updating on your o
 created: 2026-10-15
+summary: Conversations over 50 MB never send their newest messages to your other devices.
+area: Devices & sync
+side: behind
 ---
 Progress
 Done: nothing recorded.

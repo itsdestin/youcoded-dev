@@ -1,12 +1,15 @@
 ---
 id: 84
-title: Accounts: silent sign-out and Phase 2 leftovers (2 items)
+title: Accounts: silent sign-out and leftover fixes
 stage: planning
 priority: P3
 tags: other-features, accounts
 branch: 84-accounts-silent-sign-out-and
 roadmap: other-features: Accounts: silent sign-out and Phase 2 leftovers (2 items).
 created: 2026-10-15
+summary: One failed server call signs you out without telling you, so friends see you offline; plus several small account leftovers.
+area: Social
+side: both
 ---
 Progress
 Done: nothing recorded.

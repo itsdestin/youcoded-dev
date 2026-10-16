@@ -1,12 +1,17 @@
 ---
 id: 145
-title: Parked ideas: motion, voice and chat images (5 things)
+title: Motion, voice and chat images: five parked ideas
 stage: explore
 priority: P3
 tags: user-interface
 branch: 145-parked-ideas-motion-voice-and
 roadmap: user-interface: Parked ideas: motion, voice and chat images (5 things).
 created: 2026-10-15
+summary: Ideas for later: smoother panel animations, a smaller voice download, and letting the assistant show images in chat.
+area: Chat
+side: screens
+work: followup/right-pane-motion
+paused: Destin dropped the panel animations for now
 ---
 Progress
 Done: nothing recorded.

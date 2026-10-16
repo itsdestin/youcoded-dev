@@ -1,12 +1,15 @@
 ---
 id: 24
-title: Path-scoped rules not reaching sessions: 2 findings
+title: Project rules don't always reach work sessions
 stage: planning
 priority: P3
 tags: dev-workspace, knowledge
 branch: 24-path-scoped-rules-not-reaching
 roadmap: dev-workspace: Path-scoped rules not reaching sessions: 2 findings.
 created: 2026-10-15
+summary: Rules meant to guide the assistant when it edits certain files sometimes never load, and it can't tell they were missed.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

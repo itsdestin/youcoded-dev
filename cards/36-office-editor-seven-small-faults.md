@@ -7,6 +7,10 @@ tags: files, files-panel, desktop, needs-repro
 branch: 36-office-editor-seven-small-faults
 roadmap: files: Office editor: seven small faults.
 created: 2026-10-15
+summary: The Recent list goes stale, "Saved" shows a moment early, printed pages break differently, and a few menus misbehave now and then.
+area: Files & documents
+side: screens
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

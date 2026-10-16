@@ -1,6 +1,6 @@
 ---
 id: 68
-title: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
+title: Explain why an "Always allow" didn't cover a command
 stage: planning
 priority: P1
 tags: native-harness, permissions, tool-cards, desktop, release-blocker
@@ -9,6 +9,10 @@ report: docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 branch: 68-after-picking-a-wide-always
 roadmap: native-harness: **v1.3.1 release blocker.** After picking a wide "Always all
 created: 2026-10-15
+summary: After a broad "Always allow", a similar command still asks permission with no reason, so the app seems to forget approvals.
+area: Chat
+side: screens
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

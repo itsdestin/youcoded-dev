@@ -1,12 +1,15 @@
 ---
 id: 27
-title: The public Office add-on repo (youcoded-office) once held a personal budget memo of Destin's as a test file
+title: Remove a personal memo from the Office add-on history
 stage: planning
 priority: P2
 tags: dev-workspace, release, security
 branch: 27-the-public-office-add-on
 roadmap: dev-workspace: The public Office add-on repo (youcoded-office) once held a
 created: 2026-10-15
+summary: A personal budget memo was once in the public Office add-on's history; GitHub may still show the old copy until support purges it.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

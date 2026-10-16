@@ -1,6 +1,6 @@
 ---
 id: 73
-title: Helper (specialist) transcripts pile up in the sessions folder forever — no way to delete one, and closing…
+title: Clean up leftover helper chat records
 stage: planning
 priority: P2
 tags: native-harness, specialists, desktop
@@ -8,6 +8,10 @@ report: docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
 branch: 73-helper-specialist-transcripts-pile-up
 roadmap: native-harness: Helper (specialist) transcripts pile up in the sessions fold
 created: 2026-10-15
+summary: Records of helper conversations pile up forever with no way to delete them, even after the main chat is gone.
+area: Chat
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

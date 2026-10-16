@@ -1,12 +1,16 @@
 ---
 id: 71
-title: Helpers: permissions, reports and cost — 4 things
+title: Helpers: permissions, reports and cost (four)
 stage: planning
 priority: P3
 tags: native-harness, specialists, desktop, performance
 branch: 71-helpers-permissions-reports-and-cost
 roadmap: native-harness: Helpers: permissions, reports and cost — 4 things.
 created: 2026-10-15
+summary: Helpers can run commands without asking, reports always interrupt, each start costs full price, and a label is hard to read.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

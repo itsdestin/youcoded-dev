@@ -1,6 +1,6 @@
 ---
 id: 64
-title: Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not a release promise)
+title: Ideas: YouCoded Mesh and Cloud
 stage: explore
 priority: P3
 tags: native-harness, sessions
@@ -9,6 +9,9 @@ needs: 61
 branch: 64-parked-ideas-youcoded-mesh-and
 roadmap: native-harness: Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not
 created: 2026-10-15
+summary: Let your devices share requests and scheduled jobs automatically, with an optional paid cloud fallback when all are offline.
+area: Devices & sync
+side: both
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 70
-title: Settings the user cannot change yet — 3 things
+title: Settings you can't change yet (three)
 stage: planning
 priority: P3
 tags: native-harness, cost, settings
 branch: 70-settings-the-user-cannot-change
 roadmap: native-harness: Settings the user cannot change yet — 3 things.
 created: 2026-10-15
+summary: Reply length for cloud models, which models get recommended, and helper limits are all fixed instead of adjustable.
+area: Settings
+side: both
 ---
 Progress
 Done: nothing recorded.

@@ -1,6 +1,6 @@
 ---
 id: 94
-title: The app still feels sluggish: chat-switch pauses and typing interruptions (4 things, work in progress)
+title: App still feels sluggish: switching and typing
 stage: planning
 priority: P1
 tags: perf, performance
@@ -8,6 +8,10 @@ report: docs/active/investigations/2026-09-29-performance-status.md
 branch: 94-the-app-still-feels-sluggish
 roadmap: perf: The app still feels sluggish: chat-switch pauses and typing
 created: 2026-10-15
+summary: Switching chats can pause, opening a long chat can interrupt typing, and the first Find in a long chat is slow.
+area: Chat
+side: behind
+work: backup/performance-stream-attribution-wip
 ---
 Progress
 Done: nothing recorded.

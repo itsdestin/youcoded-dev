@@ -1,12 +1,15 @@
 ---
 id: 9
-title: Sending messages to Claude Code: 2 unproven faults
+title: Messages to Claude Code: two unconfirmed glitches
 stage: planning
 priority: P3
 tags: claude-code-integration, chat, needs-repro
 branch: 9-sending-messages-to-claude-code
 roadmap: claude-code-integration: Sending messages to Claude Code: 2 unproven faults.
 created: 2026-10-15
+summary: A sent message occasionally appears twice, and a typed number may be mistaken for an answer to Claude Code's rating question.
+area: Chat
+side: behind
 ---
 Progress
 Done: nothing recorded.

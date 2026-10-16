@@ -1,12 +1,15 @@
 ---
 id: 83
-title: Parked: landing copy note, recorded so it is not re-derived
+title: Note: don't lead the website with unique extras
 stage: explore
 priority: P3
 tags: operations
 branch: 83-parked-landing-copy-note-recorded
 roadmap: operations: Parked: landing copy note, recorded so it is not re-derived.
 created: 2026-10-15
+summary: Chat tags, private notes and prompt buttons are unique to YouCoded but should not headline the landing page.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

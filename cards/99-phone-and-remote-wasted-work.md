@@ -1,12 +1,16 @@
 ---
 id: 99
-title: Phone and remote: wasted work and slow starts (6 things)
+title: Phone and remote: wasted work and slow starts
 stage: planning
 priority: P3
 tags: perf, performance
 branch: 99-phone-and-remote-wasted-work
 roadmap: perf: Phone and remote: wasted work and slow starts (6 things).
 created: 2026-10-15
+summary: Phones download more than they show, can flash white on first connect, and reload whole chats on reconnect.
+area: Devices & sync
+side: behind
+platform: Phone and web
 ---
 Progress
 Done: nothing recorded.

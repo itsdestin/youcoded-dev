@@ -1,12 +1,15 @@
 ---
 id: 130
-title: Themes rendering wrong: 3 faults
+title: Themes: three display faults
 stage: planning
 priority: P3
 tags: themes
 branch: 130-themes-rendering-wrong-3-faults
 roadmap: themes: Themes rendering wrong: 3 faults.
 created: 2026-10-15
+summary: Self-built themes get old drawn previews, brand colours are hard to read on light themes, and Android ignores theme fonts.
+area: Marketplace & library
+side: screens
 ---
 Progress
 Done: nothing recorded.

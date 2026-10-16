@@ -1,12 +1,15 @@
 ---
 id: 15
-title: Test and check gaps: 8 places where nothing guards a behaviour
+title: Eight behaviors no automatic test protects
 stage: planning
 priority: P3
 tags: dev-workspace, tests, regression
 branch: 15-test-and-check-gaps-8
 roadmap: dev-workspace: Test and check gaps: 8 places where nothing guards a behavio
 created: 2026-10-15
+summary: Some features, like the Office editor and Claude Code's startup menus, have no test, so a break would only be found by users.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

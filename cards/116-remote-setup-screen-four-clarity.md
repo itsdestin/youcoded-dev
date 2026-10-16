@@ -1,12 +1,15 @@
 ---
 id: 116
-title: Remote setup screen: four clarity gaps (beta tester, 2026-09-10)
+title: Remote setup screen: four clarity gaps
 stage: planning
 priority: P3
 tags: remote-access, standalone, remote
 branch: 116-remote-setup-screen-four-clarity
 roadmap: remote-access: Remote setup screen: four clarity gaps (beta tester, 2026-09
 created: 2026-10-15
+summary: Remote setup does not confirm the password, show device removal, explain Keep awake, or say how many setup steps remain.
+area: Devices & sync
+side: screens
 ---
 Progress
 Done: nothing recorded.

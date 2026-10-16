@@ -1,6 +1,6 @@
 ---
 id: 121
-title: Two devices editing the same file: no way in the app to see or resolve the conflict
+title: See and resolve sync conflicts between two devices
 stage: explore
 priority: P2
 tags: sync, settings/sync, desktop
@@ -9,6 +9,10 @@ report: docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 branch: 121-two-devices-editing-the-same
 roadmap: sync: Two devices editing the same file: no way in the app to see
 created: 2026-10-15
+summary: When two devices edit the same file or chat, the app gives no way to find the second copy or choose which to keep.
+area: Devices & sync
+side: both
+work: session/sync-safety-audit-20260908
 ---
 Progress
 Done: nothing recorded.

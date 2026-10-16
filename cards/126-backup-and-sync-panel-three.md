@@ -7,6 +7,9 @@ tags: sync, settings/sync, desktop
 branch: 126-backup-and-sync-panel-three
 roadmap: sync: Backup & Sync panel: three wording and status gaps.
 created: 2026-10-15
+summary: The Sync panel can say "just synced" when some spaces are failing, and some toggles and messages are misleading.
+area: Settings
+side: screens
 ---
 Progress
 Done: nothing recorded.

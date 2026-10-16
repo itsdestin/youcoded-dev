@@ -1,12 +1,16 @@
 ---
 id: 101
-title: Files and Office editors: slow and memory-hungry cases (6 things)
+title: Files and Office editors: slow cases
 stage: planning
 priority: P3
 tags: perf, files-panel, desktop, performance
 branch: 101-files-and-office-editors-slow
 roadmap: perf: Files and Office editors: slow and memory-hungry cases (6 th
 created: 2026-10-15
+summary: Huge files can pause on open, big spreadsheets freeze while saving, and each open Office file keeps using memory.
+area: Files & documents
+side: behind
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

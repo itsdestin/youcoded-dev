@@ -1,6 +1,6 @@
 ---
 id: 78
-title: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
+title: Launch paperwork: company and trademark
 stage: build
 priority: P1
 tags: operations
@@ -9,6 +9,9 @@ report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 78-public-launch-paperwork-for-1
 roadmap: operations: Public launch paperwork for 1.3.1: the LLC behind every acco
 created: 2026-10-15
+summary: Finish the business setup behind public launch: the company behind every account, the trade name and a trademark filing.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

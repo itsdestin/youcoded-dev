@@ -1,12 +1,15 @@
 ---
 id: 67
-title: Parked ideas: tools, secrets and sandboxing — 9 things
+title: Ideas for assistant tools and safety (nine)
 stage: explore
 priority: P3
 tags: native-harness, tools, security
 branch: 67-parked-ideas-tools-secrets-and
 roadmap: native-harness: Parked ideas: tools, secrets and sandboxing — 9 things.
 created: 2026-10-15
+summary: Saved ideas: an assistant that knows the app, a secure box for passwords and keys, a sandbox for risky work, and tool tweaks.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

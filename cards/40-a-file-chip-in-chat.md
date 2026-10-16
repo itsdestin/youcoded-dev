@@ -1,12 +1,16 @@
 ---
 id: 40
-title: A file chip in chat for a file outside the project folder fails with "Couldn't open README.md — the file…
+title: File links in chat fail for files outside the project
 stage: planning
 priority: P3
 tags: files, chat, desktop
 branch: 40-a-file-chip-in-chat
 roadmap: files: A file chip in chat for a file outside the project folder fa
 created: 2026-10-15
+summary: Clicking a file in chat that lives outside the project folder says "not found", and two same-named files look identical.
+area: Chat
+side: screens
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

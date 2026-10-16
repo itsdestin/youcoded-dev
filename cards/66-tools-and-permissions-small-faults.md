@@ -1,12 +1,16 @@
 ---
 id: 66
-title: Tools and permissions: small faults and checks — 6 things
+title: Assistant tools and permissions: six small faults
 stage: planning
 priority: P3
 tags: native-harness, tools, desktop
 branch: 66-tools-and-permissions-small-faults
 roadmap: native-harness: Tools and permissions: small faults and checks — 6 things.
 created: 2026-10-15
+summary: Small models stumble on edits, there's no Skip Permissions for local models, and huge pictures stall and leave copies behind.
+area: Chat
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 63
-title: Parked ideas: native sessions and helpers — 13 things
+title: Ideas for the assistant and its helpers (13)
 stage: explore
 priority: P3
 tags: native-harness, sessions, security
 branch: 63-parked-ideas-native-sessions-and
 roadmap: native-harness: Parked ideas: native sessions and helpers — 13 things.
 created: 2026-10-15
+summary: Saved ideas: chat memory across conversations, goals, custom assistant builds, other AI tools as engines, and helper controls.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

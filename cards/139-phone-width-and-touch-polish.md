@@ -1,12 +1,15 @@
 ---
 id: 139
-title: Phone-width and touch polish (3 groups)
+title: Phone-width and touch screen polish: three groups
 stage: planning
 priority: P3
 tags: user-interface
 branch: 139-phone-width-and-touch-polish
 roadmap: user-interface: Phone-width and touch polish (3 groups).
 created: 2026-10-15
+summary: On narrow or touch screens, wording is unclear, text wraps badly, and hover-only buttons cannot be reached.
+area: Devices & sync
+side: screens
 ---
 Progress
 Done: nothing recorded.

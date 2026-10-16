@@ -1,6 +1,6 @@
 ---
 id: 20
-title: The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has never run end…
+title: Try the full new-feature process on a real feature
 stage: planning
 priority: P3
 tags: dev-workspace, rigs
@@ -8,6 +8,9 @@ report: docs/active/plans/2026-09-01-feature-flow-plan.md
 branch: 20-the-feature-flow-questions-deck
 roadmap: dev-workspace: The feature flow (questions deck, review rounds, contract, g
 created: 2026-10-15
+summary: The step-by-step process for designing and approving a new feature is built but has never been used start to finish.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

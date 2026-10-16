@@ -1,12 +1,15 @@
 ---
 id: 123
-title: Personal sync history only grows, and a first download of it shows nothing (2 things)
+title: Sync history grows forever; first download shows nothing
 stage: planning
 priority: P2
 tags: sync, settings/sync, performance
 branch: 123-personal-sync-history-only-grows
 roadmap: sync: Personal sync history only grows, and a first download of it
 created: 2026-10-15
+summary: Sync keeps every old version forever, so a new device downloads gigabytes, with no progress shown for up to an hour.
+area: Devices & sync
+side: both
 ---
 Progress
 Done: nothing recorded.

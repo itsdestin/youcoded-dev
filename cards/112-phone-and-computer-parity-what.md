@@ -1,12 +1,16 @@
 ---
 id: 112
-title: Phone and computer parity: what is still missing after one-core (youcoded#604), four things
+title: Phone and computer parity: four gaps left
 stage: planning
 priority: P2
 tags: remote-access, one-core, remote
 branch: 112-phone-and-computer-parity-what
 roadmap: remote-access: Phone and computer parity: what is still missing after one-c
 created: 2026-10-15
+summary: Using YouCoded from a phone still lacks some things the computer has: file uploads, the game lobby, and some buttons that lag.
+area: Devices & sync
+side: both
+platform: Phone and web
 ---
 Progress
 Done: nothing recorded.

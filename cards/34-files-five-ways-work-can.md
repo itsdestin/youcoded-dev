@@ -7,6 +7,10 @@ tags: files, desktop
 branch: 34-files-five-ways-work-can
 roadmap: files: Files: five ways work can be silently lost.
 created: 2026-10-15
+summary: Unsaved drafts, Office edits and comments can disappear without a warning when windows close or two programs change one file.
+area: Files & documents
+side: both
+platform: Desktop only
 ---
 Progress
 Done: nothing recorded.

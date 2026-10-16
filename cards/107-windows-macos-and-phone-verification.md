@@ -1,6 +1,6 @@
 ---
 id: 107
-title: Windows, macOS and phone verification before release: the terminal speed brake was checked by reading only on…
+title: Test speed fixes on Windows, Mac and phones
 stage: planning
 priority: P3
 tags: perf, performance
@@ -8,6 +8,9 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 107-windows-macos-and-phone-verification
 roadmap: perf: Windows, macOS and phone verification before release: the te
 created: 2026-10-15
+summary: Recent speed fixes were only hand-tested on Linux; check them on Windows, Mac and phones before release.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

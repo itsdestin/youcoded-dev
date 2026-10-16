@@ -1,12 +1,15 @@
 ---
 id: 3
-title: Resume browser and conversation lists: eight clarity gaps
+title: Past conversations list: eight confusing spots
 stage: planning
 priority: P3
 tags: chat-data, resume-browser
 branch: 3-resume-browser-and-conversation-lists
 roadmap: chat-data: Resume browser and conversation lists: eight clarity gaps.
 created: 2026-10-15
+summary: The past-conversations list is hard to find, has no close button, shows vague dates and cramped rows, and filters miss some labels.
+area: Chat
+side: screens
 ---
 Progress
 Done: nothing recorded.

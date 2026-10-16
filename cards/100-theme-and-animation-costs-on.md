@@ -1,12 +1,15 @@
 ---
 id: 100
-title: Theme and animation costs on screen (3 things)
+title: Themes and animations may cost too much power
 stage: planning
 priority: P3
 tags: perf, performance, themes-screen
 branch: 100-theme-and-animation-costs-on
 roadmap: perf: Theme and animation costs on screen (3 things).
 created: 2026-10-15
+summary: Some themes' effects make the graphics chip work much harder than plain themes; decide defaults for weaker computers.
+area: Settings
+side: both
 ---
 Progress
 Done: nothing recorded.

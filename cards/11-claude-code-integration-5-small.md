@@ -1,12 +1,15 @@
 ---
 id: 11
-title: Claude Code integration: 5 small faults
+title: Claude Code connection: five small faults
 stage: planning
 priority: P3
 tags: claude-code-integration, regression
 branch: 11-claude-code-integration-5-small
 roadmap: claude-code-integration: Claude Code integration: 5 small faults.
 created: 2026-10-15
+summary: A broken settings file is replaced without telling you, one warning looks different from the rest, and Android needs a newer Claude Code.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

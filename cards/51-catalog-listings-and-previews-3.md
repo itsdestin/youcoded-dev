@@ -1,12 +1,15 @@
 ---
 id: 51
-title: Catalog listings and previews: 3 small faults
+title: Marketplace listings: three small faults
 stage: planning
 priority: P3
 tags: marketplace, catalog, marketplace-screen, security
 branch: 51-catalog-listings-and-previews-3
 roadmap: marketplace: Catalog listings and previews: 3 small faults.
 created: 2026-10-15
+summary: A plugin's "What this can do" panel may undersell it, theme preview pictures are unreliable, and some theme updates stay hidden.
+area: Marketplace & library
+side: screens
 ---
 Progress
 Done: nothing recorded.

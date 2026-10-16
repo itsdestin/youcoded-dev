@@ -1,12 +1,15 @@
 ---
 id: 91
-title: YouCoded Pages follow-ups: 7 decisions and sightings
+title: Pages: seven follow-ups and decisions
 stage: planning
 priority: P2
 tags: other-features, misc, window-chrome, needs-repro
 branch: 91-youcoded-pages-follow-ups-7
 roadmap: other-features: YouCoded Pages follow-ups: 7 decisions and sightings.
 created: 2026-10-15
+summary: Open questions on Pages: page builder updates, Home page extras, phone layout, a safety fix, and more distinct page icons.
+area: Pages
+side: both
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 127
-title: Sync housekeeping: six leftovers and rare edge cases
+title: Sync: six leftover cleanups and rare edge cases
 stage: planning
 priority: P3
 tags: sync, desktop
 branch: 127-sync-housekeeping-six-leftovers-and
 roadmap: sync: Sync housekeeping: six leftovers and rare edge cases.
 created: 2026-10-15
+summary: Rare sync problems, like two projects named only by different capitals sharing files, or stray leftover files after a crash.
+area: Devices & sync
+side: behind
 ---
 Progress
 Done: nothing recorded.

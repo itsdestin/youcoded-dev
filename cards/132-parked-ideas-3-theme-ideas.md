@@ -1,12 +1,15 @@
 ---
 id: 132
-title: Parked ideas: 3 theme ideas
+title: Themes: three parked ideas
 stage: explore
 priority: P3
 tags: themes
 branch: 132-parked-ideas-3-theme-ideas
 roadmap: themes: Parked ideas: 3 theme ideas.
 created: 2026-10-15
+summary: Ideas for later: app icon that changes with the theme, theme-specific icons, and a bare layout with no backgrounds.
+area: Marketplace & library
+side: screens
 ---
 Progress
 Done: nothing recorded.

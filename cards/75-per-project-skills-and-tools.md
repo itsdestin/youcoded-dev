@@ -1,12 +1,16 @@
 ---
 id: 75
-title: Per-project skills and tools: each project chooses which skills, plugins and tool connections the assistant…
-stage: build
+title: Choose skills and tools per project
+stage: polish
 priority: P1
 tags: native-harness, skills-mcp, projects, desktop
 branch: 75-per-project-skills-and-tools
 roadmap: native-harness: Per-project skills and tools: each project chooses which ski
 created: 2026-10-15
+summary: Each project picks which skills, plugins and tool connections the assistant may use, with a warning before outside services.
+area: Projects
+side: both
+work: session/plugin-project-controls
 ---
 Progress
 Done: nothing recorded.

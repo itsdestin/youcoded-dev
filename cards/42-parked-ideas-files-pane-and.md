@@ -1,12 +1,15 @@
 ---
 id: 42
-title: Parked ideas: files pane and editor (nine things)
+title: Ideas for the files pane and editor (nine)
 stage: explore
 priority: P3
 tags: files
 branch: 42-parked-ideas-files-pane-and
 roadmap: files: Parked ideas: files pane and editor (nine things).
 created: 2026-10-15
+summary: Saved ideas: a real folder tree, several files open at once, more Git controls, smarter code editing and PDF editing.
+area: Files & documents
+side: screens
 ---
 Progress
 Done: nothing recorded.

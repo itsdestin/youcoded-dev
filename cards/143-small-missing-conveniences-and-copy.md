@@ -1,12 +1,15 @@
 ---
 id: 143
-title: Small missing conveniences and copy fixes (4 things)
+title: Small missing conveniences and wording fixes
 stage: planning
 priority: P3
 tags: user-interface
 branch: 143-small-missing-conveniences-and-copy
 roadmap: user-interface: Small missing conveniences and copy fixes (4 things).
 created: 2026-10-15
+summary: No right-click menu on images, no recent-folder list, no replace-or-add choice for quick chips, and sizes that differ from websites.
+area: Chat
+side: screens
 ---
 Progress
 Done: nothing recorded.

@@ -1,6 +1,6 @@
 ---
 id: 104
-title: Hitch recorder, owner decisions: (a) the recorder is always on (`YOUCODED_HITCH_LOG=0` is the only off…
+title: Slowdown recorder: settings and privacy choices
 stage: explore
 priority: P3
 tags: perf, performance
@@ -8,6 +8,9 @@ report: docs/archive/investigations/2026-10-04-performance-gap-review.md
 branch: 104-hitch-recorder-owner-decisions-a
 roadmap: perf: Hitch recorder, owner decisions: (a) the recorder is always
 created: 2026-10-15
+summary: Decide whether people can turn the built-in slowdown recorder off, and whether its summary may go with bug reports.
+area: Settings
+side: both
 ---
 Progress
 Done: nothing recorded.

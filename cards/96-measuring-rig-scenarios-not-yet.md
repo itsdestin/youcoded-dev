@@ -1,6 +1,6 @@
 ---
 id: 96
-title: Measuring rig: scenarios not yet measured (5 things)
+title: Speed testing: five situations not yet measured
 stage: planning
 priority: P3
 tags: perf, performance
@@ -8,6 +8,9 @@ report: docs/active/investigations/2026-09-29-performance-status.md
 branch: 96-measuring-rig-scenarios-not-yet
 roadmap: perf: Measuring rig: scenarios not yet measured (5 things).
 created: 2026-10-15
+summary: The speed-testing setup doesn't yet cover cases like typing during heavy terminal output or very long sessions.
+area: Developer tools
+side: behind
 ---
 Progress
 Done: nothing recorded.

@@ -1,12 +1,15 @@
 ---
 id: 87
-title: Browser follow-ups (the assistant's own browser, shipped 2026-10-14): 8 items left out
+title: Assistant's web browser: eight follow-ups
 stage: planning
 priority: P3
 tags: other-features, misc
 branch: 87-browser-follow-ups-the-assistant
 roadmap: other-features: Browser follow-ups (the assistant's own browser, shipped 202
 created: 2026-10-15
+summary: The new built-in browser lacks phone support, file uploads, tab extras and hand-testing on Mac and Windows.
+area: Chat
+side: both
 ---
 Progress
 Done: nothing recorded.

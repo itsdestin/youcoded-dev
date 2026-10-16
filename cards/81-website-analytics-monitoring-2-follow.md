@@ -1,12 +1,15 @@
 ---
 id: 81
-title: Website analytics monitoring: 2 follow-ups, not approval gates
+title: Website visitor stats: two checks left
 stage: planning
 priority: P3
 tags: operations
 branch: 81-website-analytics-monitoring-2-follow
 roadmap: operations: Website analytics monitoring: 2 follow-ups, not approval gat
 created: 2026-10-15
+summary: Confirm the website stats service's billing alerts and backups, and that its daily cleanup of old data actually runs.
+area: Behind the scenes
+side: behind
 ---
 Progress
 Done: nothing recorded.

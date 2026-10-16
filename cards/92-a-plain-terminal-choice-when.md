@@ -1,6 +1,6 @@
 ---
 id: 92
-title: A plain "Terminal" choice when starting a new session — a bare terminal as a YouCoded session, no assistant…
+title: Offer a plain terminal when starting a session
 stage: build
 priority: P3
 tags: other-features, misc
@@ -8,6 +8,9 @@ report: docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrad
 branch: 92-a-plain-terminal-choice-when
 roadmap: other-features: A plain "Terminal" choice when starting a new session — a ba
 created: 2026-10-15
+summary: The new-session form can't start a bare terminal with no assistant, even though the app can already open one.
+area: Chat
+side: screens
 ---
 Progress
 Done: nothing recorded.
