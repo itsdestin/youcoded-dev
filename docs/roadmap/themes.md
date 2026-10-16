@@ -2,7 +2,7 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
-- [ ] After the UI consistency work lands: a broad review, across every theme, of the colours,
+- [ ] Now that the UI consistency work has landed (2026-10-16, youcoded#626): a broad review, across every theme, of the colours,
       see-through levels and contrast used for each card level, then make the theme builder and
       its checks fast and accurate enough that a new theme comes out usable, with good contrast,
       on the first try (Destin, 2026-09-28). Starting point: on 2026-09-28 card fills measured

@@ -10,7 +10,7 @@ Set by `guide-test.questions` (answers committed beside this file).
 
 ## Each round
 1. Draw 5 at random from the pool (seed recorded below).
-2. One private copy per builder: `setup-builder.sh <round> <concept>` (this folder) makes
+2. One private copy per builder: `bash docs/archive/design/2026-10-15-guide-test/setup-builder.sh <round> <concept>` makes
    `worktrees/sessions/gt-<round>-<concept>` (workspace + app, detached, no branch) from this branch's
    HEAD with THIS folder removed, and any earlier mockup of the same kind hidden (`#R-1`).
 3. Builder brief = a normal short-route feature request in Destin's words; it is not told it is a
@@ -42,3 +42,9 @@ purchases-page.
 |---|---|---|
 | r1 | 4 of 10 answered (purchases reviewed only by chat note) | 7 rules added, 3 shared pieces built |
 | r2 | 31 of 32 | 3 notes → 4 rules |
+
+## Resuming (round 3)
+Not run. Draw 5 from the pool (never drawn so far: tool-loadout, model-presets, share, calendar), set up
+copies with the script above, brief builders as in r2 (short route, every state reachable by a URL
+switch, not told it's a test), then ask the short-format gap question. Review on ONE-picture-per-step
+picture pages with the live pages offered alongside. The guide's rules from rounds 1–2 cite this folder.

@@ -5,6 +5,7 @@ date: 2026-10-13
 owner: Destin (decisions) / Claude (writing)
 replaces: docs/archive/design/2026-08-25-ui-design-guide.md
 source: docs/active/design/2026-09-23-ui-element-review/decisions.md (every rule's decision); guide-draft.md beside it is the superseded working draft
+source-guide-test: docs/archive/design/2026-10-15-guide-test/ (rules cited as gt-r1#…, gt-r2#…, gt-r1-fixes#…, scroll-fade-1#…, pages-kit-questions#…, pages-kit-1#… — Destin's critique of fresh-builder designs; kept out of decisions.md so later builders could not read it)
 ---
 
 # YouCoded design guide
