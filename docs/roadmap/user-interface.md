@@ -18,7 +18,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       row in a list of actions" let seven cards each carry a bright button. (e) No neutral notice tone
       (info takes the accent, pink in Halftone). (f) No recipe for big summary numbers, scores, or "pick
       a card, the rest shows its details". Settle on a questions page, then a round-3 guide test.
-      `ui-guide` `all` `confirmed` `P3` `checked 2026-10-16`
+      `all` `decision` `P3` `checked 2026-10-16`
 
 - [ ] Error messages still guess at causes in many places.
       The app-wide re-audit is done and batch 1 of 7 (seventeen messages that stated something false)
