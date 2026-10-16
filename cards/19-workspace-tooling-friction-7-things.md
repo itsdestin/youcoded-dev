@@ -75,3 +75,12 @@ worktrees in five places; (i) the archived youcoded-core status line still refer
 script
 `n/a` `confirmed` `P3` `checked 2026-09-02`
 
+Found 2026-10-16 (Work board session), trying a page in a dev window:
+(i) a dev instance shares ~/YouCoded (pages, projects, chats) and ~/.claude with the real app, so a page under test
+appears in Destin's running app and syncs to his devices; the only isolation found was HOME pointed at a scratch
+folder. (ii) In that scratch home, "skip setup" does not stick across relaunches, and run-dev.sh keeps setup state in
+~/.claude/toolkit-state-<profile>, not the folder first-run.ts names by default. (iii) The dev window runs on its own
+private message bus, so it cannot reach the keyring and `gh` gets 401 (no pull-request facts); GH_CONFIG_DIR is also
+rewritten to <HOME>/.config. (iv) glob-guard guard 8 refuses `npm ci` in a SCRATCH folder because it judges by the
+session's working folder, not where the install runs; it took a script file to install fresh packages safely
+(0 shared files after). Wanted: run-dev.sh --isolated-home that sets this up, and guard 8 judging the real target.

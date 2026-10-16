@@ -27,3 +27,6 @@ What it covers (Destin, 2026-10-16)
 3. A more comprehensive human review of the whole management surface (Today, Screens, Big picture,
    the item popup, bulk edit) for UX, UI and usefulness improvements, then iterate. Run it in a new
    session.
+
+Seen 2026-10-16 running the Work board in a dev window: Big picture's "What's blocked · Built twice · Shipped this
+month" are clickable bare text (Destin dislikes clickable bare text); left as approved Oct 12 for this review.
