@@ -69,7 +69,7 @@ proposal. Do not ask about anything you can decide.
 - **Yes** (or "sure", "do it", "ok"): for each new card, in dependency order so `--needs` can name the
   numbers just made:
   `node scripts/cards.mjs new --title "<plain title>" --stage explore --tags <tags> --needs <ids> --related <ids> --vision <part ids> --why "<his words, short>"`
-  — `--vision` names the parts of his vision it builds (ids from `docs/active/design/2026-10-12-management-surface/vision-options/facts.json` → `nodes`; the most specific part, usually 1–3; none for pure housekeeping), so the Work board's Big picture shows it (2026-10-16). Once master carries the items, `new` saves straight to master.
+  — `--vision` names the parts of his vision it builds (ids from `pages/work-board/renderer/vision-options/facts.json` → `nodes`; the most specific part, usually 1–3; none for pure housekeeping), so the Work board's Big picture shows it (2026-10-16). Once master carries the items, `new` saves straight to master.
   then `node scripts/cards.mjs check`. A finish line (`--finish`) only when he said what "done" means;
   otherwise leave it for the first chat that builds it. Commit the new files by explicit path on a branch,
   push, and reply with one line naming what was filed and their numbers.

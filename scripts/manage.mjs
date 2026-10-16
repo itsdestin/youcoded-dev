@@ -2,7 +2,8 @@
 // manage.mjs — the live management page: every work card, and the tick-box bulk edits, saved without a chat.
 //
 // WHY (Destin, 2026-10-15/16): "build the real page" — the approved management page
-// (docs/active/design/2026-10-12-management-surface/, all three tabs) with Today read from cards/.
+// (drawn by pages/work-board/renderer/, all three tabs; designed in docs/active/design/2026-10-12-management-surface/)
+// with Today read from cards/.
 // Bulk edit is in v1 by his call ("you should build the bulk edit into v1"): tick items, then Combine,
 // Move to stage or Delete. Edits go through cards.mjs (all-or-nothing, rules checked), then are committed
 // and pushed so nothing lives only on this computer.
@@ -29,7 +30,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 // WHY the design folder (Destin, 2026-10-16: "what happened to the real full page with all of our earlier design
 // work?"): the live page IS the approved management page — Today, Screens, Big picture — built by its own
 // build.py, with Today drawn from cards/. Its pictures (thumbs/, shots/) are served from the same folder.
-export const PAGE_DIR = path.join(HERE, '..', 'docs', 'active', 'design', '2026-10-12-management-surface');
+// WHY pages/work-board/renderer (2026-10-16): the drawing code is the Work board page's own, so it lives with the page
+// rather than in a design folder that gets archived when its work merges.
+export const PAGE_DIR = path.join(HERE, '..', 'pages', 'work-board', 'renderer');
 const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.html': 'text/html; charset=utf-8', '.webp': 'image/webp' };
 
 /** Build the full page from the cards. Cached until a card file changes. */
