@@ -1,0 +1,213 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YouCoded — Work</title>
+<style>
+/*CC*/
+/* ---- this page (scripts/manage/page.html): arranges cc.css / page.css pieces; the row and popup looks are the
+   approved management-surface ones (Today rows, round 3; detail popup, round 4) ---- */
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.field{font:inherit;font-size:12px;line-height:16px;padding:6px 12px;border-radius:var(--radius-lg);border:1px solid var(--edge-card);background:var(--inset);color:var(--fg);width:240px}
+.field::placeholder{color:var(--fg-muted)} .field:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+select.field{width:auto;cursor:pointer}
+.crow{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;cursor:pointer;margin-bottom:8px;transition:background-color 120ms steps(4)}
+@media (hover:hover){.crow:hover{background:var(--inset)}}
+.crow.sel{border-color:var(--fg);background:var(--inset)}
+.crow input[type=checkbox]{margin:3px 0 0;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex:none}
+.cmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none} .cchips::-webkit-scrollbar{display:none}
+.cid{font-size:11px;color:var(--fg-muted);flex:none;margin-top:2px;min-width:32px;text-align:right}
+.spill.danger{background:color-mix(in srgb,var(--status-error) 15%,transparent);border-color:color-mix(in srgb,var(--status-error) 30%,transparent)}
+.spill.ok{background:color-mix(in srgb,var(--status-ok) 15%,transparent);border-color:color-mix(in srgb,var(--status-ok) 30%,transparent)}
+.spill.stage{background:var(--panel);border-color:var(--edge-strong);color:var(--fg)}
+.fold.sec{margin-bottom:8px} .foldbody{margin:4px 12px 12px}
+.selall{font-size:11px;color:var(--fg-muted);background:none;border:0;cursor:pointer;padding:0 4px;text-decoration:underline;text-underline-offset:3px}
+/* the bulk bar: appears while something is ticked, pinned at the foot of the pane */
+.bulk{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;z-index:10;border-radius:var(--radius-xl)}
+.bulk[hidden]{display:none}
+.bulk .n{font-size:12px;font-weight:500;margin-right:8px;white-space:nowrap}
+.mwrap{position:relative;display:inline-flex}
+.menu{position:absolute;bottom:calc(100% + 6px);left:0;min-width:220px;padding:4px;display:flex;flex-direction:column;border-radius:var(--radius-lg);z-index:20}
+.menu[hidden]{display:none}
+.mitem{display:flex;flex-direction:column;gap:2px;font:inherit;font-size:12px;text-align:left;padding:6px 10px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--fg);cursor:pointer}
+@media (hover:hover){.mitem:hover{background:var(--inset)}} .mitem .mhint{font-size:11px;color:var(--fg-muted)}
+.btn.danger{background:var(--status-error);color:#fff;border-color:transparent}
+/* popups: the app's Dialog at wide size */
+.scrim{position:fixed;inset:0;background:rgba(73,73,73,.5);z-index:30}
+:root[data-theme="dark"] .scrim,:root[data-theme="midnight"] .scrim{background:rgba(5,7,9,.5)}
+.dwrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:31;pointer-events:none}
+.dialog{pointer-events:auto;width:100%;max-width:min(860px,94vw);max-height:calc(100vh - 6rem);display:flex;flex-direction:column;overflow:hidden}
+.dialog.narrow{max-width:min(520px,94vw)}
+.dhead{flex:none;display:flex;align-items:center;gap:8px;min-height:56px;padding:12px 16px}
+.dtitle{font-size:16px;font-weight:500;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dbody{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.dfoot{flex:none;display:flex;justify-content:flex-end;gap:8px;padding:0 16px 16px}
+.dbody .card{box-shadow:none;padding:12px}
+.dbody .eyebrow{margin:0 4px 8px}
+.dtop{display:flex;flex-direction:column;gap:8px}
+.dtext{white-space:pre-wrap;font-size:12px;line-height:1.5;color:var(--fg-2);margin:0}
+.dcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.dlist{display:flex;flex-direction:column;gap:8px}
+.linkrow{display:flex;align-items:center;gap:8px;text-align:left;font:inherit;color:var(--fg);cursor:pointer;width:100%}
+.pick{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;cursor:pointer}
+.pick input{margin-top:3px;accent-color:var(--accent)}
+.err{border:1px solid color-mix(in srgb,var(--status-error) 30%,transparent);background:color-mix(in srgb,var(--status-error) 10%,transparent);border-radius:var(--radius-lg);padding:10px 12px;font-size:12px;white-space:pre-wrap}
+.err[hidden]{display:none}
+.tipbubble{position:fixed;left:0;top:0;z-index:60;pointer-events:none;padding:4px 8px;max-width:20rem;font-size:11px;line-height:1.375;color:var(--fg-2);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow)}
+.empty{padding:16px}
+@media (max-width:760px){#count{display:none} /* WHY: at phone width it drew over the title */ .dcols{grid-template-columns:1fr}.field{width:100%}.bulk{left:8px;right:8px;transform:none;flex-wrap:wrap}}
+</style></head><body>
+<div class="screen">
+<header class="band"><div class="bl"></div><div class="btitle">YouCoded · Work</div>
+<div class="br"><span class="muted t-2xs" id="count" data-tip="How many work items there are."></span><div class="bandpill" data-tip="The colours of this page."><select id="theme" aria-label="Theme" data-tip="The colours of this page."><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="creme">Creme</option></select></div></div></header>
+<div class="screen-body"><div class="pane">
+<div class="panehead hline"><div class="toolbar">
+  <input class="field" id="q" type="search" placeholder="Search work items" aria-label="Search work items" data-tip="Finds items whose name, tags or text contain these words.">
+  <select class="field" id="tag" aria-label="Tag" data-tip="Shows only items with this tag."><option value="">All tags</option></select>
+  <span class="t-2xs muted" data-tip="Tick items to combine them, move them to a stage, or delete them.">Tick items to edit several at once.</span>
+</div></div>
+<div class="panescroll fadescroll" id="scroller"><main class="cc-main" id="main"></main></div>
+</div></div></div>
+<div class="bulk layer" id="bulk" hidden role="toolbar" aria-label="Edit ticked items">
+  <span class="n" id="bn"></span>
+  <span class="mwrap"><button class="btn sm" id="bstage" aria-haspopup="menu" data-tip="Moves every ticked item to one stage.">Move to stage…</button><span class="menu layer" id="stagemenu" role="menu" hidden></span></span>
+  <button class="btn sm" id="bcombine" data-tip="Pulls the ticked items into one, so one branch and one chat can do them all. Nothing is lost: their text, links and tags are kept.">Combine into one…</button>
+  <button class="btn sm" id="bdelete" data-tip="Removes the ticked items. Asks first.">Delete…</button>
+  <button class="closebtn" id="bclear" aria-label="Clear the ticks" data-tip="Clears the ticks."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="dwrap" id="dwrap" hidden><div class="dialog layer" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dti">
+  <div class="dhead hline"><button class="closebtn" id="dback" aria-label="Back" data-tip="Back to the item you looked at before this one." hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="dtitle" id="dti"></h2><button class="closebtn" id="dclose" aria-label="Close" data-tip="Closes this."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="dbody" id="dbody"></div><div class="dfoot" id="dfoot"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let DATA = { cards: [], stages: [] }, SEL = new Set(), HIST = [], CUR = null;
+const W = id => (DATA.stages.find(s => s.id === id) || {}).word || id;
+// WHY this order and folding (Destin's Today, round 3): your stage and the chats' stage open; planning (108 items
+// after the roadmap move), exploring and merged fold away until opened
+const ORDER = [['polish', true], ['build', true], ['planning', false], ['explore', false], ['merged', false]];
+const STAGE_HINT = { polish: 'Built; you review it, ask for polish, and merge it.', build: 'Chats are building these.', planning: 'Agreed; ready to plan the build. Planning items never overlap.',
+  explore: 'Not settled yet. These may overlap or contradict each other.', merged: 'In master; ships with the next release.' };
+const byId = id => DATA.cards.find(c => c.id === id);
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 4000); }
+const pri = c => c.priority ? `<span class="spill ${c.priority === 'P1' ? 'danger' : ''}" data-tip="${c.priority === 'P1' ? 'P1: urgent — a release blocker or a top-priority feature.' : c.priority === 'P2' ? 'P2: major, but not the next thing.' : 'P3: at leisure.'}">${esc(c.priority)}</span>` : '';
+const chips = c => c.tags.map(t => `<span class="badge" data-tip="A tag. Pick it in the tag box to see only these.">${esc(t)}</span>`).join('')
+  + (c.release ? `<span class="badge" data-tip="The release this is aimed at.">${esc(c.release)}</span>` : '')
+  + (c.needs.length ? `<span class="badge" data-tip="Must exist before this one can be built.">needs ${c.needs.map(n => '#' + n).join(', ')}</span>` : '')
+  + (c.related.length ? `<span class="badge" data-tip="Overlaps these exploration items.">overlaps ${c.related.map(n => '#' + n).join(', ')}</span>` : '');
+function row(c) {
+  return `<div class="row crow${SEL.has(c.id) ? ' sel' : ''}" data-id="${c.id}"><input type="checkbox" ${SEL.has(c.id) ? 'checked' : ''} aria-label="Tick #${c.id}" data-tip="Tick to edit several items at once.">
+    <span class="cid">#${c.id}</span><div class="cmain"><div class="ctl"><span class="t-sm fw">${esc(c.title)}</span>${pri(c)}</div><div class="cchips">${chips(c)}</div></div></div>`;
+}
+function visible() {
+  const q = $('#q').value.trim().toLowerCase(), tag = $('#tag').value;
+  return DATA.cards.filter(c => (!tag || c.tags.includes(tag)) && (!q || (c.title + ' ' + c.tags.join(' ') + ' ' + c.body + ' #' + c.id).toLowerCase().includes(q)));
+}
+function render() {
+  const vis = visible();
+  $('#count').textContent = `${DATA.cards.length} items`;
+  const open = new Set($$('details.sec').filter(d => d.open).map(d => d.dataset.stage));
+  let h = '';
+  for (const [st, shown] of ORDER) {
+    const list = vis.filter(c => c.stage === st).sort((a, b) => (a.priority || 'P9').localeCompare(b.priority || 'P9') || a.id - b.id);
+    if (!list.length) continue;
+    const all = `<button class="selall" data-selall="${st}" data-tip="Ticks every item in this group.">tick all</button>`;
+    if (shown) h += `<section class="sec"><div class="sechead"><div class="gtext"><h2 class="gh"><span data-tip="${esc(STAGE_HINT[st])}">${esc(W(st))}</span><span class="cnt" data-tip="How many items.">${list.length}</span>${all}</h2><p class="gdesc">${esc(STAGE_HINT[st])}</p></div></div>${list.map(row).join('')}</section>`;
+    else h += `<details class="fold sec" data-stage="${st}"${open.has(st) || $('#q').value ? ' open' : ''}><summary class="foldrow big" data-tip="Shows or hides this group."><span class="fbody"><span class="gh">${esc(W(st))} <span class="cnt" data-tip="How many items.">${list.length}</span></span><span class="t-xs muted">${esc(STAGE_HINT[st])}</span></span><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span></summary><div class="foldbody">${all}${list.map(row).join('')}</div></details>`;
+  }
+  $('#main').innerHTML = h || '<div class="empty muted">Nothing matches.</div>';
+  bulkbar();
+}
+function bulkbar() {
+  SEL = new Set([...SEL].filter(id => byId(id)));
+  $('#bulk').hidden = !SEL.size;
+  $('#bn').textContent = `${SEL.size} ticked`;
+  $('#bcombine').disabled = SEL.size < 2;
+  $('#bcombine').dataset.tip = SEL.size < 2 ? 'Tick two or more items to combine them.' : 'Pulls the ticked items into one, so one branch and one chat can do them all. Nothing is lost: their text, links and tags are kept.';
+}
+async function load() { DATA = await (await fetch('/api/cards')).json(); fillTags(); render(); }
+function fillTags() {
+  const cur = $('#tag').value, tags = [...new Set(DATA.cards.flatMap(c => c.tags))].sort();
+  $('#tag').innerHTML = '<option value="">All tags</option>' + tags.map(t => `<option${t === cur ? ' selected' : ''}>${esc(t)}</option>`).join('');
+}
+async function post(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json(); if (!r.ok) throw new Error(j.error || 'Something went wrong.');
+  DATA = j; fillTags(); return j;
+}
+// ---- popups
+function openDlg(title, body, foot, narrow) { $('#dti').textContent = title; $('#dbody').innerHTML = body; $('#dfoot').innerHTML = foot || ''; $('#dlg').classList.toggle('narrow', !!narrow); $('#scrim').hidden = $('#dwrap').hidden = false; $('#dback').hidden = !HIST.length; }
+function closeDlg() { $('#scrim').hidden = $('#dwrap').hidden = true; HIST = []; CUR = null; }
+const linkrow = id => { const c = byId(id); return c ? `<button class="row linkrow" data-open="${id}" data-tip="Opens this item."><span class="cid">#${id}</span><span class="t-xs fw" style="flex:1">${esc(c.title)}</span><span class="spill stage" data-tip="Its stage.">${esc(W(c.stage))}</span></button>` : ''; };
+function detail(id, back) {
+  const c = byId(id); if (!c) return;
+  if (!back && CUR && CUR !== id && !$('#dwrap').hidden) HIST.push(CUR); CUR = id;
+  const group = (label, tip, ids) => ids.length ? `<section><div class="eyebrow" data-tip="${esc(tip)}">${label}</div><div class="card dlist">${ids.map(linkrow).join('')}</div></section>` : '';
+  const right = group('Needs first', 'Must exist before this one can be built.', c.needs) + group('Needed by', 'Cannot be built until this one exists.', c.neededBy) + group('Overlaps', 'Exploration items that cover some of the same ground.', c.related);
+  openDlg(`Work item #${c.id}`, `<div class="card dtop"><div class="ctl"><span class="t-base fw">${esc(c.title)}</span><span class="spill stage" data-tip="${esc(STAGE_HINT[c.stage])}">${esc(W(c.stage))}</span>${pri(c)}</div><div class="cchips">${chips(c)}</div>${c.finish ? `<p class="t-xs"><b>Finish line:</b> ${esc(c.finish)}</p>` : ''}</div>
+    <div class="${right ? 'dcols' : ''}"><section><div class="eyebrow" data-tip="Everything written on this item.">Details</div><div class="card"><p class="dtext">${esc(c.body.replace(/\*\*/g, ''))}</p></div></section>${right ? `<div class="dlist">${right}</div>` : ''}</div>
+    <p class="t-2xs muted">Branch name when work starts: ${esc(c.branch)} · file ${esc(c.file)}</p>`,
+    `<button class="btn sm" data-tickone="${c.id}" data-tip="Ticks this item, so you can combine it with others or move it.">${SEL.has(c.id) ? 'Untick' : 'Tick'} this item</button>`);
+}
+function stageMenu() {
+  $('#stagemenu').innerHTML = DATA.stages.filter(s => s.id !== 'merged').map(s => `<button class="mitem" role="menuitem" data-stage="${s.id}" data-tip="${esc(STAGE_HINT[s.id])}"><span>${esc(s.word)}</span><span class="mhint">${esc(STAGE_HINT[s.id])}</span></button>`).join('')
+    + `<span class="mitem" style="cursor:default"><span class="mhint">Merged is set when its branch merges, not here.</span></span>`;
+}
+function combineDlg() {
+  const items = [...SEL].map(byId).sort((a, b) => b.stage.localeCompare(a.stage));
+  const first = [...items].sort((a, b) => ['explore','planning','build','polish','merged'].indexOf(b.stage) - ['explore','planning','build','polish','merged'].indexOf(a.stage) || a.id - b.id)[0];
+  openDlg(`Combine ${items.length} items into one`, `<p class="t-xs dim" style="margin:0">One item survives. The others' text, tags and links are folded into it, and they are removed. Anything that pointed at them now points at the one that survives.</p>
+    <section><div class="eyebrow" data-tip="The item that survives keeps its number and branch name.">Which one survives</div><div class="card dlist">${items.map(c => `<label class="row pick"><input type="radio" name="keep" value="${c.id}" ${c.id === first.id ? 'checked' : ''} data-tip="Keep this one."><span class="cid">#${c.id}</span><span class="cmain"><span class="t-xs fw">${esc(c.title)}</span><span class="t-2xs muted">${esc(W(c.stage))}${c.priority ? ' · ' + c.priority : ''}</span></span></label>`).join('')}</div></section>
+    <section><div class="eyebrow" data-tip="Leave empty to keep the survivor's name.">New name (optional)</div><input class="field" id="newtitle" style="width:100%" placeholder="Keep the survivor's name" data-tip="Leave empty to keep the survivor's name."></section>
+    <div class="err" id="cerr" hidden></div>`,
+    `<button class="btn" id="ccancel" data-tip="Closes this without changing anything.">Cancel</button><button class="btn primary" id="cgo" data-tip="Combines them and saves.">Combine ${items.length} items</button>`, true);
+  $('#ccancel').onclick = closeDlg;
+  $('#cgo').onclick = async () => {
+    const keep = Number($('input[name=keep]:checked').value);
+    try { const j = await post('/api/combine', { ids: [...SEL], keep, title: $('#newtitle').value.trim() || undefined }); SEL.clear(); closeDlg(); render(); toast(`Combined into #${j.result.kept}. ${j.saved}`); }
+    catch (e) { $('#cerr').hidden = false; $('#cerr').textContent = e.message; }
+  };
+}
+function deleteDlg() {
+  const items = [...SEL].map(byId);
+  openDlg(`Delete ${items.length} item${items.length > 1 ? 's' : ''}?`, `<p class="t-xs dim" style="margin:0">These are removed, and any links to them from other items are taken off. The change is committed, so it can be undone from history.</p><div class="card dlist">${items.map(c => `<div class="row slim"><span class="cid">#${c.id}</span><span class="t-xs fw">${esc(c.title)}</span></div>`).join('')}</div><div class="err" id="derr" hidden></div>`,
+    `<button class="btn" id="dcancel" data-tip="Closes this without changing anything.">Cancel</button><button class="btn danger" id="dgo" data-tip="Deletes them and saves.">Delete ${items.length}</button>`, true);
+  $('#dcancel').onclick = closeDlg;
+  $('#dgo').onclick = async () => {
+    try { const j = await post('/api/delete', { ids: [...SEL] }); SEL.clear(); closeDlg(); render(); toast(`Deleted ${j.result.length}. ${j.saved}`); }
+    catch (e) { $('#derr').hidden = false; $('#derr').textContent = e.message; }
+  };
+}
+// ---- events
+document.addEventListener('click', async e => {
+  const t = e.target;
+  const cb = t.closest('.crow input[type=checkbox]');
+  if (cb) { const id = +cb.closest('.crow').dataset.id; cb.checked ? SEL.add(id) : SEL.delete(id); cb.closest('.crow').classList.toggle('sel', cb.checked); bulkbar(); return; }
+  const sa = t.closest('[data-selall]'); if (sa) { e.preventDefault(); visible().filter(c => c.stage === sa.dataset.selall).forEach(c => SEL.add(c.id)); render(); return; }
+  const r = t.closest('.crow'); if (r && !t.closest('.dialog')) { detail(+r.dataset.id); return; }
+  const o = t.closest('[data-open]'); if (o) { detail(+o.dataset.open); return; }
+  const one = t.closest('[data-tickone]'); if (one) { const id = +one.dataset.tickone; SEL.has(id) ? SEL.delete(id) : SEL.add(id); render(); detail(id, true); return; }
+  if (t.closest('#bstage')) { stageMenu(); $('#stagemenu').hidden = !$('#stagemenu').hidden; return; }
+  const st = t.closest('[data-stage]');
+  if (st) { $('#stagemenu').hidden = true;
+    try { const j = await post('/api/stage', { ids: [...SEL], stage: st.dataset.stage }); SEL.clear(); render(); toast(`Moved ${j.result.length} to ${W(st.dataset.stage)}. ${j.saved}`); }
+    catch (err) { toast(err.message); } return; }
+  if (!t.closest('.mwrap')) $('#stagemenu').hidden = true;
+  if (t.closest('#bcombine') && SEL.size > 1) { combineDlg(); return; }
+  if (t.closest('#bdelete')) { deleteDlg(); return; }
+  if (t.closest('#bclear')) { SEL.clear(); render(); return; }
+  if (t.closest('#dclose') || t.id === 'scrim' || t.id === 'dwrap') { closeDlg(); return; }
+  if (t.closest('#dback')) { const p = HIST.pop(); if (p) detail(p, true); return; }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#dwrap').hidden) closeDlg(); else $('#stagemenu').hidden = true; } });
+$('#q').addEventListener('input', render); $('#tag').addEventListener('change', render);
+$('#theme').onchange = e => document.documentElement.dataset.theme = e.target.value;
+// hover hints: the app's Tooltip timing (800 ms first, 130 ms for a neighbour)
+const TB = document.createElement('div'); TB.className = 'tipbubble'; TB.hidden = true; document.body.appendChild(TB); let tt, warm = 0;
+document.addEventListener('mouseover', e => { const el = e.target.closest('[data-tip]'); clearTimeout(tt); if (!el) { if (!TB.hidden) warm = Date.now() + 400; TB.hidden = true; return; }
+  tt = setTimeout(() => { TB.textContent = el.dataset.tip; TB.hidden = false; const r = el.getBoundingClientRect(); TB.style.left = Math.min(Math.max(12, r.left), innerWidth - TB.offsetWidth - 12) + 'px';
+    TB.style.top = (r.bottom + 6 + TB.offsetHeight > innerHeight ? r.top - 6 - TB.offsetHeight : r.bottom + 6) + 'px'; }, Date.now() < warm ? 130 : 800); });
+document.addEventListener('mousedown', () => { clearTimeout(tt); TB.hidden = true; });
+load().catch(e => { $('#main').innerHTML = `<div class="err">The work items couldn't be loaded: ${esc(e.message)} <button class="btn sm" onclick="location.reload()" data-tip="Loads the page again.">Try again</button></div>`; });
+</script></body></html>

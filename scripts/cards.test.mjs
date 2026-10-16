@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { parseCard, renderCard, createCard, loadCards, check, neededBy, slug, index, closeCard, SHIPPED } from './cards.mjs';
+import { setStage, deleteCards, combineCards } from './cards.mjs';
 
 function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'cards-')); }
 
@@ -102,4 +103,41 @@ test('close refuses a missing ref, an unknown card and an already-merged card', 
   closeCard(root, 1, 'x');
   assert.throws(() => closeCard(root, 1, 'y'), /already merged/);
   assert.equal(fs.readFileSync(path.join(root, SHIPPED), 'utf8').match(/#1 /g).length, 1);
+});
+
+test('setStage moves several cards and refuses overlapping planning cards, changing nothing', () => {
+  const root = tmp();
+  createCard(root, { title: 'A' }); createCard(root, { title: 'B', related: '1' }); createCard(root, { title: 'C' });
+  setStage(root, [1, 3], 'planning');
+  assert.deepEqual(loadCards(root).map(c => c.stage), ['planning', 'explore', 'planning']);
+  const before = loadCards(root).map(c => c.stage);
+  assert.throws(() => setStage(root, [2], 'planning'), /consolidate/);
+  assert.deepEqual(loadCards(root).map(c => c.stage), before);
+  assert.throws(() => setStage(root, [1], 'merged'), /closes a card/);
+});
+
+test('deleteCards removes cards and the links pointing at them', () => {
+  const root = tmp();
+  createCard(root, { title: 'A' }); createCard(root, { title: 'B', needs: '1' });
+  deleteCards(root, [1]);
+  const cards = loadCards(root);
+  assert.equal(cards.length, 1); assert.deepEqual(cards[0].needs, []);
+  assert.deepEqual(check(cards), []);
+});
+
+test('combineCards keeps one, folds the rest in, and repoints links', () => {
+  const root = tmp();
+  createCard(root, { title: 'Speed tag', tags: 'models', stage: 'planning', priority: 'P2' });
+  createCard(root, { title: 'Cost tag', tags: 'pricing', priority: 'P1' });
+  createCard(root, { title: 'Needs both', needs: '2' });
+  const r = combineCards(root, [1, 2], 1, 'Model row tags');
+  assert.deepEqual(r, { kept: 1, merged: [2], stage: 'planning' });
+  const cards = loadCards(root);
+  assert.equal(cards.length, 2);
+  const a = cards.find(c => c.id === 1);
+  assert.equal(a.title, 'Model row tags'); assert.equal(a.priority, 'P1');
+  assert.deepEqual(a.tags, ['models', 'pricing']);
+  assert.match(a.body, /Merged in #2 "Cost tag"/);
+  assert.deepEqual(cards.find(c => c.id === 3).needs, ['1']);
+  assert.deepEqual(check(cards), []);
 });

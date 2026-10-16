@@ -1,0 +1,219 @@
+{
+ "title": "The live management page: work items and bulk edit (v1)",
+ "key": "manage-page-v1-review",
+ "out": "manage-page-v1.review.html",
+ "images": "images/manage-page-v1.review",
+ "runs": {
+  "after": "runs/after"
+ },
+ "labels": {
+  "after": "Now"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "list": [
+   "manage",
+   "list",
+   "1440x900+0+0"
+  ],
+  "detail": [
+   "manage",
+   "detail",
+   "1440x900+0+0"
+  ],
+  "ticked": [
+   "manage",
+   "ticked",
+   "1440x900+0+0"
+  ],
+  "stagemenu": [
+   "manage",
+   "stagemenu",
+   "1440x900+0+0"
+  ],
+  "combine": [
+   "manage",
+   "combine",
+   "1440x900+0+0"
+  ],
+  "search": [
+   "manage",
+   "search",
+   "1440x900+0+0"
+  ],
+  "phone": [
+   "manage",
+   "phone",
+   "390x844+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-1",
+   "path": "The live page, as it opens",
+   "crop": "list",
+   "headline": "The real page: all 143 work items, read from the files, in the approved row look.",
+   "changed": "Agentic buildout is open at the top; Planning (108), Preliminary exploration (28) and Merged are folded below. Each row: tick box, number, name, priority (P1 tinted red), then its tags, target release and what it needs.",
+   "notice": "It is a small local page started by one command, like the review decks; it reads cards/ every time it loads.",
+   "risk": "Human polish & review is missing because no item is in that stage yet: the move put everything into Planning, Exploring or Agentic buildout.",
+   "highlight": {
+    "box": [
+     12,
+     10,
+     77,
+     65
+    ]
+   }
+  },
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-2",
+   "path": "Live page → click a row",
+   "crop": "detail",
+   "headline": "Click an item: the same centred popup, with everything on it.",
+   "changed": "Name, stage, priority and tags on top; its full text; what it needs, what needs it and what it overlaps, each clickable; its branch name.",
+   "notice": "\"Tick this item\" in the popup adds it to the ticked set.",
+   "risk": "The text is the old roadmap's wording, so it reads as raw notes for now.",
+   "highlight": {
+    "box": [
+     20,
+     14,
+     60,
+     72
+    ]
+   }
+  },
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-3",
+   "path": "Live page → tick three items",
+   "crop": "ticked",
+   "headline": "Tick items and a bar appears with the three bulk actions.",
+   "changed": "\"3 ticked · Move to stage… · Combine into one… · Delete… · ✕\". Each group heading also has \"tick all\". Ticks survive searching and switching tags.",
+   "notice": "Combine needs two or more ticked.",
+   "highlight": {
+    "box": [
+     33,
+     92,
+     34,
+     7
+    ]
+   }
+  },
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-4",
+   "path": "Live page → Move to stage…",
+   "crop": "stagemenu",
+   "headline": "Move to stage: pick one of the four, each with what it means.",
+   "changed": "Merged is not offered: an item becomes Merged when its branch merges. If a move would break a rule (two overlapping Planning items), nothing changes and the page says which rule.",
+   "notice": "Every change is committed and pushed straight away; the toast says \"Saved and backed up.\"",
+   "highlight": {
+    "box": [
+     39,
+     57,
+     17,
+     37
+    ]
+   }
+  },
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-5",
+   "path": "Live page → Combine into one…",
+   "crop": "combine",
+   "headline": "Combine: pick which one survives, optionally rename it.",
+   "changed": "The survivor keeps its number and branch name. The others' text is folded in under \"Merged in #n\", their tags and links are kept, the most advanced stage and most urgent priority win, and anything pointing at them now points at the survivor.",
+   "notice": "It picks the most advanced one as the survivor by default.",
+   "highlight": {
+    "box": [
+     32,
+     16,
+     36,
+     68
+    ]
+   }
+  },
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-6",
+   "path": "Live page → search \"sync\"",
+   "crop": "search",
+   "headline": "Search and tag filter narrow every group at once.",
+   "changed": "Typing searches names, tags and text; a search opens the folded groups so matches are visible.",
+   "notice": "The tag box lists every tag in use.",
+   "highlight": {
+    "box": [
+     12,
+     5,
+     50,
+     6
+    ]
+   }
+  },
+  {
+   "surface": "Management page (live)",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "id": "A-7",
+   "path": "Live page at phone width",
+   "crop": "phone",
+   "headline": "At phone width the rows stack and the bar wraps under them.",
+   "changed": "Same page, one column; the bulk bar spans the width.",
+   "notice": "The item count hides at this width so it doesn't cover the title.",
+   "risk": "It runs on your computer, so a phone can only reach it the way it reaches review decks.",
+   "highlight": {
+    "box": [
+     2,
+     88,
+     96,
+     11
+    ]
+   }
+  }
+ ]
+}

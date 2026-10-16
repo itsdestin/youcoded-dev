@@ -194,6 +194,104 @@ export function closeCard(root, id, ref, today = new Date().toISOString().slice(
   return { file: card.file, line };
 }
 
+// ---------- bulk edits (the management page's tick-box actions) ----------
+// WHY (Destin, 2026-10-15): "i might see 5 kinda related items, and decided i want to complete them all in the
+// same branch/session … i should have a mechanism to kinda pull them into the same card quickly without
+// talking to claude". Each action edits the files, then runs check() on the whole set; if the result would
+// break a rule (two overlapping Planning cards, a "needs" naming nothing) every file is put back as it was
+// and the error says which rule. All or nothing.
+
+function snapshot(root) {
+  const dir = path.join(root, CARDS_DIR);
+  const m = new Map();
+  if (fs.existsSync(dir)) for (const f of fs.readdirSync(dir)) m.set(f, fs.readFileSync(path.join(dir, f), 'utf8'));
+  return m;
+}
+function restore(root, snap) {
+  const dir = path.join(root, CARDS_DIR);
+  for (const f of fs.readdirSync(dir)) if (!snap.has(f)) fs.rmSync(path.join(dir, f));
+  for (const [f, t] of snap) fs.writeFileSync(path.join(dir, f), t);
+}
+function guarded(root, fn) {
+  const snap = snapshot(root);
+  try {
+    const out = fn();
+    const errs = check(loadCards(root));
+    if (errs.length) throw new Error(errs.join('\n'));
+    return out;
+  } catch (e) { restore(root, snap); throw e; }
+}
+function ids(list) { return [...new Set((list || []).map(x => Number(String(x).replace(/^#/, ''))))]; }
+function setLine(text, key, value) {
+  const re = new RegExp(`^${key}:.*$`, 'm');
+  if (value === '' || value == null) return text.replace(new RegExp(`^${key}:.*\\n`, 'm'), '');
+  return re.test(text) ? text.replace(re, `${key}: ${value}`) : text.replace(/\n---\n/, `\n${key}: ${value}\n---\n`);
+}
+function byId(root) { return new Map(loadCards(root).map(c => [c.id, c])); }
+
+/** Move cards to one stage. Merged cards are closed through closeCard, not here. */
+export function setStage(root, idList, stage) {
+  if (!STAGES.includes(stage) || stage === 'merged') throw new Error(`stage must be one of ${STAGES.filter(s => s !== 'merged').join(', ')} (merging closes a card with its commit)`);
+  return guarded(root, () => {
+    const m = byId(root);
+    for (const id of ids(idList)) {
+      const c = m.get(id); if (!c) throw new Error(`no card has id ${id}`);
+      const f = path.join(root, c.file);
+      fs.writeFileSync(f, setLine(fs.readFileSync(f, 'utf8'), 'stage', stage));
+    }
+    return ids(idList);
+  });
+}
+
+/** Remove cards, and every other card's needs/related pointing at them. */
+export function deleteCards(root, idList) {
+  return guarded(root, () => {
+    const gone = new Set(ids(idList)); const m = byId(root);
+    for (const id of gone) { const c = m.get(id); if (!c) throw new Error(`no card has id ${id}`); fs.rmSync(path.join(root, c.file)); }
+    for (const c of loadCards(root)) {
+      const f = path.join(root, c.file); let t = fs.readFileSync(f, 'utf8');
+      for (const k of ['needs', 'related']) if (c[k].some(x => gone.has(Number(x)))) t = setLine(t, k, c[k].filter(x => !gone.has(Number(x))).join(', '));
+      fs.writeFileSync(f, t);
+    }
+    return [...gone];
+  });
+}
+
+/**
+ * Pull several cards into one. `keep` survives (optionally renamed); the others' text is appended under
+ * "Merged in #n", their tags / needs / related are unioned, the most advanced stage and the most urgent
+ * priority win, and every other card that pointed at a merged-away id now points at `keep`.
+ */
+export function combineCards(root, idList, keep, title) {
+  return guarded(root, () => {
+    const all = ids(idList); const k = Number(String(keep ?? all[0]).replace(/^#/, ''));
+    if (!all.includes(k)) all.unshift(k);
+    if (all.length < 2) throw new Error('combine needs at least two cards');
+    const m = byId(root); const into = m.get(k); if (!into) throw new Error(`no card has id ${k}`);
+    const others = all.filter(x => x !== k).map(x => { const c = m.get(x); if (!c) throw new Error(`no card has id ${x}`); return c; });
+    const group = [into, ...others]; const gone = new Set(others.map(c => c.id));
+    const union = key => [...new Set(group.flatMap(c => c[key]))].filter(x => !gone.has(Number(x)) && Number(x) !== k);
+    const stage = group.map(c => c.stage).sort((a, b) => STAGES.indexOf(b) - STAGES.indexOf(a))[0];
+    const pri = group.map(c => c.priority).filter(Boolean).sort()[0];
+    const f = path.join(root, into.file); let t = fs.readFileSync(f, 'utf8');
+    if (title && title !== true) t = setLine(t, 'title', String(title).trim());
+    t = setLine(t, 'stage', stage); t = setLine(t, 'priority', pri ?? '');
+    t = setLine(t, 'tags', [...new Set(group.flatMap(c => c.tags))].join(', '));
+    t = setLine(t, 'needs', union('needs').join(', ')); t = setLine(t, 'related', union('related').join(', '));
+    for (const c of others) t = t.replace(/\n*$/, '') + `\n\nMerged in #${c.id} "${c.title}"\n${c.body}\n`;
+    fs.writeFileSync(f, t);
+    for (const c of others) fs.rmSync(path.join(root, c.file));
+    for (const c of loadCards(root)) {
+      if (c.id === k) continue;
+      const cf = path.join(root, c.file); let ct = fs.readFileSync(cf, 'utf8');
+      for (const key of ['needs', 'related']) if (c[key].some(x => gone.has(Number(x))))
+        ct = setLine(ct, key, [...new Set(c[key].map(x => gone.has(Number(x)) ? String(k) : x))].filter(x => Number(x) !== c.id).join(', '));
+      fs.writeFileSync(cf, ct);
+    }
+    return { kept: k, merged: others.map(c => c.id), stage };
+  });
+}
+
 function args(argv) {
   const o = { _: [] };
   for (let i = 0; i < argv.length; i++) {
