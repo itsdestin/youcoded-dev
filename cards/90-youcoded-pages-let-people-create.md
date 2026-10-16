@@ -12,6 +12,7 @@ created: 2026-10-15
 summary: Pages work today; next comes letting pages run assistant tasks, use files and be shared through the Marketplace.
 area: Pages
 side: both
+work: session/page-start-session, session/ha-pages-connection
 ---
 Progress
 Done: nothing recorded.

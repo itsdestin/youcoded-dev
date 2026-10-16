@@ -1,7 +1,7 @@
 ---
 id: 78
 title: Launch paperwork: company and trademark
-stage: build
+stage: planning
 priority: P1
 tags: operations
 release: v1.3.1

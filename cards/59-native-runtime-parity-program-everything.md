@@ -1,7 +1,7 @@
 ---
 id: 59
 title: Make YouCoded's own engine match Claude Code
-stage: build
+stage: planning
 priority: P1
 tags: native-harness, sessions, release-blocker
 release: v1.3.1

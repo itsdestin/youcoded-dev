@@ -143,6 +143,20 @@ export function liveFacts(root, { now = Date.now(), useGh = true } = {}) {
       prs.set(p.headRefName, arr);
     }
   }
+  // WHY merged pull requests too (Destin, 2026-10-16: "none of the agentic buildout rows have repo tags?"):
+  // a branch is deleted once it merges, so finished phases of work (the Android rebuild's, merged Oct 15)
+  // vanished from the page. Each merged pull request stands in for its branch: a chat that finished.
+  if (useGh) for (const repo of ['youcoded-dev', 'youcoded']) {
+    const out = sh('gh', ['pr', 'list', '-R', `itsdestin/${repo}`, '--state', 'merged', '--limit', '200', '--json', 'number,headRefName,mergedAt,title'], ws);
+    let list = []; try { list = JSON.parse(out || '[]'); } catch { /* offline: open branches only */ }
+    for (const p of list) {
+      const prev = branches.get(p.headRefName);
+      if (prev && !prev.merged) { prev.repos = [...new Set([...(prev.repos || []), repo])]; continue; }
+      const repos_ = [...new Set([...(prev?.repos || []), repo])];
+      const merged = [...(prev?.mergedAs || []), `${repo === 'youcoded' ? '' : 'workspace '}#${p.number}`];
+      branches.set(p.headRefName, { date: prev && prev.date > p.mergedAt ? prev.date : p.mergedAt, subject: prev?.subject || p.title, repos: repos_, merged: true, mergedAs: merged });
+    }
+  }
   liveCache = { at: now, root, facts: { branches, unsaved, prs, worktrees, now } };
   return liveCache.facts;
 }
@@ -152,9 +166,9 @@ export function factsFor(card, f) {
   const chats = []; const pulls = []; let unsaved = false; let working = false;
   for (const b of card.work || []) {
     const br = f.branches.get(b);
-    const live = br ? f.now - Date.parse(br.date) < 24 * 3600_000 : false;
+    const live = br && !br.merged ? f.now - Date.parse(br.date) < 24 * 3600_000 : false;
     working ||= live;
-    if (br) chats.push({ date: br.date.slice(0, 10), name: b, result: br.subject || '', live });
+    if (br) chats.push({ date: br.date.slice(0, 10), name: b, result: (br.merged ? `Merged (${br.mergedAs.join(', ')}): ` : '') + (br.subject || ''), live, merged: !!br.merged });
     if (f.unsaved.has(b)) unsaved = true;
     for (const p of f.prs.get(b) || []) pulls.push(p);
   }
@@ -163,7 +177,7 @@ export function factsFor(card, f) {
   // the youcoded status bar"): every branch that is this item's work, newest first, with its folder when a copy
   // is open on this computer
   const branchList = (card.work || []).filter(b => f.branches.has(b) || (f.worktrees || new Map()).has(b))
-    .map(b => ({ name: b, repos: f.branches.get(b)?.repos || [], date: f.branches.get(b)?.date || '', worktree: (f.worktrees || new Map()).get(b) || '' }))
+    .map(b => ({ name: b, repos: f.branches.get(b)?.repos || [], date: f.branches.get(b)?.date || '', merged: !!f.branches.get(b)?.merged, worktree: (f.worktrees || new Map()).get(b) || '' }))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
   return {
     branches: branchList,

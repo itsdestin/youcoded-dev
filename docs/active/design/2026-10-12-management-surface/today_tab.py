@@ -206,7 +206,7 @@ def chips(c):
     # status bar's icon and teal (#0D9488), with the colour in the tint, outline and icon only (guide: never in words)
     if c.get('branches'):
         bs = c['branches']
-        tip = 'Its branch' + ('es' if len(bs) > 1 else '') + ': ' + '; '.join(git_label(b) + f' (branch {b["name"]})' + (f', open on this computer in {b["worktree"]}' if b.get('worktree') else '') for b in bs)
+        tip = 'Its branch' + ('es' if len(bs) > 1 else '') + ': ' + '; '.join(git_label(b) + f' (branch {b["name"]}' + (', merged' if b.get('merged') else '') + ')' + (f', open on this computer in {b["worktree"]}' if b.get('worktree') else '') for b in bs)
         more = f' <span class="bmore">+{len(bs) - 1}</span>' if len(bs) > 1 else ''
         out.append(f'<span class="badge gitchip" data-tip="{E(tip)}">{GIT_ICON}{E(git_label(bs[0]))}{more}</span>')
     out += [f'<span class="badge" data-tip="The part of the app it lands in.">{E(a)}</span>' for a in c['area']]

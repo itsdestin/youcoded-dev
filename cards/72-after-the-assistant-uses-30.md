@@ -1,7 +1,7 @@
 ---
 id: 72
 title: Let you allow more helpers after the limit of 30
-stage: build
+stage: planning
 priority: P3
 tags: native-harness, specialists, tool-cards, desktop
 report: docs/active/specs/2026-09-15-specialist-budget-permission-design.md

@@ -1,7 +1,7 @@
 ---
 id: 92
 title: Offer a plain terminal when starting a session
-stage: build
+stage: planning
 priority: P3
 tags: other-features, misc
 report: docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json
