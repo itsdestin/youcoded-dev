@@ -1,0 +1,181 @@
+{
+  "_comment": [
+    "Review deck for the page start-session feature (app commit b83b8af3e).",
+    "Pictures are real screenshots of an isolated dev window (throwaway HOME, own profile), driven with explore + real mouse clicks, 2026-10-14.",
+    "Each Approve slide shows two moments of the flow as its before/after pair (labels name them). Shot in Midnight only.",
+    "The last slide is review finding F4 (page-start-session.code-review.md) as a Question."
+  ],
+  "title": "Pages can open a new conversation — keep it?",
+  "key": "page-start-session-review",
+  "out": "page-start-session.review.html",
+  "stage": "review",
+  "images": "page-start-session.review-images",
+  "runs": {
+    "before": "page-start-session.review-runs/before",
+    "after": "page-start-session.review-runs/after"
+  },
+  "crops": {
+    "allow": [
+      "flow",
+      "allow",
+      "900x574+330+0"
+    ],
+    "open": [
+      "flow",
+      "open",
+      "920x560+520+0"
+    ],
+    "start": [
+      "flow",
+      "start",
+      "900x556+0+300"
+    ],
+    "reopen": [
+      "flow",
+      "reopen",
+      "900x574+330+0"
+    ]
+  },
+  "themes": [
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Pages",
+      "path": "Pages, then Frontier Lab, the first time you open it",
+      "crop": "allow",
+      "highlight": {
+        "box": [
+          28,
+          54.4,
+          54,
+          45
+        ]
+      },
+      "labels": {
+        "before": "First open: the card",
+        "after": "After Allow and open"
+      },
+      "headline": "The first time, Frontier Lab asks once whether it may open a new-conversation window, then loads.",
+      "changed": "The usual approval card gains one line: the page may open a new-conversation window with a message it writes. Allow and open loads the page.",
+      "notice": "You answer this card once per page. Not now leaves the page closed.",
+      "risk": "The card says you'll see the message before anything is sent. You do, but only in the chat box after you press Create Session (see the last slide)."
+    },
+    {
+      "id": "A-2",
+      "surface": "Frontier Lab",
+      "path": "Frontier Lab, the Update now button at the top right",
+      "crop": "open",
+      "highlight": {
+        "box": [
+          89,
+          6.3,
+          10,
+          5.5
+        ]
+      },
+      "labels": {
+        "before": "Click Update now",
+        "after": "The window that opens"
+      },
+      "headline": "Update now opens the normal new-conversation window, with the Frontier project already picked.",
+      "changed": "Before this, Update now showed a box with the message to copy and paste. Now it opens the same window as New Session, titled Start a conversation, From Frontier Lab.",
+      "notice": "The project is already Frontier. You still choose the model and the permission switch, and nothing has been sent.",
+      "risk": "The window does not show the message itself. You first see it in the chat box after Create Session."
+    },
+    {
+      "id": "A-3",
+      "surface": "Chat",
+      "path": "The new-conversation window, then Create Session",
+      "crop": "start",
+      "highlight": {
+        "box": [
+          0.8,
+          88.5,
+          99,
+          6.3
+        ]
+      },
+      "labels": {
+        "before": "Press Create Session",
+        "after": "The chat it opens"
+      },
+      "headline": "Create Session opens the chat with the weekly-update request waiting in the message box, not sent.",
+      "changed": "The message box is filled with \"Run the Frontier Lab weekly update: follow .claude/skills/weekly-update/SKILL.md.\" Nothing goes until you press Enter.",
+      "notice": "You can read it, edit it or delete it first. Pressing Enter starts the real update.",
+      "risk": "In this test the box stayed greyed out, because the test window was not signed in to Claude. In your app it unlocks once the conversation is ready."
+    },
+    {
+      "id": "A-4",
+      "surface": "Pages",
+      "path": "Frontier Lab, opened again after its page and data were rebuilt",
+      "crop": "reopen",
+      "highlight": {
+        "box": [
+          28,
+          54.4,
+          54,
+          45
+        ]
+      },
+      "labels": {
+        "before": "First open: the card",
+        "after": "After a rebuild: straight in"
+      },
+      "headline": "Rebuilding the page or its data later never brings the card or a 'code changed' note back.",
+      "changed": "This permission is not tied to the page's code. A copy of the page was edited (page and data both), then opened again.",
+      "notice": "The weekly update can rewrite Frontier Lab every week and it still opens straight away.",
+      "risk": "A later rebuild could change the message the button writes without asking you again. You still see it in the chat box before you press Enter."
+    },
+    {
+      "id": "Q-F4",
+      "words": true,
+      "surface": "The new-conversation window",
+      "path": "Any page button that starts a conversation, such as Update now",
+      "headline": "Should the window show the page's message before you press Create Session?",
+      "today": "The window shows the project, model and permission switch. The message only appears in the chat box after Create Session, with the cursor at its end.",
+      "problem": "You choose the project and permissions before reading what you are about to run. A long message shows only its last lines, so its start is scrolled out of sight. Frontier Lab's message is one short line, so this matters for longer messages.",
+      "proposal": "Pick how a page's message should be shown before you send it.",
+      "options": [
+        {
+          "id": "preview",
+          "label": "Preview in window",
+          "recommended": true,
+          "pros": [
+            "You read the whole message before you choose the project or press Create Session",
+            "Matches the card's promise that you see the message first",
+            "A long message scrolls inside the window, from its first line"
+          ],
+          "cons": [
+            "The window gets taller",
+            "You see the message twice: once in the window, once in the chat box"
+          ]
+        },
+        {
+          "id": "caret-start",
+          "label": "Cursor at start",
+          "pros": [
+            "Smallest change: the window looks the same",
+            "A long message in the chat box opens on its first line"
+          ],
+          "cons": [
+            "You still pick the project and permissions before seeing the message",
+            "Typing goes in at the start, not after the message as in a normal chat"
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No more work, and nothing is ever sent before you press Enter"
+          ],
+          "cons": [
+            "The card's wording promises more than the window shows",
+            "Long messages open scrolled to their end"
+          ]
+        }
+      ]
+    }
+  ]
+}

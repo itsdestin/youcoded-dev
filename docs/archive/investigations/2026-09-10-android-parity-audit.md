@@ -1,9 +1,11 @@
 ---
 date: 2026-09-10
-status: active
+status: closed
 type: investigation
 topic: Android parity audit — everything the phone app lacks, breaks or does differently versus desktop and the browser, and what a premium mobile app with ChatGPT and OpenRouter takes
 ---
+> **Closed 2026-10-15:** the Kotlin code this describes was deleted by the Android clean rebuild (the phone runs the desktop backend); see `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`.
+
 
 # Android parity audit (2026-09-10)
 
@@ -25,7 +27,7 @@ The findings below are the audit as written that morning. Since then:
 - **Still open**: everything else.
 
 **Update 2026-09-24 — the step list moved.** §7's plan is replaced by phases A0–A6 in
-`docs/active/plans/2026-09-24-android-rebuild-plan.md` (7a → A2, and it no longer copies the
+`docs/archive/plans/2026-09-24-android-rebuild-plan.md` (7a → A2, and it no longer copies the
 remote dispatcher because the phone runs the shared door; 7b/7c → A2 plus the remote plan's
 R4 capabilities object; 7e → A5; Play → A1 and A6). That plan also corrects §7's size: the
 Kotlin copying desktop logic is ~9,500–11,000 lines, not ~3,150. This report stays the record
@@ -472,7 +474,7 @@ dev-workspace).
 3. Resuming a past Claude Code conversation starts a fresh session; hyphenated project names
    can open the wrong folder (unchanged since April).
    `resume-browser` `confirmed` `checked 2026-09-01` `v1.3.1` →
-   docs/active/investigations/2026-09-01-android-resume-unreachable.md
+   docs/archive/investigations/2026-09-01-android-resume-unreachable.md
 4. Android still carries the Drive/GitHub backup-and-restore backend desktop demolished in July.
    `settings/sync` `needs-verify` `checked 2026-09-01` `v1.3.1`
    Restore half deleted 2026-09-10 (deck Q-5, youcoded#468); the backup/push
@@ -480,15 +482,15 @@ dev-workspace).
 5. Possible crash if a screen asks for preferences, defaults, theme or sync status before
    startup finishes (18 spots).
    `needs-verify` `checked 2026-09-01` `needs-repro` →
-   docs/active/investigations/2026-09-01-android-session-service-bootstrap-npe-window.md
+   docs/archive/investigations/2026-09-01-android-session-service-bootstrap-npe-window.md
 6. May attach a conversation to the wrong Claude Code session after a subagent or hook fires
    (desktop fixed in PR #257).
    `chat` `confirmed` `checked 2026-09-01` `needs-repro` →
-   docs/active/investigations/2026-09-01-android-event-bridge-session-map-ungated.md
+   docs/archive/investigations/2026-09-01-android-event-bridge-session-map-ungated.md
 7. Dead "layout insets" reading of the chat chrome; decided 2026-09-02: delete. **Done
    2026-09-10 (youcoded#468); investigation archived.**
    `chat` `confirmed` `checked 2026-09-02` →
-   docs/active/investigations/2026-09-01-android-layout-insets-flow-uncollected.md
+   docs/archive/investigations/2026-09-01-android-layout-insets-flow-uncollected.md
 8. The 2026-07-20 soft-keyboard fix was only checked in Chrome over remote, never in the
    packaged app (Destin 2026-09-02: probably resolved, not certain).
    `input-bar` `needs-verify` `checked 2026-09-02`
@@ -503,7 +505,7 @@ dev-workspace).
 12. Skill settings (favourites, quick chips, overrides) revert every launch after the first;
     the first save wipes what was on disk.
     `confirmed` `checked 2026-09-01` `v1.3.1` →
-    docs/active/investigations/2026-09-01-android-skill-config-never-loaded.md
+    docs/archive/investigations/2026-09-01-android-skill-config-never-loaded.md
 13. What "Online" means on a phone. Destin decided 2026-09-02: Online means the app is in
     front; build that.
     `needs-verify` `checked 2026-09-02`
@@ -531,15 +533,15 @@ dev-workspace).
     read, where desktop shows "unknown" (found 2026-07-17). Likely root cause: the pinned CLI
     predates auto mode.
     `status-bar` `confirmed` `checked 2026-09-01` →
-    docs/active/investigations/2026-09-01-android-permission-mode-auto-unknown.md
+    docs/archive/investigations/2026-09-01-android-permission-mode-auto-unknown.md
 21. Phantom prompt cards (paste-your-sign-in-code, Continue/"Ready") when a reply merely
     contains phrases like "press Enter to continue" (2026-07-16 sweep).
     `tool-cards` `confirmed` `checked 2026-09-01` →
-    docs/active/investigations/2026-09-01-android-bare-phrase-prompt-cards.md
+    docs/archive/investigations/2026-09-01-android-bare-phrase-prompt-cards.md
 22. Long messages (over ~56 bytes) submit with a fixed 600 ms pause before Enter, where desktop
     waits for the terminal's echo.
     `confirmed` `checked 2026-09-01` →
-    docs/active/investigations/2026-09-01-android-pty-echo-driven-submit.md
+    docs/archive/investigations/2026-09-01-android-pty-echo-driven-submit.md
 23. Claude Code's full-screen redraws push duplicate banner chrome into the terminal's scroll
     history; re-check first, newer CLI versions fixed some cases.
     `terminal` `parked` `checked 2026-05-18`

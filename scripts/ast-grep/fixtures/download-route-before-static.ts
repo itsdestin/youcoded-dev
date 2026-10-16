@@ -10,7 +10,7 @@ export class Host {
         return;
       }
       if (this.downloads.handleHttpRequest(req, res)) return;
-      this.proxyToVite(req, res, viteDevUrl);
+      proxyHttpToVite(req, res, viteDevUrl);
     });
   }
 }

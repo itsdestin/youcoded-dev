@@ -1,17 +1,19 @@
 ---
 date: 2026-09-01
-status: active
+status: closed
 type: investigation
 topic: Android EventBridge repoints the mobile→Claude session-id map on every hook event, with no gate
 ---
+> **Closed 2026-10-15:** the Kotlin code this describes was deleted by the Android clean rebuild (the phone runs the desktop backend); see `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`.
+
 
 > **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 6 in the
-> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> appendix of `docs/archive/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
 > part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
 
 # Android `EventBridge` maps session ids with no gate
 
-> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/active/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
+> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/archive/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
 
 **Symptom.** Risk, not yet observed on a device: after a subagent or tool hook fires, the
 Android app can come to believe a conversation belongs to a different Claude Code session id

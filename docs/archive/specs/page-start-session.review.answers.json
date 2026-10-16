@@ -1,0 +1,45 @@
+{
+ "deck": "page-start-session-review",
+ "started": "2026-10-14T22:14:46.320Z",
+ "submitted": "2026-10-14T22:16:16Z",
+ "cur": 4,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "t": 1792016106946,
+   "seconds": 21,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1792016142983,
+   "note": "t",
+   "seconds": 36,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "yes",
+   "t": 1792016151683,
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-4": {
+   "v": "yes",
+   "t": 1792016154658,
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-F4": {
+   "v": "pick",
+   "pick": "preview",
+   "t": 1792016169695,
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

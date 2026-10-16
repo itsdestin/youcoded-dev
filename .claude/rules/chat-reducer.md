@@ -7,7 +7,6 @@ paths:
   - "**/desktop/src/main/subagent-watcher.ts"
   - "**/desktop/src/shared/attention-classifier.ts"
   - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
-  - "**/terminal-emulator-vendored/**"
   - "**/shared-fixtures/**"
 last_verified: 2026-10-01
 verify:
@@ -28,7 +27,6 @@ verify:
     contains: "hasBuffer"
   - path: youcoded/desktop/src/shared/attention-classifier.ts
     contains: "SPINNER_RE"
-  - path: youcoded/terminal-emulator-vendored/VENDORED.md
   - test: youcoded/desktop/tests/chat-reducer.test.ts
   - test: youcoded/desktop/tests/attention-reducer.test.ts
   - test: youcoded/desktop/src/renderer/hooks/useAttentionClassifier.test.tsx
@@ -75,6 +73,5 @@ verify:
 ## Spinner classifier (`attention-classifier.ts`)
 - **Matches glyph + gerund + ellipsis ONLY** (no seconds counter); active-vs-stalled = glyph rotation OR `COUNTER_RE` advance. **The `shared-fixtures/attention-classifier/` fixtures are the contract** — a regex or `BufferClass` change needs a fixture change in the SAME commit; a CC bump re-runs the `test-conpty` probes.
 
-## Terminal byte stream (Android xterm-in-WebView)
-- **The vendored emulator is HEADLESS** (`VENDORED.md` is truth). **`RawByteListener` fires on the terminal thread — copy bytes before any async work**; `rawByteFlow` `tryEmit`s.
-- **`pty:raw-bytes` is base64-encoded**, three-surface parity. **xterm is display-only on touch** (`disableStdin:true`; typing goes through InputBar). Never reintroduce a native render path or xterm touch input.
+## Terminal on touch screens
+- **xterm is display-only on touch** (`disableStdin:true`; typing goes through InputBar). Never reintroduce a native render path or xterm touch input. (The Android app's own terminal is the desktop backend's since 2026-10-14.)

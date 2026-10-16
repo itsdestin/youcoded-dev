@@ -187,7 +187,9 @@ export function listLayers() {
   // system placed on a layer (data-layer, never its scrim), or anything pinned to the window
   // above the page (position: fixed, z-index 30+ — drawers, toasts, pickers). NOT every
   // .layer-surface: cards use that look too (the skill tiles in the "/" drawer).
-  const ROLE = '[role=dialog],[role=alertdialog],[role=menu],[role=listbox],[role=tooltip],[aria-modal=true],[data-layer]:not(.layer-scrim),.settings-drawer';
+  // NOT a [data-pinned-control] either: a control that always floats over its
+  // view (the zoom pill) is part of that view, and Escape never closes it.
+  const ROLE = '[role=dialog],[role=alertdialog],[role=menu],[role=listbox],[role=tooltip],[aria-modal=true],[data-layer]:not(.layer-scrim):not([data-pinned-control]),.settings-drawer';
   const floating = (e) => { const cs = getComputedStyle(e); return cs.position === 'fixed' && cs.zIndex !== 'auto' && +cs.zIndex >= 30 && !e.classList.contains('layer-scrim'); };
   const shown = (e) => {
     const r = e.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;

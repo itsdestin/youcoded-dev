@@ -15,12 +15,12 @@ and one feature list that every screen reaches. It runs as two plans that share 
 | Plan | Phases | Holds |
 |---|---|---|
 | `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md` | **R0–R6** | the core, the feature list, both doors, the computer-owned session record. **R1–R4 are simplification Phase 4** |
-| `docs/active/plans/2026-09-24-android-rebuild-plan.md` | **A0–A6** | Play packaging, the core on the phone, deleting the Kotlin copies, phone-native product work, the Play listing |
+| `docs/archive/plans/2026-09-24-android-rebuild-plan.md` | **A0–A6** | Play packaging, the core on the phone, deleting the Kotlin copies, phone-native product work, the Play listing |
 
 Other docs keep their jobs and point here:
 - `docs/active/plans/2026-09-16-simplification-phases.md` keeps the execution protocol that
   every run follows, and Phase 5.
-- `docs/active/investigations/2026-09-10-android-parity-audit.md` keeps the Android findings,
+- `docs/archive/investigations/2026-09-10-android-parity-audit.md` keeps the Android findings,
   the bug appendix, and Destin's 2026-09-10 decisions (§8).
 - `docs/active/investigations/2026-09-16-simplification-audit.md` keeps the evidence for D1,
   D2, D3, M5, D9 and D10.
