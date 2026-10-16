@@ -181,6 +181,8 @@ function bar(){$('#lbulk').hidden=!SEL.size;$('#lbn').textContent=SEL.size+' tic
 function filter(){const q=$('#lq').value.trim().toLowerCase(),t=$('#ltag').value;let any=0;
   $$('.lrow').forEach(r=>{const ok=(!t||r.dataset.area===t)&&(!q||r.dataset.search.includes(q));r.hidden=!ok;if(ok)any++});
   $$('.lsec').forEach(s=>{const n=s.querySelectorAll('.lrow:not([hidden])').length;if(q||t){s.hidden=!n;if(n)s.open=true}else s.hidden=false});
+  // WHY (Destin, 2026-10-16): a search or filter is a question; the suggested-next card is not an answer to it
+  const hero=document.querySelector('#today .card.hero');if(hero)hero.hidden=!!(q||t);
   $('#lnone').hidden=!!any||!(q||t);fades()}
 $('#lq').addEventListener('input',filter);$('#ltag').addEventListener('change',filter);
 async function send(url,body){
