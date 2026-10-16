@@ -1,0 +1,58 @@
+{
+ "deck": "scroll-fade-1",
+ "started": "2026-10-16T01:55:07.823Z",
+ "submitted": "2026-10-16T01:57:31Z",
+ "cur": 6,
+ "answers": {
+  "SF-1": {
+   "v": "yes",
+   "t": 1792115784719,
+   "seconds": 77,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SF-2": {
+   "v": "yes",
+   "t": 1792115791488,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SF-3": {
+   "v": "yes",
+   "t": 1792115802980,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SF-4": {
+   "v": "yes",
+   "t": 1792115820245,
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SF-5": {
+   "v": "yes",
+   "t": 1792115833272,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SF-6": {
+   "v": "yes",
+   "t": 1792115837741,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "exception",
+   "t": 1792115850460,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
