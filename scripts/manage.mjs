@@ -107,7 +107,11 @@ export function liveFacts(root, { now = Date.now(), useGh = true } = {}) {
       const [date, name, subject] = line.split('\t');
       if (!name || name === 'HEAD') continue;
       const prev = branches.get(name);
-      if (!prev || prev.date < date) branches.set(name, { date, subject, repo: r.name });
+      // WHY every repo is kept (Destin, 2026-10-16: "can the git tag include the parent repo?"): one piece of work
+      // often has a branch of the same name in both the app and the workspace
+      const repos_ = [...new Set([...(prev?.repos || []), r.name])];
+      if (!prev || prev.date < date) branches.set(name, { date, subject, repo: r.name, repos: repos_ });
+      else prev.repos = repos_;
     }
   }
   // a copy of the work on this computer with changes not committed, or committed but not pushed
@@ -159,7 +163,7 @@ export function factsFor(card, f) {
   // the youcoded status bar"): every branch that is this item's work, newest first, with its folder when a copy
   // is open on this computer
   const branchList = (card.work || []).filter(b => f.branches.has(b) || (f.worktrees || new Map()).has(b))
-    .map(b => ({ name: b, date: f.branches.get(b)?.date || '', worktree: (f.worktrees || new Map()).get(b) || '' }))
+    .map(b => ({ name: b, repos: f.branches.get(b)?.repos || [], date: f.branches.get(b)?.date || '', worktree: (f.worktrees || new Map()).get(b) || '' }))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
   return {
     branches: branchList,

@@ -164,6 +164,15 @@ SIDE = {'screens': ('UI/UX Only', 'It changes what you see and how you use it, n
         'both': ('UI/UX and Backend', 'It changes both what you see and how the app works underneath.')}
 
 MENU_TIP = 'More: pause or close this work.'
+def git_label(b):
+    """'youcoded-dev · plugin-project-controls': the repo first, and the generic "session/" prefix dropped.
+    WHY (Destin, 2026-10-16: "sessions/blahblah is not a useful tag"): which repo it lives in is the useful
+    fact; prefixes that mean something (feat/, backup/, docs/) stay."""
+    name = b['name'][len('session/'):] if b['name'].startswith('session/') else b['name']
+    repos = b.get('repos') or []
+    return (' + '.join(repos) + ' · ' if repos else '') + name
+
+
 # the status bar's git-branch icon (octicon), copied from StatusBar.tsx
 GIT_ICON = ('<svg class="gicon" width="10" height="10" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></svg>')
 PAUSE = ('Pause…', 'Marks it paused on its card, with your reason. Its branch, copy and pull request stay exactly as they are.')
@@ -197,9 +206,9 @@ def chips(c):
     # status bar's icon and teal (#0D9488), with the colour in the tint, outline and icon only (guide: never in words)
     if c.get('branches'):
         bs = c['branches']
-        tip = 'Its branch' + ('es' if len(bs) > 1 else '') + ': ' + '; '.join(b['name'] + (f' (open on this computer in {b["worktree"]})' if b.get('worktree') else '') for b in bs)
+        tip = 'Its branch' + ('es' if len(bs) > 1 else '') + ': ' + '; '.join(git_label(b) + f' (branch {b["name"]})' + (f', open on this computer in {b["worktree"]}' if b.get('worktree') else '') for b in bs)
         more = f' <span class="bmore">+{len(bs) - 1}</span>' if len(bs) > 1 else ''
-        out.append(f'<span class="badge gitchip" data-tip="{E(tip)}">{GIT_ICON}{E(bs[0]["name"])}{more}</span>')
+        out.append(f'<span class="badge gitchip" data-tip="{E(tip)}">{GIT_ICON}{E(git_label(bs[0]))}{more}</span>')
     out += [f'<span class="badge" data-tip="The part of the app it lands in.">{E(a)}</span>' for a in c['area']]
     if c.get('platform'):
         out.append(f'<span class="badge" data-tip="It only applies on this platform.">{E(c["platform"])}</span>')
