@@ -1,0 +1,229 @@
+{
+ "title": "Big picture, round 2: one switcher, calmer detail",
+ "key": "bigpicture-round2-review",
+ "out": "bigpicture-round2.review.html",
+ "images": "images/bigpicture-round2.review",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "labels": {
+  "before": "Round 1",
+  "after": "Round 2"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "zoom": [
+   "vision",
+   "zoom",
+   "1440x900+0+0"
+  ],
+  "zoom-detail": [
+   "vision",
+   "zoom-detail",
+   "1440x900+0+0"
+  ],
+  "journeys": [
+   "vision",
+   "journeys",
+   "1440x900+0+0"
+  ],
+  "journeys-detail": [
+   "vision",
+   "journeys-detail",
+   "1440x900+0+0"
+  ],
+  "stack": [
+   "vision",
+   "stack",
+   "1440x900+0+0"
+  ],
+  "stack-detail": [
+   "vision",
+   "stack-detail",
+   "1440x900+0+0"
+  ],
+  "wiring": [
+   "vision",
+   "wiring",
+   "1440x900+0+0"
+  ],
+  "wiring-detail": [
+   "vision",
+   "wiring-detail",
+   "1440x900+0+0"
+  ],
+  "switcher": [
+   "vision",
+   "switcher",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "S-1",
+   "surface": "Management page",
+   "path": "Big picture: the switcher above all four views",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "crop": "switcher",
+   "headline": "Keep the switcher: four views over one set of facts, and it stays on what you were looking at.",
+   "changed": "One page with four buttons: Systems, Journeys, Foundations, How it works. Under them, one line says what the view on screen answers. All four read the same facts file.",
+   "notice": "Pick a thing in one view and switch: the next view opens on that same thing, named at the top right (\"Looking at …\"). ✕ lets it go.",
+   "risk": "Two views still name one thing differently (How it works says \"Saved agent recipes\"); its detail lists the other name.",
+   "highlight": {
+    "box": [
+     33,
+     0,
+     67,
+     8
+    ]
+   }
+  },
+  {
+   "id": "A-1",
+   "surface": "Management page",
+   "path": "Big picture → Systems, as it opens",
+   "crop": "zoom",
+   "headline": "Systems, first view: keep the calmer version?",
+   "changed": "The first view keeps its boxes and squares, with a shorter intro line. Every square now names itself when you point at it.",
+   "notice": "Same picture; less to read. Unfamiliar words like Mesh explain themselves on hover.",
+   "highlight": {
+    "box": [
+     0,
+     8,
+     45,
+     5
+    ]
+   }
+  },
+  {
+   "id": "A-2",
+   "surface": "Management page",
+   "path": "Big picture → Systems, after one click",
+   "crop": "zoom-detail",
+   "headline": "Systems, after a click: keep the shorter detail?",
+   "changed": "Inside a system: plain feature tiles with names and status words, and a short \"Connects to\" list. The nine rows of tiny squares and the long connection list are gone.",
+   "notice": "You see what is in the system without decoding colour; at most five connections show, the rest behind More.",
+   "highlight": {
+    "box": [
+     34,
+     12,
+     42,
+     44
+    ]
+   },
+   "risk": "The two pictures are different clicks: round 1 opened a whole system, round 2 one feature inside Agents."
+  },
+  {
+   "id": "A-3",
+   "surface": "Management page",
+   "path": "Big picture → Journeys, as it opens",
+   "crop": "journeys",
+   "headline": "Journeys, first view: keep the calmer version?",
+   "changed": "Each journey row has one short line (\"Stops at step 6: …\") instead of three, and the side lists say \"4 journeys\" instead of rows of numbered black chips.",
+   "notice": "Rows read at a glance; point at a line to see why it stops, or at \"4 journeys\" to see which.",
+   "highlight": {
+    "box": [
+     2,
+     12,
+     72,
+     30
+    ]
+   }
+  },
+  {
+   "id": "A-4",
+   "surface": "Management page",
+   "path": "Big picture → Journeys, after one click",
+   "crop": "journeys-detail",
+   "headline": "Journeys, after a click: keep the shorter detail?",
+   "changed": "A clicked step shows its name, status, one sentence and three facts: what it waits on, what it holds up, where it belongs. The rest is behind More.",
+   "notice": "\"Holds up 3 journeys\" is clickable and lights those rows. A \"with a catch\" step now says what the catch is.",
+   "highlight": {
+    "box": [
+     74.5,
+     14,
+     24,
+     30
+    ]
+   }
+  },
+  {
+   "id": "A-5",
+   "surface": "Management page",
+   "path": "Big picture → Foundations, as it opens",
+   "crop": "stack",
+   "headline": "Foundations, first view: keep the calmer version?",
+   "changed": "Finished things fold into one \"N things that already work\" strip per floor, so the unfinished ones show their full names. Badges are gone; \"floating\" is now \"missing support\"; Build next shows three things.",
+   "notice": "Far fewer boxes and almost no cut-off names. The bottom floor still needs a scroll; a \"More below\" button says so.",
+   "highlight": {
+    "box": [
+     2,
+     8,
+     70,
+     15
+    ]
+   }
+  },
+  {
+   "id": "A-6",
+   "surface": "Management page",
+   "path": "Big picture → Foundations, after one click",
+   "crop": "stack-detail",
+   "headline": "Foundations, after a click: keep the shorter detail?",
+   "changed": "A clicked block shows name, status, one sentence and three facts. The panel fits the window, and the lines now run under the blocks, faint, never over text.",
+   "notice": "The tester's worst moment (a cut-off panel with lines across the text) is fixed.",
+   "highlight": {
+    "box": [
+     72,
+     0,
+     28,
+     34
+    ]
+   }
+  },
+  {
+   "id": "A-7",
+   "surface": "Management page",
+   "path": "Big picture → How it works, as it opens",
+   "crop": "wiring",
+   "headline": "How it works, first view: keep the calmer version?",
+   "changed": "Same diagram, in the light colours the other views use, fitting the width. The \"what is not finished\" list is one short line each instead of paragraphs.",
+   "notice": "It looks like the other three views now, and the side list scans quickly. Hover gives the reasons.",
+   "highlight": {
+    "box": [
+     76,
+     5,
+     24,
+     38
+    ]
+   }
+  },
+  {
+   "id": "A-8",
+   "surface": "Management page",
+   "path": "Big picture → How it works, after one click",
+   "crop": "wiring-detail",
+   "headline": "How it works, after a click: keep the shorter detail?",
+   "changed": "A clicked part shows name, status, one sentence and three facts, with code locations behind More. \"Follow a message\" says which assistant you are following.",
+   "notice": "Each step of a trace is one short sentence. A part also lists the name the other views call it.",
+   "highlight": {
+    "box": [
+     76,
+     5,
+     24,
+     39
+    ]
+   }
+  }
+ ]
+}

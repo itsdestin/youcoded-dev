@@ -1,0 +1,194 @@
+{
+  "_about": "The vision as a tree, written from Destin's own words (destin-words.md). Pillars hold capabilities; capabilities hold features. Status and evidence are filled by agents from the repos; relations (needs / shares) are proposed by agents and reviewed. Status values: done (shipped to users), building (an unmerged branch or active plan exists), planned (a roadmap entry exists, no work), vision (only in Destin's words).",
+  "mission": "An app that is yours: your tools, your data, your choice of AI, built and shared with everyone. The core of a personal, open-source 'artisan web' against the own-nothing-and-be-happy economy.",
+  "_tracks_about": "Added 2026-10-13 (Destin: 'the money feature, and other pages like home assistant, would probably be better tracked as marketplace extensions rather than core app'). A track is the line of work an item belongs to, separate from the area of the app it lives in. track_of sets it per area, capability or feature; the nearest one wins (feature, then capability, then area). The five tracks follow the work streams Destin named on Oct 8: plugins and integrations with the marketplace, harness engineering, workflow engineering, plus installs and the app itself. screens_of names the screens a capability shows up on (screen-name prefixes, read off the screen list by hand; the real version derives them from the files the evidence cites).",
+  "tracks": [
+    {"id":"app","title":"The app","about":"What every install has: the screens and features people use day to day."},
+    {"id":"addons","title":"Marketplace & add-ons","about":"The store, and things that install from it: pages like Money and Home, integrations, themes, skills."},
+    {"id":"engine","title":"The assistant's engine","about":"How the assistant runs underneath: models, YouCoded's own runtime, fewer tokens, tests of answer quality."},
+    {"id":"devices","title":"Installs & devices","about":"Getting the app onto every computer and phone: installers, signing, updates, Android, the web version."},
+    {"id":"building","title":"How it gets built","about":"Your own tools for building YouCoded: review decks, screenshots, this page, speed checks, the public roadmap."}
+  ],
+  "track_of": {
+    "chat":"app","projects":"app","pages":"app","marketplace":"addons","social":"app","sync":"app","agents":"app","yours":"app","everywhere":"devices","together":"building",
+    "chat.harness":"engine","chat.converse.native":"engine","chat.converse.local":"engine","yours.model.free":"engine",
+    "pages.connect.money":"addons","pages.connect.home":"addons","pages.connect.moneypage":"addons","pages.connect.homepage":"addons","pages.connect.analytics":"addons",
+    "yours.everyone.ostools":"addons","yours.look.themebuilder":"addons",
+    "together.contribute.source":"app","together.contribute.bugs":"app","sync.follow.remote":"devices"
+  },
+  "screens_of": {
+    "chat.converse":["chat","chat/resume","chat/switcher","chat/sessions","chat/model-picker","chat/status-bar"],
+    "chat.steer":["settings/assistant","chat/skills","chat/specialists","chat/preferences","chat/commands","chat/session-context","projects/context","chat/first-time-warning"],
+    "chat.files":["chat/files","office"],
+    "projects.folder":["projects","projects/files","projects/context","projects/switcher"],
+    "projects.controls":["projects","chat/skills"],
+    "pages.build":["pages","pages/create","pages/library"],
+    "pages.connect":["pages/library/connections","marketplace/detail/connection"],
+    "marketplace.browse":["marketplace","library"],
+    "marketplace.publish":["marketplace/share","marketplace/theme-share"],
+    "marketplace.setup":["marketplace/detail/install","marketplace/theme-detail/install"],
+    "social.friends":["chat/games"],
+    "sync.follow":["settings/sync","settings/remote","chat/takeover","projects/turn-on-sync"],
+    "agents.unit":["chat/specialists","settings/assistant/specialists"],
+    "yours.look":["settings/appearance","settings/buddy","marketplace/themes","marketplace/theme-detail"],
+    "yours.model":["settings/assistant/cloud","settings/assistant/local","chat/model-picker"],
+    "everywhere.platforms":["settings/android","chat/update"],
+    "everywhere.firstrun":["first-run","welcome","handle-prompt"],
+    "together.contribute":["settings/development"],
+    "together.workflow":["dev"]
+  },
+  "pillars": [
+    {"id":"chat","title":"Chat and the assistant","quote":"Right now the core of it is the app shell and the agent experience. You open the app, you get a conversation window.",
+     "capabilities":[
+      {"id":"chat.converse","title":"Talk to any assistant in one window","features":[
+        {"id":"chat.converse.cloud","title":"Cloud models: Claude, ChatGPT, OpenRouter"},
+        {"id":"chat.converse.local","title":"Models that run on your own computer"},
+        {"id":"chat.converse.native","title":"YouCoded's own runtime, not just Claude Code"},
+        {"id":"chat.converse.voice","title":"Talk by voice"},
+        {"id":"chat.converse.multi","title":"Many chats open at once, across projects"},
+        {"id":"chat.converse.resume","title":"Pick an old conversation back up"}]},
+      {"id":"chat.steer","title":"Steer how the assistant behaves","features":[
+        {"id":"chat.steer.instructions","title":"Instruction files it reads before answering"},
+        {"id":"chat.steer.memory","title":"It remembers things about you"},
+        {"id":"chat.steer.permissions","title":"What it may do without asking"},
+        {"id":"chat.steer.skills","title":"Skills and slash commands"},
+        {"id":"chat.steer.specialists","title":"Helper agents it can hand work to"},
+        {"id":"chat.steer.plans","title":"It shows a plan and a budget before big work"}]},
+      {"id":"chat.harness","title":"Harness engineering","quote":"figuring out how to get local models working… maximize token efficiency, minimize tokens per task… make the model more intuitive and answer questions better","features":[
+        {"id":"chat.harness.tokens","title":"Fewer tokens per task"},
+        {"id":"chat.harness.evals","title":"Tests and evaluations of how well it answers"},
+        {"id":"chat.harness.parity","title":"The native runtime matches Claude Code feature for feature"},
+        {"id":"chat.harness.compaction","title":"Long conversations compact themselves"}]},
+      {"id":"chat.files","title":"Work with your files and documents","features":[
+        {"id":"chat.files.drawer","title":"Files the conversation made or opened"},
+        {"id":"chat.files.office","title":"Built-in document, spreadsheet and slides editors"},
+        {"id":"chat.files.cloud","title":"OneDrive and cloud files without surprises"}]}
+     ]},
+    {"id":"projects","title":"Projects","quote":"projects are like the most useful unit of organization right now","capabilities":[
+      {"id":"projects.folder","title":"A project is a folder with its own instructions, chats and Pages","features":[
+        {"id":"projects.folder.context","title":"Edit the project's instructions in the app"},
+        {"id":"projects.folder.files","title":"See and search the project's files"},
+        {"id":"projects.folder.sync","title":"Projects follow you to every device"},
+        {"id":"projects.folder.builtin","title":"A built-in 'Your Assistant' project in every install"}]},
+      {"id":"projects.controls","title":"Each project decides what the assistant may use","features":[
+        {"id":"projects.controls.skills","title":"Per-project skills and tools"},
+        {"id":"projects.controls.agents","title":"Per-project helper agents"}]},
+      {"id":"projects.units","title":"How projects, agents and reusable instructions fit together","quote":"there's the project, but then there's also the agent… those two kind of conflict and are going to eventually need to overlap or be recombined","features":[
+        {"id":"projects.units.agent","title":"A reusable agent: always this model, these instructions, these tools and files"},
+        {"id":"projects.units.instructions","title":"Reusable instructions you can attach to different agents or projects"},
+        {"id":"projects.units.rules","title":"When project and agent disagree, a clear rule for who wins"}]}
+    ]},
+    {"id":"pages","title":"Pages","quote":"the thing that is going to be the most significant part of the app is pages… you can either build something yourself from scratch, or pull in more or less any existing open source application","capabilities":[
+      {"id":"pages.build","title":"Build a page by describing it","features":[
+        {"id":"pages.build.create","title":"Make a page from a description"},
+        {"id":"pages.build.theme","title":"Pages follow the app's theme automatically"},
+        {"id":"pages.build.blocks","title":"Basic building-block units and template styles"},
+        {"id":"pages.build.setup","title":"The assistant walks you through setting a page up, accounts and keys included"}]},
+      {"id":"pages.connect","title":"Pages that reach the real world","features":[
+        {"id":"pages.connect.connections","title":"A page may use a connection you approve once"},
+        {"id":"pages.connect.money","title":"Your money, from your bank"},
+        {"id":"pages.connect.home","title":"Your smart home"},
+        {"id":"pages.connect.live","title":"Live data, camera, sockets"},
+        {"id":"pages.connect.files","title":"A page may keep access to a folder you grant"}]},
+      {"id":"pages.agents","title":"Pages, agents and tools together","quote":"my finance page might have agents that run in its config to just update it… page tools… some way to associate MCP servers with a page","features":[
+        {"id":"pages.agents.attached","title":"An agent attached to a page keeps it updated in the background"},
+        {"id":"pages.agents.tools","title":"Page tools the assistant can press from chat ('turn on the lights')"},
+        {"id":"pages.agents.mcp","title":"An MCP server paired with a page"},
+        {"id":"pages.agents.chat","title":"Talk to a page from the chat window"}]},
+      {"id":"pages.apps","title":"Any open-source app as a page","features":[
+        {"id":"pages.apps.convert","title":"Pull in an existing open-source project and convert it to fit the app"},
+        {"id":"pages.apps.server","title":"Pages that need a server or a database"},
+        {"id":"pages.apps.interpage","title":"Pages that work with other pages and projects"}]}
+    ]},
+    {"id":"marketplace","title":"Marketplace","quote":"the marketplace I eventually view as the core of this entire thing… allows any normal person… to download a single app and then see curated free content that would actually be useful to them","capabilities":[
+      {"id":"marketplace.browse","title":"Find and install free things","features":[
+        {"id":"marketplace.browse.skills","title":"Skills, commands and plugins"},
+        {"id":"marketplace.browse.themes","title":"Themes"},
+        {"id":"marketplace.browse.pages","title":"Pages"},
+        {"id":"marketplace.browse.integrations","title":"Integrations and connections"},
+        {"id":"marketplace.browse.curated","title":"Curated for normal people: 'most wouldn't know OnlyOffice is a thing'"},
+        {"id":"marketplace.browse.fromchat","title":"The assistant can search the marketplace when it lacks a capability"}]},
+      {"id":"marketplace.publish","title":"GitHub for normies","quote":"take a page… fork it, customize it, rearrange it… and then publish their own version… show all given pages that are a variant of it","features":[
+        {"id":"marketplace.publish.share","title":"Publish your own skill, theme or page"},
+        {"id":"marketplace.publish.fork","title":"Fork something, customize it, publish your version"},
+        {"id":"marketplace.publish.family","title":"See a page's variants and its parent, like a family tree"},
+        {"id":"marketplace.publish.reviews","title":"Reviews and likes"},
+        {"id":"marketplace.publish.bugs","title":"Report a bug on a page or plugin from inside the app"},
+        {"id":"marketplace.publish.anything","title":"Host anything, even things that need a server"}]},
+      {"id":"marketplace.setup","title":"Easy agentic setup instead of coding","features":[
+        {"id":"marketplace.setup.install","title":"One-click install with clear permissions"},
+        {"id":"marketplace.setup.walkthrough","title":"The assistant sets things up for you"}]}
+    ]},
+    {"id":"social","title":"Social","quote":"right now social is just the games feature basically… eventually I want to pull in a lot of open source media","capabilities":[
+      {"id":"social.friends","title":"Friends and play","features":[
+        {"id":"social.friends.add","title":"Add friends"},
+        {"id":"social.friends.games","title":"Play games together"},
+        {"id":"social.friends.dm","title":"Direct messages"},
+        {"id":"social.friends.share","title":"Share things with friends"}]},
+      {"id":"social.feeds","title":"A personal, controllable web","quote":"wrap Instagram, Threads via an open source browser inside of YouCoded… customize your own algorithms","features":[
+        {"id":"social.feeds.fediverse","title":"The Fediverse and AT protocol"},
+        {"id":"social.feeds.wrap","title":"Wrap existing social apps in a browser inside the app"},
+        {"id":"social.feeds.algorithms","title":"Your own algorithms, with transparency about what you see and why"}]}
+    ]},
+    {"id":"sync","title":"Sync and Mesh","quote":"I start a conversation on one device, I can pick it up on almost any of my other devices pretty much immediately… upgraded into a full on mesh thing","capabilities":[
+      {"id":"sync.follow","title":"Everything follows you","features":[
+        {"id":"sync.follow.chats","title":"Conversations continue on any device"},
+        {"id":"sync.follow.projects","title":"Projects and files on every device"},
+        {"id":"sync.follow.safety","title":"Sync never loses or duplicates your work"},
+        {"id":"sync.follow.remote","title":"Reach your computer's assistant from your phone or the web"}]},
+      {"id":"sync.mesh","title":"Mesh: your devices as one","quote":"automatically hand it off to whichever of your devices are live and connected at any given moment","features":[
+        {"id":"sync.mesh.handoff","title":"Work runs on whichever device is on"},
+        {"id":"sync.mesh.backup","title":"Projects always backed up on all your devices, including your phone"},
+        {"id":"sync.mesh.anydevice","title":"Give a request to any device and it coordinates across what is live"},
+        {"id":"sync.mesh.cloud","title":"Your own personal cloud"}]}
+    ]},
+    {"id":"agents","title":"Agents and automations","quote":"things that run autonomously on your behalf… my email agent that's supposed to check my email at 5 p.m.","capabilities":[
+      {"id":"agents.background","title":"Agents that work while you're away","features":[
+        {"id":"agents.background.scheduled","title":"An agent that runs on a schedule"},
+        {"id":"agents.background.personal","title":"A personal agent attached to nothing, for various things"},
+        {"id":"agents.background.view","title":"A place to see every agent and what it is doing"},
+        {"id":"agents.background.device","title":"Runs on the right device (see Mesh)"}]},
+      {"id":"agents.unit","title":"The agent as a reusable building block","quote":"make agents and the harness itself kind of like a unit or primitive that can be integrated in pages or autonomous agents or both","features":[
+        {"id":"agents.unit.recipe","title":"A saved recipe: model, instructions, tools, files, permissions"},
+        {"id":"agents.unit.workflows","title":"Agent workflows: different agents, different context, fully independent, different models"},
+        {"id":"agents.unit.inpages","title":"The same unit usable inside a page"}]}
+    ]},
+    {"id":"yours","title":"Yours: personalization and no lock-in","quote":"Customization is everything for this application… use any open weight model, any US or Chinese model","capabilities":[
+      {"id":"yours.look","title":"Make it look like yours","features":[
+        {"id":"yours.look.themes","title":"Themes, built in and from the community"},
+        {"id":"yours.look.buddy","title":"The buddy"},
+        {"id":"yours.look.finetune","title":"Fine-tune the look"}]},
+      {"id":"yours.model","title":"Any model, no single provider","features":[
+        {"id":"yours.model.any","title":"Switch providers and models freely"},
+        {"id":"yours.model.free","title":"A free model that is good enough for everyday use"},
+        {"id":"yours.model.data","title":"Your data and your agents are not held by one company"}]},
+      {"id":"yours.everyone","title":"A different app for everyone","quote":"If you're a student… if you're a software developer, you can deck it out with development tools","features":[
+        {"id":"yours.everyone.student","title":"A student's setup: documents, study pages, weekly research agents"},
+        {"id":"yours.everyone.developer","title":"A developer's setup: development tools inside the app"},
+        {"id":"yours.everyone.ostools","title":"Open-source tools replacing paid suites: Office, Home Assistant, Plaid"}]}
+    ]},
+    {"id":"everywhere","title":"Everywhere: desktop, phone, web","quote":"it's cross platform and everything is designed to work cross platform. So you can download it on anything","capabilities":[
+      {"id":"everywhere.platforms","title":"One app on every platform","features":[
+        {"id":"everywhere.platforms.desktop","title":"Windows, Mac, Linux"},
+        {"id":"everywhere.platforms.android","title":"Android"},
+        {"id":"everywhere.platforms.web","title":"In a browser"},
+        {"id":"everywhere.platforms.onecore","title":"One core shared by desktop and phone"},
+        {"id":"everywhere.platforms.signed","title":"Installs without scary warnings (signing)"}]},
+      {"id":"everywhere.firstrun","title":"Easy to start","features":[
+        {"id":"everywhere.firstrun.setup","title":"First run installs what it needs and signs you in"},
+        {"id":"everywhere.firstrun.offline","title":"Works offline and when a sign-in expires"}]}
+    ]},
+    {"id":"together","title":"Built together: open source and the community","quote":"an open source app that anyone can build and we can all collectively build together… I can ship the source code for the app with the app and the AI agent","capabilities":[
+      {"id":"together.contribute","title":"Any user can improve the app","features":[
+        {"id":"together.contribute.source","title":"The source ships with the app and the assistant can change it"},
+        {"id":"together.contribute.bugs","title":"Report a bug from inside the app"},
+        {"id":"together.contribute.roadmap","title":"A public roadmap people can see"}]},
+      {"id":"together.workflow","title":"Workflow engineering: how the app gets built","quote":"making our development workflows for the app better, improving our tooling, building things like what we're building right now","features":[
+        {"id":"together.workflow.decks","title":"Design through review decks"},
+        {"id":"together.workflow.uiagents","title":"UI agents with the design guide that review every new feature"},
+        {"id":"together.workflow.surface","title":"This management surface"},
+        {"id":"together.workflow.perf","title":"Speed measured on every build"},
+        {"id":"together.workflow.verify","title":"Checked logic: every ordering tested for the risky parts"}]}
+    ]}
+  ]
+}

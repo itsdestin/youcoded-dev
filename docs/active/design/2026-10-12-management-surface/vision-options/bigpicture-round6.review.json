@@ -1,0 +1,52 @@
+{
+ "title": "Big picture, round 6: no status key, plain quotes",
+ "key": "bigpicture-round6-review",
+ "out": "bigpicture-round6.review.html",
+ "images": "images/bigpicture-round6.review",
+ "runs": {
+  "before": "runs/round5",
+  "after": "runs/round6"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "Now"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "areas": [
+   "vision",
+   "areas",
+   "1440x900+0+0"
+  ],
+  "area-open": [
+   "vision",
+   "area-open",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Big picture → Areas, as it opens",
+   "crop": "areas",
+   "headline": "The status key under the mission bar is gone.",
+   "changed": "The row of dots explaining \"exists / being built / planned / only an idea\" is removed, since every list now says the status in words on a pill.",
+   "notice": "The bar itself stays; pointing at it still names its colours.",
+   "risk": "The bar's stripes (green, dark grey, light grey, hatched) are now explained only on hover."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Big picture → Areas → Sync and Mesh",
+   "crop": "area-open",
+   "headline": "No key inside an area, and your quote without the bar beside it.",
+   "changed": "The status key under the area's bar is removed. Your quote is plain grey italics, with no line down its left edge. The same quote look applies in Journeys and the popup.",
+   "notice": "The area header is two lines shorter."
+  }
+ ]
+}

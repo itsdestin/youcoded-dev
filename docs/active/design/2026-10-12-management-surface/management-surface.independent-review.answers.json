@@ -1,0 +1,177 @@
+{
+ "deck": "management-surface-independent-review",
+ "started": "2026-10-14T04:24:56.069Z",
+ "submitted": "2026-10-14T07:50:04Z",
+ "cur": 5,
+ "answers": {
+  "Q-1": {
+   "v": "other",
+   "t": 1791952496295,
+   "note": "that was just a very loose descriptoin of the kinds of use cases for the page. if anything you followed it far too literally.",
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "Q-2": {
+   "v": "other",
+   "dk": true,
+   "t": 1791952496295,
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "Q-3": {
+   "v": "yes",
+   "t": 1791952496295,
+   "note": "need to figure out how/when this would be updated tho",
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "Q-4": {
+   "v": "yes",
+   "t": 1791952496295,
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "Q-5": {
+   "v": "yes",
+   "t": 1791952496295,
+   "seconds": 9,
+   "theme": "halftone-dimension"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1791952744054,
+   "note": "i think one of the biggest objectives of this page is to be able to understand where the app currently lands against my big-picture vision for what it eventually should be. i'm not sure what the best way is to accomplish this, and still haven't seen a good idea. maybe have different agents polish/create a few different ways to view/organize this. i should be able to quickly understand which major systems are complete/planned in progress, which connections between systems and minor subsystems are planned/in progress, etc. unsure what the best way is to do this, how to define leveels/units of the app/systems/work, etc.",
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "Q-7": {
+   "v": "yes",
+   "t": 1791952744054,
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "Q-8": {
+   "v": "other",
+   "dk": true,
+   "t": 1791952744054,
+   "note": "this isn't just about daily/weekly decisions, but also about providing transparenct into the app and how it works/connects etc within itself. i doubt the current table is the best way to do that, but it at least attempts. there are probably more interesting/creative ways we could achieve this goal.",
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "Q-9": {
+   "v": "other",
+   "dk": true,
+   "t": 1791952744054,
+   "note": "better ways to group i'm sure",
+   "seconds": 62,
+   "theme": "halftone-dimension"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "today-first",
+   "t": 1791964174147,
+   "seconds": 181,
+   "theme": "halftone-dimension"
+  },
+  "Q-11": {
+   "v": "yes",
+   "t": 1791964174147,
+   "note": "yes, but need to think through optimal retention. all for 1 week, then jsut historical 1/week images maybe",
+   "seconds": 181,
+   "theme": "halftone-dimension"
+  },
+  "Q-12": {
+   "note": "this is a bad list. we've already pretty well established that tracks are the various major app systems, and this is kinda already outlined in the existing work. home/money are separate pages/integrations, not core to the app for now. just land under broader pages/marketplace work. they are pages primarily, but will be downloadable from marketplace eventually",
+   "t": 1791964174147,
+   "v": "other",
+   "seconds": 181,
+   "theme": "halftone-dimension"
+  },
+  "Q-13": {
+   "v": "other",
+   "dk": true,
+   "t": 1791963942896,
+   "note": "kinda confused as to what this actually means/looks like in practice",
+   "seconds": 54,
+   "theme": "halftone-dimension"
+  },
+  "Q-14": {
+   "note": "i think this is currently confusing. session means two things, and its not clear when we refer to what. a chat/conversation in youcoded is a \"session\", but so is a work branch thing. i think i'd prefer the name still include some indication as to what the work is, but it can start with a short number.",
+   "t": 1791963942896,
+   "v": "other",
+   "seconds": 54,
+   "theme": "halftone-dimension"
+  },
+  "Q-15": {
+   "v": "other",
+   "t": 1791963942896,
+   "note": "i think multiple sessions should be able to collaborate on the same card though maybe? kinda confused still",
+   "dk": true,
+   "seconds": 54,
+   "theme": "halftone-dimension"
+  },
+  "Q-16": {
+   "v": "pick",
+   "pick": "file-per-card",
+   "t": 1791963942896,
+   "seconds": 54,
+   "theme": "halftone-dimension"
+  },
+  "Q-17": {
+   "v": "other",
+   "dk": true,
+   "t": 1791963942896,
+   "note": "i think we just need a more robust tag/filtering system that allows me to view/sort/organize word in different ways. android only is a useful distinction, but so is themes/speed. and these aren't always mutually exclusive.",
+   "seconds": 54,
+   "theme": "halftone-dimension"
+  },
+  "Q-18": {
+   "v": "yes",
+   "t": 1791963942896,
+   "seconds": 54,
+   "theme": "halftone-dimension"
+  },
+  "Q-19": {
+   "v": "yes",
+   "t": 1791964201839,
+   "seconds": 41,
+   "theme": "halftone-dimension"
+  },
+  "Q-20": {
+   "v": "yes",
+   "t": 1791964201839,
+   "seconds": 41,
+   "theme": "halftone-dimension"
+  },
+  "Q-21": {
+   "v": "other",
+   "t": 1791964201839,
+   "dk": true,
+   "note": "confused. the card should probably be tied directly to a branch, and only pass when merge of that branch is fully completed",
+   "seconds": 41,
+   "theme": "halftone-dimension"
+  },
+  "Q-22": {
+   "v": "pick",
+   "pick": "start-and-merge",
+   "t": 1791964201839,
+   "note": "may eventually make this an overnight/automatic task, but this is fine for now",
+   "seconds": 41,
+   "theme": "halftone-dimension"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 41,
+   "theme": "halftone-dimension",
+   "t": 1791964201839
+  },
+  "Q-23": {
+   "v": "pick",
+   "pick": "cards-first",
+   "t": 1791964203706,
+   "note": "still kinda confused about what were doing here overall",
+   "seconds": 35,
+   "theme": "halftone-dimension"
+  }
+ }
+}

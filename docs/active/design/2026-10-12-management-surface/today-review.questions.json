@@ -1,0 +1,337 @@
+{
+ "title": "Today tab: an independent review's proposals",
+ "key": "today-review-proposals",
+ "out": "today-review.questions.html",
+ "themes": [
+  "light",
+  "midnight"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Should each row's buttons be decided by one status label, the same rule everywhere?",
+   "today": "A row's buttons depend on which section it sits in (In progress rows get \"Write its finish line\", Waiting rows get \"Wrap up\"), and the Needs you rows were picked by hand. Nothing on the page says why.",
+   "problem": "You can't predict what a row will offer, and two rows in the same situation can offer different things: a piece of work with failing checks gets the same buttons as one that only needs a look.",
+   "proposal": "Each piece of work gets exactly one status label beside its name: No finish line, Working, Needs your look, Checks failing, Ready to add, Paused or Idle. The label picks one filled main button at the right (Write finish line, Watch, Review, Fix it, Add to the app, Resume, Continue). Every row also has an outlined \"Open\" and a ⋯ menu for rarer actions.",
+   "options": [
+    {
+     "id": "labels",
+     "label": "One label decides it",
+     "pros": [
+      "Same situation, same button, everywhere.",
+      "\"Where do these come from\" has a one-sentence answer: the label decides.",
+      "The biggest step (Add to the app) finally looks more important than Hold."
+     ],
+     "cons": [
+      "A row in two situations at once (needs a look AND checks fail) shows only the more urgent one."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "per-section",
+     "label": "Same buttons per section",
+     "pros": [
+      "Smallest change to what you know."
+     ],
+     "cons": [
+      "Still wrong for mixed rows; the \"why these buttons\" question stays."
+     ]
+    },
+    {
+     "id": "no-buttons",
+     "label": "No buttons on rows",
+     "pros": [
+      "The calmest list: click a row to see all its actions."
+     ],
+     "cons": [
+      "An extra click for everything, and the list stops telling you what to do."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Replace the six \"stop this\" words with two: Pause and Close?",
+   "today": "Rows use \"Set aside\", \"Hold\", \"Wrap up\", \"Drop it\", \"Drop them\" and \"Archive\", each with a slightly different meaning only the hover hint explains.",
+   "problem": "You have to hover each one to learn whether it throws anything away, and \"Wrap up\" clashes with your everyday word for ending a chat.",
+   "proposal": "Two words, both in the ⋯ menu. Pause: keep it, stop showing it as active. Close: stop this work; nothing is erased, and unsaved changes are saved first. Both ask you one question, why, and the answer shows on the row.",
+   "options": [
+    {
+     "id": "menu",
+     "label": "Pause / Close in the ⋯ menu",
+     "pros": [
+      "Two meanings, two words.",
+      "Nothing final is one click from the list."
+     ],
+     "cons": [
+      "One extra click to reach them."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "visible",
+     "label": "Pause / Close as visible buttons",
+     "pros": [
+      "No hidden menu."
+     ],
+     "cons": [
+      "Rows grow back to three or four buttons each."
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Keep the words, fix the hints",
+     "pros": [
+      "No layout change."
+     ],
+     "cons": [
+      "The confusion is in the words themselves; hints don't fix it."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Should the page say, right where it applies, how the buttons are chosen?",
+   "today": "Nothing on the page explains why a row offers what it offers; each button's hover hint only describes that one button.",
+   "problem": "Your first question about the page, where do these come from, has no answer on the page itself.",
+   "proposal": "Hovering a row's status label says what it means and why: \"Needs your look: pictures are ready to approve. That's why this row offers Review.\" One grey line under Needs you: \"The label on each row decides its main button.\" A button that can't be pressed yet says why beside it.",
+   "options": [
+    {
+     "id": "inline",
+     "label": "Hover on the label, plus one line",
+     "pros": [
+      "The rule is explained exactly where you'd wonder about it."
+     ],
+     "cons": [
+      "One more line of text on the page."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "fold",
+     "label": "A \"How this page works\" fold at the top",
+     "pros": [
+      "The full explanation in one place."
+     ],
+     "cons": [
+      "Easy to skip, and it goes stale as the page changes."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-2",
+   "page": "Several conversations on one piece of work",
+   "intro": "Your concern: several chats can build toward one feature, one after another or at the same time."
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Should each row show every conversation that worked on it, and let you join one?",
+   "today": "Each row has one button, \"Open its conversation\", as if every piece of work had exactly one chat.",
+   "problem": "Work like Helper agents had three chats over time (plan, decisions, wrap-up), and two can run at once. You can't see who did what, which one is still running, or join the right one, and a new chat may start the same work again from scratch.",
+   "proposal": "Each row becomes one work card (the plan from the other chat). Its line says \"3 chats · 1 working now\". Open shows a short timeline of its chats, newest first, each with a live label and one line of what it achieved, under the card's progress note (done / next / blocked). \"Start another chat on this card\" opens a chat already told the finish line and progress. A new chat about the same work is told \"This is already card 142 — join it?\" instead of starting a duplicate.",
+   "options": [
+    {
+     "id": "timeline",
+     "label": "A timeline of chats on each card",
+     "pros": [
+      "One after another and at the same time both read naturally.",
+      "A live label shows what is running right now.",
+      "Joining is one click, and duplicates get caught."
+     ],
+     "cons": [
+      "Needs the work-cards plan built first; until then the page can only guess which chats belong together."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "menu",
+     "label": "\"Open its conversation\" becomes a list",
+     "pros": [
+      "A tiny change that works today."
+     ],
+     "cons": [
+      "No order, no results, no sign of what is running now."
+     ]
+    },
+    {
+     "id": "section",
+     "label": "A separate Conversations section",
+     "pros": [
+      "Everything running at once, in one list."
+     ],
+     "cons": [
+      "The same work shows up in two places again."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Sections and rows",
+   "intro": "How Today is grouped, and what every row looks like."
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Group Today by what needs doing, instead of by how recently it was touched?",
+   "today": "Today runs: Start here, Needs you, In progress (touched in the last 7 days), Waiting (everything older, folded), Bugs, Since the last release. Seven failing automatic updates and ten unsaved leftover copies sit in Needs you beside real product decisions.",
+   "problem": "Work paused on purpose, work never started and work simply forgotten all land in one folded Waiting pile, and clean-up chores compete with decisions only you can make.",
+   "proposal": "Start here · Needs you (needs your look, ready to add, checks failing) · Being worked on (working, touched this week) · Everything else (folded: idle, no finish line, paused, with their reasons) · Tidy up (folded: failing automatic updates, leftover copies with no card) · Bugs and Since the last release unchanged. A leftover copy that belongs to a card shows as an \"Unsaved changes\" label on that card instead. \"Reports from other people\" appears only when there is an open report.",
+   "options": [
+    {
+     "id": "by-state",
+     "label": "Group by what needs doing",
+     "pros": [
+      "The top of the page is exactly what needs you.",
+      "Chores never compete with product work."
+     ],
+     "cons": [
+      "A row can jump between groups when its situation changes, which may surprise you."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "tidy-only",
+     "label": "Keep the groups, move only chores to Tidy up",
+     "pros": [
+      "Smaller change."
+     ],
+     "cons": [
+      "Waiting still mixes paused, forgotten and never-started work."
+     ]
+    },
+    {
+     "id": "flat",
+     "label": "One list, sorted by urgency, with filters",
+     "pros": [
+      "One place to look."
+     ],
+     "cons": [
+      "Long, and \"what needs me\" is no longer visibly separate."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Give every row the same layout, with buttons always in the same place?",
+   "today": "Rows differ: some have one line under the title, some two, some a picture; \"See its screens\" appears on some rows only, so buttons don't line up. One line ends in a bare \"both\".",
+   "problem": "Your eye has to re-learn each row, and buttons jump around from row to row.",
+   "proposal": "Every row: name and status label on top; one line \"Next: …\" or \"Paused because: …\"; one row of small tags (card number, areas, \"3 chats\", \"Unsaved changes\"); the date at the bottom right. Buttons always Open · ⋯ · main button. The screenshot moves inside Open. \"Changes what you see\" becomes a tag: \"On screen\" or \"Behind the scenes\".",
+   "options": [
+    {
+     "id": "fixed",
+     "label": "Same layout, picture inside Open",
+     "pros": [
+      "Easy to scan; buttons line up."
+     ],
+     "cons": [
+      "No thumbnail picture on the list itself."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "thumb",
+     "label": "Same layout, keep a small picture",
+     "pros": [
+      "Keeps the picture at a glance."
+     ],
+     "cons": [
+      "Rows of two heights again."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Should the \"Start here\" card follow the same button rule as the rows?",
+   "today": "The big \"Start here\" card has its own third set of buttons (Set aside, Open its conversation, a filled Open its review deck), then \"Why this one\" and an \"Other options\" line. The suggested work then disappears from the lists below.",
+   "problem": "If you set it aside, you can't see where it went, and its buttons follow yet another rule.",
+   "proposal": "\"Start here\" is simply the top card drawn large: same label (Needs your look), same filled main button (Review), same Open and ⋯. \"Why this one\" stays; \"Other options\" goes. Its row in Needs you stays, with a small \"Suggested above\" tag.",
+   "options": [
+    {
+     "id": "same",
+     "label": "Same rule, drawn large",
+     "pros": [
+      "One rule everywhere; nothing vanishes."
+     ],
+     "cons": [
+      "The work appears twice: large on top and as a one-line row."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "drop",
+     "label": "Drop the big card",
+     "pros": [
+      "Shorter page, no repeat."
+     ],
+     "cons": [
+      "Loses the picture and the \"why\" that make the page calm to open."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "P-4",
+   "page": "Words",
+   "intro": "Fewer, plainer words. A few examples of the full list in the review."
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Management page",
+   "path": "Today tab",
+   "headline": "Shorten and plain-word the text throughout, with one date style?",
+   "today": "Examples: \"Sync safety: backup-target selection fix\" / \"Reviewed and passing its checks on Sept 9, but never put in the app. Untouched 31 days.\" / \"Apply all seven and check them\" / \"Touched in the last 7 days. Neither has a finish line yet.\" Dates appear three ways: \"Untouched 31 days\", \"31 days ago\", \"Last touched 37 days ago\".",
+   "problem": "You read more to learn less, some lines explain the data rather than the work, and one paused row says it is paused twice.",
+   "proposal": "Become: \"Sync: picks the right backup place\" / \"Approved Sept 9; checks pass. Never added.\" / \"Try all seven\" / \"Worked on this week.\" One date per row, bottom right (\"Sept 11\"; hover says \"31 days ago\"). Paused rows say once: \"Paused because: …\". The \"Other options\" line goes.",
+   "options": [
+    {
+     "id": "all",
+     "label": "Apply the whole list",
+     "pros": [
+      "About a third fewer words, one date style."
+     ],
+     "cons": [
+      "Short names drop some detail; the hover carries it."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "repeats",
+     "label": "Only fix repeats and dates",
+     "pros": [
+      "Names stay as the people who made the work wrote them."
+     ],
+     "cons": [
+      "Long names still wrap and push buttons down."
+     ]
+    }
+   ]
+  }
+ ]
+}

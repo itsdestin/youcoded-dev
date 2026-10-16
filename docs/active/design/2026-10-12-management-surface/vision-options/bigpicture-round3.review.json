@@ -1,0 +1,124 @@
+{
+ "title": "Big picture, round 3: inside the main page, folded, app look",
+ "key": "bigpicture-round3-review",
+ "out": "bigpicture-round3.review.html",
+ "images": "images/bigpicture-round3.review",
+ "runs": {
+  "before": "runs/after",
+  "after": "runs/round3"
+ },
+ "labels": {
+  "before": "Round 2",
+  "after": "Round 3"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "switcher": [
+   "vision",
+   "switcher",
+   "1440x900+0+0"
+  ],
+  "journeys": [
+   "vision",
+   "journeys",
+   "1440x900+0+0"
+  ],
+  "journeys-detail": [
+   "vision",
+   "journeys-detail",
+   "1440x900+0+0"
+  ],
+  "stack": [
+   "vision",
+   "stack",
+   "1440x900+0+0"
+  ],
+  "stack-detail": [
+   "vision",
+   "stack-detail",
+   "1440x900+0+0"
+  ],
+  "wiring": [
+   "vision",
+   "wiring",
+   "1440x900+0+0"
+  ],
+  "wiring-detail": [
+   "vision",
+   "wiring-detail",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "S-1",
+   "path": "Big picture tab: where the four views live now",
+   "crop": "switcher",
+   "headline": "The four views move into the main page's Big picture tab, as four small tabs.",
+   "changed": "No separate page any more. Big picture, next to Today and Screens, now has a second row of tabs: Areas, Journeys, Foundations, How it works. Areas is the view the tab already had.",
+   "notice": "One page, one look, one side panel. Switching views no longer reloads a different page.",
+   "risk": "Areas is unchanged from before, so its statuses are still a dot and a word while the other three use the app's tinted status pills. The old separate page still exists as a file, but nothing links to it."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Big picture → Journeys, as it opens",
+   "crop": "journeys",
+   "headline": "Journeys: one folded line per journey, with how far it gets.",
+   "changed": "Each journey is one row: its name, where it stops, and a pill like \"5 of 7 steps work\". Under them, \"What stops them\" lists the unbuilt things more than one journey needs.",
+   "notice": "The whole view fits on one screen without opening anything. No boxes in a row, no hatching."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Big picture → Journeys, one journey opened, one step clicked",
+   "crop": "journeys-detail",
+   "headline": "Opened: one row per step, and a click opens the same side panel as everywhere else.",
+   "changed": "Steps are numbered rows with a status pill; the step it stops at says \"stops here\". Clicking a step opens the side panel.",
+   "notice": "This is how it ties to the other tabs: the side panel shows \"Where it shows up\" (pictures from the Screens tab; click one to open it) and \"Work on those screens\" (the work from Today).",
+   "risk": "Round 2's picture was a different click (a step in another journey)."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-3",
+   "path": "Big picture → Foundations, as it opens",
+   "crop": "stack",
+   "headline": "Foundations: \"Build next\" first, everything else folded into three lists.",
+   "changed": "The building with floors and lines is gone. On top, the five unbuilt things that would unblock the most. Below, three folded lists: Ready to start, Waiting on something, Already exist. Stand-alone items are folded by area at the bottom.",
+   "notice": "The answer to \"what should be built next\" is the first thing you read."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-4",
+   "path": "Big picture → Foundations, a list opened and an item clicked",
+   "crop": "stack-detail",
+   "headline": "Opened: each item says what it waits on, in words.",
+   "changed": "\"Waiting on something\" opens inside its own box; each row reads \"Waits on: …\". The clicked item opens the side panel, with its screens.",
+   "notice": "Nothing is cut off and no lines cross the text."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-5",
+   "path": "Big picture → How it works, as it opens",
+   "crop": "wiring",
+   "headline": "How it works: the three paths first, then the parts as folded rows.",
+   "changed": "The diagram is replaced by lists. \"Follow a path\" (a message, an install, a sync) comes first, then the parts in three groups: parts of the app, outside services, parts not built yet.",
+   "notice": "Every part has a one-line description and a status pill without opening it.",
+   "risk": "You lose the picture of boxes and arrows. If you liked seeing the shape, say so and it can come back as one picture inside this view."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-6",
+   "path": "Big picture → How it works, one part opened",
+   "crop": "wiring-detail",
+   "headline": "Opened: what it talks to, and the ideas that rest on it.",
+   "changed": "A part opens inside its own box: what it is made of, \"Talks to\" (each connection in one sentence), \"Ideas that rest on this\" (click one for the side panel), and \"Where the code lives\" folded.",
+   "notice": "The \"Mesh\" hover hints are gone; names explain themselves."
+  }
+ ]
+}

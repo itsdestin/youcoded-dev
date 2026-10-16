@@ -1,0 +1,151 @@
+{
+ "title": "Today tab: rebuilt from the independent review",
+ "key": "today-rebuild-review",
+ "out": "today-rebuild.review.html",
+ "images": "images/today-rebuild.review",
+ "runs": {
+  "before": "runs/today-before",
+  "after": "runs/today-after"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "Now"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "top": [
+   "today",
+   "top",
+   "1440x900+0+0"
+  ],
+  "needs": [
+   "today",
+   "needs",
+   "1440x900+0+0"
+  ],
+  "open": [
+   "today",
+   "open",
+   "1440x900+0+0"
+  ],
+  "tidy": [
+   "today",
+   "tidy",
+   "1440x900+0+0"
+  ],
+  "rest": [
+   "today",
+   "rest",
+   "1440x900+0+0"
+  ],
+  "phone": [
+   "today",
+   "phone",
+   "390x844+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Today, as it opens",
+   "crop": "top",
+   "headline": "Start here is now the top card drawn large, with the same label and buttons as its row.",
+   "changed": "\"Project skills & tools\" carries its label (Needs your look), its tags (areas, 1 chat, both pull requests, Unsaved changes) and the same three buttons every row has: Open, ⋯, and the filled Review. The \"Other options\" line is gone.",
+   "notice": "Below it, Needs you now holds three rows, each with its own label and a filled button that matches it."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Today → Needs you, ⋯ opened on Sync safety",
+   "crop": "needs",
+   "headline": "One label decides each row's main button; Pause… and Close… are the only stop words.",
+   "changed": "Checks failing → Fix failing checks. Needs your look → Review. Ready to merge → Merge to master. Working → Join chat. Hold, Drop it, Set aside and Wrap up are gone; the ⋯ menu holds Pause… and Close…. Pointing at a label says why: \"Ready to merge: reviewed and its checks pass; only the merge is left. That's why this row offers Merge to master.\"",
+   "notice": "The 7 failing dependency updates and the 10 leftover copies left Needs you; a copy that belongs to a piece of work is now an \"Unsaved changes\" tag on that row.",
+   "risk": "The Working label means \"a chat touched it today\" on this mockup; the real version shows it only while a chat is actually running."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-3",
+   "path": "Today → Everything else → Helper agents → Open",
+   "crop": "open",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "Open shows every chat that worked on a piece of work, and lets you start another on it.",
+   "changed": "Helper agents opens in place: its progress (done, blocked), then its 3 chats newest first, each with what it achieved or \"No summary saved\", an Open chat button each, and \"Start another chat on this card\". Then its screens.",
+   "notice": "Until work cards exist, a \"chat\" here is a separate copy of the work, named as it is on disk; results show only where something was written down.",
+   "highlight": {
+    "box": [
+     13,
+     22,
+     74,
+     48
+    ]
+   }
+  },
+  {
+   "surface": "Management page",
+   "id": "A-4",
+   "path": "Today → Everything else (was Waiting), scrolled to its end",
+   "crop": "rest",
+   "headline": "\"Waiting\" becomes \"Everything else\": no finish line, idle, then paused, each row saying which.",
+   "changed": "Each row has the same layout: name and label, one line, a full-width line of tags with the date at the far right. Paused work comes last and says why (\"Paused because: known regressions…\"). One date style everywhere.",
+   "notice": "The notes-only copies moved out to Tidy up."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-5",
+   "path": "Today → Tidy up",
+   "crop": "tidy",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "Housekeeping gets its own folded section, away from the decisions.",
+   "changed": "Three jobs: 7 automatic dependency updates (Try all seven), 4 leftover copies with no work attached (Save as backup branches), 4 copies holding only notes (Keep the notes, close the copies). The automatic clean-up line stays at the foot.",
+   "notice": "Nothing in Tidy up changes the app.",
+   "highlight": {
+    "box": [
+     12,
+     35,
+     76,
+     42
+    ]
+   }
+  },
+  {
+   "surface": "Management page",
+   "id": "A-6",
+   "path": "Today at phone width",
+   "crop": "phone",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "At phone width, the buttons drop under the text and the tags scroll sideways.",
+   "changed": "Each row stacks: name, label, line, then the three buttons at the right, then the tags with the date.",
+   "notice": "The tags line cuts off at the edge; it scrolls sideways.",
+   "risk": "No fade marks the cut-off edge of the tags line yet.",
+   "highlight": {
+    "box": [
+     2,
+     28,
+     96,
+     24
+    ]
+   }
+  }
+ ]
+}
