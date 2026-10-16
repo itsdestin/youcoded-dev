@@ -82,9 +82,10 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
     rows = [as_row(c, today) for c in cards]
     out = []
     # ---- the controls in the fixed head: search and tag (143 items need finding)
-    tags = sorted({t for c in cards for t in c['tags']})
+    # WHY areas, not the old roadmap tags (2026-10-16): the filter offers the same plain areas the cards show
+    tags = sorted({c.get('area') for c in cards if c.get('area')})
     out.append('<div class="lensbar ltools"><input class="field lq" id="lq" type="search" placeholder="Search work items" aria-label="Search work items" data-tip="Shows only items whose number, name, tags or text contain these words.">'
-               '<select class="field" id="ltag" aria-label="Tag" data-tip="Shows only items with this tag."><option value="">All tags</option>'
+               '<select class="field" id="ltag" aria-label="Area" data-tip="Shows only items in this part of the app."><option value="">All areas</option>'
                + ''.join(f'<option>{E(t)}</option>' for t in tags) + '</select>'
                '<span class="t-2xs muted" data-tip="Tick items to combine them, move them to a stage, or delete them.">Tick items to edit several at once.</span></div>')
     # ---- Start here: the approved top card (today_tab, Q-7), its item picked as the most urgent in the furthest-along stage
@@ -178,7 +179,7 @@ const LIVE=location.protocol.startsWith('http');
 function bar(){$('#lbulk').hidden=!SEL.size;$('#lbn').textContent=SEL.size+' ticked';$('#lbcombine').disabled=SEL.size<2;
   $$('.lrow').forEach(r=>{const on=SEL.has(+r.dataset.cid);r.classList.toggle('sel',on);r.querySelector('.ltick').checked=on})}
 function filter(){const q=$('#lq').value.trim().toLowerCase(),t=$('#ltag').value;let any=0;
-  $$('.lrow').forEach(r=>{const ok=(!t||r.dataset.tags.split(' ').includes(t))&&(!q||r.dataset.search.includes(q));r.hidden=!ok;if(ok)any++});
+  $$('.lrow').forEach(r=>{const ok=(!t||r.dataset.area===t)&&(!q||r.dataset.search.includes(q));r.hidden=!ok;if(ok)any++});
   $$('.lsec').forEach(s=>{const n=s.querySelectorAll('.lrow:not([hidden])').length;if(q||t){s.hidden=!n;if(n)s.open=true}else s.hidden=false});
   $('#lnone').hidden=!!any||!(q||t);fades()}
 $('#lq').addEventListener('input',filter);$('#ltag').addEventListener('change',filter);

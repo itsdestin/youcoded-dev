@@ -245,6 +245,7 @@ import today_tab as ttab
 # `--cards-json <file>` (written by scripts/manage.mjs from cards/) Today is drawn from the real work cards by
 # live_today.py and the page goes to `--out`; without it, the approved Oct 12 mockup is built as before.
 import live_today as ltab
+import ui_controls as uic  # WHY: the app's search pill, Select and filter chips (Destin, 2026-10-16)
 def _arg(k):
     return sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
 LIVE_CARDS = _arg('--cards-json')
@@ -351,7 +352,7 @@ CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{ltab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{ltab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}{uic.CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
@@ -407,6 +408,7 @@ $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 {bptab.JS}
 {ttab.JS}
 {ltab.JS}
+{uic.JS}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
 check_tips(page)

@@ -272,7 +272,7 @@ def row(c, pic, show_stage=False, live=False):
     # WHY plain text (2026-10-16: "i hate clickable elements that are bare text"): the whole card opens it instead
     name = (f'<span class="t-sm fw"><span class="lid">#{E(c["id"])}</span> {E(c["title"])}</span>'
             if live else f'<span class="t-sm fw">{E(c["title"])}</span>')
-    attrs = (f' data-cid="{E(c["id"])}" data-stage="{E(c["stage"])}" data-tags="{E(" ".join(c.get("tags", [])))}" data-search="{E(c.get("search", ""))}"' if live else '')
+    attrs = (f' data-cid="{E(c["id"])}" data-stage="{E(c["stage"])}" data-area="{E((c.get("area") or [""])[0])}" data-tags="{E(" ".join(c.get("tags", [])))}" data-search="{E(c.get("search", ""))}"' if live else '')
     # WHY this order (UI-consistency guide, "Cards", Destin 2026-10-16: "make the card hierarchy match the ui
     # consistency branch design principles"): name with its status on the top line, quick actions at its top
     # right → one row of fact chips right under the name → the description (two lines at most) → the date at
