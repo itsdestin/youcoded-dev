@@ -269,7 +269,8 @@ def row(c, pic, show_stage=False, live=False):
     main, does = next_step(c)
     nxt = ('Paused because: ' + c['paused']) if c.get('paused') else c['next']
     tick = f'<input type="checkbox" class="ltick" aria-label="Tick #{E(c["id"])}" data-tip="Tick to edit several items at once.">' if live else ''
-    name = (f'<button class="ltitle" data-card-open="{E(c["id"])}" data-tip="Opens everything on this item."><span class="lid">#{E(c["id"])}</span> {E(c["title"])}</button>'
+    # WHY plain text (2026-10-16: "i hate clickable elements that are bare text"): the whole card opens it instead
+    name = (f'<span class="t-sm fw"><span class="lid">#{E(c["id"])}</span> {E(c["title"])}</span>'
             if live else f'<span class="t-sm fw">{E(c["title"])}</span>')
     attrs = (f' data-cid="{E(c["id"])}" data-stage="{E(c["stage"])}" data-tags="{E(" ".join(c.get("tags", [])))}" data-search="{E(c.get("search", ""))}"' if live else '')
     # WHY this order (UI-consistency guide, "Cards", Destin 2026-10-16: "make the card hierarchy match the ui

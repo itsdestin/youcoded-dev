@@ -69,7 +69,8 @@ def group(T, key, title, hint, tip, ctip, count, body, open_=False, tick=True):
     """WHY one group look for every section (Destin, 2026-10-16: "make the extra sections collapsible"; guide
     "Full screens": big groups use the Large heading — heading left, a one-line description under it, its
     tools right): the heading row itself folds the group, its tools sit at the right, cards follow."""
-    tools = (f'<button class="selall" data-tickall="{key}" data-tip="Ticks every item shown in this group.">tick all</button>' if tick and count else '')
+    # WHY a real button (Destin, 2026-10-16: "i hate clickable elements that are bare text")
+    tools = (f'<button class="btn sm" data-tickall="{key}" data-tip="Ticks every item shown in this group.">Tick all</button>' if tick and count else '')
     return (f'<details class="lsec lgroup" data-stage="{key}"{" open" if open_ else ""}><summary class="lghead" data-tip="{T(tip)}">'
             f'<span class="gtext"><span class="gh">{E(title)}<span class="cnt" data-tip="{T(ctip)}">{count}</span></span><span class="gdesc">{E(hint)}</span></span>'
             f'<span class="lgtools">{tools}<span class="chev" aria-hidden="true">›</span></span></summary><div class="lgbody">{body}</div></details>')
@@ -95,7 +96,7 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
     if hero:
         main, does = tt.next_step(hero)
         out.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
-<div class="ctl"><button class="ltitle t-lg" data-card-open="{hero['id']}" data-tip="Opens everything on this item."><span class="lid">#{hero['id']}</span> {E(hero['title'])}</button>{tt.stage_pill(hero)}{tt.markers(hero)}</div>
+<div class="ctl"><span class="t-lg"><span class="lid">#{hero['id']}</span> {E(hero['title'])}</span>{tt.stage_pill(hero)}{tt.markers(hero)}</div>
 <p class="t-sm dim">{E(hero['next'])}</p><div class="cchips">{tt.chips(hero)}</div>
 <p class="t-2xs muted">Suggested because it is the furthest along, and its next step is waiting.</p>
 <div class="acts heroacts">{tt.menu()}<button class="btn sm" data-card-open="{hero['id']}" data-tip="Opens everything on this item.">Open item</button><button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></section>''')
@@ -127,30 +128,33 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
 
 
 CSS = '''
-/* collapsible groups: the guide's Large heading row (heading + description left, tools right) as the fold's own header */
-.lgroup{margin:0 0 24px} .lgroup > summary{list-style:none} .lgroup > summary::-webkit-details-marker{display:none}
-.lghead{display:flex;align-items:flex-start;gap:12px;padding:4px 4px 8px;cursor:pointer;border-radius:var(--radius-lg)}
+/* sections are cards (Destin, 2026-10-16: "the sections should be cards, that expand into bigger cards that contain
+   the sub-cards"): a raised first-level box whose header row folds it (guide: a folded box opens inside itself, and
+   pointing at it lights the whole box); the item cards inside take the nested look (guide: Card levels) */
+.lgroup{margin:0 0 16px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:var(--layer-shadow);transition:background-color 120ms steps(4)}
+.lgroup > summary{list-style:none} .lgroup > summary::-webkit-details-marker{display:none}
+.lghead{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-radius:var(--radius-xl)}
+@media (hover:hover){.lgroup:not([open]):has(> summary:hover){background:var(--inset)} .lgroup[open] > .lghead:hover{background:color-mix(in srgb,var(--inset) 60%,transparent)}}
 .lghead .gtext{flex:1;min-width:0;display:flex;flex-direction:column}
 .lghead .gh{font-size:16px;font-weight:500;color:var(--fg)} .lghead .gh .cnt{margin-left:6px}
 .lghead .gdesc{font-size:12px;color:var(--fg-muted);margin-top:2px}
-.lgtools{display:flex;align-items:center;gap:8px;flex:none;padding-top:2px}
+.lgtools{display:flex;align-items:center;gap:8px;flex:none}
 .lgroup[open] > .lghead .chev{transform:rotate(90deg)}
-@media (hover:hover){.lghead:hover .gh{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--edge-strong)}}
 .lghead:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.lgbody{padding-top:4px}
+.lgbody{padding:0 12px 12px}
+.lgroup .crow{background:var(--inset);border:1px solid var(--edge-card);border-radius:var(--radius-lg);box-shadow:none;margin-bottom:8px}
+.lgroup .crow:last-child{margin-bottom:0}
+/* an item card opens its details when clicked anywhere that is not one of its own controls */
+.lrow{cursor:pointer;transition:background-color 120ms steps(4)}
+@media (hover:hover){.lgroup .lrow:hover{background:color-mix(in srgb,var(--inset) 88%,var(--fg))}}
 /* live Today (live_today.py): the approved rows plus a tick box, and the bulk bar */
 .ltools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .field{font:inherit;font-size:12px;line-height:16px;padding:6px 12px;border-radius:var(--radius-lg);border:1px solid var(--edge-card);background:var(--inset);color:var(--fg);width:240px}
 select.field{width:auto;cursor:pointer} .field:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .ltick{margin:3px 4px 0 0;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex:none}
 .lrow.sel{border-color:var(--fg)}
-.ltitle{font:inherit;font-size:14px;font-weight:500;color:var(--fg);background:none;border:0;padding:0;text-align:left;cursor:pointer}
-.ltitle.t-lg{font-size:18px;font-weight:600}
-@media (hover:hover){.ltitle:hover{text-decoration:underline;text-underline-offset:3px}}
 .lid{color:var(--fg-muted);font-weight:400;font-size:12px}
 .spill.stage{background:var(--panel);border-color:var(--edge-strong);color:var(--fg)}
-.selall{font-size:11px;font-weight:400;color:var(--fg-muted);background:none;border:0;cursor:pointer;padding:0 6px;text-decoration:underline;text-underline-offset:3px}
-.foldbody > .selall{display:inline-block;margin:0 0 8px}
 .lbulk{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;z-index:25;border-radius:var(--radius-xl)}
 .lbulk[hidden]{display:none} .lbulk .n{font-size:12px;font-weight:500;margin-right:8px;white-space:nowrap}
 .menu.lup{top:auto;bottom:calc(100% + 6px);left:0;right:auto;min-width:260px}
@@ -194,8 +198,10 @@ function openCard(id,back){const c=C[id];if(!c)return;if(!back&&CUR&&CUR!==id&&!
     ${c.summary?`<p class="t-sm dim">${e_(c.summary)}</p>`:''}${c.paused?`<p class="t-xs"><b>Paused because:</b> ${e_(c.paused)}</p>`:''}${c.finish?`<p class="t-xs"><b>Finish line:</b> ${e_(c.finish)}</p>`:''}</div>
     <div class="${right?'dcols':'dcol'}"><div class="dcol">${(c.live?.chats||[]).length?`<section class="dgroup"><div class="eyebrow" data-tip="Every chat that worked on this, newest first.">Chats</div><div class="card dcard">${c.live.chats.map(x=>`<div class="row slim"><span class="body"><span class="t-xs rt">${e_(x.date)} · ${e_(x.name)}</span><span class="hint wrap">${e_(x.result)}</span></span>${x.live?'<span class="spill info" data-tip="Worked on in the last 24 hours."><span class="dot" aria-hidden="true"></span>Working</span>':''}</div>`).join('')}</div></section>`:''}
       <details class="fold"><summary class="foldrow" data-tip="The original notes this item came from."><span class="t-xs">Original notes</span><span class="chev" aria-hidden="true">›</span></summary><div class="foldbody"><p class="dtext">${e_(c.body.replace(/\*\*/g,''))}</p></div></details></div>${right?`<div class="dcol">${right}</div>`:''}</div>
-    <p class="t-2xs muted">Branch name when work starts: ${e_(c.branch)} · ${e_(c.file)}</p>`,
-    `<button class="btn" data-ltickone="${c.id}" data-tip="Ticks this item, to combine or move it with others.">${SEL.has(c.id)?'Untick':'Tick'} this item</button><button class="btn primary" data-does data-tip="Starts a chat that already knows this item.">Start a chat on this</button>`);
+    ${(c.live?.branches||[]).length?'':`<p class="t-2xs muted">Branch name when work starts: ${e_(c.branch)} · ${e_(c.file)}</p>`}`,
+    // WHY the card's own next step (2026-10-16): the popup's filled button disagreed with the card's
+    (()=>{const pb=document.querySelector(`.lrow[data-cid="${c.id}"] .acts .btn.primary`);const lab=pb?pb.textContent:'Start a chat on this',tip=pb?pb.dataset.tip:'Starts a chat that already knows this item.';
+      return `<button class="btn" data-ltickone="${c.id}" data-tip="Ticks this item, to combine or move it with others.">${SEL.has(c.id)?'Untick':'Tick'} this item</button><button class="btn primary" data-does data-tip="${e_(tip)}">${e_(lab)}</button>`})());
   $('#pback').hidden=!HIST.length}
 $('#pback').onclick=()=>{const p=HIST.pop();if(p)openCard(p,true)};
 function combineDlg(){const items=[...SEL].map(i=>C[i]);const order=['explore','planning','build','polish','merged'];
@@ -215,6 +221,8 @@ document.addEventListener('click',async e=>{const t=e.target;
   const tk=t.closest('.ltick');if(tk){const id=+tk.closest('.lrow').dataset.cid;tk.checked?SEL.add(id):SEL.delete(id);bar();return}
   const ta=t.closest('[data-tickall]');if(ta){e.preventDefault();$$(`.lsec[data-stage="${ta.dataset.tickall}"] .lrow:not([hidden])`).forEach(r=>SEL.add(+r.dataset.cid));bar();return}
   const co=t.closest('[data-card-open]');if(co){e.preventDefault();openCard(+co.dataset.cardOpen);return}
+  // WHY the whole card (2026-10-16, no bare clickable text): a click on the card, not on its own controls, opens it
+  const card=t.closest('.lrow');if(card&&!t.closest('button,input,a,select,label,summary,.menu,.cbody')){openCard(+card.dataset.cid);return}
   const one=t.closest('[data-ltickone]');if(one){const id=+one.dataset.ltickone;SEL.has(id)?SEL.delete(id):SEL.add(id);bar();openCard(id,true);return}
   if(t.closest('#lbstage')){$('#lstagemenu').hidden=!$('#lstagemenu').hidden;return}
   const st=t.closest('[data-lstage]');if(st){$('#lstagemenu').hidden=true;try{const j=await send('/api/stage',{ids:[...SEL],stage:st.dataset.lstage});done(`Moved ${j.result.length} to ${W[st.dataset.lstage]}. ${j.saved}`)}catch(err){toast(err.message)}return}
