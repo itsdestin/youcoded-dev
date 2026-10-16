@@ -162,7 +162,6 @@ SIDE = {'screens': ('On screen', 'It changes what you see.'), 'behind': ('Behind
         'both': ('On screen and behind', 'It changes both what you see and how the app works.')}
 
 MENU_TIP = 'More: pause or close this work.'
-PRI_TIP = {'P1': 'P1: urgent — a release blocker or a top-priority feature.', 'P2': 'P2: major, but not the next thing.', 'P3': 'P3: at leisure.'}
 PAUSE = ('Pause…', 'Marks it paused on its card, with your reason. Its branch, copy and pull request stay exactly as they are.')
 CLOSE = ('Close…', 'Saves any unsaved changes to a backup branch, closes its pull request, removes its copy from this computer and marks the card closed. The branch stays on GitHub.')
 
@@ -197,13 +196,12 @@ def chips(c):
     if c.get('side') and 'Behind the scenes' not in c.get('area', []):
         lab, tip = SIDE[c['side']]
         out.append(f'<span class="badge" data-tip="{E(tip)}">{E(lab)}</span>')
-    # WHY a plain chip, not a tinted pill (live page): priority is a fact about the item; tint means a problem (design guide)
-    if c.get('priority'):
-        out.append(f'<span class="badge" data-tip="{E(PRI_TIP.get(c["priority"], c["priority"]))}">{E(c["priority"])}</span>')
-    if c.get('release'):
-        out.append(f'<span class="badge" data-tip="The release this is aimed at.">{E(c["release"])}</span>')
+    # WHY no priority or release chips (Destin, 2026-10-16: "completely scrap priority/version tags for the time
+    # being"): the design never decided them; rebuilding them is its own Planning item.
     n = len(c['chats']); live = sum(1 for x in c['chats'] if len(x) > 3 and x[3])
-    out.append(f'<span class="badge" data-tip="How many chats have worked on this. View chats lists them.">{f"{n} chat" + ("s" if n != 1 else "") if n else "No chats yet"}{f" · {live} working now" if live else ""}</span>')
+    # WHY nothing at zero (Destin approved the chat count, never a "No chats yet" wording)
+    if n:
+        out.append(f'<span class="badge" data-tip="How many chats have worked on this. View chats lists them.">{n} chat{"s" if n != 1 else ""}{f" · {live} working now" if live else ""}</span>')
     for k, word, tip in (('needs', 'needs', 'Must exist before this one can be built.'), ('related', 'overlaps', 'Exploration items covering some of the same ground.')):
         if c.get(k):
             out.append(f'<span class="badge" data-tip="{tip}">{word} {", ".join("#" + str(x) for x in c[k])}</span>')
@@ -254,12 +252,16 @@ def row(c, pic, show_stage=False, live=False):
     name = (f'<button class="ltitle" data-card-open="{E(c["id"])}" data-tip="Opens everything on this item."><span class="lid">#{E(c["id"])}</span> {E(c["title"])}</button>'
             if live else f'<span class="t-sm fw">{E(c["title"])}</span>')
     attrs = (f' data-cid="{E(c["id"])}" data-stage="{E(c["stage"])}" data-tags="{E(" ".join(c.get("tags", [])))}" data-search="{E(c.get("search", ""))}"' if live else '')
-    return (f'<div class="row crow{" lrow" if live else ""}" data-card="{E(c["id"])}"{attrs}><div class="ctop">{tick}<div class="cmain"><div class="ctl">{name}{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
-            f'<div class="t-xs dim cnext">{E(nxt)}</div></div>'
-            f'<div class="acts">{menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this row, its progress, every conversation that worked on it, and its screens.">View chats</button>'
+    # WHY this order (UI-consistency guide, "Cards", Destin 2026-10-16: "make the card hierarchy match the ui
+    # consistency branch design principles"): name with its status on the top line, quick actions at its top
+    # right → one row of fact chips right under the name → the description (two lines at most) → the date at
+    # the bottom right, at the end of the details line.
+    return (f'<div class="crow{" lrow" if live else ""}" data-card="{E(c["id"])}"{attrs}><div class="ctop">{tick}<div class="cmain">'
+            f'<div class="ctl">{name}{stage_pill(c) if show_stage else ""}{markers(c)}</div>'
+            f'<div class="cchips">{chips(c)}</div>'
+            f'<div class="cdesc"><span class="t-xs dim cnext">{E(nxt)}</span>{date(c)}</div></div>'
+            f'<div class="acts">{menu()}<button class="btn sm copen" aria-expanded="false" data-tip="Shows, inside this card, the chats that worked on it.">View chats</button>'
             f'<button class="btn sm primary" data-does data-tip="{E(does)}">{E(main)}</button></div></div>'
-            # WHY the chips line spans the whole row: under the text column it was cut off, and the date belongs at the far right (guide: Cards)
-            f'<div class="cmeta"><div class="cchips">{chips(c)}</div>{date(c)}</div>'
             f'<div class="cbody" hidden>{body(c, pic)}</div></div>')
 
 
@@ -300,7 +302,7 @@ def render(efforts, dev_only, leftovers, suggest, pic, T, sechead, fold):
     return out
 
 
-def tidy(leftovers, dev_only, fold, card_ids):
+def tidy(leftovers, dev_only, fold, card_ids, raw=False):
     """Tidy up (Q-5): housekeeping that never changes the app. Shared by the mockup and the live page."""
     nocard = [w for w in leftovers['worktrees'] if not any(w.startswith(str(i)) for i in card_ids)]
     nocard = [w for w in nocard if not w.startswith('specialists-plans')]
@@ -315,12 +317,16 @@ def tidy(leftovers, dev_only, fold, card_ids):
 <div class="t-xs dim cnext">{E("; ".join(d["title"] for d in dev_only))}.</div></div>
 <div class="acts">{menu()}<button class="btn sm primary" data-does data-tip="Keeps the notes in the workspace and closes the copies.">Keep the notes, close the copies</button></div></div></div>''')
     t.append(f'<div class="t-xs muted note">Cleaned up automatically, nothing to do: {E(leftovers["backups"])}; {E(leftovers["diag"])}.</div>')
+    if raw:  # WHY: the live page draws its own group heading around the same content
+        return 3, ''.join(t)
     return (fold('Tidy up', 3, 'Housekeeping: nothing here changes the app.', '<div class="cstack">' + ''.join(t) + '</div>', 'today.tidy', 'today.tidy.count'))
 
 
 CSS = '''
 /* Today rows (today_tab.py): one anatomy for every card (Q-6) — name + label, one line, chips + date, buttons right */
-.crow{display:block;padding:10px 12px}
+.crow{display:block;padding:12px 16px;margin-bottom:12px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:0 4px 16px rgba(0,0,0,calc(var(--shadow-strength) * .8))}
+.cdesc{display:flex;align-items:flex-end;gap:12px} .cdesc .cnext{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ctop > .cmain{gap:6px}
 .ctop{display:flex;gap:12px;align-items:flex-start}
 .cmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}

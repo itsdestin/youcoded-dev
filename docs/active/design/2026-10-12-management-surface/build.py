@@ -264,7 +264,12 @@ r = ['<div class="relgrid">']
 for g, items, scr in RELEASE['groups']:
     r.append(f'<div class="card inset"><div class="eyebrow"><span data-tip="{T("today.relgroup")}">{E(g)}</span></div><ul class="t-xs">' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>')
 r.append(f'</div><div class="t-xs muted note">The most recent test version went out {E(RELEASE["beta"])}.</div><div class="acts right">{btn("See all 67 changes","today.allchanges")}{btn("Start a test release","today.testrelease")}</div>')
-today.append(fold('Since the last release', None, f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.', ''.join(r), 'today.release'))
+_rel_hint = f'{RELEASE["version"]} went out {RELEASE["date"]}; {RELEASE["merges"]} changes have landed since. What users will notice.'
+if LIVE_CARDS:
+    # WHY: the live page draws every section in one group look (2026-10-16), this one included
+    today.append(ltab.group(T, 'release', 'Since the last release', _rel_hint, 'today.release', 'today.release', '', ''.join(r), tick=False))
+else:
+    today.append(fold('Since the last release', None, _rel_hint, ''.join(r), 'today.release'))
 
 # ----------------------------------------------------------------------------- SCREENS
 # WHY cut (2026-10-13, Destin: "just wayyy too many controls"): screens_tab.py now draws one
