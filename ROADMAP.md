@@ -71,6 +71,7 @@ Target: `v1.3.1`
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
 - native-harness: Native Runtime Parity Program
 - native-harness: The one object that runs a native conversation is 4,756 lines because it also runs the helper agents…
+- native-harness: Native sessions stop working before the job is done, and say it is still going
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it lacks a capability it reaches for a script or…
 - native-harness: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
 - native-harness: Per-project skills and tools: each project chooses which skills, plugins and tool connections the assistant…
@@ -87,8 +88,8 @@ Target: `v1.3.1`
      P3 leisure: smaller bugs and miscellany, done whenever. (Destin, 2026-10-05) -->
 | Area | Open | P1 | P2 | P3 | Needs verify | Decisions | Parked |
 |---|---|---|---|---|---|---|---|
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 22 | 9 | 5 | 8 | 3 | 2 | 3 |
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 21 | 3 | 5 | 13 | 2 | 0 | 3 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 21 | 8 | 5 | 8 | 2 | 2 | 3 |
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 19 | 2 | 0 | 17 | 6 | 3 | 0 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 15 | 2 | 3 | 10 | 4 | 1 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 11 | 2 | 1 | 8 | 1 | 0 | 1 |
