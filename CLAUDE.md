@@ -42,7 +42,7 @@ Runtime verification goes through an isolated dev worktree and `bash scripts/run
 
 ### Git, worktrees, and shipping
 
-- Start/resume with `workspace-start`; read its complete reorientation report, changed guidance and returned workspace instructions before proceeding. It may guardedly fast-forward the shared workspace only when it proves local state is preserved; never manually pull, stash, clean or repair shared checkouts merely to start work. New worktrees use the fetched workspace commit; resumed session branches and component worktrees preserve unfinished work. Nothing is automatically committed or published, and uncommitted guidance is a proposal rather than authority.
+- Start/resume with `workspace-start`; work on a work item names the session after it and joins it: `--session <id>-<slug> --item <id>` (`node scripts/cards.mjs index` lists them; none fits → the idea-intake skill). Read its complete reorientation report, changed guidance and returned workspace instructions before proceeding. It may guardedly fast-forward the shared workspace only when it proves local state is preserved; never manually pull, stash, clean or repair shared checkouts merely to start work. New worktrees use the fetched workspace commit; resumed session branches and component worktrees preserve unfinished work. Nothing is automatically committed or published, and uncommitted guidance is a proposal rather than authority.
 - Use absolute worktree paths with file tools; shell `cd` does not change their root. Do not migrate another session's work automatically.
 - **`workspace-start` auto-provisions a component's `node_modules`** (currently `youcoded/desktop`) as a `cp -al` hardlink farm from the source, listed in its output as `deps: …`. **Never symlink or junction `node_modules` to a shared checkout.** Hardlinks still share inodes, so dependency patchers must replace files rather than write in place. Do not run `npm ci` or Android `bundleWebUi` against shared/linked dependencies. Details: `docs/PITFALLS.md` → Worktrees.
 - Parallelize independent work when the runtime permits it. Do not assume multiple write-capable specialists can run concurrently.
@@ -145,7 +145,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 
 | Knowledge | Home |
 |---|---|
-| Planned feature / bug / idea | A card in `cards/`, filed through the idea-intake skill (`.claude/skills/idea-intake/SKILL.md`): **link an existing card before creating one** (`node scripts/cards.mjs index`); symptoms in Destin's words; `node scripts/cards.mjs check` |
+| Planned feature / bug / idea | A card in `cards/`, filed through the idea-intake skill (`.claude/skills/idea-intake/SKILL.md`): **link an existing card before creating one** (`node scripts/cards.mjs index`); symptoms in Destin's words; `node scripts/cards.mjs check`. Every `cards.mjs` change saves straight to master (Destin, 2026-10-16) — never hand-edit `cards/` on a branch |
 | Invariant / lesson | Knowledge ladder above; cross-repo only in `docs/PITFALLS.md` |
 | Doc contradicting code | Fix verified drift within authorized editing scope; otherwise report it. Deferred work becomes a card tagged `dev-workspace` |
 | Claude Code dependency watch | `youcoded/docs/cc-dependencies.md` |

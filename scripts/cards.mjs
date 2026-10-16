@@ -156,6 +156,7 @@ export function createCard(root, opts, today = new Date().toISOString().slice(0,
     tags: (opts.tags || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean),
     needs: (opts.needs || '').split(',').map(s => s.trim().replace(/^#/, '')).filter(Boolean),
     related: (opts.related || '').split(',').map(s => s.trim().replace(/^#/, '')).filter(Boolean),
+    vision: (opts.vision || '').split(',').map(s => s.trim()).filter(Boolean),
     finish: opts.finish, roadmap: opts.roadmap, created: today, why: opts.why,
     priority: opts.priority, release: opts.release, report: opts.report,
     body: opts.body ?? 'Progress\nDone: nothing yet.\nNext: ' + (opts.next || 'plan it.') + '\nBlocked: ' +
@@ -407,7 +408,7 @@ async function main() {
   } catch (e) { console.error(`cards: ${e.message}`); process.exit(1); }
   console.error([
     'usage: node scripts/cards.mjs index | check',
-    '  new --title "<t>" [--stage explore|planning|build|polish] [--related 4] [--tags a,b] [--needs 3,7] [--finish "…"] [--why "…"]',
+    '  new --title "<t>" [--stage explore|planning|build|polish] [--related 4] [--tags a,b] [--needs 3,7] [--vision <part ids>] [--finish "…"] [--why "…"]',
     '  link <id> --branch "<branch>" [--line "<what this chat is doing>"]',
     '  progress <id> [--done "…"] [--next "…"] [--blocked "…"]',
     '  pause <id> --reason "<why>"   (pause <id> with no --reason unpauses)',

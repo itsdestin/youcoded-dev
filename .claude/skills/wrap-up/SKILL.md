@@ -116,6 +116,10 @@ Then:
   are enforced) plus `node --test scripts/*.test.mjs .claude/hooks/*.test.mjs` if you touched
   either. Never report a change as done on the strength of having written it — quote what
   the check returned.
+- **The item this chat worked on** (Destin, plan deck Q-4, 2026-10-16): write its progress note —
+  `node scripts/cards.mjs progress <id> --done "…" --next "…" --blocked "…"` — and, if the work stops on
+  purpose, `node scripts/cards.mjs pause <id> --reason "…"`. A chat that never joined an item joins it now:
+  `node scripts/cards.mjs link <id> --branch <its branch> --line "<what it did>"`.
 - **Card:** `node scripts/cards.mjs index` first; **dedupe by file or symbol name,
   not by symptom** — searching `flaky` instead of `sync-spaces-engine` filed a duplicate.
   A small finding that an existing card covers goes into that card's text, not a new card;
