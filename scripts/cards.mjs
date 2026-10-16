@@ -298,6 +298,47 @@ export function combineCards(root, idList, keep, title) {
   });
 }
 
+// ---------- what chats write as they work (spec 2026-10-16, deck Q-4) ----------
+// WHY: "several chats on one item" is only trackable if each chat says which item it is on. A chat joins an
+// item at its start (link), wrap-up writes the progress note (progress), pausing records the reason (pause),
+// and merging closes it (closeCard). One small edit each, so two chats on one item rarely touch the same line.
+
+function editCard(root, id, fn) {
+  const c = loadCards(root).find((x) => x.id === Number(String(id).replace(/^#/, '')));
+  if (!c) throw new Error(`no card has id ${id}`);
+  const f = path.join(root, c.file);
+  fs.writeFileSync(f, fn(fs.readFileSync(f, 'utf8'), c));
+  return c.id;
+}
+
+/** Record a chat's branch on the item, and one line under "Chats" (date, branch, what it is doing). */
+export function linkWork(root, id, branch, line = '', today = new Date().toISOString().slice(0, 10)) {
+  if (!branch) throw new Error('link needs --branch "<branch>"');
+  return editCard(root, id, (t, c) => {
+    if (!c.work.includes(branch)) t = setLine(t, 'work', [...c.work, branch].join(', '));
+    const entry = `- ${today} ${branch}${line ? ': ' + line : ''}`;
+    // WHY the first "Chats" heading: a combined item carries one per folded-in part; the newest chat goes in the item's own
+    return /^Chats$/m.test(t) ? t.replace(/^Chats$/m, `Chats\n${entry}`) : t.replace(/\n*$/, `\n\nChats\n${entry}\n`);
+  });
+}
+
+/** Rewrite the item's own progress note (the first Done/Next/Blocked lines). Missing parts stay as they were. */
+export function setProgress(root, id, { done, next, blocked } = {}) {
+  return editCard(root, id, (t) => {
+    for (const [k, v] of [['Done', done], ['Next', next], ['Blocked', blocked]]) {
+      if (v === undefined || v === true) continue;
+      const re = new RegExp(`^${k}:.*$`, 'm');
+      t = re.test(t) ? t.replace(re, `${k}: ${v}`) : t;
+    }
+    return t;
+  });
+}
+
+/** Pause with a reason, or clear it with ''. Nothing else changes (deck: "Pause = mark paused with a reason"). */
+export function setPaused(root, id, reason) {
+  return editCard(root, id, (t) => setLine(t, 'paused', reason ? String(reason).trim() : ''));
+}
+
 function args(argv) {
   const o = { _: [] };
   for (let i = 0; i < argv.length; i++) {
@@ -307,24 +348,69 @@ function args(argv) {
   return o;
 }
 
-function main() {
+/**
+ * Run one change and save it. WHY (deck Q-5, "Straight to master"): once master carries the items, every
+ * change goes through the dedicated master copy (cards-master.mjs) — reading and writing the newest list,
+ * pushed at once — so a chat on its own branch never edits a stale copy. `--root` (tests, trying it out)
+ * and a master without items yet keep the old behaviour: edit the files where you are.
+ */
+async function save(o, root, message, fn) {
+  if (!o.root) {
+    const { workspaceOf, masterHasCards, onMaster } = await import('./cards-master.mjs');
+    const ws = workspaceOf(root);
+    if (masterHasCards(ws)) {
+      const r = onMaster(ws, message, fn);
+      console.log(r.pushed ? `saved to master (${r.commit})` : 'nothing changed');
+      return r.result;
+    }
+  }
+  return fn(root);
+}
+
+/** Where to READ the list: the master copy once master carries the items (fetched fresh), else here. */
+async function readRoot(o, root) {
+  if (o.root) return root;
+  const { workspaceOf, masterHasCards, masterCopy } = await import('./cards-master.mjs');
+  const ws = workspaceOf(root);
+  if (!masterHasCards(ws)) return root;
+  const dir = masterCopy(ws);
+  execFileSync('git', ['-C', dir, 'fetch', '-q', 'origin', 'master']);
+  execFileSync('git', ['-C', dir, 'reset', '-q', '--hard', 'origin/master']);
+  return dir;
+}
+
+async function main() {
   const o = args(process.argv.slice(2));
   const root = o.root || execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
   const cmd = o._[0];
-  if (cmd === 'index') { console.log(index(root)); return; }
-  if (cmd === 'check') {
-    const errs = check(loadCards(root));
-    if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
-    console.log(`cards: ${loadCards(root).length} ok`); return;
-  }
-  if (cmd === 'new') { console.log(createCard(root, o)); return; }
-  if (cmd === 'close') {
-    try {
-      const { file, line } = closeCard(root, o._[1], o.ref);
-      console.log(`closed ${file} (stage: merged) under ${root}\n${SHIPPED} gained: ${line}`); return;
-    } catch (e) { console.error(`cards: ${e.message}`); process.exit(1); }
-  }
-  console.error('usage: node scripts/cards.mjs index | check | close <id> --ref "<commit or PR>" | new --title "<t>" [--stage explore|planning|build|polish|merged] [--related 4] [--tags a,b] [--needs 3,7] [--finish "…"] [--why "…"]');
+  const id = o._[1];
+  try {
+    if (cmd === 'index') { console.log(index(await readRoot(o, root))); return; }
+    if (cmd === 'check') {
+      const r = await readRoot(o, root);
+      const errs = check(loadCards(r));
+      if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
+      console.log(`cards: ${loadCards(r).length} ok`); return;
+    }
+    if (cmd === 'new') { console.log(await save(o, root, `cards: new item "${o.title}"`, (r) => createCard(r, o))); return; }
+    if (cmd === 'close') {
+      const { file, line } = await save(o, root, `cards: #${id} merged (${o.ref})`, (r) => closeCard(r, id, o.ref));
+      console.log(`closed ${file} (stage: merged)\n${SHIPPED} gained: ${line}`); return;
+    }
+    if (cmd === 'link') { await save(o, root, `cards: #${id} ← ${o.branch}`, (r) => linkWork(r, id, o.branch, o.line === true ? '' : o.line)); console.log(`#${id} linked to ${o.branch}`); return; }
+    if (cmd === 'progress') { await save(o, root, `cards: #${id} progress`, (r) => setProgress(r, id, o)); console.log(`#${id} progress written`); return; }
+    if (cmd === 'pause') { await save(o, root, `cards: #${id} ${o.reason ? 'paused' : 'unpaused'}`, (r) => setPaused(r, id, o.reason === true ? '' : o.reason)); console.log(`#${id} ${o.reason ? 'paused' : 'unpaused'}`); return; }
+    if (cmd === 'stage') { await save(o, root, `cards: ${o.ids} → ${o.to}`, (r) => setStage(r, String(o.ids).split(','), o.to)); console.log(`moved ${o.ids} to ${o.to}`); return; }
+  } catch (e) { console.error(`cards: ${e.message}`); process.exit(1); }
+  console.error([
+    'usage: node scripts/cards.mjs index | check',
+    '  new --title "<t>" [--stage explore|planning|build|polish] [--related 4] [--tags a,b] [--needs 3,7] [--finish "…"] [--why "…"]',
+    '  link <id> --branch "<branch>" [--line "<what this chat is doing>"]',
+    '  progress <id> [--done "…"] [--next "…"] [--blocked "…"]',
+    '  pause <id> --reason "<why>"   (pause <id> with no --reason unpauses)',
+    '  stage --ids 3,7 --to explore|planning|build|polish',
+    '  close <id> --ref "<commit or PR>"',
+  ].join('\n'));
   process.exit(2);
 }
 

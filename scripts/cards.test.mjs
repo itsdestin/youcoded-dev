@@ -152,3 +152,22 @@ test('combineCards keeps every branch the folded-in cards were linked to', () =>
   combineCards(root, [1, 2], 1);
   assert.deepEqual(loadCards(root)[0].work, ['session/a', 'session/b']);
 });
+
+test('a chat links itself, writes progress, and pauses with a reason', async () => {
+  const { linkWork, setProgress, setPaused } = await import('./cards.mjs');
+  const root = tmp();
+  createCard(root, { title: 'A' });
+  linkWork(root, 1, 'session/75-a', 'building the list', '2026-10-16');
+  linkWork(root, 1, 'session/75-a', 'second chat', '2026-10-17');
+  setProgress(root, 1, { done: 'the list', next: 'the buttons' });
+  setPaused(root, 1, 'waiting on a release');
+  let c = loadCards(root)[0];
+  assert.deepEqual(c.work, ['session/75-a']);
+  assert.equal(c.paused, 'waiting on a release');
+  assert.match(c.body, /Done: the list\nNext: the buttons\nBlocked: nothing\./);
+  assert.match(c.body, /Chats\n- 2026-10-17 session\/75-a: second chat\n- 2026-10-16 session\/75-a: building the list/);
+  setPaused(root, 1, '');
+  c = loadCards(root)[0];
+  assert.equal(c.paused, undefined);
+  assert.deepEqual(check(loadCards(root)), []);
+});
