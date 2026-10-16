@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: On narrow or touch screens, wording is unclear, text wraps badly, and hover-only buttons cannot be reached.
 area: Devices & sync
 side: screens
+vision: everywhere.platforms.android
 ---
 Progress
 Done: nothing recorded.

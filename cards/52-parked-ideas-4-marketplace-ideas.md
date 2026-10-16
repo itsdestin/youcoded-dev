@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Marketplace ideas: personality packs, an open registry, a tip jar, and letting the assistant search the marketplace for you.
 area: Marketplace & library
 side: both
+vision: marketplace.browse.fromchat, marketplace.browse.promptpacks, marketplace.publish.tipjar, marketplace.publish.publicregistry
 ---
 Progress
 Done: nothing recorded.

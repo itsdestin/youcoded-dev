@@ -10,6 +10,7 @@ roadmap: dev-workspace: The feature flow (questions deck, review rounds, contrac
 created: 2026-10-15
 summary: The step-by-step process for designing and approving a new feature is built but has never been used start to finish.
 area: Workspace
+vision: together.workflow.decks
 ---
 Progress
 Done: nothing recorded.

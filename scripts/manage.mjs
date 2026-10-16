@@ -34,15 +34,15 @@ const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'
 
 /** Build the full page from the cards. Cached until a card file changes. */
 let cache = { key: '', html: '' };
-export function buildPage(root, { pageMode = false } = {}) {
+export function buildPage(root, { pageMode = false, tidy = null } = {}) {
   const dir = path.join(root, 'cards');
-  const key = (pageMode ? 'page|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
+  const key = (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {
     // WHY no guessed "Working" in page mode (Destin, plan deck S-3): inside YouCoded the page asks the app which
     // chats are open right now, so a branch saved in the last day must not pass for a chat that is working
-    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify(cardsPayload(root, { guessWorking: !pageMode })));
+    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify({ ...cardsPayload(root, { guessWorking: !pageMode }), ...(tidy ? { tidy } : {}) }));
     execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html'), ...(pageMode ? ['--page-mode'] : [])], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
     cache = { key, html: fs.readFileSync(path.join(tmp, 'page.html'), 'utf8') };
     return cache.html;
@@ -200,7 +200,7 @@ export function cardsPayload(root, { live = true, guessWorking = true } = {}) {
     cards: cards.map(c => {
       const live_ = f ? factsFor(c, f, { guessWorking }) : { chats: [], unsaved: false, working: false, prs: [], failing: false, mergeable: false, lastWork: '' };
       return { id: c.id, title: c.title, stage: c.stage, priority: c.priority || '', summary: c.summary || '', area: c.area || '', side: c.side || '',
-        platform: c.platform || '', paused: c.paused || '', tags: c.tags, needs: c.needs.map(Number), related: c.related.map(Number), work: c.work,
+        platform: c.platform || '', paused: c.paused || '', tags: c.tags, needs: c.needs.map(Number), related: c.related.map(Number), work: c.work, vision: c.vision,
         neededBy: nb.get(String(c.id)) || [], release: c.release || '', created: c.created || '', branch: c.branch || '', finish: c.finish || '',
         // WHY the later of the two: work on its branches is when it was last worked on; the card's own edit counts too
         updated: [touched.get(c.file) || '', live_.lastWork].sort().pop(), report: c.report || '', why: c.why || '', body: c.body || '', file: c.file, live: live_ };

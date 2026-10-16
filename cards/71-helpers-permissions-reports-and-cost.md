@@ -11,6 +11,7 @@ summary: Helpers can run commands without asking, reports always interrupt, each
 area: Chat
 side: both
 platform: Desktop only
+vision: chat.steer.specialists, agents.added.helpers
 ---
 Progress
 Done: nothing recorded.

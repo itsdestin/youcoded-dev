@@ -12,6 +12,7 @@ summary: A phone browser cannot use voice input, and pairing a phone mid-dictati
 area: Devices & sync
 side: both
 platform: Phone and web
+vision: chat.converse.voice, everywhere.platforms.web
 ---
 Progress
 Done: nothing recorded.

@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: The past-conversations list is hard to find and cramped, its search misses some chats, and there are ideas for organizing it better.
 area: Chat
 side: screens
+vision: chat.converse.resume, chat.converse.search, chat.converse.tags
 ---
 Progress
 Done: nothing recorded.

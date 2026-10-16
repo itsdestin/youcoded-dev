@@ -12,6 +12,7 @@ summary: The app takes about 1.3 seconds to open with a blank window, partly bec
 area: Getting started
 side: behind
 platform: Desktop only
+vision: everywhere.platforms.desktop
 ---
 Progress
 Done: nothing recorded.

@@ -12,6 +12,7 @@ area: Chat
 side: both
 platform: Desktop only
 work: feat/specialists-plans-ui, feat/specialists-plans-5b, docs/specialists-plans-decisions
+vision: chat.steer.plans, agents.added.budget
 ---
 Progress
 Done: nothing recorded.

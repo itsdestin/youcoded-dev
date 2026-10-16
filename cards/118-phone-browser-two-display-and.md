@@ -11,6 +11,7 @@ summary: Phones get theme colours but not wallpaper or mascot pictures, and the 
 area: Devices & sync
 side: screens
 platform: Phone and web
+vision: everywhere.platforms.web, yours.look.themes
 ---
 Progress
 Done: nothing recorded.

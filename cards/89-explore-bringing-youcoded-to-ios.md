@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: iPhones can only use YouCoded through Safari pointed at another device; compare ways to offer a real iPhone app.
 area: Devices & sync
 side: both
+vision: everywhere.added.ios
 ---
 Progress
 Done: nothing recorded.

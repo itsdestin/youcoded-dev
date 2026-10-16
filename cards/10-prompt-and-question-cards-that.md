@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Some cards keep saying "running" after a resume, and reloading the window can hide a question Claude Code is still waiting on.
 area: Chat
 side: both
+vision: chat.steer.permissions
 ---
 Progress
 Done: nothing recorded.

@@ -12,6 +12,7 @@ created: 2026-10-15
 summary: Let your devices share requests and scheduled jobs automatically, with an optional paid cloud fallback when all are offline.
 area: Devices & sync
 side: both
+vision: sync.mesh.handoff, sync.mesh.cloud, agents.background.device
 ---
 Progress
 Done: nothing recorded.

@@ -9,6 +9,7 @@ why: Destin, 2026-10-16: three follow-ups for the management page
 summary: Three follow-ups: rebuild priority and version tags, make Screens complete and better sorted, and a full human review of the page.
 area: Developer tools
 side: screens
+vision: together.workflow.surface
 ---
 Progress
 Done: nothing yet.

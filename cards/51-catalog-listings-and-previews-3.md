@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Marketplace fixes: listings that undersell, install and library faults, admin and comment faults, and a "Likely safe" badge that needs real checks.
 area: Marketplace & library
 side: screens
+vision: marketplace.browse, marketplace.setup.install
 ---
 Progress
 Done: nothing recorded.

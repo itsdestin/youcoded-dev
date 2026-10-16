@@ -12,6 +12,7 @@ area: Chat
 side: screens
 work: followup/right-pane-motion
 paused: Destin dropped the panel animations for now
+vision: chat.converse.voice
 ---
 Progress
 Done: nothing recorded.

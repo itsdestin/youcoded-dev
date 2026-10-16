@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: First-run setup and sign-in haven't been fully tested on Linux installers or some Windows PCs, and the Mac test machine is slow.
 area: Getting started
 side: behind
+vision: everywhere.firstrun.setup
 ---
 Progress
 Done: nothing recorded.

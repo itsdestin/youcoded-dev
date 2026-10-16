@@ -14,6 +14,7 @@ area: Devices & sync
 side: both
 platform: Android only
 work: session/android-setup-20261014, session/android-setup-closeout, session/android-setup-wrapup
+vision: everywhere.platforms.android, everywhere.added.play
 ---
 Progress
 Done: nothing recorded.

@@ -250,7 +250,10 @@ def _arg(k):
     return sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
 LIVE_CARDS = _arg('--cards-json')
 if LIVE_CARDS:
-    today = ltab.render(json.load(open(LIVE_CARDS))['cards'], LEFTOVERS, DEV_ONLY, T, sechead, fold, pic)
+    _payload = json.load(open(LIVE_CARDS))
+    # WHY tidy from the payload (plan deck Q-10, 2026-10-16): the Work board's program reads idle copies and
+    # dependency updates live; without it (node scripts/manage.mjs) Tidy up keeps the Oct 12 snapshot
+    today = ltab.render(_payload['cards'], LEFTOVERS, DEV_ONLY, T, sechead, fold, pic, tidy=_payload.get('tidy'))
 else:
     today = ttab.render(EFFORTS, DEV_ONLY, LEFTOVERS, SUGGEST, pic, T, sechead, fold)
 
@@ -339,7 +342,9 @@ def check_tips(page):
         raise SystemExit('check_tips: these have no hover hint (add one to tooltips.py):\n  ' + '\n  '.join(bad[:40] + titles[:10]) + f'\n({len(bad)} missing, {len(titles)} title= attributes)')
 
 # ----------------------------------------------------------------------------- PAGE
-vision_html, vision_nodes, vision_tot = vrender(HERE, TIP, TRACK_SHORT)
+vision_html, vision_nodes, vision_tot = vrender(HERE, TIP, TRACK_SHORT, cards=_payload['cards'] if LIVE_CARDS else None)
+if LIVE_CARDS:
+    bptab.paint(_payload['cards'])
 # WHY (2026-10-14, round 3): the four big-picture views live here, in one look, not on a separate page
 vision_html = bptab.render(vision_html, TIP)
 CSS = open(os.path.join(HERE, 'cc.css')).read() + open(os.path.join(HERE, 'page.css')).read()

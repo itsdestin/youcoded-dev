@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: A chat open on two computers can be taken over with no warning and both may keep writing; parked ideas for handing it over cleanly.
 area: Devices & sync
 side: both
+vision: sync.added.takeover
 ---
 Progress
 Done: nothing recorded.

@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Reply length, recommended models and the limit of 30 helpers per chat are fixed instead of adjustable.
 area: Settings
 side: both
+vision: chat.converse.native, chat.steer.specialists
 ---
 Progress
 Done: nothing recorded.

@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Accounts: a trick sign-in link could take over a YouCoded account, and sign-outs can happen silently.
 area: Settings
 side: behind
+vision: social.friends.signin, social.friends.signout
 ---
 Progress
 Done: nothing recorded.

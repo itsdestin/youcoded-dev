@@ -11,6 +11,7 @@ summary: Let the dedicated Copilot/AI key on Windows laptops open and close the 
 area: Social
 side: both
 platform: Desktop only
+vision: social.friends.games
 ---
 Progress
 Done: nothing recorded.

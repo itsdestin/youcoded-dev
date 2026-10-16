@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Rare sync problems, like two projects named only by different capitals sharing files, or stray leftover files after a crash.
 area: Devices & sync
 side: behind
+vision: sync.follow.safety
 ---
 Progress
 Done: nothing recorded.

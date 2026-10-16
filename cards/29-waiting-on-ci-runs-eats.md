@@ -10,6 +10,7 @@ roadmap: dev-workspace: Waiting on CI runs eats whole sessions. Destin, 2026-09-
 created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
+vision: everywhere.added.update
 ---
 Progress
 Done: nothing recorded.

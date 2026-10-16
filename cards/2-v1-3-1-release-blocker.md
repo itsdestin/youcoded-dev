@@ -13,6 +13,7 @@ summary: Reopened chats can mislabel replayed turns and show the reopen time ins
 area: Chat
 side: behind
 platform: Desktop only
+vision: chat.converse.resume
 ---
 Progress
 Done: nothing recorded.

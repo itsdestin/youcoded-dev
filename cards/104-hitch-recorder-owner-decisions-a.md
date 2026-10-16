@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: Decide whether people can turn the built-in slowdown recorder off, and whether its summary may go with bug reports.
 area: Settings
 side: both
+vision: together.workflow.perf, together.contribute.bugs
 ---
 Progress
 Done: nothing recorded.

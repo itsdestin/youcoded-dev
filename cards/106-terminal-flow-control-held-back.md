@@ -12,6 +12,7 @@ summary: Very fast terminal output can leave stale lines or lose a program's las
 area: Chat
 side: behind
 platform: Desktop only
+vision: chat.converse.multi
 ---
 Progress
 Done: nothing recorded.

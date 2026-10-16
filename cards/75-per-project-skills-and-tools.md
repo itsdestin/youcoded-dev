@@ -11,6 +11,7 @@ summary: Each project picks which skills, plugins and tool connections the assis
 area: Projects
 side: both
 work: session/plugin-project-controls
+vision: projects.controls.skills, agents.added.project-skills
 ---
 Progress
 Done: nothing recorded.

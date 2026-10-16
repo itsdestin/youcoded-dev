@@ -11,6 +11,7 @@ summary: Messages in an open chat can vanish, split, stick or draw wrongly, most
 area: Chat
 side: both
 platform: Desktop only
+vision: chat.converse
 ---
 Progress
 Done: nothing recorded.

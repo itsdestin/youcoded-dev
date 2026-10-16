@@ -101,7 +101,7 @@ def legend():
     # WHY each entry carries its hint: "exists" and "only an idea" are the page's own words for a status
     return ''.join(f'<span class="leg" data-tip="{E(TIPS["status." + s])}">{dot(s)}{w}</span>' for s, w in (('done','exists'),('building','being built'),('planned','planned'),('vision','only an idea')))
 
-def render(here, tip, track_short):
+def render(here, tip, track_short, cards=None):
     """WHY the cut (2026-10-13, Destin: "a confusing fucking disaster to navigate.... just wayyy too
     many controls"): the By area / By track switch and the four filter pills are gone. The tab opens
     on the mission, the two boxes and the ten area cards. Three plain links under the mission ask the
@@ -111,6 +111,9 @@ def render(here, tip, track_short):
     T = lambda k: E(tip[k])
     sk, ev, insights = load(here)
     nodes = merge(flatten(sk), ev)
+    if cards is not None:  # WHY: inside the Work board, statuses come from the work items (vision_live.py)
+        import vision_live
+        vision_live.paint(nodes, cards, STATUS_WORD)
     tracks = sk.get('tracks', [{'id': 'app', 'title': 'The app', 'about': ''}])
     track_of = sk.get('track_of', {})
     for nid, n in nodes.items(): n['track'] = track_for(nid, nodes, track_of)

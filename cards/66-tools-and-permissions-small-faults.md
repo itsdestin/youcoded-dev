@@ -11,6 +11,7 @@ summary: Small models stumble on edits, local models lack Skip Permissions, huge
 area: Chat
 side: both
 platform: Desktop only
+vision: chat.steer.permissions, chat.converse.native
 ---
 Progress
 Done: nothing recorded.

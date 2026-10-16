@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Themes: old drawn previews, hard-to-read brand colours, Android ignoring theme fonts, three things to check and three parked ideas.
 area: Marketplace & library
 side: screens
+vision: yours.look.themes
 ---
 Progress
 Done: nothing recorded.

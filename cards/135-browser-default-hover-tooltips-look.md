@@ -13,6 +13,7 @@ summary: Screens that don't match the shared look: plain browser hover hints, ha
 area: Settings
 side: screens
 work: session/ui-consistency-audit
+vision: yours.look.finetune
 ---
 Progress
 Done: nothing recorded.

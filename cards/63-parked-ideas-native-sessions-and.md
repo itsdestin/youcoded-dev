@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Saved ideas for the assistant, its helpers and its tools: memory across chats, goals, custom builds, other AI engines, and safety controls.
 area: Chat
 side: both
+vision: chat.steer.memory, chat.converse.native
 ---
 Progress
 Done: nothing recorded.

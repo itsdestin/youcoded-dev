@@ -11,6 +11,7 @@ summary: The Office editor has seven small faults, plus safety gaps: pictures do
 area: Files & documents
 side: behind
 platform: Desktop only
+vision: chat.files.office
 ---
 Progress
 Done: nothing recorded.

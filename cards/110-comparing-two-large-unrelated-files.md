@@ -12,6 +12,7 @@ summary: An edit card showing changes between two large, unrelated files can fre
 area: Chat
 side: behind
 platform: Desktop only
+vision: chat.converse
 ---
 Progress
 Done: nothing recorded.

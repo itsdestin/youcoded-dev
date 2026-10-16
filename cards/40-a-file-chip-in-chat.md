@@ -11,6 +11,7 @@ summary: Clicking a file in chat that lives outside the project folder says "not
 area: Chat
 side: screens
 platform: Desktop only
+vision: chat.files.drawer
 ---
 Progress
 Done: nothing recorded.

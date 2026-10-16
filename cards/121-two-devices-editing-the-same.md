@@ -13,6 +13,7 @@ summary: Two devices editing the same file or chat leave no way to find or choos
 area: Devices & sync
 side: both
 work: session/sync-safety-audit-20260908
+vision: sync.added.conflictcopy
 ---
 Progress
 Done: nothing recorded.

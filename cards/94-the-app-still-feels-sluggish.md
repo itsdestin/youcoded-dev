@@ -12,6 +12,7 @@ summary: Switching chats can pause, opening a long chat can interrupt typing, an
 area: Chat
 side: behind
 work: backup/performance-stream-attribution-wip
+vision: chat.converse.multi
 ---
 Progress
 Done: nothing recorded.

@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: People using only YouCoded's own engine have no obvious place to keep personal or project skills; must be fixed before 1.3.1.
 area: Agents & automations
 side: behind
+vision: chat.steer.skillshome
 ---
 Progress
 Done: nothing recorded.

@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: Files Claude creates, edits or deletes with a command or script never appear in the chat's files list; deletions are never recorded.
 area: Files & documents
 side: both
+vision: chat.files.drawer
 ---
 Progress
 Done: nothing recorded.

@@ -29,6 +29,12 @@ PART_STATUS = {'exists': 'done', 'building': 'building', 'planned': 'planned', '
 CHEV = '<span class="chev" aria-hidden="true">›</span>'
 
 
+def paint(cards):
+    """WHY: inside the Work board, Journeys, Foundations and How it works read the same item-painted statuses as Areas."""
+    import vision_live
+    vision_live.paint(N, cards, list(WORD))
+
+
 def pill(status, tips, word=None, tone=None):
     return (f'<span class="spill {tone if tone is not None else TONE[status]}" data-tip="{E(tips["status." + status] if status in WORD else status)}">'
             f'{E(word or WORD[status])}</span>')

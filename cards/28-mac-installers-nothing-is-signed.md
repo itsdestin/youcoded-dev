@@ -14,6 +14,7 @@ area: Leaving & updating
 side: behind
 platform: Mac only
 work: session/auto-update-roadmap-20261014
+vision: everywhere.added.macsign
 ---
 Progress
 Done: nothing recorded.

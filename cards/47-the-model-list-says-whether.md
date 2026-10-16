@@ -11,6 +11,7 @@ summary: The model picker can be empty on a new or second device, and its rows d
 area: Chat
 side: screens
 work: session/model-picker-tags
+vision: yours.model.tags, yours.model.any
 ---
 Progress
 Done: nothing recorded.

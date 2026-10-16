@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: The new built-in browser lacks phone support, file uploads, tab extras and hand-testing on Mac and Windows.
 area: Chat
 side: both
+vision: chat.steer.websearch
 ---
 Progress
 Done: nothing recorded.

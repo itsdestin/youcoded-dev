@@ -9,6 +9,7 @@ roadmap: dev-workspace: Session work lost or stranded: 6 ways a session's work o
 created: 2026-10-15
 summary: Unfinished work can vanish or be stranded on one computer, and the cleanup step has offered to delete folders holding unsaved edits.
 area: Workspace
+vision: together.added.closeout
 ---
 Progress
 Done: nothing recorded.

@@ -12,6 +12,7 @@ created: 2026-10-15
 summary: Public launch: the company paperwork and trademark, then a Google Play listing (Google requires a verified developer from 2027).
 area: Release & business
 platform: Android only
+vision: everywhere.added.play, together.added.legal
 ---
 Progress
 Done: nothing recorded.

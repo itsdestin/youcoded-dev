@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: A broken settings file is replaced without telling you, one warning looks different from the rest, and Android needs a newer Claude Code.
 area: Chat
 side: both
+vision: chat.converse.cloud
 ---
 Progress
 Done: nothing recorded.

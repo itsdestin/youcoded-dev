@@ -13,6 +13,7 @@ summary: Some spots still read whole files or keep data too long, causing backgr
 area: Chat
 side: behind
 platform: Desktop only
+vision: chat.converse
 ---
 Progress
 Done: nothing recorded.

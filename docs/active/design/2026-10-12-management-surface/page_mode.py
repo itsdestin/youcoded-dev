@@ -55,7 +55,7 @@ async function loadChats(){if(!Y||!Y.chats)return;const r=await Y.chats.list();i
 loadChats();
 
 // ---------- the buttons ----------
-const item=el=>{const r=el.closest('.lrow');if(r)return +r.dataset.cid;return typeof window.LCUR==='number'?window.LCUR:null};
+const item=el=>{const r=el.closest('[data-cid]');if(r)return +r.dataset.cid;return typeof window.LCUR==='number'?window.LCUR:null};
 async function start(prompt){if(!Y||!Y.startSession){toast('This page needs YouCoded with "Start a chat" for pages.');return}
   const r=await Y.startSession({prompt});if(!r.ok)toast(r.reason)}
 const brief=id=>{const c=C[id];return `Work item #${c.id}: ${c.title}\nFile: ${c.file}${c.summary?'\nSummary: '+c.summary:''}`};
@@ -75,7 +75,10 @@ function pauseDlg(id){openPanel('','Pause #'+id,`<p class="t-xs dim" style="marg
   `<button class="btn" id="lcancel" data-tip="Closes this without changing anything.">Cancel</button><button class="btn primary" id="lgo" data-tip="Marks it paused with your reason and saves.">Pause</button>`);
   $('#lcancel').onclick=closePanel;$('#lgo').onclick=async()=>{const reason=$('#preason').value.trim();if(!reason){$('#lerr').hidden=false;$('#lerr').textContent='Say why it is paused.';return}
     try{boardDone((await run({op:'pause',id,reason})).message)}catch(e){$('#lerr').hidden=false;$('#lerr').textContent=e.message}}}
-document.addEventListener('click',e=>{const b=e.target.closest('button,[role=menuitem]');if(!b)return;const label=b.textContent.trim();const fn=ACT[label];
+document.addEventListener('click',e=>{const tp=e.target.closest('[data-tidy-prompt]');if(tp){e.preventDefault();e.stopImmediatePropagation();start(tp.dataset.tidyPrompt).catch(err=>toast(err.message));return}
+  const b=e.target.closest('button,[role=menuitem]');if(!b)return;
+  // WHY the first span for a menu item: its effect is written under its name (today_tab.menu)
+  const label=(b.getAttribute('role')==='menuitem'&&b.querySelector('span')||b).textContent.trim();const fn=ACT[label];
   if(!fn)return;const id=item(b);if(id==null||!C[id])return;e.preventDefault();e.stopImmediatePropagation();Promise.resolve(fn(id)).catch(err=>toast(err.message))},true);
 })();
 '''

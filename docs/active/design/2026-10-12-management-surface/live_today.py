@@ -76,7 +76,38 @@ def group(T, key, title, hint, tip, ctip, count, body, open_=False, tick=True):
             f'<span class="lgtools">{tools}<span class="chev" aria-hidden="true">›</span></span></summary><div class="lgbody">{body}</div></details>')
 
 
-def render(cards, leftovers, dev_only, T, sechead, fold, pic):
+def live_tidy(t):
+    """Tidy up from live facts (the Work board's program): the approved rows (today_tab.tidy), with today's numbers.
+    A row with nothing in it is left out rather than shown as "0 …"."""
+    rows = []
+    def row(title, line, label, tip, prompt):
+        return (f'<div class="row crow"><div class="ctop"><div class="cmain"><div class="ctl"><span class="t-sm fw">{E(title)}</span></div>'
+                f'<div class="t-xs dim cnext">{E(line)}</div></div><div class="acts"><button class="btn sm primary" data-tidy-prompt="{E(prompt)}" data-tip="{E(tip)}">{E(label)}</button></div></div></div>')
+    deps = [d for d in t.get('deps', []) if d.get('failing')]
+    if deps:
+        rows.append(row(f'{len(deps)} automatic dependency update{"s" if len(deps) > 1 else ""} fail their checks',
+                        '; '.join(f'{d["repo"]} #{d["number"]} {d["title"]}' for d in deps[:6]) + ('…' if len(deps) > 6 else ''),
+                        f'Try {"all " + str(len(deps)) if len(deps) > 1 else "it"}', 'Starts a chat that tries these updates together and runs the checks once.',
+                        'These automatic dependency updates fail their checks: ' + ', '.join(f'{d["repo"]} #{d["number"]}' for d in deps) + '. Try them together on one branch, run the checks once, and tell me what breaks.'))
+    idle = t.get('idle', [])
+    notes = [c for c in idle if c.get('notesOnly')]
+    work = [c for c in idle if not c.get('notesOnly')]
+    if work:
+        rows.append(row(f'{len(work)} copies idle 2+ weeks with unsaved or unmerged work, and no item',
+                        ', '.join(f'{c["name"]} (last {c["last"]})' for c in work),
+                        'Save as backup branches', "Starts a chat that saves each copy's changes as a backup branch, so they can be cleaned up safely.",
+                        'Save each of these idle copies of work as a backup branch on GitHub, then show me what each held so I can decide: ' + ', '.join(c['name'] for c in work) + '.'))
+    if notes:
+        rows.append(row(f'{len(notes)} copies that hold only notes or research', ', '.join(c['name'] for c in notes),
+                        'Keep the notes, close the copies', 'Starts a chat that keeps the notes in the workspace and closes the copies.',
+                        'These copies of work hold only notes or research: ' + ', '.join(c['name'] for c in notes) + '. Keep the notes in the workspace and close the copies.'))
+    if not rows:
+        return 0, '<p class="t-xs muted">Nothing to tidy.</p>'
+    rows.append('<div class="t-xs muted note">Cleaned up automatically, nothing to do: merged copies idle 3+ days are removed when a chat starts.</div>')
+    return len(rows) - 1, '<div class="cstack">' + ''.join(rows) + '</div>'
+
+
+def render(cards, leftovers, dev_only, T, sechead, fold, pic, tidy=None):
     import datetime
     today = datetime.date.today()
     rows = [as_row(c, today) for c in cards]
@@ -96,7 +127,7 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
     hero = min(pool, key=lambda r: (ORDER.index(r['stage']), act(r), r['days'], int(r['id']))) if pool else None
     if hero:
         main, does = tt.next_step(hero)
-        out.append(f'''<section class="card hero"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
+        out.append(f'''<section class="card hero" data-cid="{hero['id']}"><div class="eyebrow"><span data-tip="{T('today.start')}">Start here · suggested next</span></div>
 <div class="ctl"><span class="t-lg"><span class="lid">#{hero['id']}</span> {E(hero['title'])}</span>{tt.stage_pill(hero)}{tt.markers(hero)}</div>
 <p class="t-sm dim">{E(hero['next'])}</p><div class="cchips">{tt.chips(hero)}</div>
 <p class="t-2xs muted">Suggested because it is the furthest along, and its next step is waiting.</p>
@@ -112,7 +143,7 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
     out.append(group(T, 'explore', 'Preliminary exploration', 'Not settled yet. These may overlap or contradict each other; combine them when one is ready to plan.', 'today.explore', 'today.explore.count', len(by['explore']), cards_of('explore')))
     if by['merged']:
         out.append(group(T, 'merged', 'Merged', 'In master; ships with the next release.', 'today.merged', 'today.merged.count', len(by['merged']), cards_of('merged')))
-    n_tidy, tidy_html = tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards], raw=True)
+    n_tidy, tidy_html = live_tidy(tidy) if tidy is not None else tt.tidy(leftovers, dev_only, fold, [c['id'] for c in cards], raw=True)
     out.append('<p class="t-xs muted lnone" id="lnone" hidden>Nothing matches.</p>')
     # ---- the bulk bar (Destin, 2026-10-15: bulk edit in v1)
     out.append('''<div class="lbulk layer" id="lbulk" hidden role="toolbar" aria-label="Edit ticked items"><span class="n" id="lbn"></span>
@@ -123,7 +154,7 @@ def render(cards, leftovers, dev_only, T, sechead, fold, pic):
 <button class="btn sm" id="lbdelete" data-tip="Removes the ticked items. Asks first.">Delete…</button>
 <button class="closebtn" id="lbclear" aria-label="Clear the ticks" data-tip="Clears the ticks."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>''')
     out.append('<script>window.LCARDS=' + json.dumps({str(c['id']): {k: c[k] for k in ('id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'live', 'tags', 'needs', 'related', 'neededBy', 'release', 'branch', 'finish', 'body', 'file')} for c in cards}).replace('</', '<\\/') + ';</script>')
-    # ---- Tidy up: the approved content, in the same group look (its facts are still the Oct 12 snapshot)
+    # ---- Tidy up: the approved content, in the same group look (live inside YouCoded; the Oct 12 snapshot under manage.mjs)
     out.append(group(T, 'tidy', 'Tidy up', 'Housekeeping: nothing here changes the app.', 'today.tidy', 'today.tidy.count', n_tidy, tidy_html, tick=False))
     return out
 

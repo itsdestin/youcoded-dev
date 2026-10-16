@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Some file kinds don't fully open or edit (csv grids, older Office formats, your fonts), plus ideas for the files pane and editor.
 area: Files & documents
 side: both
+vision: chat.files.office, chat.files.drawer
 ---
 Progress
 Done: nothing recorded.

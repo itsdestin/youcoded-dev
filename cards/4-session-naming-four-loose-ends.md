@@ -11,6 +11,7 @@ summary: Names can't go back to automatic once typed by hand, all reset to "New 
 area: Chat
 side: both
 platform: Desktop only
+vision: chat.converse.tags
 ---
 Progress
 Done: nothing recorded.

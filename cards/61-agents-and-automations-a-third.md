@@ -13,6 +13,7 @@ created: 2026-10-15
 summary: A new main view beside Chat and Projects where tasks run on a schedule or trigger, with budgets and an inbox of results.
 area: Agents & automations
 side: both
+vision: agents.background.scheduled, agents.background.view
 ---
 Progress
 Done: nothing recorded.

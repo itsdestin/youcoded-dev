@@ -13,6 +13,7 @@ summary: Pages work today; next comes letting pages run assistant tasks, use fil
 area: Pages
 side: both
 work: session/page-start-session, session/ha-pages-connection
+vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
 Done: nothing recorded.

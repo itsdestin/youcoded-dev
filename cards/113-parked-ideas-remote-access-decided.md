@@ -12,6 +12,7 @@ area: Devices & sync
 side: both
 platform: Phone and web
 paused: Destin decided to leave these as they are for now
+vision: sync.follow.remote
 ---
 Progress
 Done: nothing recorded.

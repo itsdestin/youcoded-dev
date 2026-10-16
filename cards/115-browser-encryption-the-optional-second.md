@@ -12,6 +12,7 @@ summary: The optional encrypted phone connection was designed but never built, s
 area: Devices & sync
 side: both
 platform: Phone and web
+vision: everywhere.added.remoteenc, chat.converse.voice
 ---
 Progress
 Done: nothing recorded.

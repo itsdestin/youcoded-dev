@@ -11,6 +11,7 @@ summary: Huge files can pause on open, big spreadsheets freeze while saving, and
 area: Files & documents
 side: behind
 platform: Desktop only
+vision: chat.files.office
 ---
 Progress
 Done: nothing recorded.

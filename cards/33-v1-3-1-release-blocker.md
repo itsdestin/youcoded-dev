@@ -13,6 +13,7 @@ summary: In big projects, file search stops at 2,000 files and text search at 20
 area: Files & documents
 side: both
 platform: Desktop only
+vision: projects.folder.bigsearch
 ---
 Progress
 Done: nothing recorded.

@@ -12,6 +12,7 @@ summary: Resumed cloud chats miss cheaper cached pricing, nothing is reloaded af
 area: Chat
 side: both
 platform: Desktop only
+vision: chat.harness.tokens, chat.harness.compaction
 ---
 Progress
 Done: nothing recorded.

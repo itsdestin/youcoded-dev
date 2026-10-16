@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: The new-session form can't start a bare terminal with no assistant, even though the app can already open one.
 area: Chat
 side: screens
+vision: chat.converse.multi
 ---
 Progress
 Done: nothing recorded.

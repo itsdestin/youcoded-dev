@@ -49,8 +49,10 @@ export const STAGE_WORD = { explore: 'Preliminary exploration', planning: 'Plann
 // WHY summary / area / side / platform / work / paused (Destin, 2026-10-16: "the point was to rebuild, not
 // copy-paste"): the management page's approved rows show a plain one-line description, the part of the app,
 // whether it changes what you see, and live facts worked out from the item's own branches (`work`).
-export const KEYS = ['id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'tags', 'needs', 'related', 'work', 'release', 'report', 'branch', 'finish', 'roadmap', 'created', 'why'];
-const LISTS = new Set(['tags', 'needs', 'related', 'work']);
+// WHY vision (2026-10-16, plan deck Q-10: "Big picture reads the items directly"): the parts of Destin's vision
+// (vision-options/facts.json node ids) an item builds or fixes, so Big picture paints each part from its items.
+export const KEYS = ['id', 'title', 'stage', 'priority', 'summary', 'area', 'side', 'platform', 'paused', 'tags', 'needs', 'related', 'work', 'vision', 'release', 'report', 'branch', 'finish', 'roadmap', 'created', 'why'];
+const LISTS = new Set(['tags', 'needs', 'related', 'work', 'vision']);
 
 export function slug(title) {
   return title.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').split('-').slice(0, 5).join('-') || 'card';
@@ -73,7 +75,7 @@ export function parseCard(text, file) {
   if (!Number.isInteger(card.id) || card.id < 1) errors.push('id must be a whole number from 1');
   if (!card.title) errors.push('title is missing');
   if (!STAGES.includes(card.stage)) errors.push(`stage "${card.stage ?? ''}" is not one of ${STAGES.join(', ')}`);
-  card.tags ??= []; card.needs ??= []; card.related ??= []; card.work ??= [];
+  card.tags ??= []; card.needs ??= []; card.related ??= []; card.work ??= []; card.vision ??= [];
   const want = `${card.id}-`;
   if (file && !path.basename(file).startsWith(want)) errors.push(`file name should start with "${want}"`);
   card.errors = errors;
@@ -284,6 +286,7 @@ export function combineCards(root, idList, keep, title) {
     // WHY (2026-10-16 triage): a folded-in card's branches are its live facts on the page (chats, checks, backup);
     // dropping them lost #138's link to session/ui-consistency-audit when it was combined into #135
     t = setLine(t, 'work', [...new Set(group.flatMap(c => c.work))].join(', '));
+    t = setLine(t, 'vision', [...new Set(group.flatMap(c => c.vision))].join(', '));
     for (const c of others) t = t.replace(/\n*$/, '') + `\n\nMerged in #${c.id} "${c.title}"\n${c.body}\n`;
     fs.writeFileSync(f, t);
     for (const c of others) fs.rmSync(path.join(root, c.file));

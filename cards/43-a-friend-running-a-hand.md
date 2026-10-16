@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: A friend using a modified app can record a forfeit win against you the moment you disconnect, and can flood result messages.
 area: Social
 side: behind
+vision: social.friends.forfeit
 ---
 Progress
 Done: nothing recorded.

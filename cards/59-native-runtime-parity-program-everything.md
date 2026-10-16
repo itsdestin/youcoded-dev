@@ -12,6 +12,7 @@ created: 2026-10-15
 summary: Close what still separates chats on YouCoded's own engine from Claude Code, including a settings screen to add and remove tool connections.
 area: Chat
 side: both
+vision: chat.harness.parity, projects.controls.mcp, agents.added.mcp
 ---
 Progress
 Done: nothing recorded.

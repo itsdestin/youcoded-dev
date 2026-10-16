@@ -11,6 +11,7 @@ summary: Queued-message edits lose attachments, failed replies lack Try again, t
 area: Chat
 side: both
 platform: Desktop only
+vision: chat.converse.native, chat.converse.queue
 ---
 Progress
 Done: nothing recorded.

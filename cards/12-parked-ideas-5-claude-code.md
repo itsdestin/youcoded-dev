@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Possible additions: cards for more Claude Code pop-ups, hiding secrets in tool output, showing background sessions, and a goal banner.
 area: Chat
 side: both
+vision: chat.steer.permissions
 ---
 Progress
 Done: nothing recorded.

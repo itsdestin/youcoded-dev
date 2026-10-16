@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Some themes' effects make the graphics chip work much harder than plain themes; decide defaults for weaker computers.
 area: Settings
 side: both
+vision: yours.look.reduced, yours.look.themes
 ---
 Progress
 Done: nothing recorded.

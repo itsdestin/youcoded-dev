@@ -11,6 +11,7 @@ summary: When remote access fails the phone shows a blank error instead of what'
 area: Devices & sync
 side: screens
 platform: Phone and web
+vision: sync.follow.remote
 ---
 Progress
 Done: nothing recorded.

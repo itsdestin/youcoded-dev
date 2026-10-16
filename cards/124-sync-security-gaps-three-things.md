@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Old password files may stay in sync history, Android backups copy service keys, and one device could pose as another.
 area: Devices & sync
 side: behind
+vision: sync.added.securitygaps
 ---
 Progress
 Done: nothing recorded.

@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: Speed testing misses some situations, some of its tools can mislead, and fixes haven't been checked on Windows, Mac or phones.
 area: Developer tools
 side: behind
+vision: together.workflow.perf
 ---
 Progress
 Done: nothing recorded.

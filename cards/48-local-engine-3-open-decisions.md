@@ -11,6 +11,7 @@ summary: Local models: what to do when two big models won't fit, three small scr
 area: Settings
 side: both
 platform: Desktop only
+vision: chat.converse.local, yours.model.localsettings
 ---
 Progress
 Done: nothing recorded.

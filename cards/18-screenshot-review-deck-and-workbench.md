@@ -9,6 +9,7 @@ roadmap: dev-workspace: Screenshot, review-deck and workbench tooling: 10 faults
 created: 2026-10-15
 summary: The tools that make before/after review pages sometimes send blank pages, cut off cards, or show viewers stuck loading.
 area: Workspace
+vision: together.workflow.decks, together.added.shoot
 ---
 Progress
 Done: nothing recorded.

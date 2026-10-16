@@ -12,6 +12,7 @@ created: 2026-10-15
 summary: Models, the engine and voice each download differently; one shared downloader should also show Google's Gemma licence terms.
 area: Settings
 side: screens
+vision: chat.converse.local
 ---
 Progress
 Done: nothing recorded.

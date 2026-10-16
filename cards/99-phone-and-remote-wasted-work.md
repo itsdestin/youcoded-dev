@@ -11,6 +11,7 @@ summary: Phones watching a chat download more than they show, can flash white or
 area: Devices & sync
 side: behind
 platform: Phone and web
+vision: sync.follow.remote
 ---
 Progress
 Done: nothing recorded.

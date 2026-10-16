@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Sync: large projects may miss edits or duplicate history, very long chats stop syncing, and the first download shows nothing while it runs.
 area: Devices & sync
 side: behind
+vision: sync.follow.safety, sync.added.longchats
 ---
 Progress
 Done: nothing recorded.

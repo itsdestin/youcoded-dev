@@ -10,6 +10,7 @@ created: 2026-10-15
 summary: Comments show only "5h ago" with no exact time, and on the phone an open comments panel doesn't update by itself.
 area: Files & documents
 side: screens
+vision: chat.files.comments
 ---
 Progress
 Done: nothing recorded.

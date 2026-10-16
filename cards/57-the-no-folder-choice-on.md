@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: Chats with no project folder: test the "No folder" choice, decide incognito rules, and maybe a built-in "Your Assistant" project.
 area: Chat
 side: both
+vision: projects.folder.nofolder, projects.folder.builtin
 ---
 Progress
 Done: nothing recorded.

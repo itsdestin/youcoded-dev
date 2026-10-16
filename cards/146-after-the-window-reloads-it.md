@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: After the window reloads it jumps to the first chat, so a message typed next can go to the wrong conversation.
 area: Chat
 side: both
+vision: chat.converse.multi
 ---
 Progress
 Done: nothing recorded.

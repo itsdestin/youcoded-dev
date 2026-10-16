@@ -11,6 +11,7 @@ summary: Typing in the buddy can accidentally confirm a menu choice, its Allow b
 area: Chat
 side: both
 platform: Desktop only
+vision: yours.look.buddy
 ---
 Progress
 Done: nothing recorded.

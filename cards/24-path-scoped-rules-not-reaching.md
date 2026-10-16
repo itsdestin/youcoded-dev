@@ -9,6 +9,7 @@ roadmap: dev-workspace: Path-scoped rules not reaching sessions: 2 findings.
 created: 2026-10-15
 summary: Rules meant to guide the assistant when it edits certain files sometimes never load, and it can't tell they were missed.
 area: Workspace
+vision: together.workflow
 ---
 Progress
 Done: nothing recorded.

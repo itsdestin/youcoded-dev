@@ -11,6 +11,7 @@ summary: Using YouCoded from a phone still lacks some things the computer has: f
 area: Devices & sync
 side: both
 platform: Phone and web
+vision: sync.follow.remote, everywhere.platforms.web
 ---
 Progress
 Done: nothing recorded.

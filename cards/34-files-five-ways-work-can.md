@@ -11,6 +11,7 @@ summary: Unsaved drafts, Office edits and comments can be lost when windows clos
 area: Files & documents
 side: both
 platform: Desktop only
+vision: chat.files.office, chat.files.drawer
 ---
 Progress
 Done: nothing recorded.

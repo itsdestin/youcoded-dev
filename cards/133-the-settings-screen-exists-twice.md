@@ -13,6 +13,7 @@ summary: Settings is built twice, once per platform, so every change is made twi
 area: Settings
 side: both
 paused: On hold since 2026-09-18; resumes with the wider simplification work
+vision: everywhere.platforms.onecore
 ---
 Progress
 Done: nothing recorded.
