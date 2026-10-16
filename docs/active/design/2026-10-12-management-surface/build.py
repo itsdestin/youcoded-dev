@@ -241,13 +241,24 @@ def sechead(title, count, hint='', tip=None, ctip=None):
 # WHY replaced (2026-10-14, Destin's answers to the independent review: all eight recommended options):
 # Today's rows are drawn by today_tab.py from one table of states; the label decides each row's button.
 import today_tab as ttab
-today = ttab.render(EFFORTS, DEV_ONLY, LEFTOVERS, SUGGEST, pic, T, sechead, fold)
+# WHY two modes (Destin, 2026-10-16: the live page is this whole page, not a separate list): with
+# `--cards-json <file>` (written by scripts/manage.mjs from cards/) Today is drawn from the real work cards by
+# live_today.py and the page goes to `--out`; without it, the approved Oct 12 mockup is built as before.
+import live_today as ltab
+def _arg(k):
+    return sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
+LIVE_CARDS = _arg('--cards-json')
+if LIVE_CARDS:
+    today = ltab.render(json.load(open(LIVE_CARDS))['cards'], LEFTOVERS, DEV_ONLY, T, sechead, fold)
+else:
+    today = ttab.render(EFFORTS, DEV_ONLY, LEFTOVERS, SUGGEST, pic, T, sechead, fold)
 
-b = []
-for x in BUGS:
-    b.append(f'''<div class="row">{pic(x['screens'])}<div class="body"><div class="t-sm">{E(x['title'])}</div><div class="hint wrap">In {E(x['place'])} · {E(x['src'])}</div></div>
-      <div class="acts">{btn('Start a fix','today.startfix')}{btn('Not a bug anymore','today.notbug')}</div></div>''')
-today.append(fold('Bugs users hit', len(BUGS), 'From the roadmap, which does not record who reported them.', ''.join(b), 'today.bugs', 'today.bugs.count'))
+if not LIVE_CARDS:  # WHY: in the live page every bug is a work card already
+    b = []
+    for x in BUGS:
+        b.append(f'''<div class="row">{pic(x['screens'])}<div class="body"><div class="t-sm">{E(x['title'])}</div><div class="hint wrap">In {E(x['place'])} · {E(x['src'])}</div></div>
+          <div class="acts">{btn('Start a fix','today.startfix')}{btn('Not a bug anymore','today.notbug')}</div></div>''')
+    today.append(fold('Bugs users hit', len(BUGS), 'From the roadmap, which does not record who reported them.', ''.join(b), 'today.bugs', 'today.bugs.count'))
 
 r = ['<div class="relgrid">']
 for g, items, scr in RELEASE['groups']:
@@ -335,7 +346,7 @@ CHEV='<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9
 # WHY the header holds only the tabs, the theme, the Draft tag and the date (2026-10-13 cut): every
 # other control moved into the tab it belongs to, or was removed.
 page = f'''<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YouCoded — Today</title>
-<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
+<style>{CSS}{stab.CSS}{VCSS}{ttab.CSS}{ltab.CSS}{bptab.CSS}{POPUP_CSS}{SVG_CSS}{TIP_CSS}</style></head><body>
 <div class="screen">
 <header class="band"><div class="bl"><span class="badge draft" tabindex="0" data-tip="{T('draft')}">Draft ⓘ</span></div>
 <div class="btitle">{ICON_HOME}YouCoded</div>
@@ -390,9 +401,10 @@ $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 {bptab.JS}
 {ttab.JS}
+{ltab.JS}
 </script></body></html>'''
 page = page.replace('<span class="chev" aria-hidden="true">›</span>', CHEV).replace('<span class="chev">›</span>', CHEV)
 check_tips(page)
-open(os.path.join(HERE, 'mockup.html'), 'w').write(page)
+open(_arg('--out') or os.path.join(HERE, 'mockup.html'), 'w').write(page)
 print('screens', len(names), 'base', len(base), 'places', {p: len(v) for p, v in by_place.items()})
 print('hints', len(TIP), '· wrote mockup.html', len(page)//1024, 'KB')

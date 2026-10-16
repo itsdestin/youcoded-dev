@@ -20,7 +20,9 @@ async function withServer(fn) {
 const post = (base, url, body, headers = {}) => fetch(base + url, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body) });
 
 test('serves the page and the cards', () => withServer(async base => {
-  assert.match(await (await fetch(base + '/')).text(), /YouCoded · Work/);
+  const html = await (await fetch(base + '/')).text();
+  assert.match(html, /Big picture/); assert.match(html, /Speed tag/);   // the full page, with Today from the cards
+  assert.equal((await fetch(base + '/../../../etc/passwd')).status, 404);
   const j = await (await fetch(base + '/api/cards')).json();
   assert.equal(j.cards.length, 3); assert.equal(j.stages.length, 5);
 }));

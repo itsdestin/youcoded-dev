@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // manage.mjs — the live management page: every work card, and the tick-box bulk edits, saved without a chat.
 //
-// WHY (Destin, 2026-10-15/16): "build the real page" — the approved mockup
-// (docs/active/design/2026-10-12-management-surface/) read a hand-made Oct 12 snapshot; this reads cards/.
+// WHY (Destin, 2026-10-15/16): "build the real page" — the approved management page
+// (docs/active/design/2026-10-12-management-surface/, all three tabs) with Today read from cards/.
 // Bulk edit is in v1 by his call ("you should build the bulk edit into v1"): tick items, then Combine,
 // Move to stage or Delete. Edits go through cards.mjs (all-or-nothing, rules checked), then are committed
 // and pushed so nothing lives only on this computer.
@@ -22,9 +22,30 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import os from 'node:os';
 import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD } from './cards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+// WHY the design folder (Destin, 2026-10-16: "what happened to the real full page with all of our earlier design
+// work?"): the live page IS the approved management page — Today, Screens, Big picture — built by its own
+// build.py, with Today drawn from cards/. Its pictures (thumbs/, shots/) are served from the same folder.
+export const PAGE_DIR = path.join(HERE, '..', 'docs', 'active', 'design', '2026-10-12-management-surface');
+const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.html': 'text/html; charset=utf-8', '.webp': 'image/webp' };
+
+/** Build the full page from the cards. Cached until a card file changes. */
+let cache = { key: '', html: '' };
+export function buildPage(root) {
+  const dir = path.join(root, 'cards');
+  const key = fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '';
+  if (key === cache.key && cache.html) return cache.html;
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
+  try {
+    fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify(cardsPayload(root)));
+    execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html')], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
+    cache = { key, html: fs.readFileSync(path.join(tmp, 'page.html'), 'utf8') };
+    return cache.html;
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+}
 
 function git(root, args) { return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim(); }
 
@@ -62,15 +83,21 @@ function readBody(req) {
 }
 
 export function makeServer(root, { useGit = true } = {}) {
-  const page = () => fs.readFileSync(path.join(HERE, 'manage', 'page.html'), 'utf8')
-    .replace('/*CC*/', fs.readFileSync(path.join(HERE, 'manage', 'cc.css'), 'utf8') + fs.readFileSync(path.join(HERE, 'manage', 'page.css'), 'utf8'));
   return http.createServer(async (req, res) => {
     const send = (code, obj, type = 'application/json') => { res.writeHead(code, { 'content-type': type, 'cache-control': 'no-store' }); res.end(type === 'application/json' ? JSON.stringify(obj) : obj); };
     try {
       // WHY only 127.0.0.1 and same-origin posts: this server writes files; nothing else on the network or in another tab may drive it
       const origin = req.headers.origin;
       if (req.method === 'POST' && origin && origin !== `http://${req.headers.host}`) return send(403, { error: 'Refused: request came from another page.' });
-      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) return send(200, page(), 'text/html; charset=utf-8');
+      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root), 'text/html; charset=utf-8'); }
+      if (req.method === 'GET' && !req.url.startsWith('/api/')) {
+        // WHY the containment check: only files inside the page's own folder are served, never ../ outside it
+        const rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '');
+        const file = path.resolve(PAGE_DIR, rel);
+        if (!file.startsWith(path.resolve(PAGE_DIR) + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return send(404, { error: 'Not found.' });
+        res.writeHead(200, { 'content-type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'cache-control': 'max-age=3600' });
+        return fs.createReadStream(file).pipe(res);
+      }
       if (req.method === 'GET' && req.url === '/api/cards') { if (useGit) pull(root); return send(200, cardsPayload(root)); }
       if (req.method !== 'POST') return send(404, { error: 'Not found.' });
       const body = await readBody(req);
