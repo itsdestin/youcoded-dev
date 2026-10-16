@@ -1,0 +1,29 @@
+{
+ "deck": "manage-page-v1-review",
+ "started": "2026-10-16T14:21:42.077Z",
+ "submitted": null,
+ "cur": 0,
+ "answers": {
+  "A-1": {
+   "v": "skip",
+   "seconds": 21,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792160523445
+  },
+  "A-2": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792160524816
+  },
+  "A-3": {
+   "v": "skip",
+   "seconds": 2,
+   "theme": "light",
+   "zoom": 1,
+   "t": 1792160526415
+  }
+ }
+}
