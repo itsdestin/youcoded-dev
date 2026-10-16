@@ -8,8 +8,7 @@ branch: 82-free-z13-tablet-kit-as
 roadmap: operations: Free "Z13 tablet kit" as a marketing post: package Destin's
 created: 2026-10-15
 summary: Package Destin's tablet setup and swipe keyboard as a free download for other Z13 owners, as a post that points to YouCoded.
-area: Behind the scenes
-side: behind
+area: Release & business
 ---
 Progress
 Done: nothing recorded.

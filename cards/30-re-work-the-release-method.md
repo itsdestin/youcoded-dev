@@ -8,8 +8,7 @@ branch: 30-re-work-the-release-method
 roadmap: dev-workspace: Re-work the release method: releases tag master directly, so
 created: 2026-10-15
 summary: Every release ships everything on master, so a quick fix can't go out while a bigger update is still unfinished.
-area: Behind the scenes
-side: behind
+area: Release & business
 ---
 Progress
 Done: nothing recorded.

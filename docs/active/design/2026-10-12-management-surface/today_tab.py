@@ -164,6 +164,8 @@ SIDE = {'screens': ('UI/UX Only', 'It changes what you see and how you use it, n
         'both': ('UI/UX and Backend', 'It changes both what you see and how the app works underneath.')}
 
 MENU_TIP = 'More: pause or close this work.'
+# the status bar's git-branch icon (octicon), copied from StatusBar.tsx
+GIT_ICON = ('<svg class="gicon" width="10" height="10" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></svg>')
 PAUSE = ('Pause…', 'Marks it paused on its card, with your reason. Its branch, copy and pull request stay exactly as they are.')
 CLOSE = ('Close…', 'Saves any unsaved changes to a backup branch, closes its pull request, removes its copy from this computer and marks the card closed. The branch stays on GitHub.')
 
@@ -191,11 +193,18 @@ def menu():
 
 def chips(c):
     out = ['<span class="badge" data-tip="This is the suggested next step at the top of the page.">Suggested above</span>'] if c.get('suggested') else []
+    # WHY first and teal (Destin, 2026-10-16: like the status bar's branch chip, "with the same teal tint"): the
+    # status bar's icon and teal (#0D9488), with the colour in the tint, outline and icon only (guide: never in words)
+    if c.get('branches'):
+        bs = c['branches']
+        tip = 'Its branch' + ('es' if len(bs) > 1 else '') + ': ' + '; '.join(b['name'] + (f' (open on this computer in {b["worktree"]})' if b.get('worktree') else '') for b in bs)
+        more = f' <span class="bmore">+{len(bs) - 1}</span>' if len(bs) > 1 else ''
+        out.append(f'<span class="badge gitchip" data-tip="{E(tip)}">{GIT_ICON}{E(bs[0]["name"])}{more}</span>')
     out += [f'<span class="badge" data-tip="The part of the app it lands in.">{E(a)}</span>' for a in c['area']]
     if c.get('platform'):
         out.append(f'<span class="badge" data-tip="It only applies on this platform.">{E(c["platform"])}</span>')
-    # WHY skip it for behind-the-scenes work: that is workspace or business work outside the app, so "Backend Only" would mislead
-    if c.get('side') and 'Behind the scenes' not in c.get('area', []):
+    # WHY only when set: work outside the app (Workspace, Website, Release & business) has no UI/UX-or-Backend side
+    if c.get('side'):
         lab, tip = SIDE[c['side']]
         out.append(f'<span class="badge" data-tip="{E(tip)}">{E(lab)}</span>')
     # WHY no priority or release chips (Destin, 2026-10-16: "completely scrap priority/version tags for the time
@@ -327,6 +336,7 @@ def tidy(leftovers, dev_only, fold, card_ids, raw=False):
 CSS = '''
 /* Today rows (today_tab.py): one anatomy for every card (Q-6) — name + label, one line, chips + date, buttons right */
 .crow{display:block;padding:12px 16px;margin-bottom:12px;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-xl);box-shadow:0 4px 16px rgba(0,0,0,calc(var(--shadow-strength) * .8))}
+.gitchip{background:color-mix(in srgb,#0D9488 12%,transparent);border-color:rgba(13,148,136,.35)} .gitchip .gicon{color:#0D9488;flex:none} .gitchip .bmore{color:var(--fg-muted)}
 .cdesc{display:flex;align-items:flex-end;gap:12px} .cdesc .cnext{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ctop > .cmain{gap:6px}
 .ctop{display:flex;gap:12px;align-items:flex-start}

@@ -9,8 +9,7 @@ branch: 107-windows-macos-and-phone-verification
 roadmap: perf: Windows, macOS and phone verification before release: the te
 created: 2026-10-15
 summary: Recent speed fixes were only hand-tested on Linux; check them on Windows, Mac and phones before release.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

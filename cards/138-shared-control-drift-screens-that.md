@@ -8,7 +8,7 @@ branch: 138-shared-control-drift-screens-that
 roadmap: user-interface: Shared-control drift: screens that do not match the shared l
 created: 2026-10-15
 summary: Hundreds of spots use their own buttons, sizes or colours, and some clickable items lack hover or keyboard access.
-area: Behind the scenes
+area: Settings
 side: screens
 work: session/ui-consistency-audit
 ---

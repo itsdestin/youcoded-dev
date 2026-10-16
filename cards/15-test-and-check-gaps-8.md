@@ -8,8 +8,7 @@ branch: 15-test-and-check-gaps-8
 roadmap: dev-workspace: Test and check gaps: 8 places where nothing guards a behavio
 created: 2026-10-15
 summary: Some features, like the Office editor and Claude Code's startup menus, have no test, so a break would only be found by users.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

@@ -8,8 +8,7 @@ branch: 21-session-strip-motion-review-re
 roadmap: dev-workspace: Session-strip motion review: re-author as live pick-one step
 created: 2026-10-15
 summary: The review page for how the session bar moves when switching was rough; it should offer live options to pick between.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

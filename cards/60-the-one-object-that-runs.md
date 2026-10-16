@@ -10,7 +10,7 @@ branch: 60-the-one-object-that-runs
 roadmap: native-harness: **v1.3.1 release blocker.** The one object that runs a nativ
 created: 2026-10-15
 summary: The code running each chat on YouCoded's own engine also runs helpers and terminals, making it huge and hard to change safely.
-area: Behind the scenes
+area: Chat
 side: behind
 platform: Desktop only
 paused: On hold since 2026-09-18 until other cleanup lands

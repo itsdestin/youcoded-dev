@@ -8,8 +8,7 @@ branch: 32-release-and-build-upkeep-6
 roadmap: dev-workspace: Release and build upkeep: 6 loose ends.
 created: 2026-10-15
 summary: Model list names can go stale, tiny changes trigger 20-minute builds, installers carry test files, and some updates are overdue.
-area: Behind the scenes
-side: behind
+area: Release & business
 ---
 Progress
 Done: nothing recorded.

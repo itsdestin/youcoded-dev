@@ -10,8 +10,7 @@ branch: 78-public-launch-paperwork-for-1
 roadmap: operations: Public launch paperwork for 1.3.1: the LLC behind every acco
 created: 2026-10-15
 summary: Finish the business setup behind public launch: the company behind every account, the trade name and a trademark filing.
-area: Behind the scenes
-side: behind
+area: Release & business
 ---
 Progress
 Done: nothing recorded.

@@ -8,7 +8,7 @@ branch: 95-main-process-freezes-and-resource
 roadmap: perf: Main process: freezes and resource growth that can hit every
 created: 2026-10-15
 summary: Some background work can briefly freeze every window, and memory can grow large over long busy sessions.
-area: Behind the scenes
+area: Chat
 side: behind
 platform: Desktop only
 ---

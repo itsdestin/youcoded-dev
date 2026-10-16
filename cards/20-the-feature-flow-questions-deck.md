@@ -9,8 +9,7 @@ branch: 20-the-feature-flow-questions-deck
 roadmap: dev-workspace: The feature flow (questions deck, review rounds, contract, g
 created: 2026-10-15
 summary: The step-by-step process for designing and approving a new feature is built but has never been used start to finish.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

@@ -8,8 +8,7 @@ branch: 26-parked-ideas-10-dev-workspace
 roadmap: dev-workspace: Parked ideas: 10 dev-workspace ideas.
 created: 2026-10-15
 summary: Possible additions: testing new-user setup on real Windows, Mac and Linux machines, plus better review pages and tidier process docs.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

@@ -8,8 +8,7 @@ branch: 81-website-analytics-monitoring-2-follow
 roadmap: operations: Website analytics monitoring: 2 follow-ups, not approval gat
 created: 2026-10-15
 summary: Confirm the website stats service's billing alerts and backups, and that its daily cleanup of old data actually runs.
-area: Behind the scenes
-side: behind
+area: Website
 ---
 Progress
 Done: nothing recorded.

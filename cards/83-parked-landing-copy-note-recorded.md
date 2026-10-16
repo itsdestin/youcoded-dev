@@ -8,8 +8,7 @@ branch: 83-parked-landing-copy-note-recorded
 roadmap: operations: Parked: landing copy note, recorded so it is not re-derived.
 created: 2026-10-15
 summary: Chat tags, private notes and prompt buttons are unique to YouCoded but should not headline the landing page.
-area: Behind the scenes
-side: behind
+area: Website
 ---
 Progress
 Done: nothing recorded.

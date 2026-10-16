@@ -112,12 +112,14 @@ export function liveFacts(root, { now = Date.now(), useGh = true } = {}) {
   }
   // a copy of the work on this computer with changes not committed, or committed but not pushed
   const unsaved = new Set();
+  const worktrees = new Map();   // branch → the folder on this computer that has it checked out
   for (const r of repos) {
     let wt = null;
     for (const line of sh('git', ['-C', r.dir, 'worktree', 'list', '--porcelain'], r.dir).split('\n')) {
       if (line.startsWith('worktree ')) wt = line.slice(9);
       else if (line.startsWith('branch refs/heads/') && wt) {
         const b = line.slice(18);
+        if (!worktrees.has(b)) worktrees.set(b, path.relative(ws, wt) || '.');
         const dirty = sh('git', ['-C', wt, 'status', '--porcelain', '--untracked-files=no'], wt);
         const ahead = sh('git', ['-C', wt, 'rev-list', '--count', '@{u}..HEAD'], wt);
         if (dirty || (ahead && ahead !== '0')) unsaved.add(b);
@@ -137,7 +139,7 @@ export function liveFacts(root, { now = Date.now(), useGh = true } = {}) {
       prs.set(p.headRefName, arr);
     }
   }
-  liveCache = { at: now, root, facts: { branches, unsaved, prs, now } };
+  liveCache = { at: now, root, facts: { branches, unsaved, prs, worktrees, now } };
   return liveCache.facts;
 }
 
@@ -153,7 +155,14 @@ export function factsFor(card, f) {
     for (const p of f.prs.get(b) || []) pulls.push(p);
   }
   chats.sort((a, b) => (a.date < b.date ? 1 : -1));
+  // WHY (Destin, 2026-10-16: "a tag on each card that has its git worktree/branch, kinda similar to the one in
+  // the youcoded status bar"): every branch that is this item's work, newest first, with its folder when a copy
+  // is open on this computer
+  const branchList = (card.work || []).filter(b => f.branches.has(b) || (f.worktrees || new Map()).has(b))
+    .map(b => ({ name: b, date: f.branches.get(b)?.date || '', worktree: (f.worktrees || new Map()).get(b) || '' }))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
   return {
+    branches: branchList,
     chats, unsaved, working, prs: pulls.map(p => `${p.repo === 'youcoded' ? '' : 'workspace '}#${p.number}`),
     failing: pulls.some(p => p.failing), mergeable: pulls.length > 0 && pulls.every(p => p.passing && p.approved),
     lastWork: chats[0]?.date || '',

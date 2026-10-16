@@ -8,8 +8,8 @@ branch: 144-unfinished-whole-ui-cleanup-2
 roadmap: user-interface: Unfinished whole-UI cleanup (2 things).
 created: 2026-10-15
 summary: The last phase of the app-wide visual review and the split of the app's biggest building block are still unfinished.
-area: Behind the scenes
-side: both
+area: Chat
+side: behind
 ---
 Progress
 Done: nothing recorded.

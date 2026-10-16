@@ -8,7 +8,7 @@ branch: 25-we-can-see-how-many
 roadmap: dev-workspace: We can see how many people open the app and nothing else. Th
 created: 2026-10-15
 summary: Today we only see who opens the app, not which features they use, where setup loses them, or why they stop coming back.
-area: Behind the scenes
+area: Settings
 side: behind
 ---
 Progress

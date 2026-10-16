@@ -8,8 +8,7 @@ branch: 80-moderating-r-youcoded-set-up
 roadmap: operations: Moderating r/youcoded (set up 2026-09-10) is all by hand: De
 created: 2026-10-15
 summary: Destin approves posts and copies bug reports and ideas into the to-do list by hand; automate the repetitive parts.
-area: Behind the scenes
-side: behind
+area: Release & business
 ---
 Progress
 Done: nothing recorded.

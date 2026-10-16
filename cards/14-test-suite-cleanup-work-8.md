@@ -8,8 +8,7 @@ branch: 14-test-suite-cleanup-work-8
 roadmap: dev-workspace: Test-suite cleanup work: 8 things left over from the simplif
 created: 2026-10-15
 summary: The automatic tests still have fixed waits, unchecked files, unreviewed slow calls and duplicates left over from the big cleanup.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

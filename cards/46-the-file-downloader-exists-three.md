@@ -10,7 +10,7 @@ branch: 46-the-file-downloader-exists-three
 roadmap: local-models: The file downloader exists three times (model files, engine,
 created: 2026-10-15
 summary: The app has three separate file downloaders, so a fix like the disk-full guard must be repeated in each one.
-area: Behind the scenes
+area: Settings
 side: behind
 platform: Desktop only
 paused: On hold since 2026-09-18 with the rest of the cleanup phase

@@ -9,8 +9,7 @@ branch: 86-parked-ideas-7-features-none
 roadmap: other-features: Parked ideas: 7 features, none started.
 created: 2026-10-15
 summary: Ideas held for later: shared documents, a proper first-run screen, automation results by Telegram or email, and more.
-area: Behind the scenes
-side: both
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

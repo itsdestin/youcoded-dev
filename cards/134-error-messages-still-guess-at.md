@@ -10,8 +10,8 @@ branch: 134-error-messages-still-guess-at
 roadmap: user-interface: Error messages still guess at causes in many places.
 created: 2026-10-15
 summary: Many error messages still state a guessed cause or offer no next step; six of seven fix batches remain.
-area: Behind the scenes
-side: screens
+area: Settings
+side: both
 ---
 Progress
 Done: nothing recorded.

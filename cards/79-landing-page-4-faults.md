@@ -8,8 +8,7 @@ branch: 79-landing-page-4-faults
 roadmap: operations: Landing page: 4 faults.
 created: 2026-10-15
 summary: On phones the demo videos are unreadably small and some text runs too long; the iOS footnote and promo film opening are off.
-area: Behind the scenes
-side: behind
+area: Website
 ---
 Progress
 Done: nothing recorded.

@@ -9,8 +9,7 @@ branch: 29-waiting-on-ci-runs-eats
 roadmap: dev-workspace: Waiting on CI runs eats whole sessions. Destin, 2026-09-20:
 created: 2026-10-15
 summary: Small fixes take an hour of waiting on full online test runs; ideas are a nightly practice build and running just one test on one system.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

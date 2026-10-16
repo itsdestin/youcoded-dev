@@ -9,7 +9,7 @@ branch: 111-on-android-the-phone-app
 roadmap: perf: On Android the phone app may be slow while a reply streams,
 created: 2026-10-15
 summary: The phone app may stutter or seem frozen while a reply streams, stays awake too much, and uses costly blur effects by default.
-area: Behind the scenes
+area: Devices & sync
 side: behind
 platform: Android only
 ---

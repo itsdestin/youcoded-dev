@@ -8,7 +8,7 @@ branch: 16-cross-platform-first-run-testing
 roadmap: dev-workspace: Cross-platform first-run testing: 5 open pieces.
 created: 2026-10-15
 summary: First-run setup and sign-in haven't been fully tested on Linux installers or some Windows PCs, and the Mac test machine is slow.
-area: Behind the scenes
+area: Getting started
 side: behind
 ---
 Progress

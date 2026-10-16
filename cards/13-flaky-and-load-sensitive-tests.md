@@ -8,8 +8,7 @@ branch: 13-flaky-and-load-sensitive-tests
 roadmap: dev-workspace: Flaky and load-sensitive tests: 9 that fail on CI or only in
 created: 2026-10-15
 summary: Nine automatic checks fail at random or only under load, which can block good changes and waste time re-running them.
-area: Behind the scenes
-side: behind
+area: Workspace
 ---
 Progress
 Done: nothing recorded.

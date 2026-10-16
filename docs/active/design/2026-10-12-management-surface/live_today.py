@@ -60,7 +60,7 @@ def as_row(c, today):
     return dict(id=str(c['id']), title=c['title'], stage=c['stage'], state='working' if lv.get('working') else '',
                 area=[c['area']] if c.get('area') else [], tags=c['tags'], side=c.get('side') or None, platform=c.get('platform', ''),
                 priority=c.get('priority'), release=c.get('release'), needs=c['needs'], related=c['related'],
-                chats=chats, prs=lv.get('prs', []), unsaved=lv.get('unsaved', False), failing=lv.get('failing', False),
+                chats=chats, branches=lv.get('branches', []), prs=lv.get('prs', []), unsaved=lv.get('unsaved', False), failing=lv.get('failing', False),
                 mergeable=lv.get('mergeable', False), paused=c.get('paused') or None,
                 next=c.get('summary') or next_line(c), date=nice, days=days, search=search, screens=[])
 

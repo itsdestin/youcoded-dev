@@ -10,8 +10,7 @@ branch: 31-no-google-play-listing-android
 roadmap: dev-workspace: No Google Play listing — Android installs only from a GitHub
 created: 2026-10-15
 summary: Android installs only from a GitHub download, and from 2027 Google will require a verified developer even for that.
-area: Behind the scenes
-side: behind
+area: Release & business
 platform: Android only
 ---
 Progress
