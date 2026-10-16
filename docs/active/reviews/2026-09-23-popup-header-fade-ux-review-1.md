@@ -1,0 +1,6 @@
+# Popup header/fade — context-free UX review 1
+
+- U1 rejected — Tester expected the last About lines to remain readable when the scroll body initially ends in a fade (`/tmp/about-selected2.png`), but explicitly did **not** scroll. The content fade communicates more below; at the actual end, the isolated browser measured `scrollTop=scrollHeight-clientHeight=1211` and `data-fade-bottom=false`. Do not shorten Destin's chosen Settings numbers on the basis of an unscrolled still. The live deck asks him to scroll both ends.
+- U2 rejected — Tester saw a flat gray backdrop in standalone `ui-probe` captures of both Today and Selected (`/tmp/about-today.png`, `/tmp/about-selected2.png`, `/tmp/about-halftone.png`), not a candidate-specific defect. The final review-deck contact sheet, captured through the theme-aware deck preview in Meadow Mist and Halftone Dimension at 1440×900 and 1024×768, shows the real wallpaper through the modal and scrim. The screenshot rig's flat background must not be passed off as the popup appearance.
+
+Tester could open About, but did not scroll or assess a footer; the independent UX pass therefore did not establish motion or end-of-scroll appearance. No production modal changes resulted from this review.

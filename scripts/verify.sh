@@ -229,6 +229,12 @@ fi
 # so they run concurrently into separate logs and are reported in a fixed order
 # afterwards. Interleaving their stdout would make the output unreadable.
 LOGDIR="$(mktemp -d)"
+# The machine's load when the checks start and when they end, said in the summary.
+# WHY (close-session friction, proposal 18): a load failure read as a code failure until someone
+# thought to check how busy the machine was (load 36–49 on 32 threads in that round).
+load_now() { awk '{print $1}' /proc/loadavg 2>/dev/null || echo '?'; }
+THREADS="$(nproc 2>/dev/null || echo '?')"
+LOAD_START="$(load_now)"
 # Kept ONLY on a green run. A failing run moves its logs somewhere durable
 # below, because the transcript tail is 25 lines and a flake is unreportable
 # without the rest — on 2026-09-02 two tests failed here, passed on a re-run,
@@ -358,37 +364,61 @@ if [[ -d "$DESKTOP/tests/journeys" ]] \
   start journeys "journeys (click paths)" node "$ROOT/scripts/shoot/journeys.mjs" --worktree "$CHECKOUT"
 fi
 
+# Every check's full log is kept, passing or failing, in one folder named on the FAIL line itself.
+# WHY (marketplace-detail friction, proposal 3): only failed checks' logs were kept, and their folder
+# was printed once, after the summary — a session that read just the PASS/FAIL lines never saw it,
+# and a one-off full-suite failure could not be named afterwards. A passing run's log matters too:
+# it is what you compare a later failure against.
+KEEP="$ROOT/scratch/verify-$(date +%Y%m%d-%H%M%S)-$$"
+mkdir -p "$KEEP" 2>/dev/null || KEEP=""
+# WHY pruned (final review F57): one folder per run, passing runs included, piled up in scratch/
+# forever. The newest 10 are kept — enough to compare a failure with the runs before it — and
+# this run's own folder is never among those removed (it is the newest, and skipped by name).
+if [[ -n "$KEEP" ]]; then
+  ls -1dt "$ROOT"/scratch/verify-*/ 2>/dev/null | tail -n +11 | while IFS= read -r old; do
+    [[ "${old%/}" == "$KEEP" ]] || rm -rf -- "${old%/}"
+  done
+fi
+
 FAILED=0
 FAILED_KEYS=()
 if [[ $BUDGETS_FAILED -eq 1 ]]; then FAILED=1; FAILED_KEYS+=("budgets"); fi
 for key in types testtypes tests knip lint design invariants screens journeys; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
+  [[ -n "$KEEP" ]] && cp "$LOGDIR/$key.log" "$KEEP/$key.log" 2>/dev/null
   if [[ $rc -eq 0 ]]; then
     printf 'PASS  %s\n' "${LABEL[$key]}"
   else
     FAILED=$((FAILED + 1))
-    printf 'FAIL  %s\n' "${LABEL[$key]}"
+    printf 'FAIL  %s%s\n' "${LABEL[$key]}" "${KEEP:+  — full log: $KEEP/$key.log}"
     # Last 25 lines: enough for a tsc error list or a vitest failure summary
     # without dumping a full suite run into the transcript.
     sed 's/^/      /' "$LOGDIR/$key.log" | tail -25
     FAILED_KEYS+=("$key")
+    # A failed test run: rerun just its failed files, alone, and say what that showed
+    # (scripts/lib/verify-rerun.mjs). The check stays FAILED either way.
+    if [[ $key == tests ]]; then
+      mapfile -t RERUN < <(node "$ROOT/scripts/lib/verify-rerun.mjs" files "$LOGDIR/tests.log" 2>/dev/null)
+      if [[ ${#RERUN[@]} -gt 0 && ${#RERUN[@]} -le 20 ]]; then
+        echo "      rerunning the ${#RERUN[@]} failed file(s) alone (load now $(load_now) on $THREADS threads)…"
+        ( cd "$DESKTOP" && npx vitest run "${RERUN[@]}" ) >"$LOGDIR/tests-alone.log" 2>&1
+        [[ -n "$KEEP" ]] && cp "$LOGDIR/tests-alone.log" "$KEEP/tests-alone.log" 2>/dev/null
+        node "$ROOT/scripts/lib/verify-rerun.mjs" verdict "$LOGDIR/tests.log" "$LOGDIR/tests-alone.log" | sed 's/^/      /'
+      fi
+    fi
   fi
 done
 
-# Preserve the logs for every check that failed. The old line said "(full log
-# was $LOGDIR/…)" and pointed at a path the EXIT trap was about to delete — a
-# message naming a file the reader cannot open is worse than no message.
-if [[ $FAILED -gt 0 ]]; then
-  KEEP="$ROOT/scratch/verify-$(date +%Y%m%d-%H%M%S)-$$"
-  if mkdir -p "$KEEP" 2>/dev/null; then
-    for key in "${FAILED_KEYS[@]}"; do cp "$LOGDIR/$key.log" "$KEEP/$key.log" 2>/dev/null; done
-    echo ""
-    echo "full logs: $KEEP"
-  fi
+# The logs live on after the EXIT trap deletes $LOGDIR (a path to a deleted file is worse than none).
+if [[ -n "$KEEP" ]]; then
+  [[ $BUDGETS_FAILED -eq 1 ]] && cp "$LOGDIR/budgets.log" "$KEEP/budgets.log" 2>/dev/null
+  echo ""
+  echo "full logs (every check): $KEEP"
 fi
 
 echo ""
+echo "machine load: $LOAD_START at the start, $(load_now) at the end, on $THREADS threads (1-minute load average)"
 if [[ $FAILED -eq 0 ]]; then
   echo "OK — all checks passed."
   [[ $RUN_FULL -eq 0 && ${#REL[@]} -eq 0 ]] && echo "   NOTE: no test ran. Nothing changed under desktop/."

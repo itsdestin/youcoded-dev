@@ -1,0 +1,32 @@
+{
+  "title": "Settings — current drawer versus your selected combination",
+  "key": "ui-guide-settings-composition-8",
+  "out": "settings-composition.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "Title, header line and scrolling edge together",
+      "hint": "Scroll inside both drawers and compare the header as rows move beneath it. Scroll outside a drawer to reach the next version. Switch between Meadow Mist, Halftone and a solid theme above.",
+      "headline": "Should this complete Settings treatment replace today's styling?",
+      "risk": "Final visual check before a Settings-only code change. Choosing the new drawer does not approve a design-guide rule, other scroll surfaces, dialogs, or a release.",
+      "live": {"surface": "settings-taper-calibration", "round": 10},
+      "variants": [
+        {
+          "id": "shipping-today",
+          "label": "Today",
+          "candidate": "shipping-today",
+          "summary": "Unchanged: 14px bold title, full-width border, painted scroll strip."
+        },
+        {
+          "id": "selected-composition",
+          "label": "Selected combination",
+          "candidate": "selected-composition",
+          "summary": "16px medium title, quick-tapered line, 42px content fade with 4% sides and no painted strip."
+        }
+      ]
+    }
+  ]
+}

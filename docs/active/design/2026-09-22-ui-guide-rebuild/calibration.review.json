@@ -1,0 +1,59 @@
+{
+  "title": "A first taste check: titles, dividers and file entries",
+  "key": "ui-guide-calibration-1",
+  "out": "calibration.review.html",
+  "images": "images/calibration.review",
+  "runs": {
+    "today": "../../../../scratch/ui-consistency-calibration-deck/today",
+    "before": "../../../../scratch/ui-consistency-calibration-deck/type",
+    "after": "../../../../scratch/ui-consistency-calibration-deck/taper"
+  },
+  "labels": {
+    "today": "Today",
+    "before": "Roomier titles",
+    "after": "Tapered line"
+  },
+  "crops": {
+    "paired-headers": ["calibration", "paired-headers", "670x128+0+0"],
+    "session-file-list": ["calibration", "session-file-list", "480x340+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Settings and dialogs",
+      "path": "Open Settings; the second picture is the donation dialog",
+      "crop": "paired-headers",
+      "runs": ["today", "before"],
+      "headline": "Settings and dialog titles become larger and less heavy.",
+      "changed": "Both titles move from a small bold label to a slightly larger, medium-weight title. The line underneath stays exactly as it is today.",
+      "notice": "The title may read more clearly without feeling as heavy as the rows below it.",
+      "risk": "Long titles may crowd the close button. You'll approve the eventual rule separately."
+    },
+    {
+      "id": "C-2",
+      "surface": "Settings and dialogs",
+      "path": "The line below the Settings and dialog titles",
+      "crop": "paired-headers",
+      "runs": ["before", "after"],
+      "labels": {"before": "Full-width line", "after": "Tapered line"},
+      "headline": "Header lines fade before they reach the sides.",
+      "highlight": {"box": [23, 30, 3, 6]},
+      "changed": "The title treatment is identical on both sides; only the line changes. Instead of meeting the outer edges, it begins and ends inside the panel with a soft fade.",
+      "notice": "The headers may feel less cut into two blocks while still separating the title from the content.",
+      "risk": "This covers two headers, not structural or content dividers. Those remain separate decisions."
+    },
+    {
+      "id": "C-3",
+      "surface": "Session Files",
+      "path": "Open the file list beside a conversation",
+      "crop": "session-file-list",
+      "runs": ["today", "after"],
+      "labels": {"today": "Continuous rows", "after": "Compact cards"},
+      "headline": "Session Files become separate compact cards instead of continuous rows.",
+      "highlight": {"box": [93, 31, 3, 6]},
+      "changed": "Each file now has its own quiet surface and rounded edge. The filename, status and date stay in the same order; no empty thumbnail is added.",
+      "notice": "It is easier to see where one file ends and another begins, but fewer entries fit at once.",
+      "risk": "Project Files already has a grid and a list. This choice does not decide that screen or the phone layout."
+    }
+  ]
+}

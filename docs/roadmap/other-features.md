@@ -66,6 +66,14 @@ has passed ~8 items — graduate it to its own file.
       Settings and the site footer once the subreddit has a few posts (not yet answered).
       `all` `confirmed` `P3` `checked 2026-09-10`
 
+- [ ] Revisit the "Submit a ticket" screen (Settings → Help & feedback → Report a bug). Destin, 2026-09-28,
+      after its regrouping was approved: "i want to come back to this page specifically, i think some of the
+      ux is still a bit odd" (earlier: "some of these should maybe be grouped/arranged/displayed differently.
+      it just looks off"). The review step after "Review ticket" was not regrouped yet.
+      2026-10-08: redesigned over six review rounds (submit-ticket-1…6, all approved) on branch
+      `session/ui-consistency-audit`; closes when that branch merges
+      `settings/development` `all` `in-flight` `P3` `checked 2026-10-08`
+
 - [ ] Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari pointed
       at another device. Options: a native app around the shared interface (minus on-device runtime,
       which App Store rules refuse), a pair-to-desktop-only app, or a web client over an encrypted
@@ -90,9 +98,12 @@ has passed ~8 items — graduate it to its own file.
       personal page, not for the marketplace. 2026-10-14: a page can open the new-session window
       with a message waiting (youcoded#623; spec docs/archive/specs/2026-10-14-page-start-session-design.md).
       Destin 2026-10-05 triage (roadmap-triage-2026-10-05#16): next phases postponed — "finsih in 1.3.2/1.3.3"
+      2026-10-08, follow-up (Destin, after the Pages kit took the app's new slider): "we are going to
+      rebuild/rework the pages kit at some point to be directly tied to the real app ui, so page guidance
+      doesn't drift. i also want to provide more pre-built sets of buttons, menus, etc."
       `window-chrome` `all` `in-flight` `P2` `checked 2026-09-23` `v1.3.2` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
-- [ ] YouCoded Pages follow-ups: 7 decisions and sightings.
+- [ ] YouCoded Pages follow-ups: 8 decisions and sightings.
       (a) The page-builder skill's connections update (plugin 0.2.0) is finished and held until an
       app release carries Pages Phase 2; merge it in the same step. It must also learn the home-device
       connection, the live connection, camera video and the see-through background (merged 2026-10-07)
@@ -105,11 +116,15 @@ has passed ~8 items — graduate it to its own file.
       name server; the fix adds a package, so it waits for Destin's OK. (d) A web browser as a page:
       most big sites refuse to show inside another page, so the app would need a website view.
       (e) Pages on a phone: nobody designed the narrow layout, and connected pages were never tried
-      over remote access. (f) Pages once turned accent-coloured (Golden Sunbreak, Halftone: "a weird
+      over remote access. Found by three guide-test builders (2026-10-15): at phone width, opening a
+      Page from the Pages list keeps the list beside it and squeezes the Page to ~170px; the pinned
+      view works (Destin: "roadmap item"). (f) Pages once turned accent-coloured (Golden Sunbreak, Halftone: "a weird
       yellow shade") and "its fine now. idk what happened"; not reproduced. (g) Page icons: "page
       builder skill needs better instructions to build a unique icon for each page that matches its
       purpose at-a-glance. users utilize these to tell pages apart." The set is nine glyphs, money included; it needs
-      many more, and the skill a rule to pick one no other page uses.
+      many more, and the skill a rule to pick one no other page uses. (h) Charts in Pages: no guide
+      recipe or kit colours; the guide-test PC-build and trip pages each invented one (Destin,
+      2026-10-16: "will want eventually, add to roadmap for now").
       `window-chrome` `all` `needs-verify` `P2` `checked 2026-10-08` `needs-repro`
 
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal as a YouCoded session,

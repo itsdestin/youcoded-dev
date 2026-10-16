@@ -1,0 +1,79 @@
+{
+ "title": "Status words as pills",
+ "key": "ui-status-pills",
+ "out": "status-pills.review.html",
+ "images": "images/status-pills.review",
+ "runs": {
+  "before": "runs/pills-before",
+  "after": "runs/pills-after"
+ },
+ "labels": {
+  "before": "Plain words",
+  "after": "Pills"
+ },
+ "themes": [
+  "meadow-mist",
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "rejected": [
+   "pl",
+   "rejected",
+   "1440x900+0+0"
+  ],
+  "unchecked": [
+   "pl",
+   "unchecked",
+   "1440x900+0+0"
+  ],
+  "local": [
+   "pl",
+   "local",
+   "1440x900+0+0"
+  ],
+  "lobby": [
+   "pl",
+   "lobby",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "PL-1",
+   "surface": "Cloud providers",
+   "path": "Assistant settings \u2192 Cloud providers (OpenRouter with a rejected key)",
+   "crop": "rejected",
+   "headline": "A broken key's state as a pill beside the name \u2014 keep?",
+   "changed": "\"Key not accepted\" moves from the grey line under OpenRouter into a small pill beside its name, red-tinted because the key no longer works. The explanation stays in its error box below.",
+   "notice": "The words are always grey; only the pill's tint carries colour. Sentences like \"Signed in as you@\u2026\" stay as lines."
+  },
+  {
+   "id": "PL-2",
+   "surface": "Cloud providers",
+   "path": "OpenRouter with a key that hasn't been checked yet",
+   "crop": "unchecked",
+   "headline": "Ordinary and in-between states \u2014 keep?",
+   "changed": "\"Key saved \u2014 not checked yet\" becomes an amber pill. Ordinary states (\"Connected\", \"Not connected\", \"Not signed in\") are grey pills, keeping your earlier \"neutral, no green Connected\" call.",
+   "notice": "The \"Your own API keys\" rows use the same pills (grey, amber for \"Needs API key\")."
+  },
+  {
+   "id": "PL-3",
+   "surface": "Local models",
+   "path": "Assistant settings \u2192 Local models",
+   "crop": "local",
+   "headline": "The engine's Running / Stopped as a pill \u2014 keep?",
+   "changed": "\"Stopped\" beside \"Local engine\" becomes a grey pill; \"Running\" gets a light green tint, like a working session in the sessions menu.",
+   "notice": "Only the look changes; the engine starts and stops exactly as before."
+  },
+  {
+   "id": "PL-4",
+   "surface": "Games lobby",
+   "path": "Games \u2192 Chess (signed in)",
+   "crop": "lobby",
+   "headline": "Online / Incognito as pills \u2014 keep?",
+   "changed": "Your \"Online\" and each friend's \"Online\" / \"In game\" become green-tinted pills beside the name (grey for Incognito and Offline). \"Last seen 5m ago\" stays a small line, since it's a sentence, not a state.",
+   "notice": "Your friend's status moves up beside their name, so each friend row is one line shorter when they're online."
+  }
+ ]
+}

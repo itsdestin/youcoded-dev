@@ -1,0 +1,55 @@
+{
+  "title": "Popup headers — does the Settings treatment fit here?",
+  "key": "ui-guide-popup-header-fade-1",
+  "out": "popup-header-fade.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 640},
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "About popup",
+      "path": "Header line and scrolling text inside the popup",
+      "hint": "Scroll inside each About popup to see both fade edges; scroll outside it to reach the next version. Try Meadow Mist, Halftone Dimension and a solid theme. Close and reopen either popup to compare again.",
+      "headline": "Should popups with a title and scrollable body use this treatment?",
+      "risk": "Custom popups outside the shared dialog need separate review; this choice does not approve a design-guide rule or release.",
+      "live": {"surface": "popup-header-fade-calibration", "round": 1},
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "14px bold title, full-width line, painted scroll fade."
+        },
+        {
+          "id": "selected",
+          "label": "Settings treatment",
+          "candidate": "selected",
+          "summary": "16px medium title, 8% tapered line, 42px content fade with 4% sides."
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "surface": "Development popup",
+      "path": "Title and divider above its action rows",
+      "hint": "Compare the title and divider on this shorter popup. The scroll fade appears only if the rows overflow at your window size.",
+      "headline": "Does the same header treatment fit a smaller popup?",
+      "risk": "This is another preview using the shared dialog, not a change to all menus or confirmations.",
+      "live": {"surface": "popup-header-fade-calibration", "round": 2},
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "14px bold title and full-width divider."
+        },
+        {
+          "id": "selected",
+          "label": "Settings treatment",
+          "candidate": "selected",
+          "summary": "16px medium title and 8% tapered divider; no fade unless content scrolls."
+        }
+      ]
+    }
+  ]
+}

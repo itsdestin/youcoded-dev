@@ -1,0 +1,210 @@
+{
+ "title": "Surface levels — one visible outline per layer",
+ "key": "ui-surface-levels",
+ "out": "surface-levels.review.html",
+ "images": "images/surface-levels.review",
+ "runs": {
+  "before": "runs/sl-before",
+  "after": "runs/sl-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Clearer layers"
+ },
+ "themes": [
+  "meadow-mist",
+  "cotton-candy-sky",
+  "golden-sunbreak",
+  "devils-garden",
+  "light",
+  "dark",
+  "creme",
+  "midnight"
+ ],
+ "crops": {
+  "settings__sync": [
+   "sl",
+   "settings__sync",
+   "468x636+486+132"
+  ],
+  "settings__sync--oversize": [
+   "sl",
+   "settings__sync--oversize",
+   "468x636+486+132"
+  ],
+  "settings__assistant__general": [
+   "sl",
+   "settings__assistant__general",
+   "868x748+286+76"
+  ],
+  "settings__assistant__cloud": [
+   "sl",
+   "settings__assistant__cloud",
+   "868x748+286+76"
+  ],
+  "settings__assistant__local": [
+   "sl",
+   "settings__assistant__local",
+   "868x748+286+76"
+  ],
+  "settings__assistant__permissions": [
+   "sl",
+   "settings__assistant__permissions",
+   "868x748+286+76"
+  ],
+  "settings__assistant__specialists": [
+   "sl",
+   "settings__assistant__specialists",
+   "868x748+286+76"
+  ],
+  "settings__remote": [
+   "sl",
+   "settings__remote",
+   "468x636+486+132"
+  ],
+  "settings__sound": [
+   "sl",
+   "settings__sound",
+   "468x636+486+132"
+  ],
+  "settings__account": [
+   "sl",
+   "settings__account",
+   "468x303+486+299"
+  ],
+  "settings__appearance": [
+   "sl",
+   "settings__appearance",
+   "468x636+486+132"
+  ],
+  "settings__development__bug-report": [
+   "sl",
+   "settings__development__bug-report",
+   "648x723+396+89"
+  ],
+  "settings": [
+   "sl",
+   "settings",
+   "344x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "SL-1",
+   "surface": "Backup & Sync",
+   "path": "Settings → Backup & Sync",
+   "crop": "settings__sync",
+   "headline": "Backup & Sync: clearer layers?",
+   "changed": "The two cards and the Sync log row get a clearly visible outline. The Google Drive row inside reads as nested.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-2",
+   "surface": "Backup & Sync — too big to sync",
+   "path": "Settings → Backup & Sync (a warning showing)",
+   "crop": "settings__sync--oversize",
+   "headline": "Backup & Sync — too big to sync: clearer layers?",
+   "changed": "Same outline change, with the warning open.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-3",
+   "surface": "Assistant → General",
+   "path": "Settings → Assistant settings → General",
+   "crop": "settings__assistant__general",
+   "headline": "Assistant → General: clearer layers?",
+   "changed": "Every card gets the same visible outline; the choice strips and pickers inside use the nested look.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-4",
+   "surface": "Cloud providers",
+   "path": "Settings → Assistant settings → Cloud providers",
+   "crop": "settings__assistant__cloud",
+   "headline": "Cloud providers: clearer layers?",
+   "changed": "Provider cards get the visible outline.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-5",
+   "surface": "Local models",
+   "path": "Settings → Assistant settings → Local models",
+   "crop": "settings__assistant__local",
+   "headline": "Local models: clearer layers?",
+   "changed": "\"Advanced\" inside the engine card now uses the nested look (it had the outer card's look). Every card outlined the same.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-6",
+   "surface": "Permissions",
+   "path": "Settings → Assistant settings → Permissions",
+   "crop": "settings__assistant__permissions",
+   "headline": "Permissions: clearer layers?",
+   "changed": "Cards and the folder list get the visible outline.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-7",
+   "surface": "Specialists",
+   "path": "Settings → Assistant settings → Specialists",
+   "crop": "settings__assistant__specialists",
+   "headline": "Specialists: clearer layers?",
+   "changed": "Cards and the two pickers get the visible outline.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-8",
+   "surface": "Remote Access",
+   "path": "Settings → Remote Access",
+   "crop": "settings__remote",
+   "headline": "Remote Access: clearer layers?",
+   "changed": "The \"Not set up yet\" line inside the Status card now has an outline like every other nested box.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-9",
+   "surface": "Sound",
+   "path": "Settings → Sound",
+   "crop": "settings__sound",
+   "headline": "Sound: clearer layers?",
+   "changed": "The Needs Attention / Response Ready strip now has an outline (it had none); the sound list outlines match.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-10",
+   "surface": "Account",
+   "path": "Settings → Account",
+   "crop": "settings__account",
+   "headline": "Account: clearer layers?",
+   "changed": "Cards get the visible outline.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-11",
+   "surface": "Appearance",
+   "path": "Settings → Appearance",
+   "crop": "settings__appearance",
+   "headline": "Appearance: clearer layers?",
+   "changed": "Cards and pickers get the visible outline.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-12",
+   "surface": "Bug report",
+   "path": "Settings → Development → Report a bug",
+   "crop": "settings__development__bug-report",
+   "headline": "Bug report: clearer layers?",
+   "changed": "The tab strip at the top gets an outline; the text boxes get the same outline as nested boxes.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  },
+  {
+   "id": "SL-13",
+   "surface": "Settings list",
+   "path": "Settings (the list on the left)",
+   "crop": "settings",
+   "headline": "Settings list: clearer layers?",
+   "changed": "Each row's outline is a little stronger, matching the cards.",
+   "notice": "Only outlines and nested-box fills change. Layout, spacing, text and buttons are exactly as you approved. Switch themes at the top — the light see-through themes and Golden Sunbreak changed most."
+  }
+ ]
+}

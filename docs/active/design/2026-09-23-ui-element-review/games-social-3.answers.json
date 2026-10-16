@@ -1,0 +1,97 @@
+{
+ "deck": "games-social-3",
+ "started": "2026-10-05T23:20:07.105Z",
+ "submitted": "2026-10-05T23:23:43Z",
+ "cur": 11,
+ "answers": {
+  "G3-1": {
+   "v": "yes",
+   "t": 1791242416002,
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-2": {
+   "v": "yes",
+   "t": 1791242420988,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-3": {
+   "note": "i don't like the 3-dot menu/icon. we should try a different way to display/manage this.",
+   "t": 1791242466377,
+   "v": "other",
+   "seconds": 45,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-4": {
+   "note": "i think we should use cards styled more like this in the previous menu's scrollable friend list.",
+   "t": 1791242490497,
+   "v": "other",
+   "seconds": 24,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-5": {
+   "v": "yes",
+   "t": 1791242493456,
+   "seconds": 3,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-6": {
+   "v": "yes",
+   "t": 1791242509134,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-7": {
+   "v": "other",
+   "t": 1791242526116,
+   "seconds": 22,
+   "theme": "youcoded",
+   "zoom": 1,
+   "note": "that red text seems to be unique styling not used elsewhere. fix it."
+  },
+  "G3-8": {
+   "v": "yes",
+   "t": 1791242528523,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3-9": {
+   "v": "yes",
+   "t": 1791242550730,
+   "seconds": 17,
+   "theme": "youcoded",
+   "zoom": 1,
+   "note": "should still show number of friends online in sub-text."
+  },
+  "G3-10": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791242553574
+  },
+  "G3-11": {
+   "v": "yes",
+   "t": 1791242563813,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "G3C-1": {
+   "v": "pick",
+   "seconds": 63,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791242622161,
+   "pick": "account"
+  }
+ }
+}

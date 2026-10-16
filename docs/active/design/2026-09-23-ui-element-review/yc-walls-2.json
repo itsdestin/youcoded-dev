@@ -1,0 +1,25 @@
+{
+  "title": "YouCoded theme — Glow and Silk together",
+  "key": "yc-walls-2",
+  "out": "yc-walls-2.review.html",
+  "images": "images/yc-walls-2",
+  "runs": {"after": "r/after"},
+  "themes": ["light"],
+  "crops": {"gs1": ["x", "gs1", "1280x1600+0+0"], "gs2": ["x", "gs2", "1280x1600+0+0"], "gs3": ["x", "gs3", "1280x1600+0+0"]},
+  "steps": [
+    {
+      "id": "YW2-1",
+      "surface": "YouCoded theme", "path": "The picture behind everything: YouCoded on top, YouCoded Night underneath",
+      "headline": "Glow and Silk combined at three strengths. Which one?",
+      "variants": [
+        {"id": "gs1", "label": "Calm", "crop": "gs1",
+         "summary": "Glow underneath, ribbons in three depths (wide and soft far back, thin and bright in front) with a fine sheen; the softest of the three."},
+        {"id": "gs2", "label": "Richer", "crop": "gs2",
+         "summary": "The same picture with deeper colour and fuller ribbons."},
+        {"id": "gs3", "label": "Strongest", "crop": "gs3",
+         "summary": "The most colour and the boldest ribbons.",
+         "risk": "Behind see-through panels, the brightest ribbons can pull the eye from the chat."}
+      ]
+    }
+  ]
+}

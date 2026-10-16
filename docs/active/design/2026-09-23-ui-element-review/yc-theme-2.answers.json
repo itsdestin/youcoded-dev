@@ -1,0 +1,23 @@
+{
+ "deck": "yc-theme-2",
+ "started": "2026-10-05T04:13:09.590Z",
+ "submitted": "2026-10-05T04:13:35Z",
+ "cur": 1,
+ "answers": {
+  "YT2-1": {
+   "note": "just a bit smaller",
+   "t": 1791173607121,
+   "v": "other",
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "YT2-2": {
+   "v": "yes",
+   "t": 1791173612051,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

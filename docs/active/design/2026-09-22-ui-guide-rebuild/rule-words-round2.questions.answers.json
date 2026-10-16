@@ -1,0 +1,29 @@
+{
+ "deck": "ui-guide-wording-round2",
+ "started": "2026-09-23T22:47:22.651Z",
+ "submitted": "2026-09-23T22:49:03Z",
+ "cur": 1,
+ "answers": {
+  "T-01-r4": {
+   "v": "other",
+   "seconds": 44,
+   "theme": "morning-rounds"
+  },
+  "P-04-r1": {
+   "v": "other",
+   "note": "you're misunderstanding the design guide and what it should be used for. we shouldn't just be verbally describing every existing surface as currently designed. this should be about more general rules/principles/design instructions that will apply when building new surfaces, with only pointers to existing surfaces to reference.",
+   "seconds": 44,
+   "theme": "morning-rounds"
+  },
+  "T-03-r4": {
+   "v": "other",
+   "seconds": 6,
+   "theme": "morning-rounds"
+  },
+  "COUNT-1": {
+   "v": "other",
+   "seconds": 6,
+   "theme": "morning-rounds"
+  }
+ }
+}

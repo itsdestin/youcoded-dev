@@ -24,6 +24,21 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(d['runs'], ['before', 'after']); self.assertEqual(d['themeNames']['midnight'], 'Midnight')
         s = d['steps'][1]; self.assertEqual(s['images']['light']['after'], 'images/deck/c--light--after.png'); self.assertEqual(s['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
         self.assertEqual(s['measured'], ''); self.assertEqual(s['risk'], '')
+    def test_a_new_state_slide_reads_keep_or_remove(self):
+        # games-social friction, proposal 5: one picture of a BUILT state is not a brief.
+        st = dict(self.spec['steps'][1]); st['id'] = 'S-9'; st['new'] = True; st['runs'] = ['after']
+        self.spec['steps'].append(st)
+        d = deck_data(self.spec, self.boxes)
+        out = [x for x in d['steps'] if x['id'] == 'S-9'][0]
+        self.assertEqual((out['yes'], out['no']), ('Yes, keep it', 'No, remove it'))
+        self.assertNotIn('yes', d['steps'][1])   # an ordinary slide keeps the page's own wording
+    def test_a_new_state_slide_keeps_its_own_answer_words(self):
+        # The step's own yes/no win over keep-or-remove (a judging deck: "Good first try").
+        st = dict(self.spec['steps'][1]); st['id'] = 'S-8'; st['new'] = True; st['runs'] = ['after']
+        st['yes'] = 'Good first try'; st['no'] = 'Needs work'
+        self.spec['steps'].append(st)
+        out = [x for x in deck_data(self.spec, self.boxes)['steps'] if x['id'] == 'S-8'][0]
+        self.assertEqual((out['yes'], out['no']), ('Good first try', 'Needs work'))
     def test_refuses_when_a_picture_is_missing(self):
         os.remove(os.path.join(self.spec['_base'], 'images', 'deck', 'c--light--after.png'))
         with self.assertRaises(SpecError) as cm: build_page(self.spec, self.boxes)
@@ -104,6 +119,26 @@ class BuildTests(unittest.TestCase):
         self.assertNotIn('changed', d)                                  # no What changed card
         self.assertEqual(sorted(d['images']['light']), ['after', 'before'])   # a picture per run, like a normal step
         self.assertEqual(d['boxes']['light']['after'], [25.0, 25.0, 20.0, 15.0])
+
+    def test_also_changes_reaches_the_page(self):
+        self.spec['steps'][0]['alsoChanges'] = ['Session details', 'Resume → Organize']
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        self.assertEqual(deck_data(self.spec, boxes)['steps'][0]['alsoChanges'], ['Session details', 'Resume → Organize'])
+
+    def test_a_decide_step_with_a_picture_keeps_today_problem_and_proposal(self):
+        # WHY (submit-ticket friction, proposal 20): validate accepted these on a picture decide
+        # step, page.js draws their cards, but the build dropped them — submit-ticket-3#ST3-Q1
+        # reached Destin without its Today / Problem / Proposal, silently.
+        self.spec['steps'].append({'id': 'S-4', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+            'highlight': {'selector': '#send'}, 'headline': 'Where should the block go?',
+            'today': 'It sits on top.', 'problem': 'It hides the box.', 'proposal': 'Move it.',
+            'options': [{'id': 'a', 'label': 'Leave it', 'summary': 'Nothing moves.'},
+                        {'id': 'b', 'label': 'Move it down', 'summary': 'It drops below.'}]})
+        from deck.spec import validate
+        self.assertEqual(validate(self.spec)[0], [])
+        boxes = crop_images(self.spec, log=lambda *a: None)['boxes']
+        d = deck_data(self.spec, boxes)['steps'][3]
+        self.assertEqual((d['today'], d['problem'], d['proposal']), ('It sits on top.', 'It hides the box.', 'Move it.'))
 
 
 class TemplateTests(unittest.TestCase):

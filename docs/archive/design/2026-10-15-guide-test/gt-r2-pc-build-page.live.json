@@ -1,0 +1,63 @@
+{
+  "title": "PC build planner — second attempt (round 2, design D)",
+  "key": "gt-r2-pc-build-page.live",
+  "out": "gt-r2-pc-build-page.live.html",
+  "live": {
+    "worktree": "sessions/gt-r2-pc-build-page/youcoded"
+  },
+  "steps": [
+    {
+      "id": "D-1",
+      "surface": "PC build planner (a Page)",
+      "path": "Pages → PC build planner",
+      "headline": "PC build planner, rebuilt from the updated guide: builds as tabs, parts with New/Used, totals and a comparison.",
+      "hint": "It opens on the page. Flip New/Used switches, switch builds, + New build, Check prices.",
+      "notice": "Builder avoided all your round 1 notes. Its own worries: eight lit New/Used switches are loud; \"no light text beside bold\" makes each row taller; the Pages kit still lacks notices, pills and switches.",
+      "risk": "Prices are made up; Check prices is pretend.",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "page-pc-build"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-2",
+      "surface": "PC build planner (a Page)",
+      "path": "PC build planner, first time",
+      "headline": "PC build planner the first time.",
+      "hint": "It opens on the page.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "page-pc-build",
+          "pcBuild": "empty"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-3",
+      "surface": "PC build planner (a Page)",
+      "path": "PC build planner, price check failed",
+      "headline": "PC build planner when the price check failed.",
+      "hint": "It opens on the page. Try again works.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "page-pc-build",
+          "pcBuild": "failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

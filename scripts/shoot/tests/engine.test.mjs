@@ -5,11 +5,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureBuild, openPool, poolSize, serve, sweepLeftovers } from '../engine.mjs';
+import { ensureBuild, openPool, poolSize, serve, setShotScale, sweepLeftovers } from '../engine.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CHECKOUT = resolve(HERE, '..', '..', '..', 'youcoded');
@@ -75,6 +75,98 @@ test('two tabs on the same address each keep their own theme', { skip: !canBrows
     assert.equal(await themeOf(a), 'dark');
     assert.equal(await themeOf(b), 'light');
   } finally { pool.close(); server.close(); }
+});
+
+// WHY (project-switcher friction, proposal 8): at 1.5× a hover picture lit the row ABOVE the
+// pointed one. Taking the picture made Chrome send a late, trusted `mouseover` at the hover's
+// point divided by the scale (720,454 → 480,302), because the browser ran at a real density
+// of 1 (`--force-device-scale-factor=1`) while the tab pretended 1.5 (emulation). It needs a
+// hover that changes layout (the bin appearing; here a taller row). Every pointer
+// event the page sees after a hover and a picture must be at the point the pointer was put.
+const canChrome = spawnSync('google-chrome-stable', ['--version']).status === 0;
+test('at 1.5× a picture never moves the pointer: no late event off the hovered point', { skip: !canChrome && 'needs Chrome' }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'youcoded-shoot-ptr-'));
+  writeFileSync(join(dir, 'index.html'), `<!doctype html><style>body{margin:0}div{height:100px;border-bottom:1px solid #888}div:hover{background:#f0f}div:hover::after{content:'';display:block;height:20px}</style>
+    ${Array.from({ length: 8 }, (_, i) => `<div id="r${i}">row ${i}</div>`).join('')}
+    <script>window.log=[];for(const t of ['mouseover','mousemove'])addEventListener(t,e=>log.push([t,e.clientX,e.clientY]),true)</script>`);
+  const server = await serve(dir);
+  setShotScale(1.5);
+  const pool = await openPool({ tabs: 1, browsers: 1, width: 800, height: 900 });
+  try {
+    const tab = pool.tabs[0];
+    await tab.prepare({ theme: 'light', width: 800, height: 900 });
+    await tab.navigate(`http://127.0.0.1:${server.port}/index.html`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('!!window.log').catch(() => false)); i++) await new Promise((r) => setTimeout(r, 50));
+    await tab.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 600, y: 450, pointerType: 'mouse' });
+    await tab.png();
+    await new Promise((r) => setTimeout(r, 400));
+    const log = await tab.evaluate('log');
+    const off = log.filter(([, x, y]) => x !== 600 || y !== 450);
+    assert.deepEqual(off, [], `pointer events away from (600, 450): ${JSON.stringify(off)}`);
+    assert.equal(await tab.evaluate("document.querySelector('div:hover')?.id"), 'r4', 'the hovered row is the one under the pointer');
+  } finally { setShotScale(1); pool.close(); server.close(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+// WHY (2026-10-07, shoot --check under verify's load): a screen opened a real window
+// (window.open → github.com/login). It became the front tab of our tab's window, so our page went
+// `hidden`; a hidden page runs no requestAnimationFrame, and every later screen on that tab hung
+// for 20 s in the app's open step (measured: 0 frames in 20 s, timers still ticking, visibility
+// hidden, the GitHub page listed among the browser's targets). The engine closes any page a tab opens.
+test('a page a tab opens is closed, and the tab stays visible with frames running', { skip: !canChrome && 'needs Chrome' }, async () => {
+  const pool = await openPool({ tabs: 1, browsers: 1, width: 800, height: 600 });
+  try {
+    const tab = pool.tabs[0];
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    await tab.navigate('data:text/html,<p>main');
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete"').catch(() => false)); i++) await new Promise((r) => setTimeout(r, 50));
+    // userGesture: the app opens these from a click (a screen's open step), which the popup blocker allows.
+    await tab.send('Runtime.evaluate', { expression: "window.open('about:blank#popup', '_blank'); 0", userGesture: true });
+    await new Promise((r) => setTimeout(r, 300));
+    let pages = [];
+    for (let i = 0; i < 40; i++) {
+      pages = (await tab.send('Target.getTargets', {})).targetInfos.filter((t) => t.type === 'page' && t.url.includes('#popup'));
+      if (!pages.length) break;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    assert.deepEqual(pages.map((t) => t.url), [], 'the opened page is closed');
+    const frames = await tab.evaluate('new Promise((r) => { let f = 0; const go = () => { f++; requestAnimationFrame(go); }; requestAnimationFrame(go); setTimeout(() => r(document.visibilityState + ":" + (f > 2)), 500); })', 5000);
+    assert.equal(frames, 'visible:true');
+  } finally { pool.close(); }
+});
+
+// WHY (2026-10-12, verify under load): several sessions shoot from ONE checkout. When one of them
+// rebuilt the photo-only copy (its source had changed), `--emptyOutDir` emptied the folder the
+// others were serving: their next page load got index.html instead of a script, screens missed
+// their mark ("its mark is not on the page"), and a run crashed on ENOENT reading index.html.
+// Each build now lands in a folder of its own that nothing empties while a run may use it, and
+// the server answers a vanished file with an error instead of crashing.
+import { sweepOldBuilds } from '../engine.mjs';
+
+test('a file that vanishes under the server is an error answer, not a crash', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'youcoded-shoot-serve-'));
+  writeFileSync(join(dir, 'index.html'), '<p>x');
+  const server = await serve(dir);
+  try {
+    rmSync(join(dir, 'index.html'));
+    const r = await fetch(`http://127.0.0.1:${server.port}/index.html`);
+    assert.ok(r.status >= 400, `status ${r.status}`);
+    writeFileSync(join(dir, 'index.html'), '<p>back');
+    assert.equal(await (await fetch(`http://127.0.0.1:${server.port}/index.html`)).text(), '<p>back', 'the server is still up');
+  } finally { server.close(); rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('old builds are swept; the current one and any recently used are kept', () => {
+  const home = mkdtempSync(join(tmpdir(), 'youcoded-shoot-builds-'));
+  try {
+    for (const d of ['dist-old', 'dist-recent', 'dist-current', 'dist']) mkdirSync(join(home, d));
+    const hoursAgo = (h) => new Date(Date.now() - h * 3_600_000);
+    utimesSync(join(home, 'dist-old'), hoursAgo(9), hoursAgo(9));
+    utimesSync(join(home, 'dist'), hoursAgo(9), hoursAgo(9));
+    utimesSync(join(home, 'dist-recent'), hoursAgo(1), hoursAgo(1));
+    utimesSync(join(home, 'dist-current'), hoursAgo(9), hoursAgo(9));
+    sweepOldBuilds(home, join(home, 'dist-current'));
+    assert.deepEqual(['dist-old', 'dist-recent', 'dist-current', 'dist'].filter((d) => existsSync(join(home, d))), ['dist-recent', 'dist-current']);
+  } finally { rmSync(home, { recursive: true, force: true }); }
 });
 
 // STILL runs inside the page; a tiny fake page lets the cap logic be tested without a browser.

@@ -78,6 +78,10 @@ searched or resumed (chat-data).
       The same click on a project file works (Destin, 2026-09-03, a document in his notes repo).
       `chat` `desktop` `needs-verify` `P3` `checked 2026-09-03`
 
+- [ ] The side pane (session files) needs its own design pass. Destin, 2026-10-13 (final-review#FV-2,
+      pictures, diagrams and PDFs open in it): "the side pane needs separate ui/ux work, particularly to
+      make images look better nested fitted and to improve the bottom bar and our git surfaces".
+      `files-panel` `all` `confirmed` `P3` `checked 2026-10-13`
 - [ ] Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or
       as "created by Claude" — e.g. a Word file built by a script (Destin, 2026-10-13: "track every file created,
       edited, or deleted by claude, even done with scripts/bash"). Deletions are never recorded at all.

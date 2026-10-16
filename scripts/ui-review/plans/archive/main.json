@@ -89,22 +89,26 @@
   },
   {
    "name": "settings-model-providers",
+   "_why": "Model Providers was folded into the wide Assistant settings dialog (2026-09-05, AssistantSettings.tsx) — this shot now opens its Cloud providers page, the closest surviving equivalent. 'Add provider' no longer exists as a row; the dialog's own aria-label is now its fixed title, 'Assistant settings'.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Cloud providers\")",
      "settle": 900
     }
    ],
    "measure": [
-    "[role=dialog][aria-label='Model Providers']",
-    "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Model Providers\"] button')].find(b=>b.textContent.trim()==='Add provider')",
-    "js:document.querySelector('[role=dialog][aria-label=\"Model Providers\"] .scroll-fade')"
+    "[role=dialog][aria-label='Assistant settings']",
+    "js:document.querySelector('[role=dialog] .scroll-fade')"
    ],
-   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Cloud providers'"
   },
   {
    "name": "settings-remote-access",
@@ -122,31 +126,37 @@
   },
   {
    "name": "settings-defaults",
+   "_why": "Session Defaults was folded into Assistant settings' General page (2026-09-05, AssistantSettings.tsx) — General is also the page the panel opens on, so just opening the row shows it.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Defaults\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
     }
    ],
-   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+   "expect": "[role=dialog] nav[aria-label='Assistant settings pages']"
   },
   {
    "name": "settings-permissions",
+   "_why": "Permissions was folded into Assistant settings (2026-09-05, AssistantSettings.tsx) — it is now one of its pages.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Permissions\")",
      "settle": 900
     }
    ],
-   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Permissions'"
   },
   {
    "name": "settings-development",
@@ -654,13 +664,18 @@
   {
    "name": "permissions-stress",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "_why": "Permissions was folded into Assistant settings (2026-09-05).",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Permissions\")",
      "settle": 900
     }
    ]
@@ -668,13 +683,18 @@
   {
    "name": "providers-none",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=no-providers",
+   "_why": "Model Providers was folded into Assistant settings (2026-09-05); Cloud providers is its closest page.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Cloud providers\")",
      "settle": 900
     }
    ]

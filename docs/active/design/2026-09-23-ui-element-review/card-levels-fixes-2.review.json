@@ -1,0 +1,65 @@
+{
+  "title": "Card levels \u2014 the last three notes",
+  "key": "ui-card-levels-fixes-2",
+  "out": "card-levels-fixes-2.review.html",
+  "images": "images/card-levels-fixes-2.review",
+  "runs": {
+    "before": "runs/lv5-before",
+    "after": "runs/lv5-after"
+  },
+  "labels": {
+    "before": "You reviewed",
+    "after": "Fixed"
+  },
+  "themes": [
+    "meadow-mist",
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "settings-backup-sync": [
+      "lv",
+      "settings-backup-sync",
+      "640x800+400+50"
+    ],
+    "assistant-specialists": [
+      "lv",
+      "assistant-specialists",
+      "820x700+310+100"
+    ],
+    "account": [
+      "lv",
+      "account",
+      "640x800+400+50"
+    ]
+  },
+  "steps": [
+    {
+      "id": "G-1",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "settings-backup-sync",
+      "headline": "Backup & Sync: fixed now?",
+      "changed": "\"Additional backups\" no longer has a box of its own inside the card \u2014 the header is part of the card.",
+      "notice": "Only this change; everything else as you approved."
+    },
+    {
+      "id": "G-2",
+      "surface": "Specialists",
+      "path": "Settings \u2192 Specialists",
+      "crop": "assistant-specialists",
+      "headline": "Specialists: fixed now?",
+      "changed": "Budget and Frontier are evenly spaced \u2014 the big gap is gone.",
+      "notice": "Only this change; everything else as you approved."
+    },
+    {
+      "id": "G-3",
+      "surface": "Account",
+      "path": "Settings \u2192 Account",
+      "crop": "account",
+      "headline": "Account: fixed now?",
+      "changed": "The explanation and a full-width \"Sign in\" button sit together in one card, like Connected services below it.",
+      "notice": "Only this change; everything else as you approved."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+ "deck": "popup-cards-1",
+ "started": "2026-10-14T08:10:07.828Z",
+ "submitted": "2026-10-14T08:13:10Z",
+ "cur": 2,
+ "answers": {
+  "PC-1": {
+   "v": "pick",
+   "pick": "box-buttons-in",
+   "t": 1791965468344,
+   "seconds": 60,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PC-2": {
+   "v": "pick",
+   "pick": "keep-line",
+   "t": 1791965579284,
+   "seconds": 111,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PC-3": {
+   "v": "pick",
+   "pick": "first-labelled",
+   "t": 1791965589418,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

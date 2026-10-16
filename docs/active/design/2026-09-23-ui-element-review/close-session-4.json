@@ -1,0 +1,108 @@
+{
+  "title": "Close session follow-ups: pinned popup buttons, one Enter rule, the Projects description box",
+  "key": "close-session-4",
+  "out": "close-session-4.review.html",
+  "images": "images/close-session-4",
+  "runs": {
+    "before": "runs/cs4/before",
+    "after": "runs/cs4/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "live": {
+    "worktree": "sessions/ui-consistency-audit/youcoded"
+  },
+  "themes": [
+    "creme",
+    "youcoded",
+    "youcoded-night",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "CS4-1",
+      "surface": "What's new / Update available",
+      "path": "Status bar → version chip, when an update is waiting",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/update@640x320+400+290",
+      "highlight": "auto",
+      "headline": "The update popup loses the full-width line above its button; the notes now fade under the button when they're long.",
+      "changed": "It drew its own footer with a line across the popup, and its notes scrolled with no fade. It now uses the shared popup's pinned footer: no line, and long notes fade see-through where they meet Update now.",
+      "notice": "The notes sit a little closer to the popup's edges (16 points instead of 20), like every other popup."
+    },
+    {
+      "id": "CS4-2",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit with unsaved files, on a short window",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "app/unsaved-before-quit#short@380x480+530+0",
+      "highlight": "auto",
+      "headline": "On a short window the file list now fades see-through under the buttons, instead of a light painted band.",
+      "changed": "Only its list scrolled, under the old painted fade (the light strip over the last file). Now the whole message scrolls in the shared popup and fades into the pinned buttons.",
+      "notice": "At a normal window height nothing changes — the list fits."
+    },
+    {
+      "id": "CS4-3",
+      "surface": "Close window",
+      "path": "Close a window that still has sessions",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/quit-sessions@460x220+490+340",
+      "highlight": "panel",
+      "headline": "Close window keeps your wording and layout; it now uses the shared pinned footer, so its button row can't scroll away.",
+      "changed": "The bold line, the text and the \"Resume on Next Launch?\" switch beside Close window are exactly as you set them. A few points of spacing moved.",
+      "notice": "Enter does not close the window — it ends sessions, so it takes a click."
+    },
+    {
+      "id": "CS4-4",
+      "surface": "Close session prompt",
+      "path": "Close a session",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/close-session@460x620+490+140",
+      "highlight": "panel",
+      "headline": "The close prompt looks the same; it now uses the shared footer and the shared Enter rule.",
+      "changed": "Its hand-made scroll area and Enter listener are gone; the shared popup does both. Enter now also respects \"Don't show again\" — before, only the button saved it.",
+      "notice": "Nothing should look different. The next slide is the one to try."
+    },
+    {
+      "id": "CS4-5",
+      "surface": "Close session prompt",
+      "path": "Top bar → session name → a session's ✕ (Close session), then try Enter",
+      "live": {
+        "app": "default"
+      },
+      "hint": "Click the session name in the top bar to open the sessions menu, point at a session and click its ✕ (\"Close session\"). In the popup: click a tag (say \"work\") and press Enter — its edit box opens and the session stays. Click \"+ Add a note\", type, press Enter — a new line. Then click an empty part of the popup and press Enter — that closes the session. Nothing is saved; it is the practice app.",
+      "headline": "Try Enter in the close prompt: it closes only from an empty spot, never from a tag, switch or text box.",
+      "changed": "The practice app, with the shared Enter rule in the close prompt. Opening another popup on top (click the session's name to rename it) also stops Enter from reaching the close prompt.",
+      "notice": "Every popup that uses Enter from now on gets the same rule."
+    },
+    {
+      "id": "CS4-6",
+      "surface": "Projects",
+      "path": "Projects → click the project's description",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/files#description-edit@1100x150+170+110",
+      "highlight": "auto",
+      "headline": "The project description's text box now keeps the card's margins and upright words, like Session details' note box.",
+      "changed": "The box you type in was pulled into the card's left margin (so its right edge stopped short) and in italics. Now it is the app's plain text box at its normal size. \"+ Add a description\" no longer hangs into the margin either.",
+      "notice": "The saved description still shows in quotes and italics."
+    }
+  ]
+}

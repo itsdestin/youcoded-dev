@@ -1,0 +1,29 @@
+{
+ "deck": "ui-element-review-final",
+ "started": "2026-09-24T08:15:14.057Z",
+ "submitted": "2026-09-24T08:16:41Z",
+ "cur": 2,
+ "answers": {
+  "F-1": {
+   "v": "pick",
+   "pick": "text",
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "F-2": {
+   "v": "pick",
+   "pick": "outlined",
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "pick",
+   "pick": "medium",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

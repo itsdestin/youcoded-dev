@@ -1,0 +1,96 @@
+{
+ "deck": "submit-ticket-5",
+ "started": "2026-10-08T12:53:33.580Z",
+ "submitted": "2026-10-08T12:58:03Z",
+ "cur": 11,
+ "answers": {
+  "ST5-1": {
+   "v": "yes",
+   "t": 1791464017984,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-2": {
+   "v": "yes",
+   "t": 1791464028150,
+   "seconds": 10,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-3": {
+   "v": "yes",
+   "t": 1791464054296,
+   "seconds": 23,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-4": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791464073668
+  },
+  "ST5-5": {
+   "v": "yes",
+   "t": 1791464136544,
+   "note": "i want a new slider style. use home assistant page light slider as a refereence. round handle, with fill that rounds around the edge of the drag handle. use for volume too. ",
+   "seconds": 63,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-6": {
+   "v": "yes",
+   "t": 1791464139941,
+   "seconds": 3,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-7": {
+   "v": "yes",
+   "t": 1791464148755,
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-8": {
+   "v": "yes",
+   "t": 1791464156716,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-9": {
+   "v": "no",
+   "t": 1791464219073,
+   "note": "mock failure dev open session in might scare our users. this error is just confusing and unhelpful.",
+   "seconds": 59,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-10": {
+   "v": "other",
+   "seconds": 40,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791464256427,
+   "note": "what. is this a new thing youre randomly proposing? or did we do work on this"
+  },
+  "ST5-Q1": {
+   "v": "pick",
+   "pick": "allow",
+   "t": 1791464276833,
+   "seconds": 20,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST5-Q2": {
+   "v": "yes",
+   "t": 1791464282367,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

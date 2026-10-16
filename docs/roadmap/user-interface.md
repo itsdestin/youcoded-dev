@@ -43,7 +43,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       card colour and read as labels (report: docs/active/investigations/2026-09-01-field-surface-invisible-on-inset.md).
       `all` `confirmed` `P3` `checked 2026-09-01`
 
-- [ ] Shared-control drift: screens that do not match the shared look (7 things).
+- [ ] Shared-control drift: screens that do not match the shared look (9 things).
       (a) The design check still lists ~530 places that override a shared button, type a size by hand
       or use an off-theme colour, each group needing a design call; (b) about twenty clickable
       non-buttons have no hover and no keyboard path (command drawer, resume rows, model picker,
@@ -52,8 +52,15 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       marker) — Destin: "I HATE the bare dropdowns with a chevron" (G-29); (d) the files filter
       panel draws a 12 px chip instead of the shared 14 px pill; (e) a lit filter chip is 2 px shorter
       than an idle one (design-guide G-14); (f) the specialists chip and session strip draw their
-      own badges instead of the shared one.
-      `all` `confirmed` `P3` `checked 2026-09-01`
+      own badges instead of the shared one; (g) buttons beside text in cards and rows are top-, centre- or
+      bottom-aligned with no one rule (a model to download has its button at the top, the installed model
+      under it is centred). Destin, 2026-10-13 (small-fixes-3#SF3-9): "just leave this for now, but keep a
+      future roadmap item to do a full review and deal with top/center/bottom alignment for buttons by text"
+      (survey: docs/active/design/2026-09-23-ui-element-review/button-alignment-survey.md); (h) the app has no
+      shared icon set: about a hundred are drawn one by one, so the same idea looks different across screens
+      and a badly drawn one (the theme page's heart, 2026-10-05) is caught only by eye; the `dev/icons`
+      screenshot sheet shows them all at 48px meanwhile.
+      `all` `confirmed` `P3` `checked 2026-10-13`
 
 - [ ] Phone-width and touch polish (3 groups).
       (a) A tester on a phone browser (2026-09-10) hit: "Session" wording a student would not use,
@@ -73,12 +80,15 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       tripwire that logs what emptied an open chat, or the friend's log file.
       `chat` `desktop` `needs-verify` `P2` `checked 2026-09-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
-- [ ] Chat view glitches (2 things).
+- [ ] Chat view glitches (3 things).
       (a) Floating items (attention toast, permission gates, spinners, sync status) were never
       audited for landing on top of each other (docs/active/investigations/2026-09-01-chat-float-stacking.md);
       (b) an empty timestamp-only assistant bubble appears above a permission card (spec:
-      docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md).
-      `chat` `all` `needs-verify` `P3` `checked 2026-09-01`
+      docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md); (c) after the window
+      reloads it returns to the first session instead of the one you were on — seen 2026-10-05 in the
+      performance rig's reload test, a message typed after the reload went to the wrong session
+      (docs/archive/investigations/2026-10-04-performance-gap-review.md).
+      `chat` `all` `needs-verify` `P3` `checked 2026-10-05`
 
 - [ ] Dialogs, help bubbles and window drag (3 things).
       (a) Closing a dialog from the Development menu closes the menu behind it, and "Known issues"
@@ -115,7 +125,14 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       transitions feel abrupt (Destin, 2026-07-20), no design pass yet.
       `all` `parked` `P3` `checked 2026-09-01`
 
-- [ ] After the window reloads it returns to the first session instead of the one you were on.
-      Seen 2026-10-05 in the performance rig's reload test (a chat message typed after the
-      reload went to the wrong session); not caused by the performance work
-      `all` `needs-verify` `P3` `checked 2026-10-05` → docs/archive/investigations/2026-10-04-performance-gap-review.md
+- [ ] Surfaces that need their own design pass, separate from the design-guide work (4 things).
+      (a) Session context: Destin, 2026-10-13, looking at a skill's fold in it (final-review#CH-28):
+      "this particular popups needs additional ui/ux work"; (b) the Donate ("buy me a coffee") popup
+      in Settings: "buy me a coffer popup needs work" (final-review#ST-30); (c) Projects →
+      Instructions → How context works: "i want to fully rebuild the how context works popup at some
+      point" (final-review#PU-1); (d) tool cards, permission prompts and chat question cards — Destin,
+      2026-09-24: "might rework tool cards and permission prompts as a seprate endeavor. we should just
+      have our design guide explicitly note that these elements are not consider final/formal"; the
+      question cards' Dismiss / Submit order was never approved (2026-10-13, final-review#CH-29: "we
+      need to revisit this later alongisde tool cards"). The guide marks them not final.
+      `tool-cards` `all` `confirmed` `P3` `checked 2026-10-13`

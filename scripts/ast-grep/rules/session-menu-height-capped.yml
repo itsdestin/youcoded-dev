@@ -8,9 +8,9 @@ message: >-
   --session-menu-available-height for the New Session form's own scroll
   region, keep --vvp-offset in the cap so a mobile browser's virtual
   viewport doesn't hide the bottom, and give the session list itself
-  (twice — the "no results" and populated states) the scroll-fade + flex-1
-  treatment so it flexes and scrolls before the New Session controls are
-  pushed past the bottom edge.
+  (twice — the local list and the other-windows list) the scrolling
+  .scroll-mask + flex-1 treatment so it flexes and scrolls before the New
+  Session controls are pushed past the bottom edge.
 note: |
   Invariant source: tests/menu-row-reachability.test.ts (retired by Plan B,
   2026-09-16; case 5 of 7 — "the session menu gives its list the remaining
@@ -25,6 +25,9 @@ note: |
   rather than by regex on `string_fragment`, so the `${belowTrigger}`
   substitution in its middle cannot break the match the way a flat regex
   scanning raw text never had to worry about.
+  2026-10-15: the lists' class moved from the retired painted .scroll-fade to
+  the app's one fade (.scroll-mask) plus the overflow/min-height classes the
+  old class carried; the pinned strings follow.
   FIX (review of batch B, 2026-09-16), two changes:
   (1) the `min(680px, ${…})` branch used to match the bare template
   ANYWHERE in the file, not the `maxHeight: ` PAIR the retired test's
@@ -77,11 +80,11 @@ rule:
         has:
           stopBy: end
           pattern:
-            context: '<div className="scroll-fade flex-1" />'
+            context: '<div className="scroll-mask relative overflow-y-auto overflow-x-hidden min-h-0 scrollbar-none flex-1" />'
             selector: jsx_attribute
     - not:
         has:
           stopBy: end
           pattern:
-            context: '<div className="scroll-fade flex-1 py-1" />'
+            context: '<div className="scroll-mask relative overflow-y-auto overflow-x-hidden min-h-0 scrollbar-none flex-1 py-1" />'
             selector: jsx_attribute

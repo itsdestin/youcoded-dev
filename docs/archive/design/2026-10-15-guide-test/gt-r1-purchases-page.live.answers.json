@@ -1,0 +1,36 @@
+{
+ "deck": "gt-r1-purchases-page.live",
+ "started": "2026-10-15T03:59:48.904Z",
+ "submitted": null,
+ "cur": 2,
+ "answers": {
+  "A-1": {
+   "v": "skip",
+   "seconds": 244,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "t": 1792037033354
+  },
+  "A-2": {
+   "v": "skip",
+   "seconds": 9,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "t": 1792037046155
+  },
+  "A-3": {
+   "v": "skip",
+   "seconds": 2,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "t": 1792037037607
+  },
+  "A-4": {
+   "v": "skip",
+   "seconds": 3,
+   "theme": "morning-rounds",
+   "zoom": 1,
+   "t": 1792037040204
+  }
+ }
+}

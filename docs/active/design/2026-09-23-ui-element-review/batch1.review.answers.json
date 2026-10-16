@@ -1,0 +1,86 @@
+{
+ "deck": "ui-fix-batch-1",
+ "started": "2026-09-24T22:29:02.926Z",
+ "submitted": "2026-09-24T22:42:57Z",
+ "cur": 11,
+ "answers": {
+  "B1-1": {
+   "note": "don't like this page. will need to rebuild/simplify as a follow up.",
+   "v": "other",
+   "seconds": 54,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B1-2": {
+   "note": "i'm not sure how i feel about the checkbox styling here. i think we can improve. maybe box on the right? or differently styled box? idk exactly, but the vibe is off.",
+   "v": "other",
+   "seconds": 69,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B1-3": {
+   "v": "other",
+   "note": "this doesn't look like we changed anything. these top banners are still unlike anything else in the app. it should match other existing warning/error styles.",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B1-4": {
+   "note": "there are still thinks on this page i don't like, like the lare gap after the specialists header before the copy.",
+   "v": "other",
+   "seconds": 45,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B1-5": {
+   "v": "other",
+   "note": "the generate button should just be remove. that \"set\" button doesnt match any existing style. ",
+   "seconds": 152,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B1-6": {
+   "note": "sync errors and show details dropdown are not styled properly. sync log dropdown, back up all now button, spacing between top sync card and \"additional backups\" etc all wrong.",
+   "v": "other",
+   "seconds": 234,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B1-7": {
+   "v": "other",
+   "seconds": 204,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-1": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-3": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-4": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-5": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

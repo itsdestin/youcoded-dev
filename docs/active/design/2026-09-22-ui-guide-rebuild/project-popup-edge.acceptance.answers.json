@@ -1,0 +1,15 @@
+{
+ "deck": "ui-guide-project-popup-acceptance-1",
+ "started": "2026-09-23T09:11:13.228Z",
+ "submitted": "2026-09-23T09:11:38Z",
+ "cur": 0,
+ "answers": {
+  "A-1": {
+   "v": "pick",
+   "pick": "selected",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "deck": "ui-nothing-bare",
+ "started": "2026-09-28T23:00:11.999Z",
+ "submitted": "2026-09-28T23:05:17Z",
+ "cur": 3,
+ "answers": {
+  "NB-1": {
+   "v": "yes",
+   "t": 1790636420272,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "NB-2": {
+   "note": "this is another class of issue we should prevent. when a box contains tex on the left and buttons on the right, they should be in-line with one another instead of stacked when posssible. if buttons and text are stacked, things should probably be centered/full width instead of right aligned. we should fix alignment for the youcoded 1.3.0 privacy/terms card, then put it at the bottom of the page.",
+   "t": 1790636571829,
+   "v": "yes",
+   "seconds": 152,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "NB-3": {
+   "note": "i think we can clean the prefer power saving card up. i think i'd also like to avoid having cards directly below the popup header line. i'd rather have first-level bare header text above the beginning of the popup. this text should never replicate the popup header title",
+   "t": 1790636681893,
+   "v": "other",
+   "seconds": 110,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "NB-4": {
+   "v": "yes",
+   "t": 1790636716777,
+   "note": "with subheader thing",
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

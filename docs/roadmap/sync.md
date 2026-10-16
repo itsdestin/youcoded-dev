@@ -31,6 +31,9 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       in history; new edits stay on the device, but removing it means rewriting the project's history on every
       device (decided out of scope, 2026-09-23). (b) The Android app's GitHub backup copies `mcp.json` (which can
       hold service keys) and settings into the backup repository; the desktop app no longer has this backup.
+      2026-10-13, Destin (small-fixes-2#SF2-7): "the phone and pc should eventually function identically.
+      we will replace github backup on phone with pc-parity cross device sync". Computers stopped offering
+      it on 2026-10-13 (an old one shows "No longer supported"); the phone keeps it until then.
       (c) The sync worker accepts whatever device id a lease message claims without checking the signed-in
       connection, so a client in your account could act as another of your devices (decided 2026-09-21 to file
       as a potential issue, not fix now; report: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md).

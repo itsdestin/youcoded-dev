@@ -1,0 +1,1277 @@
+[
+  {
+    "name": "chat/games#degraded",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#degraded/midnight.png",
+    "ms": 4012,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/youcoded.png",
+    "ms": 4141,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#empty",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#empty/midnight.png",
+    "ms": 4615,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#signed-in",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#signed-in/midnight.png",
+    "ms": 4617,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#signed-in",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#signed-in/youcoded.png",
+    "ms": 4621,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#friends",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#friends/youcoded-night.png",
+    "ms": 4711,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/midnight.png",
+    "ms": 4811,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#empty",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#empty/youcoded-night.png",
+    "ms": 5309,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#friends",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#friends/midnight.png",
+    "ms": 5385,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#degraded",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#degraded/youcoded.png",
+    "ms": 5634,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/youcoded-night.png",
+    "ms": 5894,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#empty",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#empty/youcoded.png",
+    "ms": 6449,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#signed-in",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#signed-in/youcoded-night.png",
+    "ms": 8220,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#friends",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#friends/youcoded.png",
+    "ms": 8353,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#no-friends",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#no-friends/youcoded.png",
+    "ms": 8903,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#degraded",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#degraded/youcoded-night.png",
+    "ms": 9108,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#phone/youcoded-night.png",
+    "ms": 1418,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 667
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#no-friends",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#no-friends/midnight.png",
+    "ms": 2091,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#no-friends",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#no-friends/youcoded-night.png",
+    "ms": 2371,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#phone/midnight.png",
+    "ms": 1146,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 651
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#requests",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#requests/midnight.png",
+    "ms": 2076,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#requests",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#requests/youcoded.png",
+    "ms": 2149,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#signed-out-phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#signed-out-phone/youcoded.png",
+    "ms": 1483,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 667
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#signed-out-phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#signed-out-phone/midnight.png",
+    "ms": 1082,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 651
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#phone/youcoded.png",
+    "ms": 2363,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 667
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#requests",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#requests/youcoded-night.png",
+    "ms": 2456,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#signed-out-phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#signed-out-phone/youcoded-night.png",
+    "ms": 1454,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 667
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#small",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#small/youcoded.png",
+    "ms": 1159,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 620,
+      "h": 327
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#small",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#small/youcoded-night.png",
+    "ms": 1118,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 620,
+      "h": 327
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#small",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#small/midnight.png",
+    "ms": 1056,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 620,
+      "h": 327
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#long",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#long/youcoded.png",
+    "ms": 2885,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#long",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#long/youcoded-night.png",
+    "ms": 2762,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#incognito",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#incognito/midnight.png",
+    "ms": 1240,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#long",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#long/midnight.png",
+    "ms": 1265,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-account",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-account/midnight.png",
+    "ms": 1908,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#status-menu",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#status-menu/midnight.png",
+    "ms": 1982,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#offline",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#offline/midnight.png",
+    "ms": 2241,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-account-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-account-open/midnight.png",
+    "ms": 2259,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-account",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-account/youcoded.png",
+    "ms": 2391,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-account-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-account-open/youcoded-night.png",
+    "ms": 2477,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-account-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-account-open/youcoded.png",
+    "ms": 2410,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#status-menu",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#status-menu/youcoded-night.png",
+    "ms": 2669,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#incognito",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#incognito/youcoded-night.png",
+    "ms": 2959,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-roster",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-roster/midnight.png",
+    "ms": 1133,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#incognito",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#incognito/youcoded.png",
+    "ms": 3389,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#offline",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#offline/youcoded.png",
+    "ms": 3246,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-strip",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-strip/midnight.png",
+    "ms": 999,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-account",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-account/youcoded-night.png",
+    "ms": 3517,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#status-menu",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#status-menu/youcoded.png",
+    "ms": 3554,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#offline",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#offline/youcoded-night.png",
+    "ms": 3909,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-strip-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-strip-open/midnight.png",
+    "ms": 996,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-roster-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-roster-open/midnight.png",
+    "ms": 2143,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-strip",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-strip/youcoded-night.png",
+    "ms": 2175,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-roster",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-roster/youcoded.png",
+    "ms": 3260,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-roster",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-roster/youcoded-night.png",
+    "ms": 3219,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby/midnight.png",
+    "ms": 1309,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-roster-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-roster-open/youcoded-night.png",
+    "ms": 3143,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-roster-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-roster-open/youcoded.png",
+    "ms": 3516,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-strip",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-strip/youcoded.png",
+    "ms": 3114,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby/youcoded-night.png",
+    "ms": 2235,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-strip-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-strip-open/youcoded.png",
+    "ms": 3052,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#no-friends",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#no-friends/youcoded.png",
+    "ms": 1954,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#friends",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#friends/midnight.png",
+    "ms": 2192,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games#look-strip-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games#look-strip-open/youcoded-night.png",
+    "ms": 3079,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 40,
+      "w": 420,
+      "h": 747
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#phone/youcoded.png",
+    "ms": 1525,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 370,
+      "h": 623
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#phone/youcoded-night.png",
+    "ms": 1523,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 370,
+      "h": 623
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#no-friends",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#no-friends/midnight.png",
+    "ms": 1891,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#no-friends",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#no-friends/youcoded-night.png",
+    "ms": 2065,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#phone/midnight.png",
+    "ms": 1736,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 370,
+      "h": 607
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby/youcoded.png",
+    "ms": 3459,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#friends",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#friends/youcoded.png",
+    "ms": 3620,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/chess/lobby#friends",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/chess/lobby#friends/youcoded-night.png",
+    "ms": 3503,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 910,
+      "y": 84,
+      "w": 520,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/connect-four/lobby",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/connect-four/lobby/midnight.png",
+    "ms": 1881,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 84,
+      "w": 420,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/connect-four/lobby",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/connect-four/lobby/youcoded.png",
+    "ms": 2078,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 84,
+      "w": 420,
+      "h": 703
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/games/connect-four/lobby",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/gs3-after/chat/games/connect-four/lobby/youcoded-night.png",
+    "ms": 3322,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 1010,
+      "y": 84,
+      "w": 420,
+      "h": 703
+    },
+    "parts": []
+  }
+]

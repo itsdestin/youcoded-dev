@@ -1,0 +1,39 @@
+{
+ "deck": "ui-provider-notices",
+ "started": "2026-10-01T07:20:40.720Z",
+ "submitted": "2026-10-01T07:22:18Z",
+ "cur": 3,
+ "answers": {
+  "PN-1": {
+   "v": "other",
+   "t": 1790839275594,
+   "note": "try to fit the text all the way across and put the buttons at the bottom right",
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN-2": {
+   "note": "same as before",
+   "t": 1790839286935,
+   "v": "other",
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN-3": {
+   "v": "yes",
+   "t": 1790839323678,
+   "seconds": 37,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN-4": {
+   "note": "this is much taller than it needs to be",
+   "t": 1790839337727,
+   "v": "other",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

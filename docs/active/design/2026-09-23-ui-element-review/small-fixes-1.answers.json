@@ -1,0 +1,109 @@
+{
+ "deck": "small-fixes-1",
+ "started": "2026-10-13T00:22:54.078Z",
+ "submitted": "2026-10-13T00:27:31Z",
+ "cur": 13,
+ "answers": {
+  "SF-0": {
+   "v": "yes",
+   "t": 1791850977812,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-1": {
+   "note": "just \"try again\". as we just did everywhere else. the entire purpose of this work is consistency, but you keep introducing new inconsistencies... this error text is also worse and more convoluted",
+   "t": 1791851057167,
+   "v": "other",
+   "seconds": 79,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-2": {
+   "v": "yes",
+   "t": 1791851080553,
+   "seconds": 23,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-3": {
+   "v": "yes",
+   "t": 1791851086141,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-4": {
+   "v": "yes",
+   "t": 1791851099463,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-5": {
+   "v": "yes",
+   "t": 1791851113034,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-6": {
+   "v": "yes",
+   "t": 1791851116307,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-7": {
+   "v": "yes",
+   "t": 1791851125409,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-8": {
+   "note": "this whole page needs a rework to align with the new ui guide and the other changes we've made. this is an oldd popup. also want to conduct an investigation to make sure this even still works to track claude code/native harness session tasks",
+   "t": 1791851171285,
+   "v": "other",
+   "seconds": 46,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-9": {
+   "v": "yes",
+   "t": 1791851176541,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-10": {
+   "v": "pick",
+   "pick": "replaced",
+   "t": 1791851206769,
+   "seconds": 28,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-11": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1791851226446
+  },
+  "SF-12": {
+   "v": "yes",
+   "t": 1791851238845,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF-13": {
+   "v": "yes",
+   "t": 1791851250897,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

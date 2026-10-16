@@ -1,0 +1,33 @@
+{
+ "title": "Quick fixes — session fade, project switcher, games",
+ "key": "ui-quick-fixes",
+ "out": "quick-fixes.review.html",
+ "images": "images/quick-fixes.review",
+ "runs": {"before": "runs/qfd-before", "after": "runs/qfd-after"},
+ "labels": {"before": "Today", "after": "Fixed"},
+ "themes": ["meadow-mist", "light", "midnight"],
+ "crops": {
+  "sessions": ["qf", "chat__sessions", "400x500+520+30"],
+  "switcher": ["qf", "projects__switcher", "660x420+390+125"],
+  "games": ["qf", "chat__games", "540x760+900+40"],
+  "lobby": ["qf", "chat__games__chess__lobby", "540x760+900+40"]
+ },
+ "steps": [
+  {"id": "QF-1", "surface": "Sessions menu", "path": "Session pill → sessions menu", "crop": "sessions",
+   "headline": "Sessions menu: the see-through fade — keep?",
+   "changed": "The list's top and bottom edges now fade to clear, the same fade as popups and Resume. It used to paint a band of the menu's colour over the last row.",
+   "notice": "Look at the last row (llama) on Meadow Mist: before, a pale band covers it; after, the row fades into the glass. On solid themes (Light, Midnight) the two look almost the same, which is expected."},
+  {"id": "QF-2", "surface": "Project switcher", "path": "Projects → project name ▾", "crop": "switcher",
+   "headline": "Project switcher: ✕, no check mark, softer rows — keep?",
+   "changed": "The \"esc\" chip is now the usual ✕ (Esc still closes it). The current project no longer has a check mark or an outlined box: rows now look like the sessions menu, with a stronger tint on the row under your mouse or arrow keys and a light tint on the current project. The two full-width lines are now the short faded dividers popups use.",
+   "notice": "When it opens, your current project is also the highlighted row, so it shows the stronger tint until you move. There's still no way to remove a synced project; that's on the redesign list, not in this batch."},
+  {"id": "QF-3", "surface": "Games", "path": "Games pane", "crop": "games",
+   "headline": "Games list: standard cards — keep?",
+   "changed": "The four game tiles and the sign-in note are now the app's standard first-level cards (outline, light fill), not darker boxes. The line under \"Games\" is now the short faded divider, and the ✕ is the shared one.",
+   "notice": "The sign-in note's \"Sign in\" is still a bare text link; the bare-text buttons batch will fix it with the others."},
+  {"id": "QF-4", "surface": "Games lobby", "path": "Games → Chess (signed in)", "crop": "lobby",
+   "headline": "Games lobby: labelled cards instead of lines — keep?",
+   "changed": "The full-width lines are gone. Each part is now a small label with a card under it: Your profile, Add a friend, Friends (1). Each friend is a box inside the Friends card, 8px apart. A challenge or \"declined\" message now uses the standard notice box.",
+   "notice": "\"Go Incognito\" is still a bare text button and a failed friend request still shows red text; the bare-text and red-text batches cover those. The chat under a game in play keeps its lines, because the game screens are exempt."}
+ ]
+}

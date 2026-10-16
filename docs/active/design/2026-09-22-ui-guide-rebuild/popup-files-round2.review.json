@@ -1,0 +1,54 @@
+{
+  "title":"Headers and Session Files — show the actual alternatives",
+  "key":"ui-guide-popup-files-round2",
+  "out":"popup-files-round2.review.html",
+  "images":"images/popup-files-round2.review",
+  "runs":{"today":"../../../../scratch/ui-consistency-popup-preview/round2"},
+  "themes":["halftone-dimension","meadow-mist"],
+  "crops":{
+    "dialogs-today":["round2-montage","dialogs-today","1240x344+0+0"],
+    "dialogs-aligned":["round2-montage","dialogs-aligned","1240x344+0+0"],
+    "dialogs-roomy":["round2-montage","dialogs-roomy","1240x344+0+0"],
+    "other-today":["round2-montage","other-today","1240x474+0+0"],
+    "other-aligned":["round2-montage","other-aligned","1240x474+0+0"],
+    "other-roomy":["round2-montage","other-roomy","1240x474+0+0"],
+    "files-compact":["round2-plan","files-compact","500x720+940+50"],
+    "files-balanced":["round2-plan","files-balanced","500x720+940+50"],
+    "files-roomy":["round2-plan","files-roomy","500x720+940+50"]
+  },
+  "steps":[
+    {
+      "id":"H-1","surface":"Four dialog sizes","path":"Support YouCoded; About; Submit a ticket; Assistant settings",
+      "headline":"Which complete header rhythm and title style works across all four dialogs?",
+      "notice":"The widths stay as they are. Compare title weight, total header height, subtitle and close-button alignment; all four use the same underlying dialog header.",
+      "risk":"These are real Workbench previews, not an approved global rule. A long title, phone width and keyboard interaction still need a separate check.",
+      "variants":[
+        {"id":"current","label":"Today · 16 medium","crop":"dialogs-today","summary":"Today's shared header and 16px medium title; About adds its version underneath."},
+        {"id":"aligned","label":"Aligned · 16 stronger","crop":"dialogs-aligned","summary":"56px minimum header, 16px semibold title and consistent side spacing; the About subtitle stays in its header."},
+        {"id":"roomy","label":"Roomier · 18 medium","crop":"dialogs-roomy","summary":"64px minimum header with an 18px medium title; the extra height costs content space in the smaller dialogs."}
+      ]
+    },
+    {
+      "id":"H-2","surface":"Other popup headers","path":"Tags & note; Marketplace Details; Project file Details; a right-click menu",
+      "headline":"Should those same title and header treatments extend to other popup classes?",
+      "notice":"Here are the actual screens under each treatment, not three descriptions of an unseen change. Their widths, positions and inner content stay distinct. The anchored menu has no title and stays unchanged.",
+      "risk":"Picking a direction here does not approve every custom popup; a Project switcher has a search field instead of a title and remains a separate class.",
+      "variants":[
+        {"id":"keep","label":"Keep today's mix","crop":"other-today","summary":"Each outer shell keeps its existing title spacing. The menu remains anchored beside the click."},
+        {"id":"aligned","label":"Share aligned chrome","crop":"other-aligned","summary":"Titled custom shells get the 56px header, semibold title and tapered edge; menu and sizes stay as they are."},
+        {"id":"roomy","label":"Share roomier chrome","crop":"other-roomy","summary":"Titled custom shells get the 64px header and larger medium title; menu and sizes stay as they are."}
+      ]
+    },
+    {
+      "id":"F-2","surface":"Session Files","path":"Open the file list beside a conversation",
+      "headline":"Which wide-preview size and card spacing should Session Files use?",
+      "notice":"All three build on your rectangular-preview choice. Each has a tapered title line and a fade only where more files are hidden; the extra divider under search is gone.",
+      "risk":"The tiny text previews can still crop awkwardly, and unsupported content shows its file type instead. Android and touch/keyboard controls need separate verification before production.",
+      "variants":[
+        {"id":"compact","label":"Compact · 72 × 44","crop":"files-compact","summary":"Small preview with 8px gaps, close to your initial pick; more filename room but previews are easily cropped."},
+        {"id":"balanced","label":"Balanced · 84 × 48","crop":"files-balanced","summary":"A little more picture room with the same gap; the center option for card density."},
+        {"id":"roomy","label":"Roomy · 96 × 52","crop":"files-roomy","summary":"Larger preview and wider gap; more visual detail, fewer files visible at once."}
+      ]
+    }
+  ]
+}

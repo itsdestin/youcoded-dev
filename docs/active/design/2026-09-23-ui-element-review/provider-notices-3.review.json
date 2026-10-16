@@ -1,0 +1,79 @@
+{
+ "title": "Provider cards \u2014 round 3",
+ "key": "ui-provider-notices-3",
+ "out": "provider-notices-3.review.html",
+ "images": "images/provider-notices-3.review",
+ "runs": {
+  "before": "runs/notice3-before",
+  "after": "runs/notice3-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Round 3"
+ },
+ "themes": [
+  "meadow-mist",
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "unchecked": [
+   "nt",
+   "unchecked",
+   "700x500+460+250"
+  ],
+  "rejected": [
+   "nt",
+   "rejected",
+   "700x500+460+250"
+  ],
+  "expired": [
+   "nt",
+   "expired",
+   "700x500+460+250"
+  ],
+  "blocked": [
+   "nt",
+   "blocked",
+   "700x500+460+150"
+  ]
+ },
+ "steps": [
+  {
+   "id": "PN3-1",
+   "surface": "OpenRouter, key not checked",
+   "path": "Assistant settings \u2192 Cloud providers",
+   "crop": "unchecked",
+   "headline": "One line: \"Key saved, not checked yet.\" with its buttons \u2014 keep?",
+   "changed": "The amber box is now a single slim line: the short sentence on the left, \"Replace key\" and \"Try again\" on the right.",
+   "notice": "The longer explanation (\"OpenRouter couldn't be reached\u2026 tries again on its own\") is gone; the app still retries by itself."
+  },
+  {
+   "id": "PN3-2",
+   "surface": "OpenRouter, broken key",
+   "path": "Same card with a rejected key",
+   "crop": "rejected",
+   "headline": "Broken key on one line \u2014 keep?",
+   "changed": "\"OpenRouter didn't accept this key.\" with \"API Key\" and \"Sign in with OpenRouter\" beside it, in one slim red box.",
+   "notice": "The other broken states read \"This key expired on Sep 19.\", \"This kind of key can't run models.\" and \"OpenRouter refused this key.\" \u2014 the buttons say what to do."
+  },
+  {
+   "id": "PN3-3",
+   "surface": "OpenRouter, expired key",
+   "path": "Same card with an expired key",
+   "crop": "expired",
+   "headline": "Expired key on one line \u2014 keep?",
+   "changed": "\"This key expired on Sep 19.\" beside the same two buttons.",
+   "notice": "The date is the day the key stopped working."
+  },
+  {
+   "id": "PN3-4",
+   "surface": "ChatGPT, blocked",
+   "path": "ChatGPT card when OpenAI blocks the account",
+   "crop": "blocked",
+   "headline": "The blocked box, now slim \u2014 keep?",
+   "changed": "Same one-line red box as the others, about half the height of round 2. Sign out stays at the top.",
+   "notice": "OpenAI's own sentence is shown as they wrote it; a very long one will wrap to a second line."
+  }
+ ]
+}

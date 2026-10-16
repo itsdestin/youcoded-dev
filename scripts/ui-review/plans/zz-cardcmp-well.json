@@ -1,0 +1,305 @@
+{
+ "_why": "Card-recipe comparison deck (2026-09-27): the 19 Settings-family shots the review needs, pulled out of main.json/assistant-settings.json/sync-oversize-fix.json into one lean plan so a 3-theme x 3-variant sweep doesn't have to run every other shot in those files. Nothing here is a new surface; every action/expect is copied from its source shot (assistant-settings-derived shots get the Settings-drawer click that those files' own top-level 'pre' used to supply, since this file has no 'pre'). This variant (well) appends &proposal=settings-one-card-well to base so every shot loads with that CSS proposal active.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&proposal=settings-one-card-well",
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "settings-drawer",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    }
+   ],
+   "expect": "[aria-label='Close settings']"
+  },
+  {
+   "name": "settings-account",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Account\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-appearance",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-sound",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Sound\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-backup-sync",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Backup & Sync\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog]')||[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Retry')"
+  },
+  {
+   "name": "settings-remote-access",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Remote Access\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-development",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Development') && b.textContent.includes('Report'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[title^='Report a Bug']"
+  },
+  {
+   "name": "settings-about",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"About\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "preferences-config",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/config"
+    },
+    {
+     "key": "Enter",
+     "settle": 1000
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "settings-keyboard-shortcuts",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Keyboard Shortcuts\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-buddy-floater",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Buddy Floater\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "settings-donate",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Donate\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+  },
+  {
+   "name": "assistant-general",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog] nav[aria-label='Assistant settings pages']"
+  },
+  {
+   "name": "assistant-claude",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Cloud providers')",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.trim()==='Claude Code')?.scrollIntoView({block:'start'})"
+    },
+    {
+     "wait": 300
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Cloud providers'"
+  },
+  {
+   "name": "assistant-local",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Local models')",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Local models'"
+  },
+  {
+   "name": "assistant-permissions",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Permissions'"
+  },
+  {
+   "name": "assistant-specialists",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Specialists')",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Specialists'"
+  },
+  {
+   "name": "sync-error",
+   "actions": [
+    {
+     "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); for(const ns of ['syncSpaces','session']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.seen=(...parts)=>parts.some(p=>document.body.innerText.includes(p)); window.failPersonal=()=>{const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:[...s.recentEvents.filter(e=>e.type!=='error'),{type:'error',spaceId:'personal',at:Date.now()-30000,message:'Sync push failed for personal: error: RPC failed; curl 28 Operation too slow. Less than 2000 bytes/sec transferred the last 20 seconds\\nsend-pack: unexpected disconnect while reading sideband packet\\nfatal: the remote end hung up unexpectedly'}]};};}; window.failPersonal();"
+    },
+    {
+     "click": "[data-hint='Settings']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.trim()==='Try again')"
+  },
+  {
+   "name": "sync-oversize-open",
+   "actions": [
+    {
+     "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); for(const ns of ['syncSpaces','session']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}}); } const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:s.recentEvents.filter(e=>e.type!=='error'), oversize:[{spaceId:'personal',files:['Conversations/claude/transcripts/youcoded-dev/84ee31a9-297c-4e25-982e-b8546a54b12e.jsonl','Conversations/claude/transcripts/youcoded-dev/b4c2255f-4691-41ef-af84-d30d63b7afaa.jsonl']}], oversizeLimitMb:50};}; const b=window.claude.session.browse; window.claude.session.browse=async()=>{const l=await b(); const base=Array.isArray(l)?l:[]; return [...base,{sessionId:'84ee31a9-297c-4e25-982e-b8546a54b12e',name:'Sync spaces overhaul',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:112178346},{sessionId:'b4c2255f-4691-41ef-af84-d30d63b7afaa',name:'Landing page redesign',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:98579022}];};"
+    },
+    {
+     "click": "[data-hint='Settings']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+     "settle": 1400
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] summary')].find(s=>s.textContent.includes('too big to sync'))||document.querySelector('[role=dialog]')",
+     "settle": 500
+    }
+   ],
+   "expect": "js:!!document.querySelector('[role=dialog]')"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+  "title": "The Browser's settings move inside Assistant settings",
+  "key": "browser-fit-2",
+  "out": "browser-fit-2.review.html",
+  "images": "images/browser-fit-2",
+  "runs": {
+    "before": "runs/r16/before",
+    "after": "runs/r16/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Settings",
+      "path": "Settings (the list down the side)",
+      "crop": "settings",
+      "headline": "Browser is no longer its own row in Settings.",
+      "changed": "The \"Browser\" row between Assistant settings and Appearance is gone. Its settings are now a page inside Assistant settings (next step), as you asked on the last page.",
+      "notice": "The Assistant settings row still reads \"Models, permissions, defaults\"; I didn't add \"browser\" to it, to keep it short.",
+      "risk": "Anyone who already knew the Browser row has one more click to reach it. The Browser panel in a chat is unchanged."
+    },
+    {
+      "id": "M-2",
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Assistant settings → Browser",
+      "path": "Settings → Assistant settings → Browser (last in the list)",
+      "crop": [
+        { "crop": "settings/assistant/browser", "label": "Usual" },
+        { "crop": "settings/assistant/browser#no-browser", "label": "No browser found" }
+      ],
+      "headline": "The same Browser settings, now the last page of Assistant settings.",
+      "changed": "Every group, word and control you approved on the last page is unchanged; it just sits in Assistant settings beside Permissions and Specialists. The one-line explanation that was under the old popup's title now sits behind the (i) next to the page title, like Local models.",
+      "notice": "The page only appears on the computer itself — not on the phone app or remote access, same as before. The \"are you sure\" popups for switching browsers and signing out still appear on top.",
+      "risk": "Before pictures are the popup you approved last round; after pictures are the page. The page is wider, so the longer descriptions wrap less."
+    }
+  ]
+}

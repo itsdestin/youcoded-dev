@@ -1,0 +1,47 @@
+{
+ "deck": "popup-cards-3",
+ "started": "2026-10-14T16:56:45.983Z",
+ "submitted": "2026-10-14T16:59:34Z",
+ "cur": 4,
+ "answers": {
+  "B-1": {
+   "note": "again, the ggrey subtext should be below the text box in each for consistency",
+   "t": 1791997066608,
+   "v": "other",
+   "seconds": 61,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "t": 1791997075690,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-3": {
+   "note": "grey text below text input box",
+   "t": 1791997099238,
+   "v": "yes",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-4": {
+   "v": "yes",
+   "t": 1791997106936,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "note": "no. if the buttons at the bottom apply to an entire popup with multiple sections, they should remain at the bottom",
+   "t": 1791997173372,
+   "v": "pick",
+   "pick": "bottom-line",
+   "seconds": 66,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

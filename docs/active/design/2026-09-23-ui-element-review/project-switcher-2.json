@@ -1,0 +1,181 @@
+{
+  "title": "Project switcher: old look with status pills, and removing a synced project everywhere — round 2",
+  "key": "project-switcher-2",
+  "out": "project-switcher-2.review.html",
+  "images": "images/project-switcher-2",
+  "runs": {
+    "before": "runs/ps-after",
+    "after": "runs/ps2-after",
+    "phone": "runs/ps2-after-phone",
+    "small": "runs/ps2-after-small"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2",
+    "phone": "Phone",
+    "small": "Small window"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "P2-1",
+      "surface": "Projects",
+      "path": "Projects → click the project's name",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher@680x620+380+120",
+      "headline": "The switcher is back to its old look — search row, Recent, plain rows, Add a project — keeping the new sync pills.",
+      "changed": "Round 1's popup shell is gone. Sync pills stay; unsynced folders now say \"Not synced\". Counts are \"21 files · 5 chats\" with bold numbers.",
+      "notice": "The project you're in has a small check beside its name here; two other ways to mark it are the choice further on."
+    },
+    {
+      "id": "P2-2",
+      "surface": "Projects",
+      "path": "Projects → click the name, with many projects (one folder moved away)",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/switcher#many",
+      "highlight": "panel",
+      "headline": "Many projects, old look: the list scrolls as before, and a moved-away folder shows an amber \"Folder missing\" pill.",
+      "changed": "Same states as round 1 (sync pills, Folder missing, no counts on a missing folder), on the old container.",
+      "notice": "The search row and Add a project sit where they always did."
+    },
+    {
+      "id": "P2-3",
+      "new": true,
+      "surface": "Projects",
+      "path": "Project switcher, pointer on the second row",
+      "runs": [
+        "after"
+      ],
+      "crop": "projects/switcher#pointed@680x460+380+120",
+      "headline": "The bin shows only on the row you point at; on other rows the counts and pill sit flush right.",
+      "changed": "The bin takes no space until you point at a row or move to it with the arrow keys.",
+      "notice": "On a phone or touch screen the bin always shows, because pointing never happens there."
+    },
+    {
+      "id": "P2-4",
+      "surface": "Projects",
+      "path": "Project switcher → bin on a synced project",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "projects/remove/synced@460x560+490+170",
+      "headline": "Removing a synced project now stops syncing it and takes it off your lists on all your devices.",
+      "changed": "New wording, a red \"Remove from all devices\" button, and a note that the GitHub backup stays, with Open on GitHub.",
+      "notice": "Every device keeps its copy of the files. YouCoded never deletes anything on GitHub. Syncing can't be turned back on for it."
+    },
+    {
+      "id": "P2-5",
+      "new": true,
+      "surface": "Settings",
+      "path": "Settings → Backup & sync, after removing two projects",
+      "runs": [
+        "after"
+      ],
+      "crop": "settings/sync#removed@460x620+490+150",
+      "headline": "Backup & sync lists removed projects, each with Open on GitHub, and says how to delete the backup there yourself.",
+      "changed": "New \"Removed projects\" card, shown only when there is one. Same GitHub note as the confirm.",
+      "notice": "YouCoded only links to GitHub; deleting a backup is done on GitHub's own page."
+    },
+    {
+      "id": "P2-6",
+      "new": true,
+      "surface": "Projects",
+      "path": "Project switcher at phone width, many projects",
+      "runs": [
+        "phone"
+      ],
+      "crop": "projects/switcher#many",
+      "headline": "At phone width the old look fits: counts hide as before, pills stay, the bin shows on every row.",
+      "changed": "Same rows, narrower. \"Not synced\" is shorter than round 1's \"Only on this computer\", so names keep more room.",
+      "notice": "The bin always shows on touch screens."
+    },
+    {
+      "id": "P2-7",
+      "new": true,
+      "surface": "Projects",
+      "path": "Project switcher in a 640 × 480 window",
+      "runs": [
+        "small"
+      ],
+      "crop": "projects/switcher#many",
+      "headline": "In a small window the old switcher fits and scrolls its list.",
+      "changed": "Nothing special for small windows.",
+      "notice": "Add a project stays at the bottom of the popup."
+    },
+    {
+      "id": "P2C-1",
+      "surface": "Projects",
+      "path": "Project switcher, the project you are in",
+      "runs": [
+        "after"
+      ],
+      "headline": "Three new ways to mark the project you're already in. Which reads best?",
+      "notice": "Each picture has the pointer on the second row, so the marking isn't hidden under the highlight. My pick is the check: closest to the old one, now beside the name.",
+      "variants": [
+        {
+          "id": "check",
+          "label": "Check by name",
+          "crop": "projects/switcher#pointed@680x300+380+170",
+          "summary": "The old check, small and in the accent colour, right after the name."
+        },
+        {
+          "id": "edge",
+          "label": "Edge bar",
+          "crop": "projects/switcher#current-edge@680x300+380+170",
+          "summary": "An accent bar down the row's left edge, like a sidebar's \"you are here\"."
+        },
+        {
+          "id": "subtext",
+          "label": "Words",
+          "crop": "projects/switcher#current-subtext@680x300+380+170",
+          "summary": "\"Current project\" in the accent colour before the folder path.",
+          "risk": "Pushes the path along; a long path is cut sooner."
+        }
+      ]
+    },
+    {
+      "id": "P2Q-1",
+      "words": true,
+      "surface": "Projects",
+      "path": "The project's own page, its sync pill",
+      "headline": "Should the project page's sync pill also say \"Not synced\" instead of \"Only on this computer\"?",
+      "today": "The switcher now says \"Not synced\" for a folder that doesn't sync; the project's own page still says \"Only on this computer\" for the same thing.",
+      "problem": "One project, two wordings, depending on where you look.",
+      "proposal": "Change the project page to \"Not synced\" too, or keep its longer words where there is room.",
+      "options": [
+        {
+          "id": "match",
+          "label": "Match: Not synced",
+          "pros": [
+            "Same words everywhere"
+          ],
+          "cons": [
+            "Loses the hint that the files are only on this computer"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep both",
+          "pros": [
+            "The page, with more room, says more"
+          ],
+          "cons": [
+            "Two wordings for one state"
+          ]
+        }
+      ]
+    }
+  ]
+}

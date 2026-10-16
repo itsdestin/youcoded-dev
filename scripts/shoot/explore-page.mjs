@@ -64,6 +64,17 @@ export function listControls({ all = false } = {}) {
       || e.querySelector?.('img[alt]')?.getAttribute('alt') || e.querySelector?.('svg title')?.textContent;
     return t(v);
   };
+  // The name a screen reader hears: the same, but text inside `aria-hidden` parts left out
+  // (a "+" drawn in a hidden span before "Add a note"). WHY (close-session friction, proposal
+  // 7): a step written with the browser's own name, "Add a note", was "not on screen" because
+  // this tool's name was "+ Add a note". Controls carry both; a step may use either.
+  const spoken = (e) => {
+    if (!e.querySelector || !e.querySelector('[aria-hidden="true"]') || e.getAttribute('aria-label') || e.getAttribute('aria-labelledby')) return null;
+    const c = e.cloneNode(true);
+    for (const h of c.querySelectorAll('[aria-hidden="true"]')) h.remove();
+    const v = t(c.textContent).slice(0, 70);
+    return v || null;
+  };
   const state = (e) => {
     const s = [];
     if (e.disabled || e.getAttribute('aria-disabled') === 'true') s.push('disabled');
@@ -122,7 +133,8 @@ export function listControls({ all = false } = {}) {
         if (!(hit && hit.tagName === 'LABEL' && hit.control === e)) { covered++; continue; }
       }
     } else off = true;
-    rows.push({ e, role: role(e), label: name(e), state: state(e), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: Math.round(r.width), h: Math.round(r.height), off });
+    const label = name(e); const heard = spoken(e);
+    rows.push({ e, role: role(e), label, ...(heard && heard !== label ? { spoken: heard } : {}), state: state(e), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: Math.round(r.width), h: Math.round(r.height), off });
   }
   // The top layer's controls first (a menu's items are what a person looks at), each layer
   // in reading order: rows of 12 px, then left to right. Layers come from listLayers.
@@ -134,7 +146,7 @@ export function listControls({ all = false } = {}) {
   const seen = {};
   const controls = rows.map((r, i) => {
     const key = `${r.role}|${r.label}`; seen[key] = (seen[key] || 0) + 1;
-    return { n: i + 1, role: r.role, label: r.label, nth: seen[key], state: r.state, x: r.x, y: r.y, w: r.w, h: r.h, off: r.off, layer: r.layer };
+    return { n: i + 1, role: r.role, label: r.label, ...(r.spoken ? { spoken: r.spoken } : {}), nth: seen[key], state: r.state, x: r.x, y: r.y, w: r.w, h: r.h, off: r.off, layer: r.layer };
   });
   return { controls, covered, offscreen: all ? 0 : offscreen };
 }
@@ -187,6 +199,19 @@ export function listLayers() {
   };
   const cands = new Set(document.querySelectorAll(ROLE));
   for (const e of document.body.querySelectorAll('*')) if (!cands.has(e) && floating(e)) cands.add(e);
+  // A list is a layer only when it floats. WHY (project-switcher friction, proposal 6): a
+  // role=listbox laid out in a dialog's own flow (the switcher's project list) read as a second
+  // layer, and `shoot --check` failed seven screens with "Escape should close listbox … only".
+  // A dropdown's popup listbox is positioned (absolute/fixed) on it or on a wrapper between it
+  // and the layer around it — that one still counts.
+  const floatsInside = (e) => {
+    for (let p = e; p && p !== document.body; p = p.parentElement) {
+      if (p !== e && cands.has(p)) return false;   // reached the layer it sits in, never lifted out
+      if (/^(absolute|fixed)$/.test(getComputedStyle(p).position)) return true;
+    }
+    return false;
+  };
+  for (const e of [...cands]) if (e.matches('[role=listbox]') && !e.matches('[data-layer],[aria-modal=true]') && !floatsInside(e)) cands.delete(e);
   // A full-window wrapper the pointer passes through (Dialog's centring box) is not a layer.
   let els = [...cands].filter(shown).filter((e) => getComputedStyle(e).pointerEvents !== 'none');
   // A layer inside a layer is its own layer (the marketplace's detail page over the
@@ -226,10 +251,17 @@ export function listLayers() {
   const markOf = (s) => ownFirst(s, '[data-screen]')?.getAttribute('data-screen') || '';
   // Covered = a HIGHER layer sits over this one's middle. (Not "the hit is outside it": a
   // dialog's own full-window wrapper lets the pointer through to its scrim.)
+  // `uid`: the same ELEMENT keeps the same number across calls. WHY (2026-10-05): a layer's
+  // name can change while it is open — the Office document panel is named by its text until
+  // its screen mark draws, then by the mark — so shoot --check's Escape test, comparing names,
+  // read "the panel under the dialog changed" as "Escape closed two layers" (1 run in 6, under
+  // load). Comparing uids asks the real question: is it the same layer?
+  const uids = (window.__layerUids ||= new WeakMap());
+  const uidOf = (e) => { if (!uids.has(e)) uids.set(e, (window.__layerUidNext = (window.__layerUidNext || 0) + 1)); return uids.get(e); };
   const layers = els.map((e, i) => {
     const r = e.getBoundingClientRect();
     const hit = document.elementFromPoint(Math.min(Math.max(r.left + r.width / 2, 1), innerWidth - 2), Math.min(Math.max(r.top + r.height / 2, 1), innerHeight - 2));
-    return { kind: kindOf(e), name: nameOf(e), screen: markOf(e), covered: !!hit && els.slice(0, i).some((o) => o.contains(hit)) };
+    return { kind: kindOf(e), name: nameOf(e), screen: markOf(e), uid: uidOf(e), covered: !!hit && els.slice(0, i).some((o) => o.contains(hit)) };
   });
   const inLayer = (m) => els.some((e) => e.contains(m));
   const base = [...new Set([...document.querySelectorAll('[data-screen]')].filter((m) => !inLayer(m) && m.parentElement && shown(m.parentElement)).map((m) => m.getAttribute('data-screen')))];

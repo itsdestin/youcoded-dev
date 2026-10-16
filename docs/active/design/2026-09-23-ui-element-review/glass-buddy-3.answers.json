@@ -1,0 +1,23 @@
+{
+ "deck": "glass-buddy-3",
+ "started": "2026-10-05T04:38:46.554Z",
+ "submitted": "2026-10-05T04:39:28Z",
+ "cur": 1,
+ "answers": {
+  "GB3-1": {
+   "v": "yes",
+   "t": 1791175141484,
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GB3-2": {
+   "note": "need to fix alignment between mascot and text",
+   "t": 1791175167489,
+   "v": "yes",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

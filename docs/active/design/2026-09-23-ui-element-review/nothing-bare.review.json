@@ -1,0 +1,80 @@
+{
+ "title": "Nothing bare on the popup — Sound, About, Performance, Shortcuts",
+ "key": "ui-nothing-bare",
+ "out": "nothing-bare.review.html",
+ "images": "images/nothing-bare.review",
+ "runs": {
+  "before": "runs/nb-before",
+  "after": "runs/nb-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "In cards"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight",
+  "golden-sunbreak"
+ ],
+ "crops": {
+  "settings__sound": [
+   "nb",
+   "settings__sound",
+   "468x636+486+132"
+  ],
+  "settings__about": [
+   "nb",
+   "settings__about",
+   "468x636+486+132"
+  ],
+  "settings__performance": [
+   "nb",
+   "settings__performance",
+   "468x636+486+132"
+  ],
+  "settings__shortcuts": [
+   "nb",
+   "settings__shortcuts",
+   "468x572+486+164"
+  ]
+ },
+ "steps": [
+  {
+   "id": "NB-1",
+   "surface": "Sound",
+   "path": "Settings → Sound",
+   "crop": "settings__sound",
+   "headline": "Sound: better as cards?",
+   "changed": "Volume and Notification each sit in a card, like Remote Access. The tabs, the on/off switch and the sound list are one card, because they are one idea.",
+   "notice": "Only grouping changes. The sound list keeps its 8px gaps; nothing is removed."
+  },
+  {
+   "id": "NB-2",
+   "surface": "About",
+   "path": "Settings → About",
+   "crop": "settings__about",
+   "headline": "About: better as cards?",
+   "changed": "Version and the two policy links share the first card (the links are outlined buttons now, not underlined text). Disclaimer, Privacy and Licenses each sit in a card. The long privacy parts and the library list fold open. The usage-stats switch stays visible.",
+   "notice": "Every sentence is the approved wording, unchanged — only where it sits. New words are only the fold titles: \"Your account (optional)\", \"Friends & presence (optional)\", \"Anonymous usage stats\", \"Remote access and games\", \"Open-source libraries\". The underline under Disclaimer/Privacy/Licenses goes, since the text is now inside cards."
+  },
+  {
+   "id": "NB-3",
+   "surface": "Performance",
+   "path": "Settings → Performance",
+   "crop": "settings__performance",
+   "headline": "Performance: better as cards?",
+   "changed": "One card holds the power-saving switch, the restart notice when it shows, and your detected graphics chips. A \"How GPU choice works\" card holds the explanation, with its three sections folded — the popup now opens short. The spaced-capital heading is gone.",
+   "notice": "The one-line intro \"GPU choice affects performance.\" is removed — it repeated the explanation. Every other word is unchanged."
+  },
+  {
+   "id": "NB-4",
+   "surface": "Keyboard Shortcuts",
+   "path": "Settings → Keyboard Shortcuts",
+   "crop": "settings__shortcuts",
+   "headline": "Keyboard Shortcuts: better as cards?",
+   "changed": "The shortcut table sits in a card instead of bare on the popup.",
+   "notice": "Three longer descriptions now wrap onto two lines — the card's padding costs a little width in this fixed-width popup."
+  }
+ ]
+}

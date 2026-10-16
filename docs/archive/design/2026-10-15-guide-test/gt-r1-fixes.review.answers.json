@@ -1,0 +1,36 @@
+{
+ "deck": "gt-r1-fixes",
+ "started": "2026-10-15T04:51:15.210Z",
+ "submitted": "2026-10-15T04:51:53Z",
+ "cur": 3,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "t": 1792039885864,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-2": {
+   "v": "yes",
+   "t": 1792039888278,
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "yes",
+   "t": 1792039899701,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-4": {
+   "v": "yes",
+   "t": 1792039911809,
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

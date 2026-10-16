@@ -1,0 +1,132 @@
+{
+  "title": "Marketplace detail pages — round 3",
+  "key": "marketplace-detail-3",
+  "out": "marketplace-detail-3.review.html",
+  "images": "images/marketplace-detail-3",
+  "runs": {
+    "before": "runs/mkd2-after",
+    "after": "runs/mkd3-after"
+  },
+  "labels": {
+    "before": "Round 2",
+    "after": "Round 3"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "crops": {
+    "like-ghost": [
+      "like",
+      "like-ghost",
+      "270x190+0+0"
+    ],
+    "like-outline": [
+      "like",
+      "like-outline",
+      "270x190+0+0"
+    ],
+    "like-filled": [
+      "like",
+      "like-filled",
+      "270x190+0+0"
+    ],
+    "like-chip": [
+      "like",
+      "like-chip",
+      "270x190+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "M3-1",
+      "surface": "Marketplace",
+      "path": "Any theme page → the heart in the top card (here: Meadow Mist)",
+      "headline": "Four ways to draw the like button. Which should theme pages use?",
+      "notice": "All four use the app's normal buttons. Liked fills the heart in the accent colour; in 'Filled when liked' the whole button fills.",
+      "risk": "In the narrow right column the heart sits beside the chips, so the author and downloads chips get cut short by the fade.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "ghost",
+          "label": "Plain heart",
+          "crop": "like-ghost",
+          "summary": "Heart and count with no outline, like the star and share beside it (round 2)."
+        },
+        {
+          "id": "outline",
+          "label": "Outlined",
+          "crop": "like-outline",
+          "summary": "Heart and count inside an outlined button, so it reads as something to press."
+        },
+        {
+          "id": "filled",
+          "label": "Filled when liked",
+          "crop": "like-filled",
+          "summary": "An outlined 'Like 88' button that fills with the accent once you've liked it, reading 'Liked'.",
+          "risk": "The widest of the four; the chips have least room."
+        },
+        {
+          "id": "chip",
+          "label": "Heart, count as chip",
+          "crop": "like-chip",
+          "summary": "Just a heart icon; the number moves into the chip row as '88 likes'.",
+          "risk": "The chip's number doesn't change the moment you like it — only after the page refreshes its counts."
+        }
+      ]
+    },
+    {
+      "id": "M3-2",
+      "surface": "Marketplace",
+      "path": "Marketplace → Connect your stuff → Google Workspace",
+      "headline": "Three ways to show an integration's icon, two of them with a tighter top card. Which do you prefer?",
+      "notice": "In the tighter cards the description and the Uninstall / Connect buttons share one line, so the card is about a third shorter.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "tile",
+          "label": "Big tile",
+          "crop": "marketplace/integration-detail",
+          "summary": "Round 2: the coloured 'G' square beside the name, roomy card."
+        },
+        {
+          "id": "badge",
+          "label": "Small badge",
+          "crop": "marketplace/integration-detail#badge",
+          "summary": "A small coloured 'G' just before the name, about the size of the provider logos in the model picker; tighter card."
+        },
+        {
+          "id": "none",
+          "label": "No icon",
+          "crop": "marketplace/integration-detail#none",
+          "summary": "Just the name and its status pill; tighter card.",
+          "risk": "Integrations lose their colour on this page."
+        }
+      ]
+    },
+    {
+      "id": "M3-3",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Meadow Mist (installed)",
+      "crop": "marketplace/theme-detail",
+      "headline": "The theme page you picked: the picture on the left with no 'Preview' label, the top card and colours on the right.",
+      "changed": "The other two layouts are gone. The word 'Preview' above the picture is removed, as you asked.",
+      "notice": "The heart, star and share now sit beside the chips, one line under the name, so the name no longer breaks mid-word.",
+      "risk": "The chips are cut short in the narrow column."
+    },
+    {
+      "id": "M3-4",
+      "surface": "Marketplace",
+      "path": "Marketplace → Themes → Cotton Candy Sky (not installed)",
+      "crop": "marketplace/theme-detail/not-installed",
+      "headline": "The same page for a theme you don't have: the picture left, Install at the top of the right column.",
+      "changed": "Same as above for the not-installed state.",
+      "notice": "Install is full width in the right-hand card."
+    }
+  ]
+}

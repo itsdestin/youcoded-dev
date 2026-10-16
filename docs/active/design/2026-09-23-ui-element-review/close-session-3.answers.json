@@ -1,0 +1,30 @@
+{
+ "deck": "close-session-3",
+ "started": "2026-10-12T12:38:10.015Z",
+ "submitted": "2026-10-12T12:40:00Z",
+ "cur": 2,
+ "answers": {
+  "CS3-1": {
+   "v": "yes",
+   "t": 1791808704704,
+   "seconds": 15,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS3-2": {
+   "v": "yes",
+   "t": 1791808709517,
+   "seconds": 5,
+   "theme": "youcoded-night",
+   "zoom": 1
+  },
+  "CS3-3": {
+   "v": "yes",
+   "t": 1791808799048,
+   "seconds": 89,
+   "theme": "youcoded-night",
+   "zoom": 1,
+   "note": "we can truncate to just \"hides this session from your resumable sessions list\" on both surfaces. pin to top can be \"Keeps this session at the top of your active sessions list\""
+  }
+ }
+}

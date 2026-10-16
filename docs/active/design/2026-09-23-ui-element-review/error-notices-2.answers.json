@@ -1,0 +1,57 @@
+{
+ "deck": "error-notices-2",
+ "started": "2026-10-12T14:34:16.895Z",
+ "submitted": "2026-10-12T14:34:49Z",
+ "cur": 6,
+ "answers": {
+  "EN2-1": {
+   "v": "yes",
+   "t": 1791815663068,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN2-2": {
+   "v": "yes",
+   "t": 1791815668738,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN2-3": {
+   "v": "yes",
+   "t": 1791815672498,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN2-4": {
+   "v": "yes",
+   "t": 1791815675538,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN2-5": {
+   "v": "yes",
+   "t": 1791815681868,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN2-6": {
+   "v": "yes",
+   "t": 1791815684407,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN2-7": {
+   "v": "yes",
+   "t": 1791815688344,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

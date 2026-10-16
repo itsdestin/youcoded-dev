@@ -1,0 +1,114 @@
+{
+  "title": "Small popups made to match, and where whole-popup buttons go (pictures)",
+  "key": "popup-cards-3",
+  "out": "popup-cards-3.review.html",
+  "images": "images/popup-cards-3",
+  "runs": {
+    "before": "runs/r3/before",
+    "after": "runs/r3/after",
+    "q1": "runs/q1"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "crops": {
+    "bottom": ["q1", "bottom", "680x1000+0+0"],
+    "under": ["q1", "under", "680x1000+0+0"],
+    "inside": ["q1", "inside", "680x1000+0+0"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "runs": ["before", "after"],
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Popups",
+      "path": "Rename session · Pick a handle · Settings → Assistant → Cloud → Connect OpenRouter",
+      "crop": [
+        {"crop": "chat/rename-session@panel", "label": "Rename"},
+        {"crop": "handle-prompt@panel", "label": "Pick a handle"},
+        {"crop": "settings/assistant/cloud/openrouter/key@panel", "label": "OpenRouter"}
+      ],
+      "headline": "Rename session, Pick a handle and Connect OpenRouter now share one layout.",
+      "changed": "All three are the same width. Each has the same size grey words, a name above the text box, and two full-width buttons with the main one on top. Pick a handle's Save moved out of the text box. Rename's buttons stopped sitting side by side at the right.",
+      "notice": "Line them up: the title, words, box name, text box and buttons should sit in the same places in all three. One shared piece now draws all of these popups, so a new one can't drift.",
+      "risk": "Pick a handle and OpenRouter got wider (340 → 420px). Pressing Enter in the text box still saves."
+    },
+    {
+      "id": "B-2",
+      "runs": ["before", "after"],
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Warnings",
+      "path": "Chat: first time turning on Skip permissions · first time picking a smaller model · Settings → Assistant → Permissions → Skip permissions",
+      "crop": [
+        {"crop": "chat/first-time-warning/skip-permissions@panel", "label": "Skip warning"},
+        {"crop": "chat/first-time-warning/small-model@panel", "label": "Smaller model"},
+        {"crop": "settings/assistant/permissions/skip-confirm@panel", "label": "Settings: skip"}
+      ],
+      "headline": "The three warnings use the same layout as the popups above.",
+      "changed": "The same width, the same 12px grey words, the same tick box, and stacked full-width buttons with the main one on top. Before, the chat warnings had smaller words and side-by-side buttons, and the Settings one was narrower with darker words.",
+      "notice": "The \"Tick the box to continue\" hover hint still appears on the grey button.",
+      "risk": "Settings' Skip permissions popup got wider (340 → 420px)."
+    },
+    {
+      "id": "B-3",
+      "runs": ["before", "after"],
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Projects",
+      "path": "Projects → a project's bin (a plain folder, a synced project, a missing folder) · Projects → Turn on sync",
+      "crop": [
+        {"crop": "projects/remove@panel", "label": "Remove"},
+        {"crop": "projects/remove/synced@panel", "label": "Remove synced"},
+        {"crop": "projects/remove/missing@panel", "label": "Folder missing"},
+        {"crop": "projects/turn-on-sync@panel", "label": "Turn on sync"}
+      ],
+      "headline": "Remove project and Turn on sync use the same layout too.",
+      "changed": "Remove project is now one width for every kind of project (a plain folder was narrower). Turn on sync's two paragraphs are one grey, its text box has the same name line as the others, and its buttons stack with Move and sync on top.",
+      "notice": "\"Folder missing\" is still plain words with no box: it is a one-sentence question with nothing to tick or type, the short-confirmation exception you approved.",
+      "risk": "The words are unchanged."
+    },
+    {
+      "id": "B-4",
+      "runs": ["before", "after"],
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Resuming a conversation",
+      "path": "Resume a conversation that used a model that is no longer set up",
+      "crop": "chat/resume/pick-model@panel",
+      "headline": "Choose a model to resume with: the box around the dropdown is gone.",
+      "changed": "Your note: \"fine as bare dropdown w buttons\". The dropdown and its Cancel / Resume buttons now sit straight on the popup, with no box around them.",
+      "notice": "Fast mode keeps its box (your note only named the model picker).",
+      "risk": "This one popup is now an exception to \"nothing sits bare on a popup\". I'll write it into the design guide as: a popup that is only one dropdown and its buttons stays bare."
+    },
+    {
+      "id": "Q-1",
+      "runs": ["q1"],
+      "themes": ["meadow-mist", "halftone-dimension"],
+      "surface": "Popups with several labelled boxes",
+      "path": "Close session, shown three ways (the same applies to Update, Submit a ticket and the others)",
+      "headline": "In a popup with several boxes, where should buttons for the whole popup go?",
+      "notice": "This is Close session, photographed three ways. The first two look almost the same here because this popup is short. They only differ when a popup is long enough to scroll: the bottom line stays put, while \"under the boxes\" scrolls away with them.",
+      "variants": [
+        {
+          "id": "bottom-line",
+          "label": "Pinned bottom line",
+          "crop": "bottom",
+          "summary": "Today's Close session and Update. The buttons sit on the popup's bottom edge and stay in view while the boxes scroll above them. I recommend this one: always reachable, and clearly about the whole popup."
+        },
+        {
+          "id": "under-boxes",
+          "label": "Under the last box",
+          "crop": "under",
+          "summary": "Today's Submit a ticket. The buttons come after the last box and scroll with the boxes.",
+          "risk": "On a long popup the buttons are hidden until you scroll down."
+        },
+        {
+          "id": "inside-last",
+          "label": "Inside the last box",
+          "crop": "inside",
+          "summary": "The buttons go inside the final box, under a thin line, like the one-job popups.",
+          "risk": "Reads as if Close session belongs to \"In your lists\" only. It also scrolls away."
+        }
+      ]
+    }
+  ]
+}

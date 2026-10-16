@@ -1,0 +1,16 @@
+{
+ "deck": "glass-buddy-5",
+ "started": "2026-10-05T04:44:10.607Z",
+ "submitted": "2026-10-05T04:44:33Z",
+ "cur": 0,
+ "answers": {
+  "GB5-1": {
+   "note": "lower",
+   "t": 1791175472564,
+   "v": "other",
+   "seconds": 22,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

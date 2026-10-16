@@ -1,0 +1,440 @@
+[
+  {
+    "name": "settings/assistant/local/model-settings#advanced-open",
+    "theme": "youcoded-night",
+    "ok": false,
+    "reason": "open step click button \"Advanced Graphics-chip layers, extra engine flags\" failed: button \"Advanced Graphics-chip layers, extra engine flags\" is not on screen. On screen: button \"Close Model settings\", textbox \"Context length for this model\", switch \"Keep loaded\", button \"Advanced\", button \"About GPU layers\", button \"Auto\", button \"About extra engine flags\", textbox \"Extra engine flags\", button \"Delete\", button \"Qwen3.5 4B Fast all-rounder for chat and quick questions. 2.4 GB · UD-\", button \"Download\", button \"What 2.4 GB is made of\", button \"Gemma 4 E4B Strong small model from Google — sees images. 3.3 GB · UD-\", button \"Download\", button \"What 3.3 GB is made of\", button \"Detect\", switch \"Enable Ollama\", button \"Add key\", button \"Test\", button \"Remove\", button \"Started with this project’s rules and 3 skills Details\", button \"Read a file · /home/destin/youcoded-dev/youcoded/desktop/src/renderer/\", button \"Edited a file · /home/destin/youcoded-dev/youcoded/desktop/src/rendere\"",
+    "file": null,
+    "ms": 8437,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "settings/assistant/local/model-settings#advanced-open",
+    "theme": "midnight",
+    "ok": false,
+    "reason": "open step click button \"Advanced Graphics-chip layers, extra engine flags\" failed: button \"Advanced Graphics-chip layers, extra engine flags\" is not on screen. On screen: button \"Close Model settings\", textbox \"Context length for this model\", switch \"Keep loaded\", button \"Advanced\", button \"About GPU layers\", button \"Auto\", button \"About extra engine flags\", textbox \"Extra engine flags\", button \"Delete\", button \"Qwen3.5 4B Fast all-rounder for chat and quick questions. 2.4 GB · UD-\", button \"Download\", button \"What 2.4 GB is made of\", button \"Gemma 4 E4B Strong small model from Google — sees images. 3.3 GB · UD-\", button \"Download\", button \"What 3.3 GB is made of\", button \"Detect\", switch \"Enable Ollama\", button \"Add key\", button \"Test\", button \"Remove\", button \"Started with this project’s rules and 3 skills Details\", button \"Read a file · /home/destin/youcoded-dev/youcoded/desktop/src/renderer/\", button \"Edited a file · /home/destin/youcoded-dev/youcoded/desktop/src/rendere\"",
+    "file": null,
+    "ms": 8674,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "settings/development/contribute#open-failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/contribute#open-failed/youcoded.png",
+    "ms": 8788,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 345,
+      "w": 420,
+      "h": 211
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local/engine-advanced",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/assistant/local/engine-advanced/youcoded.png",
+    "ms": 9307,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#open-failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/contribute#open-failed/midnight.png",
+    "ms": 10076,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 326,
+      "w": 420,
+      "h": 249
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local/model-settings#advanced-open",
+    "theme": "youcoded",
+    "ok": false,
+    "reason": "open step click button \"Advanced Graphics-chip layers, extra engine flags\" failed: button \"Advanced Graphics-chip layers, extra engine flags\" is not on screen. On screen: button \"Close Model settings\", textbox \"Context length for this model\", switch \"Keep loaded\", button \"Advanced\", button \"About GPU layers\", button \"Auto\", button \"About extra engine flags\", textbox \"Extra engine flags\", button \"Delete\", button \"Qwen3.5 4B Fast all-rounder for chat and quick questions. 2.4 GB · UD-\", button \"Download\", button \"What 2.4 GB is made of\", button \"Gemma 4 E4B Strong small model from Google — sees images. 3.3 GB · UD-\", button \"Download\", button \"What 3.3 GB is made of\", button \"Detect\", switch \"Enable Ollama\", button \"Add key\", button \"Test\", button \"Remove\", button \"Started with this project’s rules and 3 skills Details\", button \"Read a file · /home/destin/youcoded-dev/youcoded/desktop/src/renderer/\", button \"Edited a file · /home/destin/youcoded-dev/youcoded/desktop/src/rendere\"",
+    "file": null,
+    "ms": 10433,
+    "errors": [],
+    "scale": 1.5
+  },
+  {
+    "name": "settings/appearance#custom-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/appearance#custom-open/midnight.png",
+    "ms": 11403,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#failed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/contribute#failed/youcoded.png",
+    "ms": 11863,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 317,
+      "w": 420,
+      "h": 267
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/open-tasks",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/chat/open-tasks/youcoded.png",
+    "ms": 3443,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 381,
+      "w": 420,
+      "h": 137
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#failed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/contribute#failed/midnight.png",
+    "ms": 12582,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 298,
+      "w": 420,
+      "h": 305
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#custom-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/appearance#custom-open/youcoded.png",
+    "ms": 13527,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local/engine-advanced",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/assistant/local/engine-advanced/midnight.png",
+    "ms": 4909,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/local/engine-advanced",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/assistant/local/engine-advanced/youcoded-night.png",
+    "ms": 6112,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/open-tasks",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/chat/open-tasks/midnight.png",
+    "ms": 4473,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 381,
+      "w": 420,
+      "h": 137
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#open-failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/contribute#open-failed/youcoded-night.png",
+    "ms": 15701,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 345,
+      "w": 420,
+      "h": 211
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/open-tasks",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/chat/open-tasks/youcoded-night.png",
+    "ms": 6746,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 381,
+      "w": 420,
+      "h": 137
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent-strong",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/bug-report#sent-strong/midnight.png",
+    "ms": 3751,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 308,
+      "w": 600,
+      "h": 285
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#custom-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/appearance#custom-open/youcoded-night.png",
+    "ms": 18164,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#finetune-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/appearance#finetune-open/midnight.png",
+    "ms": 19494,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/contribute#failed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/contribute#failed/youcoded-night.png",
+    "ms": 20817,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 317,
+      "w": 420,
+      "h": 267
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/bug-report#sent/youcoded-night.png",
+    "ms": 16227,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 316,
+      "w": 600,
+      "h": 269
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/bug-report#sent/midnight.png",
+    "ms": 15824,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 308,
+      "w": 600,
+      "h": 285
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent-strong",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/bug-report#sent-strong/youcoded.png",
+    "ms": 16915,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 316,
+      "w": 600,
+      "h": 269
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#finetune-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/appearance#finetune-open/youcoded-night.png",
+    "ms": 33016,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/bug-report#sent/youcoded.png",
+    "ms": 30103,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 316,
+      "w": 600,
+      "h": 269
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/appearance#finetune-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/appearance#finetune-open/youcoded.png",
+    "ms": 42275,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/development/bug-report#sent-strong",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-before/settings/development/bug-report#sent-strong/youcoded-night.png",
+    "ms": 31302,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 316,
+      "w": 600,
+      "h": 269
+    },
+    "parts": []
+  }
+]

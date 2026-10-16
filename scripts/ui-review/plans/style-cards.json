@@ -1,0 +1,124 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[title=Settings]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "projects",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label=Files]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "games-picker",
+   "actions": [
+    {
+     "click": "[title='Games']",
+     "settle": 900
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Flappy'))",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "skills-drawer",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='\u2605 Favorites only')?.parentElement",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='\u2605 Favorites only')?.parentElement?.firstElementChild",
+    "js:document.querySelector(\"[title='Open marketplace']\")?.parentElement",
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add Skills'))"
+   ],
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    }
+   ],
+   "expect": "[title='Open marketplace']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[aria-label='Open Your Library'], [title='Your Library']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[title='Marketplace']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "resume-browser",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ],
+   "expect": "[placeholder^='Search sessions']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "pages-library",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label='Exit pages']",
+   "measure": [
+    "[aria-label='Exit pages']",
+    "[aria-label='Unpin Focus timer']",
+    "[aria-label='Pin Week planner']",
+    "[aria-label='Edit Week planner in chat']"
+   ],
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  }
+ ]
+}

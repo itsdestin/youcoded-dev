@@ -60,6 +60,19 @@ export async function cdp(port, w, h) {
   }
 }
 
+// WHY: a live page finishes arranging its cards before its embedded renderer has
+// mounted. Waiting on the pane-height message (marked by page.js) prevents a
+// successful preview made entirely of loading spinners. App-screen panes without
+// authored candidates retain the previous behavior because they do not report size.
+export async function waitForLivePanes(evaluate, delay = sleep, attempts = 60) {
+  for (let i = 0; i < attempts; i++) {
+    const ready = await evaluate("[...document.querySelectorAll('#inner iframe[data-src*=\"view=live\"]')].every(f => f.dataset.mounted === 'true' && f.dataset.appliedTheme === document.documentElement.dataset.theme)").catch(() => false);
+    if (ready) return true;
+    if (i + 1 < attempts) await delay(250);
+  }
+  return false;
+}
+
 // Every page of a served deck, at every size, in every theme, as one PNG each.
 // `pages` is a count: page numbers are 1-based and match the deck's own `?step=` (which is
 // the PAGE number on a words-only deck and the step number otherwise).
@@ -94,6 +107,16 @@ export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 
             // producing a clean-looking contact sheet for a page that never actually finished
             // laying out. Report it instead of hiding it.
             errors.push(`${label}: the page never finished laying out (window.__deckReady was never set)`);
+          }
+          // WHY: an unavailable Workbench replaces live iframes with a help card.
+          // An empty iframe selector otherwise reads as "everything mounted" and
+          // a text-only contact sheet can falsely pass the visual review.
+          if (await c.evaluate("!!document.querySelector('#inner .down')").catch(() => false)) {
+            errors.push(`${label}: live app server unavailable during preview`);
+          }
+          const liveCandidates = await c.evaluate("document.querySelectorAll('#inner iframe[data-src*=\"view=live\"]').length > 0").catch(() => false);
+          if (liveCandidates && !await waitForLivePanes(c.evaluate)) {
+            errors.push(`${label}: a live candidate did not mount and paint the requested theme before capture`);
           }
           // Fix: a page holding a RECORDING used to be shot after a longer fixed wait, guessing
           // how long Chrome's native video controls take to stop showing their own loading
@@ -164,6 +187,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     pages: Number(args.pages || 1),
     settle: Number(args.settle || 400),
   });
-  console.log(JSON.stringify(result));
-  process.exit(result.errors.length ? 1 : 0);
+  // WHY: write, THEN exit from its callback. Writes to a pipe are asynchronous in Node, so
+  // console.log + an immediate process.exit cut a large deck's result line off mid-JSON
+  // (final-review, 206 pages, 2026-10-13): preview.py could not parse it and made no sheet.
+  process.stdout.write(JSON.stringify(result) + '\n', () => process.exit(result.errors.length ? 1 : 0));
 }

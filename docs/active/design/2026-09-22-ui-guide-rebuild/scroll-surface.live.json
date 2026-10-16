@@ -1,0 +1,34 @@
+{
+  "title": "Settings scroll fade — blend into its own background",
+  "key": "ui-guide-scroll-surface-1",
+  "out": "scroll-surface.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "The scrolling edge beneath the title",
+      "hint": "Scroll inside each Settings drawer to see the fade; scroll outside it to reach the next version. Try Meadow Mist, Halftone and a solid theme using the theme buttons.",
+      "headline": "Should the content fade into the actual background instead of painting a flat strip?",
+      "risk": "Review-only Settings comparison. The 20% tapered title line is held constant here, not approved as a final endpoint. The shared dialogs and other scrolling surfaces need their own checks before this can become an app-wide treatment.",
+      "live": {"surface": "settings-taper-calibration", "round": 3},
+      "variants": [
+        {
+          "id": "painted",
+          "label": "Today: painted strip",
+          "candidate": "painted",
+          "summary": "The current scroll fade overlays a solid panel colour across the full width.",
+          "risk": "On translucent themes the strip does not match the actual background behind it."
+        },
+        {
+          "id": "backdrop",
+          "label": "Fade the content",
+          "candidate": "backdrop",
+          "summary": "No painted colour. Scrolling content fades against the real drawer background, and the effect tapers toward the sides.",
+          "risk": "At the far sides, some content stays visible; check that this reads naturally while scrolling."
+        }
+      ]
+    }
+  ]
+}

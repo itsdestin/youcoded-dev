@@ -1,0 +1,55 @@
+{
+  "title": "Automations — agents and automations (round 1, design B)",
+  "key": "gt-r1-agents-automations.live",
+  "out": "gt-r1-agents-automations.live.html",
+  "live": {
+    "worktree": "sessions/gt-r1-agents-automations/youcoded"
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Automations (new screen)",
+      "path": "Top bar → Automations (clock button after Projects)",
+      "headline": "Automations: the list of jobs, the Activity log, a job's details and the new/edit form.",
+      "hint": "Click the new clock-and-arrow button in the top bar (after Projects). Try the Activity tab, open a job card, New automation, and Edit inside a job.",
+      "notice": "Builder's main guide gaps: no recipe for a whole new screen or where its button goes; no status words beyond sessions; no create-form recipe; no time picker. It felt \"every group gets a label and a box\" made the details too boxy.",
+      "risk": "Adds a button to everyone's top bar. Review, Create, Save and Delete just close the popup.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-2",
+      "surface": "Automations (new screen)",
+      "path": "Automations, first time",
+      "headline": "Automations the first time, before you've made any.",
+      "hint": "Click the clock-and-arrow button in the top bar.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "empty"
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-3",
+      "surface": "Automations (new screen)",
+      "path": "Automations, couldn't load",
+      "headline": "Automations when the list couldn't load.",
+      "hint": "Click the clock-and-arrow button in the top bar.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "fail": "automations.list"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

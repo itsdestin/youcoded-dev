@@ -67,7 +67,19 @@
   const probeLive = () => fetch(DECK.live.base ? DECK.live.base + '/' : '/app/index.html',
     { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
   function drawLivePanes() {
-    $$('#inner iframe').forEach(f => { if (f.dataset.src) f.src = f.dataset.src; });
+    $$('#inner iframe').forEach(f => {
+      if (!f.dataset.src) return;
+      // WHY: an offscreen renderer can finish loading AFTER its first size
+      // report; an early theme message then lands before its listener exists.
+      // Re-send at frame load, when the renderer is listening, so every pane
+      // uses the chosen theme even before the reviewer scrolls it into view.
+      f.addEventListener('load', () => {
+        if (!f.isConnected) return;
+        delete f.dataset.appliedTheme;
+        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* gone */ }
+      }, { once: true });
+      f.src = f.dataset.src;
+    });
   }
   function drawServerDown(st) {
     // Specific and accurate (docs/error-message-standards.md): we know exactly which address
@@ -90,7 +102,10 @@
   function setLiveTheme() {
     document.documentElement.dataset.theme = theme;
     $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
-    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (e) { /* not loaded yet */ } });
+    $$('#inner iframe').forEach(f => {
+      delete f.dataset.appliedTheme;
+      try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (e) { /* not loaded yet */ }
+    });
   }
   // What a pane may be wide, as a range. A width the pane MEASURED for itself beats the one
   // the spec guessed at — the number lives in the registry in the other repo, so the deck can
@@ -208,6 +223,9 @@
   const changedCard = st => !st.changed && !st.measured ? ''
     : `<section class="card"><h3>${ICON.change}What changed</h3>${st.changed ? `<p>${esc(st.changed)}</p>` : ''}${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
   const noticeCard = st => st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '';
+  // "Also changes" (close-session friction, proposal 15): the other screens a shared change
+  // reaches, listed with the notice so a yes here is a yes to all of them.
+  const alsoCard = st => st.alsoChanges && st.alsoChanges.length ? `<section class="card also"><h3>${ICON.eye}Also changes</h3><ul>${st.alsoChanges.map(x => `<li>${esc(x)}</li>`).join('')}</ul></section>` : '';
   const riskCard = st => st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '';
   // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
   // adds a Verdict column instead of always reserving one nobody has filled in yet.
@@ -246,12 +264,12 @@
     + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
     + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
   // The body of one step, in the order the cards are read.
-  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
-    : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + riskCard(st)
-    : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + riskCard(st)
-    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
-    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
-    : changedCard(st) + noticeCard(st) + riskCard(st);
+  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + alsoCard(st) + riskCard(st)
+    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + alsoCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : changedCard(st) + noticeCard(st) + alsoCard(st) + riskCard(st);
 
   // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
   // does not exist. Decided per slide, because a deck may hold both kinds.
@@ -452,7 +470,8 @@
       // Once a click lands inside a pane, focus is in ITS document and this page stops seeing
       // key presses — so say so rather than leaving arrow keys mysteriously dead. Prev/Next
       // and every answer button still work with the mouse.
-      $('#livehint').textContent = 'These panes are the running app — hover, click and drag them. Click the page outside a pane to use ← → again.';
+      $('#livehint').textContent = (st.hint ? st.hint + ' ' : '')
+        + 'These panes are the running app. Click outside a pane to use ← → again.';
       probeLive().then(up => {
         if (DECK.steps[cur] !== st) return;   // he moved on while we were asking
         if (up) drawLivePanes(); else drawServerDown(st);
@@ -652,7 +671,11 @@
     const opts = { A: 'row-below', B: 'col-right stacked', C: 'col-right', D: 'row-below stacked' }; const score = {};
     step.classList.remove('compact-step');
     for (const k in opts) {
-      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant PICTURES need the full row (a decide step has only one picture, so it keeps the column)
+      // A side column needs real width; variant PICTURES need the full row (a decide step has only
+      // one picture, so it keeps the column) — except three or more TALL designs, which the row's
+      // cards below squeeze to ~180px each (close-session friction, proposal 16): beside a side
+      // column they get the stage's whole height, so the column is scored for them too.
+      if (opts[k].includes('col-right') && (c.clientWidth < 820 || (DECK.steps[cur].kind === 'choice' && !(n >= 3 && natH > natW)))) { score[k] = 0; continue; }
       if (n === 1 && opts[k].includes('stacked')) { score[k] = 0; continue; }                 // one picture: stacking means nothing
       if (DECK.steps[cur].kind === 'clip' && opts[k].includes('stacked')) { score[k] = 0; continue; }   // clips: side by side, or the two recordings can't be watched together
       c.className = 'content ' + opts[k]; const SW = stage.clientWidth - PAD, SH = stage.clientHeight - PAD; const stacked = opts[k].includes('stacked');
@@ -661,9 +684,26 @@
     let best = 'A'; for (const k of ['B', 'C', 'D']) if (score[k] > score[best] * 1.05) best = k;   // A wins ties
     let s;
     // A clip pair is worth watching smaller: compact only under 30% (stills: 50%).
-    const floor = DECK.steps[cur].kind === 'clip' ? 0.3 : 0.5;
+    // Two or more TALL pictures likewise: compact stacks them at full size, so only the top of
+    // the first is on screen until you scroll — worse than both, shrunk, side by side (zoom
+    // brings detail back). WHY (submit-ticket friction, proposal 10): every slide of a ~740px
+    // popup shot at 1.5× scored ~40% side by side and stacked. Stacked layouts are not offered
+    // to them, for the same reason.
+    // A CHOICE likewise (close-session friction, proposal 8): its designs are only compared side
+    // by side — stacked, a composite design (folded + opened) filled the width, the second sat
+    // under the answer bar, and only one could be seen.
+    const tall = n >= 2 && (natH > natW || DECK.steps[cur].kind === 'choice');
+    if (tall) for (const k in opts) if (opts[k].includes('stacked')) score[k] = 0;
+    if (tall) { best = 'A'; for (const k of ['C']) if (score[k] > score[best] * 1.05) best = k; }
+    const floor = DECK.steps[cur].kind === 'clip' || tall ? 0.3 : 0.5;
     if (score[best] < floor) { c.className = 'content compact'; step.classList.add('compact-step'); s = Math.min((c.clientWidth - PAD) / w, 1); }
     else { c.className = 'content ' + opts[best]; s = Math.min(score[best], 1.5); }
+    // Three or more TALL designs open at the width that fills the row, not the height: fitted
+    // to the height they came out ~180-250px wide, readable only through the zoom (close-session
+    // friction, proposal 16). Side by side, their tops line up; the stage scrolls for the rest.
+    const wide3 = DECK.steps[cur].kind === 'choice' && n >= 3 && natH > natW && score[best] >= floor;
+    if (wide3) { const SW = stage.clientWidth - PAD; s = Math.min(Math.max(s, (SW - GAP * (n - 1)) / n / w), 1.5); }
+    document.body.dataset.fit = wide3 ? 'width' : '';
     $$('#inner img, #inner video').forEach(i => i.style.width = ((i.naturalWidth || i.videoWidth) * s * zoom) + 'px');
     $('#lvl').textContent = Math.round(zoom * 100) + '%';
     // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
@@ -865,14 +905,35 @@
     // Symmetric with the route, which only accepts theme messages from a loopback origin.
     if (!DECK.live || e.origin !== LIVE_ORIGIN) return;
     const d = e.data;
+    if (d?.type === 'youcoded:pane-theme' && typeof d.theme === 'string') {
+      // WHY: mounting does not imply the requested palette has painted. The
+      // renderer acknowledges after ThemeProvider writes it, so preview can
+      // refuse a pane whose first screenshot still wears its URL's old theme.
+      const f = $$('#inner iframe').find(x => x.contentWindow === e.source);
+      if (f && d.theme === theme) {
+        f.dataset.appliedTheme = d.theme;
+      } else if (f && Number(f.dataset.themeRetries || 0) < 3) {
+        // WHY: an offscreen pane can acknowledge its initial default AFTER
+        // our load-time theme request; ThemeProvider's async initial restore
+        // overwrites that request. Retry on its painted-theme acknowledgement,
+        // never claim readiness from the earlier size report.
+        f.dataset.themeRetries = String(Number(f.dataset.themeRetries || 0) + 1);
+        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+      }
+      return;
+    }
     if (!d || d.type !== 'youcoded:pane-height' || !(d.height > 0)) return;
     const st = DECK.steps[cur];
-    if (st.kind !== 'live' || st.height) return;   // a declared height is an override, not a suggestion
+    if (st.kind !== 'live') return;
     // contentWindow identity, not the id in the payload: it is the only thing that cannot be
     // wrong when four panes report independently. The id is the fallback if the frame moved.
     const panes = $$('#inner iframe');
     const f = panes.find(x => x.contentWindow === e.source) || panes.find(x => x.dataset.pane === d.candidate);
     if (!f) return;
+    // WHY: layout readiness predates the async app in each frame. Preview must
+    // wait for THIS mounted report before photographing a live pane, including
+    // a pane whose height is explicitly fixed by its deck.
+    const firstMount = f.dataset.mounted !== 'true';
     // The pane's address carries the deck's FIRST theme, baked at build time — so a live step
     // opened while the deck is on any other theme (switched on an earlier step, or ?theme= in
     // the URL) showed Midnight panes inside a Light deck. Answering its height report is the
@@ -880,12 +941,17 @@
     // `load` event is not — it fires before the app's async boot installs the listener, and
     // the message is dropped silently (tried that first, 2026-09-01).
     try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (err) { /* gone */ }
+    f.dataset.mounted = 'true';
+    // WHY: the first layout sent fluid width before the iframe installed its
+    // listener. Its requested-width cache must be cleared ONCE after mount, or
+    // the candidate stays at min width inside a wider allocated pane.
+    if (firstMount) delete f.dataset.askedWidth;
     // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
     // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
     // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of
     // the design, and a design you cannot see all of is not a design you can judge. The stage
     // is `overflow:auto` already, so a tall pane makes the STAGE scroll and stays whole.
-    f.style.height = Math.max(MIN_PANE_H, d.height) + 'px';
+    if (!st.height) f.style.height = Math.max(MIN_PANE_H, d.height) + 'px'; // declared height wins
     // WIDTH is not capped and not guessed. It comes from the registry in the other repo, so
     // the pane is the only thing that knows it; a deck-level `live.paneWidth` that is too
     // small clips the design's right-hand edge with nothing to say so (permissions-mode-control

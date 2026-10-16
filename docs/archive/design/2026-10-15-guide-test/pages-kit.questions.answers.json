@@ -1,0 +1,70 @@
+{
+ "deck": "pages-kit-questions",
+ "started": "2026-10-16T14:22:38.442Z",
+ "submitted": "2026-10-16T14:25:20Z",
+ "cur": 0,
+ "answers": {
+  "K-1": {
+   "v": "picks",
+   "picks": [
+    "status-pill",
+    "notice",
+    "loading-error"
+   ],
+   "t": 1792160719093,
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "K-2": {
+   "v": "picks",
+   "picks": [
+    "toggle",
+    "filters"
+   ],
+   "t": 1792160719093,
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "K-3": {
+   "v": "picks",
+   "picks": [
+    "fold",
+    "scroll-fade",
+    "nested"
+   ],
+   "t": 1792160719093,
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "K-4": {
+   "v": "yes",
+   "t": 1792160719093,
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "K-5": {
+   "v": "pick",
+   "pick": "leave",
+   "t": 1792160719093,
+   "note": "users should still be able to fully customize page ui and disregard our design principles if they so choose. the kit is just a starting point for good first-shot attempts, but should be ignored if the user provides contradictory guidance",
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "K-6": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1792160719093,
+   "note": "will want eventually, add to roadmap for now",
+   "seconds": 23,
+   "theme": "morning-rounds"
+  },
+  "K-7": {
+   "v": "other",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1792160719093,
+   "dk": true,
+   "note": "roadmap item"
+  }
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "_why": "Git file review (GitReviewView.tsx, opened from Session Files → a changed file's own Review Changes button) had ZERO screenshots anywhere — the whole design-language effort never once looked at it (completeness-screens.md, 2026-09-23 audit). Root cause: the workbench mock-shim had no `git` namespace at all, so `window.claude.git.fileStatus()` silently fell through the outer bridge's catch-all and resolved `[]`; the footer read that as 'not a repo' and never rendered its 'Review Changes' door. Added a small generic `git` fixture to mock-shim.ts (2026-09-24, capture repair) — every open file now reads as 'one uncommitted edit, two commits of history', which is enough to picture the real component; it is not per-file accurate.",
+ "shots": [
+  {
+   "name": "git-review-uncommitted",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "ChatView.tsx",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Review Changes'))?.click()"
+    },
+    {
+     "wait": 700
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Reviewing changes for')"
+  },
+  {
+   "name": "git-review-commit-expanded",
+   "_why": "Expands the first historical commit card to picture its per-commit diff (GitReviewCard / expandCommit).",
+   "actions": [
+    {
+     "click": "[title='Session Files']",
+     "settle": 900
+    },
+    {
+     "clickText": "ChatView.tsx",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Review Changes'))?.click()"
+    },
+    {
+     "wait": 700
+    },
+    {
+     "eval": "[...document.querySelectorAll('span')].find(s=>/^chat: cache the per-session selector/.test(s.textContent.trim()))?.closest('button, [role=button], div[class*=cursor]')?.click()"
+    },
+    {
+     "wait": 700
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Reviewing changes for')"
+  }
+ ]
+}

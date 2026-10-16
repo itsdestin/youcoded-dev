@@ -1,0 +1,195 @@
+{
+  "title": "Every retry button says exactly \"Try again\", plus three fixes you approved",
+  "key": "small-fixes-2",
+  "out": "small-fixes-2.review.html",
+  "images": "images/small-fixes-2",
+  "runs": {
+    "before": "runs/sf2/before",
+    "after": "runs/sf2/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Fixed"
+  },
+  "themes": [
+    "halftone-dimension",
+    "youcoded"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "SF2-1",
+      "surface": "Marketplace → an integration's details",
+      "path": "Marketplace → Integrations → Google Workspace, after an install that failed",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "marketplace/integration-detail#failed@panel",
+      "headline": "A failed install now says one short sentence with \"Try again\"; the technical reason waits under Details.",
+      "changed": "Was \"Couldn't install: Plugin not found in marketplace: google-workspace …\" beside \"Try installing again\". Now \"Google Workspace couldn't be installed.\" with \"Try again\" inside the box, and the installer's own words in a Details fold under it — the shape you approved for Contribute's failures.",
+      "notice": "Plugin and theme pages use this same box, word for word (next slide).",
+      "alsoChanges": [
+        "Plugin details",
+        "Theme details"
+      ]
+    },
+    {
+      "id": "SF2-2",
+      "surface": "Marketplace → a plugin's details",
+      "path": "Marketplace → a plugin → Install, when the install fails",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "marketplace/detail/install#failed@panel",
+      "headline": "Plugin pages show the identical failed-install box, so all detail pages match.",
+      "changed": "\"Couldn't download it: the source repository did not answer …\" with \"Try installing again\" becomes \"Browser Use couldn't be installed.\" with \"Try again\", and the reason under Details.",
+      "notice": "Same sentence pattern, same button, same Details fold as the integration page."
+    },
+    {
+      "id": "SF2-3",
+      "surface": "Update available",
+      "path": "The version pill → Update now, when the download fails",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/update#download-failed@panel",
+      "headline": "A failed update is a sentence in the notice box with \"Try again\", instead of \"Download failed — Try again\" on the button.",
+      "changed": "The failure lived in the big button's label (\"Download failed — Try again\"), with \"Open in browser instead\" under it. Now the notice box takes the button's place: \"The update didn't download.\", then \"Open in browser instead\" and \"Try again\" inside it.",
+      "notice": "Other failures read the same way: \"The installer didn't start.\", \"The download was damaged, so it wasn't installed.\" (no browser option there — that file is the one the check refused)."
+    },
+    {
+      "id": "SF2-4",
+      "surface": "Settings → Backup & sync → Warnings",
+      "path": "Backup & sync, when a Google Drive backup timed out",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#backup-timeout@panel",
+      "headline": "Backup & sync's fix buttons read \"Try again\", not \"Try again now\".",
+      "changed": "Every Backup & sync warning that offers a retry (timed out, disk full, couldn't connect, too many uploads, and the rest) now labels its button \"Try again\".",
+      "notice": "A small test now checks the whole app, phone included, so a variant can't come back."
+    },
+    {
+      "id": "SF2-5",
+      "surface": "Settings → Backup & sync → Add a backup",
+      "path": "Backup & sync → ＋ Add a backup",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#add-picker@panel",
+      "headline": "On a computer, Add a backup no longer offers GitHub, which had copied nothing since its backup was removed.",
+      "changed": "The picker offered Google Drive and GitHub. A GitHub backup made here saved its settings but nothing ever copied to it. Now only the choices that work are offered (Google Drive; iCloud too on Mac and Windows).",
+      "notice": "Your files sync to GitHub through cross-device sync, at the top of Backup & sync — that is unchanged."
+    },
+    {
+      "id": "SF2-6",
+      "surface": "Settings → Backup & sync → Additional backups",
+      "path": "Backup & sync, for someone who set up a GitHub backup earlier",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#github-unsupported@panel",
+      "headline": "A GitHub backup set up earlier now says it's no longer supported, with Remove, instead of a false \"Backed up\".",
+      "changed": "Its row read \"Backed up 5m ago\" with a green light, though nothing was copied. Now: \"No longer supported\", a grey light, and a warning notice inside its box saying nothing is copied and what's on GitHub stays — with Remove, which opens the usual Remove confirm. Its settings and files are never deleted on their own.",
+      "notice": "Same notice-inside-the-item look as Local models' interrupted download."
+    },
+    {
+      "id": "SF2-7",
+      "surface": "The phone app → Backup & sync",
+      "path": "Android, Backup & sync → Add a backup",
+      "words": true,
+      "headline": "The phone app still backs up to GitHub by itself. Should it keep offering the GitHub backup?",
+      "today": "On the phone app (not paired to a computer), a GitHub backup still really copies your memory and settings to a GitHub repository.",
+      "problem": "Computers no longer have it, so the two apps differ.",
+      "proposal": "For now the phone keeps the option, because there it works. Removing it there too would make the apps match, but take away a working backup from anyone using it.",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep on phone",
+          "recommended": true,
+          "pros": [
+            "Nothing that works is taken away"
+          ],
+          "cons": [
+            "The phone offers a choice computers don't"
+          ]
+        },
+        {
+          "id": "remove",
+          "label": "Remove everywhere",
+          "pros": [
+            "Both apps offer the same choices"
+          ],
+          "cons": [
+            "Phone users lose a backup that works; theirs would show \"no longer supported\""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SF2-8",
+      "surface": "Settings → Backup & sync → Add a backup",
+      "path": "Add a backup → Google Drive → Connect to Google, when the sign-in fails",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#add-auth-failed@panel",
+      "headline": "A failed sign-in now shows the sign-in's real reason with Try again, not a cheerful guess.",
+      "changed": "It always said \"Looks like the sign-in didn't complete. No worries — try again when you're ready.\" and dropped the actual reason, with Try again below the main button. Now the reason the sign-in gave sits in the error box with Try again inside it, in the button's place; when there is no reason, only \"The sign-in didn't finish.\"",
+      "notice": "The practice reason here is made up; the real app shows Google's or GitHub's own words."
+    },
+    {
+      "id": "SF2-9",
+      "surface": "Assistant settings → Local models",
+      "path": "Local models → Recommended",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/assistant/local#download-failed@600x200+502+460",
+      "headline": "\"Runs fast — fits on your GPU\" is now a green-tinted pill with normal words, not green text.",
+      "changed": "How well a model fits was coloured words: green \"Runs fast — fits on your GPU\", amber \"Will be tight…\", red \"Too large for this machine\". Now the same words sit in a status pill in that colour, like the Local engine's Running / Stopped pill above it.",
+      "notice": "Same words and colours, just in the pill's tint — the guide's rule that status colours never colour the words."
+    },
+    {
+      "id": "SF2-10",
+      "surface": "Choosing a model for a conversation",
+      "path": "The model menu, when a local model may not fit in memory",
+      "words": true,
+      "headline": "Found nearby: the model menu's \"may not fit in memory\" warning is amber or red text. Fix it the same way next round?",
+      "today": "When you pick a local model that may not fit, the model menu shows a fold titled \"This model may not fit in available memory\" in amber (red when too large).",
+      "problem": "That is status colour in text, which the guide rules out. It isn't on Local models itself, so it wasn't changed here.",
+      "proposal": "Next round, make it the warning notice box — tinted box, normal words — keeping its fold and the \"Warn me about this model\" switch inside.",
+      "options": [
+        {
+          "id": "fix-next",
+          "label": "Fix next round",
+          "recommended": true,
+          "pros": [
+            "Matches every other warning"
+          ],
+          "cons": [
+            "One more popup to check"
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it",
+          "pros": [
+            "No change now"
+          ],
+          "cons": [
+            "One coloured-text warning stays"
+          ]
+        }
+      ]
+    }
+  ]
+}

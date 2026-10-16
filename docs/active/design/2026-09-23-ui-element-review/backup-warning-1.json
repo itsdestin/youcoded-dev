@@ -1,0 +1,220 @@
+{
+ "title": "Where the backup warning lives",
+ "key": "backup-warning-1",
+ "out": "backup-warning-1.review.html",
+ "images": "images/backup-warning-1",
+ "runs": {
+  "today": "runs/bw1"
+ },
+ "labels": {
+  "today": "Built in the app"
+ },
+ "themes": [
+  "halftone-dimension",
+  "creme",
+  "youcoded",
+  "youcoded-night",
+  "meadow-mist"
+ ],
+ "stage": "design",
+ "steps": [
+  {
+   "id": "BW-1",
+   "surface": "First days with the app",
+   "path": "Three places the warning could go: the tour, the first file change, Settings → Permissions",
+   "headline": "Where should the backup warning go now that it is off the setup screen?",
+   "crop": [
+    {
+     "crop": "tour/backups@480x250+930+520",
+     "label": "Buddy's tour"
+    },
+    {
+     "crop": "chat#backup-first-change@1420x330+10+40",
+     "label": "First file change"
+    },
+    {
+     "crop": "settings/assistant/permissions#backup-note@630x320+492+290",
+     "label": "Settings, Permissions"
+    }
+   ],
+   "highlight": {
+    "box": [
+     0,
+     0,
+     100,
+     100
+    ]
+   },
+   "today": "Until 4 October setup's sign-in step ended with your backup sentence; you removed it there. Now only people who turn on Skip permissions or Full auto see a backup warning.",
+   "problem": "ChatGPT, OpenRouter and local-model users start in Auto edit: the assistant changes files without asking, and nothing warns them. The app can't undo its changes, and Backup & sync doesn't copy project folders.",
+   "proposal": "Put your sentence in one of three places, all built and shown above. Or leave it out.",
+   "options": [
+    {
+     "id": "tour",
+     "label": "A tour stop",
+     "summary": "A ninth stop right after Files, while the Projects screen is still open.",
+     "pros": [
+      "Comes with the other first-day explanations, from the buddy.",
+      "Nothing new in the chat or Settings."
+     ],
+     "cons": [
+      "Only on a computer: the tour never runs on a phone or in a browser.",
+      "Anyone who presses Skip tour never sees it.",
+      "Shown before the person has done anything, so it's easy to forget."
+     ],
+     "cost": "One stop in the tour list."
+    },
+    {
+     "id": "first-change",
+     "label": "First file change",
+     "recommended": true,
+     "summary": "A notice box inside the first card where the assistant creates or changes a file, with Got it. Once per install.",
+     "pros": [
+      "Arrives the moment it matters, beside the change itself.",
+      "Reaches every user: computer, phone, browser; Claude or any other AI.",
+      "Also covers Auto edit, where nothing else would ever warn."
+     ],
+     "cons": [
+      "One more box on a card that is asking you something.",
+      "If Got it isn't pressed, it shows again on the next change."
+     ],
+     "cost": "A small notice on the change card; nothing else moves."
+    },
+    {
+     "id": "permissions",
+     "label": "Settings → Permissions",
+     "summary": "A notice box at the foot of the Permission modes card.",
+     "pros": [
+      "Always there for anyone who goes looking.",
+      "Sits next to the modes it is about."
+     ],
+     "cons": [
+      "Almost no new user opens this page, so most never see it.",
+      "Nothing points people to it."
+     ],
+     "cost": "One notice on one page."
+    },
+    {
+     "id": "nowhere",
+     "label": "Nowhere",
+     "summary": "Leave it off. The Skip permissions and Full auto warnings already say to keep backups.",
+     "pros": [
+      "Nothing extra for anyone to read."
+     ],
+     "cons": [
+      "ChatGPT, OpenRouter and local-model users start in Auto edit and are never warned.",
+      "A first-time user learns there's no undo only after something goes wrong."
+     ],
+     "cost": "Nothing to build."
+    }
+   ]
+  },
+  {
+   "id": "BW-2",
+   "surface": "The buddy's tour",
+   "path": "Starts on its own after setup; again from Settings → Help & feedback → Show me around",
+   "new": true,
+   "crop": [
+    {
+     "crop": "tour/files@480x250+930+520",
+     "label": "Today: stop 5"
+    },
+    {
+     "crop": "tour/backups@480x250+930+520",
+     "label": "Added: stop 6"
+    }
+   ],
+   "headline": "If the tour wins: the warning becomes stop 6 of 9, right after Files, with the Files tab still ringed.",
+   "changed": "A new stop after \"Files the assistant makes show up here…\". Same bubble, same buttons (Back, Skip tour, Next). Your 2026-09-10 sentence, word for word.",
+   "notice": "The tour is one stop longer. Phone and browser users never get the tour, so they would never see this.",
+   "risk": "This is also the first time the tour can be photographed at all, so later tour changes can be shown on a deck."
+  },
+  {
+   "id": "BW-3",
+   "surface": "Chat",
+   "path": "The first time the assistant edits or creates a file",
+   "new": true,
+   "crop": [
+    {
+     "crop": "chat#bubbles-edit-approval@1420x330+10+40",
+     "label": "Today"
+    },
+    {
+     "crop": "chat#backup-first-change@1420x330+10+40",
+     "label": "First file change"
+    }
+   ],
+   "headline": "If the first file change wins: a notice box inside that card, with an outlined Got it, once per install.",
+   "changed": "Between the card's title and its Yes / No, the notice box (tinted in the theme colour) with your sentence and Got it at its right. Got it is outlined so Yes stays the main answer. Only a change happening now carries it, never an old conversation.",
+   "notice": "After Got it it never shows again on that device. In Auto edit there is no Yes / No: the notice sits on the finished change instead. On a phone, Got it drops under the words.",
+   "risk": "A new device or a reinstall shows it once more, like the other first-time warnings."
+  },
+  {
+   "id": "BW-4",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Permissions",
+   "new": true,
+   "crop": [
+    {
+     "crop": "settings/assistant/permissions@630x320+492+290",
+     "label": "Today"
+    },
+    {
+     "crop": "settings/assistant/permissions#backup-note@630x320+492+290",
+     "label": "With the notice"
+    }
+   ],
+   "headline": "If Permissions wins: a notice box at the foot of the Permission modes card, in the card's own text size.",
+   "changed": "Under \"Each conversation has its own mode…\", the notice box (tinted in the theme colour) with your sentence. No button: this card only explains, it has nothing to press.",
+   "notice": "The card gets about two lines taller; Always allowed moves down."
+  },
+  {
+   "id": "BW-5",
+   "words": true,
+   "surface": "Wherever the warning goes",
+   "path": "The warning's words",
+   "headline": "Keep your 2026-09-10 wording, or say plainly that the app can't undo the assistant's changes?",
+   "today": "Every draft uses your sentence: \"With your permission, the assistant may create, change, or delete files on your device. Create backups for anything you cannot replace.\"",
+   "problem": "\"With your permission\" reads as \"it always asks first\", but in Auto edit (the start for ChatGPT, OpenRouter and local models) it changes files without asking each time. Nothing says there is no undo.",
+   "proposal": "Pick the words the chosen place will show.",
+   "options": [
+    {
+     "id": "keep",
+     "label": "Keep your wording",
+     "summary": "\"With your permission, the assistant may create, change, or delete files on your device. Create backups for anything you cannot replace.\"",
+     "pros": [
+      "Already approved; short."
+     ],
+     "cons": [
+      "Implies it always asks; doesn't say there's no undo."
+     ]
+    },
+    {
+     "id": "plain",
+     "label": "Say no undo",
+     "recommended": true,
+     "summary": "\"The assistant can create, change or delete files on your computer, and YouCoded can't undo that. Keep your own copies of anything you can't replace.\"",
+     "pros": [
+      "True in every mode.",
+      "Says the one fact people get wrong: there's no undo button."
+     ],
+     "cons": [
+      "A little longer.",
+      "Sounds firmer."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "BW-6",
+   "words": true,
+   "surface": "The buddy's tour",
+   "path": "Press Escape while the tour is showing",
+   "headline": "Escape now closes the tour's bubble and leaves you on the screen it was showing.",
+   "changed": "Before, Escape closed the screen under the bubble (the Projects view, say) and left the tour floating over nothing. Now Escape ends the tour, like closing any popup; Skip tour and Done still take you back where you started.",
+   "notice": "Found while photographing the tour for this deck. On the Appearance and Help stops, the page that opens a moment after the stop takes the first Escape; the next one closes the tour.",
+   "yes": "Keep it",
+   "no": "Undo it"
+  }
+ ]
+}

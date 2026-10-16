@@ -1,0 +1,35 @@
+{
+  "title": "Check the applied Marketplace Details popups",
+  "key": "ui-guide-marketplace-detail-acceptance-1",
+  "out": "marketplace-detail-shell.acceptance.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 710},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Marketplace skill details",
+      "path": "Confirming the matching edge you selected for skills",
+      "hint": "Scroll inside the skill content to its end; scroll outside the popup to switch between Before and Applied. Open in New Window for the full height.",
+      "headline": "Does the applied skill Details header match your choice?",
+      "risk": "Civic Report is Workbench sample data. The change is limited to the outer Details shell; the skill name, actions and nested file viewer remain separate.",
+      "live": {"surface": "marketplace-detail-header", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Before (for reference)", "candidate": "today-skill", "summary": "Original 18px semibold Details header, full-width divider and bare content scrolling."},
+        {"id": "proposed", "label": "Applied skill Details", "candidate": "proposed-skill", "summary": "Actual 16px medium Details header, 8% tapered divider and conditional 42px/4%-side content fade."}
+      ]
+    },
+    {
+      "id": "T-1",
+      "surface": "Marketplace theme details",
+      "path": "Confirming the matching edge you selected for themes",
+      "hint": "Compare the outer Details header above the theme name; scroll inside the body to check that more content remains legible.",
+      "headline": "Does the applied theme Details header match your choice?",
+      "risk": "Golden Sunbreak is Workbench sample data with its preview image. Applying a theme, installing and voting are not part of this styling change.",
+      "live": {"surface": "marketplace-detail-header", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Before (for reference)", "candidate": "today-theme", "summary": "Original 18px semibold Details header, full-width divider and bare content scrolling."},
+        {"id": "proposed", "label": "Applied theme Details", "candidate": "proposed-theme", "summary": "Actual 16px medium Details header, 8% tapered divider and conditional 42px/4%-side content fade."}
+      ]
+    }
+  ]
+}

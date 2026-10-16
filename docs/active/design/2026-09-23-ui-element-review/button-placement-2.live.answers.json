@@ -1,0 +1,22 @@
+{
+ "deck": "ui-element-review-button-placement-2",
+ "started": "2026-09-24T09:21:17.680Z",
+ "submitted": "2026-09-24T09:22:10Z",
+ "cur": 1,
+ "answers": {
+  "BW-1": {
+   "v": "other",
+   "note": "i think the buttons start to look weird when they get that wide and have a bunch of left/right empty margin",
+   "seconds": 42,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "BW-2": {
+   "v": "pick",
+   "pick": "filled-top",
+   "seconds": 8,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Legal pages — expandable section card",
+  "key": "website-legal-review-3",
+  "out": "website-legal.review-3.html",
+  "images": "images/website-legal.review-3",
+  "runs": {"before": "runs/card-before", "after": "runs/card-after"},
+  "themes": ["cotton-candy-sky"],
+  "theme": "fixed",
+  "crops": {"index-card": ["legal", "index-card", "390x110+0+210"]},
+  "steps": [
+    {
+      "id": "L-4",
+      "surface": "Website · Phone section index",
+      "path": "Privacy or Terms → On this page",
+      "crop": "index-card",
+      "headline": "The section index is now an expandable card with a simple chevron.",
+      "changed": "Your L-3 note: a soft, rounded card and a right-side chevron replace the bare dropdown.",
+      "notice": "Tap anywhere on the header. Links expand inside the card and the chevron turns upward. Both policies match.",
+      "risk": "Opening it pushes the policy down; no text is hidden or changed."
+    }
+  ]
+}

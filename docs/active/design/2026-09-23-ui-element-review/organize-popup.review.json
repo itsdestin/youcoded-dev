@@ -1,0 +1,37 @@
+{
+  "title": "Resume opens Session details as a popup",
+  "key": "organize-popup",
+  "out": "organize-popup.review.html",
+  "images": "images/organize-popup",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "labels": {
+    "before": "Last round's sheet",
+    "after": "Now"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "resume": [
+      "x",
+      "resume",
+      "1000x700+220+95"
+    ]
+  },
+  "steps": [
+    {
+      "id": "OP-1",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "crop": "resume",
+      "headline": "The tag icon now opens the Session details popup you approved, over Resume, named for that conversation.",
+      "changed": "No sheet inside the card any more. The popup shows the conversation's name (click to rename), its note, its tags and Pin to top. The side panel's and Projects preview's tag buttons open the same popup.",
+      "notice": "Organizing a conversation looks identical everywhere — status bar, Resume, side panel, Projects. The ✕ or a click outside closes it; changes save as you make them.",
+      "risk": "While it's open you can't see the other conversations in the list."
+    }
+  ]
+}

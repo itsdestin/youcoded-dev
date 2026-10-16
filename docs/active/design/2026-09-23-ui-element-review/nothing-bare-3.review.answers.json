@@ -1,0 +1,31 @@
+{
+ "deck": "ui-nothing-bare-3",
+ "started": "2026-09-28T23:37:29.996Z",
+ "submitted": "2026-09-28T23:39:40Z",
+ "cur": 2,
+ "answers": {
+  "N3-1": {
+   "v": "yes",
+   "t": 1790638668405,
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N3-2": {
+   "v": "yes",
+   "t": 1790638725065,
+   "note": "i think the google drive card should be styled more like typical second level cards.",
+   "seconds": 37,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N3-3": {
+   "v": "yes",
+   "seconds": 57,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1790638779685,
+   "note": "is this just a linux/kde thing? we should say remove *platform* helper"
+  }
+ }
+}

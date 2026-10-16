@@ -1,0 +1,25 @@
+{
+ "deck": "welcome-1",
+ "started": "2026-10-05T03:20:03.565Z",
+ "submitted": "2026-10-05T03:24:53Z",
+ "cur": 1,
+ "answers": {
+  "WL-1": {
+   "note": "d1. can we try putting the mascot to the lefto f the start your first session text? also can we possibly make a new \"youcoded\" theme installed as a default that uses our purple styling and stuff? i think all of the purple was originally based on the existing cotton candy sky theme, but i don't like much about that other than the purple. i want a new, youcoded-purple default theme, and the mascor should match the styling used for our icon.",
+   "t": 1791170682775,
+   "v": "pick",
+   "pick": "D1",
+   "seconds": 126,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "WL-2": {
+   "v": "other",
+   "t": 1791170692809,
+   "note": "see previous",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

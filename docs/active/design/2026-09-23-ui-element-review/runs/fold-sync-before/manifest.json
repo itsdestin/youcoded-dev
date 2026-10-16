@@ -1,0 +1,53 @@
+[
+  {
+    "name": "settings/sync#log-open",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/fold-sync-before/settings/sync#log-open/midnight.png",
+    "ms": 3575,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#log-open",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/fold-sync-before/settings/sync#log-open/youcoded.png",
+    "ms": 24996,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/sync#log-open",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/fold-sync-before/settings/sync#log-open/youcoded-night.png",
+    "ms": 25184,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

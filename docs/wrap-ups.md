@@ -846,6 +846,13 @@ recurred — the repetition is the data.
 - Full-suite timeouts passed in isolation; a bounded eight-worker full run passed, while the old workspace verifier mismatched newer Office/buddy source. No timeout thresholds were inflated; the final integrated full run explicitly passed screen and journey gates, and Android passed 594 tests in each variant. Additional performance experiments → dropped: closeout scope, not new optimization.
 - deleted/merged: duplicate Git-maintenance and broad coverage entries merged; four Office performance entries moved rather than copied. Paused renderer experiments stay out of shipping source, with checksum-preserved recovery and raw evidence outside the worktree. No new always-loaded rule.
 
+## 2026-10-06 — website legal pages (session/ui-consistency-audit)
+- Current live branding differs from this preserved branch; rejected dark first attempt was not the design authority → applied: inspected live and branch screenshots, used light lavender with current logo, left homepage/history untouched. Asset provenance is in `youcoded/docs/legal-assets/README.md`. Goal: avoid another stale-site redesign.
+- Preserve legal wording/dates and open website policies on both platforms → applied: independent Markdown-fidelity tests and desktop/Android About click tests, observed red before green; native disclosure has an accessible decorative chevron. Approval records include Destin's expandable-card preference. Goal: automate the invariants.
+- RECURRENCE: invalid Grep types and full-window review crops wasted calls; existing tool schema/authoring guidance already explain both → dropped new guidance; focused card crop made the follow-up comparison visible. No additional always-loaded rule.
+- Two verification runs each timed out opening one different screen; all other gates passed → unresolved evidence in `docs/active/design/2026-10-06-website-legal/status.md`. Dropped speculative timeout/concurrency changes from this task: root cause unproven, unrelated work must be preserved, separate investigation offered but not authorized. Not filed as a roadmap flake or claimed fixed.
+- deleted/merged: removed the rejected wallpaper, dark panels and large hero styling; reused the generator and shared CSS for both policies. No further consolidation found.
+
 ## 2026-10-04 — brand icons built: glass app icon, theme icons on taskbar/Dock/tray, Mac Liquid Glass, a macOS 26 VM (session/brand-identity-v2, youcoded + wecoded-themes + workspace)
 - main.ts's AUMID comment claimed matching the shortcut's AppUserModelID makes `setIcon` reach the Windows taskbar; tested false (it reaches only Alt+Tab) and it cost four VM experiments → applied: comment corrected, the working route lives in `windows-taskbar-icon.ts` with its WHY
 - A "failed" macOS 26 install had finished stage one twice; the OpenCore picker defaults to Recovery on EVERY boot, and my watcher used a 3-entry fingerprint (≈550) though vm-testing.md already said ≈930 for the real picker → applied: vm-testing.md now says every boot + both fingerprints + the Setup Assistant hang; the doc was right, I measured instead of reading it
@@ -921,3 +928,12 @@ recurred — the repetition is the data.
 - Destin said: "nobody is using the app rn … no intermediate fixes"; licensing: company must accept Anthropic Commercial Terms before distribution → roadmap: android-only entry (P4 next, terms note)
 - Phone testing needed the screen unlocked; a locked phone was worked around by loading the bundled page in a laptop browser over `adb forward` against the phone's backend → applied: recipe in `youcoded/docs/android-runtime.md` → Developing
 - deleted/merged: ~30,500 lines of Android Kotlin, the vendored Termux terminal and duplicated hook assets; the superseded 2026-09-24 plan and 8 Kotlin-era investigations archived; Kotlin parity tests retired (3 files deleted, ~20 reduced)
+
+## 2026-10-16 — UI consistency: popups, guide test (2 rounds), one scroll fade, Pages kit (youcoded#626, wecoded-marketplace#108, youcoded-dev#261)
+- Review pages shut down after 240 min unanswered; Destin had to ask for a relaunch 3× → applied: `review-cards.py serve`/`wait` default timeout 1440 min (WHY at the flag)
+- A multi-picture step rendered each shot at half width ("hard to review cuz the images are small") → applied: review-deck rule "One picture per step, live alongside"
+- A trivial fixture edit was delegated to a subagent with full verify (~11 min; "should've taken like 5 seconds") → applied: `~/system/me/preferences.md` bullet
+- Guide test (fresh builders, not told it's a test, critiqued on decks): round 1 4/10 good, round 2 31/32 → applied: ~15 guide rules; procedure + setup script archived with the round notes
+- Flaky tests met by builders under load (LocalModelsSection, prompt-assembly, switch-marks, ipc-handlers status + real GitHub calls, wheel-scroll scan, journeys on glass) → applied: each fixed with break-it proof; journeys run with Reduce effects; ipc-handlers fails on any network use
+- Destin said: Pages chart recipe "add to roadmap"; phone Pages squeeze "roadmap item" → roadmap: other-features.md Pages follow-ups (e), (h)
+- deleted/merged: the old painted scroll-fade band and 5 private fade copies (one CSS-only fade); Focus timer and Week planner samples; the PITFALLS pre-merge incognito note (checked at merge instead)

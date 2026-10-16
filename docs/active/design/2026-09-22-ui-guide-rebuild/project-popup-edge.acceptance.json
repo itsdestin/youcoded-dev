@@ -1,0 +1,22 @@
+{
+  "title": "Project detail — check the applied treatment",
+  "key": "ui-guide-project-popup-acceptance-1",
+  "out": "project-popup-edge.acceptance.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 710},
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Project detail overlay",
+      "path": "Checking the approved treatment on the real Project popup",
+      "hint": "Scroll inside each overlay, then try Meadow Mist, Halftone Dimension and a solid theme. Choose Other if the applied edge needs tuning.",
+      "headline": "Does the applied Project popup match the choice you made?",
+      "risk": "The 42px fade makes the last visible lines faint until you scroll. This check does not include Tags, Marketplace or other custom popups.",
+      "live": {"surface": "project-popup-edge-calibration", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Before (for reference)", "candidate": "today", "summary": "Original 16px semibold title, full-width line, no content fade."},
+        {"id": "selected", "label": "Applied Project detail", "candidate": "selected", "summary": "Actual production shell: 16px medium title, 8% tapered divider, 42px fade with 4% side taper."}
+      ]
+    }
+  ]
+}

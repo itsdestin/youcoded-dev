@@ -1,0 +1,166 @@
+{
+  "title": "Error notices — every \"couldn't load\" box becomes the guide's red-tinted notice box",
+  "key": "error-notices-1",
+  "out": "error-notices-1.review.html",
+  "images": "images/error-notices-1",
+  "runs": {
+    "before": "runs/error-notices-1/before",
+    "after": "runs/error-notices-1/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension",
+    "light",
+    "midnight"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "EN-1",
+      "surface": "Skills drawer",
+      "path": "Chat → type / → the skills list fails to load",
+      "crop": "chat/skills#load-failed@1440x200+0+260",
+      "headline": "A whole list that fails to load is now the red-tinted notice box, with Retry inside it at the right.",
+      "changed": "Today an error is a grey box with a small red dot. Proposed: the same red-tinted box with a red border that every other warning and error in the app already uses (your guide's rule). The dot is gone; the words stay normal grey.",
+      "notice": "61 places in the app change at once — every error that can be retried or reported. This slide is a whole list failing (the big size).",
+      "risk": "The words are a little smaller (the notice box's size), and a one-line message sits level with the top of the Retry button rather than its middle."
+    },
+    {
+      "id": "EN-2",
+      "surface": "Resume session",
+      "path": "Resume session → the conversation list fails to load",
+      "crop": "chat/resume#load-failed@1000x260+220+108",
+      "headline": "An error inside a popup or a menu uses the notice box's slim one-line form.",
+      "changed": "The \"inline\" errors (inside a list, a menu or a card) become the slim red notice box — the same one approved for the provider notices — instead of a grey strip with a dot.",
+      "notice": "Long messages wrap to two lines inside the box; Retry stays at the right."
+    },
+    {
+      "id": "EN-3",
+      "surface": "Session details",
+      "path": "Status bar → tags → your tags fail to load",
+      "crop": "chat/tags#load-failed@440x280+500+240",
+      "headline": "Session details' \"couldn't load your tags\" line becomes the slim red notice box.",
+      "changed": "Grey strip with a red dot → slim red-tinted box with a red border, Retry inside at the right.",
+      "notice": "Same look on the close prompt and Organize, which share this card."
+    },
+    {
+      "id": "EN-4",
+      "surface": "Settings → Specialists",
+      "path": "Settings → Assistant settings → Specialists → the tiers fail to load",
+      "crop": "settings/assistant/specialists#load-failed@820x300+310+100",
+      "headline": "An error inside a setting's card is the slim red notice box, inside that card.",
+      "changed": "The grey box with a dot inside the \"Specialist intelligence tiers\" card becomes the slim red notice box in the same spot.",
+      "notice": "The card around it is a little shorter, because the slim box has less padding."
+    },
+    {
+      "id": "EN-5",
+      "surface": "Settings → Permissions",
+      "path": "Settings → Assistant settings → Permissions → your approvals can't be read",
+      "crop": "settings/assistant/permissions#load-failed@640x230+480+580",
+      "headline": "A \"we don't know why\" error keeps its title, words and Report bug / Diagnose, now in the red notice box.",
+      "changed": "The general kind of error (cause unknown) moves into the red-tinted box: title in normal colour, the explanation under it, and Report bug then Diagnose with the assistant on their own line at the bottom right, as before.",
+      "notice": "The title is a little smaller than today, matching every other notice's title. Whether it should have a title at all is the second question below."
+    },
+    {
+      "id": "EN-6",
+      "surface": "Settings → General → Step guard",
+      "path": "Settings → Assistant settings → General → the step guard fails to load",
+      "crop": "settings/assistant/general#step-guard-failed@640x190+490+610",
+      "headline": "Step guard's hand-made error line with a bare text Retry becomes the shared notice box with a filled Retry.",
+      "changed": "This one was drawn by hand: a small red line with \"Retry\" as plain text inside it. It now uses the shared error box, so Retry is a real filled button at the right.",
+      "notice": "Also moved, with no practice screen to photograph: GitHub's connect error, the voice download failure, and the game connection error (its big red ! is gone).",
+      "risk": "GitHub's button changes from \"Try again\" to \"Retry\" until the first question below is answered."
+    },
+    {
+      "id": "EN-7",
+      "surface": "Your library",
+      "path": "Marketplace → Your library → your plugins fail to load",
+      "crop": "library#load-failed@1440x200+0+0",
+      "headline": "Full screens (Library, Marketplace) get the same red notice box across the top of the list.",
+      "changed": "Grey band with a dot → red-tinted band with a red border, Retry at the right.",
+      "notice": "The Themes tab of the library changes the same way."
+    },
+    {
+      "id": "EN-8",
+      "surface": "Projects → Files",
+      "path": "Projects → a project → Files → a folder the computer won't open",
+      "crop": "projects/files/folder/Locked@1100x200+170+380",
+      "headline": "A project folder that can't be opened shows the red notice box where its files would be.",
+      "changed": "Grey card with a dot → red-tinted card, same words, Retry inside at the right.",
+      "notice": "Same in a project's file search, a chat's files panel and the Office versions list."
+    },
+    {
+      "id": "EN-Q1",
+      "words": true,
+      "surface": "Every error with a retry button",
+      "path": "Anywhere something fails and can be tried again",
+      "headline": "Should the retry button say \"Retry\" or \"Try again\" everywhere?",
+      "today": "The 61 shared error boxes say \"Retry\". The screens you redesigned recently (Games while offline, a failed ticket, Contribute, the close prompt, model providers) say \"Try again\", and your guide is written with \"Try again\".",
+      "problem": "Two words for the same button. Moving GitHub's connect error onto the shared box changed its \"Try again\" to \"Retry\", so the split now shows on one more screen.",
+      "proposal": "Pick one word and every error box uses it; the screens that hand-wrote the other word are changed to match.",
+      "options": [
+        {
+          "id": "try-again",
+          "label": "Try again",
+          "recommended": true,
+          "pros": [
+            "Matches the guide and every screen you approved this month",
+            "Plainer for people who are not technical"
+          ],
+          "cons": [
+            "About 61 places change wording, and the game error's hint (\"you can also hit Retry\") needs rewording"
+          ]
+        },
+        {
+          "id": "retry",
+          "label": "Retry",
+          "pros": [
+            "Shorter, fits narrow menus",
+            "Nothing in the 61 places changes"
+          ],
+          "cons": [
+            "About ten recently approved screens change from \"Try again\" to \"Retry\""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EN-Q2",
+      "words": true,
+      "surface": "Errors whose cause is unknown",
+      "path": "e.g. Settings → Permissions when your approvals can't be read",
+      "headline": "Should \"we don't know why\" errors keep a bold title line, or say it in one sentence?",
+      "today": "These errors have a title (\"Unable to show what you've approved.\") and a sentence under it, then Report bug and Diagnose. Slide EN-5 shows it in the new box with the title kept.",
+      "problem": "Your guide says most notices need no title — one plain sentence says it — and the failed-ticket decision chose no title. The old error design always had one.",
+      "proposal": "Either keep the title as shown, or merge title and sentence into one plain paragraph with no bold line. About 9 places are this kind.",
+      "options": [
+        {
+          "id": "keep-title",
+          "label": "Keep the title",
+          "recommended": true,
+          "pros": [
+            "The headline is easy to spot when the explanation is long",
+            "No wording changes"
+          ],
+          "cons": [
+            "A bold line that most other notices don't have"
+          ]
+        },
+        {
+          "id": "one-sentence",
+          "label": "One plain paragraph",
+          "pros": [
+            "Matches the guide's \"one plain sentence\" and the ticket's failed send"
+          ],
+          "cons": [
+            "Each of the 9 or so messages needs rewording so it still reads well without its headline"
+          ]
+        }
+      ]
+    }
+  ]
+}

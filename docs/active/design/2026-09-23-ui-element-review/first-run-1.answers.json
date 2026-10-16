@@ -1,0 +1,64 @@
+{
+ "deck": "first-run-1",
+ "started": "2026-10-05T01:59:59.163Z",
+ "submitted": "2026-10-05T02:04:21Z",
+ "cur": 6,
+ "answers": {
+  "R-1": {
+   "note": "maybe not stacked. maybe try horizontal icon/brand/tagline, all a bit bigger.",
+   "t": 1791165669080,
+   "v": "other",
+   "seconds": 70,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "we can make this feel more polished.",
+   "t": 1791165689495,
+   "v": "other",
+   "seconds": 20,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "note": "add brand icons for claude/gpt/openrouter if not against the rules. we can make this feel much more polished/premium",
+   "t": 1791165784778,
+   "v": "other",
+   "seconds": 95,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-4": {
+   "note": "i think one of our recent master changes removed this developer mode thing",
+   "t": 1791165803314,
+   "v": "other",
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "other",
+   "t": 1791165832332,
+   "note": "none of these. we can make this a lot better",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "download",
+   "t": 1791165849097,
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "outfit-all",
+   "t": 1791165856804,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

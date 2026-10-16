@@ -1,0 +1,30 @@
+{
+ "deck": "first-run-7",
+ "started": "2026-10-05T02:53:12.712Z",
+ "submitted": "2026-10-05T02:54:32Z",
+ "cur": 2,
+ "answers": {
+  "P7-1": {
+   "note": "",
+   "t": 1791168825155,
+   "v": "yes",
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P7-2": {
+   "v": "yes",
+   "t": 1791168869461,
+   "seconds": 37,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P7-3": {
+   "v": "yes",
+   "t": 1791168871218,
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,308 @@
+[
+  {
+    "name": "dev/pills",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/dev/pills/youcoded-night.png",
+    "ms": 1596,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/pills",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/dev/pills/midnight.png",
+    "ms": 2537,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/pills#strong",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/dev/pills#strong/youcoded-night.png",
+    "ms": 1045,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/pills#strong",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/dev/pills#strong/youcoded.png",
+    "ms": 2671,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions#folder-open-hover",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/assistant/permissions#folder-open-hover/midnight.png",
+    "ms": 2878,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/pills",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/dev/pills/youcoded.png",
+    "ms": 3516,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/about#fold-hover",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/about#fold-hover/youcoded-night.png",
+    "ms": 3922,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/about#fold-hover",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/about#fold-hover/midnight.png",
+    "ms": 4186,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/performance#fold-open-hover",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/performance#fold-open-hover/midnight.png",
+    "ms": 4266,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "dev/pills#strong",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/dev/pills#strong/midnight.png",
+    "ms": 1922,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions#folder-open-hover",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/assistant/permissions#folder-open-hover/youcoded.png",
+    "ms": 5360,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/performance#fold-open-hover",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/performance#fold-open-hover/youcoded.png",
+    "ms": 5965,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#skill-open-hover",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/chat/session-context#skill-open-hover/youcoded.png",
+    "ms": 6199,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/permissions#folder-open-hover",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/assistant/permissions#folder-open-hover/youcoded-night.png",
+    "ms": 6384,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/about#fold-hover",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/about#fold-hover/youcoded.png",
+    "ms": 6618,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#skill-open-hover",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/chat/session-context#skill-open-hover/midnight.png",
+    "ms": 6807,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/session-context#skill-open-hover",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/chat/session-context#skill-open-hover/youcoded-night.png",
+    "ms": 6932,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/performance#fold-open-hover",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/r5-after-1x/settings/performance#fold-open-hover/youcoded-night.png",
+    "ms": 9245,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

@@ -1,0 +1,261 @@
+{
+ "title": "Labels batch — no more spaced-out capitals",
+ "key": "ui-labels-batch",
+ "out": "labels-batch.review.html",
+ "images": "images/labels-batch.review",
+ "runs": {
+  "before": "runs/lb-before",
+  "after": "runs/lb-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Normal case"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight"
+ ],
+ "crops": {
+  "settings__appearance": [
+   "lb",
+   "settings__appearance",
+   "1440x900+0+0"
+  ],
+  "settings__appearance__edit": [
+   "lb",
+   "settings__appearance__edit",
+   "1440x900+0+0"
+  ],
+  "chat__skills": [
+   "lb",
+   "chat__skills",
+   "1440x900+0+0"
+  ],
+  "chat__skills__edit": [
+   "lb",
+   "chat__skills__edit",
+   "1440x900+0+0"
+  ],
+  "chat__sessions": [
+   "lb",
+   "chat__sessions",
+   "1440x900+0+0"
+  ],
+  "chat__specialists": [
+   "lb",
+   "chat__specialists",
+   "1440x900+0+0"
+  ],
+  "chat__model-picker": [
+   "lb",
+   "chat__model-picker",
+   "1440x900+0+0"
+  ],
+  "chat__session-context": [
+   "lb",
+   "chat__session-context",
+   "1440x900+0+0"
+  ],
+  "chat__status-bar": [
+   "lb",
+   "chat__status-bar",
+   "1440x900+0+0"
+  ],
+  "marketplace__detail": [
+   "lb",
+   "marketplace__detail",
+   "1440x900+0+0"
+  ],
+  "projects__switcher": [
+   "lb",
+   "projects__switcher",
+   "1440x900+0+0"
+  ],
+  "projects__context": [
+   "lb",
+   "projects__context",
+   "1440x900+0+0"
+  ],
+  "projects__files__filter": [
+   "lb",
+   "projects__files__filter",
+   "1440x900+0+0"
+  ],
+  "pages__library": [
+   "lb",
+   "pages__library",
+   "1440x900+0+0"
+  ],
+  "pages__page__page-analytics": [
+   "lb",
+   "pages__page__page-analytics",
+   "1440x900+0+0"
+  ],
+  "chat__games__chess__lobby": [
+   "lb",
+   "chat__games__chess__lobby",
+   "1440x900+0+0"
+  ],
+  "welcome__new-session": [
+   "lb",
+   "welcome__new-session",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "LB-1",
+   "surface": "Appearance",
+   "path": "Appearance",
+   "crop": "settings__appearance",
+   "headline": "Appearance: labels in normal case — keep?",
+   "changed": "\"THEMES\", \"LAYOUT\", \"EFFECTS & CHAT\" → Themes, Layout, Effects & chat.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-2",
+   "surface": "Appearance → edit a theme",
+   "path": "Appearance → edit a theme",
+   "crop": "settings__appearance__edit",
+   "headline": "Appearance → edit a theme: labels in normal case — keep?",
+   "changed": "\"GLASS\", \"TERMINAL\" → Glass, Terminal.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-3",
+   "surface": "Skills drawer",
+   "path": "Skills drawer",
+   "crop": "chat__skills",
+   "headline": "Skills drawer: labels in normal case — keep?",
+   "changed": "\"FAVORITES\", \"ALL INSTALLED\" → Favorites, All installed.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-4",
+   "surface": "Editing a skill",
+   "path": "Editing a skill",
+   "crop": "chat__skills__edit",
+   "headline": "Editing a skill: labels in normal case — keep?",
+   "changed": "\"NAME\", \"DESCRIPTION\", \"CATEGORY\" → Name, Description, Category.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-5",
+   "surface": "Sessions menu",
+   "path": "Sessions menu",
+   "crop": "chat__sessions",
+   "headline": "Sessions menu: labels in normal case — keep?",
+   "changed": "\"SESSIONS IN THIS WINDOW\" and the new-session form's \"PROJECT FOLDER\" → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-6",
+   "surface": "Specialists list",
+   "path": "Specialists list",
+   "crop": "chat__specialists",
+   "headline": "Specialists list: labels in normal case — keep?",
+   "changed": "\"NEEDS YOU\", \"WORKING\", \"FINISHED\" → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-7",
+   "surface": "Model picker",
+   "path": "Model picker",
+   "crop": "chat__model-picker",
+   "headline": "Model picker: labels in normal case — keep?",
+   "changed": "Group labels and \"EFFORT LEVEL\" → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-8",
+   "surface": "What your assistant sees",
+   "path": "What your assistant sees",
+   "crop": "chat__session-context",
+   "headline": "What your assistant sees: labels in normal case — keep?",
+   "changed": "\"THIS CHAT\", \"SYSTEM INSTRUCTIONS\", \"SKILLS\", \"TOOLS\"… → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-9",
+   "surface": "Status bar editor",
+   "path": "Status bar editor",
+   "crop": "chat__status-bar",
+   "headline": "Status bar editor: labels in normal case — keep?",
+   "changed": "\"ALWAYS ON\", \"RATE LIMITS\" → Always on, Rate limits.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-10",
+   "surface": "Marketplace details",
+   "path": "Marketplace details",
+   "crop": "marketplace__detail",
+   "headline": "Marketplace details: labels in normal case — keep?",
+   "changed": "\"ABOUT\", \"SETUP\", \"WHAT THIS CAN DO\", status tags → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-11",
+   "surface": "Project switcher",
+   "path": "Project switcher",
+   "crop": "projects__switcher",
+   "headline": "Project switcher: labels in normal case — keep?",
+   "changed": "\"RECENT\" → Recent. (The \"esc\" key chip is a key, so it stays.)",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-12",
+   "surface": "Project → Context",
+   "path": "Project → Context",
+   "crop": "projects__context",
+   "headline": "Project → Context: labels in normal case — keep?",
+   "changed": "\"PROJECT INSTRUCTIONS\", \"MEMORY\"… → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-13",
+   "surface": "Project files filter",
+   "path": "Project files filter",
+   "crop": "projects__files__filter",
+   "headline": "Project files filter: labels in normal case — keep?",
+   "changed": "\"TYPE\", \"SORT BY\", \"VISIBILITY\" → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-14",
+   "surface": "Manage pages",
+   "path": "Manage pages",
+   "crop": "pages__library",
+   "headline": "Manage pages: labels in normal case — keep?",
+   "changed": "\"PERSONAL\" and the project group names → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-15",
+   "surface": "A Page (the page style kit)",
+   "path": "A Page (the page style kit)",
+   "crop": "pages__page__page-analytics",
+   "headline": "A Page (the page style kit): labels in normal case — keep?",
+   "changed": "Table column headers and small labels inside Pages → normal case. This comes from the shared page style, so every Page people have made changes the same way.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-16",
+   "surface": "Games lobby",
+   "path": "Games lobby",
+   "crop": "chat__games__chess__lobby",
+   "headline": "Games lobby: labels in normal case — keep?",
+   "changed": "\"FRIEND REQUESTS\", \"FRIENDS\", leaderboard labels → normal case. (The game boards themselves are exempt and unchanged.)",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  },
+  {
+   "id": "LB-17",
+   "surface": "New session (welcome screen)",
+   "path": "New session (welcome screen)",
+   "crop": "welcome__new-session",
+   "headline": "New session (welcome screen): labels in normal case — keep?",
+   "changed": "\"PROJECT FOLDER\", \"MODEL\" → normal case.",
+   "notice": "Only the labels change: same words, the standard small grey label (12px, no spaced-out capitals). A few feature names written in Title Case everywhere else (\"Skip Permissions\", \"Launch in New Window\", \"Add Device\", \"Show Complete\") were left as they are — see my message."
+  }
+ ]
+}

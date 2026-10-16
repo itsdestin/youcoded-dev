@@ -1,0 +1,79 @@
+{
+ "title": "Provider cards \u2014 one notice with its fix inside",
+ "key": "ui-provider-notices",
+ "out": "provider-notices.review.html",
+ "images": "images/provider-notices.review",
+ "runs": {
+  "before": "runs/notice-before",
+  "after": "runs/notice-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "New"
+ },
+ "themes": [
+  "meadow-mist",
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "unchecked": [
+   "nt",
+   "unchecked",
+   "700x500+460+250"
+  ],
+  "rejected": [
+   "nt",
+   "rejected",
+   "700x500+460+250"
+  ],
+  "verified": [
+   "nt",
+   "verified",
+   "700x500+460+250"
+  ],
+  "blocked": [
+   "nt",
+   "blocked",
+   "700x500+460+150"
+  ]
+ },
+ "steps": [
+  {
+   "id": "PN-1",
+   "surface": "OpenRouter, key not checked",
+   "path": "Assistant settings \u2192 Cloud providers",
+   "crop": "unchecked",
+   "headline": "Key not checked yet: one amber box with Replace key and Try again \u2014 keep?",
+   "changed": "The status line and the separate explanation are now one amber warning box along the bottom of the card. \"Replace key\" (outlined) and \"Try again\" (filled) sit inside it on the right; the card's top-right buttons step aside while it shows.",
+   "notice": "Try again runs the same check the page does when it opens."
+  },
+  {
+   "id": "PN-2",
+   "surface": "OpenRouter, broken key",
+   "path": "Same card with a rejected key",
+   "crop": "rejected",
+   "headline": "Broken key: one red box with the way back in \u2014 keep?",
+   "changed": "No more \"Key not accepted\" word above; the red box says what happened and holds \"API Key\" and \"Sign in with OpenRouter\" (or \"Replace key\" where sign-in isn't available).",
+   "notice": "Expired, refused and wrong-kind keys look the same, each with its own sentence."
+  },
+  {
+   "id": "PN-3",
+   "surface": "OpenRouter, working key",
+   "path": "Same card with a working key",
+   "crop": "verified",
+   "headline": "Working key: no status at all \u2014 keep?",
+   "changed": "\"Connected\" is gone; a working card shows just its name and buttons (My account, Replace key).",
+   "notice": "Nothing to read means nothing is wrong."
+  },
+  {
+   "id": "PN-4",
+   "surface": "ChatGPT, blocked",
+   "path": "ChatGPT card when OpenAI blocks the account",
+   "crop": "blocked",
+   "headline": "ChatGPT blocked: the same red box with Sign out inside \u2014 keep?",
+   "changed": "OpenAI's reason (e.g. \"Your workspace admin has turned off Codex\") is now a red notice box across the card with \"Sign out\" inside it, instead of a red line under the card and Sign out at the top.",
+   "notice": "The \"Your own API keys\" rows keep their plain words; the engine and lobby pills you approved are unchanged."
+  }
+ ]
+}

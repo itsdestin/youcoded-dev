@@ -1,0 +1,53 @@
+{
+ "deck": "close-session-1",
+ "started": "2026-10-09T16:11:11.950Z",
+ "submitted": "2026-10-09T16:14:59Z",
+ "cur": 5,
+ "answers": {
+  "CS-1": {
+   "note": "i think the add a note button should be full width with matching left/right margins. i think theres probably a better way to style pin to top/mark complete. weird for them to fall under the \"tags\" subheader, as they aren't exactly tags?  and its not completely clear if they should share a card",
+   "t": 1791562421513,
+   "v": "other",
+   "seconds": 150,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS-2": {
+   "v": "pick",
+   "pick": "open",
+   "t": 1791562445978,
+   "seconds": 24,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS-3": {
+   "note": "the styling of the note text input box is a bit odd i think",
+   "t": 1791562478164,
+   "v": "other",
+   "seconds": 32,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS-4": {
+   "v": "yes",
+   "t": 1791562486453,
+   "seconds": 8,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS-5": {
+   "v": "yes",
+   "t": 1791562492411,
+   "seconds": 6,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS-6": {
+   "v": "yes",
+   "t": 1791562498542,
+   "seconds": 6,
+   "theme": "creme",
+   "zoom": 1
+  }
+ }
+}

@@ -79,3 +79,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 - [ ] The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that joins late may replay a garbled start. This predates the 2026-10-04 terminal work; fixing it changes the offsets phones replay against, so it needs a phone check. Filed here because the fix is the phone protocol; the memory cost of that buffer is in perf
       `remote` `needs-verify` `P3` `checked 2026-10-04` `performance` → docs/archive/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Keep awake needs its own redesign. Destin, 2026-09-24: "the ui for keep awake needs to be
+      unique and rebuilt though. it should show how much keep awake time is left." Today it is a
+      five-part switch strip with no sign of how long is left.
+      `settings` `all` `decision` `P3` `checked 2026-09-24`

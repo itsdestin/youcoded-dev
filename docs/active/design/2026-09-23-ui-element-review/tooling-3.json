@@ -1,0 +1,50 @@
+{
+  "title": "Review pages: two tall pictures side by side",
+  "key": "tooling-3",
+  "out": "tooling-3.review.html",
+  "images": "images/tooling-3",
+  "runs": {
+    "today": "runs/tooling3-tall/both"
+  },
+  "themes": [
+    "youcoded"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "deck-before": [
+      "deck",
+      "before",
+      "1160x700+140+175"
+    ],
+    "deck-after": [
+      "deck",
+      "after",
+      "1160x700+140+175"
+    ]
+  },
+  "steps": [
+    {
+      "id": "T3-1",
+      "surface": "Review page",
+      "path": "Any review page showing a tall popup before and after (here: Submit a ticket, round 1)",
+      "crop": [
+        {
+          "crop": "deck-before",
+          "label": "Before"
+        },
+        {
+          "crop": "deck-after",
+          "label": "After"
+        }
+      ],
+      "headline": "Review pages now show two tall pictures side by side, shrunk to fit the screen, instead of one under the other.",
+      "changed": "Two tall pictures (taller than wide) are never stacked any more; they shrink until both fit beside each other. Short, wide pictures are laid out exactly as before.",
+      "notice": "You see Today and Proposed whole, next to each other, without scrolling. They are smaller; the + button beside the pictures zooms in.",
+      "risk": "On a small window the pictures can get small enough that fine detail needs the zoom button.",
+      "new": true
+    }
+  ],
+  "labels": {
+    "today": "A review slide of a tall popup"
+  }
+}

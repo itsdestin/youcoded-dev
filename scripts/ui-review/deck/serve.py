@@ -514,7 +514,7 @@ def rewrite_stale_live(html, log=print):
     return html[:m.start(2)] + blob + html[m.end(2):]
 
 
-def serve(spec, port=0, timeout_min=240, log=print, live=True):
+def serve(spec, port=0, timeout_min=1440, log=print, live=True):
     """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served.
 
     `live=False` (--no-live) never builds or serves `/app/*` for this deck's live panes — for
@@ -599,7 +599,7 @@ def serve(spec, port=0, timeout_min=240, log=print, live=True):
     return 2
 
 
-def wait_for_submit(spec, timeout_min=240, poll_s=2, log=print):
+def wait_for_submit(spec, timeout_min=1440, poll_s=2, log=print):
     """Block until the answers file carries `submitted`; 0 with the summary logged, 2 on timeout.
     WHY a second way to wait: `serve` runs as a background command and its exit is the signal —
     but a session that was compacted, restarted or lost that process still needs to know when

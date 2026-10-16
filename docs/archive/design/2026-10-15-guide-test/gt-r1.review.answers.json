@@ -1,0 +1,98 @@
+{
+ "deck": "gt-r1",
+ "started": "2026-10-15T03:54:49.787Z",
+ "submitted": "2026-10-15T04:14:20Z",
+ "cur": 11,
+ "answers": {
+  "A-1": {
+   "v": "skip",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1792036503373
+  },
+  "A-2": {
+   "v": "skip",
+   "seconds": 592,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1792037095505
+  },
+  "B-1": {
+   "v": "yes",
+   "t": 1792037133247,
+   "seconds": 38,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "t": 1792037158727,
+   "seconds": 25,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-3": {
+   "note": "i think we need better full-screen error states for when nothing on the page loads at all",
+   "t": 1792037185730,
+   "v": "other",
+   "seconds": 27,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-1": {
+   "note": "i don't like that \"new\" all have their own cards, but \"earlier\" don't. isnt clear why they wouldnt be the same. also, popups over chat should only be opened from settings or status bar chips. top bar items should either open side panels or fullscreen pages.",
+   "t": 1792037267687,
+   "v": "other",
+   "seconds": 82,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "t": 1792037273432,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-1": {
+   "note": "the new/used toggle is in a bad spot. toggles/buttons should always be flush left, flush right, or the full width of the panel. bare numbers should not be to the right of a right aligned button, as they are here. i also think there should be some kinda divider between the listed options and the \"add another option\" button in the dropdown. i also don't like the bold text direclty to the right of light text. graphics card - geforce for example. graphics card should either be above/below or to the right of the dark text. and too much empty space below the processor/motherboard etc labels, we should always optimize to reduce dead spcae",
+   "t": 1792037478328,
+   "v": "other",
+   "seconds": 205,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "yes",
+   "t": 1792037493683,
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-1": {
+   "v": "other",
+   "t": 1792037562949,
+   "note": "in the last slide, stop import is the main action and could also plausibly be considered constructive. should either have theme button fill or destructive styling.",
+   "seconds": 69,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-2": {
+   "note": "the \"try again\" button should go below the details line. also the done/show my conversations buttons should be styled differently. two light buttons with no primary button is bad",
+   "t": 1792037630005,
+   "v": "other",
+   "seconds": 67,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "E-3": {
+   "note": "buttons below details dropdown, not above",
+   "t": 1792037659298,
+   "v": "other",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

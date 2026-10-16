@@ -1,0 +1,66 @@
+{
+ "title": "An outline around the frame",
+ "key": "ui-frame-outline",
+ "out": "frame-outline.review.html",
+ "images": "images/frame-outline.review",
+ "runs": {
+  "before": "runs/fo-before",
+  "after": "runs/fo-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "With the outline"
+ },
+ "themes": [
+  "midnight",
+  "dark",
+  "light",
+  "meadow-mist"
+ ],
+ "crops": {
+  "chat": [
+   "fo",
+   "chat",
+   "520x340+0+560"
+  ],
+  "games": [
+   "fo",
+   "chat__games",
+   "620x340+700+560"
+  ],
+  "projects": [
+   "fo",
+   "projects",
+   "520x340+0+560"
+  ]
+ },
+ "steps": [
+  {
+   "id": "FO-1",
+   "surface": "Chat",
+   "path": "Any framed theme, chat view",
+   "crop": "chat",
+   "headline": "A thin outline around the chat pane \u2014 keep?",
+   "changed": "A 1px line in the card-outline colour runs all the way around the chat pane where it meets the frame, including the rounded corners. Framed themes only; floating layouts have no frame and don't get it.",
+   "notice": "Most visible on dark themes (Midnight, Dark), where the pane and the frame are close in colour. On Light it's subtle."
+  },
+  {
+   "id": "FO-2",
+   "surface": "Chat with a side pane",
+   "path": "Chat with the games or files drawer open",
+   "crop": "games",
+   "headline": "The side pane gets the same outline \u2014 keep?",
+   "changed": "When the files drawer or games panel is open, it's outlined the same way, so both panes read as two windows in one frame.",
+   "notice": "It sits on the same edge the pane already has; nothing moves or resizes."
+  },
+  {
+   "id": "FO-3",
+   "surface": "Full screens",
+   "path": "Projects (also Pages and the other full screens)",
+   "crop": "projects",
+   "headline": "Full-screen panes get it too \u2014 keep?",
+   "changed": "The big pane on Projects, Pages and the other full screens is outlined the same way.",
+   "notice": "The welcome screen's frame follows the same rule."
+  }
+ ]
+}

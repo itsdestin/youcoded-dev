@@ -1,0 +1,47 @@
+{
+ "deck": "vocab-chips-1",
+ "started": "2026-10-14T20:59:38.754Z",
+ "submitted": "2026-10-14T21:02:54Z",
+ "cur": 4,
+ "answers": {
+  "K-1": {
+   "note": "idk, need to see this next to other similar popups. which would be most consistent? ",
+   "t": 1792011623563,
+   "v": "other",
+   "seconds": 45,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "V-1": {
+   "note": "i want you to propose visual redesigns for voice/quick chips that better align with tags, while still keeping unique elements as needed for hteir unique purposes.",
+   "t": 1792011697758,
+   "v": "other",
+   "seconds": 74,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "V-2": {
+   "v": "other",
+   "t": 1792011757236,
+   "note": "unsure, want to see some of these alternativers",
+   "seconds": 59,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "V-3": {
+   "v": "other",
+   "t": 1792011765471,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "V-4": {
+   "v": "pick",
+   "t": 1792011772927,
+   "pick": "tag-size",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

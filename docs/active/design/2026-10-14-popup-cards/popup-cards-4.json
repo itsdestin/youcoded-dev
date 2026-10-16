@@ -1,0 +1,92 @@
+{
+  "title": "Grey words under the text box; Submit a ticket's buttons on the bottom line",
+  "key": "popup-cards-4",
+  "out": "popup-cards-4.review.html",
+  "images": "images/popup-cards-4",
+  "runs": {
+    "before": "runs/r4/before",
+    "after": "runs/r4/after",
+    "tbefore": "runs/r4t/before",
+    "tafter": "runs/r4t/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Popups",
+      "path": "Rename session · Pick a handle · Settings → Assistant → Cloud → Connect OpenRouter · Projects → Turn on sync",
+      "crop": [
+        {
+          "crop": "chat/rename-session@panel",
+          "label": "Rename"
+        },
+        {
+          "crop": "handle-prompt@panel",
+          "label": "Pick a handle"
+        },
+        {
+          "crop": "settings/assistant/cloud/openrouter/key@panel",
+          "label": "OpenRouter"
+        },
+        {
+          "crop": "projects/turn-on-sync@panel",
+          "label": "Turn on sync"
+        }
+      ],
+      "headline": "All four now read the same way: box name, text box, then grey words under it.",
+      "changed": "Pick a handle's explanation, OpenRouter's three steps and Turn on sync's two paragraphs moved from above the text box to under it, as Rename's line already was. All the words under a text box are now the same lighter grey.",
+      "notice": "OpenRouter's step 3 now says \"Paste the key above\", since the box is now above the steps.",
+      "risk": "On OpenRouter you now see the empty box before the steps that explain where the key comes from."
+    },
+    {
+      "id": "C-2",
+      "runs": [
+        "tbefore",
+        "tafter"
+      ],
+      "labels": {
+        "tbefore": "Before",
+        "tafter": "After"
+      },
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Submit a ticket",
+      "path": "Settings → Development → Submit a ticket (writing it, and reviewing before sending)",
+      "crop": [
+        {
+          "crop": "settings/development/bug-report#filled-all@panel",
+          "label": "Writing"
+        },
+        {
+          "crop": "settings/development/bug-report#review-logs@panel",
+          "label": "Reviewing"
+        }
+      ],
+      "headline": "Submit a ticket's buttons now sit on the popup's pinned bottom line, your pick.",
+      "changed": "Review ticket, Back to draft / Submit, and the Done / Open buttons moved onto the pinned bottom line, like Close session and Update.",
+      "notice": "The pictures look the same before and after: this popup is short enough here that nothing scrolls. On a smaller window, or once the logs are opened, the boxes now scroll while the buttons stay visible at the bottom. Before, the buttons scrolled away with the boxes.",
+      "risk": "No wording changed. If sending fails, the error notice with Try again also stays on the bottom line, where the buttons were.",
+      "highlight": {
+        "box": [
+          0,
+          86,
+          100,
+          14
+        ]
+      }
+    }
+  ]
+}

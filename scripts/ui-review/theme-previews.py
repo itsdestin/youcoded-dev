@@ -14,7 +14,7 @@ Usage (with a workbench serving — scripts/run-workbench.sh):
         [--only slug,slug] [--dry-run]
 
 Writes:
-    <workspace>/youcoded/desktop/src/renderer/themes/builtin/previews/<slug>.png  (4 built-ins)
+    <workspace>/youcoded/desktop/src/renderer/themes/builtin/previews/<slug>.png  (the built-ins)
     <workspace>/wecoded-themes/themes/<slug>/preview.png                          (community)
 
 Nothing here commits, pushes or opens a pull request.
@@ -28,7 +28,7 @@ import tempfile
 
 from PIL import Image
 
-BUILTINS = ["light", "dark", "midnight", "creme"]
+BUILTINS = ["light", "dark", "midnight", "creme", "youcoded", "youcoded-night"]
 # 1000x625 is the preview's own 16:10 shape. A smaller window than a laptop's keeps
 # the short sample conversation filling the picture instead of a third of it; it is
 # shrunk to 800x500 on the way out.
@@ -47,7 +47,8 @@ def main() -> int:
 
     community_dir = os.path.join(a.workspace, "wecoded-themes", "themes")
     builtin_dir = os.path.join(a.workspace, "youcoded", "desktop", "src", "renderer", "themes", "builtin", "previews")
-    community = sorted(d for d in os.listdir(community_dir) if os.path.isfile(os.path.join(community_dir, d, "manifest.json")))
+    # A session worktree often has no wecoded-themes checkout; the built-ins can still be shot.
+    community = sorted(d for d in os.listdir(community_dir) if os.path.isfile(os.path.join(community_dir, d, "manifest.json"))) if os.path.isdir(community_dir) else []
     targets = {s: os.path.join(builtin_dir, f"{s}.png") for s in BUILTINS}
     targets.update({s: os.path.join(community_dir, s, "preview.png") for s in community})
     if a.only:

@@ -1,0 +1,45 @@
+Colour difference (CIE ΔE) between a tag's fill and the surface beside it — today / proposed. Under ~5 is hard to see; under ~10 reads as grey-ish.
+
+popup
+theme               neutral       info          ok            warning       danger        
+cotton-candy-sky    17.3 /  7.4   10.7 / 18.4   11.2 / 32.5   14.3 / 29.8   11.6 / 19.9   
+creme                7.6 /  7.5    9.5 / 15.8    9.7 / 29.4   12.9 / 25.5   12.1 / 20.4   
+dark                 4.5 /  7.8   13.4 / 21.4   15.0 / 37.9   20.6 / 38.8   13.6 / 22.6   
+devils-garden        6.5 /  9.9   22.3 / 35.4   16.3 / 43.2   22.2 / 41.4   13.0 / 21.0   
+golden-sunbreak      9.8 /  8.0   20.0 / 33.2   14.7 / 39.7   20.9 / 41.3   13.6 / 22.9   
+halftone-dimension  13.9 /  8.8   16.0 / 26.2   15.9 / 39.4   22.1 / 41.8   13.8 / 23.2   
+kuromi-dreamer      15.0 /  5.9    6.5 / 11.3   13.0 / 35.7   16.0 / 32.7   10.3 / 18.0   
+light                6.7 /  7.4   11.0 / 18.6   10.2 / 30.1   13.7 / 28.0   12.2 / 20.8   
+meadow-mist         15.8 /  8.2    8.0 / 13.8    8.8 / 28.5   13.0 / 26.9   13.3 / 21.4   
+midnight             5.4 /  7.8   10.9 / 18.5   15.3 / 38.4   21.0 / 40.3   12.9 / 22.0   
+morning-rounds       8.2 /  6.4   12.2 / 21.1   10.3 / 29.8   13.0 / 26.5   11.8 / 20.7   
+strawberry-kitty    16.5 /  6.3    8.8 / 15.6   11.7 / 33.8   14.1 / 28.1   10.9 / 18.4   
+youcoded            15.7 /  8.1   10.4 / 18.4   11.4 / 32.2   14.8 / 29.9   11.8 / 20.3   
+youcoded-night       8.2 /  8.3   12.3 / 19.9   17.4 / 44.7   22.9 / 44.0   12.3 / 21.1   
+
+card
+theme               neutral       info          ok            warning       danger        
+cotton-candy-sky     8.7 /  6.5    9.4 / 16.7   12.0 / 33.8   15.1 / 30.3   11.0 / 18.6   
+creme                3.7 /  6.9    9.0 / 14.9    9.7 / 29.4   12.7 / 25.5   11.5 / 19.7   
+dark                 2.5 /  7.2   12.8 / 20.7   14.6 / 37.6   20.1 / 38.3   13.3 / 22.2   
+devils-garden        3.4 /  9.7   21.9 / 35.1   16.8 / 43.8   21.6 / 41.4   11.7 / 20.5   
+golden-sunbreak      5.0 /  9.1   21.3 / 34.7   16.1 / 41.6   22.2 / 42.4   13.1 / 22.1   
+halftone-dimension   6.6 /  7.8   14.8 / 24.3   16.8 / 42.7   22.8 / 43.9   13.0 / 21.9   
+kuromi-dreamer       6.9 /  7.4    8.4 / 13.4   11.5 / 33.4   14.7 / 31.1   11.2 / 19.1   
+light                3.5 /  7.1   10.7 / 18.1   10.2 / 29.9   13.7 / 27.9   12.1 / 20.5   
+meadow-mist          7.9 /  7.2    7.1 / 12.0    8.4 / 26.9   12.9 / 26.2   12.9 / 20.9   
+midnight             2.9 /  7.6   10.7 / 17.8   15.2 / 38.6   20.4 / 40.0   12.1 / 21.5   
+morning-rounds       4.2 /  6.3   12.5 / 21.1    9.8 / 29.4   12.9 / 26.0   12.2 / 20.7   
+strawberry-kitty     8.6 /  7.0    9.5 / 17.4   11.8 / 32.2   14.7 / 28.4   11.6 / 20.2   
+youcoded             8.0 /  7.2    9.1 / 16.9   12.4 / 34.0   15.5 / 31.4   11.0 / 19.5   
+youcoded-night       3.6 /  8.1   11.1 / 18.2   18.3 / 44.7   23.3 / 43.8   11.9 / 20.2   
+pills         neutral  min  2.5  under-5: 8/28  under-10: 22/28
+pills         info     min  6.5  under-5: 0/28  under-10: 10/28
+pills         ok       min  8.4  under-5: 0/28  under-10: 5/28
+pills         warning  min 12.7  under-5: 0/28  under-10: 0/28
+pills         danger   min 10.3  under-5: 0/28  under-10: 0/28
+pills#strong  neutral  min  5.9  under-5: 0/28  under-10: 28/28
+pills#strong  info     min 11.3  under-5: 0/28  under-10: 0/28
+pills#strong  ok       min 26.9  under-5: 0/28  under-10: 0/28
+pills#strong  warning  min 25.5  under-5: 0/28  under-10: 0/28
+pills#strong  danger   min 18.0  under-5: 0/28  under-10: 0/28

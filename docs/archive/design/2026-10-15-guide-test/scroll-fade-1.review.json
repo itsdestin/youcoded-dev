@@ -1,0 +1,141 @@
+{
+  "title": "One scroll fade everywhere",
+  "key": "scroll-fade-1",
+  "out": "scroll-fade-1.review.html",
+  "images": "images/scroll-fade-1.review",
+  "runs": {
+    "before": "runs/scroll-fade/before",
+    "after": "runs/scroll-fade/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "SF-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Voice → Your words, a long list",
+      "crop": "chat/voice/vocabulary#stress",
+      "highlight": "auto",
+      "headline": "A long word list now fades at the edge where more is hidden.",
+      "changed": "The last visible row fades out instead of being cut off flat.",
+      "notice": "Same fade as every popup's body — now one fade everywhere.",
+      "risk": "—"
+    },
+    {
+      "id": "SF-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Pages",
+      "path": "Pages screen, the list on the left",
+      "crop": "pages",
+      "highlight": "auto",
+      "headline": "The Pages list fades at its bottom edge when it scrolls.",
+      "changed": "\"Release board\" fades out under the list instead of being cut off.",
+      "notice": "Same on the Office home, games, first-run setup and about 60 other places.",
+      "risk": "—"
+    },
+    {
+      "id": "SF-3",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Backup & sync",
+      "path": "Settings → Backup & sync",
+      "crop": "settings/sync",
+      "highlight": "auto",
+      "headline": "Popups: one fade, appearing instantly.",
+      "changed": "The old painted band over the edge is replaced by the content fading, the same look as everywhere else; it no longer eases in.",
+      "notice": "Settings, Resume, the file viewer and project popups also lose an unfaded strip at each side.",
+      "risk": "—"
+    },
+    {
+      "id": "SF-4",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Resume a conversation",
+      "path": "Resume",
+      "crop": "chat/resume",
+      "highlight": "auto",
+      "headline": "Resume: the same one fade.",
+      "changed": "Its own private fade is replaced by the shared one.",
+      "notice": "—",
+      "risk": "—"
+    },
+    {
+      "id": "SF-5",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Sessions menu",
+      "path": "The sessions list from the top bar",
+      "crop": "chat/sessions",
+      "highlight": "panel",
+      "headline": "The sessions menu: the fade now actually shows.",
+      "changed": "These lists had the fade's name but never switched it on; now they fade.",
+      "notice": "—",
+      "risk": "—"
+    },
+    {
+      "id": "SF-6",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Model picker",
+      "path": "The model chip in the status bar",
+      "crop": "chat/model-picker",
+      "highlight": "panel",
+      "headline": "The model picker's list fades in every style.",
+      "changed": "The fuller style of the picker had no fade; now it matches the flat one.",
+      "notice": "—",
+      "risk": "—"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat, Marketplace, Library",
+      "path": "The chat transcript, conversation preview, Marketplace and Library pages",
+      "headline": "Should the chat and the Marketplace/Library pages get a fade too, using a faded copy of the wallpaper?",
+      "today": "These four are the only scrolling areas left without a fade. A normal fade there stops the frosted cards and bubbles from blurring the wallpaper behind them.",
+      "problem": "They break the new \"every scroll area fades\" rule, and the chat transcript is the most-seen scroll area in the app.",
+      "proposal": "Pick one.",
+      "options": [
+        {
+          "id": "build",
+          "label": "Build the wallpaper fade",
+          "pros": [
+            "Every scroll area in the app fades, no exceptions.",
+            "The Minimalist layout's chat already does this, so the look exists."
+          ],
+          "cons": [
+            "More work, and a full-screen effect that has to be checked in every theme."
+          ]
+        },
+        {
+          "id": "exception",
+          "label": "Keep them as exceptions",
+          "recommended": true,
+          "pros": [
+            "No risk to the frosted look; the branch closes sooner — why I recommend it for now.",
+            "The exceptions are written down and guarded."
+          ],
+          "cons": [
+            "Four places still scroll without a fade."
+          ]
+        }
+      ]
+    }
+  ]
+}

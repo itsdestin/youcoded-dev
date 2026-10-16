@@ -132,7 +132,7 @@ Once the mockups hold together, and **before Destin sees any deck**, dispatch th
 `scripts/ui-review/tester-kit.md`, nothing from the workspace) against the workbench with
 the feature's task. Triage its findings (`accepted` / `rejected` / `already handled` on each
 line of `docs/active/reviews/<date>-<feature>-ux-review-1.md`), apply the accepted ones and the
-shorter wording it proposes (checked against the design guide's banned words; a proposal
+shorter wording it proposes (checked against the design guide's Text and numbers rules — sentence case, plain words; a proposal
 that changes meaning goes on the deck for Destin instead), then build the review deck. The
 deck he sees should already be free of the confusion an outsider catches in ten minutes.
 

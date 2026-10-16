@@ -7,7 +7,7 @@ description: Autonomous whole-app UI review — screenshot every YouCoded surfac
 
 Pictures come from `shoot` and click-throughs from `explore` (`scripts/shoot/README.md`);
 decks from `scripts/ui-review/` (README there). This skill is the procedure around them.
-Standard: `docs/active/design/2026-08-25-ui-design-guide.md`. Last full review and its
+Standard: `docs/active/design/2026-10-13-ui-design-guide.md`. Last full review and its
 ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 
 ## 1. Capture (no judgement yet)
@@ -51,7 +51,7 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
   approves by number (visible change · surfaces touched · what users will notice).
 - Copy the contact sheets into `docs/active/design/<date>-ui-audit/` (images
   git-ignored by the existing rule; a README naming the `shoot` command regenerates them).
-- Update the design guide only for rules that changed; new rules get the next `G-n`.
+- Update the design guide only for rules Destin decided; cite the decisions row (`docs/active/design/2026-09-23-ui-element-review/decisions.md`).
 - Roadmap entry: the whole-UI review item (in `docs/roadmap/dev-workspace.md` → `## rigs`) gets an update line pointing at the docs.
 
 ## 4. Improve (when asked, or as the follow-up)
@@ -63,13 +63,15 @@ then a **review page** — never a gallery, never a chat summary:
    (writes `runs/before` and `runs/after`; each side builds its own checkout on a free port).
    A second variant is a second worktree and its own `--after` run.
 2. Write `docs/active/design/<audit>/<phase>-review.json` (copy `phase-c-review-v2.json`): one
-   step per point with `surface`, `path`, `crop` (a `shoot` screen name), `highlight` (`"auto"`
+   step per point with `surface`, `path`, `crop` (a `shoot` screen name; a `screen@WxH+X+Y`
+   close-up; or a LIST of them laid side by side as one picture — several states, a folded +
+   opened pair), `highlight` (`"auto"`
    for before/after; one run defaults to the screen's own panel), and the four texts — **headline** (≤ 25 words, what a
    user sees), **changed** (what was edited, plain words, with `measured` when there is a number),
    **notice** (what changes for users — intended and side effects), **risk** (what could look
    wrong, or is not shown faithfully). The builder refuses jargon (token, primitive, selector,
-   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`). **Anything that has to MOVE — an animation, a drag, a hover — is a LIVE step, not a clip** (`live: {surface, round}` + `variants` with a `candidate` each): panes of the running app Destin can operate himself. Four clip steps were rejected on 2026-08-31 as "just rough to compare"; a 200 ms animation is judged by doing it. `serve` serves the worktree's practice app for the panes itself, under the deck's own `/app/`.
-3. `python3 scripts/ui-review/review-cards.py preview <spec>` and READ `preview/contact.png`, then
+   IPC, prop, reducer, handler, component…), a missing picture, or an unresolved box. **Several designs for one thing are ONE choice step** (`variants: [...]` — one page, pick one; see the README), never a yes/no step per design (`phase-d-mockups.json`). A NEW state with no before (offline, a menu opened) is one picture with `"new": true`, so it reads keep / remove, not build / leave. **Anything that has to MOVE — an animation, a drag, a hover — is a LIVE step, not a clip** (`live: {surface, round}` + `variants` with a `candidate` each): panes of the running app Destin can operate himself. Four clip steps were rejected on 2026-08-31 as "just rough to compare"; a 200 ms animation is judged by doing it. `serve` serves the worktree's practice app for the panes itself, under the deck's own `/app/`.
+3. `python3 scripts/ui-review/review-cards.py preview <spec>` and READ `preview/<spec name>/contact.png`, then
    `python3 scripts/ui-review/review-cards.py serve <spec>` **in the background** (it builds
    first; fix every `missing:` line it prints — a missing picture is a screen that did not show). It never opens a browser. **The address to give Destin is the `[deck] http://127.0.0.1:<port>/<out>.html` line `serve` prints** (also in `<spec>.serve.json` next to the spec) — quote it whole, in chat, as the last line of your turn; the bare port now redirects to the deck, but never guess a URL you have not read. Destin answers
    Yes / No / Other per step with an optional note and presses Submit; the background command

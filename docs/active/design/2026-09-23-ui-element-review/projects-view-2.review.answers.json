@@ -1,0 +1,23 @@
+{
+ "deck": "ui-projects-view-2",
+ "started": "2026-09-29T10:40:19.859Z",
+ "submitted": "2026-09-29T10:42:39Z",
+ "cur": 1,
+ "answers": {
+  "PV2-1": {
+   "v": "yes",
+   "t": 1790678442570,
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PV2-2": {
+   "v": "pick",
+   "pick": "16",
+   "t": 1790678558750,
+   "seconds": 116,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

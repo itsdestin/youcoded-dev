@@ -1,0 +1,20 @@
+{
+  "title": "Skills drawer — taller, with a working handle",
+  "key": "skills-drawer-live",
+  "out": "skills-drawer.live.html",
+  "themes": ["light", "midnight"],
+  "live": { "worktree": "sessions/ui-skills-drawer/youcoded" },
+  "steps": [
+    {
+      "id": "SD-1",
+      "surface": "Chat",
+      "path": "Press the Browse skills button at the left of the message box (or type /)",
+      "headline": "Open the drawer, then drag its handle, click it, and close and reopen it. Does it behave the way you want?",
+      "changed": "It opens at 70% of the window instead of 45%. The bar at the top now works: drag it up or down to any height; click it to jump to full height, click again to come back; drag it most of the way down and let go to close. Every time it opens, it starts at 70% again.",
+      "measured": "70% open height, full height leaves 48 px for the top bar",
+      "notice": "About three rows of skill cards show at once instead of one and a half.",
+      "risk": "It covers more of the conversation while open, and a stray click on the bar makes it jump to full height.",
+      "live": { "app": "default" }
+    }
+  ]
+}

@@ -116,6 +116,16 @@ seen-on is always n/a here.
       (Destin, 2026-09-02)
       `n/a` `in-flight` `P3` `checked 2026-09-02`
 
+- [ ] Tooling that gets sessions to actually use the design guide and meet its standards — a
+      conventions list per part of a screen before building, a design-lint rule for hand-built rows
+      and problem lines, a check that popup titles name the popup, live deck panes that take
+      practice settings, and shoot sizing its browsers by the machine's load (proposals 21–25 in
+      the UI element review's close-session friction notes). Deferred by Destin, 2026-10-12: "we
+      will revisit tooling to actually get sessions to use the guide and meet standards later. for
+      now, we should just continue to focus on current app design and the ui guide."
+      → docs/active/design/2026-09-23-ui-element-review/close-session-friction.md
+      `n/a` `parked` `P3` `checked 2026-10-12`
+
 ## knowledge
 
 - [ ] Session work lost or stranded: 6 ways a session's work or worktree goes missing.
@@ -133,8 +143,8 @@ seen-on is always n/a here.
 - [ ] Roadmap and docs drift: 9 upkeep items.
       (a) nine roadmap items point at reports whose proof no longer matches the code; re-check each;
       (b) a Worker setting can exist only as a test value; wanted: an anchors check on the Worker's
-      optional fields; (c) the design guide has two G-22 rules (renumbered on `session/convo-tab-lag`;
-      close when it merges); (d) recheck the old cleanup handoff's remaining unused-code ideas;
+      optional fields; (c) closed: the old guide's second G-22 is now G-29 (`session/convo-tab-lag`
+      merged, PR #155); (d) recheck the old cleanup handoff's remaining unused-code ideas;
       (e) the roadmap checker reads whatever sub-repo copy is on disk, so stale checkouts keep fixed
       bugs "confirmed"; (f) every branch filing a roadmap item conflicts on the ROADMAP.md table;
       (g) two 2026-07-28 guardrails unshipped: spec counts undated, and `run-dev.sh --list` shows

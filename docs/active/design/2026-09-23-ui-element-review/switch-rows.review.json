@@ -1,0 +1,107 @@
+{
+ "title": "Switch rows — title and switch on one line, explanation full width below",
+ "key": "ui-switch-rows",
+ "out": "switch-rows.review.html",
+ "images": "images/switch-rows.review",
+ "runs": {
+  "before": "runs/sw-before",
+  "after": "runs/sw-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Proposed"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight"
+ ],
+ "crops": {
+  "settings__help": [
+   "sw",
+   "settings__help",
+   "468x636+486+132"
+  ],
+  "settings__assistant__permissions": [
+   "sw",
+   "settings__assistant__permissions",
+   "868x748+286+76"
+  ],
+  "settings__assistant__local__engine-advanced": [
+   "sw",
+   "settings__assistant__local__engine-advanced",
+   "868x748+286+76"
+  ],
+  "settings__assistant__local__model-settings": [
+   "sw",
+   "settings__assistant__local__model-settings",
+   "468x520+486+190"
+  ],
+  "settings__buddy": [
+   "sw",
+   "settings__buddy",
+   "388x258+526+321"
+  ],
+  "settings__sync": [
+   "sw",
+   "settings__sync",
+   "468x636+486+132"
+  ]
+ },
+ "steps": [
+  {
+   "id": "SW-1",
+   "surface": "Help & feedback",
+   "path": "Settings → Help & feedback",
+   "crop": "settings__help",
+   "headline": "Help & feedback: switch on the title line, explanation below — better?",
+   "changed": "\"Tips for new users\": the switch stays on the title's line and \"Hints as things come up\" moves underneath.",
+   "notice": "A short explanation now takes a line of its own, so the row is a little taller."
+  },
+  {
+   "id": "SW-2",
+   "surface": "Permissions",
+   "path": "Settings → Assistant settings → Permissions",
+   "crop": "settings__assistant__permissions",
+   "headline": "Permissions: switch on the title line, explanation below — better?",
+   "changed": "\"Enable Skip Permissions Mode?\": the long explanation now runs the full width of the card under the title and switch, instead of squeezing beside the switch.",
+   "notice": "Only switch rows change."
+  },
+  {
+   "id": "SW-3",
+   "surface": "Local models → Advanced",
+   "path": "Settings → Assistant settings → Local models → Advanced",
+   "crop": "settings__assistant__local__engine-advanced",
+   "headline": "Local models → Advanced: switch on the title line, explanation below — better?",
+   "changed": "\"Speculative decoding\" and \"Compress context memory\": switch on the title line, explanation underneath. The other rows (a text box, a Set up button, the engine build) are not switches and keep their look.",
+   "notice": "Rows with a button or a box as their control are unchanged."
+  },
+  {
+   "id": "SW-4",
+   "surface": "A model's settings",
+   "path": "Local models → a model → Settings",
+   "crop": "settings__assistant__local__model-settings",
+   "headline": "A model's settings: switch on the title line, explanation below — better?",
+   "changed": "\"Keep loaded\": switch on the title line, explanation full width underneath.",
+   "notice": "Only switch rows change."
+  },
+  {
+   "id": "SW-5",
+   "surface": "Buddy Floater",
+   "path": "Settings → Buddy Floater",
+   "crop": "settings__buddy",
+   "headline": "Buddy Floater: switch on the title line, explanation below — better?",
+   "changed": "\"Show buddy floater\": the explanation runs full width under the title and switch.",
+   "notice": "Only switch rows change."
+  },
+  {
+   "id": "SW-6",
+   "surface": "Backup & Sync",
+   "path": "Settings → Backup & Sync",
+   "crop": "settings__sync",
+   "headline": "Backup & Sync: switch on the title line, explanation below — better?",
+   "changed": "\"Keep a second copy\": the switch stays by the title, \"A second copy on top of GitHub — it stays primary.\" runs underneath. (The main backup card's own layout is custom and unchanged.)",
+   "notice": "Only switch rows change."
+  }
+ ]
+}

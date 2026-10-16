@@ -1,0 +1,45 @@
+{
+  "title": "Appearance — regrouped, theme editor removed",
+  "key": "appearance-review",
+  "out": "appearance.review.html",
+  "images": "images/appearance",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light"],
+  "crops": {
+    "ap-top": ["ap", "top", "420x330+510+200"],
+    "ap-mid": ["ap", "mid", "420x540+510+200"],
+    "ap-bottom": ["ap", "bottom", "420x540+510+200"]
+  },
+  "steps": [
+    {
+      "id": "AR-1",
+      "surface": "Appearance",
+      "path": "Settings → Appearance → a theme you built (Meadow Mist here)",
+      "crop": "ap-top",
+      "headline": "The pencil on your own themes is now a share icon that publishes the theme; the separate edit menu is gone.",
+      "changed": "The pencil opened \"Edit: <theme>\" (accent, roundness, particles, glass and terminal sliders, Publish). That menu is removed. The share icon opens the same Publish to Marketplace screen directly.",
+      "notice": "Only one place changes how themes look: the cards below. Your own themes are still marked by having the extra icon.",
+      "risk": "A theme's own accent colour, built-in roundness and glass can no longer be changed by hand; that now means asking Claude. The every-theme settings below still override them."
+    },
+    {
+      "id": "AR-2",
+      "surface": "Appearance",
+      "path": "Settings → Appearance, scrolled a little",
+      "crop": "ap-mid",
+      "headline": "\"Additional customizations\" is gone: Window and Chat are labelled cards, always open.",
+      "changed": "Window holds Layout and Roundness. Chat holds Message bubbles and Message timestamps. Nothing is folded.",
+      "notice": "Every setting is visible under a label that says what it changes.",
+      "risk": "The screen is longer, so the settings at the bottom take more scrolling to reach."
+    },
+    {
+      "id": "AR-3",
+      "surface": "Appearance",
+      "path": "Settings → Appearance, at the bottom",
+      "crop": "ap-bottom",
+      "headline": "Glass & effects holds glass, the new Particles choice and Reduce visual effects.",
+      "changed": "Particles (Auto, None, Rain, Dust, Ember, Snow) now work on every theme, like glass. Reduce visual effects moved in beside the effects it switches off. Reset all to Auto appears under the card once anything is changed.",
+      "notice": "You can add snow or turn off a theme's particles without editing the theme.",
+      "risk": "Like glass, particles only show through themes with a wallpaper; on plain themes the line under Particles says it has no effect."
+    }
+  ]
+}

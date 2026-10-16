@@ -1,0 +1,131 @@
+{
+ "deck": "submit-ticket-1",
+ "started": "2026-10-07T23:06:53.902Z",
+ "submitted": "2026-10-07T23:14:55Z",
+ "cur": 1,
+ "answers": {
+  "ST-1": {
+   "v": "other",
+   "seconds": 66,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791414892825,
+   "note": "the checkbox ux is still odd. "
+  },
+  "ST-2": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791414894431
+  },
+  "ST-C1": {
+   "v": "pick",
+   "pick": "folded",
+   "t": 1791414493984,
+   "seconds": 43,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-3": {
+   "note": "these cards should be nested inside the exapndale optional ai help card. we made the same mistake in our new about page i think. an expandable card should alway contain expanded content within itself, not open a new separate card below",
+   "t": 1791414561194,
+   "v": "other",
+   "seconds": 67,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-4": {
+   "v": "yes",
+   "t": 1791414572426,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-5": {
+   "v": "yes",
+   "t": 1791414584046,
+   "seconds": 12,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-6": {
+   "v": "yes",
+   "t": 1791414589032,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-7": {
+   "note": "what does that even mean",
+   "t": 1791414611966,
+   "v": "other",
+   "seconds": 23,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-8": {
+   "note": "don't like either of these. feel like there may be a better happy medium",
+   "t": 1791414646292,
+   "v": "other",
+   "seconds": 34,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-9": {
+   "v": "other",
+   "t": 1791414675643,
+   "note": "same as previous. don'y like this. ",
+   "seconds": 29,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-10": {
+   "v": "yes",
+   "t": 1791414680899,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-11": {
+   "note": "unclear what that means",
+   "t": 1791414695295,
+   "v": "other",
+   "seconds": 14,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-12": {
+   "v": "other",
+   "t": 1791414711126,
+   "note": "this looks weird",
+   "seconds": 16,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-13": {
+   "v": "other",
+   "t": 1791414783239,
+   "note": "this is just really weird ui/ux design. i can open this popup from settings, then click \"error details and version\". but i didnt necessarily come from an error message? this is weird. it shouldn't fill text in the description, but the error details checkbox should explain itself when it applies",
+   "seconds": 72,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-14": {
+   "v": "yes",
+   "t": 1791414799070,
+   "seconds": 16,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST-Q1": {
+   "note": "we should always send version. the box should just be for error details.",
+   "t": 1791414846615,
+   "v": "pick",
+   "seconds": 48,
+   "theme": "youcoded",
+   "zoom": 1,
+   "pick": "show"
+  }
+ }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "First-run setup — spinner, line under the bar, bigger logo",
+  "key": "first-run-6",
+  "out": "first-run-6.review.html",
+  "images": "images/first-run-6",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {"install": ["x", "install", "1440x900+0+0"], "signin": ["x", "signin", "1440x900+0+0"]},
+  "steps": [
+    {
+      "id": "P6-1", "surface": "First-run setup", "path": "The 'getting things ready' screen",
+      "crop": "install",
+      "headline": "The app's usual spinner beside the black heading above the bar; the grey line moved below the bar.",
+      "changed": "The spinner is the same one the app uses everywhere (its usual grey colours, no purple), just sized to the heading. 'Setting up the tools your assistant needs…' now sits under the bar.",
+      "notice": "Heading, bar, explanation, top to bottom.",
+      "risk": "The braille spinner's dots sit slightly high in their space, as they do everywhere; at this size it shows a little more."
+    },
+    {
+      "id": "P6-2", "surface": "First-run setup", "path": "The sign-in step (and every setup step)",
+      "crop": "signin",
+      "headline": "The logo is bigger: icon 112 → 144px, name and tagline with it. I kept the icon version, since no other was picked.",
+      "changed": "Same fixed spot above the middle; everything below starts the same distance under it.",
+      "notice": "The brand is the first and biggest thing on every setup screen.",
+      "risk": "If you meant a no-icon version bigger, say which one in the note."
+    }
+  ]
+}

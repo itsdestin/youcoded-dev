@@ -1,0 +1,30 @@
+{
+ "deck": "session-details-3",
+ "started": "2026-10-04T07:29:16.507Z",
+ "submitted": "2026-10-04T07:29:59Z",
+ "cur": 2,
+ "answers": {
+  "SD3-1": {
+   "note": "no the old tag icon was better. the alignement between the text and various icons has just been off",
+   "t": 1791098989828,
+   "v": "other",
+   "seconds": 33,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD3-2": {
+   "v": "other",
+   "t": 1791098996785,
+   "seconds": 7,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD3-3": {
+   "v": "other",
+   "t": 1791098998310,
+   "seconds": 2,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

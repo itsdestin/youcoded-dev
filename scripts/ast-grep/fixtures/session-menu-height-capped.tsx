@@ -1,5 +1,5 @@
 // Violation fixture for session-menu-height-capped.
-// Missing the second scroll-fade treatment (className="scroll-fade flex-1 py-1").
+// Missing the second list's scroll treatment (className="scroll-mask relative overflow-y-auto overflow-x-hidden min-h-0 scrollbar-none flex-1 py-1").
 function SessionMenu() {
   const style = {
     height: undefined,
@@ -7,5 +7,5 @@ function SessionMenu() {
   };
   const other = { maxHeight: 'var(--session-menu-available-height)' };
   const offset = 'calc(100vh - 8px - var(--vvp-offset, 0px))';
-  return <div className="scroll-fade flex-1" />;
+  return <div className="scroll-mask relative overflow-y-auto overflow-x-hidden min-h-0 scrollbar-none flex-1" />;
 }

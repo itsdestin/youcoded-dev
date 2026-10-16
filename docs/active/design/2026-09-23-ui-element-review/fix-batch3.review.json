@@ -1,0 +1,115 @@
+{
+ "title": "Fix batch \u2014 error lines, buttons, notices",
+ "key": "ui-fix-batch3",
+ "out": "fix-batch3.review.html",
+ "images": "images/fix-batch3.review",
+ "runs": {
+  "before": "runs/fb3-before",
+  "after": "runs/fb3-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Fixed"
+ },
+ "themes": [
+  "meadow-mist",
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "fe-red": [
+   "fb",
+   "fe-red",
+   "640x120+490+520"
+  ],
+  "fe-icon": [
+   "fb",
+   "fe-icon",
+   "640x120+490+520"
+  ],
+  "fe-box": [
+   "fb",
+   "fe-box",
+   "640x120+490+520"
+  ],
+  "tags": [
+   "fb",
+   "chat__tags__manage",
+   "1440x900+0+0"
+  ],
+  "lobby": [
+   "fb",
+   "chat__games__chess__lobby",
+   "1440x900+0+0"
+  ],
+  "fast": [
+   "fb",
+   "chat__model-picker__fast-mode",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "FB-1",
+   "surface": "Error lines (about 40 places)",
+   "path": "Example: Assistant settings \u2192 Cloud providers, a rejected OpenRouter key",
+   "headline": "How should a short error line look?",
+   "variants": [
+    {
+     "id": "red",
+     "label": "Today: red text",
+     "crop": "fe-red",
+     "summary": "The sentence itself is red. The guide says never red body text, so today's look breaks that rule."
+    },
+    {
+     "id": "icon",
+     "label": "Grey text, red icon",
+     "crop": "fe-icon",
+     "summary": "Normal grey text with a small red warning icon in front. Only the icon carries the colour; it takes no more space than today."
+    },
+    {
+     "id": "box",
+     "label": "Small tinted box",
+     "crop": "fe-box",
+     "summary": "The same text in a small red-tinted box: a mini version of the notice box used everywhere else. Most noticeable, and it takes a little more space."
+    }
+   ],
+   "notice": "Every short error line in the app (sign-in failures, a request that didn't go through, a save that failed\u2026) now goes through this one piece, so your pick changes all of them at once. Bigger notices keep the full notice box."
+  },
+  {
+   "id": "FB-2",
+   "surface": "Manage tags",
+   "path": "Tag menu \u2192 Manage tags",
+   "crop": "tags",
+   "headline": "Archive and Delete as outlined buttons \u2014 keep?",
+   "changed": "Archive and Delete were plain text beside each tag; now they're outlined buttons. Delete's confirm step uses the red button, like other deletes.",
+   "notice": "Each tag row gets a little wider on the right; nothing else moves.",
+   "highlight": {
+    "box": [
+     52,
+     49,
+     12,
+     17
+    ]
+   }
+  },
+  {
+   "id": "FB-3",
+   "surface": "Games lobby",
+   "path": "Games \u2192 Chess (signed in)",
+   "crop": "lobby",
+   "headline": "Go incognito as an outlined button \u2014 keep?",
+   "changed": "\"Go Incognito\" was plain text; now it's an outlined button reading \"Go incognito\". The lobby's other small actions (Dismiss, Cancel, Retry) change the same way.",
+   "notice": "The friends-panel redesign you asked for is still to come; this only fixes today's buttons."
+  },
+  {
+   "id": "FB-4",
+   "surface": "Fast mode confirmation",
+   "path": "Model menu \u2192 Fast mode switch",
+   "crop": "fast",
+   "headline": "The billing warning as the standard notice box \u2014 keep?",
+   "changed": "The billing box (\"Billed per \u2026\") was hand-made with an orange title and a \u26a0 character; it's now the app's standard warning notice box, same text.",
+   "notice": "The orange \"Enable & accept charges\" button stays as it is: it's deliberately a billing-warning colour."
+  }
+ ]
+}

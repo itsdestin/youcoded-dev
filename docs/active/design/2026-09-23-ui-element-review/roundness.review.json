@@ -1,0 +1,79 @@
+{
+  "title": "Roundness — the whole app at four levels",
+  "key": "ui-element-review-roundness",
+  "out": "roundness.review.html",
+  "images": "images/roundness.review",
+  "runs": {
+    "today": "runs/shape-levels"
+  },
+  "labels": {
+    "today": "Level"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "sharp": [
+      "levels",
+      "sharp",
+      "1100x776+0+0"
+    ],
+    "soft": [
+      "levels",
+      "soft",
+      "1100x776+0+0"
+    ],
+    "round": [
+      "levels",
+      "round",
+      "1100x776+0+0"
+    ],
+    "pill": [
+      "levels",
+      "pill",
+      "1100x776+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Everywhere",
+      "path": "Projects, the Themes popup, Resume Session and first-run sign-in, together",
+      "headline": "Buttons now follow the theme's roundness. Which level should the built-in themes use?",
+      "notice": "Cards, popups, buttons, tabs, filters and search boxes all move together at each level, so nothing is fixed as a pill any more. Community themes set their own level; this picks the default look.",
+      "risk": "Each picture is scaled down to fit four screens in one frame; use the zoom buttons to look closely.",
+      "variants": [
+        {
+          "id": "sharp",
+          "label": "Sharp",
+          "crop": "sharp",
+          "summary": "Barely rounded. Buttons, tabs and search boxes 4px; cards and popups 6–10px.",
+          "measured": "4px buttons"
+        },
+        {
+          "id": "soft",
+          "label": "Soft",
+          "crop": "soft",
+          "summary": "Today's built-in corner sizes, but buttons, tabs and search boxes all share one 8px corner — no pills.",
+          "measured": "8px buttons"
+        },
+        {
+          "id": "round",
+          "label": "Round",
+          "crop": "round",
+          "summary": "Noticeably rounder. Buttons, tabs and search boxes 14px; cards and popups 18–24px.",
+          "measured": "14px buttons"
+        },
+        {
+          "id": "pill",
+          "label": "Pill",
+          "crop": "pill",
+          "summary": "Every button, tab, filter and search box fully rounded; cards and popups 24–32px, like Halftone.",
+          "measured": "9999px buttons"
+        }
+      ]
+    }
+  ]
+}

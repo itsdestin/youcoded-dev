@@ -1,0 +1,84 @@
+{
+ "deck": "error-notices-1",
+ "started": "2026-10-12T13:49:53.508Z",
+ "submitted": "2026-10-12T14:02:30Z",
+ "cur": 9,
+ "answers": {
+  "EN-1": {
+   "note": "better, but the spacing is very odd",
+   "t": 1791813032010,
+   "v": "other",
+   "seconds": 38,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-2": {
+   "v": "yes",
+   "t": 1791813055957,
+   "note": "spacing on left/right margins might be a bit odd",
+   "seconds": 24,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-3": {
+   "note": "should still keep the tags section header",
+   "t": 1791813682846,
+   "v": "other",
+   "seconds": 627,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-4": {
+   "v": "yes",
+   "t": 1791813692268,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-5": {
+   "v": "yes",
+   "t": 1791813699960,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-6": {
+   "v": "yes",
+   "t": 1791813702714,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-7": {
+   "v": "yes",
+   "t": 1791813707587,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-8": {
+   "v": "other",
+   "t": 1791813722774,
+   "note": "full width",
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-Q1": {
+   "v": "pick",
+   "pick": "try-again",
+   "t": 1791813734403,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "EN-Q2": {
+   "v": "pick",
+   "pick": "keep-title",
+   "t": 1791813749627,
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

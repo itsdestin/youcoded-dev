@@ -1,0 +1,104 @@
+[
+  {
+    "name": "pages/library#load-failed",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/screen-error/after/pages/library#load-failed/meadow-mist.png",
+    "ms": 3505,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "library#load-failed",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/screen-error/after/library#load-failed/meadow-mist.png",
+    "ms": 4238,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "library#load-failed",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/screen-error/after/library#load-failed/halftone-dimension.png",
+    "ms": 4416,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/library#load-failed",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/screen-error/after/pages/library#load-failed/halftone-dimension.png",
+    "ms": 4651,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace#load-failed",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/screen-error/after/marketplace#load-failed/meadow-mist.png",
+    "ms": 4752,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "marketplace#load-failed",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/screen-error/after/marketplace#load-failed/halftone-dimension.png",
+    "ms": 4906,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  }
+]

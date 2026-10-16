@@ -1,0 +1,85 @@
+{
+  "title": "Close session follow-ups, round 2: Update available, Unsaved changes, and Enter behind a popup",
+  "key": "close-session-5",
+  "out": "close-session-5.review.html",
+  "images": "images/close-session-5",
+  "runs": {
+    "before": "runs/cs5/before",
+    "after": "runs/cs5/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Proposed"
+  },
+  "themes": [
+    "halftone-dimension",
+    "creme",
+    "youcoded",
+    "youcoded-night"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "CS5-1",
+      "surface": "Update available",
+      "path": "Status bar → version chip, when an update is waiting",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/update@640x380+400+260",
+      "highlight": "panel",
+      "headline": "Update available now uses the app's labelled cards, with a full-width Update button.",
+      "changed": "The notes sit in a card under their version and date; \"Get beta builds\" sits in its own card under an \"Updates\" label (it was a boxed row under a ruled line); Update now spans the popup. References: Session details' \"In your lists\" card, About's reading cards, the same switch in Help & feedback.",
+      "notice": "When the notes can't load, it is now the red notice box with Open on GitHub; if a download fails, \"Open in browser instead\" is an outlined button, not underlined text. The notes were nearly invisible on dark themes like Halftone Dimension — they now use the normal text colour."
+    },
+    {
+      "id": "CS5-2",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit YouCoded, or close its last window, while a file you edited in YouCoded is unsaved",
+      "runs": [
+        "after"
+      ],
+      "headline": "You see this when you quit with an unsaved file open in YouCoded's viewer or Office. Which file list fits?",
+      "variants": [
+        {
+          "id": "boxes",
+          "label": "A box per file",
+          "crop": "app/unsaved-before-quit@380x520+530+190",
+          "summary": "Each file is its own box inside the card, its buttons at the right — the Games friends list's look. Easiest to tell files apart; a little taller."
+        },
+        {
+          "id": "rows",
+          "label": "Rows in one box",
+          "crop": "app/unsaved-before-quit#rows@380x520+530+190",
+          "summary": "The files are plain rows inside one box — Backup & sync's saved-devices list. Calmer and shorter; files are told apart by spacing only."
+        }
+      ]
+    },
+    {
+      "id": "CS5-3",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit with unsaved files → Discard and quit",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "app/unsaved-before-quit/discard@380x520+530+190",
+      "highlight": "panel",
+      "headline": "The intro and the list now sit in one card, errors are small red boxes, and the buttons stack full width.",
+      "changed": "Nothing sits bare on the popup any more: the \"Save them, then quit again\" line and the files are in one card. A file's error is the small red notice box, not loose text. The two buttons stack full width with the main one on top — red Discard when you are confirming — as in every narrow popup.",
+      "notice": "The see-through fade at the bottom of the list is kept."
+    },
+    {
+      "id": "CS5-4",
+      "surface": "Chat, with a popup open",
+      "path": "Any popup open over the chat (Session details, Close session) while a permission or question card waits",
+      "words": true,
+      "headline": "With a popup open, Enter now belongs to the popup: it no longer answers the chat's card behind it, or sends your draft.",
+      "changed": "While any popup is open, the chat's permission, question and Claude Code cards ignore Enter, the arrow keys and the number keys, and the message box ignores Enter. Before, Enter on an empty spot in a popup could answer \"Yes\" on the card behind it, or send the message you were writing — and the popup's own Enter (Close session) then never ran. With no popup open, nothing changes: Enter still sends your message and answers the card. Approved in chat on 2026-10-12; three tests fail on the old code. Not shown live: the practice app has no waiting card unless it is started with a practice setting a live pane can't pass.",
+      "notice": "Close the popup first, then press Enter to answer a card.",
+      "yes": "Yes, keep it",
+      "no": "No, revert it"
+    }
+  ]
+}

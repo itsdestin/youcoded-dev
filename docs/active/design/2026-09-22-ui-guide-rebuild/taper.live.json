@@ -1,0 +1,76 @@
+{
+  "title": "Tune the Settings line and its scroll fade",
+  "key": "ui-guide-taper-live-1",
+  "out": "taper.live.html",
+  "stage": "design",
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 700
+  },
+  "steps": [
+    {
+      "id": "T-1",
+      "surface": "Settings",
+      "path": "Scroll inside Settings to test; scroll outside the pane for other versions",
+      "hint": "Scroll down and back up inside each Settings drawer; then scroll this comparison area outside the pane for the next version.",
+      "headline": "Scroll each drawer down and back up before choosing the title line.",
+      "risk": "All three keep today's animated top scroll fade. This picks the line's ends, not the final guide rule or the fade treatment.",
+      "live": {"surface": "settings-taper-calibration", "round": 1},
+      "variants": [
+        {
+          "id": "quick",
+          "label": "Quick ends",
+          "candidate": "quick",
+          "summary": "Reaches a solid line quickly, then stays steady through most of the header.",
+          "risk": "Could read as nearly full-width again."
+        },
+        {
+          "id": "balanced",
+          "label": "Moderate ends",
+          "candidate": "balanced",
+          "summary": "A moderate fade at both ends, between the quick and gradual versions.",
+          "risk": "Still may clash with the fade that appears above scrolled content."
+        },
+        {
+          "id": "gradual",
+          "label": "Gradual ends",
+          "candidate": "gradual",
+          "summary": "Fades toward the middle for longer; the solid center is shorter.",
+          "risk": "May disappear on patterned or pale themes."
+        }
+      ]
+    },
+    {
+      "id": "T-2",
+      "surface": "Settings",
+      "path": "Scroll inside Settings to test; scroll outside the pane for other versions",
+      "hint": "Scroll down and back up inside each Settings drawer; then scroll this comparison area outside the pane for the next version.",
+      "headline": "Scroll each drawer down and back up. Which top-edge motion feels right?",
+      "risk": "Each pane uses the same moderate line for a fair fade comparison. Your line choice above will be combined with this choice in a later check. The bottom fade is unchanged.",
+      "live": {"surface": "settings-taper-calibration", "round": 2},
+      "variants": [
+        {
+          "id": "current",
+          "label": "Current fade",
+          "candidate": "current",
+          "summary": "A full-strength top gradient appears in 150ms once content moves under the header.",
+          "risk": "Its full-width colour band may fight the tapered line, especially on wallpapers."
+        },
+        {
+          "id": "quiet",
+          "label": "Softer fade",
+          "candidate": "quiet",
+          "summary": "The same top gradient at 45% strength, arriving and leaving over 220ms.",
+          "risk": "Could be too subtle as a clue that more settings are above."
+        },
+        {
+          "id": "none",
+          "label": "No top fade",
+          "candidate": "none",
+          "summary": "Only the title line marks the top. The bottom keeps its current gradient.",
+          "risk": "Without the top clue, hidden settings above may be less obvious."
+        }
+      ]
+    }
+  ]
+}

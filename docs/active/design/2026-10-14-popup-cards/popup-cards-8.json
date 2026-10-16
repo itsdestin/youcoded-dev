@@ -1,0 +1,150 @@
+{
+  "title": "Status bar widgets, error details, theme previews",
+  "key": "popup-cards-8",
+  "out": "popup-cards-8.review.html",
+  "images": "images/popup-cards-8",
+  "runs": {
+    "wb": "runs/r7/before",
+    "wa": "runs/r7/after",
+    "cb": "runs/r8/before",
+    "ca": "runs/r8/after",
+    "mb": "runs/r9/before",
+    "ma": "runs/r9/after"
+  },
+  "steps": [
+    {
+      "id": "W-1",
+      "runs": [
+        "wb",
+        "wa"
+      ],
+      "labels": {
+        "wb": "Before",
+        "wa": "After"
+      },
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Status bar widgets",
+      "path": "Chat → right-click the status bar → Status bar widgets",
+      "crop": "chat/status-bar@panel",
+      "headline": "Status bar widgets: the line under the title is gone; an \"Always on\" section opens the popup.",
+      "changed": "Model, Permissions, Tags & note and Announcements each get their own row with a one-line hint, and a switch that is on, greyed and can't be turned off.",
+      "notice": "The choices you can change follow below it, as before.",
+      "risk": "The popup is one card taller, so the lower sections need a little more scrolling."
+    },
+    {
+      "id": "D-1",
+      "runs": [
+        "cb",
+        "ca"
+      ],
+      "labels": {
+        "cb": "Before",
+        "ca": "After"
+      },
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Close session",
+      "path": "Close a conversation whose tags and note can't be read",
+      "crop": "chat/close-session#meta-unreadable@panel",
+      "headline": "\"Details\" now sits inside the red error box it belongs to.",
+      "changed": "The fold with the error's own words moved into the bottom of the red box, under Try again. The shared error box can now do this anywhere.",
+      "notice": "Same words; Details still opens to show the raw message.",
+      "risk": "Eight other places still show Details under their error box (a broken part of the app, a failed install, voice typing, the games lobby, Git review, a file that won't open, contributing). The question below asks about them."
+    },
+    {
+      "id": "M-1",
+      "runs": [
+        "mb",
+        "ma"
+      ],
+      "labels": {
+        "mb": "Before",
+        "ma": "After"
+      },
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Marketplace → Themes",
+      "path": "Marketplace → Themes tab",
+      "crop": "marketplace/themes@680x200+10+165",
+      "headline": "Theme previews now fit their cards: the picture's corners follow the card's.",
+      "changed": "The picture sat inside the card with small corners while the card's were large, so the rim around it was thin on the sides and thick at the corners. Its top corners now match the card's curve, keeping one even rim.",
+      "notice": "Zoom in on a card's top corners to compare.",
+      "risk": "The larger corners trim the very edge of the screenshot's own window buttons (the gear at top-left and the ✕ at top-right), most on Halftone."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Error boxes",
+      "path": "Everywhere an error has a Details fold",
+      "headline": "Move Details inside the error box everywhere, as on Close session?",
+      "today": "Close session now folds Details inside its red box. Eight other errors put Details under the box, as a separate box.",
+      "problem": "Two looks for the same thing.",
+      "proposal": "Move Details inside the box in all eight, using the same shared piece.",
+      "options": [
+        {
+          "id": "everywhere",
+          "label": "Everywhere",
+          "recommended": true,
+          "pros": [
+            "Every error looks the same",
+            "The raw message clearly belongs to its error"
+          ],
+          "cons": [
+            "Eight screens change at once"
+          ]
+        },
+        {
+          "id": "close-only",
+          "label": "Close session only",
+          "pros": [
+            "Nothing else changes"
+          ],
+          "cons": [
+            "Two looks for the same thing remain"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Short popups",
+      "path": "Remove project (folder missing), Switch model, Remove backup",
+      "headline": "Box the remaining one-sentence popups too, like the take-over popups?",
+      "today": "These short yes/no popups show plain words and their buttons with no box. You asked for the take-over popups' short versions to be boxed.",
+      "problem": "Short popups now come in two looks.",
+      "proposal": "Put their words and buttons in one box, the same as every other small popup.",
+      "options": [
+        {
+          "id": "box-all",
+          "label": "Box them all",
+          "recommended": true,
+          "pros": [
+            "Every small popup looks the same",
+            "No exception to remember"
+          ],
+          "cons": [
+            "Very short questions get a box around one line"
+          ]
+        },
+        {
+          "id": "keep-plain",
+          "label": "Keep them plain",
+          "pros": [
+            "Short questions stay light"
+          ],
+          "cons": [
+            "Take-over now differs from them"
+          ]
+        }
+      ]
+    }
+  ]
+}

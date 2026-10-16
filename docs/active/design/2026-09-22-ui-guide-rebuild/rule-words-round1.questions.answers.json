@@ -1,0 +1,27 @@
+{
+ "deck": "ui-guide-wording-round1-1",
+ "started": "2026-09-23T12:21:41.866Z",
+ "submitted": "2026-09-23T12:24:41Z",
+ "cur": 1,
+ "answers": {
+  "T-01-r3": {
+   "v": "other",
+   "dk": true,
+   "note": "i think i want to see all the various popup sizes/classes in-context alongside eachother. with some options to simplify/unify/formalize styles.",
+   "seconds": 51,
+   "theme": "meadow-mist"
+  },
+  "T-02-r2": {
+   "v": "yes",
+   "seconds": 51,
+   "theme": "meadow-mist"
+  },
+  "T-03-r3": {
+   "v": "other",
+   "note": "may want to add small square/rectangle previews in the lefthand side of the cards... not sure?",
+   "dk": true,
+   "seconds": 77,
+   "theme": "meadow-mist"
+  }
+ }
+}

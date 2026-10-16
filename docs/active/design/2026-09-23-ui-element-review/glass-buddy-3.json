@@ -1,0 +1,27 @@
+{
+  "title": "The glass buddy — hands and feet",
+  "key": "glass-buddy-3",
+  "out": "glass-buddy-3.review.html",
+  "images": "images/glass-buddy-3",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {"sheet": ["x", "sheet", "1280x512+0+0"], "welcome": ["x", "welcome", "1440x900+0+0"]},
+  "steps": [
+    {
+      "id": "GB3-1", "surface": "Mascot", "path": "Four faces, YouCoded on top and YouCoded Night below, beside the app icon",
+      "crop": "sheet",
+      "headline": "Hands and feet continue the body's colours, and the glow no longer covers them.",
+      "changed": "The limbs now carry the same pink-to-periwinkle run as the body, continued past its edges: arms beside the middle are lavender, feet below are periwinkle. The soft glow moved behind the whole buddy (it was drawn over the limbs) and is a little lighter.",
+      "notice": "The limbs look like the same glass as the body.",
+      "risk": ""
+    },
+    {
+      "id": "GB3-2", "surface": "New session screen", "path": "The first screen after setup",
+      "crop": "welcome",
+      "headline": "The welcome screen with the updated buddy.",
+      "changed": "Only the buddy changed.",
+      "notice": "Same layout you approved.",
+      "risk": ""
+    }
+  ]
+}

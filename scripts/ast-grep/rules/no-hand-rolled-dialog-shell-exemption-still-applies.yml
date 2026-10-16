@@ -24,6 +24,7 @@ files:
   - "**/src/renderer/components/ZoomOverlay.tsx"
   - "**/src/renderer/components/ViewToggleHint.tsx"
   - "**/src/renderer/components/VoiceButton.tsx"
+  - "**/src/renderer/components/ModelPickerPopup.tsx"
   - "**/src/renderer/components/ui/AnchorTip.tsx"
   - "**/src/renderer/components/ui/Select.tsx"
   - "**/src/renderer/components/ui/Toast.tsx"

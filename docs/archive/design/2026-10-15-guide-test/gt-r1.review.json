@@ -1,0 +1,366 @@
+{
+  "title": "Guide test, round 1 — five made-up features, each designed from scratch by a fresh builder",
+  "key": "gt-r1",
+  "out": "gt-r1.review.html",
+  "images": "images/gt-r1.review",
+  "runs": {
+    "design": "runs/gt-r1"
+  },
+  "labels": {
+    "design": "Design"
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "new": true,
+      "surface": "Purchases (a Page)",
+      "path": "Pages → Purchases",
+      "crop": [
+        {
+          "crop": "pages/page/page-purchases",
+          "label": "This month"
+        },
+        {
+          "crop": "pages/page/page-purchases#category",
+          "label": "One category picked"
+        }
+      ],
+      "headline": "Purchase tracker: built as one of YouCoded's Pages, sorting a month's spending into categories.",
+      "changed": "Top to bottom: the month's total with one coloured split bar; purchases that need a category (your pick applies to later ones from the same place); a card per category with amount and change from last month (click to filter); every purchase with filter chips; connected banks.",
+      "notice": "Builder's guide gaps: its notes on the guide were cut off and never arrived, so judge from the pictures only.",
+      "risk": "Bank sign-in buttons only show the app's existing \"can't connect\" message in this practice copy. Shows one month only.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "A-2",
+      "new": true,
+      "surface": "Purchases (a Page)",
+      "path": "Pages → Purchases: first time, problems, phone",
+      "crop": [
+        {
+          "crop": "pages/page/page-purchases#empty",
+          "label": "First time"
+        },
+        {
+          "crop": "pages/page/page-purchases#reconnect",
+          "label": "A bank needs sign-in"
+        },
+        {
+          "crop": "pages/page/page-purchases#failed",
+          "label": "Download failed"
+        },
+        {
+          "crop": "pages/focus/page-purchases#phone",
+          "label": "Phone"
+        }
+      ],
+      "headline": "Purchase tracker: first time, a bank needing sign-in again, a failed download, and phone width.",
+      "changed": "First time is one card with \"Connect a bank\". A bank needing sign-in gets an amber notice saying the month is missing purchases after a date. A failed first download puts a red notice with Try again where the total would be.",
+      "notice": "Builder's guide gaps: not available (see above).",
+      "risk": "None of these buttons do anything in the practice copy.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "B-1",
+      "new": true,
+      "surface": "Automations (new screen)",
+      "path": "Header → Automations (new button after Projects)",
+      "crop": [
+        {
+          "crop": "automations",
+          "label": "Automations"
+        },
+        {
+          "crop": "automations/activity",
+          "label": "Activity"
+        }
+      ],
+      "headline": "Agents and automations: a new full screen called Automations, with a list of jobs and a log of every run.",
+      "changed": "Jobs are cards grouped \"Needs you\" / \"Active\" / \"Turned off\", each with an on/off switch, when it runs, who does it (your assistant or a specialist), and a small notice with one button when it needs you. Activity lists every run by day.",
+      "notice": "Builder's guide gaps: no recipe for adding a whole new screen or where its button goes; reference screens disagree on tabs; no status words beyond sessions and sync; grid width unspecified. It felt \"nothing bare\" made details too boxy.",
+      "risk": "Adds a button to everyone's header. Runs only while YouCoded is open — said on the screen. Review, Create, Save and Delete just close in the mockup.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "B-2",
+      "new": true,
+      "surface": "Automations (new screen)",
+      "path": "Automations → open a job · New automation · Edit",
+      "crop": [
+        {
+          "crop": "automations/detail/invoice-reminders",
+          "label": "Details"
+        },
+        {
+          "crop": "automations/new",
+          "label": "New"
+        },
+        {
+          "crop": "automations/edit",
+          "label": "Edit"
+        }
+      ],
+      "headline": "Automations: a job's details, and the new/edit form.",
+      "changed": "Details reuse the Marketplace detail layout: what you asked for and recent runs on the left; when, who and what it may do on the right. New and Edit are one form in four labelled parts (what, when, who, while you're away), buttons pinned at the bottom, red Delete on Edit.",
+      "notice": "Builder's guide gaps: no recipe for a create form; no time picker (it used a half-hour dropdown); unsure where a disabled button's reason goes in a pinned footer.",
+      "risk": "The form's fourth part is below the fold in the picture.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "B-3",
+      "new": true,
+      "surface": "Automations (new screen)",
+      "path": "Automations: first time, failed, phone",
+      "crop": [
+        {
+          "crop": "automations#empty",
+          "label": "First time"
+        },
+        {
+          "crop": "automations#failed",
+          "label": "Couldn't load"
+        },
+        {
+          "crop": "automations#phone",
+          "label": "Phone"
+        }
+      ],
+      "headline": "Automations: first time, a list that couldn't load, and phone width.",
+      "changed": "First time is one card explaining it, with New automation. A failed load is the standard red box with Try again.",
+      "notice": "Builder's guide gaps: see B-1.",
+      "risk": "—",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "C-1",
+      "new": true,
+      "surface": "Notifications (new)",
+      "path": "Top bar → bell (new) → Notifications",
+      "crop": [
+        {
+          "crop": "chat",
+          "label": "The bell"
+        },
+        {
+          "crop": "chat/notifications",
+          "label": "Open"
+        },
+        {
+          "crop": "chat/notifications#all-read",
+          "label": "All read"
+        }
+      ],
+      "headline": "Notifications: a bell in the top bar opening a popup of what happened while you were away.",
+      "changed": "The bell sits first in the top bar's right group with a small dot when something is new. The popup has \"New\" (boxed rows, each with Mark as read) and \"Earlier\" (plain rows), and Mark all as read pinned at the bottom.",
+      "notice": "Builder's guide gaps: no rule for a \"something new\" marker (its green dot looks like Games' online dot); \"row buttons on hover\" contradicts Open tasks' always-visible buttons; nothing on where a new top-bar button goes.",
+      "risk": "Clicking an item only marks it read and closes. In the busy theme, titles wrap because of the per-row buttons.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "C-2",
+      "new": true,
+      "surface": "Notifications (new)",
+      "path": "Notifications: nothing yet, failed, phone",
+      "crop": [
+        {
+          "crop": "chat/notifications#empty",
+          "label": "Nothing yet"
+        },
+        {
+          "crop": "chat/notifications#load-failed",
+          "label": "Couldn't load"
+        },
+        {
+          "crop": "chat/notifications#phone",
+          "label": "Phone"
+        }
+      ],
+      "headline": "Notifications: never had any, couldn't load, and phone width.",
+      "changed": "Empty is one card saying \"Nothing here yet.\" A failed load is the standard red box with Try again. On a phone the bell moves into the ☰ menu.",
+      "notice": "Builder's guide gaps: see C-1; also no rule for a popup that is entirely empty or entirely failed.",
+      "risk": "—",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "D-1",
+      "new": true,
+      "surface": "PC build (a Page)",
+      "path": "Pages → PC build",
+      "crop": [
+        {
+          "crop": "pages/page/page-pc-build",
+          "label": "A build"
+        },
+        {
+          "crop": "pages/page/page-pc-build#picker",
+          "label": "Picking a part"
+        }
+      ],
+      "headline": "PC build estimator: a Page that prices a build from new and used parts and compares builds on value.",
+      "changed": "The build card shows total price, estimated frames per second, cost per frame and savings vs all-new, with a 1080p/1440p/4K switch. Each part row has a New/Used switch, price and where the price came from; risky used parts get an amber tag. A small chart compares saved builds.",
+      "notice": "Builder's guide gaps: the guide's section on Pages is three lines; the Pages style kit lacks switches, notices, menus and charts and contradicts the guide in places; nothing on charts or big summary numbers.",
+      "risk": "Where prices come from is undecided (placeholder). Save as a new build and Try again aren't wired.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "D-2",
+      "new": true,
+      "surface": "PC build (a Page)",
+      "path": "PC build: first time, failed price check, phone",
+      "crop": [
+        {
+          "crop": "pages/page/page-pc-build#empty",
+          "label": "First time"
+        },
+        {
+          "crop": "pages/page/page-pc-build#failed",
+          "label": "Prices couldn't update"
+        },
+        {
+          "crop": "pages/focus/page-pc-build#phone",
+          "label": "Phone"
+        }
+      ],
+      "headline": "PC build estimator: first time, prices that couldn't update, and phone width.",
+      "changed": "First time is one card with \"Start with a typical gaming build\" and a grey hint to ask your assistant in chat. A failed price check keeps the old prices and shows a red notice in the Parts card with Try again.",
+      "notice": "Builder's guide gaps: see D-1; also stale-but-usable data after a failed refresh isn't covered.",
+      "risk": "—",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "E-1",
+      "new": true,
+      "surface": "Import from ChatGPT (new)",
+      "path": "Settings → Import from ChatGPT (new row under Backup & sync)",
+      "crop": [
+        {
+          "crop": "settings/import-chatgpt",
+          "label": "Start"
+        },
+        {
+          "crop": "settings/import-chatgpt#preview",
+          "label": "What will come in"
+        },
+        {
+          "crop": "settings/import-chatgpt#importing",
+          "label": "Importing"
+        }
+      ],
+      "headline": "Import from ChatGPT: a Settings row opening one popup that moves from getting your file, to a preview, to importing.",
+      "changed": "Start explains how to get the export from ChatGPT. The preview shows your file (counts, dates, newest titles), skips ones imported before, and has switches for pictures and archived chats; the button names the count. Importing shows progress, says you can close it, and offers Stop.",
+      "notice": "Builder's guide gaps: open guide questions on long-running work, step counters and switches vs tick boxes (it chose itself); nowhere says where a new feature's entry point goes; only two popup sizes described.",
+      "risk": "Picking a file returns a made-up export. Desktop only.",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "E-2",
+      "new": true,
+      "surface": "Import from ChatGPT (new)",
+      "path": "Import from ChatGPT: done, partly done",
+      "crop": [
+        {
+          "crop": "settings/import-chatgpt#done",
+          "label": "Done"
+        },
+        {
+          "crop": "settings/import-chatgpt#partial",
+          "label": "Partly imported"
+        },
+        {
+          "crop": "settings/import-chatgpt#partial-details",
+          "label": "Details open"
+        }
+      ],
+      "headline": "Import from ChatGPT: everything came in, and some conversations couldn't be read.",
+      "changed": "The file card stays, marked Imported or Partly imported. A red notice names the missing conversations (\"Tax questions 2024\", \"Garden layout sketch\" and 13 others) with Try again for just those; the reasons fold under Details.",
+      "notice": "Builder's guide gaps: does the notice's filled Try again count against the view's one filled button? That left two equal outlined buttons at the bottom with no clear next step.",
+      "risk": "—",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "E-3",
+      "new": true,
+      "surface": "Import from ChatGPT (new)",
+      "path": "Import from ChatGPT: wrong file, failed, phone",
+      "crop": [
+        {
+          "crop": "settings/import-chatgpt#wrong-file",
+          "label": "Wrong file"
+        },
+        {
+          "crop": "settings/import-chatgpt#failed",
+          "label": "Nothing came in"
+        },
+        {
+          "crop": "settings/import-chatgpt#phone-partial",
+          "label": "Phone"
+        }
+      ],
+      "headline": "Import from ChatGPT: the wrong file, a total failure, and phone width.",
+      "changed": "A wrong file offers \"Choose another file\" instead of Try again, since reading it again can't help. A total failure says nothing changed and offers Try again.",
+      "notice": "Builder's guide gaps: \"every error box has Try again or Report bug\" doesn't fit a wrong file.",
+      "risk": "—",
+      "yes": "Good first try",
+      "no": "Needs work",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    }
+  ]
+}

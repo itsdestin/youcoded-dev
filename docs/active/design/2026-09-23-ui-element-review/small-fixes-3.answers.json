@@ -1,0 +1,92 @@
+{
+ "deck": "small-fixes-3",
+ "started": "2026-10-13T18:50:41.661Z",
+ "submitted": "2026-10-13T18:55:41Z",
+ "cur": 10,
+ "answers": {
+  "SF3-0": {
+   "v": "yes",
+   "t": 1791917444534,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-1": {
+   "note": "this is worse. ",
+   "t": 1791917459133,
+   "v": "other",
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-2": {
+   "v": "yes",
+   "t": 1791917464641,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-3": {
+   "v": "yes",
+   "t": 1791917475731,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-4": {
+   "v": "yes",
+   "t": 1791917479593,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-5": {
+   "v": "other",
+   "t": 1791917504544,
+   "note": "we can probably just remove this page and dump them back on the main backup & sync page",
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-6": {
+   "v": "pick",
+   "pick": "logos",
+   "t": 1791917522305,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-7": {
+   "v": "other",
+   "t": 1791917560678,
+   "note": "no, this is too much bare text. should all just be hidden behind the i popup i think. to much nuance/confusion",
+   "seconds": 38,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-8": {
+   "v": "yes",
+   "t": 1791917563679,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-9": {
+   "v": "other",
+   "t": 1791917612691,
+   "note": "just leave this for now, but keep a future roadmap item to do a full review and deal with top/center/bottom alignment for buttons by text.",
+   "seconds": 49,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "SF3-10": {
+   "v": "pick",
+   "pick": "sweep",
+   "t": 1791917740298,
+   "note": "this is way too many separate review decks and rounds of review. this should've taken a few days, but has taken weeks at this point. what are we still missing? i want to wrap this up. give all remaining work to independent agents and lets fucking finish this, i'm tired of sitting around wasting time, thinking we're finishing, only for you to come back with \"heres another thing i just didn't do\". do everything that remains, have a separate final opus reviewer review the completed branch/PR for errors, omissions, etc, then prepare a single final deck that shows me EVERYTHING the branch changes and helps me review the whole thing. do not follow up with me until the entire branch is ready for review. i am leaving for a hike. good luck.",
+   "seconds": 128,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

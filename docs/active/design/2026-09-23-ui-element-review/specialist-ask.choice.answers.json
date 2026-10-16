@@ -1,0 +1,16 @@
+{
+ "deck": "specialist-ask-choice",
+ "started": "2026-10-01T10:37:53.080Z",
+ "submitted": "2026-10-01T10:38:04Z",
+ "cur": 0,
+ "answers": {
+  "SA-1": {
+   "v": "pick",
+   "pick": "foot",
+   "t": 1790851083685,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,63 @@
+{
+  "title": "Japan trip planner (round 2, design E)",
+  "key": "gt-r2-trip-page.live",
+  "out": "gt-r2-trip-page.live.html",
+  "live": {
+    "worktree": "sessions/gt-r2-trip-page/youcoded"
+  },
+  "steps": [
+    {
+      "id": "E-1",
+      "surface": "Japan trip (a Page)",
+      "path": "Pages → Japan trip",
+      "headline": "Japan trip planner: flights with price history, the route of cities, and things to see, eat and stay.",
+      "hint": "It opens on the page. Click a flight option to see its price history (point at the line), click cities along the route, try Change details.",
+      "notice": "Builder's main gaps: the Pages kit has no status pill, notice, fold, tab strip or spinner, and the only data-heavy sample Page (Money) breaks the guide, so it hand-rebuilt the app's pieces; nothing on charts or \"pick a card, see its details\" screens; \"no light text beside bold\" doubled legend and price lines.",
+      "risk": "All data is made up; the real version needs a flight-price service.",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "page-japan-trip"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-2",
+      "surface": "Japan trip (a Page)",
+      "path": "Japan trip, first time",
+      "headline": "Japan trip planner the first time.",
+      "hint": "It opens on the page. Start planning shows the plan after a moment.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "page-japan-trip",
+          "tripPage": "empty"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-3",
+      "surface": "Japan trip (a Page)",
+      "path": "Japan trip, flight prices failed",
+      "headline": "Japan trip planner when flight prices couldn't load.",
+      "hint": "It opens on the page. Try again loads them.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "openPage": "page-japan-trip",
+          "tripPage": "failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

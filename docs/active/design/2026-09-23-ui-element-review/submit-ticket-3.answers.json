@@ -1,0 +1,81 @@
+{
+ "deck": "submit-ticket-3",
+ "started": "2026-10-08T11:53:42.473Z",
+ "submitted": "2026-10-08T11:56:00Z",
+ "cur": 9,
+ "answers": {
+  "ST3-1": {
+   "v": "yes",
+   "t": 1791460430177,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-2": {
+   "v": "yes",
+   "t": 1791460433837,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-3": {
+   "v": "yes",
+   "t": 1791460440730,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-4": {
+   "v": "yes",
+   "t": 1791460456181,
+   "seconds": 15,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-5": {
+   "v": "yes",
+   "t": 1791460484263,
+   "note": "the highlight/hover effect is weird there on the header. not rounded or whatever.",
+   "seconds": 28,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-6": {
+   "v": "yes",
+   "t": 1791460490042,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-7": {
+   "v": "yes",
+   "t": 1791460492441,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-8": {
+   "v": "yes",
+   "t": 1791460499998,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-9": {
+   "v": "yes",
+   "t": 1791460507909,
+   "seconds": 8,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST3-Q1": {
+   "v": "pick",
+   "pick": "contribute",
+   "t": 1791460558892,
+   "note": "ensure the contribute page is worded in a way that makes sense for handoff peeps too though",
+   "seconds": 51,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

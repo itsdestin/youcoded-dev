@@ -1,0 +1,392 @@
+[
+  {
+    "name": "projects",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/midnight.png",
+    "ms": 1064,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    }
+  },
+  {
+    "name": "projects/files",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/midnight.png",
+    "ms": 1105,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/context",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/context/midnight.png",
+    "ms": 1277,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/conversations",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/conversations/midnight.png",
+    "ms": 1294,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/context/how",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/context/how/midnight.png",
+    "ms": 1300,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 72,
+      "w": 820,
+      "h": 654
+    }
+  },
+  {
+    "name": "projects/files/filter",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/filter/midnight.png",
+    "ms": 1312,
+    "errors": [],
+    "panel": {
+      "x": 884,
+      "y": 388,
+      "w": 264,
+      "h": 226
+    }
+  },
+  {
+    "name": "projects/context/editor",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/context/editor/midnight.png",
+    "ms": 1330,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "projects/conversations/preview",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/conversations/preview/midnight.png",
+    "ms": 1339,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/switcher/midnight.png",
+    "ms": 1196,
+    "errors": [],
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    }
+  },
+  {
+    "name": "projects/files",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/meadow-mist.png",
+    "ms": 2344,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/context",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/context/meadow-mist.png",
+    "ms": 2449,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/turn-on-sync",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/turn-on-sync/midnight.png",
+    "ms": 1250,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 314,
+      "w": 420,
+      "h": 272
+    }
+  },
+  {
+    "name": "projects/add",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/add/midnight.png",
+    "ms": 1320,
+    "errors": [],
+    "panel": {
+      "x": 512,
+      "y": 291,
+      "w": 416,
+      "h": 319
+    }
+  },
+  {
+    "name": "projects/turn-on-sync",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/turn-on-sync/meadow-mist.png",
+    "ms": 1373,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 330,
+      "w": 420,
+      "h": 240
+    }
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/switcher/meadow-mist.png",
+    "ms": 1625,
+    "errors": [],
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    }
+  },
+  {
+    "name": "projects/files/folder/docs",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/folder/docs/midnight.png",
+    "ms": 1375,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/files/folder/docs",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/folder/docs/meadow-mist.png",
+    "ms": 1397,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/meadow-mist.png",
+    "ms": 2893,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    }
+  },
+  {
+    "name": "projects/conversations",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/conversations/meadow-mist.png",
+    "ms": 3000,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/context/how",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/context/how/meadow-mist.png",
+    "ms": 3024,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 72,
+      "w": 820,
+      "h": 635
+    }
+  },
+  {
+    "name": "projects/conversations/preview",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/conversations/preview/meadow-mist.png",
+    "ms": 3580,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "projects/files/folder/Locked",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/folder/Locked/midnight.png",
+    "ms": 1473,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  },
+  {
+    "name": "projects/files/filter",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/filter/meadow-mist.png",
+    "ms": 3991,
+    "errors": [],
+    "panel": {
+      "x": 903,
+      "y": 388,
+      "w": 264,
+      "h": 194
+    }
+  },
+  {
+    "name": "projects/context/editor",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/context/editor/meadow-mist.png",
+    "ms": 4014,
+    "errors": [],
+    "panel": {
+      "x": 64,
+      "y": 64,
+      "w": 1312,
+      "h": 772
+    }
+  },
+  {
+    "name": "projects/add",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/add/meadow-mist.png",
+    "ms": 2803,
+    "errors": [],
+    "panel": {
+      "x": 512,
+      "y": 299,
+      "w": 416,
+      "h": 303
+    }
+  },
+  {
+    "name": "projects/files/folder/Locked",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/pv-today/projects/files/folder/Locked/meadow-mist.png",
+    "ms": 5580,
+    "errors": [],
+    "panel": {
+      "x": 170,
+      "y": 382,
+      "w": 1100,
+      "h": 509
+    }
+  }
+]

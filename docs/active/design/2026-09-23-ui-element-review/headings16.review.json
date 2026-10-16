@@ -1,0 +1,49 @@
+{
+  "title": "Marketplace and Library \u2014 16px section headings",
+  "key": "headings16-review",
+  "out": "headings16.review.html",
+  "images": "images/headings16",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "H16-1",
+      "surface": "Marketplace",
+      "path": "Marketplace, the rows of picks",
+      "crop": "h-mkt",
+      "headline": "Section headings like \"Destin's picks\" are a step smaller, the same size as the Projects view headings.",
+      "changed": "Each row's heading goes from 18px to 16px; the line under it and the cards are unchanged. The page title \"Marketplace\" stays as it is.",
+      "measured": "18 px \u2192 16 px",
+      "notice": "Marketplace, Library and Projects now use one heading size for their sections, as the guide says.",
+      "risk": "The headings stand out a little less from the cards."
+    },
+    {
+      "id": "H16-2",
+      "surface": "Your library",
+      "path": "Your library, Favorites and Installed",
+      "crop": "h-lib",
+      "headline": "\"Favorites\" and \"Installed\" get the same 16px heading.",
+      "changed": "Both section headings go from 18px to 16px.",
+      "measured": "18 px \u2192 16 px",
+      "notice": "Matches the Marketplace and Projects headings.",
+      "risk": ""
+    }
+  ],
+  "crops": {
+    "h-mkt": [
+      "h",
+      "mkt",
+      "720x420+0+300"
+    ],
+    "h-lib": [
+      "h",
+      "lib",
+      "720x400+0+130"
+    ]
+  }
+}

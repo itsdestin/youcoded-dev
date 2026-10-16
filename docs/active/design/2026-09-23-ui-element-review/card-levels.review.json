@@ -1,0 +1,404 @@
+{
+  "title": "Card levels \u2014 every Settings menu, before and after",
+  "key": "ui-card-levels",
+  "out": "card-levels.review.html",
+  "images": "images/card-levels.review",
+  "runs": {
+    "before": "runs/lv-before",
+    "after": "runs/lv-after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "themes": [
+    "meadow-mist",
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "settings-backup-sync": [
+      "lv",
+      "settings-backup-sync",
+      "640x800+400+50"
+    ],
+    "sync-error": [
+      "lv",
+      "sync-error",
+      "640x800+400+50"
+    ],
+    "sync-oversize-open": [
+      "lv",
+      "sync-oversize-open",
+      "640x800+400+50"
+    ],
+    "sync-setup-wizard": [
+      "lv",
+      "sync-setup-wizard",
+      "640x800+400+50"
+    ],
+    "remote-access": [
+      "lv",
+      "remote-access",
+      "640x800+400+50"
+    ],
+    "remote-access-connected": [
+      "lv",
+      "remote-access-connected",
+      "640x800+400+50"
+    ],
+    "assistant-cloud": [
+      "lv",
+      "assistant-cloud",
+      "820x700+310+100"
+    ],
+    "assistant-local": [
+      "lv",
+      "assistant-local",
+      "820x700+310+100"
+    ],
+    "assistant-permissions": [
+      "lv",
+      "assistant-permissions",
+      "820x700+310+100"
+    ],
+    "assistant-specialists": [
+      "lv",
+      "assistant-specialists",
+      "820x700+310+100"
+    ],
+    "account": [
+      "lv",
+      "account",
+      "640x800+400+50"
+    ],
+    "appearance": [
+      "lv",
+      "appearance",
+      "640x800+400+50"
+    ],
+    "sound": [
+      "lv",
+      "sound",
+      "640x800+400+50"
+    ],
+    "development": [
+      "lv",
+      "development",
+      "640x800+400+50"
+    ],
+    "bug-report": [
+      "lv",
+      "bug-report",
+      "640x800+400+50"
+    ],
+    "about": [
+      "lv",
+      "about",
+      "640x800+400+50"
+    ],
+    "preferences": [
+      "lv",
+      "preferences",
+      "640x800+400+50"
+    ],
+    "keyboard-shortcuts": [
+      "lv",
+      "keyboard-shortcuts",
+      "640x800+400+50"
+    ],
+    "buddy": [
+      "lv",
+      "buddy",
+      "640x800+400+50"
+    ],
+    "donate": [
+      "lv",
+      "donate",
+      "640x800+400+50"
+    ],
+    "settings-drawer": [
+      "lv",
+      "settings-drawer",
+      "320x740+0+50"
+    ]
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "settings-backup-sync",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-2",
+      "surface": "Backup & Sync \u2014 sync failing",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-error",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 sync failing: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-3",
+      "surface": "Backup & Sync \u2014 too big to sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-oversize-open",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 too big to sync: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-4",
+      "surface": "Backup & Sync \u2014 add a backup",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-setup-wizard",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 add a backup: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-5",
+      "surface": "Remote Access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "remote-access",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Remote Access: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-6",
+      "surface": "Remote Access \u2014 connected",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "remote-access-connected",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Remote Access \u2014 connected: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-7",
+      "surface": "Cloud providers",
+      "path": "Settings \u2192 Cloud providers",
+      "crop": "assistant-cloud",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Cloud providers: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-8",
+      "surface": "Local models",
+      "path": "Settings \u2192 Local models",
+      "crop": "assistant-local",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Local models: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-9",
+      "surface": "Permissions",
+      "path": "Settings \u2192 Permissions",
+      "crop": "assistant-permissions",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Permissions: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-10",
+      "surface": "Specialists",
+      "path": "Settings \u2192 Specialists",
+      "crop": "assistant-specialists",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Specialists: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-11",
+      "surface": "Account",
+      "path": "Settings \u2192 Account",
+      "crop": "account",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Account: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today.",
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "L-12",
+      "surface": "Appearance",
+      "path": "Settings \u2192 Appearance",
+      "crop": "appearance",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Appearance: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-13",
+      "surface": "Sound & Notifications",
+      "path": "Settings \u2192 Sound & Notifications",
+      "crop": "sound",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Sound & Notifications: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-14",
+      "surface": "Development",
+      "path": "Settings \u2192 Development",
+      "crop": "development",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Development: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today.",
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "L-15",
+      "surface": "Report a bug",
+      "path": "Settings \u2192 Report a bug",
+      "crop": "bug-report",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Report a bug: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-16",
+      "surface": "About",
+      "path": "Settings \u2192 About",
+      "crop": "about",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "About: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-17",
+      "surface": "Preferences",
+      "path": "Settings \u2192 Preferences",
+      "crop": "preferences",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Preferences: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today."
+    },
+    {
+      "id": "L-18",
+      "surface": "Keyboard shortcuts",
+      "path": "Settings \u2192 Keyboard shortcuts",
+      "crop": "keyboard-shortcuts",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Keyboard shortcuts: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today.",
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "id": "L-19",
+      "surface": "Buddy",
+      "path": "Settings \u2192 Buddy",
+      "crop": "buddy",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Buddy: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today.",
+      "themes": [
+        "light",
+        "midnight"
+      ]
+    },
+    {
+      "id": "L-21",
+      "surface": "Settings list",
+      "path": "Settings \u2192 Settings list",
+      "crop": "settings-drawer",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Settings list: keep the card levels?",
+      "changed": "Every first-level card is the same glass card; everything inside a card shares one nested look; no full-width lines; text that belongs to a card sits inside it; outlined buttons are visible.",
+      "notice": "Same groups in the same places as today.",
+      "themes": [
+        "meadow-mist"
+      ]
+    }
+  ]
+}

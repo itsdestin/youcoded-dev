@@ -1,0 +1,75 @@
+{
+  "title": "Import from ChatGPT (round 1, design E)",
+  "key": "gt-r1-import.live",
+  "out": "gt-r1-import.live.html",
+  "live": {
+    "worktree": "sessions/gt-r1-import/youcoded"
+  },
+  "steps": [
+    {
+      "id": "E-1",
+      "surface": "Import from ChatGPT (new)",
+      "path": "Settings → Import from ChatGPT",
+      "headline": "Import from ChatGPT: getting your file, the preview, importing, done.",
+      "hint": "Open Settings (gear), then Import from ChatGPT under Backup & sync. Press Choose file…, try the switches, then Import 300 conversations. Stop import works while it runs.",
+      "notice": "Builder's main guide gaps: open guide questions on long-running work, step counters and switches vs tick boxes (it chose itself); nowhere says where a new feature's entry goes.",
+      "risk": "Picking a file pretends you chose a 312-conversation export.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-2",
+      "surface": "Import from ChatGPT (new)",
+      "path": "Settings → Import from ChatGPT, some fail",
+      "headline": "Import from ChatGPT when some conversations couldn't be read.",
+      "hint": "Settings → Import from ChatGPT → Choose file… → Import 300 conversations. Open Details in the red notice.",
+      "notice": "Builder: unsure whether the notice's filled Try again counts as the screen's one filled button, so both bottom buttons ended up outlined.",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "chatgptImport": "partial"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-3",
+      "surface": "Import from ChatGPT (new)",
+      "path": "Settings → Import from ChatGPT, wrong file",
+      "headline": "Import from ChatGPT when the file isn't a ChatGPT export.",
+      "hint": "Settings → Import from ChatGPT → Choose file….",
+      "notice": "Builder: \"every error box has Try again or Report bug\" doesn't fit a wrong file, so it offers Choose another file.",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "chatgptImport": "wrong-file"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-4",
+      "surface": "Import from ChatGPT (new)",
+      "path": "Settings → Import from ChatGPT, nothing came in",
+      "headline": "Import from ChatGPT when the import failed completely.",
+      "hint": "Settings → Import from ChatGPT → Choose file… → Import 300 conversations.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "chatgptImport": "failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

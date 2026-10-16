@@ -2,6 +2,14 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
+- [ ] After the UI consistency work lands: a broad review, across every theme, of the colours,
+      see-through levels and contrast used for each card level, then make the theme builder and
+      its checks fast and accurate enough that a new theme comes out usable, with good contrast,
+      on the first try (Destin, 2026-09-28). Starting point: on 2026-09-28 card fills measured
+      only a shade off their background in all 8 themes tested, and the theme's own faint
+      outline nearly vanished on three glass themes, so the app now forces a stronger shared outline
+      `settings/themes` `all` `confirmed` `P3` `checked 2026-09-28`
+
 - [ ] Themes rendering wrong: 3 faults.
       (a) Themes you build yourself still get the old drawn preview picture while built-in and
       community themes show a real screenshot; the desktop share/publish step, the theme builder's

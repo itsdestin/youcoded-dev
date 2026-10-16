@@ -1,0 +1,24 @@
+{
+ "deck": "first-run-6",
+ "started": "2026-10-05T02:50:03.397Z",
+ "submitted": "2026-10-05T02:51:04Z",
+ "cur": 1,
+ "answers": {
+  "P6-1": {
+   "note": "nah put gray text back. up where it was..",
+   "t": 1791168635220,
+   "v": "other",
+   "seconds": 32,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P6-2": {
+   "note": "drop the icon. i thought i picked the stacked option",
+   "t": 1791168663105,
+   "v": "other",
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

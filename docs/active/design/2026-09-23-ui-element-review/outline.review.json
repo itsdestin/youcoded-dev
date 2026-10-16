@@ -1,0 +1,44 @@
+{
+  "title": "Outlined buttons \u2014 stronger outline?",
+  "key": "ui-fix-batch-2-outline",
+  "out": "outline.review.html",
+  "images": "images/outline.review",
+  "runs": {
+    "before": "runs/b2-after",
+    "after": "runs/b2-outline"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Stronger outline"
+  },
+  "themes": [
+    "meadow-mist"
+  ],
+  "crops": {
+    "sync-main": [
+      "main",
+      "settings-backup-sync",
+      "420x590+510+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "O-1",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-main",
+      "headline": "Should outlined buttons have a stronger outline?",
+      "changed": "Outlined buttons (Add a backup, Back up all now, Show details, Cancel\u2026) use the full-strength outline colour instead of the faint one. It applies to every outlined button in the app.",
+      "notice": "On Meadow Mist the buttons now read as buttons; today they look like plain text.",
+      "risk": "Every outlined button gets slightly heavier; on some themes the screen may look busier.",
+      "highlight": {
+        "box": [
+          3,
+          56,
+          94,
+          17
+        ]
+      }
+    }
+  ]
+}

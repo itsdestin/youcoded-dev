@@ -20,17 +20,29 @@ If a child process, network call, or file op can fail, capture its real error an
 When you genuinely can't surface a specific cause at that layer, use a *general* message that does NOT assert a cause — e.g. **"Error: Unable to run local models."** — paired with two actions:
 
 1. **Report bug / submit PR** — link the user to the issue-report path.
-2. **Diagnose with Claude** — hand the real error context to Claude for investigation (the same pattern as **Settings → Development** — `dev:summarize-issue` / `dev:submit-issue`, which shell to `claude -p` with logs).
+2. **Diagnose with Claude** — hand the real error context to Claude for investigation (the same pattern as the bug report in **Settings → Help & feedback** — `dev:summarize-issue` / `dev:submit-issue`, which shell to `claude -p` with logs).
 
 A general message is acceptable. A general message that *invents a plausible-sounding cause* is not.
 
 ### Every error state offers an action
 
 Destin, 2026-09-11: a message with nothing to press is a dead end. Every error state carries at
-least one of **Retry**, **Report bug** or **Diagnose** — Retry when retrying can help, Report bug
+least one of **Try again**, **Report bug** or **Diagnose** — Try again when retrying can help, Report bug
 wherever the cause is not known, both when both are true. `<ErrorState>` refuses an error with
 no action by type (`tests/error-state.test.tsx`), and its buttons sit in one fixed order with
-Retry last, at the right-hand end.
+Try again last, at the right-hand end. The button reads "Try again", never "Retry" (Destin,
+error-notices-1#EN-Q1, 2026-10-12).
+
+### What an error looks like
+
+`<ErrorState>` draws the design guide's notice box (the shared `Callout`, danger tone): a
+red tint and red border, the words in the normal text colour, the buttons inside the box at
+the right. No red text, no red title, no separate red dot. A one-line error keeps its buttons
+on its line; `variant="inline"` (inside a section, menu or card) is the slim one-line box; a
+general error puts its buttons on their own line at the bottom right. This replaced the
+2026-07-16 "Option C" look (a neutral grey box with a red dot) on 2026-10-12, deck
+`error-notices-1`; `tests/error-state.test.tsx` pins that ErrorState's box is exactly the
+notice box. A one-line problem with nothing to press is `FieldError`, the box in miniature.
 
 ## The same rule, applied to what the app SAYS IT KNOWS
 
@@ -77,12 +89,12 @@ We will **go back and replace all existing system/app error messages** against t
 - Audit every user-facing `throw new Error('…')`, toast, banner, and IPC error string across desktop, Android, and the worker.
 - Fix any that assert an unverified cause (specific+accurate) or that are vague without a next step (general + the two actions).
 - Where a subprocess/exception detail is available, thread it through instead of swallowing it.
-- ~~Wire the two-action fallback UX (report / diagnose-with-Claude) as a reusable component so general errors get a consistent affordance.~~ **DONE — the component exists.** `components/ui/states.tsx` exports `<ErrorState>` with exactly the two modes this standard describes: `mode="recoverable"` (specific message + Retry) and `mode="general"` (title + explainer + **Report bug** / **Diagnose with Claude**). Built 2026-07-23 as change 33 of the UI-consistency migration.
+- ~~Wire the two-action fallback UX (report / diagnose-with-Claude) as a reusable component so general errors get a consistent affordance.~~ **DONE — the component exists.** `components/ui/states.tsx` exports `<ErrorState>` with exactly the two modes this standard describes: `mode="recoverable"` (specific message + Try again) and `mode="general"` (title + explainer + **Report bug** / **Diagnose with Claude**). Built 2026-07-23 as change 33 of the UI-consistency migration.
 
   **Update 2026-07-28 — it has its first TWO call sites** (Remote Access's Tailscale setup failure, K5 of the menu-internals kit): `recoverable` with the real error when we have one, `general` when the installer reports no reason at all. Both modes were chosen for that one verified failure rather than swept in, which is the bar this audit sets. `desktop/tests/primitive-adoption.test.ts` no longer exempts `ErrorState` — that exemption asserts NON-adoption and would now rot. **The audit itself is still outstanding**; the exemption came off early for a mechanical reason, not because the work landed.
 
   **It had ZERO call sites, deliberately.** Choosing which mode each site gets IS this audit's core decision — adopting it early would have guessed that call at every site, and each guess would then read as settled. So the audit's job is now: for every error surface, pick the mode, and pass the real detail (subprocess stderr, caught exception, failing path/port) rather than a hardcoded cause. The markup is no longer part of the work.
 
-  ~~`desktop/tests/primitive-adoption.test.ts` exempts `ErrorState` by name with this reasoning; **remove it from `INTENTIONALLY_UNADOPTED` when this audit lands**, or the guard will keep covering for it.~~ **Done 2026-07-28** — see the update above. `FieldError` is still listed and still unadopted.
+  ~~`desktop/tests/primitive-adoption.test.ts` exempts `ErrorState` by name with this reasoning; **remove it from `INTENTIONALLY_UNADOPTED` when this audit lands**, or the guard will keep covering for it.~~ **Done 2026-07-28** — see the update above. (`FieldError` has since been adopted too: field-error-adoption.)
 
 Tracked in `docs/roadmap/user-interface.md` (the misleading-errors audit, flagged `v1.3.1`) → `docs/active/investigations/2026-09-01-misleading-error-audit.md`.

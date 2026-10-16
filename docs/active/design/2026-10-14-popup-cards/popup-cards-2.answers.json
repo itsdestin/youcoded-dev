@@ -1,0 +1,62 @@
+{
+ "deck": "popup-cards-2",
+ "started": "2026-10-14T16:00:01.557Z",
+ "submitted": "2026-10-14T16:02:55Z",
+ "cur": 6,
+ "answers": {
+  "A-1": {
+   "note": "yes. still think these can look more similar. notice the difference in header/text/input box/button positioning across all 3 popups that basically have the same job/size",
+   "t": 1791993652375,
+   "v": "other",
+   "seconds": 51,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-2": {
+   "note": "think these could be more consistent too",
+   "t": 1791993694458,
+   "v": "other",
+   "seconds": 42,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-3": {
+   "note": "same",
+   "t": 1791993713430,
+   "v": "other",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-4": {
+   "note": "for the model picker one, i don't want the exterior container. i think this is fine as bare dropdown w buttons",
+   "t": 1791993741726,
+   "v": "other",
+   "seconds": 28,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-5": {
+   "v": "yes",
+   "t": 1791993752510,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-6": {
+   "v": "yes",
+   "t": 1791993756852,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1791993774812,
+   "note": "help me visualize these",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,357 @@
+{
+  "title": "Headers and titles — every style the app uses today",
+  "key": "ui-element-review-headers",
+  "out": "headers.review.html",
+  "images": "images/headers.review",
+  "runs": {
+    "today": "runs/today"
+  },
+  "labels": {
+    "today": "Today"
+  },
+  "crops": {
+    "screen-projects": [
+      "main",
+      "projects",
+      "1440x44+0+0"
+    ],
+    "screen-pages": [
+      "pages-view",
+      "view",
+      "1440x44+0+0"
+    ],
+    "screen-marketplace": [
+      "main",
+      "marketplace",
+      "1440x56+0+0"
+    ],
+    "screen-library": [
+      "main",
+      "library",
+      "1440x56+0+0"
+    ],
+    "title-settings": [
+      "main",
+      "settings-sound",
+      "840x56+0+0"
+    ],
+    "title-dialog": [
+      "main",
+      "settings-sound",
+      "840x64+300+156"
+    ],
+    "title-session-files": [
+      "main",
+      "session-files-pane",
+      "840x40+590+58"
+    ],
+    "title-resume": [
+      "main",
+      "resume-browser",
+      "840x56+100+110"
+    ],
+    "title-add-project": [
+      "overlays",
+      "projects-add-project",
+      "840x52+300+292"
+    ],
+    "title-games": [
+      "main",
+      "games-picker",
+      "840x46+590+40"
+    ],
+    "label-caps-small": [
+      "main",
+      "settings-sound",
+      "400x96+515+224"
+    ],
+    "label-caps-featured": [
+      "main",
+      "marketplace",
+      "420x80+25+72"
+    ],
+    "label-caps-sidebar": [
+      "pages-view",
+      "view",
+      "240x80+15+52"
+    ],
+    "label-rail": [
+      "main",
+      "marketplace",
+      "420x50+10+322"
+    ],
+    "label-library": [
+      "main",
+      "library",
+      "420x50+10+118"
+    ],
+    "label-project-files": [
+      "main",
+      "projects",
+      "420x34+180+392"
+    ],
+    "count-parens": [
+      "main",
+      "session-files-pane",
+      "700x36+730+56"
+    ],
+    "count-tab-projects": [
+      "main",
+      "projects",
+      "700x44+186+338"
+    ],
+    "count-tab-market": [
+      "main",
+      "marketplace",
+      "700x44+28+260"
+    ],
+    "count-chip": [
+      "main",
+      "session-files-pane",
+      "700x40+740+0"
+    ],
+    "count-words-card": [
+      "main",
+      "marketplace",
+      "700x34+20+512"
+    ],
+    "count-stats": [
+      "main",
+      "projects",
+      "700x30+200+228"
+    ],
+    "exit-button": [
+      "main",
+      "projects",
+      "300x40+1140+0"
+    ],
+    "exit-text": [
+      "main",
+      "marketplace",
+      "360x44+1080+5"
+    ]
+  },
+  "steps": [
+    {
+      "id": "H-1",
+      "surface": "Full screens",
+      "path": "Projects, Pages, Marketplace and Your Library — the title strip at the very top",
+      "headline": "Full screens name themselves two different ways. Which should every full screen use?",
+      "notice": "Projects and Pages put a small centered title in the window's top strip. Marketplace and Library put a large bold title on the left. Whichever you pick becomes the rule for every full screen, including ones built later.",
+      "risk": "Moving Marketplace and Library to the centered strip also moves their Back and Library buttons, so those two screens would change the most.",
+      "variants": [
+        {
+          "id": "centered-projects",
+          "label": "Centered, small",
+          "crop": "screen-projects",
+          "summary": "Projects. The name sits in the window's own top strip, next to the app's icons, with a Back to chat button on the right.",
+          "measured": "14px, centered"
+        },
+        {
+          "id": "centered-pages",
+          "label": "Centered with icon",
+          "crop": "screen-pages",
+          "summary": "Pages. The same centered strip, with the page's own icon in front of its name.",
+          "measured": "14px, centered, icon"
+        },
+        {
+          "id": "left-large-market",
+          "label": "Left, large",
+          "crop": "screen-marketplace",
+          "summary": "Marketplace. A big bold name on the left with a logo, in its own bar; the app's icons are hidden.",
+          "measured": "20px semibold, left"
+        },
+        {
+          "id": "left-large-library",
+          "label": "Left, large, no icon",
+          "crop": "screen-library",
+          "summary": "Your Library. The same big left title as Marketplace, without the logo.",
+          "measured": "20px semibold, left"
+        }
+      ]
+    },
+    {
+      "id": "H-2",
+      "surface": "Popups and side panels",
+      "path": "Settings, Sound, Session Files, Resume Session, Add a project and Games",
+      "headline": "Popup and side-panel titles come in six styles. Which one should every popup and panel title use?",
+      "notice": "They differ in size, boldness, the line under them, and whether there's a close button. The last session gave Settings a lighter title and shared popups a bolder one; this pick settles which is right everywhere.",
+      "risk": "Add a project has no close button at all today; any pick would add one.",
+      "variants": [
+        {
+          "id": "settings",
+          "label": "Settings drawer",
+          "crop": "title-settings",
+          "summary": "Medium weight, one line, tapered line underneath, close button on the right.",
+          "measured": "16px medium"
+        },
+        {
+          "id": "dialog",
+          "label": "Shared popup",
+          "crop": "title-dialog",
+          "summary": "Used by most popups (Sound, About, Preferences…). Bolder than Settings, same tapered line and close button.",
+          "measured": "16px semibold"
+        },
+        {
+          "id": "session-files",
+          "label": "Session Files panel",
+          "crop": "title-session-files",
+          "summary": "Same weight as the shared popup, with the count in brackets in the title itself.",
+          "measured": "16px semibold"
+        },
+        {
+          "id": "resume",
+          "label": "Resume Session",
+          "crop": "title-resume",
+          "summary": "Medium weight, with a small capitals switch label sharing the title line; no close button.",
+          "measured": "16px medium"
+        },
+        {
+          "id": "add-project",
+          "label": "Add a project",
+          "crop": "title-add-project",
+          "summary": "Smaller and lighter than every other popup, no line under it and no close button.",
+          "measured": "14px semibold"
+        },
+        {
+          "id": "games",
+          "label": "Games panel",
+          "crop": "title-games",
+          "summary": "Smaller title and a full-width plain line underneath.",
+          "measured": "14px semibold"
+        }
+      ]
+    },
+    {
+      "id": "H-3",
+      "surface": "Everywhere inside screens and popups",
+      "path": "The labels that head a group of settings, cards or files",
+      "headline": "Section labels come in six styles. Pick the ones worth keeping — likely one small and one large.",
+      "pick": "several",
+      "notice": "Small grey capitals are the most common (about 90 places). The large plain headings are used for big groups on full screens. Anything you don't pick gets folded into what you do pick.",
+      "risk": "Picking only one style means big full-screen groups and tiny popup groups would look the same weight.",
+      "variants": [
+        {
+          "id": "caps-small",
+          "label": "Small grey capitals",
+          "crop": "label-caps-small",
+          "summary": "VOLUME, NOTIFICATION. Used inside popups and Settings. The most common label in the app.",
+          "measured": "10px capitals, ~90 places"
+        },
+        {
+          "id": "caps-featured",
+          "label": "Larger capitals",
+          "crop": "label-caps-featured",
+          "summary": "FEATURED, over the Marketplace banner. Same idea, but bigger and darker than everywhere else.",
+          "measured": "12–14px capitals"
+        },
+        {
+          "id": "caps-sidebar",
+          "label": "Sidebar capitals",
+          "crop": "label-caps-sidebar",
+          "summary": "PERSONAL, in the Pages sidebar. A size between the two above.",
+          "measured": "11px capitals"
+        },
+        {
+          "id": "rail",
+          "label": "Heading with a subtitle",
+          "crop": "label-rail",
+          "summary": "Destin's picks / What I'm using this week. A plain large heading with a grey line under it.",
+          "measured": "18px + 12px"
+        },
+        {
+          "id": "library",
+          "label": "Large plain heading",
+          "crop": "label-library",
+          "summary": "Favorites, in Your Library. The same large heading as above, without a subtitle.",
+          "measured": "18px"
+        },
+        {
+          "id": "project-files",
+          "label": "Small folder heading",
+          "crop": "label-project-files",
+          "summary": "Project Files, in Projects. Normal small text that doubles as the folder path you can click back through.",
+          "measured": "12px"
+        }
+      ]
+    },
+    {
+      "id": "H-4",
+      "surface": "Titles, tabs and cards",
+      "path": "Anywhere a number says how many",
+      "headline": "Counts are shown six ways. Which should be the standard next to a label or tab?",
+      "notice": "This is about a number that sits beside a word (Files 17). Sentences like \"5 skills\" on a card are a separate kind of count, and you can keep them by picking both.",
+      "pick": "several",
+      "variants": [
+        {
+          "id": "parens",
+          "label": "In brackets",
+          "crop": "count-parens",
+          "summary": "Session Files (12). The number is part of the title text.",
+          "measured": "(12)"
+        },
+        {
+          "id": "tab-faint",
+          "label": "Faint number after",
+          "crop": "count-tab-projects",
+          "summary": "Files 17 · Conversations 2 in Projects. A smaller, fainter number after the word.",
+          "measured": "Files 17"
+        },
+        {
+          "id": "tab-faint-market",
+          "label": "Same, Marketplace",
+          "crop": "count-tab-market",
+          "summary": "All 42 · Plugins 28. The same faint-number style in Marketplace's filter strip.",
+          "measured": "All 42"
+        },
+        {
+          "id": "chip",
+          "label": "Number chip",
+          "crop": "count-chip",
+          "summary": "The 12 on the Session Files button in the top bar, in a small filled chip.",
+          "measured": "12 in a chip"
+        },
+        {
+          "id": "words",
+          "label": "Words",
+          "crop": "count-words-card",
+          "summary": "5 skills, 1 skill · 1 command on Marketplace cards. Plain words, no special styling.",
+          "measured": "5 skills"
+        },
+        {
+          "id": "stats",
+          "label": "Bold number, grey word",
+          "crop": "count-stats",
+          "summary": "17 files · 2 conversations on the Project header. The number bold, the word grey.",
+          "measured": "17 files"
+        }
+      ]
+    },
+    {
+      "id": "H-5",
+      "surface": "Full screens",
+      "path": "The way out, top right of Projects, Pages, Marketplace and Library",
+      "headline": "Full screens offer the way back to chat two ways. Which should all of them use?",
+      "notice": "Projects and Pages use a filled button reading \"Back to chat · Esc\". Marketplace and Library use plain text reading \"Esc · Back to chat\", with the words in the other order.",
+      "variants": [
+        {
+          "id": "button",
+          "label": "Filled button",
+          "crop": "exit-button",
+          "summary": "Projects and Pages. A small filled button, words first, key second."
+        },
+        {
+          "id": "text",
+          "label": "Plain text",
+          "crop": "exit-text",
+          "summary": "Marketplace and Library. Unboxed text, key first, words second."
+        }
+      ]
+    }
+  ],
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ]
+}

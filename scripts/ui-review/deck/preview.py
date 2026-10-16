@@ -45,6 +45,19 @@ def page_count(spec):
     return sum(1 for st in spec['steps'] if not is_page(st))
 
 
+def group_by_theme(files, themes):
+    """The rendered pages of each theme, in page order: {theme: [file, …]}. A page file is named
+    `p<page>-<theme>-<W>x<H>.png`; the theme is matched whole (`youcoded` never takes
+    `youcoded-night`'s pages)."""
+    import re
+    out = {t: [] for t in themes}
+    for f in files:
+        for t in themes:
+            if re.fullmatch(rf'p\d+-{re.escape(t)}-\d+x\d+\.png', os.path.basename(f)):
+                out[t].append(f)
+    return out
+
+
 def preview(spec, sizes=None, themes=None, out=None, log=print):
     """Write one PNG per page x size x theme plus contact.png. Returns 0, 1 if the page logged
     an error while being shot (they are printed), or 2 if this machine has no Chrome.
@@ -55,17 +68,26 @@ def preview(spec, sizes=None, themes=None, out=None, log=print):
     if not can_render(log):
         return 2
     sizes = list(sizes) if sizes else list(DEFAULT_SIZES)
-    # The deck opens on spec['themes'][0] and its `?theme=` switch only knows spec['themes'],
-    # so the default is simply the first two it lists — after apply_live_theme has moved the
-    # theme Destin's app is on to the front.
-    themes = list(themes) if themes else list(spec['themes'][:2])
+    # The deck opens on spec['themes'][0] and its `?theme=` switch only knows spec['themes'].
+    # WHY every theme it carries by default (marketplace-detail friction, proposal 9c): the old
+    # default was the first two, so a three-theme deck's third theme was never looked at unless
+    # the author knew to pass --themes (round 4 of the detail pages missed Midnight that way).
+    themes = list(themes) if themes else list(spec['themes'])
     unknown = [t for t in themes if t not in spec['themes']]
     if unknown:
         # Fix: the page ignores a `?theme=` it does not carry, so without this check the shot
         # would be named for a theme it is not in — a picture that lies about itself.
         log('this deck has no ' + ', '.join(unknown) + ' — it carries ' + ', '.join(spec['themes']))
         return 2
-    out = out or os.path.join(spec['_base'], 'preview')
+    # WHY a folder per deck, emptied first: every deck in a design folder used to share one
+    # `preview/`, and pages a run did not rewrite (another deck's, an older size) stayed beside the
+    # fresh ones under the same names — a session read another deck's stale page as its own.
+    if not out:
+        out = os.path.join(spec['_base'], 'preview', spec['_stem'])
+        if os.path.isdir(out):
+            for f in os.listdir(out):
+                if f.endswith('.png'):
+                    os.remove(os.path.join(out, f))
     os.makedirs(out, exist_ok=True)
 
     srv, url = make_server(spec, 0, lambda state: None)
@@ -111,6 +133,18 @@ def preview(spec, sizes=None, themes=None, out=None, log=print):
         log('could not build the contact sheet: ' + (m.stderr.strip() or f'magick exit {m.returncode}'))
         return 1
     log('contact: ' + sheet)
+    # One sheet per theme as well, the sizes across. WHY (close-session friction, proposal 11):
+    # 24 pages × 4 themes on one sheet came out 773px wide — unreadable, so every check needed
+    # single pages. A theme's own sheet is a quarter as wide for the same pages.
+    if len(themes) > 1:
+        for theme, files in group_by_theme(result['files'], themes).items():
+            if not files:
+                continue
+            one = os.path.join(out, f'contact-{theme}.png')
+            m = subprocess.run(['magick', 'montage', *files, '-tile', f'{len(sizes)}x',
+                                '-geometry', '+6+6', '-background', '#111', one], capture_output=True, text=True)
+            if m.returncode == 0:
+                log(f'contact ({theme}): ' + one)
     if result['errors']:
         log('the page logged an error while being shot:')
         for e in result['errors']:

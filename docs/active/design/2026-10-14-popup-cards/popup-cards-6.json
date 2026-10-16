@@ -1,0 +1,47 @@
+{
+  "title": "Take-over popups: titles, ✕ and the shared layout",
+  "key": "popup-cards-6",
+  "out": "popup-cards-6.review.html",
+  "images": "images/popup-cards-6",
+  "runs": {
+    "before": "runs/r6/before",
+    "after": "runs/r6/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "T-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Take over a conversation",
+      "path": "Resume a conversation that another computer has open (the four ways it can go)",
+      "crop": [
+        {
+          "crop": "chat/takeover/confirm@panel",
+          "label": "Ask"
+        },
+        {
+          "crop": "chat/takeover/force@panel",
+          "label": "No answer"
+        },
+        {
+          "crop": "chat/takeover/undeliverable@panel",
+          "label": "Can't reach"
+        },
+        {
+          "crop": "chat/takeover/claim-denied@panel",
+          "label": "Taken back"
+        }
+      ],
+      "headline": "The take-over popups get your approved titles, a ✕, and the shared layout.",
+      "changed": "Titles: \"Take over this conversation?\", or \"That device can't be reached\" when the other computer can't be contacted. Each now has a ✕. Words are 12px grey like the other popups, and the buttons stack full width with Take over (or Try again) on top. The two longer versions are one box holding the words and buttons; the one-sentence versions stay plain words, the short-question exception.",
+      "notice": "The wording is unchanged; the Buddy window shares it.",
+      "risk": "Two things to judge: the first version now asks twice (title \"Take over this conversation?\" and the line \"…take over here?\"). And \"Taken back\", where the other computer has kept it, also uses \"Take over this conversation?\" because you only approved two titles. Say in a note if you want either reworded."
+    }
+  ]
+}

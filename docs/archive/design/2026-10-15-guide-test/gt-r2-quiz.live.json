@@ -1,0 +1,81 @@
+{
+  "title": "Study quiz card in the chat (round 2, design A)",
+  "key": "gt-r2-quiz.live",
+  "out": "gt-r2-quiz.live.html",
+  "live": {
+    "worktree": "sessions/gt-r2-quiz/youcoded"
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Chat — quiz card",
+      "path": "A chat where the assistant quizzes you",
+      "headline": "Study quiz: answer questions in a card inside the assistant's reply.",
+      "hint": "Click the second practice conversation in the session list (amber dot). Pick an answer, press Next question, go through to the score, try Retake.",
+      "notice": "Builder's main gaps: the guide has NO recipe for cards inside the chat; the normal card style vanishes inside a chat bubble; no neutral notice colour (the explanation box turns hot pink in Halftone).",
+      "risk": "Sending your score to the assistant is faked.",
+      "live": {
+        "app": "default",
+        "params": {
+          "seed": "bubbles-quiz"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-2",
+      "surface": "Chat — quiz card",
+      "path": "Quiz, a wrong answer",
+      "headline": "Quiz after a wrong answer.",
+      "hint": "Second practice conversation (amber dot).",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "seed": "bubbles-quiz",
+          "quiz": "wrong"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-3",
+      "surface": "Chat — quiz card",
+      "path": "Quiz, finished",
+      "headline": "Quiz finished: the score and what you missed.",
+      "hint": "Second practice conversation (amber dot).",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "seed": "bubbles-quiz",
+          "quiz": "finished"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-4",
+      "surface": "Chat — quiz card",
+      "path": "Quiz, sending the score failed",
+      "headline": "Quiz when your score couldn't be sent to the assistant.",
+      "hint": "Second practice conversation (amber dot). Try again works on the second press.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "seed": "bubbles-quiz",
+          "quiz": "send-failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

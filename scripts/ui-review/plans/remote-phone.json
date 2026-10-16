@@ -1,0 +1,38 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&connection=remote",
+ "width": 390,
+ "height": 844,
+ "boot": 3000,
+ "_why": "Remote / phone-browser paired-device UI had ZERO real captures (completeness-screens.md, 2026-09-23 audit) — the one related shot tested a text fallback inside the desktop app, not the actual phone-side experience. Full login (RemoteGate/LoginScreen, remote-gate.tsx) is structurally unreachable here: index.tsx's dev-only workbench bootstrap renders <App/> directly and explicitly bypasses <Root>/<RemoteGate> (its own comment: 'Root exists only to own remote connection state ... going through Root would mean converting isElectron to a function ... going through Root would break a module-eval-time const') — that gap is real and would need a new dev-only entry point to close, out of this repair's scope. What IS reachable and existing (install-mock.ts declarePlatform, `?connection=remote`, undocumented in the README's switches list but present in source): the PAIRED, POST-login state — platform='browser' + isRemoteMode()=true, everything every isRemoteMode() branch in the shared renderer keys on. Filmed narrow (390) because that is the only width a phone browser has (source comment). Known fidelity gaps stated in source: no wallpaper theme layer, no Unpair button, no real terminal PTY classifier — there is no live remote server behind this, only the flag.",
+ "shots": [
+  {
+   "name": "remote-phone-home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[aria-label='Open menu']"
+  },
+  {
+   "name": "remote-phone-menu",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "remote-phone-settings",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    }
+   ],
+   "expect": "[aria-label='Close settings']"
+  }
+ ]
+}

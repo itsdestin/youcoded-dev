@@ -1,0 +1,27 @@
+{
+  "title": "YouCoded theme — welcome header and header lines",
+  "key": "yc-theme-2",
+  "out": "yc-theme-2.review.html",
+  "images": "images/yc-theme-2",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light", "dark"],
+  "crops": {"welcome": ["x", "welcome", "1440x900+0+0"], "settings": ["x", "settings", "480x200+0+0"]},
+  "steps": [
+    {
+      "id": "YT2-1", "surface": "New session screen", "path": "The first screen after setup (YouCoded; Dark shows YouCoded Night)",
+      "crop": "welcome",
+      "headline": "The mascot, heading and line are bigger next to the form and sit a little higher above it.",
+      "changed": "Mascot 80 → 112px, heading one size up to 36px, the line under it at normal reading size, and 24px more space between them and the form.",
+      "notice": "The welcome reads first, the form second.",
+      "risk": "The mascot is still the grey robot until the glass buddy round."
+    },
+    {
+      "id": "YT2-2", "surface": "Settings", "path": "The line under 'Settings' at the top of the panel (close-up)",
+      "crop": "settings",
+      "headline": "The line under the panel's title now uses the same colour as the card outlines below it.",
+      "changed": "Before, it used a lighter edge colour than the cards. The same line sits under the title of every popup (dialogs, Resume, Marketplace and Project details, the file viewer, the project switcher), so they all changed together to stay alike.",
+      "notice": "In every theme the title line and the cards beneath look like one family.",
+      "risk": "Every popup's title line is slightly darker than before, not only Settings'."
+    }
+  ]
+}

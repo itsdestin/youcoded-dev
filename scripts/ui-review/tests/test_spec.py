@@ -1,7 +1,9 @@
 import json, os, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
+sys.path.insert(0, HERE)
 from deck.spec import load_spec, validate, run_names, step_runs, word_count, banned_in, workspace_root, SpecError
+from fixture import shoot_run
 
 def write_spec(d, **over):
     # images/deck names the spec stem ('deck.json'), which is what validate() wants — see
@@ -28,8 +30,11 @@ class SpecTests(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'styles', 'globals.css')), root)
     def _without(self, key):
         p = write_spec(self.d); s = json.load(open(p)); del s[key]; json.dump(s, open(p, 'w')); return p
-    def test_three_runs_rejected(self):
-        with self.assertRaises(SpecError): load_spec(write_spec(self.d, runs={"a": "/a", "b": "/b", "c": "/c"}))
+    def test_any_short_lowercase_run_names_are_accepted(self):
+        # Proposal 9b (2026-10-05): a slide may compare against an older round by its own name.
+        load_spec(write_spec(self.d, runs={"a": "/a", "b": "/b", "round3": "/c"}))
+    def test_a_run_name_with_capitals_or_spaces_is_refused(self):
+        with self.assertRaises(SpecError): load_spec(write_spec(self.d, runs={"Round 3": "/a"}))
     def test_valid_spec_has_no_errors(self):
         self.assertEqual(validate(load_spec(write_spec(self.d))), ([], []))
     def test_images_folder_must_name_the_deck(self):
@@ -62,6 +67,31 @@ class SpecTests(unittest.TestCase):
         # "first-run#authenticate" has no "/" — the "#" state marker is what says shoot screen.
         s = load_spec(write_spec(self.d)); s['steps'][0]['crop'] = 'first-run#authenticate'
         self.assertFalse(any('unknown crop' in e for e in validate(s)[0]))
+    def test_a_one_word_screen_in_a_run_manifest_is_not_an_unknown_crop(self):
+        # WHY (project-switcher friction, proposal 7): "projects" (the Project View) is a real
+        # shoot screen with neither "/" nor "#", so "projects@…" was refused as an unknown crop.
+        # A name the run's own manifest.json lists is a shoot screen, whatever its shape.
+        run = shoot_run(os.path.join(self.d, 'run'), [{'name': 'projects', 'theme': 'light'}])
+        s = load_spec(write_spec(self.d, runs={'today': run}))
+        for crop in ('projects', 'projects@600x400+100+50'):
+            s['steps'][0]['crop'] = crop
+            errors = validate(s)[0]
+            self.assertFalse(any('unknown crop' in e for e in errors), (crop, errors))
+            self.assertFalse(any('needs a highlight' in e for e in errors), (crop, errors))
+        s['steps'][0]['crop'] = 'projectz'   # a typo of it is still refused
+        self.assertTrue(any('unknown crop' in e for e in validate(s)[0]))
+    def test_also_changes_names_other_screens_in_short_words(self):
+        # Close-session friction, proposal 15: a change to a SHARED card ("In your lists") is a
+        # change to Session details too, and nothing on a slide could say so.
+        s = load_spec(write_spec(self.d)); s['steps'][0]['alsoChanges'] = ['Session details', 'Resume → Organize']
+        self.assertEqual(validate(s)[0], [])
+        s['steps'][0]['alsoChanges'] = 'Session details'
+        self.assertTrue(any('alsoChanges' in e and 'list' in e for e in validate(s)[0]))
+        s['steps'][0]['alsoChanges'] = ['a screen whose name runs on far too long for a list']
+        self.assertTrue(any('alsoChanges' in e and 'words' in e for e in validate(s)[0]))
+        s['steps'][0]['alsoChanges'] = ['The tags component']
+        self.assertTrue(any('banned word "component"' in e for e in validate(s)[0]))
+
     def test_a_single_run_shoot_screen_needs_no_highlight(self):
         # A shoot picture defaults to its own panel as the highlight, so — unlike a legacy crop
         # — one picture and no highlight is not an error.
@@ -161,6 +191,40 @@ class SpecTests(unittest.TestCase):
         self.assertEqual(word_count("it’s a two-line, five-word headline"), 5)   # curly apostrophe is one word too
 
 if __name__ == '__main__': unittest.main()
+
+
+class ComposeAndNewStateTests(unittest.TestCase):
+    """A crop may be a LIST of pictures laid side by side; a one-picture slide of something
+    already built may say `"new": true` (keep / remove). games-social friction, proposals 4, 5."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+    def _errors(self, step_over, **over):
+        step = {"id": "S-1", "surface": "Games", "path": "Games", "crop": "c",
+                "headline": "Short headline.", "changed": "What changed.", "notice": "You will notice."}
+        step.update(step_over)
+        return validate(load_spec(write_spec(self.d, steps=[step], **over)))[0]
+    def test_a_list_of_known_crops_is_valid(self):
+        self.assertEqual(self._errors({"crop": ["c", "games/a@10x10+0+0", {"crop": "games/b", "label": "Opened"}]}), [])
+    def test_a_list_crop_needs_two_pieces_and_known_names(self):
+        self.assertTrue(any('at least two' in e for e in self._errors({"crop": ["c"]})))
+        self.assertTrue(any('unknown crop "nope"' in e for e in self._errors({"crop": ["c", "nope"]})))
+        self.assertTrue(any('list inside a list' in e for e in self._errors({"crop": ["c", ["c", "c"]]})))
+        self.assertTrue(any('only "crop" and "label"' in e for e in self._errors({"crop": ["c", {"crop": "c", "box": 1}]})))
+    def test_a_piece_label_is_a_short_caption_in_plain_words(self):
+        self.assertTrue(any('keep it to four' in e for e in self._errors({"crop": ["c", {"crop": "c", "label": "one two three four five"}]})))
+        self.assertTrue(any('banned word "component"' in e for e in self._errors({"crop": ["c", {"crop": "c", "label": "The component"}]})))
+    def test_panel_highlight_is_refused_on_a_composite(self):
+        self.assertTrue(any('ONE shoot screen' in e for e in self._errors({"crop": ["games/a", "games/b"], "highlight": "panel"})))
+    def test_a_one_picture_composite_needs_no_highlight(self):
+        self.assertEqual(self._errors({"crop": ["games/a", "games/b"]}, runs={"after": "/b"}), [])
+    def test_new_marks_a_one_picture_slide_of_something_built(self):
+        self.assertEqual(self._errors({"crop": "games/a", "new": True}, runs={"after": "/b"}), [])
+    def test_new_on_a_before_and_after_slide_is_refused(self):
+        self.assertTrue(any('already reads keep / revert' in e for e in self._errors({"crop": "games/a", "new": True})))
+    def test_new_must_be_true(self):
+        self.assertTrue(any('true or absent' in e for e in self._errors({"crop": "games/a", "new": "yes"}, runs={"after": "/b"})))
+    def test_a_new_state_slide_counts_as_a_review(self):
+        self.assertEqual(self._errors({"crop": "games/a", "new": True}, runs={"after": "/b"}, stage="review"), [])
+        self.assertTrue(any('"review" deck needs' in e for e in self._errors({"crop": "games/a", "highlight": {"box": [1, 1, 5, 5]}}, runs={"after": "/b"}, stage="review")))
 
 
 class ClipStepTests(unittest.TestCase):
@@ -416,9 +480,10 @@ class SlideRunsTests(unittest.TestCase):
         s = load_spec(write_spec(self.d, runs={'today': '/t', 'before': '/a', 'after': '/b'}))
         self.assertEqual(len(s['runs']), 3)
 
-    def test_a_capture_name_outside_the_three_is_refused(self):
-        with self.assertRaises(SpecError):
-            load_spec(write_spec(self.d, runs={'yesterday': '/a'}))
+    def test_before_always_reads_left_of_after_whatever_else_is_named(self):
+        from deck.spec import run_names
+        s = load_spec(write_spec(self.d, runs={'after': '/b', 'round3': '/c', 'before': '/a'}))
+        self.assertEqual(run_names(s), ['before', 'after', 'round3'])
 
 
 if __name__ == '__main__': unittest.main()

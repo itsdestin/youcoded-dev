@@ -1,0 +1,38 @@
+{
+ "deck": "ui-status-pills",
+ "started": "2026-10-01T01:00:52.624Z",
+ "submitted": "2026-10-01T01:15:33Z",
+ "cur": 3,
+ "answers": {
+  "PL-1": {
+   "note": "we can remove the openrouter key not accepted status thing altogether, because the error below basically duplicates the statusmessage.",
+   "t": 1790816539175,
+   "v": "other",
+   "seconds": 87,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PL-2": {
+   "note": "don't like this, i think the buttons/copy/warning for each of these cards should all kinda shift to accomodate the different states. i don't like these status pills. i'd prefer a full warning/banner with the button inside on the righthand side. like \"key saved - not yet tested\" should be a yellow warning banner across the bottom with a \"replace key\" and \"try again\" button. buttons inside the banner, try again the dark one. no online status",
+   "t": 1790817056107,
+   "v": "other",
+   "seconds": 328,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PL-3": {
+   "v": "yes",
+   "t": 1790817190889,
+   "seconds": 135,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PL-4": {
+   "v": "yes",
+   "t": 1790817327851,
+   "seconds": 137,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

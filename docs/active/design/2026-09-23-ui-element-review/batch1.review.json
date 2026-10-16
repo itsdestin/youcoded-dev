@@ -1,0 +1,193 @@
+{
+  "title": "Fix batch 1 — Settings and lists, before and after",
+  "key": "ui-fix-batch-1",
+  "out": "batch1.review.html",
+  "images": "images/batch1.review",
+  "runs": {
+    "before": "runs/b1-before",
+    "after": "runs/b1-after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "perm": [
+      "assistant-settings",
+      "assistant-permissions",
+      "820x700+310+100"
+    ],
+    "skip": [
+      "assistant-settings",
+      "assistant-claude-skip-on",
+      "360x360+540+270"
+    ],
+    "local": [
+      "assistant-settings",
+      "assistant-local",
+      "820x700+310+100"
+    ],
+    "spec": [
+      "assistant-settings",
+      "assistant-specialists",
+      "820x700+310+100"
+    ],
+    "remote": [
+      "main",
+      "settings-remote-access",
+      "420x590+510+150"
+    ],
+    "sync": [
+      "main",
+      "settings-backup-sync",
+      "420x590+510+150"
+    ],
+    "oversize": [
+      "sync-oversize-fix",
+      "sync-oversize-open",
+      "420x590+510+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "B1-1",
+      "surface": "Assistant settings — Permissions",
+      "path": "Settings → Assistant settings → Permissions",
+      "headline": "Assistant settings — Permissions: keep these changes?",
+      "crop": "perm",
+      "changed": "The doubled heading is gone; small labels lose their spaced capitals.",
+      "notice": "\"Permission modes\" is the only heading where two used to stack."
+    },
+    {
+      "id": "B1-2",
+      "surface": "Skip Permissions confirm",
+      "path": "Permissions → turn on Skip Permissions Mode",
+      "headline": "Skip Permissions confirm: keep these changes?",
+      "crop": "skip",
+      "changed": "Narrow popup: the two buttons now stack, the red one on top, an outlined Cancel below.",
+      "notice": "Matches your \"stacked in narrow popups, main on top\" rule.",
+      "highlight": {
+        "box": [
+          0,
+          60,
+          100,
+          32
+        ]
+      }
+    },
+    {
+      "id": "B1-3",
+      "surface": "Assistant settings — Local models",
+      "path": "Settings → Assistant settings → Local models",
+      "headline": "Assistant settings — Local models: keep these changes?",
+      "crop": "local",
+      "changed": "Labels lose capitals; download errors now sit in tinted boxes; the plain-text retry and Pause are real buttons.",
+      "notice": "Error states only show when a download fails, so this picture shows the calm state.",
+      "risk": "The failed-download states could not be pictured by the capture tool; they are code-checked only."
+    },
+    {
+      "id": "B1-4",
+      "surface": "Assistant settings — Specialists",
+      "path": "Settings → Assistant settings → Specialists",
+      "headline": "Assistant settings — Specialists: keep these changes?",
+      "crop": "spec",
+      "changed": "Labels lose their spaced capitals; rows slightly tighter.",
+      "notice": "Otherwise unchanged — its \"box in a box\" had already been removed earlier."
+    },
+    {
+      "id": "B1-5",
+      "surface": "Remote Access",
+      "path": "Settings → Remote Access",
+      "headline": "Remote Access: keep these changes?",
+      "crop": "remote",
+      "changed": "Password hint moved under its label, above the box; Set stays inside the box; labels lose capitals; lone Install Tailscale button full width. Keep awake left as is (its own redesign).",
+      "notice": "One miss I found: \"Generate\" is still plain text — it should be an outlined button. I will fix it with any changes you ask for.",
+      "highlight": {
+        "box": [
+          0,
+          30,
+          100,
+          48
+        ]
+      }
+    },
+    {
+      "id": "B1-6",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync",
+      "headline": "Backup & Sync: keep these changes?",
+      "crop": "sync",
+      "changed": "\"Additional backups\" is flat: no dashed box and no boxes inside it; a normal outlined \"Add a backup\" button; labels lose capitals.",
+      "notice": "The main sync status card is unchanged."
+    },
+    {
+      "id": "B1-7",
+      "surface": "Backup & Sync — too big to sync",
+      "path": "Backup & Sync with conversations over the size limit",
+      "headline": "Backup & Sync — too big to sync: keep these changes?",
+      "crop": "oversize",
+      "changed": "Same flattening and labels, with the warning box you chose kept.",
+      "notice": "The orange warning box is the style you picked."
+    },
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Rewritten: How to use this guide",
+      "headline": "Is the rewritten \"How to use this guide\" clear and useful now?",
+      "changed": "1. Name the job: \"a popup with a main action\", \"a list of settings\", \"a card for something you can install\".  2. Find that job's recipe below and copy its sizes, order and placement exactly, checking the example screen it names.  3. If no recipe fits, stop and ask Destin for one. Do not invent a look.",
+      "notice": "Rewritten after your \"word salad\" note (or, for Principle 3, with your own wording).",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Rewritten: Principle 1",
+      "headline": "Is the rewritten \"Principle 1\" clear and useful now?",
+      "changed": "1. Find the job first. Every element has a job with a recipe below — \"two buttons in a narrow popup\" → Buttons; \"a setting with a switch\" → Settings. Copy the recipe exactly; if none fits, ask Destin for one instead of inventing a look.",
+      "notice": "Rewritten after your \"word salad\" note (or, for Principle 3, with your own wording).",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "W-3",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Rewritten: Principle 3",
+      "headline": "Is the rewritten \"Principle 3\" clear and useful now?",
+      "changed": "3. Quiet by default. Small grey labels in normal case. Show what the user needs to act on; drop details nobody asked for and options or information that would confuse someone who has never seen the app or used its features. Headers are one line.",
+      "notice": "Rewritten after your \"word salad\" note (or, for Principle 3, with your own wording).",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "W-4",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Rewritten: Principle 5",
+      "headline": "Is the rewritten \"Principle 5\" clear and useful now?",
+      "changed": "5. Cards for things, rows for lists, no nesting. Something you open or install (a plugin, a Page, a file) is a raised card. A list you read or pick from (settings, a menu) is rows, never cards. Group with a small label and spacing — never put a box inside a box.",
+      "notice": "Rewritten after your \"word salad\" note (or, for Principle 3, with your own wording).",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "W-5",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Rewritten: Text and numbers",
+      "headline": "Is the rewritten \"Text and numbers\" clear and useful now?",
+      "changed": "• Body text: 14px, main text colour.  • Hints, descriptions, dates and other secondary text: 12px in the one grey used for secondary text. The faintest grey is only for disabled things.  • Nothing a user has to read is smaller than 11px.  • A count beside a label or tab is the word then a smaller, fainter number: \"Files 17\". In a summary line it is a bold number then a grey word: \"17 files\". Never \"(17)\" and never a number in a bubble.",
+      "notice": "Rewritten after your \"word salad\" note (or, for Principle 3, with your own wording).",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    }
+  ]
+}

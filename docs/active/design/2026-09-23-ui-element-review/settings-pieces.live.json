@@ -1,0 +1,270 @@
+{
+  "title": "Settings pieces",
+  "key": "ui-element-review-settings-pieces",
+  "out": "settings-pieces.live.html",
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 460
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings",
+      "path": "Backup & Sync \u2192 Sync log; Local models \u2192 Advanced",
+      "hint": "Click the fold-outs in each pane to open them.",
+      "headline": "How should a fold-out section (Sync log, Advanced, Show details) look?",
+      "notice": "Today one popup uses two styles: a triangle for Show details, an arrow for Sync log.",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "triangle",
+          "label": "Today: triangle",
+          "candidate": "triangle",
+          "summary": "Small grey text with a triangle."
+        },
+        {
+          "id": "chevron-left",
+          "label": "Today: arrow",
+          "candidate": "chevron-left",
+          "summary": "Small grey text with an arrow."
+        },
+        {
+          "id": "row",
+          "label": "Boxed row",
+          "candidate": "row",
+          "summary": "A whole row like a setting, arrow on the right."
+        },
+        {
+          "id": "button",
+          "label": "Outlined button",
+          "candidate": "button",
+          "summary": "A small outlined button with an arrow."
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "surface": "Settings",
+      "path": "Backup & Sync when sync fails",
+      "headline": "How should an error inside a setting look?",
+      "notice": "Today the message is red text inside the status card, unlike the warning box you picked.",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 2
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "Red text inside the status card."
+        },
+        {
+          "id": "box-under",
+          "label": "Warning box under it",
+          "candidate": "box-under",
+          "summary": "The setting stays a normal row; the problem goes in the tinted box."
+        },
+        {
+          "id": "whole-card",
+          "label": "Whole card tinted",
+          "candidate": "whole-card",
+          "summary": "The setting itself becomes the tinted red box."
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "surface": "Settings",
+      "path": "Backup & Sync \u2192 Back up all now",
+      "headline": "How should a small follow-up action under a group look?",
+      "notice": "Today: underlined words at the bottom left (Back up all now, Sync now, Clear).",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 3
+      },
+      "variants": [
+        {
+          "id": "link",
+          "label": "Today: underlined text",
+          "candidate": "link",
+          "summary": "Underlined words at the bottom left."
+        },
+        {
+          "id": "outlined-right",
+          "label": "Small, on the right",
+          "candidate": "outlined-right",
+          "summary": "A small outlined button at the right."
+        },
+        {
+          "id": "outlined-full",
+          "label": "Full width",
+          "candidate": "outlined-full",
+          "summary": "An outlined button across the width."
+        },
+        {
+          "id": "row",
+          "label": "Its own row",
+          "candidate": "row",
+          "summary": "A row with a title and hint, button on the right."
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "surface": "Settings",
+      "path": "Assistant settings \u2192 Local models, a failed download",
+      "headline": "How should a problem on one item in a list show?",
+      "notice": "Today: a bright strip across the top of the card (Download interrupted, Damaged).",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 4
+      },
+      "variants": [
+        {
+          "id": "banner",
+          "label": "Today: strip on top",
+          "candidate": "banner",
+          "summary": "A bright coloured strip across the card's top."
+        },
+        {
+          "id": "pill",
+          "label": "Pill by the name",
+          "candidate": "pill",
+          "summary": "A tinted pill beside the name, like Installed."
+        },
+        {
+          "id": "box",
+          "label": "Warning box inside",
+          "candidate": "box",
+          "summary": "The tinted warning box inside the card, with a short explanation."
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "surface": "Settings",
+      "path": "Remote Access \u2192 Password",
+      "headline": "How should the button inside a text box look?",
+      "notice": "Type in the box to see it. Generate is gone, as you asked.",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 5
+      },
+      "variants": [
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "candidate": "outlined",
+          "summary": "A small outlined button."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "candidate": "filled",
+          "summary": "A small filled button."
+        },
+        {
+          "id": "ghost",
+          "label": "Plain word",
+          "candidate": "ghost",
+          "summary": "The word only; highlights on hover."
+        },
+        {
+          "id": "arrow",
+          "label": "Arrow",
+          "candidate": "arrow",
+          "summary": "A filled square with an arrow, like send."
+        }
+      ]
+    },
+    {
+      "id": "P-6",
+      "surface": "Popups",
+      "path": "Permissions \u2192 turn on Skip Permissions Mode",
+      "hint": "Tick the box: Turn it on only works once it is ticked.",
+      "headline": "How should an 'I understand' tick box look before a risky action?",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 6
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "A small box on the left, text beside it."
+        },
+        {
+          "id": "boxed-left",
+          "label": "Boxed, box left",
+          "candidate": "boxed-left",
+          "summary": "The whole line is a tappable box that lights up when ticked."
+        },
+        {
+          "id": "boxed-right",
+          "label": "Boxed, box right",
+          "candidate": "boxed-right",
+          "summary": "The same, tick box on the right like a setting."
+        },
+        {
+          "id": "switch",
+          "label": "Switch",
+          "candidate": "switch",
+          "summary": "A setting row with a switch."
+        }
+      ]
+    },
+    {
+      "id": "P-7",
+      "surface": "Settings",
+      "path": "Remote Access, top of the popup",
+      "headline": "How should the status at the top of a Settings popup look?",
+      "notice": "Today it is a box inside a box. The same shape tops Backup & Sync.",
+      "live": {
+        "surface": "settings-pieces",
+        "round": 7
+      },
+      "variants": [
+        {
+          "id": "nested",
+          "label": "Today: box in a box",
+          "candidate": "nested",
+          "summary": "The intro and status box inside an outer box."
+        },
+        {
+          "id": "plain-intro",
+          "label": "Intro above",
+          "candidate": "plain-intro",
+          "summary": "The intro as plain text, then the status box."
+        },
+        {
+          "id": "strip-only",
+          "label": "Intro inside status",
+          "candidate": "strip-only",
+          "summary": "One status box; the intro is its grey second line."
+        }
+      ]
+    },
+    {
+      "id": "P-8",
+      "words": true,
+      "answer": "words",
+      "surface": "Backup & Sync",
+      "path": "Backup & Sync with conversations too big to sync",
+      "headline": "On the 'too big to sync' screen, what was wrong?",
+      "prompt": "e.g. the same as the main Backup & Sync screen, or the warning box itself",
+      "today": "You answered 'other' on this slide last round but left no note.",
+      "problem": "I can't tell whether you disliked the orange warning box or the rest of the screen.",
+      "proposal": "Tell me in a line; if it's the same as the main screen, I'll fix them together."
+    }
+  ]
+}

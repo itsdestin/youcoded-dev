@@ -1,0 +1,316 @@
+{
+  "title": "Button shapes — the same screens three ways",
+  "key": "ui-element-review-button-shapes",
+  "out": "button-shapes.review.html",
+  "images": "images/button-shapes.review",
+  "runs": {
+    "today": "runs/buttons-2"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "today-projects": [
+      "compare",
+      "today-projects",
+      "1100x150+170+255"
+    ],
+    "rect-projects": [
+      "compare",
+      "rect-projects",
+      "1100x150+170+255"
+    ],
+    "pill-projects": [
+      "compare",
+      "pill-projects",
+      "1100x150+170+255"
+    ],
+    "today-marketplace": [
+      "compare",
+      "today-marketplace",
+      "1440x340+0+0"
+    ],
+    "rect-marketplace": [
+      "compare",
+      "rect-marketplace",
+      "1440x340+0+0"
+    ],
+    "pill-marketplace": [
+      "compare",
+      "pill-marketplace",
+      "1440x340+0+0"
+    ],
+    "today-settings-appearance": [
+      "compare",
+      "today-settings-appearance",
+      "440x150+500+562"
+    ],
+    "rect-settings-appearance": [
+      "compare",
+      "rect-settings-appearance",
+      "440x150+500+562"
+    ],
+    "pill-settings-appearance": [
+      "compare",
+      "pill-settings-appearance",
+      "440x150+500+562"
+    ],
+    "today-tags-note-popover": [
+      "compare",
+      "today-tags-note-popover",
+      "380x90+530+560"
+    ],
+    "rect-tags-note-popover": [
+      "compare",
+      "rect-tags-note-popover",
+      "380x90+530+560"
+    ],
+    "pill-tags-note-popover": [
+      "compare",
+      "pill-tags-note-popover",
+      "380x90+530+560"
+    ],
+    "today-resume-browser": [
+      "compare",
+      "today-resume-browser",
+      "430x150+215+150"
+    ],
+    "rect-resume-browser": [
+      "compare",
+      "rect-resume-browser",
+      "430x150+215+150"
+    ],
+    "pill-resume-browser": [
+      "compare",
+      "pill-resume-browser",
+      "430x150+215+150"
+    ],
+    "today-first-run-sign-in": [
+      "compare",
+      "today-first-run-sign-in",
+      "480x320+480+480"
+    ],
+    "rect-first-run-sign-in": [
+      "compare",
+      "rect-first-run-sign-in",
+      "480x320+480+480"
+    ],
+    "pill-first-run-sign-in": [
+      "compare",
+      "pill-first-run-sign-in",
+      "480x320+480+480"
+    ],
+    "today-phone": [
+      "compare-narrow",
+      "today-home",
+      "390x230+0+614"
+    ],
+    "rect-phone": [
+      "compare-narrow",
+      "rect-home",
+      "390x230+0+614"
+    ],
+    "pill-phone": [
+      "compare-narrow",
+      "pill-home",
+      "390x230+0+614"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Projects",
+      "path": "The top of any project",
+      "headline": "Projects: which button shapes look best here?",
+      "notice": "Look at: Rename, New Conversation, the tab strip, search and Add file. Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-projects",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-projects",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-projects",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ],
+      "risk": "Picking differently on different screens is a real answer: it means shapes should depend on the job, and the guide will say so."
+    },
+    {
+      "id": "P-2",
+      "surface": "Marketplace",
+      "path": "The top of the Marketplace",
+      "headline": "Marketplace: which button shapes look best here?",
+      "notice": "Look at: The header buttons, the featured banner button and the filter strip. Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-marketplace",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-marketplace",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-marketplace",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "surface": "Settings",
+      "path": "Settings → Appearance",
+      "headline": "Settings: which button shapes look best here?",
+      "notice": "Look at: Two full-width buttons: Browse Theme Marketplace and Build New Theme. Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-settings-appearance",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-settings-appearance",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-settings-appearance",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "surface": "Chat",
+      "path": "A conversation's Tags & note popup",
+      "headline": "Chat: which button shapes look best here?",
+      "notice": "Look at: The full-width Done button (a pill today). Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-tags-note-popover",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-tags-note-popover",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-tags-note-popover",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "surface": "Resume Session",
+      "path": "The session list",
+      "headline": "Resume Session: which button shapes look best here?",
+      "notice": "Look at: The search box and the Projects / Tags / Most recent filter buttons. Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-resume-browser",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-resume-browser",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-resume-browser",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ]
+    },
+    {
+      "id": "P-6",
+      "surface": "First-run setup",
+      "path": "The sign-in step",
+      "headline": "First-run setup: which button shapes look best here?",
+      "notice": "Look at: The five stacked sign-in buttons (pills today). Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-first-run-sign-in",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-first-run-sign-in",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-first-run-sign-in",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ]
+    },
+    {
+      "id": "P-7",
+      "surface": "Phone",
+      "path": "Chat at phone width",
+      "headline": "Phone: which button shapes look best here?",
+      "notice": "Look at: The quick-prompt chips above the message box and the status chips below it. Nothing else on the screen changes between the three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-phone",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "rect",
+          "label": "Rectangles",
+          "crop": "rect-phone",
+          "summary": "Every button, tab, filter and search box gets the same gentle 8px corners at every size."
+        },
+        {
+          "id": "pill",
+          "label": "Pills",
+          "crop": "pill-phone",
+          "summary": "Every button, tab, filter and search box is fully rounded at every size."
+        }
+      ]
+    }
+  ]
+}

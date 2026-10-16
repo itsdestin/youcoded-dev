@@ -1,0 +1,65 @@
+{
+ "deck": "ui-sentence-case",
+ "started": "2026-09-29T10:51:32.817Z",
+ "submitted": "2026-09-29T10:53:03Z",
+ "cur": 7,
+ "answers": {
+  "SC-1": {
+   "v": "yes",
+   "t": 1790679101199,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-2": {
+   "v": "yes",
+   "t": 1790679111256,
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-3": {
+   "v": "yes",
+   "t": 1790679117124,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-4": {
+   "v": "yes",
+   "t": 1790679161932,
+   "note": "",
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-5": {
+   "v": "yes",
+   "t": 1790679166993,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-6": {
+   "v": "yes",
+   "t": 1790679169532,
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-7": {
+   "v": "yes",
+   "t": 1790679177635,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SC-8": {
+   "v": "yes",
+   "t": 1790679182647,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

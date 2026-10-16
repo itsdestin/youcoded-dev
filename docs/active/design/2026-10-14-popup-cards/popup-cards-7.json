@@ -1,0 +1,47 @@
+{
+  "title": "Take-over popups: every version boxed",
+  "key": "popup-cards-7",
+  "out": "popup-cards-7.review.html",
+  "images": "images/popup-cards-7",
+  "runs": {
+    "before": "runs/r6b/before",
+    "after": "runs/r6b/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "T-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Take over a conversation",
+      "path": "Resume a conversation that another computer has open (the four ways it can go)",
+      "crop": [
+        {
+          "crop": "chat/takeover/confirm@panel",
+          "label": "Ask"
+        },
+        {
+          "crop": "chat/takeover/force@panel",
+          "label": "No answer"
+        },
+        {
+          "crop": "chat/takeover/undeliverable@panel",
+          "label": "Can't reach"
+        },
+        {
+          "crop": "chat/takeover/claim-denied@panel",
+          "label": "Taken back"
+        }
+      ],
+      "headline": "Ask and Taken back now use the same box as the other two, as you asked.",
+      "changed": "The one-sentence versions now put their words and buttons inside one box, the same as No answer and Can't reach. Titles, ✕ and wording as on the last page.",
+      "notice": "Before = the last page's version (plain words for Ask and Taken back).",
+      "risk": "Other one-sentence popups (Remove project when the folder is missing, Switch model, Remove backup) still use plain words with no box. I haven't changed those."
+    }
+  ]
+}

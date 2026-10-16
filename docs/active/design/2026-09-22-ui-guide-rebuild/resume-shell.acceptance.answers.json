@@ -1,0 +1,15 @@
+{
+ "deck": "ui-guide-resume-shell-acceptance-1",
+ "started": "2026-09-23T12:08:08.006Z",
+ "submitted": "2026-09-23T12:08:18Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "v": "pick",
+   "pick": "applied",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

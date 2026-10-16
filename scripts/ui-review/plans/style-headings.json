@@ -1,0 +1,118 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "settings-sound",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Sound\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "settings-about",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"About\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "projects",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label=Files]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[aria-label='Open Your Library'], [title='Your Library']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[title='Marketplace']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "view",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Back to chat']",
+    "[aria-label='Pin Week planner']"
+   ],
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "assistant-general",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog] nav[aria-label='Assistant settings pages']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  }
+ ]
+}

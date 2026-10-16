@@ -1,0 +1,331 @@
+---
+status: active
+date: 2026-10-05
+related: redesign-backlog.md row 11, games-social-1.json
+---
+
+# Games: friends panel, sign-in and lobby — where the guide helped, and where it didn't
+
+First drafts of the redesigned Games panel (backlog row 11), built only from `guide-draft.md`,
+`decisions.md`, the backlog and the workspace tooling. App commits: practice states + screens
+(no visual change), then the redesign. Deck: `games-social-1.json` (before `runs/gs-before`,
+after `runs/gs-after`; YouCoded, YouCoded Night, Midnight).
+
+References opened first (guide "How to use" step 2): **the sessions menu's status pill**
+(`SessionStrip.tsx` `StatusPill` — a live status with its dot inside), **Account → Your profile**
+(identity row + outlined button in one level-1 card; the signed-in/out card in the same spot),
+**Session details' Tags card** (an "Add a tag" box at the top of the card that holds the list),
+**Settings → Remote Access device list** (short names as plain rows in one shared box), and the
+**solo leaderboards** (`Leaderboard.tsx`, a score column at the right under a small label).
+
+## Decisions, one by one
+
+| # | What I did | Driven by |
+|---|---|---|
+| 1 | Signed out: one card at the TOP, Destin's sentence verbatim, a filled Sign in; "Flappy and 2048 play without an account" removed. | Backlog row 11 (verbatim). Guide "Empty states" (a card with a short explanation and one button). |
+| 2 | The Sign in is **centred** by default; a full-width draft is on the deck (GC-2). | **Contradicted.** Destin's direction says "centered filled sign in"; guide "Buttons" says any lone button is full width unless it sits on one line beside its text. Built both, asked. |
+| 3 | A "Friends" label over that card and over the signed-in card; a "Games" label over the grid. | Guide "Spacing" → a label comes first; once one card has a label every card does. The grid is cards you pick (raised cards), so it is **ambiguous** whether "every card labelled" covers a card grid — I labelled it so the two groups read as siblings. |
+| 4 | Unplayable games (versus signed out; versus when the server is down) are disabled and greyed with `opacity-50`; their line still says why. | Row 11 ("grey/disable unplayable games"). **Reverses** the arcade spec §4.2 / old guide §4.7 rule that signed-out versus tiles stay clickable to explain the gate — the friends panel now explains it. Guide "Text and numbers": the faintest grey is only for disabled things. |
+| 5 | Signed in: ONE level-1 card holds you (name, live pill, Go incognito), the add box, and every person as plain rows in ONE nested box. | Guide "Card levels" (one idea = one card; nested = level-2), "Lists of short names are plain rows inside one shared box", decisions K-RULE (four-kinds rejected: keep grouping cards). |
+| 6 | Status as pills with a dot inside: Online / In game green, Offline grey; Connecting… / Incognito / Offline for you. | Row 11 ("online status should be a status pill"); guide "Status and notices" (live status carries its dot inside the pill); decisions S-1, PL-1…4 (lobby states green/grey). **Tooling gap:** the shared `Pill` had no dot — the only dotted pill is the session switcher's private copy. I added an optional `dot` to `Pill` (static dot, no animation — performance rule 6). Not invented vocabulary, but a primitive change: flag it. |
+| 7 | "Last seen 3h ago" stays a grey line under an offline friend; the pill says Offline. | Guide silent on history vs live state — chose: pill = live state, grey line = history (the setting row's hint). |
+| 8 | Friend requests are rows in the same list: incoming first ("Wants to be your friend", filled Accept + outlined Decline), sent last ("Request sent" pill + Cancel). | Row 11 ("add a friend could be subsumed into friends"). **Ambiguous:** guide principle 6 says one filled button per view; Accept stays filled (change 47, 2026-07-16), so several incoming requests show several filled buttons. Guide silent on a list where each row has its own main action. |
+| 9 | Add a friend: three drafts behind `?friendsAdd=` — box at the top of the card (shipped default), full-width outlined button under the list that opens the box, a fold-out row. Box keeps "Add" inside it as a small filled button. | Row 11 left the "how" open. Guide "Buttons" (action inside the text box — P-5/G-8; a follow-up action is a full-width outlined button — P-3; never a dashed add box — fix batch 1) and "Settings" (fold-outs are boxed rows). The top-box default copies Session details' Add a tag. The "Add" button label replaced "Send request" (screen-reader name: "Send friend request"). |
+| 10 | Lobby keeps: incoming challenge (Accept/Decline notice), declined notice, and each friend's pill, record and Challenge. Removed: profile card, add box, requests, sent requests, ⋯ menu. | Row 11 ("just show scores for each person … with challenge. no add friend in game panels"). |
+| 11 | Lobby record: three drafts behind `?lobbyScores=` — right-hand column under "Your record" (shipped default), today's chip, a sentence under the name ("You lead 4–2"). | Row 11 left the "how" open. Column copies the solo leaderboards' score column; the sentence uses `recordSentence` (the end-of-game card's wording). **Guide silent** on numbers in a list row. |
+| 12 | Lobby while incognito: a notice "You're incognito. Friends can't see you or challenge you." with Go online inside it. | Guide "Status and notices" (a notice's buttons go inside it). Needed because the incognito switch left the lobby (moved to the friends card). |
+| 13 | Empty lobby: a card + full-width filled "Add a friend" that goes back to the Games list. | Guide "Empty states" (first time → card + one full-width filled button). **Behaviour:** the button navigates; it doesn't open the box (in the `button`/`fold` drafts you still have to open it). |
+| 14 | Presence pills hidden whenever presence is unknown (incognito, server unreachable) instead of showing "Offline". | Workspace rule "never invent a cause/state"; found reading the round's pictures (degraded state showed everyone "Offline" beside "Active just now"). Guide silent on unknown status. |
+| 15 | Block confirm inside the ⋯ menu: red Block on top, Cancel under it, full width. | Guide "Buttons" (destructive confirm: red takes the main action's place — on top when stacked). Was side by side with red on the LEFT. The red "Block" menu item text was left as it was — **guide silent** on destructive menu items vs "never coloured text". |
+| 16 | Phone and 640×480: same layout; nothing scrolls sideways. In 640×480 the friends card fills the first screen and the games are out of sight. | Guide "Every theme, every width". The cost is asked as a question (GQ-1) rather than solved by inventing a cap. |
+
+## Tooling — did the Marketplace-round improvements help?
+
+| Improvement | Verdict |
+|---|---|
+| **Practice-state switches / fixtures pattern** | Helped a lot. Adding `?friends=many|requests|none` to the existing `social` fake took ~40 lines and gave every state the brief asked for. The "N designs of one real screen" recipe in `scripts/shoot/README.md` was exactly right — three switches in `workbench-mode.ts`, screen entries with `params`. |
+| **1.5× pictures by default** | Helped — chip/pill borders were judged at Destin's scale with no extra step. |
+| **Region crops `<screen>@WxH+X+Y`** | Essential: the games pane is 420px on the right of a 1440px picture, so a whole-screen crop is mostly chat. |
+| **`highlight: "panel"`** | **Broke on region crops**: `build` refused every step ("has no panel box to draw (a region crop, or an old picture)"). The region already IS the panel, so for a whole-pane redesign there was nothing to box; I dropped the field and accepted the default `auto`, which then warns "whole-surface change, name an element" on 13 of 16 steps — the same warning the Marketplace round asked to silence. Fix: let `panel` on a region crop mean "the region itself", or translate the panel box into region coordinates. |
+| **"Parts agree" check (`data-parts-agree`)** | Used: marked the friend-request button pair and the challenge Accept/Decline pair. No findings. It cannot see the thing that actually needed checking (pill heights next to buttons in one row are DIFFERENT by design), so it stays a narrow check. |
+| **Preview writes per deck, `--themes`** | Helped: `preview/games-social-1/` held only this deck. Still easy to forget `--themes` (default takes two). |
+| **verify keeps logs** | Fine; both full runs passed so the logs weren't needed. `shoot --check` was NOT blocked by port 4717 this time. |
+
+## New friction
+
+1. **The crop names a screen STATE, and a typo silently shows a different state.** My first build
+   pointed GS-2/3/4 at `chat/games@…` (signed out) instead of `chat/games#friends@…`, and GS-5/6 at
+   the one-friend lobby. The build passed; only reading the preview pages caught it ("signed in,
+   four friends" headline over a signed-out picture). A check that the step's `path` and its crop
+   agree is impossible, but `build` could print, per step, which screen state each crop resolves to.
+2. **Tall crops lose the side cards.** A 420×560 pane crop puts What changed / You'll notice / Risk
+   in a side column that fits ~2 short cards; the Risk card vanished on GS-1/GS-2 and "You'll
+   notice" was cut mid-sentence. AUTHORING.md warns about it; a side pane is ALWAYS tall, so every
+   games step hits it. I shortened the words and dropped Risk on tall steps. A build-time warning
+   ("this step will render side-column; N cards won't fit") would save a preview round.
+3. **Choice slides with tall pictures stack the variants vertically**, so only the first is on
+   screen and the answer bar covers the rest until you scroll. Not wrong, but three 420×560
+   drafts are hard to compare. Side-by-side for tall crops (each scaled down) would suit a pane.
+4. **Panel box for a lobby excludes its header**, the games list's includes it (the lobby's mark
+   sits in the body). Crops therefore needed hand-measured header offsets (`+910+40` not `+910+84`).
+5. **The shoot "before" needed a two-commit dance** (fixtures first, picture, then the redesign) —
+   the same as the Marketplace round. `shoot --before <commit>` that builds a temporary checkout
+   would remove it.
+6. **No shared avatar.** Friends have `avatar_url` but `AccountAvatar` is private to
+   `AccountSection.tsx`; I left avatars out rather than copy it.
+7. **The landing page films this pane** (`?signedIn=1`, Jake only). The next `site-assets.sh` run
+   will film the new friends card; nobody is told. Not regenerated here.
+
+8. **A load-sensitive failure in `shoot --check`, unrelated to games — fixed.** The second full
+   verify failed `office/versions`: "Escape should close dialog Versions only … after: panel
+   office/document". Alone it passed 4 of 4 (and in verify runs 1 and 3). Cause: the Escape test
+   compared layers by NAME, and the Office document panel under the dialog renames itself (from
+   its text to its screen mark) when it finishes loading — so under load the same panel read as a
+   different one. Fix (workspace `scripts/shoot/`): `listLayers` gives each layer element a stable
+   `uid`; the Escape test compares uids and keeps names for the message. Shoot's 18 tests pass and
+   three later full `--check` runs were clean. **Not reproduced on demand** (1 in 6 under load), so
+   "seen red, then green" was not possible for this one.
+
+8. **`shoot --check`'s Escape test failed once in six full runs** (`office/versions`, never on a
+   games screen): it named layers by text, and the Office document panel under the Versions dialog
+   renamed itself (its text → its screen mark) as it finished loading during the 2 s wait, so "the
+   panel stayed open" read as "Escape closed two layers". Passed 4 of 4 run alone. **Fixed in this
+   round** (workspace `scripts/shoot/explore-page.mjs` gives each layer element a stable `uid`;
+   `shoot.mjs` compares uids, keeping names for the message). Two full `--check` runs and the final
+   `verify --full` were clean after it. Not reproducible on demand, so the fix is reasoned, not
+   seen red→green. A panel that genuinely re-mounts on Escape would now be flagged — none did.
+9. **A PC crash mid-round** damaged the app repo's object store (repaired by the coordinator). The
+   workspace drafts, runs and deck survived intact (every picture re-read, manifests parsed).
+
+## Left undone / unsure
+
+- Avatars on friend rows (no shared avatar piece).
+- The ⋯ trigger and its menu stay hand-rolled (moved unchanged): a `⋯` text glyph, not an icon button.
+- The lobby's fallback sign-in screen (only reachable by signing out while a lobby is open) keeps
+  its old look with the 🎮 emoji.
+- Solo boards (Flappy/2048) untouched — row 11 is about the versus lobby; their "Add a friend and
+  their best shows up here" invitation now points at the friends card implicitly.
+- The friends list is not chunked (`useChunkedReveal`): friends lists are small (server caps
+  requests per day) and the old lobby wasn't either; a 1,000-friend stress pin was not added.
+- Android: shared renderer, no native UI for games/friends (Kotlin only proxies the social and
+  arcade calls, unchanged). Not built here.
+
+## Round 2 (2026-10-05) — after Destin's games-social-1 answers
+
+Deck `games-social-2.json` (before `runs/gs-after` = round 1, after `runs/gs2-after`). References
+opened: **Settings → Account's signed-out card** (`SignedOutBody`), **Appearance's themes box**
+(`ThemeScreen.tsx`: capped `.scroll-mask` list with its buttons inside at the bottom), the app's one
+dropdown **`ui/Select`** (as in Settings → Providers), the **sessions menu rows** and the **Settings list**.
+
+| # | What I did | Driven by |
+|---|---|---|
+| R2-1 | Signed-out card = Account's: level-1 card, left-aligned 12px line, full-width filled Sign in. | GS-1 note ("doesn't match app styling"), GC-2 (full). The guide's "Empty states" recipe gave round 1 nothing about text size or alignment; copying a named screen did. |
+| R2-2 | Your status is one `Select` (Online / Incognito) at the right of the card; the pill and Go incognito are gone. | GS-2 note. **Guide silent** on a dropdown inside a card's header row; Select is a full-width field, so it needed a fixed-width box (first draft stretched over the summary — caught in the pictures, not by any check). |
+| R2-3 | The card starts folded to ONE line, no "Friends" title inside it (the label above says it); arrow on the right; folds again each time Games opens. Two drafts behind `?friendsSummary=`: `count` ("2 of 4 online · 1 request", shipped) and `names` (green "2 online" pill + "Jake, Mira"). | GS-2 note. First draft repeated "Friends" under the "Friends" label — the guide's "a label never repeats the popup's title" doesn't cover a label repeating inside its own card; read off the pictures. |
+| R2-4 | Opened list: Appearance's themes-box pattern — capped (`max-h-64`), scrolls under the masked fade, filled full-width "Add a friend" INSIDE the box at the bottom, rows passing under it; online first; no folding. | GC-1 note ("dark … inside the container, like the appearance panel"), GQ-1 note ("scrollable, like resume browser"). The guide has no recipe for "a list with its action pinned inside" — Appearance is the only example; worth a guide line. "Dark" read as filled (the theme's filled button). |
+| R2-5 | Accept is the rightmost button; Decline left of it. | GS-3. **Round 1 broke the guide**, not the other way round: "two buttons side by side: the filled one on the right". I had kept the old lobby's order. No conflict to report. |
+| R2-6 | Lobby: record as a sentence only (GC-3 line); column/chip and `?lobbyScores=` removed. Two arrangements behind `?lobbyRows=`: `switcher` (sessions-menu plain rows, pill after the name, shipped) and `settings` (Settings-list boxed rows). | GS-5 note ("rearrange these tiles to match other app ui"), GS-7 ("rearrange"). **Ambiguous:** "tiles" on the lobby step most likely means the friend rows (the only tiles on that picture); the games grid was left as it is. |
+| R2-7 | Three distinct not-connected states (`friends-data.ts` `socialState`, one source for the card and the tiles): **incognito** — line "Hidden from friends", dropdown says Incognito, no notice, Connect 4/Chess still open and say "You're incognito"; **no internet** — line "No internet connection", amber notice "This computer is offline…" + Try again, Connect 4/Chess greyed; **server unreachable** — line "Game server unreachable", red notice + Try again, Connect 4/Chess greyed. Friends' pills hidden in all three. | GS-12 note; `docs/error-message-standards.md`: "no internet" only when `navigator.onLine` is false (the browser reports no network — a fact); online-but-failing says WHERE ("game server"), not why; every error state has an action (Try again). New `hooks/useNetworkOnline.ts`. |
+| R2-8 | Practice states: `?incognito=1`, `?network=offline`, `?friendsOpen=1`, `?friends=lots` (12 friends). | Needed to photograph each state. |
+
+### Tooling friction this round
+1. **An approve slide can't compare two different screen states**, so a brand-new state (incognito,
+   offline, the long list) can only go on as a one-picture slide whose buttons read "Yes build it /
+   No leave it" — wrong words for something already built. I renamed round 2's `#requests` screen to
+   the opened card so at least that one compares.
+2. **"Show three states side by side" has no tool.** I cut three panes per theme by hand into
+   `runs/gs2-after/shots-states/<theme>/three.png` and named it with a deck `crops` entry. A
+   `"crop": ["a", "b", "c"]` that lays several screens side by side would do it.
+3. **A dropdown that silently fills its row** (`Select` is `w-full`; its `className` doesn't win
+   over that) overlapped the summary text. No check caught it — "parts agree" only reads marked rows.
+4. **Choice slides compare whatever data their screens carry** — round 2's first build compared a
+   summary WITH a request against one without; only reading the slide caught it.
+5. The crash wiped the session scratchpad (the crop helper); rebuilt in a minute. `preview` per deck
+   and `--themes` worked as intended. `verify --full`: 9/9 PASS (twice this round).
+
+### Not done / unsure
+- Games grid left as it is (see R2-6).
+- "No internet" can only be shown when the computer has NO network; a network with no internet reads
+  as "Game server unreachable" — correct by the standards, but Destin may expect "no internet" there.
+- Status dropdown says "Online" while offline (it is your choice, not your connection) — not said on
+  the deck; could confuse.
+- The add box, once open, sits over the last row of the list (it grows upward inside the box).
+
+## Round 3 (2026-10-05) — after Destin's games-social-2 answers
+
+Deck `games-social-3.json` (before `runs/gs2-after`, after `runs/gs3-after`). References: round 1's
+Online pill, **Settings → Account's profile row**, the **sessions menu** (rows with status pills),
+a **detail page's one-line chip row**, the **⋯ row menu** popover, the **Settings list** (boxed rows).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R3-1 | Your status is the status pill itself, clickable (new shared `PillButton` in `ui/Pill.tsx`: the pill + the dropdown chevron), opening a small menu — Online / Incognito, one explaining line each. The `Select` is gone. | G2-2 ("keep the styling of the online pill, but make it clickable"). Guide "Buttons": an edit control is shaped like the things it edits (a pill among pills). **Tooling gap:** no shared anchored menu — the ⋯ menu and this one share a small local hook (`useAnchoredMenu`), not a primitive. |
+| R3-2 | Three concepts behind `?statusLook=`: **account** (shipped; your name + clickable pill, "2 of 4 friends online · 1 request" under it, arrow right — Account's profile row), **roster** (you as the first row, then requests and online friends, "All friends 4" opens the rest — the sessions menu), **strip** (your pill, then online friends as green pills and a request pill on one line, "+N" past three — a chip row). Same opened list in all three. | G2C-1 ("reimagine … self status and friend status"). **Invented:** the strip's thin vertical divider between your pill and theirs (no app piece for it). The roster's "All friends 4" uses the guide's count style (word, then a smaller fainter number). |
+| R3-3 | Rows: name only, its pill directly right, both in one 20px line box centred (`NameWithPill`); ⋯ at the right edge of every friend row, a 28px square (the header ✕'s size) centred on the row; the @handle is the ⋯ menu's header. Same name+pill on the game page. | G2-3, G2-7. Guide "Actions live on the right" / the setting row's control slot. Checked at 1.5×: name and pill centres within about 1px. **Tooling gap:** "parts agree" can't check this — it wants every child the SAME height, and a name and a pill are deliberately different heights; a "centres agree" mode (`data-centres-agree`) would. I left the rows unmarked rather than mark something the check would fail. |
+| R3-4 | No internet / server down: the whole friends card is replaced by one notice box (title, sentence, Try again inside). Incognito keeps the normal card; the pill reads Incognito. | G2-5. Guide "Status and notices"; error-message standards (same wording rules as round 2). |
+| R3-5 | Challenge is filled. | G2-8. **Contradicts** guide principle 6 ("one filled button per view") whenever two friends are online, and change 47's reason for outlining it. Done as asked; noted on the slide. |
+| R3-6 | Game page: boxed rows only (Settings list); `?lobbyRows=` and the sessions-menu variant removed. | G2C-2. |
+
+### Tooling friction this round
+1. **Choice pictures that are two states each** (folded + opened) had to be hand-composed again
+   (`runs/gs3-after/shots-concepts/`), as did the three error states. Third round running.
+2. **A `sameAs` was needed** because the shipped concept opened (`#look-account-open`) is pixel-equal
+   to `#requests` — honest here, but the list grows with every variant round.
+3. The menu-open state needed its own practice switch (`?statusMenu=1`) — `shoot` has no "click this
+   first" step for a screen state, and `explore` pictures can't go on a deck.
+4. `verify --full` 9/9 PASS. New tests: the pill's menu switches to Incognito; rows hide the handle and
+   the ⋯ menu shows it (broke it, saw it fail, restored); error card replaces the card.
+
+### Not done / unsure
+- The roster concept's "Show online only" row sits at the bottom of the scrolling list, under the
+  pinned Add a friend, so it's only reachable by scrolling.
+- Two filled Challenge buttons when two friends are online (R3-5).
+- Danger notice titles are red text — the shared notice box's own style, not changed here.
+
+## Round 4 (2026-10-05) — after Destin's games-social-3 answers
+
+Deck `games-social-4.json` (before `runs/gs3-after`, after `runs/gs4-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R4-1 | Account concept shipped; roster / strip and `?statusLook=` removed. | G3C-1. |
+| R4-2 | Incognito line: "4 friends · who's online is hidden". **No online count**: incognito disconnects the presence connection (`usePresence`), so this computer receives nobody's online state — there is no number to show. | G3-9 asked for the count; the error-message standards forbid a guessed number. Reported, not built. |
+| R4-3 | Opened list: every person is a box (the game page's Settings-list look, `CARD_LEVEL_1`, re-levelled inside the card), 8px apart, scrolling under the fade, Add a friend pinned at the bottom. The list's own nested box is gone (boxes inside a box inside a card would be three levels). | G3-4. Guide "Card levels" (a first-level box inside a card takes the nested look). |
+| R4-4 | ⋯ menu removed. Three ways behind `?friendManage=`: **details** (shipped) — click a friend's box (setting-row arrow) for a "Friend details" popup like Session details / the detail pages' top card, Unfriend + Block… under it; **inline** — a Manage button opens the box in place, like the Tags card's edit-in-place; **edit** — "Edit friends" beside Add a friend puts the list in an edit mode with Done, like Settings → Account's Edit account. Block asks first in all three, with the warning visible (not a tooltip). | G3-3. The guide has no recipe for "manage one item in a list"; the three references are screens, not rules. |
+| R4-5 | The error boxes lost their titles: one plain sentence + Try again. | G3-7. **Count:** of the app's 16 red notice boxes, 13 have NO title; 3 carry the shared notice box's red title — `components/marketplace/MarketplaceDetailOverlay.tsx:229` ("Couldn't install"), `components/marketplace/IntegrationDetailOverlay.tsx:97` ("Something went wrong"), `components/LocalModelsSection.tsx:1122` ("This model failed to load last time") — plus the workbench mockup `SettingsPiecesDemo.tsx:114`. The red title is the shared `Callout` danger tone's own style (`ui/Callout.tsx`, `title: 'text-destructive-fg'`), while its warning and info titles are normal text colour and `ErrorState`'s title is normal text colour. Not changed elsewhere (ask first). |
+
+### Tooling friction this round
+1. **A Choice slide can overflow sideways** and cut its first and last pictures (three crops of
+   different widths: 340 / 420 / 420). Equal-sized crops fixed it. The builder gave no warning.
+2. The friend details popup needed a `Dialog` screen name and a `useScreenOpen` inside a part of
+   the card that only exists once the card is open — the screen entry had to set `friendsOpen=1` as
+   well. Easy to get wrong; the screens test catches a missing name but not this.
+3. Part of a file was cut by my own section-slicing edit and restored from the previous commit —
+   typecheck caught it at once.
+4. `verify --full` 9/9 PASS. New tests: the details popup shows the handle and gates Block; the
+   incognito line never shows a number (broke it, saw it fail, restored).
+
+## Round 5 (2026-10-05) — after Destin's games-social-4 answers
+
+G4C-1 picked the **friend details popup**; the Manage-in-place and edit-mode drafts, `?friendManage=`
+and `?manageOpen=` are removed. Decisions recorded in `decisions.md` ("Games: …" rows); backlog row 11
+is **done except incognito presence**.
+
+### Incognito presence (G4-3) — blocked on the server, not built
+Destin: "they shouldn't be able to see me in incognito, but i feel like i should still be able to
+see who else is online."
+
+- **Client today:** incognito = close the presence connection (`usePresence.ts` desired-state effect →
+  `social.presenceDisconnect`; `main/presence-socket.ts`; Android `social/PresenceClient.kt`).
+- **Server today** (`wecoded-marketplace/worker/src/social/presence-room.ts`, the `PresenceRoom`
+  Durable Object behind `GET /social/presence`): any connected socket IS "online". On connect it
+  sends you your friends' snapshot AND broadcasts `user-joined` to your online friends; every
+  friend's snapshot lists you; your close broadcasts `user-left`; the alarm writes your `last_seen_at`.
+  There is no invisible / receive-only flag anywhere in the worker.
+- **So it cannot be done client-side without revealing the user.** Keeping the socket open while
+  incognito would announce you online the moment you connect.
+- **What would be needed (not done):** in the worker, an invisible socket mode — e.g.
+  `/social/presence?invisible=1` stored on the socket's attachment; invisible sockets left out of
+  `liveSocketsFor()` (snapshots, "was online", challenge reachability), no `user-joined` /
+  `user-left` / `user-status` broadcasts for them, no `last_seen_at` writes from them, and challenges
+  or status messages FROM them refused. The server should confirm the mode in its `connected` frame,
+  and the client must disconnect if it doesn't get that confirmation (an older server would otherwise
+  silently mark the user online). Client: pass the flag on desktop AND Android (parity), keep receiving
+  `presence` / `user-*` frames, never send `status` or challenges while invisible.
+- **Privacy risks to weigh:** (1) a client/server version mismatch exposing the user — handled only by
+  the confirm-or-disconnect rule; (2) a second device that is NOT incognito still shows you online
+  (account-level vs device-level incognito needs a product call); (3) timing — a friend could notice
+  you appear the instant you leave incognito; (4) worker deploys are CI-driven on master, so this is a
+  marketplace-repo change with its own review.
+
+## Round 6 (2026-10-05) — incognito hidden mode built; plain error titles app-wide
+
+Destin approved hidden mode **per device** and plain error titles app-wide. Deck `games-social-5.json`.
+
+| # | What I did | Driven by |
+|---|---|---|
+| R6-1 | **Server** (wecoded-marketplace, branch `session/ui-consistency-audit`, NOT deployed): `?hidden=1` on the presence socket, passed by the route as a header it always sets or clears; `liveSocketsFor()` — the one "is online" definition — leaves hidden sockets out (no snapshot listing, no challenge delivery, no "was online"); no join/leave broadcast and no `last_seen_at` from a hidden socket (close and alarm both); status / challenge / challenge-response from it answered `{type:"refused", reason:"hidden"}`; `{type:"hello", hidden:true}` sent before the snapshot; `GET /social/presence/capabilities` → `{hidden:true}`. 7 new worker tests (6 seen failing first), 388/388 worker tests, typecheck clean. | G4-3; the round-5 write-up above. |
+| R6-2 | **Desktop:** incognito connects hidden. Guard 1 — `social-handlers` probes capabilities first and never connects hidden without a yes (an older server = presence stays off, "who's online is hidden"). Guard 2 — `presence-socket` treats the socket as connected only after the hello; any other first frame → disconnect, relay nothing, `hidden-unsupported`. Status/challenge frames are dropped while hidden (renderer and main). | Same; privacy first. |
+| R6-3 | **Android:** same two guards and send filter in `PresenceClient.kt` (`HiddenPresence` object, 6 new unit tests; 600/600 Android unit tests green). `SessionService` passes `payload.hidden`. | Parity. **Conflict noted:** the shared checkout's newer `android-runtime.md` says "never port new desktop logic to Kotlin (A3 deletes the copies)". Not porting would have been a privacy leak — the renderer asks for hidden mode and an Android client ignoring it would connect VISIBLY — so the guard was ported, kept small and pure. |
+| R6-4 | **UI:** incognito line shows the real count once hidden mode is confirmed ("2 of 4 friends online · they can't see you"), pills show, Challenge hidden while incognito (it would reveal you). A server failure now outranks incognito in `socialState` (incognito keeps a connection, so its failure is real news). | G3-9 / G4-3. |
+| R6-5 | **Red titles:** the shared notice box's danger title is normal text colour at its root (`ui/Callout.tsx`), pinned by a test seen red first; the three red-title screens rewritten as one sentence (install failure keeps the real reason and avoids "Couldn't install: Couldn't…"). Side effect, approved as "app-wide": the local-model "Damaged download" box and Sync's danger-level warnings keep their titles, now in normal colour. Integration error has no workbench screen — not photographed. | G3-7 + Destin's app-wide approval. |
+
+### Tooling friction this round
+1. **The shared marketplace checkout's `node_modules` was older than its branch** (`cloudflareTest` export
+   missing), so the hardlink farm couldn't run the worker tests; a fresh `npm ci` in the worktree then
+   needed `workerd`'s blocked install script run by hand (npm 12 blocks it; `allowScripts` in the worker's
+   package.json doesn't list it). `workspace-start` doesn't provision `wecoded-marketplace/worker` deps.
+2. **A temporary "before" checkout can't live in `/tmp`** — hardlinking `node_modules` fails across
+   filesystems. Put it in the workspace's ignored `scratch/`.
+3. Workbench presence is mocked at the renderer, so hidden mode's guards (which live in main / Kotlin)
+   cannot be seen in pictures — only in unit tests.
+
+## Proposed guide and tooling changes (most valuable first — not implemented)
+
+1. **Guide: a "panel at the top of a pane" recipe** — `guide-draft.md` Recipes. Folded by default to one
+   Account-style header row (name + clickable status pill, grey line, arrow right); opens to a capped
+   scrolling list of boxed rows with its main action pinned inside (Appearance's themes box). Why: four
+   rounds converged on it from screens, not rules; nothing in the guide described it.
+2. **Guide: "a problem replaces the card it is about"** — `guide-draft.md` "Status and notices". When the
+   whole card can't work (offline, server down), the card IS the notice box (one sentence + Try again,
+   no title). Why: G2-5 and G3-7 corrected a label swap and a red title.
+3. **Decide the red danger title app-wide** — `ui/Callout.tsx` danger tone (`text-destructive-fg`)
+   against principle 2 ("status hues never in text"); 3 screens use it (Marketplace install failure,
+   integration error, local model load failure). Why: G3-7 called it "unique styling".
+4. **Deck: compose several screens into one picture** — `scripts/ui-review/deck/`: a crop that is a list
+   of screens laid side by side (and folded/opened pairs). Why: three rounds needed hand-cut composites
+   (three states ×2, concepts ×3).
+5. **Deck: an approve slide for a NEW state** — let a one-picture slide carry built-thing wording ("Yes keep
+   it") instead of "Yes build it". Why: every new practice state (incognito, offline, menu open) read as
+   unbuilt.
+6. **Deck: warn when a Choice slide will overflow sideways** — the builder could compare summed crop widths
+   with the stage. Why: R4 cut the first and last pictures silently.
+7. **Shoot: a "centres agree" check** — `scripts/shoot/parts-agree.mjs`: for a marked row of DIFFERENT-height
+   items (a name beside a pill, a button beside text), flag vertical centres more than 1px apart. Why: G2-7
+   ("vertical alignment is a bit off") could only be checked by eye at 1.5×.
+8. **A shared anchored menu primitive** — `components/ui/`: the small popover (outside-click + Esc,
+   menuitem / menuitemradio) used by the old ⋯ menu, the status pill and MarketplaceAuthChip. Why: three
+   hand copies.
+9. **Shoot: "open this first" steps on a screen entry** — e.g. `open: ['status pill']` replayed like a
+   journey before the picture. Why: every opened state (menu, popup, card) needed its own workbench switch.
+10. **Guide: say which rule wins** — "one filled button per view" vs a filled per-row action (Challenge,
+   Accept). Why: G2-8 asked for filled Challenge against the principle.
+11. **`Select` width** — `ui/Select.tsx` trigger is `w-full` and a caller's width class doesn't win; document
+   it or let `className` size the trigger. Why: R2's dropdown silently covered the summary line.
+
+## Proposals implemented (2026-10-05, approved by Destin)
+
+All 11 done. Deck `tooling-2.json` (before `runs/tooling2-before`, after `runs/tooling2-after`)
+shows the one visible change.
+
+1. **Guide recipe** — `guide-draft.md` "A panel at the top of a side pane (Games → Friends)".
+2. **"A problem replaces the card it is about"** — `guide-draft.md` "Status and notices".
+3. **No coloured notice titles** — already fixed at the root last round (`ui/Callout.tsx`, pinned by
+   `callout-authority.test.tsx`); the guide now says it (principle 2 and "Status and notices"), and
+   Callout's own header comment, which still said "only the title keeps the tone's colour", was corrected.
+4. **Composite pictures** — a deck `crop` may be a list (`deck/crops.py` `compose_pieces`): pieces side by
+   side, 16 CSS px apart, optional labels; works on approve / brief / decide steps and choice variants.
+5. **New-state slides** — `"new": true` on a one-picture slide reads *Yes, keep it / No, remove it*.
+6. **Choice overflow warning** — `build` warns when a later choice picture is wider than the first.
+   Found while doing it: a one-picture close-up (`screen@WxH+X+Y`) was let through by `validate` and
+   then refused by `build` ("no highlight box"); a close-up or composite on one picture now needs no box.
+7. **"Centres agree"** — `scripts/shoot/parts-agree.mjs`, `data-centres-agree`. Marked: Games name + pill,
+   friend rows, your name + status, a detail page's name + status pill, Specialists' label + warnings.
+   Every screen at 1× (light) and 1.5× (YouCoded Night): **one hit outside the reviewed screens** —
+   Settings → Assistant → Local models, "Local engine" + its Stopped pill, 1.4px off at 1.5× (the pill
+   sits inline on the words' baseline). Not fixed; the row is left unmarked with a comment.
+   Seen red end to end: the Games pill pushed 3px down gave five findings.
+8. **Shared small menu** — `components/ui/Menu.tsx` (`Menu`, `MenuItem`, `MenuRadioItem`, `MenuNote`):
+   outside press, Escape (the app's Escape stack, focus back to the trigger), ↑/↓/Home/End, Tab closes,
+   opening from the keyboard focuses the chosen item. Replaces the friends status menu and the
+   Marketplace account chip's popover. **Visible change:** the account menu's words are 12px (were 14px)
+   with the status menu's padding; it now closes on Escape. The status menu is unchanged to look at.
+   The project / chat ⋯ menus keep `hooks/useAnchoredMenu` (they position on the page, at screen edges).
+9. **"Open this first"** — a screen entry's `open: ['<button label>']` (or journey steps) is replayed by
+   `shoot` before the picture. `?statusMenu=1` and `workbenchStatusMenuOpen` are gone
+   (`chat/games#status-menu` clicks the pill); new `marketplace/skills#account-menu` uses it too.
+10. **Which rule wins** — `guide-draft.md` "Buttons": one filled button per view, or one per row in a list of
+    actions (filled at the row's right); principle 6 and the checklist say so.
+11. **`Select` width** — the trigger merges a caller's classes over its own (`mergeClasses`), so `w-32`
+    replaces `w-full`; pinned in `Select.test.tsx` (seen red first). No product screen passed a width, so
+    nothing in the app moves; the workbench mockup `SettingsAnatomyDemo`'s `w-32` dropdown now really is 128px.

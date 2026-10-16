@@ -1,0 +1,24 @@
+{
+ "deck": "manage-rows-review",
+ "started": "2026-10-01T08:17:46.536Z",
+ "submitted": "2026-10-01T08:18:29Z",
+ "cur": 1,
+ "answers": {
+  "MR-1": {
+   "v": "no",
+   "t": 1790842689693,
+   "note": "centered was much better, no icon",
+   "seconds": 23,
+   "theme": "light",
+   "zoom": 1
+  },
+  "MR-2": {
+   "note": "this whole popup menu needs to be rebuilt",
+   "t": 1790842708316,
+   "v": "other",
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

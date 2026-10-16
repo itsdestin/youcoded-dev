@@ -1,0 +1,41 @@
+{
+ "deck": "vocab-chips-2",
+ "started": "2026-10-14T21:13:56.799Z",
+ "submitted": "2026-10-14T21:15:21Z",
+ "cur": 3,
+ "answers": {
+  "K-2": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1792012471215,
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "pick",
+   "pick": "proposed",
+   "t": 1792012479627,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "pick",
+   "pick": "enter",
+   "t": 1792012488760,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-3": {
+   "v": "pick",
+   "t": 1792012520687,
+   "note": "the spacing on the right side of these looks odd. and the add surface is still odd compared to tags/voice",
+   "pick": "pills",
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

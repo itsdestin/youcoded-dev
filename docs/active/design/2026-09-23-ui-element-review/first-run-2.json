@@ -1,0 +1,130 @@
+{
+ "title": "First-run setup \u2014 polished round",
+ "key": "first-run-2",
+ "out": "first-run-2.review.html",
+ "images": "images/first-run-2",
+ "runs": {
+  "before": "r/before",
+  "after": "r/after"
+ },
+ "themes": [
+  "light"
+ ],
+ "crops": {
+  "install": [
+   "x",
+   "install",
+   "1440x900+0+0"
+  ],
+  "failed": [
+   "x",
+   "failed",
+   "1440x900+0+0"
+  ],
+  "signin-a": [
+   "x",
+   "signin-a",
+   "1440x900+0+0"
+  ],
+  "signin-b": [
+   "x",
+   "signin-b",
+   "1440x900+0+0"
+  ],
+  "wait": [
+   "x",
+   "wait",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "P2-1",
+   "surface": "First-run setup",
+   "path": "The first screen after installing: 'getting things ready' (before = today's app)",
+   "crop": "install",
+   "headline": "Side-by-side logo, bigger, with the tagline tucked beside the 'y' as approved; Outfit for every word; a thicker bar.",
+   "changed": "The logo uses your approved side-by-side spacing (round 26) at an 80px icon. All setup text is in Outfit now (your Q-2), the heading is larger, and the bar is thicker with a faint glow in the name's colours.",
+   "notice": "The first thing a new user sees looks like the brand boards, not like a settings page.",
+   "risk": "The tool names are gone, as you picked last round; on a Mac the line instead says to click Install in Apple's window."
+  },
+  {
+   "id": "P2-2",
+   "surface": "First-run setup",
+   "path": "When a step fails (before = last round)",
+   "crop": "failed",
+   "headline": "A failure is one white card: a soft stop sign, 'Setup stopped', one sentence, a gradient Retry button and 'Show details'.",
+   "changed": "The grey error strip and separate 'Show details' box became a single card. Retry is the screen's one filled button, in the name's purple-to-pink. 'Show details' is a quiet link that opens the full message inside the card.",
+   "notice": "It reads as a calm pause with one obvious next step, not as an error dump.",
+   "risk": "The card isn't the app's standard error strip; it is setup's own, like the rest of the brand surface."
+  },
+  {
+   "id": "P2-3",
+   "surface": "First-run setup",
+   "path": "The sign-in step",
+   "headline": "Which polished sign-in layout?",
+   "variants": [
+    {
+     "id": "A",
+     "label": "A \u00b7 All three open",
+     "crop": "signin-a",
+     "summary": "Three white cards, each with a badge (No extra cost / Pay per message / Private), three facts with small icons, and white buttons led by the Claude, ChatGPT and OpenRouter logos.",
+     "risk": "Tall: the third card and the backup warning need a scroll on a laptop screen."
+    },
+    {
+     "id": "B",
+     "label": "B \u00b7 Pick a kind first",
+     "crop": "signin-b",
+     "summary": "Three rows with the companies' logos, a badge and an arrow; clicking one opens its facts and logo buttons (right half shows 'Pay as you go' opened), with '\u2039 All options' to go back.",
+     "risk": "One extra click, and the facts can't be compared side by side."
+    }
+   ]
+  },
+  {
+   "id": "P2-4",
+   "surface": "First-run setup",
+   "path": "After pressing a sign-in button, while the browser is open",
+   "crop": "wait",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "New"
+   },
+   "highlight": {
+    "box": [
+     34,
+     52,
+     32,
+     16
+    ]
+   },
+   "headline": "The 'finish signing in your browser' wait now has a Cancel button (from master) and sits in the same white card.",
+   "changed": "Master added Cancel on this screen while we were working; it's carried into the new look.",
+   "notice": "Changing your mind after pressing a sign-in button no longer means restarting the app.",
+   "risk": ""
+  },
+  {
+   "id": "P2-5",
+   "words": true,
+   "surface": "New session screen",
+   "path": "The 'Start your first session' screen right after setup",
+   "headline": "The 'Start your first session' screen gets its own round once setup is approved, built to match it.",
+   "changed": "Stated, not asked: you rejected all four versions last round. Rather than guess again in parallel, I'll design it from the approved setup look so the hand-off from setup into the app feels continuous.",
+   "notice": "Next deck after this one is that screen alone.",
+   "yes": "Holds",
+   "no": "Do it now"
+  },
+  {
+   "id": "P2-6",
+   "words": true,
+   "surface": "First-run setup",
+   "path": "How setup gets Node.js and Git",
+   "headline": "Your bundling question is already answered on master: setup downloads its own Git and Node.js, without winget.",
+   "changed": "Stated: while we worked, master shipped exactly the option you picked: Git comes from the official ready-to-run download into YouCoded's own folder (no winget, no admin prompt), and Node.js installs only when someone chooses Claude Code. Master also removed the Windows Developer Mode step. I merged master into this branch, so the screens here use it.",
+   "notice": "The failure on your Windows machine can't happen that way any more; this branch is now up to date with master.",
+   "yes": "Good",
+   "no": "Something's wrong"
+  }
+ ]
+}

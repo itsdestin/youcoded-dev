@@ -3,7 +3,8 @@
     "BRIEF — one picture of how it is TODAY, and he answers Yes, build it / No, leave it / Other.",
     "Same shape as approve.json, with ONE run instead of two. Because nothing is built yet there is nothing to diff, so every step must say what to box.",
     "Use it before you write any code: the point he signs off is the change, described, over a picture of what it replaces.",
-    "A brief slide can also live in a deck that captures a before and an after: give the slide \"runs\": [\"after\"] (and \"labels\": {\"after\": \"Today\"}) and it shows one picture and asks \"build it?\" while the slides around it ask \"keep it?\". One deck, one ask."
+    "A brief slide can also live in a deck that captures a before and an after: give the slide \"runs\": [\"after\"] (and \"labels\": {\"after\": \"Today\"}) and it shows one picture and asks \"build it?\" while the slides around it ask \"keep it?\". One deck, one ask.",
+    "ALREADY BUILT, but with no before (a new state: offline, a menu opened)? Add \"new\": true to that one-picture slide and it reads Yes, keep it / No, remove it instead of build / leave."
   ],
   "title": "Model name in the bottom strip — build it?",
   "_comment_title": "title: what this deck is about, in his words. It heads every page.",

@@ -1,0 +1,53 @@
+[
+  {
+    "name": "projects/switcher#pointed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-pointer/projects/switcher#pointed/midnight.png",
+    "ms": 1815,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#pointed",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-pointer/projects/switcher#pointed/youcoded-night.png",
+    "ms": 3566,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#pointed",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps3-pointer/projects/switcher#pointed/youcoded.png",
+    "ms": 3624,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 400,
+      "y": 135,
+      "w": 640,
+      "h": 407
+    },
+    "parts": []
+  }
+]
