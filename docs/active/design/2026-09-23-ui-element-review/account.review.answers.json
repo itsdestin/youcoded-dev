@@ -1,0 +1,29 @@
+{
+ "deck": "ui-account",
+ "started": "2026-09-29T10:21:30.822Z",
+ "submitted": "2026-09-29T10:22:25Z",
+ "cur": 2,
+ "answers": {
+  "AC-1": {
+   "v": "yes",
+   "t": 1790677300806,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "AC-2": {
+   "v": "yes",
+   "t": 1790677320584,
+   "seconds": 20,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "MP4-1": {
+   "v": "yes",
+   "t": 1790677344015,
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "deck": "ui-card-levels-fixes-2",
+ "started": "2026-09-28T11:22:29.769Z",
+ "submitted": "2026-09-28T11:23:08Z",
+ "cur": 2,
+ "answers": {
+  "G-1": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-3": {
+   "v": "yes",
+   "note": "big gap between the two cards still it seems",
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "deck": "ui-switch-rows",
+ "started": "2026-09-29T05:12:14.265Z",
+ "submitted": "2026-09-29T05:14:19Z",
+ "cur": 5,
+ "answers": {
+  "SW-1": {
+   "v": "no",
+   "t": 1790658802087,
+   "note": "",
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SW-2": {
+   "v": "no",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1790658805195
+  },
+  "SW-3": {
+   "v": "no",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1790658809505
+  },
+  "SW-4": {
+   "v": "no",
+   "t": 1790658818062,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SW-5": {
+   "v": "no",
+   "t": 1790658823600,
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SW-6": {
+   "v": "no",
+   "t": 1790658858954,
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "note": "i think for these narrower cards, i prefer vertically centered. its only for the much bigger cards that top aligned looks better."
+  }
+ }
+}

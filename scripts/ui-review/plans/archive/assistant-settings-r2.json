@@ -55,16 +55,16 @@
     { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
     { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')", "settle": 900 }
    ],
-   "expect": "[role=dialog] [aria-label='Skip Permissions']"
+   "expect": "[role=dialog] [aria-label='Enable Skip Permissions Mode?']"
   },
   {
    "name": "assistant-permissions-skip-on",
    "actions": [
     { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900 },
     { "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')", "settle": 900 },
-    { "click": "[role=dialog] [aria-label='Skip Permissions']", "settle": 600 }
+    { "click": "[role=dialog] [aria-label='Enable Skip Permissions Mode?']", "settle": 600 }
    ],
-   "expect": "js:document.body.textContent.includes('without asking you')"
+   "expect": "[role=dialog][aria-label='Skip Permissions Mode']"
   },
   {
    "name": "assistant-specialists",

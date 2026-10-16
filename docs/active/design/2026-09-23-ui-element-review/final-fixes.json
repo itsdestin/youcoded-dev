@@ -1,0 +1,783 @@
+{
+ "title": "Final fixes: what changed from your final-review answers",
+ "key": "final-fixes",
+ "out": "final-fixes.review.html",
+ "images": "images/final-fixes",
+ "runs": {
+  "before": "runs/ff/before",
+  "after": "runs/ff/after"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "Now"
+ },
+ "themes": [
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "stage": "review",
+ "steps": [
+  {
+   "id": "OV-1",
+   "surface": "This round",
+   "path": "Read this first",
+   "words": true,
+   "headline": "The fixes from your answers on the final review — each slide quotes what you wrote and shows before and after.",
+   "changed": "Before is the branch as you saw it on the final review; Now is the branch today. Pictures are in your theme (Halftone Dimension) and one light theme (Meadow Mist) — the swatches at the top switch. Checked today: the full desktop check, Android tests, documentation links and the deck tool's tests (numbers on the last slide).",
+   "notice": "One question near the end: the take-over popups. The last slide lists what is still not done.",
+   "yes": "Got it",
+   "no": "Something's unclear"
+  },
+  {
+   "id": "FV-6",
+   "surface": "The way back to chat",
+   "path": "Marketplace: the strip at the top",
+   "crop": "marketplace@800x44+640+0",
+   "headline": "“Esc · Back to chat” is the light button again on every full screen, not filled.",
+   "changed": "You said on FV-6: “i really don't want esc/back to chat to be filled. it should be a light button like the old version was” The guide now says the same.",
+   "notice": "The way out is quieter; the screen's own buttons stand out more.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Your library",
+    "Projects",
+    "Pages",
+    "Office",
+    "the tour",
+    "every Page"
+   ]
+  },
+  {
+   "id": "CH-17",
+   "surface": "Theme cycle",
+   "path": "Status bar → pencil → Theme cycle",
+   "crop": "chat/status-bar/themes@panel",
+   "headline": "The Theme cycle list drops the coloured dot before each theme.",
+   "changed": "You said on CH-17: “we should remove the weird color dots next ot the themes” ",
+   "notice": "Each row is just the theme name and its switch.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "ST-30",
+   "surface": "Tailscale notice",
+   "path": "Phone: Settings → Connect to desktop; computer: Remote access",
+   "crop": "settings/android/connect-desktop@panel",
+   "headline": "“Tailscale not connected” loses the warning triangle in front of it.",
+   "changed": "You said on ST-30: “remove the exclamation triangle thing in front of tailscale not connected” Notices now never carry their own symbol (Fast mode's ⚠ went too, shown later). The text also moved into a card (popup rule).",
+   "notice": "The notice starts with its words.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Remote access on the computer"
+   ]
+  },
+  {
+   "id": "MK-1",
+   "surface": "Integration cards",
+   "path": "Marketplace → Connect your stuff",
+   "crop": "marketplace@1140x170+0+350",
+   "headline": "Integration cards lose their coloured outline and use the normal card outline.",
+   "changed": "You said on MK-1: “i don't think i like the colored outlines on integration cards.” ",
+   "notice": "The row matches the cards around it; the logo still carries the colour.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-5",
+   "surface": "Project switcher",
+   "path": "Click the project name",
+   "crop": "projects/switcher@panel",
+   "headline": "The project switcher drops the letter tile in front of each project.",
+   "changed": "You said on PR-5: “remove the letter icon in front of each project” ",
+   "notice": "Names line up at the left edge of each row.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Switcher: many projects",
+    "Switcher: a pointed row"
+   ]
+  },
+  {
+   "id": "MK-2",
+   "surface": "Marketplace theme cards",
+   "path": "Marketplace → Themes; Settings → Appearance",
+   "crop": [
+    {
+     "crop": "marketplace/themes@360x290+10+185",
+     "label": "Marketplace"
+    },
+    {
+     "crop": "settings/appearance@400x270+520+225",
+     "label": "Appearance (unchanged)"
+    }
+   ],
+   "headline": "Marketplace theme cards frame their picture inside the card, like the theme cards in Appearance.",
+   "changed": "You said on MK-2: “i think we can improve these marketplace theme cards a bit to slightly better match the cards used in the appearance panel” The picture now sits inset with its own corner and outline. Appearance is shown for comparison (unchanged).",
+   "notice": "Theme pictures look framed rather than bleeding to the card's edge.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Your library → Themes"
+   ]
+  },
+  {
+   "id": "GM-1",
+   "surface": "Games cards",
+   "path": "Side pane → Games",
+   "crop": "chat/games@panel",
+   "headline": "The Games pane sits on the popups' panel surface, so its cards stand out from it like Settings cards.",
+   "changed": "You said on GM-1: “the cards no longer separate from the main background surface ... game/skill cards don't just look like bare outlines” Switch to Meadow at the top: on dark themes like yours the difference is very small.",
+   "notice": "On light themes the pane is a solid panel with cards on it, not outlines on the wallpaper.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Every Games screen and game"
+   ],
+   "highlight": "panel"
+  },
+  {
+   "id": "GM-1b",
+   "surface": "Skills drawer cards",
+   "path": "Type / or press the compass",
+   "crop": "chat/skills@580x285+0+390",
+   "headline": "Skill tiles in the drawer are now the normal first-level card, so they stand out from the drawer.",
+   "changed": "You said on GM-1: “the cards no longer separate from the main background surface ... in the skills menu” ",
+   "notice": "Tiles look like cards on both themes; clearest on Meadow.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "The skills drawer opened by typing /"
+   ]
+  },
+  {
+   "id": "CH-5",
+   "surface": "Quick chips editor",
+   "path": "Pencil at the end of the chip row",
+   "crop": [
+    {
+     "crop": "chat/quick-chips@panel",
+     "label": "Chips"
+    },
+    {
+     "crop": "chat/quick-chips/edit@panel",
+     "label": "Edit a chip"
+    }
+   ],
+   "headline": "The quick chips editor now follows the Tags card's edit box: one card per page, buttons inside it.",
+   "changed": "You said on CH-5: “may want to compare this against our tag menu side by side” Save never greys out (it says why under an empty box), Remove asks first in place, “+ Add a chip” is a dashed chip at the end of the row.",
+   "notice": "Editing a chip feels like editing a tag; the next slides put them side by side.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "CH-6",
+   "surface": "Chip editor beside the tag box",
+   "path": "Quick chips → pencil; Session details → a tag",
+   "crop": [
+    {
+     "crop": "chat/quick-chips/edit@panel",
+     "label": "Edit a chip"
+    },
+    {
+     "crop": "chat/quick-chips/edit#remove@panel",
+     "label": "Remove a chip"
+    },
+    {
+     "crop": "chat/tags#tag-edit@panel",
+     "label": "Edit a tag"
+    }
+   ],
+   "headline": "Side by side: editing a chip, removing one, and editing a tag.",
+   "changed": "You said on CH-6: “want to see next to tag edit menu” Kept different on purpose: a chip opens a page from its pencil (the chip itself is what you drag); a tag opens its box in place.",
+   "notice": "Same card, same field look, same Remove · Cancel · Save order.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "after"
+   ],
+   "new": true
+  },
+  {
+   "id": "CH-6b",
+   "surface": "Adding a chip beside a new tag",
+   "path": "Quick chips → Add a chip; Session details → New tag",
+   "crop": [
+    {
+     "crop": "chat/quick-chips/add@panel",
+     "label": "Add a chip"
+    },
+    {
+     "crop": "chat/quick-chips/add#empty@panel",
+     "label": "Empty name"
+    },
+    {
+     "crop": "chat/tags#new-tag@panel",
+     "label": "New tag"
+    }
+   ],
+   "headline": "Side by side: adding a chip, trying to save it empty, and making a new tag.",
+   "changed": "You said on CH-6: “want to see next to tag edit menu” ",
+   "notice": "An empty chip says what is missing instead of greying the Save button.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "after"
+   ],
+   "new": true
+  },
+  {
+   "id": "ST-12",
+   "surface": "Tick boxes in popups",
+   "path": "Choosing Full auto or Skip permissions",
+   "crop": [
+    {
+     "crop": "chat/first-time-warning/full-auto@panel",
+     "label": "Full auto"
+    },
+    {
+     "crop": "chat/first-time-warning/skip-permissions@panel",
+     "label": "Skip permissions"
+    },
+    {
+     "crop": "settings/assistant/permissions/skip-confirm@panel",
+     "label": "Settings: skip"
+    }
+   ],
+   "headline": "Every “I understand” tick box before an action now sits in a card, the same way in every popup.",
+   "changed": "You said on ST-12: “this skip permissions checkbox is in a card, but the earlier checkboxes on popups from a few screenshots ago were bare. lets compare these popups side by side” ",
+   "notice": "The explanation and the tick box read as one card in each popup.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "ST-12b",
+   "surface": "Tick boxes in popups (2)",
+   "path": "Project switcher → bin",
+   "crop": [
+    {
+     "crop": "projects/remove@panel",
+     "label": "Remove a project"
+    },
+    {
+     "crop": "projects/remove/synced@panel",
+     "label": "Synced project"
+    }
+   ],
+   "headline": "Removing a project uses the same tick-box card.",
+   "changed": "You said on PR-7: “same checkbox inconsistency.” ",
+   "notice": "Same look as the warnings on the slide before.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "ST-21",
+   "surface": "Explainers in cards",
+   "path": "The (i) button on a popup",
+   "crop": [
+    {
+     "crop": "settings/appearance/about@panel",
+     "label": "About Appearance"
+    },
+    {
+     "crop": "settings/sync#explainer@panel",
+     "label": "About backups"
+    }
+   ],
+   "headline": "(i) explainers and info popups group their text into labelled cards, like About.",
+   "changed": "You said on ST-21: “the inside of this (i) popup for appearance needs similar grouping to our new about popup. probably other (i) popups with bare text as well” ",
+   "notice": "No more bare paragraphs straight on the popup. The Context popup (two slides on) and Remote access's (i) got the same treatment.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-7a",
+   "surface": "Popups: content in cards",
+   "path": "Various popups",
+   "crop": [
+    {
+     "crop": "chat/quit-sessions@panel",
+     "label": "Quit"
+    },
+    {
+     "crop": "chat/rename-session@panel",
+     "label": "Rename"
+    },
+    {
+     "crop": "handle-prompt@panel",
+     "label": "Pick a handle"
+    }
+   ],
+   "headline": "The same popup rule across the rest of the popups: text, fields and choices sit in cards.",
+   "changed": "You said on PR-7: “some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.” Exception: a one- or two-sentence question with nothing to tick or type stays plain text.",
+   "notice": "Popups look like About: a card (with a label when there are several) for each part.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-7b",
+   "surface": "Popups: content in cards",
+   "path": "Various popups",
+   "crop": [
+    {
+     "crop": "chat/voice/vocabulary@panel",
+     "label": "Voice words"
+    },
+    {
+     "crop": "marketplace/theme-share@panel",
+     "label": "Share a theme"
+    },
+    {
+     "crop": "chat/preferences@panel",
+     "label": "Preferences"
+    }
+   ],
+   "headline": "The same popup rule across the rest of the popups: text, fields and choices sit in cards.",
+   "changed": "You said on PR-7: “some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.” Exception: a one- or two-sentence question with nothing to tick or type stays plain text.",
+   "notice": "Popups look like About: a card (with a label when there are several) for each part.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Voice words: empty",
+    "Voice words: narrow window",
+    "Voice words: long list"
+   ]
+  },
+  {
+   "id": "PR-7c",
+   "surface": "Popups: content in cards",
+   "path": "Various popups",
+   "crop": [
+    {
+     "crop": "chat/resume/pick-model@panel",
+     "label": "Pick model"
+    },
+    {
+     "crop": "chat/model-picker/fast-mode@panel",
+     "label": "Fast mode"
+    },
+    {
+     "crop": "settings/assistant/cloud/openrouter/key@panel",
+     "label": "OpenRouter key"
+    }
+   ],
+   "headline": "The same popup rule across the rest of the popups: text, fields and choices sit in cards.",
+   "changed": "You said on PR-7: “some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.” Exception: a one- or two-sentence question with nothing to tick or type stays plain text.",
+   "notice": "Popups look like About: a card (with a label when there are several) for each part.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-7d",
+   "surface": "Popups: content in cards",
+   "path": "Various popups",
+   "crop": [
+    {
+     "crop": "chat/status-bar@panel",
+     "label": "Widgets"
+    },
+    {
+     "crop": "office/versions@panel",
+     "label": "Versions"
+    }
+   ],
+   "headline": "The same popup rule across the rest of the popups: text, fields and choices sit in cards.",
+   "changed": "You said on PR-7: “some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.” Exception: a one- or two-sentence question with nothing to tick or type stays plain text.",
+   "notice": "Popups look like About: a card (with a label when there are several) for each part.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-7e",
+   "surface": "Popups: content in cards",
+   "path": "Various popups",
+   "crop": [
+    {
+     "crop": "pages/create@panel",
+     "label": "New page"
+    },
+    {
+     "crop": "pages/library/edit@panel",
+     "label": "Edit page"
+    },
+    {
+     "crop": "pages/library/connections@panel",
+     "label": "Connections"
+    }
+   ],
+   "headline": "The same popup rule across the rest of the popups: text, fields and choices sit in cards.",
+   "changed": "You said on PR-7: “some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.” Exception: a one- or two-sentence question with nothing to tick or type stays plain text.",
+   "notice": "Popups look like About: a card (with a label when there are several) for each part.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-7f",
+   "surface": "Popups: content in cards",
+   "path": "Various popups",
+   "crop": [
+    {
+     "crop": "chat/takeover/force@panel",
+     "label": "Take over"
+    },
+    {
+     "crop": "chat/takeover/undeliverable@panel",
+     "label": "Can’t reach it"
+    },
+    {
+     "crop": "chat/first-time-warning/small-model@panel",
+     "label": "Small model"
+    }
+   ],
+   "headline": "The same popup rule across the rest of the popups: text, fields and choices sit in cards.",
+   "changed": "You said on PR-7: “some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.” Exception: a one- or two-sentence question with nothing to tick or type stays plain text.",
+   "notice": "Popups look like About: a card (with a label when there are several) for each part.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "PR-8",
+   "surface": "Turn on sync",
+   "path": "Projects → a project → Turn on sync",
+   "crop": "projects/turn-on-sync@panel",
+   "headline": "Turn on sync is rebuilt on the shared popup: title, ✕, body in a card, an outlined Cancel.",
+   "changed": "You said on PR-8: “this seems a little odd” ",
+   "notice": "It now looks like every other popup.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "CT-8",
+   "surface": "A popup over a popup",
+   "path": "Report a bug → Let your assistant fix it; Resume → Session details",
+   "crop": [
+    {
+     "crop": "settings/development/bug-report#handover-ready@620x640+410+130",
+     "label": "Ticket hand-over"
+    },
+    {
+     "crop": "settings/assistant/cloud/claude-code/sign-out@840x720+300+90",
+     "label": "Claude Code sign-out"
+    }
+   ],
+   "headline": "A popup opened over another popup now blurs and dims the one behind it, like every other popup.",
+   "changed": "You said on CT-8: “these popups are stacking with no blur, which looks a bit cluttered. all other popups blur what's behind them” ",
+   "notice": "Only the top popup is sharp.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Resume → Session details",
+    "Every popup opened from another popup"
+   ]
+  },
+  {
+   "id": "CH-11",
+   "surface": "Close prompt when details can't load",
+   "path": "Close a session whose details fail to read",
+   "crop": "chat/close-session#meta-unreadable@panel",
+   "headline": "The notice and its Details fold now sit inside the session's name card instead of a lone box.",
+   "changed": "You said on CH-11: “this details box is weird/unique i think?” Same shape as a failed install on a detail page.",
+   "notice": "One card says what went wrong, with Try again and Details inside.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "ST-22",
+   "surface": "Appearance: Theme, not Auto",
+   "path": "Settings → Appearance → the folds",
+   "crop": "settings/appearance#finetune-open@420x230+510+500",
+   "headline": "Every Appearance picker's first choice reads “Theme” instead of “Auto”.",
+   "changed": "You said on ST-22: “replace \"auto\" with \"theme\"” Also “Reset all to Theme” and the (i) text. Same meaning, nothing in your settings changes.",
+   "notice": "“Theme” means “whatever your theme does”.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Settings → Appearance"
+   ]
+  },
+  {
+   "id": "CX-1",
+   "surface": "Context popup",
+   "path": "Status bar → Context",
+   "crop": "chat/context@panel",
+   "headline": "Context's parts sit in labelled cards, and its status-bar choice (Percentage or counts) is the shared tab strip.",
+   "changed": "Cards: the popup rule (ST-21, PR-7). The switch was not on your list: found while checking the guide. It was a hand-made switch with its own border and divider line; now the same strip as Session naming in Assistant settings.",
+   "notice": "The switch has the theme's corners and matches the other choice strips.",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "Q-3",
+   "surface": "Pin to top hint",
+   "path": "Session details; Close session",
+   "crop": [
+    {
+     "crop": "chat/tags@420x170+510+545",
+     "label": "Session details"
+    },
+    {
+     "crop": "chat/close-session@420x170+510+560",
+     "label": "Close session"
+    }
+   ],
+   "headline": "The Pin to top hint now says “Keeps this session at the top of your resumable sessions list”.",
+   "changed": "You said on Q-3: “that copt is wrong then. it should say at the top of your resumable sessions list.” ",
+   "notice": "Only the words under Pin to top changed (on a light theme the longer line wraps, so the popup is a few pixels taller).",
+   "themes": [
+    "halftone-dimension",
+    "meadow-mist"
+   ],
+   "runs": [
+    "before",
+    "after"
+   ],
+   "alsoChanges": [
+    "Session details, every state",
+    "Close session, every state"
+   ]
+  },
+  {
+   "id": "CH-21",
+   "surface": "Quitting with nothing unsaved",
+   "path": "Quit or close after saving",
+   "words": true,
+   "headline": "No “Everything is saved” popup: once nothing is left unsaved, the quit or close just goes on.",
+   "changed": "You said on CH-21: “why is there even a popup if everything is saved? inherently removes the need for an unsaved changes popup” Saving or discarding the last file in the popup, an Office autosave landing, or nothing unsaved at all — the app quits straight away. That practice screen is gone.",
+   "notice": "Saving your last file in the quit popup quits the app.",
+   "yes": "Keep it",
+   "no": "Bring the popup back"
+  },
+  {
+   "id": "F47",
+   "surface": "YouCoded themes start faster",
+   "path": "Behind the scenes",
+   "words": true,
+   "headline": "The YouCoded themes' buddy drawings are now made only when shown, not at every start in every window.",
+   "changed": "You picked this one of the five small items (final-review Q-6). F35, F46, F48 and F49 stay as they were.",
+   "notice": "Nothing to see; starting the app and opening windows does a little less work.",
+   "yes": "Got it",
+   "no": "Something's off"
+  },
+  {
+   "id": "TL-0",
+   "surface": "Stronger pill tints removed",
+   "path": "Practice app only",
+   "words": true,
+   "headline": "The practice-only stronger status-pill tints and their two practice screens are gone.",
+   "changed": "You said on TL-0: “we can drop the ones with stronger tints, this would just be a waste/leftover if we arent adopting.” The icon sheet and today's pill sheet stay. Nothing in YouCoded changes.",
+   "notice": "Nothing in the app.",
+   "yes": "Got it",
+   "no": "Something's off"
+  },
+  {
+   "id": "RM-1",
+   "surface": "Filed for later",
+   "path": "The roadmap",
+   "words": true,
+   "headline": "Five things you asked to come back to are on the roadmap, in your words.",
+   "changed": "Session context popup needs its own design pass (CH-28). The Donate (“buy me a coffee”) popup needs work (ST-30). How context works to be fully rebuilt (PU-1). The side pane: images fitted, its bottom bar, the git screens (FV-2). Chat question cards revisited together with tool cards (CH-29) — the guide no longer calls them approved.",
+   "notice": "Nothing changes now.",
+   "yes": "Got it",
+   "no": "Something's missing"
+  },
+  {
+   "id": "DC-0",
+   "surface": "The design guide",
+   "path": "The rulebook every session designs from",
+   "words": true,
+   "headline": "The new design guide is approved and in use; the old one is archived.",
+   "changed": "You approved it with one change (the light way back to chat, FV-6). This round's rules were added: cards separate from their surface, content in popups sits in cards, notices carry no symbol, the way back is light.",
+   "notice": "Sessions now design from the new guide.",
+   "yes": "Got it",
+   "no": "Something's off"
+  },
+  {
+   "id": "Q-TO",
+   "surface": "Take-over popups",
+   "path": "Open a session another device is using",
+   "words": true,
+   "headline": "Should the two take-over popups get a short title and a ✕, like every other popup?",
+   "today": "When a conversation is open on another device that cannot be reached, a small popup explains it and offers Never mind or Take over. There are two versions (could not confirm, and cannot be reached). Neither has a title or a ✕.",
+   "problem": "Every other popup has a title at the top and a ✕ to close it (the guide's popup rule). These two start straight with their text, so they look unfinished and the only way out is a button.",
+   "proposal": "Add the titles “Take over this conversation?” and “That device can’t be reached”, and the ✕ (it does the same as Never mind).",
+   "options": [
+    {
+     "id": "titles",
+     "label": "Add titles and ✕",
+     "recommended": true,
+     "pros": [
+      "Matches every other popup",
+      "A clear way out"
+     ],
+     "cons": [
+      "The popups get one line taller"
+     ]
+    },
+    {
+     "id": "keep",
+     "label": "Keep as is",
+     "pros": [
+      "Nothing moves"
+     ],
+     "cons": [
+      "Two popups still break the rule",
+      "No ✕ to close them"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "END-1",
+   "surface": "Still not done",
+   "path": "So nothing surprises you later",
+   "words": true,
+   "headline": "What is still not done after this round — none of it ships with the branch.",
+   "changed": "NEXT, BEFORE MERGING (your DC-1 note): a new session tests the guide by building a few practice screens from it, and you iterate on the guide with it; this session hands over where the branch and documents are. ON THE ROADMAP: the five items two slides back; the tooling that makes sessions follow the guide; a review of buttons beside text; the phone's GitHub backup; the Pages kit; tool cards and permission prompts; Keep awake time left; a per-theme colour review. KNOWN DEVIATIONS the guide documents but does not fix: the message box, file viewers, terminal toolbar, Git review colours, buddy, games, tour, the phone-width strip with no title. NOT FIXED FROM THE REVIEW: the model menu can land off screen if its chip is hidden (F44); F9, F20, F28, F54 as you decided. CHECKS RUN TODAY: desktop full check green (20,182 tests, 0 failures); Android 1,839 tests, 0 failures; documentation links 572 of 572; deck tool 196 tests. LEFT BEHIND: a scratch copy of the app at scratch/fr-before-master (for these pictures; safe to delete).",
+   "notice": "If any of these should block merging, say No and name it.",
+   "yes": "Understood",
+   "no": "One should block"
+  }
+ ]
+}

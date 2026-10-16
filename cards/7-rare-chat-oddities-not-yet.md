@@ -55,3 +55,15 @@ Chats
 
 From the old roadmap (user-interface, status needs-verify, seen on all, last checked 2026-09-01)
 Chat view glitches (2 things). (a) Floating items (attention toast, permission gates, spinners, sync status) were never audited for landing on top of each other (docs/active/investigations/2026-09-01-chat-float-stacking.md); (b) an empty timestamp-only assistant bubble appears above a permission card (spec: docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md).
+
+Updated on the old roadmap after the move (master, merged in 2026-10-16)
+Chat view glitches (3 things).
+(a) Floating items (attention toast, permission gates, spinners, sync status) were never
+audited for landing on top of each other (docs/active/investigations/2026-09-01-chat-float-stacking.md);
+(b) an empty timestamp-only assistant bubble appears above a permission card (spec:
+docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md); (c) after the window
+reloads it returns to the first session instead of the one you were on — seen 2026-10-05 in the
+performance rig's reload test, a message typed after the reload went to the wrong session
+(docs/archive/investigations/2026-10-04-performance-gap-review.md).
+`chat` `all` `needs-verify` `P3` `checked 2026-10-05`
+

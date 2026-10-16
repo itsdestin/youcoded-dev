@@ -3,7 +3,7 @@ from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture, live_spec
-from deck.spec import load_spec
+from deck.spec import load_spec, workspace_root
 from deck.serve import answers_path, build_app, make_server, preferred_ports, rewrite_stale_live, rotate_submitted, serve, summary, wait_for_submit, write_atomic
 
 def post(url, obj):
@@ -318,12 +318,18 @@ class AppServingTests(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
 
     def _live_spec_for_this_worktree(self):
-        # The app checkout BESIDE these scripts, as a path, so build_app runs the REAL
-        # scripts/shoot/build.mjs (cached: near-instant when nothing changed). It used to name
-        # the worktree it was written in ('ui-review-infra'), so it failed in every other one
-        # (found 2026-10-01).
-        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-        return load_spec(live_spec(self.tmp, live={'worktree': os.path.join(root, 'youcoded')}))
+        # This worktree's own app checkout, by PATH — build_app runs the REAL
+        # scripts/shoot/build.mjs on it (cached: near-instant when nothing changed).
+        # WHY a path and not a name: it used to name the worktree that wrote this test
+        # ("ui-review-infra"), so it failed in every other session once that worktree was
+        # removed (found 2026-10-05). A session worktree holds its checkout at youcoded/;
+        # the shared checkout is the fallback.
+        here = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        tree = next((t for t in (os.path.join(here, 'youcoded'), os.path.join(workspace_root(), 'youcoded'))
+                     if os.path.isdir(os.path.join(t, 'desktop'))), None)
+        if not tree:
+            self.skipTest('no app checkout with desktop/ next to this worktree or at the workspace root')
+        return load_spec(live_spec(self.tmp, live={'worktree': tree}))
 
     def test_a_served_deck_answers_app_index_and_an_asset_with_the_right_type(self):
         # WHY the skip (2026-10-15): a docs-only workspace (workspace-start with no component repos) has

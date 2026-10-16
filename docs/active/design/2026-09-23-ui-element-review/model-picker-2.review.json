@@ -1,0 +1,16 @@
+{
+ "title": "Model menu — your two changes",
+ "key": "ui-model-picker-2",
+ "out": "model-picker-2.review.html",
+ "images": "images/model-picker-2.review",
+ "runs": {"before": "runs/mp2-before", "after": "runs/mp2-after"},
+ "labels": {"before": "B as shown", "after": "With your changes"},
+ "themes": ["midnight", "light", "meadow-mist"],
+ "crops": {"menu": ["mp", "menu", "440x440+0+440"]},
+ "steps": [
+  {"id": "MP2-1", "surface": "Model menu", "path": "Click the model chip in the status bar", "crop": "menu",
+   "headline": "Model menu with your changes — keep?",
+   "changed": "For a Claude Code session the search box is gone: all four Claude models are always listed (small to large: Haiku, Sonnet, Opus, Fable). \"Manage models…\" is now the list's last row, lined up with the model names, instead of a separate footer at the bottom.",
+   "notice": "Sessions on other models (local or OpenRouter) keep the search box, since their lists can be long. The current model keeps its light tint instead of moving to the top."}
+ ]
+}

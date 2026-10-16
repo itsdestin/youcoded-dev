@@ -1,0 +1,24 @@
+{
+  "title": "Project file detail — remove the metadata strip",
+  "key": "ui-guide-project-context-metadata",
+  "out": "project-context-metadata.review.html",
+  "images": "images/project-context-metadata.review",
+  "runs": {"today": "../../../../scratch/ui-consistency-popup-preview/round4/review"},
+  "themes": ["halftone-dimension", "meadow-mist"],
+  "crops": {
+    "quiet": ["round4-review", "quiet-project", "1310x650+65+65"],
+    "no-meta": ["round4-review", "no-meta-project", "1310x650+65+65"]
+  },
+  "steps": [
+    {
+      "id": "P-5", "surface": "Project context file detail", "path": "Projects → Instructions & Memories → CLAUDE.md",
+      "headline": "Is the metadata-free file detail what you meant?",
+      "notice": "Compare your picked quiet treatment, which still has the Project Instructions · Always · 4.1 KB row, with the same screen minus that entire row. It keeps the one-line file title, actions, approved tapered line/fade, unboxed explanation and full-width document. The underlying file information isn't deleted.",
+      "risk": "The text is a Workbench sample, not your CLAUDE.md; global files and other Project views are untouched, while narrow windows, editing, Android and contrast still need verification.",
+      "variants": [
+        {"id": "quiet", "label": "Picked quiet · row remains", "crop": "quiet", "summary": "Your previous pick: scope, timing and size remain on a plain line beneath the header."},
+        {"id": "no-meta", "label": "Remove metadata row", "crop": "no-meta", "summary": "The file's explanation begins under the header, with no Project Instructions / Always / 4.1 KB banner."}
+      ]
+    }
+  ]
+}

@@ -54,7 +54,6 @@ ignores:
   - "**/components/SettingsPanel.tsx"
   - "**/components/SyncPanel.tsx"
   - "**/components/ProvidersSection.tsx"
-  - "**/components/SyncSetupWizard.tsx"
   - "**/components/ResumeBrowser.tsx"
   - "**/components/ResumeOptions.tsx"
   - "**/components/CloseSessionPrompt.tsx"

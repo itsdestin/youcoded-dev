@@ -1,0 +1,39 @@
+{
+ "deck": "close-session-5",
+ "started": "2026-10-12T15:18:03.444Z",
+ "submitted": "2026-10-12T15:20:34Z",
+ "cur": 3,
+ "answers": {
+  "CS5-1": {
+   "note": "is the spacing between the beta buils and update now card consistent with other app buttons/cards?",
+   "t": 1791818313363,
+   "v": "other",
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS5-2": {
+   "v": "pick",
+   "t": 1791818412700,
+   "note": "this still needs a lot of refinement. you're doing a bunch of unique styling here again instead of following the conventions we've already established. the fade is weird, the buttons for each file are weird, etc. the header is too long",
+   "pick": "boxes",
+   "seconds": 99,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS5-3": {
+   "v": "yes",
+   "t": 1791818428604,
+   "seconds": 16,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CS5-4": {
+   "v": "yes",
+   "t": 1791818432782,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

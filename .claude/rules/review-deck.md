@@ -26,7 +26,7 @@ sign-off is a slide.
 | You want Destin to… | Kind | He answers |
 |---|---|---|
 | approve a change he can see | **Approve** | Yes keep it / No revert it |
-| approve something not built yet | **Brief** | Yes build it / No leave it |
+| approve something unbuilt (`"new": true`: built, no before) | **Brief** | Yes build it / No leave it (`new`: keep/remove) |
 | pick between pictures of ONE thing | **Choice** | pick one / None of these |
 | pick between written options over a picture | **Decide** | pick one |
 | judge motion or a transition | **Clip** | Yes / No |
@@ -61,7 +61,7 @@ should stay in the same place for each set of questions" (2026-09-04). **Guard:*
 **Why:** 28 of 28 options drifted in two days. **Guard:** `test_words.py`.
 
 ## Look at it before he does
-**Invariant:** `preview <spec>`, READ `preview/contact.png`, then `serve`; re-serve an answered
+**Invariant:** `preview <spec>`, READ `preview/<spec name>/contact.png`, then `serve`; re-serve an answered
 deck with `--no-build`. **Why:** four defective decks in a day; rebuilding "fixes" a past
 decision. **Guard:** candidate.
 
@@ -73,6 +73,12 @@ what i'm looking at". **Guard:** `test_cli.py`. Depth for every field: `deck/AUT
 ## The deck opens on the theme his app is on
 **Invariant:** never hand-order `themes` — `build`/`serve` read the app's; `--theme` overrides,
 `"theme": "fixed"` pins. **Why:** every deck opened on Midnight. **Guard:** `test_spec.py`.
+
+## One picture per step, live alongside
+**Invariant:** a picture step shows ONE full-window shot (several states = several steps), so it
+reads at full width; offer the matching live page as optional extra, never instead.
+**Why:** "this deck is hard to review cuz the images are small"; then "go back to screenshots…
+i also want to be able to test live alongside" (Destin, 2026-10-15). **Guard:** candidate.
 
 ## The link goes in chat as the last line of the turn
 **Invariant:** `serve` prints `[deck] http://…` and opens nothing; paste it last, stop.

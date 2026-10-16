@@ -1,0 +1,41 @@
+{
+ "deck": "pick-menus-3",
+ "started": "2026-10-01T23:41:23.116Z",
+ "submitted": "2026-10-01T23:45:06Z",
+ "cur": 3,
+ "answers": {
+  "PM3-1": {
+   "v": "other",
+   "t": 1790898178763,
+   "note": "i want a few more alternatives with similar style. maybe two drag spots for active/inactive. edit icon on each chip with hover. want to see the edit surface after clicking. a few optoins",
+   "seconds": 96,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM3-2": {
+   "note": "still not loving the tag interface",
+   "t": 1790898238172,
+   "v": "other",
+   "seconds": 59,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM3-3": {
+   "v": "pick",
+   "pick": "menu",
+   "t": 1790898252248,
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM3-4": {
+   "note": "fine with pin, but want a few alternate renders and i don't like the current location.",
+   "t": 1790898305871,
+   "v": "pick",
+   "pick": "pin",
+   "seconds": 54,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -20,3 +20,14 @@ export const StyleSplitOpen = () => (
 export const StyleSplitSelfClosing = () => (
   <img className="rounded-lg bg-destructive/10" style={{ border: '2px solid red' }} />
 );
+// A hand-rolled notice WITH its own buttons (fix batch 2, 2026-09-26): this used
+// to be excused as "a K5 status strip". Since decisions.md P-2 it is simply a
+// <Callout actions>, so the shape must still fire — Backup & Sync's old
+// Warnings card was exactly this.
+declare const onRetry: () => void;
+export const NoticeWithButtons = () => (
+  <div className="rounded-lg border px-3 py-2 border-amber-700/30 bg-amber-700/5">
+    Google Drive backup failed
+    <button onClick={onRetry}>Retry</button>
+  </div>
+);

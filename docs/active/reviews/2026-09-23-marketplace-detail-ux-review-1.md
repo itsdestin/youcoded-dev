@@ -1,0 +1,5 @@
+# Marketplace Details header — context-free UX review, first pass
+
+Scope: dev-only real `MarketplaceDetailOverlay` comparisons for skill and theme, Today vs proposed outer shell; no production Marketplace detail style edit.
+
+- **U1 — accepted, fixed:** Tester captured `today-skill` with “Skill not found in the current registry,” leaving an empty Details shell. Its `ui-probe` used `document.body.textContent.length > 0` as readiness, which resolves before `MarketplaceProvider` finishes fetching the Workbench fixture. Unlike the real Marketplace screen, the stand-alone preview opened the overlay on the provider's initial empty array. Dev-only `LoadedDetail` now waits for the requested real skill/theme entry before mounting the actual popup. Repeating the same early probe returned `notFound:false`; subsequent self-verifying shots waited for actual content and verified 7/7 skill/theme top/end/dismissal states. The tester is repeating the independent visual pass with content-specific readiness; its verdict remains pending.

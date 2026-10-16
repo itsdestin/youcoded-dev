@@ -1,0 +1,46 @@
+{
+ "deck": "close-session-2",
+ "started": "2026-10-12T12:20:43.150Z",
+ "submitted": "2026-10-12T12:22:32Z",
+ "cur": 4,
+ "answers": {
+  "CS2-1": {
+   "v": "yes",
+   "t": 1791807654042,
+   "seconds": 11,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS2-2": {
+   "v": "pick",
+   "pick": "lists",
+   "t": 1791807697425,
+   "seconds": 43,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS2-3": {
+   "v": "yes",
+   "t": 1791807717688,
+   "seconds": 20,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS2-4": {
+   "v": "yes",
+   "t": 1791807729815,
+   "seconds": 12,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "CS2-5": {
+   "v": "pick",
+   "pick": "follow",
+   "t": 1791807750199,
+   "note": "also add the complete toggle here",
+   "seconds": 20,
+   "theme": "creme",
+   "zoom": 1
+  }
+ }
+}

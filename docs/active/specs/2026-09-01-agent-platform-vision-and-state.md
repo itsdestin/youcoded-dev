@@ -335,7 +335,7 @@ keystore; then the Agents inbox and approvals on Android as pure UI while execut
 desktop-side. Parallelizable after Phase 2, which is done; nobody has started it.
 
 *(2026-09-24: the Android app's own sequencing now lives in
-`docs/active/plans/2026-09-24-android-rebuild-plan.md` (A0–A6). That plan treats on-device
+`docs/archive/plans/2026-09-24-android-rebuild-plan.md` (A0–A6). That plan treats on-device
 inference as out of scope — local models show "not available on this device", per the
 2026-09-10 decisions. LAN engine access is not scheduled in it.)*
 

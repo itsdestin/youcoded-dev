@@ -1,0 +1,32 @@
+{
+ "title": "Projects view — scroll fade and headings",
+ "key": "ui-projects-view",
+ "out": "projects-view.review.html",
+ "images": "images/projects-view.review",
+ "runs": {"before": "runs/pvs-before", "after": "runs/pvs-after"},
+ "labels": {"before": "Today", "after": "With the fade"},
+ "themes": ["meadow-mist", "midnight", "light"],
+ "crops": {
+  "scroll": ["pv", "scroll", "1100x560+170+330"],
+  "pv-today": ["pv", "today", "1100x1180+0+0"],
+  "pv-a": ["pv", "a", "1100x1180+0+0"],
+  "pv-b": ["pv", "b", "1100x1180+0+0"]
+ },
+ "steps": [
+  {"id": "PV-1", "surface": "Projects view, scrolling", "path": "Projects → Conversations, a long list scrolled down", "crop": "scroll",
+   "headline": "Lists fade at their edges instead of being cut off — keep?",
+   "changed": "When a tab's list scrolls, the cards now fade out under the tab row and at the bottom of the window (the same see-through fade as popups and the sessions menu). Before, they were cut off in a hard line. It's on all three tabs.",
+   "notice": "The After picture also shows the new heading from the next step. The fade only appears at an edge where there's more to scroll."},
+  {"id": "PV-2", "surface": "Projects view, all three tabs", "path": "Projects → Files, then Conversations, then Instructions & Memories (stacked top to bottom)",
+   "headline": "Which heading style for the three tabs?",
+   "variants": [
+    {"id": "today", "label": "Today", "crop": "pv-today",
+     "summary": "Files has a small \"Project Files\" line, Conversations has no heading, and Instructions & Memories has small labels with a sentence squeezed beside each one."},
+    {"id": "a", "label": "A · Large headings", "crop": "pv-a",
+     "summary": "Every tab opens with the same heading row, using the guide's Large heading for big groups on a full screen (like Marketplace and Library): \"Project files\" (with the folder path when you're inside one), \"Recent conversations\", and \"Project instructions\" / \"Global instructions\" each with a one-line description under it. Tools (grid/list switch, ⓘ) sit at the right of the row."},
+    {"id": "b", "label": "B · Small labels", "crop": "pv-b",
+     "summary": "The same rows and words as A, but as the small grey labels popups use. Quieter, but on a full screen they're the same size as the text inside the cards."}
+   ],
+   "notice": "Both new versions also give the Instructions & Memories file cards the same card look as the conversation cards. The only new words are \"Recent conversations\"."}
+ ]
+}

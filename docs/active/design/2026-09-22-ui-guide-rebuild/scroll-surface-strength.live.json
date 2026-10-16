@@ -1,0 +1,38 @@
+{
+  "title": "Settings scroll fade — how much content should disappear?",
+  "key": "ui-guide-scroll-surface-strength-2",
+  "out": "scroll-surface-strength.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "The content disappearing under the title while you scroll",
+      "hint": "Scroll inside each drawer to see the fade. Scroll outside it to reach the next version. Try Meadow Mist, Halftone and a solid theme with the theme buttons.",
+      "headline": "Which fade hides enough content without feeling too heavy?",
+      "risk": "Review-only comparison. All three fade content rather than paint a coloured strip; none changes production styling. The title line's provisional 20% taper is held constant, not approved as a final endpoint. Other scrolling surfaces are not covered here.",
+      "live": {"surface": "settings-taper-calibration", "round": 4},
+      "variants": [
+        {
+          "id": "initial-mask",
+          "label": "Earlier fade",
+          "candidate": "initial-mask",
+          "summary": "The version you found too faint: content fades over 36px, with a wide taper at each side. Included as a reference."
+        },
+        {
+          "id": "strong-mask",
+          "label": "Stronger fade",
+          "candidate": "strong-mask",
+          "summary": "Content fades over 64px, with less of the left and right edges untouched."
+        },
+        {
+          "id": "deep-mask",
+          "label": "Most coverage",
+          "candidate": "deep-mask",
+          "summary": "Content fades over 84px, nearly across the whole width. This hides more but could feel heavy while scrolling."
+        }
+      ]
+    }
+  ]
+}

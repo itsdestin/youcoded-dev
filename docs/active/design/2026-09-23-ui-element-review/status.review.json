@@ -1,0 +1,117 @@
+{
+  "title": "Status labels and warnings",
+  "key": "ui-element-review-status",
+  "out": "status.review.html",
+  "images": "images/status.review",
+  "runs": {
+    "today": "runs/status"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "status-today": [
+      "s",
+      "status-today",
+      "880x236+0+0"
+    ],
+    "status-tint": [
+      "s",
+      "status-tint",
+      "880x236+0+0"
+    ],
+    "status-dot": [
+      "s",
+      "status-dot",
+      "880x236+0+0"
+    ],
+    "status-text": [
+      "s",
+      "status-text",
+      "880x236+0+0"
+    ],
+    "warn-today": [
+      "s",
+      "warn-today",
+      "400x165+525+410"
+    ],
+    "warn-bar": [
+      "s",
+      "warn-bar",
+      "400x165+525+410"
+    ],
+    "warn-plain": [
+      "s",
+      "warn-plain",
+      "400x165+525+410"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Cards and menus",
+      "path": "INSTALLED on Marketplace cards; Working / Inactive in the session list",
+      "headline": "How should small status labels look?",
+      "notice": "Top of each picture: INSTALLED on two Marketplace cards. Bottom: Working in the session list. Every version drops the capital letters, as you chose for section labels.",
+      "risk": "Session labels already carry their own colored dot, so there \"Dot and word\" and \"Quiet words\" look almost the same; the Marketplace cards show the difference.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "status-today",
+          "summary": "Small capitals in a grey pill on cards; a tinted pill with a dot in the session list."
+        },
+        {
+          "id": "tint",
+          "label": "Tinted pill",
+          "crop": "status-tint",
+          "summary": "A soft pill in the label's color, normal case."
+        },
+        {
+          "id": "dot",
+          "label": "Dot and word",
+          "crop": "status-dot",
+          "summary": "A small dot followed by the word, no pill."
+        },
+        {
+          "id": "text",
+          "label": "Quiet words",
+          "crop": "status-text",
+          "summary": "Just small grey words, no pill and no extra dot."
+        }
+      ]
+    },
+    {
+      "id": "W-1",
+      "surface": "Settings",
+      "path": "Settings → Backup & Sync, with conversations too big to sync",
+      "headline": "How should a warning or notice sit on the page?",
+      "notice": "Look at the orange notice: \"2 conversations too big to sync\". The same style would be used for every passive warning, info and danger notice in the app.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Tinted box",
+          "crop": "warn-today",
+          "summary": "Today: a softly tinted box with a matching border."
+        },
+        {
+          "id": "bar",
+          "label": "Side bar",
+          "crop": "warn-bar",
+          "summary": "No box: a colored bar down the left edge beside the text."
+        },
+        {
+          "id": "plain",
+          "label": "Plain",
+          "crop": "warn-plain",
+          "summary": "No box and no bar: the colored title and the text sit directly on the page."
+        }
+      ]
+    }
+  ]
+}

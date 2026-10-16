@@ -398,6 +398,8 @@ fi
 #   its "-missing" fixture; app-composer-disabled-through-helper's fixture fires once. 408 + 4 = 412.
 # 2026-09-24 (startup prompts, dev-instance finding): +2 — app-existing-sessions-started-through-helper's
 #   fixture fires twice (the map form and the loop form). 412 + 2 = 414.
+# 2026-09-26 (UI fix batch 2): +1 for no-hand-rolled-callout-tint — a hand-rolled notice
+#   WITH buttons, which the superseded "a notice with a button is a K5 strip" rule excused.
 # 2026-09-30 (one-core R3-1): -3 — tags-list-no-empty-fallback-remote retired (its `case` moved into the
 #   channel table; the main rule now guards the one shared entry). Its two fixtures fired 2 + 1 = 3. 414 - 3 = 411.
 # 2026-09-30 (one-core R3-4): -3 — get-meta-marks-failed-read-unreadable-remote retired (its `case` moved into
@@ -415,7 +417,8 @@ fi
 #   fixtures of the same count. 407 - 10 + 9 + 4 = 410.
 # 2026-10-01 (one-core R5-1): +1 — no-paired-session-send-and-broadcast (its fixture fires once; its -ok twin is clean).
 #   411 + 1 = 412.
-EXPECTED_VIOLATIONS=412
+# Merge of master (2026-10-13): the branch's +1 above on master's 412. 412 + 1 = 413.
+EXPECTED_VIOLATIONS=413
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

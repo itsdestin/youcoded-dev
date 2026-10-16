@@ -171,3 +171,13 @@ test('a chat links itself, writes progress, and pauses with a reason', async () 
   assert.equal(c.paused, undefined);
   assert.deepEqual(check(loadCards(root)), []);
 });
+
+test('check refuses the retired roadmap coming back (an old branch merging would restore it)', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const root = tmp();
+  createCard(root, { title: 'A' });
+  const run = () => execFileSync(process.execPath, [path.join(import.meta.dirname, 'cards.mjs'), 'check', '--root', root], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  assert.match(run(), /cards: 1 ok/);
+  fs.mkdirSync(path.join(root, 'docs', 'roadmap'), { recursive: true });
+  assert.throws(run, /old roadmap was retired/);
+});

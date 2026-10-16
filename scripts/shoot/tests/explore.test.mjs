@@ -103,6 +103,66 @@ test('controls: labels, roles, what is covered, and the top layer first', { skip
   } finally { b.close(); }
 });
 
+// WHY (project-switcher friction, proposal 6): the redesigned switcher's project list carried
+// role=listbox inside its dialog, and `shoot --check` read it as a second layer — seven screens
+// failed "Escape should close listbox Projects only". A list that sits in the dialog's own flow
+// is part of the dialog; a listbox that floats (a dropdown's popup) is still its own layer.
+test('a listbox in a dialog\'s flow is part of the dialog; a floating one is a layer', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    const page = `<!doctype html><body style="margin:0">
+      <div role=dialog aria-label="Switch project" style="position:fixed;inset:60px;z-index:60;background:#fff">
+        <input placeholder="Jump to project">
+        <div role=listbox aria-label="Projects"><div role=option>youcoded</div><div role=option>recipes</div></div>
+        <div style="position:relative"><div role=listbox aria-label="Sort by" style="position:absolute;top:0;left:200px;width:120px;background:#eee">
+          <div role=option>Name</div><div role=option>Recent</div></div></div>
+      </div></body>`;
+    await tab.navigate(`data:text/html,${encodeURIComponent(page)}`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) await new Promise((r) => setTimeout(r, 50));
+    const { layers } = await tab.evaluate(inPage(listLayers));
+    assert.deepEqual(layers.map((l) => `${l.kind} ${l.name}`), ['listbox Sort by', 'dialog Switch project']);
+  } finally { b.close(); }
+});
+
+// Proposal 14 (submit-ticket friction): after the last open step clicked, the pointer is moved
+// off the page so the clicked row does not keep its hover tint in the picture.
+// Close-session friction, proposal 7: "+ Add a note" draws its "+" in an aria-hidden span, so
+// the browser (and a screen reader) calls the button "Add a note" — a step written that way
+// must find it, and the old full text keeps working.
+test('a control is found by the name the browser gives it, aria-hidden text left out', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    await tab.navigate(`data:text/html,${encodeURIComponent('<!doctype html><body style="margin:0"><button id=b onclick="window.hit=(window.hit||0)+1"><span aria-hidden="true">+</span> Add a note</button>')}`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) await new Promise((r) => setTimeout(r, 50));
+    await tab.evaluate(inPage(listLayers));
+    const { controls } = await tab.evaluate(inPage(listControls, {}));
+    assert.deepEqual(controls.map((c) => [c.label, c.spoken]), [['+ Add a note', 'Add a note']]);
+    const driver = makeDriver(tab, { width: 800, height: 600 });
+    await driver.perform({ do: 'click', target: { role: 'button', label: 'Add a note' } });
+    await driver.perform({ do: 'click', target: { role: 'button', label: '+ Add a note' } });
+    assert.equal(await tab.evaluate('window.hit'), 2);
+  } finally { b.close(); }
+});
+
+test('pointerAway leaves nothing hovered', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    await tab.navigate(`data:text/html,${encodeURIComponent('<!doctype html><body style="margin:0"><button id=b style="width:200px;height:60px">Recent logs 4 lines</button>')}`);
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) await new Promise((r) => setTimeout(r, 50));
+    const driver = makeDriver(tab, { width: 800, height: 600 });
+    await driver.perform({ do: 'click', target: { role: 'button', labelStarts: 'Recent logs' } });
+    assert.equal(await tab.evaluate("!!document.querySelector('#b:hover')"), true, 'the click left the pointer on the button');
+    await driver.pointerAway();
+    assert.equal(await tab.evaluate("!!document.querySelector('#b:hover')"), false);
+  } finally { b.close(); }
+});
+
 test('a click re-aims after pointer arrival moves its target instead of hitting the old-position decoy', { skip: !hasChrome && 'needs Chrome' }, async () => {
   const b = await openBrowser({ width: 800, height: 600 });
   try {

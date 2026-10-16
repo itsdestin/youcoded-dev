@@ -47,7 +47,8 @@ with `"` or `\r\n`, are POSIX-only; text reads strip `\r` first.
 **Guard:** `scripts/ast-grep/rules/test-file-url-to-path.yml`; the rest — candidate.
 
 ## Never assert on wall-clock time
-**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock.
+**Invariant:** budgets measure CPU time, never wall clock — a pure-CPU group calls
+`budgetCpuPerTest()` (`tests/helpers/cpu-budget.ts`).
 **Guard:** none — candidate.
 
 ## Unmount what you render
@@ -60,9 +61,9 @@ for jsdom files); clear any timer that outlives it.
 **Invariant:** wait on the thing itself — an event, or `vi.waitFor` on real state — never
 `setTimeout(…, 20)` hoping the work started, and never a REAL `setInterval` (fake it:
 `vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })` + `advanceTimersByTimeAsync`).
-Wait for the positive signal, then settle for the negative.
-**Why:** under load the work hasn't started; ~100 remain.
-**Guard:** none — candidate.
+Wait for the positive signal, then settle for the negative (comment it "settle").
+**Why:** under load the work hasn't started.
+**Guard:** `tests/test-waits.test.ts`.
 
 ## Budgets are measured, not guessed
 **Invariant:** suite-wide is 30s; **`vi.waitFor` is a SEPARATE 15s budget** (`tests/setup-waitfor.ts`).

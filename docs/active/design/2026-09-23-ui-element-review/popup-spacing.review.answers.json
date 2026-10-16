@@ -1,0 +1,49 @@
+{
+ "deck": "ui-popup-spacing",
+ "started": "2026-09-28T22:29:31.500Z",
+ "submitted": "2026-09-28T22:35:47Z",
+ "cur": 4,
+ "answers": {
+  "SP-1": {
+   "v": "other",
+   "t": 1790634687908,
+   "note": "i think maybe all of the toggl/options should be grouped into a card or something somehow? i dont like the bare text there above the sound options on the plain popup backgroun",
+   "seconds": 116,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SP-2": {
+   "note": "i think maybe each of the text sections below a header could go in a card? maybe mearrange and make some sections collapsible so this is easier to navigate and more concise/useful?",
+   "t": 1790634740916,
+   "v": "other",
+   "seconds": 53,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SP-3": {
+   "note": "this page is still egregious i think. the headers/paragraph totally run into eachother and the visual heirarchy is unclear.",
+   "t": 1790634798015,
+   "v": "other",
+   "seconds": 57,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SP-4": {
+   "v": "yes",
+   "t": 1790634837720,
+   "note": "i think we need to kinda consolidate/sort the overlap between this and the help and feedback tab",
+   "seconds": 40,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SP-5": {
+   "v": "pick",
+   "pick": "eight",
+   "t": 1790634946837,
+   "note": "this is a really good example of a good page/menu atp i think. obv a lot of notes on this deck are kinda tangential, but still useful for understanding the state of our overall work. still have a lot to review/refine/clarify i think",
+   "seconds": 109,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

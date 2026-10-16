@@ -1,0 +1,27 @@
+{
+ "deck": "ui-guide-calibration-1",
+ "started": "2026-09-23T00:42:50.040Z",
+ "submitted": "2026-09-23T00:44:42Z",
+ "cur": 2,
+ "answers": {
+  "C-1": {
+   "v": "yes",
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "note": "but i want to tune the beginning/end of the taper a bit. also we will need to re-think how our scroll-fade animations look, as the current one will look very janky against this tapered line i think",
+   "seconds": 71,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "C-3": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

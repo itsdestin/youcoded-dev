@@ -1,0 +1,29 @@
+{
+ "deck": "ui-element-review-unreviewed",
+ "started": "2026-09-24T19:52:59.547Z",
+ "submitted": "2026-09-24T19:54:43Z",
+ "cur": 2,
+ "answers": {
+  "U-1": {
+   "note": "all the chips should be in the same row right below the name",
+   "v": "other",
+   "seconds": 22,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-2": {
+   "note": "maybe date should actually be bottom right, with tag/note buttons top right",
+   "v": "other",
+   "seconds": 51,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "U-3": {
+   "v": "other",
+   "note": "confused?",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

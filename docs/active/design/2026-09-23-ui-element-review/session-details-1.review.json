@@ -1,0 +1,93 @@
+{
+  "title": "Session details — three versions, pick one",
+  "key": "session-details-1",
+  "out": "session-details-1.choice.html",
+  "images": "images/session-details-1",
+  "runs": {
+    "today": "r/today"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "A": [
+      "x",
+      "A",
+      "440x560+500+190"
+    ],
+    "B": [
+      "x",
+      "B",
+      "440x560+500+190"
+    ],
+    "C": [
+      "x",
+      "C",
+      "440x560+500+190"
+    ],
+    "note": [
+      "x",
+      "note",
+      "440x600+500+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SD1-1",
+      "surface": "Session details",
+      "path": "Click the tag element in the bottom status bar (was \"Tags & note\")",
+      "headline": "Which layout should Session details use? All three share the same top card and Pin to top.",
+      "notice": "Top card (same in all three): \"Session\", the name large (click to rename), then \"+ Add a note\" — or the note itself as plain words, no quotes. Tags on this session are now bigger, filled, with a full-colour edge; other tags are plain grey outlines with only the icon coloured; archived ones are flat grey with no edge, so they never look like \"+ New tag\".",
+      "risk": "The sample session has only one tag, so the \"On this session\" area looks emptier here than with several.",
+      "variants": [
+        {
+          "id": "A",
+          "label": "One Tags card",
+          "crop": "A",
+          "summary": "One Tags card: this session's tags first, big, then \"Add a tag\" with the search and the rest underneath.",
+          "risk": "Applied and available share a card, so the split is shown by size and a small label only."
+        },
+        {
+          "id": "B",
+          "label": "Two cards of pills",
+          "crop": "B",
+          "summary": "\"On this session\" gets its own card of big pills; \"More tags\" holds the search, the other tags and + New tag.",
+          "risk": "One more card, so the page is a little taller."
+        },
+        {
+          "id": "C",
+          "label": "Applied as a list",
+          "crop": "C",
+          "summary": "\"On this session\" is a list: one row per tag with a Remove button. \"More tags\" as in B.",
+          "risk": "Tallest when a session has many tags (one row each)."
+        }
+      ]
+    },
+    {
+      "id": "SD1-2",
+      "surface": "Session details",
+      "path": "Session details → + Add a note, type, then click a tag (shown in A)",
+      "headline": "The top card with a note and without one — say if either reads wrong.",
+      "notice": "The note shows as plain words in the top card, like a project's description; click it to edit. Clicking any tag still opens its edit box inside the tags card.",
+      "risk": "A long note makes the top card tall and pushes the tags down.",
+      "themes": [
+        "dark"
+      ],
+      "variants": [
+        {
+          "id": "note",
+          "label": "Note written",
+          "crop": "note",
+          "summary": "The note as plain words under the name; click to edit. Here a tag's edit box is open too."
+        },
+        {
+          "id": "empty",
+          "label": "No note yet",
+          "crop": "A",
+          "summary": "A small dashed \"+ Add a note\" under the name — the project card's \"+ Add a description\" recipe."
+        }
+      ]
+    }
+  ]
+}

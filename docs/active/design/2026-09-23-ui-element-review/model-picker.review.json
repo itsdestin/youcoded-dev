@@ -1,0 +1,26 @@
+{
+ "title": "Model picker — two redesigns",
+ "key": "ui-model-picker",
+ "out": "model-picker.review.html",
+ "images": "images/model-picker.review",
+ "runs": {"today": "runs/mp"},
+ "themes": ["midnight", "light", "meadow-mist"],
+ "crops": {
+  "mp-today": ["mp", "today", "1440x900+0+0"],
+  "mp-a": ["mp", "a", "1440x900+0+0"],
+  "mp-b": ["mp", "b", "1440x900+0+0"]
+ },
+ "steps": [
+  {"id": "MP-1", "surface": "Model picker", "path": "Click the model chip in the status bar (or type /model)",
+   "headline": "Which model picker?",
+   "variants": [
+    {"id": "today", "label": "Today", "crop": "mp-today",
+     "summary": "A centred popup: the search and list sit in their own box with a ruled footer, then a row of five grey effort buttons and a Fast mode card."},
+    {"id": "a", "label": "A · Tidied popup", "crop": "mp-a",
+     "summary": "Still a centred popup, with less padding and no box around the list. Search sits right under the title, and models are plain rows with the current one lightly tinted (like the sessions menu). Manage models is an outlined button. Effort is a card holding the app's segmented bar (the same control as Remote Access's Keep awake), with its hint inside."},
+    {"id": "b", "label": "B · Menu above the status bar", "crop": "mp-b",
+     "summary": "No popup: a small menu opens just above the model chip, the way the sessions menu hangs from its pill. It holds the same search and plain rows, then Effort as the segmented bar and Fast mode as a plain row, with Manage models as the footer. Nothing dims, and clicking outside closes it."}
+   ],
+   "notice": "Max stays greyed until Opus or Fable is picked, in all three. In A the popup is centred, so it shrinks and moves while you search (today's does the same). In B the menu never covers the chat's middle, but a model name longer than the menu gets cut off sooner. The model lists on the new-session form and Resume keep their current look for now; they can follow in a later step."}
+ ]
+}

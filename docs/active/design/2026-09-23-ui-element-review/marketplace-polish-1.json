@@ -1,0 +1,106 @@
+{
+  "title": "Marketplace polish — buttons, phone chips, install errors",
+  "key": "marketplace-polish-1",
+  "out": "marketplace-polish-1.review.html",
+  "images": "images/marketplace-polish-1",
+  "runs": {
+    "before": "runs/polish-before",
+    "after": "runs/polish-after"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "P1-1",
+      "surface": "Buttons",
+      "path": "Welcome → Start your first session",
+      "crop": "welcome/new-session@400x220+520+415",
+      "headline": "A filled button standing alone is now 2 pixels taller, the same height as an outlined button.",
+      "changed": "Every filled (and red) button in the app got an invisible 1-pixel edge, so it is exactly as tall as an outlined one.",
+      "notice": "Start session is 2px taller here; on its own you will barely see it — it matters where two buttons sit side by side.",
+      "risk": "Every filled button in the app grows by 2px; a very tight row could now wrap a line sooner.",
+      "highlight": {
+        "box": [
+          3,
+          72,
+          94,
+          17
+        ]
+      }
+    },
+    {
+      "id": "P1-2",
+      "surface": "Buttons",
+      "path": "Close a session → the close prompt",
+      "crop": "chat/close-session@360x290+540+305",
+      "headline": "The close prompt's filled button grows 2 pixels, like every filled button.",
+      "changed": "Same change: an invisible edge on filled buttons.",
+      "notice": "Close session sits 2px taller at the bottom of the prompt.",
+      "highlight": {
+        "box": [
+          60,
+          84,
+          38,
+          14
+        ]
+      }
+    },
+    {
+      "id": "P1-3",
+      "surface": "Buttons",
+      "path": "Settings → turn on Skip permissions (first time)",
+      "crop": "chat/first-time-warning/skip-permissions@440x300+500+300",
+      "headline": "Cancel and Turn it on now line up exactly — before, the filled one was 2 pixels shorter than its outlined neighbour.",
+      "changed": "The filled button gained the invisible edge the outlined one always had.",
+      "notice": "The two buttons' tops and bottoms are level."
+    },
+    {
+      "id": "P1-4",
+      "surface": "Buttons",
+      "path": "Settings → Backup & sync → remove a backup",
+      "crop": "settings/sync/remove-backend@360x200+540+350",
+      "headline": "Red confirm buttons get the same edge: Remove and Cancel are now the same height.",
+      "changed": "The red (filled) button gained the invisible edge, like the other filled buttons.",
+      "notice": "Remove and Cancel line up."
+    },
+    {
+      "id": "P1-5",
+      "surface": "Buttons",
+      "path": "Marketplace → Connect your stuff → Google Workspace",
+      "crop": "marketplace/integration-detail@820x170+310+235",
+      "headline": "Uninstall and Connect still line up — now from the shared button, not a fix on this page alone.",
+      "changed": "The detail pages' own workaround is removed; the shared button does it everywhere.",
+      "notice": "Nothing changes on this page; it is here to show the pair still matches.",
+      "highlight": {
+        "box": [
+          60,
+          30,
+          39,
+          40
+        ]
+      }
+    },
+    {
+      "id": "P1-6",
+      "surface": "Buttons",
+      "path": "Marketplace on a phone (390 wide), the card list",
+      "crop": "marketplace/skills#phone@390x420+0+150",
+      "headline": "On phone-width Marketplace cards the shield chip is now as tall as the author chip beside it.",
+      "changed": "The shield chip shows only its icon on a phone, so it was 18px beside 22.5px chips. It now uses the shared chip, which keeps the text line's height.",
+      "notice": "The two chips under each card's description are level.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P1-7",
+      "surface": "Buttons",
+      "path": "Marketplace → Browser Use → Install fails, 8 seconds later",
+      "crop": "marketplace/detail/install#failed-later@820x230+310+120",
+      "headline": "When an install fails, the reason now stays on the page until you retry, dismiss it or close the page.",
+      "changed": "Before, the red notice vanished after 6 seconds and left a plain Install button. Picture taken 8 seconds after the failure.",
+      "notice": "The bottom strip's copy of the message has a Dismiss button; trying again or closing the page also puts it away."
+    }
+  ]
+}

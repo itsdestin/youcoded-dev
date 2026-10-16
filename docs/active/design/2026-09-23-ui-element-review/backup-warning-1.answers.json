@@ -1,0 +1,54 @@
+{
+ "deck": "backup-warning-1",
+ "started": "2026-10-12T15:14:32.797Z",
+ "submitted": "2026-10-12T15:17:57Z",
+ "cur": 5,
+ "answers": {
+  "BW-1": {
+   "v": "pick",
+   "t": 1791818238637,
+   "note": "plus a persistent warning at the top of the permission modes card",
+   "seconds": 158,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "pick": "tour"
+  },
+  "BW-2": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1791818242077
+  },
+  "BW-3": {
+   "v": "other",
+   "t": 1791818246884,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BW-4": {
+   "note": "top of card",
+   "t": 1791818255920,
+   "v": "yes",
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BW-5": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1791818267929,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BW-6": {
+   "v": "yes",
+   "t": 1791818276061,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

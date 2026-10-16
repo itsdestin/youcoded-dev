@@ -1,0 +1,293 @@
+{
+ "title": "Popup boxes — what goes in a box, the line under titles, explainer labels",
+ "key": "popup-cards-1",
+ "out": "popup-cards-1.review.html",
+ "images": "images/popup-cards-1",
+ "runs": {
+  "mock": "runs/mock"
+ },
+ "crops": {
+  "today-pages-library-connections": [
+   "p",
+   "today__pages_library_connections",
+   "672x613+0+0"
+  ],
+  "today-pages-create": [
+   "p",
+   "today__pages_create",
+   "672x595+0+0"
+  ],
+  "today-handle-prompt": [
+   "p",
+   "today__handle-prompt",
+   "552x404+0+0"
+  ],
+  "today-chat-rename-session": [
+   "p",
+   "today__chat_rename-session",
+   "672x398+0+0"
+  ],
+  "today-settings-appearance-about": [
+   "p",
+   "today__settings_appearance_about",
+   "672x924+0+0"
+  ],
+  "today-settings-sync-explainer": [
+   "p",
+   "today__settings_sync~explainer",
+   "672x924+0+0"
+  ],
+  "nobox-chat-rename-session": [
+   "p",
+   "nobox__chat_rename-session",
+   "672x398+0+0"
+  ],
+  "nobox-pages-create": [
+   "p",
+   "nobox__pages_create",
+   "672x595+0+0"
+  ],
+  "nobox-handle-prompt": [
+   "p",
+   "nobox__handle-prompt",
+   "552x404+0+0"
+  ],
+  "cardout-chat-rename-session": [
+   "p",
+   "cardout__chat_rename-session",
+   "672x398+0+0"
+  ],
+  "cardout-pages-create": [
+   "p",
+   "cardout__pages_create",
+   "672x595+0+0"
+  ],
+  "cardout-handle-prompt": [
+   "p",
+   "cardout__handle-prompt",
+   "552x404+0+0"
+  ],
+  "cardin-pages-create": [
+   "p",
+   "cardin__pages_create",
+   "672x595+0+0"
+  ],
+  "cardin-chat-rename-session": [
+   "p",
+   "cardin__chat_rename-session",
+   "672x398+0+0"
+  ],
+  "cardin-handle-prompt": [
+   "p",
+   "cardin__handle-prompt",
+   "552x404+0+0"
+  ],
+  "nosub-pages-create": [
+   "p",
+   "nosub__pages_create",
+   "672x595+0+0"
+  ],
+  "nosub-pages-library-connections": [
+   "p",
+   "nosub__pages_library_connections",
+   "672x613+0+0"
+  ],
+  "subbody-pages-create": [
+   "p",
+   "subbody__pages_create",
+   "672x595+0+0"
+  ],
+  "subbody-pages-library-connections": [
+   "p",
+   "subbody__pages_library_connections",
+   "672x613+0+0"
+  ],
+  "firstlabel-settings-appearance-about": [
+   "p",
+   "firstlabel__settings_appearance_about",
+   "672x924+0+0"
+  ],
+  "firstlabel-settings-sync-explainer": [
+   "p",
+   "firstlabel__settings_sync~explainer",
+   "672x924+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "PC-1",
+   "surface": "Popups",
+   "path": "Any small popup that does one thing (Rename session, Pick a handle, Create a page)",
+   "headline": "In a popup that does one thing, should its fields sit in a box, and where do its buttons go?",
+   "notice": "Whichever you pick becomes the rule for every one-job popup — about 30 of the app's 60 popups. Popups with several labelled sections (Settings, Session details) keep their boxes either way.",
+   "risk": "Same words, fields and buttons in all three; only the box and the buttons' place change.",
+   "variants": [
+    {
+     "id": "no-box",
+     "label": "No box",
+     "crop": [
+      {
+       "crop": "nobox-chat-rename-session",
+       "label": "Rename session"
+      },
+      {
+       "crop": "nobox-handle-prompt",
+       "label": "Pick a handle"
+      },
+      {
+       "crop": "nobox-pages-create",
+       "label": "Create a page"
+      }
+     ],
+     "summary": "Fields sit straight on the popup, buttons under them. Fewest layers; the popup itself is the box."
+    },
+    {
+     "id": "box-buttons-out",
+     "label": "Box, buttons outside",
+     "crop": [
+      {
+       "crop": "cardout-chat-rename-session",
+       "label": "Rename session"
+      },
+      {
+       "crop": "cardout-handle-prompt",
+       "label": "Pick a handle"
+      },
+      {
+       "crop": "cardout-pages-create",
+       "label": "Create a page"
+      }
+     ],
+     "summary": "Fields in a box, the popup's buttons under the box. What the last round built for Rename and Pick a handle.",
+     "risk": "A box inside a popup with nothing else in it — what you called arbitrary."
+    },
+    {
+     "id": "box-buttons-in",
+     "label": "Box, buttons inside",
+     "crop": [
+      {
+       "crop": "cardin-chat-rename-session",
+       "label": "Rename session"
+      },
+      {
+       "crop": "cardin-handle-prompt",
+       "label": "Pick a handle"
+      },
+      {
+       "crop": "cardin-pages-create",
+       "label": "Create a page"
+      }
+     ],
+     "summary": "Everything, buttons included, in one box. What the last round built for Create a page.",
+     "risk": "Same extra layer, and the buttons read as belonging to the box rather than the popup."
+    }
+   ],
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ]
+  },
+  {
+   "id": "PC-2",
+   "surface": "Popups",
+   "path": "Create a page; a Page's connections (7 popups have this line today)",
+   "headline": "Should popups have a small grey line under their title?",
+   "notice": "Seven popups use it today: Create/Edit a page, a Page's connections, Status bar widgets, Specialists, Model settings, Versions and What the assistant was given.",
+   "variants": [
+    {
+     "id": "keep-line",
+     "label": "Keep the line",
+     "crop": [
+      {
+       "crop": "today-pages-create",
+       "label": "Create a page"
+      },
+      {
+       "crop": "today-pages-library-connections",
+       "label": "Connections"
+      }
+     ],
+     "summary": "Today: a one-line explanation under the title."
+    },
+    {
+     "id": "no-line",
+     "label": "Remove it",
+     "crop": [
+      {
+       "crop": "nosub-pages-create",
+       "label": "Create a page"
+      },
+      {
+       "crop": "nosub-pages-library-connections",
+       "label": "Connections"
+      }
+     ],
+     "summary": "Title only. Shorter popup.",
+     "risk": "The explanation is gone. For Connections, nobody is told where saved keys live."
+    },
+    {
+     "id": "line-in-body",
+     "label": "Move into the popup",
+     "crop": [
+      {
+       "crop": "subbody-pages-create",
+       "label": "Create a page"
+      },
+      {
+       "crop": "subbody-pages-library-connections",
+       "label": "Connections"
+      }
+     ],
+     "summary": "Title only; the line moves down into the popup, beside what it explains (top of the form, or under the list)."
+    }
+   ],
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ]
+  },
+  {
+   "id": "PC-3",
+   "surface": "(i) explainer pages",
+   "path": "Settings → Appearance → (i), Backup & sync → What is this?",
+   "headline": "On an (i) page with labelled boxes, should the first box get a label too?",
+   "notice": "One shared piece draws every (i) page, so this changes all six (Appearance, Backup & sync, Remote access, Context, Permissions, Specialists).",
+   "variants": [
+    {
+     "id": "first-unlabelled",
+     "label": "Today: no label",
+     "crop": [
+      {
+       "crop": "today-settings-appearance-about",
+       "label": "About Appearance"
+      },
+      {
+       "crop": "today-settings-sync-explainer",
+       "label": "About Backup & sync"
+      }
+     ],
+     "summary": "The opening summary box has no label; every box after it does."
+    },
+    {
+     "id": "first-labelled",
+     "label": "Labelled \"Overview\"",
+     "crop": [
+      {
+       "crop": "firstlabel-settings-appearance-about",
+       "label": "About Appearance"
+      },
+      {
+       "crop": "firstlabel-settings-sync-explainer",
+       "label": "About Backup & sync"
+      }
+     ],
+     "summary": "Every box has a label, the first one \"Overview\". Tell me in Other if you want different wording."
+    }
+   ],
+   "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+   ]
+  }
+ ]
+}

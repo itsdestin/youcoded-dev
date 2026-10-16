@@ -1,0 +1,193 @@
+{
+  "title": "Games: friends panel, status and lobby — round 3",
+  "key": "games-social-3",
+  "out": "games-social-3.review.html",
+  "images": "images/games-social-3",
+  "runs": {
+    "before": "runs/gs2-after",
+    "after": "runs/gs3-after"
+  },
+  "labels": {
+    "before": "Round 2",
+    "after": "Round 3"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "crops": {
+    "three-states": [
+      "states",
+      "three",
+      "1962x660+0+0"
+    ],
+    "concept-account": [
+      "concepts",
+      "account",
+      "1308x780+0+0"
+    ],
+    "concept-roster": [
+      "concepts",
+      "roster",
+      "1308x780+0+0"
+    ],
+    "concept-strip": [
+      "concepts",
+      "strip",
+      "1308x780+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "G3-1",
+      "surface": "Games",
+      "path": "Gamepad button, signed in with four friends",
+      "crop": "chat/games#friends@420x220+1010+40",
+      "headline": "Your status is the Online pill again, now clickable, beside your name; the dropdown is gone.",
+      "changed": "The pill sits right after your name at the top left of the card, like the Account profile row. The arrow at the right opens the list.",
+      "notice": "Click the pill to pick Online or Incognito. The grey line under your name counts friends online."
+    },
+    {
+      "id": "G3-2",
+      "surface": "Games",
+      "path": "Gamepad button → click your Online pill",
+      "crop": "chat/games#status-menu@420x300+1010+40",
+      "runs": [
+        "after"
+      ],
+      "headline": "Clicking your status pill opens a small menu: Online or Incognito, each with one line saying what it means.",
+      "changed": "A new menu, the same small popover as a friend's ⋯ menu; it closes on a click outside or Esc.",
+      "notice": "Choosing Incognito turns the pill grey and hides you from friends.",
+      "highlight": {
+        "box": [
+          12,
+          30,
+          64,
+          62
+        ]
+      }
+    },
+    {
+      "id": "G3-3",
+      "surface": "Games",
+      "path": "Gamepad button, card opened, a request each way",
+      "crop": "chat/games#requests@420x560+1010+40",
+      "headline": "Friend rows show only the name, its status pill right beside it, and the ⋯ at the right edge of every row.",
+      "changed": "@handles are gone from the rows; they show at the top of a friend's ⋯ menu. The pill is centred on the name's line; the ⋯ is the same 28px square on every row.",
+      "notice": "Accept stays rightmost on a request row."
+    },
+    {
+      "id": "G3-4",
+      "surface": "Games",
+      "path": "Games → Chess, four friends",
+      "crop": "chat/games/chess/lobby#friends@520x380+910+40",
+      "headline": "A game's page uses one box per friend, like the Settings list, with a filled Challenge.",
+      "changed": "Your pick (Settings boxes). Name and status pill side by side, no @handle; your record under it; Challenge is now filled.",
+      "notice": "Two friends online means two filled Challenge buttons on the page."
+    },
+    {
+      "id": "G3-5",
+      "surface": "Games",
+      "path": "Games → Connect 4, one friend",
+      "crop": "chat/games/connect-four/lobby@420x300+1010+40",
+      "headline": "Connect 4's page with the same boxed rows and filled Challenge.",
+      "changed": "Same rows as Chess.",
+      "notice": "\"You lead 1–0\" under Jake."
+    },
+    {
+      "id": "G3-6",
+      "surface": "Games",
+      "path": "Gamepad button: incognito · no internet · game server down",
+      "crop": "three-states",
+      "runs": [
+        "after"
+      ],
+      "headline": "Incognito keeps the normal card with a grey Incognito pill; no internet and a broken server replace the whole card with an error box.",
+      "changed": "No more swapped line. Offline: an amber box titled \"No internet connection\". Server down: a red box titled \"Can't reach the game server\". Both have Try again.",
+      "notice": "Connect 4 and Chess are greyed only in the two error states.",
+      "highlight": {
+        "box": [
+          1,
+          8,
+          98,
+          22
+        ]
+      }
+    },
+    {
+      "id": "G3-7",
+      "surface": "Games",
+      "path": "Gamepad button, game server unreachable",
+      "crop": "chat/games#degraded@420x420+1010+40",
+      "headline": "Server down: the friends card is replaced by one red error box with Try again.",
+      "changed": "Round 2 kept the card with a changed line and a box inside it. Now the box is the card.",
+      "notice": "Flappy and 2048 still play."
+    },
+    {
+      "id": "G3-8",
+      "surface": "Games",
+      "path": "Gamepad button, no internet",
+      "crop": "chat/games#offline@420x420+1010+40",
+      "headline": "No internet: the friends card is replaced by one amber box with Try again.",
+      "changed": "Same change as the server-down state, amber instead of red.",
+      "notice": "Shown only when the computer reports no network at all."
+    },
+    {
+      "id": "G3-9",
+      "surface": "Games",
+      "path": "Gamepad button, incognito",
+      "crop": "chat/games#incognito@420x300+1010+40",
+      "headline": "Incognito: the normal card, your pill reads Incognito in grey.",
+      "changed": "Round 2 swapped the line to \"Hidden from friends\". Now the pill says it and the line reads \"Friends can't see you\".",
+      "notice": "Connect 4 and Chess still open."
+    },
+    {
+      "id": "G3-10",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → Games, signed in",
+      "crop": "chat/games#phone@390x500+0+0",
+      "headline": "On a phone: your name and pill on one line, the count under it, the arrow at the right.",
+      "changed": "Same card at phone width.",
+      "notice": "Nothing scrolls sideways."
+    },
+    {
+      "id": "G3-11",
+      "surface": "Games on a phone",
+      "path": "Phone (390 wide) → Games → Chess",
+      "crop": "chat/games/chess/lobby#phone@390x500+0+0",
+      "headline": "A game's page on a phone with boxed rows and the filled Challenge.",
+      "changed": "Same rows at phone width.",
+      "notice": "Records wrap under the name."
+    },
+    {
+      "id": "G3C-1",
+      "surface": "Games",
+      "path": "Gamepad button, signed in, a request waiting — folded, then opened",
+      "headline": "How should your status and your friends' statuses show together? Each picture: folded, then opened.",
+      "notice": "All three use your clickable status pill and the same opened list; only how the card reads folded changes.",
+      "variants": [
+        {
+          "id": "account",
+          "label": "You, then a count",
+          "crop": "concept-account",
+          "summary": "Like Settings → Account's profile row: your name with your pill, \"2 of 4 friends online · 1 request\" under it, arrow at the right."
+        },
+        {
+          "id": "roster",
+          "label": "You at the top of the list",
+          "crop": "concept-roster",
+          "summary": "Like the sessions menu: you are the first row, then any request and the friends online, each with a pill; \"All friends 4\" opens everyone.",
+          "risk": "Taller folded; grows with how many friends are online."
+        },
+        {
+          "id": "strip",
+          "label": "One line of pills",
+          "crop": "concept-strip",
+          "summary": "Your pill, then the friends online as green pills and a request pill, in one line like a chip row; three names then \"+N\".",
+          "risk": "Names only fit three at a time."
+        }
+      ]
+    }
+  ]
+}

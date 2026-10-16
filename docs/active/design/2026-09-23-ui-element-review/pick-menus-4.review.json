@@ -1,0 +1,70 @@
+{
+  "title": "Quick chips, tags and the pin — round 4",
+  "key": "pick-menus-4",
+  "out": "pick-menus-4.review.html",
+  "images": "images/pick-menus-4",
+  "runs": { "today": "runs/today" },
+  "themes": ["light"],
+  "crops": {
+    "qc-rest": ["x", "qc-rest", "430x390+505+262"],
+    "qc-card": ["x", "qc-shelves-card", "430x590+505+155"],
+    "qc-page": ["x", "qc-shelves-page", "430x430+505+235"],
+    "qc-pop": ["x", "qc-shelves-pop", "430x390+505+262"],
+    "tg-switch": ["x", "tg-switch", "430x580+505+160"],
+    "tg-cloud": ["x", "tg-cloud", "430x500+505+205"],
+    "tg-onoff": ["x", "tg-onoff", "430x580+505+160"],
+    "pin-a": ["x", "pin-before-name", "390x110+528+60"],
+    "pin-b": ["x", "pin-by-status", "390x110+528+60"],
+    "pin-c": ["x", "pin-pill", "390x110+528+60"]
+  },
+  "steps": [
+    {
+      "id": "PM4-1",
+      "surface": "Quick chips",
+      "path": "The pencil at the end of the chips above the message box",
+      "headline": "Two shelves, chips with a pencil on hover. Where should editing open?",
+      "notice": "All three share the resting look: \"Shown above the message box\" and \"Set aside\" shelves of chips; drag between them to show or hide a chip, along a row to reorder; a pencil appears on the chip you point at (shown on Inbox). Pictures are after clicking Inbox's pencil. \"Set aside\" is new: chips you keep but don't show.",
+      "variants": [
+        { "id": "card", "label": "Edit card below", "crop": "qc-card",
+          "summary": "An \"Edit “Inbox”\" card opens under the shelves: name, message, Save / Cancel / Remove.",
+          "risk": "The popup grows taller while you edit." },
+        { "id": "page", "label": "Edit page", "crop": "qc-page",
+          "summary": "The popup turns into an \"Edit “Inbox”\" page with \"‹ All chips\" to go back, and a \"Show above the message box\" switch.",
+          "risk": "The shelves are out of sight while you edit." },
+        { "id": "pop", "label": "Small panel by the chip", "crop": "qc-pop",
+          "summary": "A small floating panel opens right under the chip you clicked.",
+          "risk": "It covers the shelf under it while open." }
+      ]
+    },
+    {
+      "id": "PM4-2",
+      "surface": "Tags & note",
+      "path": "The tag chip in the status bar",
+      "headline": "Which tags layout?",
+      "notice": "All: Pin to top first, Note last, the approved \"…\" menu on each tag (shown on work in the cloud).",
+      "variants": [
+        { "id": "switch", "label": "Rows with switches", "crop": "tg-switch",
+          "summary": "Last round's: one tag per row, a switch at the right." },
+        { "id": "cloud", "label": "Tag cloud", "crop": "tg-cloud",
+          "summary": "All tags as chips in one block: filled when on this session, faint outline when not; click to switch. \"…\" appears beside a chip on hover.",
+          "risk": "On and off differ only by how strong the chip looks." },
+        { "id": "onoff", "label": "On this session / Add a tag", "crop": "tg-onoff",
+          "summary": "Two cards: the tags on this session (✕ to take one off), then every other tag with + to add and \"…\" for the menu.",
+          "risk": "Taller; a tag moves between the two cards when you click it." }
+      ]
+    },
+    {
+      "id": "PM4-3",
+      "surface": "Sessions menu",
+      "path": "The session list at the top of the window (first row is pinned)",
+      "headline": "Where and how should the pin show?",
+      "notice": "Resume's cards and the status bar's tag chip follow whichever you pick.",
+      "variants": [
+        { "id": "before-name", "label": "Before the name", "crop": "pin-a", "summary": "An outline pin just before the session's name." },
+        { "id": "by-status", "label": "By the status", "crop": "pin-b", "summary": "A filled accent-colour pin just left of the Working/Inactive pill." },
+        { "id": "pill", "label": "A \"Pinned\" pill", "crop": "pin-c", "summary": "A small grey \"Pinned\" pill with a pin, beside the status pill.",
+          "risk": "Wider; on a long name the name gets cut sooner." }
+      ]
+    }
+  ]
+}

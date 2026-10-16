@@ -1,0 +1,47 @@
+{
+ "deck": "popup-cards-8",
+ "started": "2026-10-14T19:41:53.512Z",
+ "submitted": "2026-10-14T19:43:30Z",
+ "cur": 4,
+ "answers": {
+  "W-1": {
+   "v": "yes",
+   "t": 1792006952665,
+   "note": "we should also make the version chip always-on ",
+   "seconds": 39,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "yes",
+   "t": 1792006963858,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "M-1": {
+   "note": "still cant see the bottom of the preview. i should be able to see the full window.",
+   "t": 1792006986157,
+   "v": "other",
+   "seconds": 22,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "everywhere",
+   "t": 1792006996999,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "box-all",
+   "t": 1792007009735,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,75 @@
+{
+  "title": "Purchases — a purchase tracker (round 1, design A)",
+  "key": "gt-r1-purchases-page.live",
+  "out": "gt-r1-purchases-page.live.html",
+  "live": {
+    "worktree": "sessions/gt-r1-purchases-page/youcoded"
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Purchases (a Page)",
+      "path": "Pages → Purchases",
+      "headline": "Purchase tracker: does this month's view work as a first try?",
+      "hint": "Open Pages (the grid button in the top bar), then Purchases in the list on the left. Try picking a category, clicking a category card, and Add a purchase.",
+      "notice": "Builder's notes on the guide never arrived; judge from what you see.",
+      "risk": "Bank buttons only show the app's existing \"can't connect\" message here.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-2",
+      "surface": "Purchases (a Page)",
+      "path": "Pages → Purchases, first time",
+      "headline": "Purchase tracker, first time: one card and \"Connect a bank\".",
+      "hint": "Open Pages, then Purchases.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "pagesPurchases": "empty"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-3",
+      "surface": "Purchases (a Page)",
+      "path": "Pages → Purchases, a bank needs sign-in",
+      "headline": "Purchase tracker when a bank needs you to sign in again.",
+      "hint": "Open Pages, then Purchases. Then change the step to A-4 to see a failed download.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "pagesPurchases": "reconnect"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-4",
+      "surface": "Purchases (a Page)",
+      "path": "Pages → Purchases, download failed",
+      "headline": "Purchase tracker when the first download failed.",
+      "hint": "Open Pages, then Purchases.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "pagesPurchases": "failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

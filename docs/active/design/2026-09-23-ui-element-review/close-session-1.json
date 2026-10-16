@@ -1,0 +1,125 @@
+{
+  "title": "Close session prompt — round 1: the same cards as Session details",
+  "key": "close-session-1",
+  "out": "close-session-1.review.html",
+  "images": "images/close-session-1",
+  "runs": {
+    "b": "runs/cs-before",
+    "a": "runs/cs-after"
+  },
+  "labels": {
+    "b": "Today",
+    "a": "Proposed"
+  },
+  "themes": [
+    "creme",
+    "youcoded",
+    "youcoded-night",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "CS-1",
+      "surface": "Close session prompt",
+      "path": "Close a session (its ✕ in the session list)",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "chat/close-session@460x580+490+165",
+      "headline": "The close prompt now shows the same cards as Session details, ready to use — no separate editing step.",
+      "changed": "Was a summary box you clicked to swap into a second form. Now: the session's name and note in its own card, the Tags card edited in place, then Pin to top and Mark complete together in one card. The name left the title line for its own card, as in Session details.",
+      "notice": "Tags, the note and the pin change right there; nothing is saved until you press Close session, and the ✕ still leaves everything as it was. The name can be renamed from here too. The popup is wider (Session details' width) and taller.",
+      "risk": "It is taller: about 510 points instead of 280, so Close session sits lower on the screen.",
+      "highlight": "panel"
+    },
+    {
+      "id": "CS-2",
+      "surface": "Close session prompt",
+      "path": "Close a session",
+      "runs": [
+        "a"
+      ],
+      "headline": "Should the Tags card be open when the prompt opens, or folded to one row until you need it?",
+      "variants": [
+        {
+          "id": "open",
+          "label": "Tags open",
+          "crop": "chat/close-session@460x580+490+165",
+          "summary": "Exactly Session details' Tags card, search and all. Most consistent; the prompt is tall and Close session sits lower."
+        },
+        {
+          "id": "folded",
+          "label": "Tags folded",
+          "crop": "chat/close-session#folded@460x580+490+165",
+          "summary": "One \"Tags\" row showing this session's tags; a click opens the same Tags card inside it (the tag then shows only once). Shorter, closer to today's quick close, one extra click to tag."
+        }
+      ]
+    },
+    {
+      "id": "CS-3",
+      "surface": "Close session prompt",
+      "path": "Close a session → + Add a note, or click a tag",
+      "runs": [
+        "a"
+      ],
+      "new": true,
+      "crop": [
+        {
+          "crop": "chat/close-session#note-typing@460x620+490+140",
+          "label": "Writing a note"
+        },
+        {
+          "crop": "chat/close-session#tag-edit@460x620+490+140",
+          "label": "A tag clicked"
+        }
+      ],
+      "headline": "The note is written in place, and clicking a tag opens its edit box inside the Tags card — as in Session details.",
+      "changed": "\"+ Add a note\" turns into the note box right under the name; a clicked tag opens its name, colour and archive box inside the card. The middle of the prompt scrolls under a soft fade while the Close session line stays put.",
+      "notice": "Pressing Enter on a tag or a switch now does that control's job. Before, Enter anywhere outside a text box closed the session — even while you were editing a tag."
+    },
+    {
+      "id": "CS-4",
+      "surface": "Close session prompt",
+      "path": "Close a session whose tags and note could not be read",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "chat/close-session#meta-unreadable@460x400+490+250",
+      "headline": "When a session's tags and note can't be read, the prompt says so in the notice box, with Try again.",
+      "changed": "Was a small grey line on the popup with the technical error in it. Now the name card stays, and a red notice box in place of the cards says what happened and that closing still works, with Try again; the technical reason is folded under Details.",
+      "notice": "Try again reads them again and brings the cards back when it works.",
+      "highlight": "panel"
+    },
+    {
+      "id": "CS-5",
+      "surface": "Close session prompt",
+      "path": "Close a session on a phone (remote access)",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "chat/close-session#phone",
+      "headline": "On a phone the prompt fits the screen's width, and the Close session line always stays in view.",
+      "changed": "The same cards at phone width; the session list behind it is unchanged.",
+      "notice": "On a normal phone it fits without scrolling; on a very short screen, or with a tag's edit box open, the middle scrolls under a soft fade.",
+      "highlight": "panel"
+    },
+    {
+      "id": "CS-6",
+      "surface": "Close session prompt",
+      "path": "Close a session that has a note but no tags",
+      "runs": [
+        "b",
+        "a"
+      ],
+      "crop": "chat/close-session#note@460x580+490+165",
+      "headline": "A session's note shows under its name, in quotes and italics, and a click edits it.",
+      "changed": "Was clipped to two small grey lines inside the summary box. Now it is the note as Session details shows it.",
+      "notice": "\"No tags on this session yet\" says the empty case in words, as in Session details.",
+      "highlight": "panel"
+    }
+  ]
+}

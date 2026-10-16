@@ -132,7 +132,7 @@ Once the mockups hold together, and **before Destin sees any deck**, dispatch th
 `scripts/ui-review/tester-kit.md`, nothing from the workspace) against the workbench with
 the feature's task. Triage its findings (`accepted` / `rejected` / `already handled` on each
 line of `docs/active/reviews/<date>-<feature>-ux-review-1.md`), apply the accepted ones and the
-shorter wording it proposes (checked against the design guide's banned words; a proposal
+shorter wording it proposes (checked against the design guide's Text and numbers rules — sentence case, plain words; a proposal
 that changes meaning goes on the deck for Destin instead), then build the review deck. The
 deck he sees should already be free of the confusion an outsider catches in ten minutes.
 
@@ -152,7 +152,7 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    `<feature>.contract.json`; it is the last thing Destin answers before the build. Run
    `review-cards.py contract-check` on it and paste the output into the handoff.
 2. Turn the `MOCK_ONLY` entries the approved UI depends on into real handlers (main +
-   `preload.ts` + `remote-shim.ts` + `SessionService.kt`, guarded by `ipc-channels.test.ts`),
+   `preload.ts` + `remote-shim.ts`, guarded by `ipc-channels.test.ts`),
    then drop them from the registry.
 3. **Run the build stage** (design §8): a short technical design (backend, data shape, reuse)
    → adversarial review, one findings file per round under `docs/active/reviews/`, stop on a

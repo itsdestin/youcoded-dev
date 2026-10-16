@@ -1,0 +1,23 @@
+{
+ "deck": "ui-guide-custom-popup-visual-1",
+ "started": "2026-09-23T09:41:02.366Z",
+ "submitted": "2026-09-23T09:42:18Z",
+ "cur": 1,
+ "answers": {
+  "M-1": {
+   "v": "pick",
+   "pick": "one-line",
+   "note": "but style it like other headers",
+   "seconds": 49,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-1": {
+   "v": "pick",
+   "pick": "fade",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

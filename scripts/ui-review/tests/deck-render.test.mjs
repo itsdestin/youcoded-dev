@@ -307,6 +307,8 @@ test('live step: panes, label theme row that does not reload them, no picking by
     // build time — otherwise switching theme on step 1 leaves step 2's panes on the old one.
     assert.deepEqual(await c.evaluate("[...new Set(window.__acks.filter(a=>a.type==='stub:theme').map(a=>a.theme))]"), ['midnight'],
       'panes are told the theme on load, with no click');
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe[data-applied-theme=midnight]').length"), 2,
+      'both panes acknowledge painted theme before a preview claims they are ready');
     const loadedIds = await c.evaluate("JSON.stringify(window.__acks.filter(a=>a.type==='stub:loaded').map(a=>a.id).sort())");
     assert.equal(JSON.parse(loadedIds).length, 2, 'both panes announced themselves');
     await c.evaluate("[...document.querySelectorAll('#thumbs .thumb')].find(b=>b.dataset.v==='light').click()"); await sleep(500);
@@ -673,6 +675,22 @@ test('preview writes one png per page × size × theme and a contact sheet', asy
   assert.equal(existsSync(join(dirname(spec), 'questions.serve.json')), false, 'preview takes no serve lock');
 });
 
+test('a server-down live pane makes preview fail instead of accepting a text-only shot', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-live-down-'));
+  const deadBase = `http://127.0.0.1:${await freePort()}`;
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import live_spec; print(live_spec(${JSON.stringify(tmp)}, base=${JSON.stringify(deadBase)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
+  const build = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' });
+  assert.equal(build.status, 0, build.stdout + build.stderr);
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const r = await renderDeck({ url: `http://127.0.0.1:${port}/live.html`, out: join(tmp, 'shots'), sizes: ['640x480'], themes: ['midnight'], pages: 1 });
+    assert.ok(r.errors.some(e => e.includes('live app server unavailable')), JSON.stringify(r.errors));
+  } finally { srv.kill(); }
+});
+
 // A page that never sets window.__deckReady used to be screenshotted silently: the bounded
 // poll (40 × 250ms) would just time out and renderDeck would shoot whatever was on screen with
 // no sign anything was wrong. A plain, no-JS HTML file served over file:// is the simplest
@@ -945,10 +963,14 @@ print(p)`;
     assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('live-fill')"), true);
     const box = JSON.parse(await c.evaluate("(()=>{const s=document.querySelector('.stage').getBoundingClientRect(),"
       + "f=document.querySelector('#inner iframe').getBoundingClientRect(),"
-      + "cap=document.querySelector('#inner figcaption').getBoundingClientRect();"
-      + "return JSON.stringify({s:{w:s.width,h:s.height,b:s.bottom},f:{w:f.width,h:f.height,b:f.bottom},cap:cap.height});})()"));
-    // Tall: everything the stage has, minus its padding and the caption above the pane.
-    assert.ok(box.f.h > box.s.h - box.cap - 40, `pane ${box.f.h} should fill stage ${box.s.h} (caption ${box.cap})`);
+      + "cap=document.querySelector('#inner figcaption').getBoundingClientRect(),"
+      + "hint=document.querySelector('#livehint'), hs=getComputedStyle(hint);"
+      + "return JSON.stringify({s:{w:s.width,h:s.height,b:s.bottom},f:{w:f.width,h:f.height,b:f.bottom},"
+      + "cap:cap.height,hint:hint.getBoundingClientRect().height+parseFloat(hs.marginTop)+parseFloat(hs.marginBottom)});})()"));
+    // Tall: everything the stage has, minus its padding, the now-before-pane
+    // operating hint, and the caption. Neither hint nor the app may be clipped.
+    assert.ok(box.f.h > box.s.h - box.cap - box.hint - 40,
+      `pane ${box.f.h} should fill stage ${box.s.h} (caption ${box.cap}, hint ${box.hint})`);
     // And never past it — the clipped bottom strip is exactly what this guards.
     assert.ok(box.f.b <= box.s.b + 1, `pane bottom ${box.f.b} must stay inside the stage ${box.s.b}`);
     assert.ok(box.f.w > box.s.w - 40, `pane ${box.f.w} should fill stage ${box.s.w}`);
@@ -1004,6 +1026,116 @@ test('a save that fails says so and retries, and a restart or a stale page loses
     await c.evaluate(`(() => { const k = 'deck:fixture'; const s = JSON.parse(localStorage.getItem(k)); s.answers['S-4'] = { v: 'yes', t: Date.now() }; localStorage.setItem(k, JSON.stringify(s)); })()`);
     await open(1);
     await until(async () => onDisk()['S-4']?.v === 'yes', 'the backup to reach the file');
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});
+
+// WHY (submit-ticket friction, proposal 10): a tall popup's before/after (a 620×750 close-up
+// shot at 1.5×) scored under the 50% floor side by side, so the page fell back to COMPACT and
+// stacked the two pictures at full size — only the top of "Today" was on screen until you
+// scrolled, on every ticket slide. Two tall pictures now stay side by side, shrunk to fit.
+test('two tall pictures sit side by side and fit the screen instead of stacking', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-tall-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  const mk = spawnSync('python3', ['-c', `import sys, os; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import shoot_run
+for run, rect in (('before', None), ('after', (500, 300, 100, 40))):
+    shoot_run(os.path.join(${JSON.stringify(tmp)}, 'sruns', run), [{'name': 'settings/sound', 'theme': t, 'rect': rect, 'scale': 1.5} for t in ('midnight', 'light')])`], { encoding: 'utf8' });
+  assert.equal(mk.status, 0, mk.stderr);
+  const s = JSON.parse(readFileSync(spec, 'utf8'));
+  s.runs = { before: join(tmp, 'sruns', 'before'), after: join(tmp, 'sruns', 'after') };
+  s.steps = [{ id: 'T-1', surface: 'Submit a ticket', path: 'Settings', crop: 'settings/sound@620x750+410+75', headline: 'A tall popup changed.', changed: 'A block was painted.', notice: 'You see it.' }];
+  writeFileSync(spec, JSON.stringify(s));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    for (const size of ['1440x900', '1512x860']) {
+      const [w, h] = size.split('x').map(Number); const c = await cdp(await freePort(), w, h);
+      try {
+        await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+        for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+        await sleep(300);
+        const m = JSON.parse(await c.evaluate(`JSON.stringify({ layout: document.body.dataset.layout, ih: innerHeight,
+          imgs: [...document.querySelectorAll('#inner img')].map((i) => { const r = i.getBoundingClientRect(); return { top: Math.round(r.top), left: Math.round(r.left), bottom: Math.round(r.bottom) }; }) })`));
+        assert.notEqual(m.layout, 'compact', size);
+        assert.equal(m.imgs.length, 2);
+        assert.equal(m.imgs[0].top, m.imgs[1].top, `${size}: side by side, not stacked ${JSON.stringify(m.imgs)}`);
+        assert.ok(m.imgs.every((i) => i.bottom <= m.ih), `${size}: both pictures whole on screen ${JSON.stringify(m)}`);
+        assert.deepEqual(c.errors, [], size);
+      } finally { c.close(); }
+    }
+  } finally { srv.kill(); }
+});
+
+// Close-session friction, proposals 8 and 16: a choice's designs are compared side by side.
+// Composite designs (folded + opened) used to stack full width with the second under the answer
+// bar; three tall designs were fitted to the height and came out ~250px wide.
+async function choiceDeck(mode) {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-choice-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('deck.json'), fx.stderr);
+  const mk = spawnSync('python3', ['-c', `import sys, os; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import shoot_run
+shoot_run(os.path.join(${JSON.stringify(tmp)}, 'sruns', 'after'), [{'name': n, 'theme': t, 'rect': (500, 300, 100, 40), 'scale': 1.5} for n in ('a/x', 'a/y', 'a/z') for t in ('midnight', 'light')])`], { encoding: 'utf8' });
+  assert.equal(mk.status, 0, mk.stderr);
+  const s = JSON.parse(readFileSync(spec, 'utf8'));
+  s.runs = { after: join(tmp, 'sruns', 'after') };
+  const ids = mode === 'composite' ? ['x', 'y'] : ['x', 'y', 'z'];
+  s.steps = [{ id: 'C-1', surface: 'Popup', path: 'Settings', headline: 'Which design?', variants: ids.map((id) => ({ id, label: `Design ${id}`, summary: 'A short summary of this design.',
+    crop: mode === 'composite' ? [{ crop: `a/${id}@420x500+500+100`, label: 'Folded' }, { crop: `a/${id}@420x500+500+100`, label: 'Open' }] : `a/${id}@420x740+500+100` })) }];
+  writeFileSync(spec, JSON.stringify(s));
+  const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr + r.stdout);
+  return spec;
+}
+async function measureChoice(spec, w, h) {
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), w, h);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    await sleep(300);
+    assert.deepEqual(c.errors, []);
+    return JSON.parse(await c.evaluate(`JSON.stringify({ layout: document.body.dataset.layout, imgs: [...document.querySelectorAll('#inner img')].map((i) => { const r = i.getBoundingClientRect(); return { top: Math.round(r.top), width: Math.round(r.width) }; }) })`));
+  } finally { c.close(); srv.kill(); }
+}
+
+test('two composite designs on a choice sit side by side, not stacked', async () => {
+  const spec = await choiceDeck('composite');
+  for (const [w, h] of [[1440, 900], [1024, 768]]) {
+    const m = await measureChoice(spec, w, h);
+    assert.notEqual(m.layout, 'compact', `${w}x${h}`);
+    assert.equal(m.imgs.length, 2);
+    assert.equal(m.imgs[0].top, m.imgs[1].top, `${w}x${h}: side by side ${JSON.stringify(m.imgs)}`);
+  }
+});
+
+test('three tall designs on a choice open at the width that fills the row', async () => {
+  const spec = await choiceDeck('tall');
+  const m = await measureChoice(spec, 1440, 900);
+  assert.equal(m.imgs.length, 3);
+  assert.ok(m.imgs.every((i) => i.top === m.imgs[0].top), JSON.stringify(m.imgs));
+  assert.ok(m.imgs.every((i) => i.width >= 330), `each design at least 330px wide: ${JSON.stringify(m.imgs)}`);
+});
+
+// Close-session friction, proposal 15: a slide names the other screens a shared change reaches.
+test('a slide lists the other screens its change also reaches', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-also-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim();
+  const s = JSON.parse(readFileSync(spec, 'utf8')); s.steps[0].alsoChanges = ['Session details', 'Resume → Organize']; writeFileSync(spec, JSON.stringify(s));
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/fixture.html?step=1` });
+    for (let i = 0; i < 40 && !(await c.evaluate('!!window.__deckReady').catch(() => false)); i++) await sleep(250);
+    const got = JSON.parse(await c.evaluate(`JSON.stringify({ head: document.querySelector('.card.also h3')?.textContent, items: [...document.querySelectorAll('.card.also li')].map((l) => l.textContent) })`));
+    assert.deepEqual(got, { head: 'Also changes', items: ['Session details', 'Resume → Organize'] });
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); }
 });

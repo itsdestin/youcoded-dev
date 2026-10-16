@@ -1,0 +1,654 @@
+{
+  "title": "Guide test, round 2 — five more made-up features from fresh builders",
+  "key": "gt-r2",
+  "out": "gt-r2.review.html",
+  "images": "images/gt-r2.review",
+  "runs": {
+    "design": "runs/gt-r2"
+  },
+  "labels": {
+    "design": "Design"
+  },
+  "steps": [
+    {
+      "id": "A-1a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Chat — quiz card",
+      "path": "A chat where the assistant quizzes you — A question",
+      "crop": "chat#quiz",
+      "headline": "Study quiz: a card inside the assistant's reply — pick an answer and it's checked at once.",
+      "changed": "Quiz name and \"Question 2 of 5\", the question, answers as round-selector rows. A right answer gets a green \"Right\" tag; an explanation box with \"Next question\" follows.",
+      "notice": "Builder's main gaps: the guide has NO recipe for cards inside the chat; the normal card style vanishes inside a chat bubble; no neutral notice colour (the explanation box turns hot pink in Halftone).",
+      "risk": "Sending your score to the assistant is faked. · Try it live: http://127.0.0.1:23234/gt-r2-quiz.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-1b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Chat — quiz card",
+      "path": "A chat where the assistant quizzes you — Answered right",
+      "crop": "chat#quiz-right",
+      "headline": "Study quiz: answered right.",
+      "changed": "Quiz name and \"Question 2 of 5\", the question, answers as round-selector rows. A right answer gets a green \"Right\" tag; an explanation box with \"Next question\" follows.",
+      "notice": "Builder's main gaps: the guide has NO recipe for cards inside the chat; the normal card style vanishes inside a chat bubble; no neutral notice colour (the explanation box turns hot pink in Halftone).",
+      "risk": "Sending your score to the assistant is faked. · Try it live: http://127.0.0.1:23234/gt-r2-quiz.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-2a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Chat — quiz card",
+      "path": "Wrong answer, then the score — Wrong answer",
+      "crop": "chat#quiz-wrong",
+      "headline": "Quiz: a wrong answer, and the final score.",
+      "changed": "Wrong: red \"Your answer\" tag, green \"Right answer\" tag on the correct one. Finished: \"4 of 5 right\", each question with Right/Missed, then Retake quiz and Go over what I missed.",
+      "notice": "Builder: unsure where a score like \"4 of 5\" fits — no heading level matches it.",
+      "risk": "— · Try it live: http://127.0.0.1:23234/gt-r2-quiz.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-2b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Chat — quiz card",
+      "path": "Wrong answer, then the score — Finished",
+      "crop": "chat#quiz-finished",
+      "headline": "Quiz: finished.",
+      "changed": "Wrong: red \"Your answer\" tag, green \"Right answer\" tag on the correct one. Finished: \"4 of 5 right\", each question with Right/Missed, then Retake quiz and Go over what I missed.",
+      "notice": "Builder: unsure where a score like \"4 of 5\" fits — no heading level matches it.",
+      "risk": "— · Try it live: http://127.0.0.1:23234/gt-r2-quiz.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-3a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Chat — quiz card",
+      "path": "Sending failed, and phone width — Send failed",
+      "crop": "chat#quiz-send-failed",
+      "headline": "Quiz: the score couldn't be sent, and the score at phone width.",
+      "changed": "A red notice replaces the buttons: \"Your answers couldn't be sent to the assistant. Your score is still here.\" with Try again.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:23234/gt-r2-quiz.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "A-3b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Chat — quiz card",
+      "path": "Sending failed, and phone width — Phone",
+      "crop": "chat#quiz-finished-phone",
+      "headline": "Quiz: phone.",
+      "changed": "A red notice replaces the buttons: \"Your answers couldn't be sent to the assistant. Your score is still here.\" with Try again.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:23234/gt-r2-quiz.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-1",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "Pages → News (under Built in; pinnable)",
+      "crop": "news",
+      "headline": "News: headlines by topic from the sites you pick, as a built-in Page you can pin to the top bar.",
+      "changed": "\"24 stories · 4 sources\" with Topics and sources; one section per topic, story cards three across (headline, site chips, two-line summary, time); Show 3 more.",
+      "notice": "Builder's main gaps: nowhere says a built-in Page is a place a feature can live; no spot for a whole-screen tool button; \"date bottom right\" adds dead space on grid cards.",
+      "risk": "Stories are made up. · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-2a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "News → Topics and sources · first time — Topics and sources",
+      "crop": "news/settings",
+      "headline": "News: the topics-and-sources popup, and the first-time screen.",
+      "changed": "Removable topic pills, dashed \"+ World\" suggestions and an \"Add a topic\" box; source switches with a paywall note. First time: one card and \"Choose topics and sources\".",
+      "notice": "Builder: the first-time card's filled button competes with Pages' own filled \"Create a page\" — two filled buttons on one screen.",
+      "risk": "— · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-2b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "News → Topics and sources · first time — First time",
+      "crop": "news#first-run",
+      "headline": "News: first time.",
+      "changed": "Removable topic pills, dashed \"+ World\" suggestions and an \"Add a topic\" box; source switches with a paywall note. First time: one card and \"Choose topics and sources\".",
+      "notice": "Builder: the first-time card's filled button competes with Pages' own filled \"Create a page\" — two filled buttons on one screen.",
+      "risk": "— · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-3a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "One site didn't answer · offline — One site failed",
+      "crop": "news#source-failed",
+      "headline": "News: when one source didn't answer, and offline.",
+      "changed": "One red notice above all topics (Politico missing, the rest up to date) with Details and Try again; offline is an amber notice with the time of the headlines shown.",
+      "notice": "Builder: stories are grouped by topic, not by site, so there was no single part for the notice to replace.",
+      "risk": "— · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-3b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "One site didn't answer · offline — Offline",
+      "crop": "news#offline",
+      "headline": "News: offline.",
+      "changed": "One red notice above all topics (Politico missing, the rest up to date) with Details and Try again; offline is an amber notice with the time of the headlines shown.",
+      "notice": "Builder: stories are grouped by topic, not by site, so there was no single part for the notice to replace.",
+      "risk": "— · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-4a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "Nothing loaded · pinned, phone width — Nothing loaded",
+      "crop": "news#failed",
+      "headline": "News: the full-screen error, and at phone width.",
+      "changed": "Nothing loaded and nothing saved: the new full-screen error. On a phone, one card per row.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "B-4b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "News (a built-in Page)",
+      "path": "Nothing loaded · pinned, phone width — Phone",
+      "crop": "news/focus#phone",
+      "headline": "News: phone.",
+      "changed": "Nothing loaded and nothing saved: the new full-screen error. On a phone, one card per row.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20945/gt-r2-news-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-1",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "Top bar → open-book button → Saved for later",
+      "crop": "reading",
+      "headline": "Reading list: links and files you saved, with tags, search and \"Ask about this\".",
+      "changed": "\"Saved for later\" with a count and \"+ Save a link or file\"; search and tag chips; each card has its name, site chips, summary, tags, \"Saved 2h ago\" and a filled \"Ask about this\"; tag icon and bin at the top right.",
+      "notice": "Builder's main gaps: is a grid of cards \"a list of actions\" (so every card gets a filled button)? It said yes — seven bright buttons. Removing with Undo has no rule. A fourth permanent top-bar icon felt like the only allowed way in.",
+      "risk": "Adds a button to everyone's top bar. · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-2a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "A card's details · Ask about this — Details",
+      "crop": "reading/details",
+      "headline": "Reading list: a saved link's details, and asking the assistant about it.",
+      "changed": "Details reuse Session details' Tags card (the same tags as conversations). Ask about this opens the existing \"Ask your assistant\" popup with a prepared, unsent question.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-2b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "A card's details · Ask about this — Ask about this",
+      "crop": "reading/ask",
+      "headline": "Reading list: ask about this.",
+      "changed": "Details reuse Session details' Tags card (the same tags as conversations). Ask about this opens the existing \"Ask your assistant\" popup with a prepared, unsent question.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-3a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "+ Save a link or file · saving failed — Save for later",
+      "crop": "reading/add",
+      "headline": "Reading list: saving a link, and when saving fails.",
+      "changed": "One box for a link and \"Choose a file instead…\". A failure replaces the buttons: \"This link couldn't be saved. What you typed is still here.\", Details, Cancel / Try again.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-3b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "+ Save a link or file · saving failed — Saving failed",
+      "crop": "reading/add#failed",
+      "headline": "Reading list: saving failed.",
+      "changed": "One box for a link and \"Choose a file instead…\". A failure replaces the buttons: \"This link couldn't be saved. What you typed is still here.\", Details, Cancel / Try again.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-4a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "First time · couldn't load — First time",
+      "crop": "reading#empty",
+      "headline": "Reading list: before anything is saved, and when the list couldn't load.",
+      "changed": "A first-time card with one \"Save a link or file\" button; the full-screen error when loading fails.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-4b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "First time · couldn't load — Couldn't load",
+      "crop": "reading#load-failed",
+      "headline": "Reading list: couldn't load.",
+      "changed": "A first-time card with one \"Save a link or file\" button; the full-screen error when loading fails.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-5a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "No matches · phone — No matches",
+      "crop": "reading#no-matches",
+      "headline": "Reading list: a search with no matches, and phone width.",
+      "changed": "\"Nothing you saved matches '…'\" with Clear search. On a phone the screen is one column, reached from the ☰ menu.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "C-5b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Reading list (new screen)",
+      "path": "No matches · phone — Phone",
+      "crop": "reading#phone",
+      "headline": "Reading list: phone.",
+      "changed": "\"Nothing you saved matches '…'\" with Clear search. On a phone the screen is one column, reached from the ☰ menu.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20820/gt-r2-reading-list.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-1",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "PC build planner (a Page)",
+      "path": "Pages → PC build planner",
+      "crop": "pages/page/page-pc-build",
+      "headline": "PC build planner, second attempt from the updated guide.",
+      "changed": "Builds as tabs with \"+ New build\" and Check prices; each part row has its name, a grey line under it, the price and a New/Used switch flush right; the build's total, speed and \"$288 less than All new, 12% slower\"; a comparison with a value bar and a \"Best value\" pill.",
+      "notice": "Builder avoided all your round 1 notes. Its own worries: eight lit New/Used switches are loud; \"no light text beside bold\" makes rows taller; the Pages kit still lacks notices, pills and switches.",
+      "risk": "Prices are made up. · Try it live: http://127.0.0.1:20195/gt-r2-pc-build-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-2a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "PC build planner (a Page)",
+      "path": "First time · price check failed — First time",
+      "crop": "pages/page/page-pc-build#empty",
+      "headline": "PC build planner: first time, and a failed price check.",
+      "changed": "First time is one card with \"Start a build\". A failed check replaces Check prices with a red notice: prices are from 2 days ago, Details, Try again.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20195/gt-r2-pc-build-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-2b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "PC build planner (a Page)",
+      "path": "First time · price check failed — Check failed",
+      "crop": "pages/page/page-pc-build#failed",
+      "headline": "PC build planner: check failed.",
+      "changed": "First time is one card with \"Start a build\". A failed check replaces Check prices with a red notice: prices are from 2 days ago, Details, Try again.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20195/gt-r2-pc-build-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-3a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "PC build planner (a Page)",
+      "path": "Checking prices · phone — Checking",
+      "crop": "pages/page/page-pc-build#checking",
+      "headline": "PC build planner: while prices are checked, and phone width.",
+      "changed": "\"Checking prices…\" with a spinner, no Stop. On a phone the total moves above the parts.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20195/gt-r2-pc-build-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-3b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "PC build planner (a Page)",
+      "path": "Checking prices · phone — Phone",
+      "crop": "pages/focus/page-pc-build#phone",
+      "headline": "PC build planner: phone.",
+      "changed": "\"Checking prices…\" with a spinner, no Stop. On a phone the total moves above the parts.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20195/gt-r2-pc-build-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-1",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Japan trip (a Page)",
+      "path": "Pages → Japan trip",
+      "crop": "pages/page/page-japan-trip",
+      "headline": "Japan trip planner: flights with price history, the route of cities, and things to see, eat and stay.",
+      "changed": "Trip card with facts and three totals; four flight date options with price labels and a 30/90-day price chart; the route as clickable stops (maybe stops dashed); for the picked city, Things to see, Where to eat and Where to stay.",
+      "notice": "Builder's main gaps: the Pages kit has no pill, notice, fold, tab strip or spinner, and the one data-heavy sample Page breaks the guide, so it hand-rebuilt the app's pieces; nothing on charts or \"pick a card, see its details\" screens.",
+      "risk": "All data is made up. · Try it live: http://127.0.0.1:20039/gt-r2-trip-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-2a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Japan trip (a Page)",
+      "path": "First time · Change details — First time",
+      "crop": "pages/page/page-japan-trip#first-time",
+      "headline": "Japan trip: the first-time form, and editing the trip.",
+      "changed": "First time is one card holding four fields and Start planning. Change details opens the trip card for editing with Cancel and Save.",
+      "notice": "Builder: unsure whether a first-time card may hold a form.",
+      "risk": "— · Try it live: http://127.0.0.1:20039/gt-r2-trip-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-2b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Japan trip (a Page)",
+      "path": "First time · Change details — Change details",
+      "crop": "pages/page/page-japan-trip#change-details",
+      "headline": "Japan trip: change details.",
+      "changed": "First time is one card holding four fields and Start planning. Change details opens the trip card for editing with Cancel and Save.",
+      "notice": "Builder: unsure whether a first-time card may hold a form.",
+      "risk": "— · Try it live: http://127.0.0.1:20039/gt-r2-trip-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-3a",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Japan trip (a Page)",
+      "path": "Flight prices failed · phone — Prices failed",
+      "crop": "pages/page/page-japan-trip#prices-failed",
+      "headline": "Japan trip: flight prices couldn't load, and phone width.",
+      "changed": "The flights card is replaced by a red notice with Details and Try again; the cities still show. On a phone, one column.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20039/gt-r2-trip-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "E-3b",
+      "new": true,
+      "runs": [
+        "design"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Japan trip (a Page)",
+      "path": "Flight prices failed · phone — Phone",
+      "crop": "pages/focus/page-japan-trip#phone",
+      "headline": "Japan trip: phone.",
+      "changed": "The flights card is replaced by a red notice with Details and Try again; the cities still show. On a phone, one column.",
+      "notice": "—",
+      "risk": "— · Try it live: http://127.0.0.1:20039/gt-r2-trip-page.live.html",
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

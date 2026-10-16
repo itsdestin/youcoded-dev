@@ -34,7 +34,7 @@ rule:
           kind: jsx_element
           has:
             kind: jsx_text
-            regex: '^No Active Session$'
+            regex: '^No [Aa]ctive [Ss]ession$'  # either case: the label went sentence case (2026-09-29)
             follows: { matches: select-none-tag-last }
             precedes: { regex: '^<' }
     - kind: program

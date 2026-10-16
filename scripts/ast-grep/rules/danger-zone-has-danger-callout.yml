@@ -2,8 +2,8 @@ id: danger-zone-has-danger-callout
 language: tsx
 severity: error
 message: >-
-  Each settings danger zone (SettingsPanel, AccountSection, LocalModelsSection)
-  states its consequence in a danger callout: a <Callout … tone="danger"> tag.
+  Each settings danger zone (AccountSection, LocalModelsSection) states its
+  consequence in a danger callout: a <Callout … tone="danger"> tag.
   The three zones used to hold that sentence in three different containers (a
   raw red span, a bare <p>, a bordered box) — K9's shape is the one callout.
 note: |
@@ -15,8 +15,11 @@ note: |
   `tone="danger"` attribute. DELIBERATE DIFFERENCES: the tag must be real
   JSX (a string or template quoting it no longer counts), and an attribute
   holding `>` before tone (`onClose={() => …}`) no longer hides it.
+  SettingsPanel left the list 2026-10-12 (small-fixes-1): it holds no danger zone any more
+  (account deletion lives in AccountSection), and the only red box still matching there was
+  Connect to Desktop's connection error — which became the shared error box. Keeping the file
+  listed would have demanded a red box with nothing to press.
 files:
-  - "**/src/renderer/components/SettingsPanel.tsx"
   - "**/src/renderer/components/AccountSection.tsx"
   - "**/src/renderer/components/LocalModelsSection.tsx"
   - "**/fixtures/danger-zone-has-danger-callout.tsx"

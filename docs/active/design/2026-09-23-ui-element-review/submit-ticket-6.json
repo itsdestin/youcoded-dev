@@ -1,0 +1,161 @@
+{
+  "title": "Submit a ticket — round 6: the new slider, plain-words failures, Git review and Open tasks",
+  "key": "submit-ticket-6",
+  "out": "submit-ticket-6.review.html",
+  "images": "images/submit-ticket-6",
+  "runs": {
+    "b6": "runs/r6/before",
+    "a6": "runs/r6/after",
+    "gb": "runs/r6-git/before",
+    "ga": "runs/r6-git/after",
+    "tb": "runs/r6-tasks/before",
+    "ta": "runs/r6-tasks/after",
+    "x": "runs/r6-extra"
+  },
+  "labels": {
+    "b6": "Today",
+    "a6": "Proposed",
+    "gb": "Today",
+    "ga": "Proposed",
+    "tb": "Today",
+    "ta": "Proposed",
+    "x": "Proposed"
+  },
+  "live": {
+    "worktree": "sessions/ui-consistency-audit/youcoded"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "ST6-1",
+      "surface": "Sound",
+      "path": "Settings → Sound → Volume",
+      "runs": [
+        "b6",
+        "a6"
+      ],
+      "crop": "settings/sound@440x200+500+150",
+      "headline": "The volume slider now has a round handle with the fill wrapping around it, like Home Assistant's.",
+      "changed": "The thin browser slider became the app's own: a thick track, the accent fill up to the handle, its end curving around the round handle.",
+      "notice": "Drags, clicks and arrow keys work as before."
+    },
+    {
+      "id": "ST6-2",
+      "surface": "Appearance",
+      "path": "Additional customizations → Fine-tune glass",
+      "runs": [
+        "b6",
+        "a6"
+      ],
+      "crop": "settings/appearance#finetune-open@440x600+500+150",
+      "headline": "Every glass slider uses the same new slider.",
+      "changed": "All seven: panel blur and see-through, bubble blur and see-through, terminal see-through, blur and brightness.",
+      "notice": "The ones the theme fixes still show faded and can't be moved."
+    },
+    {
+      "id": "ST6-3",
+      "surface": "Sound, Appearance",
+      "path": "Settings → Sound, or Appearance → Additional customizations → Fine-tune glass",
+      "live": {
+        "app": "default"
+      },
+      "hint": "Open Settings (the gear, top left) → Sound, and drag the Volume slider. Then try Appearance → Additional customizations → Fine-tune glass.",
+      "headline": "Try the new slider: drag it, click along it, and use the arrow keys.",
+      "changed": "The practice app, with the new slider in Sound and in Fine-tune glass.",
+      "notice": "Nothing is saved here."
+    },
+    {
+      "id": "ST6-4",
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute → Open it, when the conversation can't start",
+      "runs": [
+        "b6",
+        "a6"
+      ],
+      "crop": "settings/development/contribute#open-failed@440x300+500+300",
+      "headline": "When the conversation won't open, it now says so in plain words — no technical error in the message.",
+      "changed": "Was \"The conversation didn't open. spawn claude ENOENT …\". Now: the new conversation didn't open, the code is still on this computer, and trying again picks up where it left off.",
+      "notice": "The technical reason is still there for a bug report, folded under Details."
+    },
+    {
+      "id": "ST6-5",
+      "surface": "Contribute to YouCoded",
+      "path": "… → Details",
+      "runs": [
+        "x"
+      ],
+      "crop": "settings/development/contribute#open-failed-details@440x380+500+260",
+      "headline": "Details opens to show the technical reason, for anyone who needs it.",
+      "changed": "The raw text the app got, in small type, inside the Details box.",
+      "notice": "Closed by default.",
+      "new": true
+    },
+    {
+      "id": "ST6-6",
+      "surface": "Contribute to YouCoded",
+      "path": "Contribute → Download, when it fails",
+      "runs": [
+        "b6",
+        "a6"
+      ],
+      "crop": "settings/development/contribute#failed@440x320+500+290",
+      "headline": "A failed download reads the same way: what happened, that nothing was left behind, and Try again.",
+      "changed": "Was the download error with git's own words in the message. Now plain words; with no network it says that instead.",
+      "notice": "The practice picture now uses the kind of error a real failure gives, not a tidied-up one."
+    },
+    {
+      "id": "ST6-7",
+      "surface": "Contribute to YouCoded",
+      "path": "… → Details",
+      "runs": [
+        "x"
+      ],
+      "crop": "settings/development/contribute#failed-details@440x420+500+250",
+      "headline": "Details holds git's own message for a failed download.",
+      "changed": "The raw text, folded away until opened.",
+      "notice": "Closed by default.",
+      "new": true
+    },
+    {
+      "id": "ST6-8",
+      "surface": "Git review",
+      "path": "A file in Session files → Review changes → a commit, pointed at",
+      "runs": [
+        "gb",
+        "ga"
+      ],
+      "crop": "chat/files/open/a-launch-brief#git-review@480x748+950+40",
+      "headline": "A commit card now lights as one box when pointed at — no band ending in a hard line.",
+      "changed": "The header used to light alone and stop above the changes.",
+      "notice": "This screen now has a practice picture, so it can be checked from now on. On YouCoded Night the highlight is too faint to see in either picture.",
+      "highlight": "panel"
+    },
+    {
+      "id": "ST6-9",
+      "surface": "Open tasks",
+      "path": "Status bar → Open tasks",
+      "runs": [
+        "tb",
+        "ta"
+      ],
+      "crop": "dev/open-tasks@440x480+500+210",
+      "headline": "Open tasks' Completed and Marked inactive sections are now the app's folded rows — no line across the popup.",
+      "changed": "They were bare words with a count and a small arrow, and a full-width line above \"Marked inactive\". Now each is a box that opens inside itself, its count under its name.",
+      "notice": "Pictured with practice tasks; the practice app had none before."
+    },
+    {
+      "id": "ST6-Q1",
+      "words": true,
+      "surface": "Pages",
+      "path": "A Page you or your assistant build (the Pages kit's slider)",
+      "headline": "Should sliders inside Pages get the same new look?",
+      "today": "Pages people build use the Pages kit, whose slider is still the browser's thin one.",
+      "problem": "A Page would look different from the rest of the app wherever it has a slider.",
+      "proposal": "Yes: the Pages kit's slider gets the round handle and wrapped fill too (Pages update automatically). No: Pages keep the browser's slider."
+    }
+  ]
+}

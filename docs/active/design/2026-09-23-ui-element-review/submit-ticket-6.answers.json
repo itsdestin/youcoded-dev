@@ -1,0 +1,79 @@
+{
+ "deck": "submit-ticket-6",
+ "started": "2026-10-08T21:56:02.255Z",
+ "submitted": "2026-10-08T21:58:32Z",
+ "cur": 9,
+ "answers": {
+  "ST6-1": {
+   "v": "yes",
+   "t": 1791496568401,
+   "seconds": 6,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-2": {
+   "v": "yes",
+   "t": 1791496575577,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-3": {
+   "v": "yes",
+   "t": 1791496586962,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-4": {
+   "v": "yes",
+   "t": 1791496599021,
+   "seconds": 12,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-5": {
+   "v": "yes",
+   "t": 1791496601171,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-6": {
+   "v": "yes",
+   "t": 1791496602811,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-7": {
+   "v": "yes",
+   "t": 1791496605990,
+   "seconds": 3,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-8": {
+   "v": "yes",
+   "t": 1791496625407,
+   "seconds": 19,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-9": {
+   "v": "yes",
+   "t": 1791496640646,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "ST6-Q1": {
+   "v": "yes",
+   "seconds": 75,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791496711551,
+   "note": "we are going to rebuild/wework the pages kit at some point to be directly tied to the real app ui, so page guidance doesn't drift. i also want to provide more pre-built sets of buttons, menus, etc. record as a follow up "
+  }
+ }
+}

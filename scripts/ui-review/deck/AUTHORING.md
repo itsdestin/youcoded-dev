@@ -29,7 +29,7 @@ worktree** (the path `workspace-start` returned — never the shared `youcoded-d
 files a session cannot commit; one session built four decks there before noticing, 2026-09-10), named
 `<feature>.<round>.json` — `.questions.json`, `.review.json`, `.review-2.json`,
 `.contract.json`. The built page, the answers and any rotated older answers land beside the
-spec. Answers files are committed (they are the record of Destin's decisions); `preview/`,
+spec. Answers files are committed (they are the record of Destin's decisions); `preview/` (one folder per deck),
 `*.serve.json` and `*.workbench.log` are scratch and are ignored.
 
 ## Deck-level fields
@@ -43,9 +43,10 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
 | `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `shoot` output folder (`node scripts/shoot/shoot.mjs <screens> --before <branch> --after <worktree> --out runs` writes `runs/before` and `runs/after`), or an old sweep's folder. **Paths resolve from the spec's own folder** — write `runs/after` beside the spec; a workspace-root path such as `docs/active/design/<feature>/runs/after` is looked up UNDER the spec's folder and fails (measured 2026-09-10; a 2026-09-09 note said the opposite and cost one build). A slide shows all of them unless it names its own (below) |
 | `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
+| (run names) | — | `today`, `before`, `after`, or any short lowercase name (`round3`) — a slide comparing with an older round names that run in its own `runs`. `before` always shows left of `after` |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
-| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen |
+| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen. A name with `/` or `#` is taken as one on sight; a one-word screen (`projects`) is recognised because a run's own `manifest.json` lists it, so shoot it before you validate |
 | `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
 | `branch` | contract | the branch the contract will be built on |
 | `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |
@@ -54,6 +55,18 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 Fields on every step: `id` (unique, never reused), `surface` (the part of the app, in his
 words), `path` (how he would get there), `headline` (one sentence, 25 words max, no code
 words). A step may carry its own `themes` when its picture exists in one palette only.
+
+**Two tall pictures stay side by side** (2026-10-08): a before/after of a tall popup is shrunk to fit
+the screen beside each other rather than stacked full size — Destin can zoom with + for detail.
+The same holds for every **choice**: its designs are never stacked (composite designs too), and three
+or more tall designs open at the width that fills the row, the stage scrolling for the rest (2026-10-12).
+
+**`"crop": "<screen>@panel"`** cuts a close-up around that screen's panel in EVERY run and theme, plus
+16px — a popup that changed size gets one box covering both without measuring manifests. With no
+`highlight` written, a close-up whose change covers most of it boxes each run's own panel (no warning).
+
+**`"alsoChanges": ["Session details", "Resume → Organize"]`** on any slide lists the other screens a
+shared change reaches, in an "Also changes" card beside You'll notice — a yes is a yes to all of them.
 
 **A crop's SHAPE decides the page layout, and a tall one hides your Risk card.** The page
 tries every arrangement and keeps whichever shows the pictures largest: a wide crop puts
@@ -79,6 +92,13 @@ No revert it*, `highlight` defaults to `"auto"`. So one deck now holds a "should
 this?" slide, a "keep it or revert it?" slide, a written question and the contract — the ask
 decides where a deck ends, not the screenshot rule.
 
+**A NEW state that is already built** (offline, incognito, a menu opened — something with no
+"before") is still one picture, but it is not a brief: add `"new": true` and the buttons read
+*Yes, keep it / No, remove it*. Refused on a two-picture slide (that already reads keep / revert)
+and on choice and decide slides. A `"review"` deck counts it as its review slide. WHY (games-social
+friction, proposal 5): every new practice state of the Games round reached Destin as "Yes build it"
+over something already in the app.
+
 WHY it moved (Destin, 2026-09-06): the capture set is a property of the picture, not of the
 deck. While it sat on the deck, a brief slide and an approve slide could never share a page and
 he was handed two links for one ask.
@@ -91,20 +111,38 @@ Two runs; the rig boxes the pixels that differ.
 
 | Field | Required | What it is |
 |---|---|---|
-| `crop` | yes | which region of the screenshots to show — a `crops` name, or a `shoot` screen name |
+| `crop` | yes | which region of the screenshots to show — a `crops` name, a `shoot` screen name, or a close-up of one: `"<screen>@WxH+X+Y"` in the screen's own CSS pixels (the 1440×900 coordinates, whatever density it was shot at) — or a LIST of these laid side by side as one picture (below, "Several screens in one picture") |
 | `changed` | yes | the *What changed* card — the real difference, one or two sentences |
 | `notice` | yes | the *You'll notice* card — what is different for him while using it |
 | `risk` | no | the *Risk* card. Keep it to one sentence |
 | `measured` | no | a number that proves it (must contain a digit) |
-| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
+| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `"panel"` (the screen's own panel in every run — for a whole-page change, where `"auto"` would warn "whole-surface"; on a close-up `screen@WxH+X+Y` it boxes the part of the panel inside the close-up), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
 
 He answers **Yes keep it / No revert it / Other**.
 
 ### Brief — something not built yet (`brief.json`)
 
 The same fields over ONE picture — the deck captures one run, or the slide names one of the
-deck's with `runs` — so the buttons read **Yes build it / No leave it / Other**. `highlight` is
-required: with one picture there is nothing to diff.
+deck's with `runs` — so the buttons read **Yes build it / No leave it / Other** (or, with
+`"new": true`, **Yes keep it / No remove it**). With one picture there is nothing to diff, so a
+legacy crop needs a `highlight`; a `shoot` screen boxes its own panel, and a close-up
+(`screen@WxH+X+Y`) or a list of screens is already the focus and gets no box.
+
+### Several screens in one picture
+
+`"crop"` may be a list: each entry is a crop name (a screen, a close-up, a legacy name) or
+`{"crop": "<name>", "label": "<four words at most>"}`. The pieces are cut from the same run and
+laid side by side, top-aligned, 16 CSS px apart; with any label, a strip over every piece carries
+it in the theme's text colour (gaps and strips are see-through, so the deck page shows between).
+
+    "crop": [{"crop": "chat/games#offline@420x200+1010+70", "label": "No internet"},
+             {"crop": "chat/games#incognito@420x200+1010+70", "label": "Incognito"}]
+
+Works on approve / brief / decide steps and on a choice variant (each concept a folded + opened
+pair). `"auto"` still boxes the change across two runs; `"panel"` and `{"text"}` / `{"selector"}`
+are refused (there is no one panel, nothing measured); a hand `box` is percent of the whole
+composite. A missing piece is reported by number and the picture is not made. WHY (games-social
+friction, proposal 4): three rounds running hand-cut composites into fake `shots-<plan>` folders.
 
 ### Choice — several pictures of one thing (`choice.json`)
 
@@ -130,7 +168,9 @@ same size, or the before/after diff cannot box the change.
 
 `crop` + `highlight` (required — one picture, nothing to diff) + `options[]` (at least two on a
 picture deck). Option fields are the question option fields below, plus `cost` (what taking it
-costs). He **picks one**, or Other.
+costs). Optional `today` / `problem` / `proposal` draw the question's three cards above the
+options, as on a words-only question (before 2026-10-08 a picture decide dropped them silently).
+He **picks one**, or Other.
 
 ### Clip — motion, hover, a transition (`clip.json`)
 
@@ -156,7 +196,10 @@ checkout with a desktop/ folder"). A pane shows one of two things:
 yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app
 as it is. ONE app pane with no `paneWidth` and no `height` **fills the stage**, so the whole
 screen is usable without scrolling; give it either and it takes that size instead, and a ROW of
-panes is a comparison and always keeps its declared size.
+panes is a comparison and always keeps its declared size. An optional step-level `hint`
+appears **above** the panes in the scrolling comparison area; put operating directions there
+when they must be seen before the first interaction. The header's `path` is hidden at laptop
+widths and the question cards sit below the panes, so neither can carry those directions.
 
 WHY the app rows exist (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote for one
 comparison. Asking him to operate a real screen had no shape at all, so a live slide could only
@@ -313,9 +356,23 @@ Pictures: a missing crop file, an unknown crop name, an unresolved highlight box
 and nothing to compare it with — this slide needs a highlight`, `"auto" highlight needs a before
 and an after run`, `runs names <x>, which the deck does not capture`.
 
+A list crop: `a list crop lays several pictures side by side — give at least two`, `piece N of the
+crop list needs a crop name (a list inside a list is not allowed)`, `piece N of the crop list
+carries only "crop" and "label"`, `unknown crop "<x>" in the crop list`, a label over four words or
+with a banned word, `"panel" highlight needs ONE shoot screen crop`, and (at crop time) `a picture
+made of several screens has no element to measure`.
+
+`"new"`: `"new" is true or absent`, `"new" is for ONE picture with no before — a before/after slide
+already reads keep / revert`, `"new" is for a one-picture keep-or-remove slide, not a choice` (or a
+decide step).
+
 Warnings (printed, but the page is still written): more than three options; a hand-placed
 `box`; a `measured` with no digit; a `risk` over 40 words; an `images` folder that does not
-contain the spec's name.
+contain the spec's name; **a choice whose pictures are different widths, with a later one wider
+than the first** — the page sizes the whole row by the first picture, so the row overflows and the
+outer pictures are cut off (`… the row is about N% too wide …`). Crop every design to one size, or
+put the widest first. WHY (games-social friction, proposal 6): 340 / 420 / 420 crops cut two
+drafts in round 4 and nothing said so.
 
 ## The answers file
 
@@ -366,7 +423,7 @@ on a yes/no question.
 | Command | What it is for |
 |---|---|
 | `build <spec> [--theme SLUG]` | cut the crops, resolve every highlight, write the page. Refuses (no page) on any rule above |
-| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme plus `contact.png`, in `<spec dir>/preview/`. **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
+| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme (every theme the deck carries, unless `--themes`) plus `contact.png`, in `<spec dir>/preview/<spec name>/` (emptied first, so no other deck's pages sit beside them), plus `contact-<theme>.png` per theme when the deck has several — far easier to read. **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
 | `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit when he submits. Prints `[deck] http://…` and **opens nothing** — put that line in chat as the last line of your turn. Run it in the background |
 | `wait <spec> [--timeout MIN]` | block on the answers file alone, for a session that no longer holds the `serve` process |
 | `record <spec> '<pasted summary>'` | write the submitted answers file from the page's copy box, for a deck he answered as a plain file |
@@ -388,7 +445,8 @@ deck whose point IS one theme.
 
 1. Copy the template for the kind you need; write the steps.
 2. `build` — fix every refusal it names.
-3. `preview` — read `preview/contact.png`. A defect you can see there is one he would see.
+3. `preview` — read `preview/<spec name>/contact.png` (and single pages when the sheet is too tall to
+   read). A defect you can see there is one he would see.
 4. `serve` in the background; put the printed `[deck] http://…` line in chat as the last line
    of your turn, and stop.
 5. Its exit is the notification; read the summary it prints.

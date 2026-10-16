@@ -1,0 +1,38 @@
+{
+  "title": "Settings scroll fade — closer to the sides",
+  "key": "ui-guide-scroll-surface-width-5",
+  "out": "scroll-surface-width.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "How close the fade gets to the drawer's sides",
+      "hint": "Scroll inside each drawer to see the fade; scroll outside to reach the next version. Try Meadow Mist, Halftone and a solid theme above.",
+      "headline": "Which width reaches the sides without looking like a flat strip?",
+      "risk": "Review-only comparison. Every version stays 42px deep; the middle-strength fade from the last comparison is held constant only to test width, not approved. The title line's 20% taper is also provisional. No production styling has changed.",
+      "live": {"surface": "settings-taper-calibration", "round": 7},
+      "variants": [
+        {
+          "id": "width-10",
+          "label": "Previous width",
+          "candidate": "width-10",
+          "summary": "A 10% side taper on each edge. Reference for how much content stays visible near the sides."
+        },
+        {
+          "id": "width-7",
+          "label": "A bit wider",
+          "candidate": "width-7",
+          "summary": "A 7% side taper. The fade reaches closer to the left and right edges."
+        },
+        {
+          "id": "width-4",
+          "label": "Almost full",
+          "candidate": "width-4",
+          "summary": "A 4% side taper. The fade reaches nearly all the way across, but may feel too rectangular."
+        }
+      ]
+    }
+  ]
+}

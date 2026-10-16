@@ -1,0 +1,37 @@
+{
+ "deck": "ui-element-review-labels",
+ "started": "2026-09-24T06:05:59.639Z",
+ "submitted": "2026-09-24T06:07:38Z",
+ "cur": 3,
+ "answers": {
+  "L-1": {
+   "v": "pick",
+   "pick": "plain",
+   "seconds": 34,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "pick",
+   "pick": "plain",
+   "note": "maybe add underlines? for some headers, where it makes sense?",
+   "seconds": 27,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-3": {
+   "v": "pick",
+   "pick": "plain",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-4": {
+   "v": "pick",
+   "pick": "plain",
+   "seconds": 21,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -6,14 +6,14 @@ import html
 import json
 import os
 
-from .crops import image_name
+from .crops import image_name, is_focus_crop
 from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
+NICE = {'youcoded': 'YouCoded', 'youcoded-night': 'YouCoded Night', 'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
 TOKEN_KEYS = ['canvas', 'panel', 'inset', 'well', 'accent', 'on-accent', 'fg', 'fg-2', 'fg-dim', 'fg-muted', 'fg-faint', 'edge', 'link']
 RADIUS_KEYS = ['radius-sm', 'radius-md', 'radius-lg']
 
@@ -24,13 +24,22 @@ def theme_tokens(themes):
         builtin = json.load(f)
     # Community themes live in the wecoded-themes checkout at the WORKSPACE root — a worktree has none.
     theme_dirs = [os.path.join(workspace_root(), 'wecoded-themes', 'themes')]
+    # WHY the app's own built-in theme files too (2026-10-04): YouCoded and YouCoded Night are
+    # built-ins that live as JSON in the app (themes/builtin/<slug>.json, the same tokens/dark
+    # shape as a community manifest), not in globals.css or wecoded-themes — so a deck shot in
+    # the app's DEFAULT themes refused to build. The session's own app checkout comes first
+    # (a new built-in may exist only on its branch), then the shared one.
+    builtin_rel = ('youcoded', 'desktop', 'src', 'renderer', 'themes', 'builtin')
+    session_root = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
+    builtin_dirs = [os.path.join(session_root, *builtin_rel), os.path.join(workspace_root(), *builtin_rel)]
     out = {}
     for t in themes:
         if t in builtin:
             out[t] = builtin[t]
             continue
-        for d in theme_dirs:
-            mf = os.path.join(d, t, 'manifest.json')
+        app_json = next((os.path.join(d, t + '.json') for d in builtin_dirs if os.path.exists(os.path.join(d, t + '.json'))), None)
+        for d in ([os.path.dirname(app_json)] if app_json else []) + theme_dirs:
+            mf = app_json if app_json and d == os.path.dirname(app_json) else os.path.join(d, t, 'manifest.json')
             if os.path.exists(mf):
                 with open(mf) as f:
                     m = json.load(f)
@@ -43,7 +52,7 @@ def theme_tokens(themes):
                 out[t] = tok
                 break
         else:
-            raise SpecError(f'no tokens for theme "{t}" (not built in, no manifest under {theme_dirs})')
+            raise SpecError(f'no tokens for theme "{t}" (not built in, no app theme file under {builtin_dirs}, no manifest under {theme_dirs})')
     return out
 
 
@@ -96,6 +105,10 @@ def _decide_step(spec, st, boxes, runs):
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
         **({'runs': runs} if st.get('runs') else {}),
         **({'labels': st['labels']} if st.get('labels') else {}),
+        # Today / The problem / Proposal ride along exactly as on a words-only decide.
+        # WHY (submit-ticket friction, proposal 20): validate accepted them and page.js draws
+        # them, but this step dropped them — a picture decide reached Destin without them.
+        **{k: st[k] for k in QUESTION_FIELDS if st.get(k)},
     }
 
 
@@ -200,6 +213,9 @@ def _live_step(spec, st):
         # renders Yes/No buttons over panes nobody can choose between.
         'shape': 'choice' if st.get('variants') else 'approve',
         'surface': st['surface'], 'path': st['path'],
+        # WHY: a live stage can scroll independently of a pane; put optional
+        # per-step operating instructions above the panes, not below them.
+        'hint': st.get('hint', ''),
         'headline': st['headline'], 'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
         # WHY these ride along (2026-09-10): a live pane has no `runs`, so page.js's default
@@ -242,6 +258,13 @@ def _still_step(spec, st, boxes):
         # about a pair.
         **({'runs': runs} if st.get('runs') else {}),
         **({'labels': st['labels']} if st.get('labels') else {}),
+        # A NEW state of something built: one picture, but keep-or-remove, not build-or-leave.
+        # page.js already prefers a step's own yes/no over its one-picture brief wording, so the
+        # words are decided here and the page needed no change (games-social friction, 5).
+        # WHY `st.get(...) or`: a step's own yes/no (already validated for length and banned
+        # words) used to be silently replaced here — a judging deck asking "Good first try /
+        # Needs work" showed "Yes, keep it" instead (guide test, 2026-10-15).
+        **({'yes': st.get('yes') or 'Yes, keep it', 'no': st.get('no') or 'No, remove it'} if st.get('new') is True else {}),
     }
 
 
@@ -274,6 +297,8 @@ def deck_data(spec, boxes):
              for st in spec['steps'] if not is_page(st)]
     for st, out in zip([x for x in spec['steps'] if not is_page(x)], steps):
         out.update(_answer_shape(st))
+        if st.get('alsoChanges'):
+            out['alsoChanges'] = list(st['alsoChanges'])   # every kind: page.js draws "Also changes" 
     every = all_themes(spec)
     tree = (spec.get('live') or {}).get('worktree', '')
     base = live_base(spec)
@@ -293,7 +318,8 @@ def deck_data(spec, boxes):
     paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
                         'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
     return {**live, **paged, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
-            'runLabels': {'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
+            # Any other run name (`round3`) shows as written unless `labels` names it.
+            'runLabels': {**{r: r for r in spec['runs']}, 'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
 
@@ -326,7 +352,12 @@ def build_page(spec, boxes):
                 if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(st['crop'], t, r))):
                     errors.append(f'{st["id"]}: no picture for {t}/{r} — run `crop`, and see why in that run\'s shoot summary / manifest.json (an old sweep\'s run: coverage.md)')
             have = boxes.get(st['id'], {}).get(t) or {}
-            if not all(r in have for r in runs):
+            # A close-up region or a composite of several screens on a ONE-picture slide is
+            # already the focus: no box is drawn and none is owed (crops.py draws none either).
+            # WHY: such a slide was refused here although validate() let it through, so a
+            # "new state" slide of a cropped pane needed a meaningless hand-placed box.
+            focus = len(runs) == 1 and 'highlight' not in st and is_focus_crop(st['crop'])
+            if not focus and not all(r in have for r in runs):
                 errors.append(f'{st["id"]}: no highlight box for {t} — `crop` could not resolve it (see its output)')
     if errors:
         raise SpecError('\n'.join(errors))

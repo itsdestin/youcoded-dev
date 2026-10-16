@@ -1,0 +1,57 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&platform=android",
+ "width": 390,
+ "height": 844,
+ "boot": 3000,
+ "_why": "Android rendering had ZERO screenshots anywhere — every one of the 424 planned shots drove the desktop Electron workbench with no mobile platform switch (completeness-screens.md, 2026-09-23 audit). `?platform=android` (install-mock.ts declarePlatform, existing switch, listed in README's 'Workbench switches') sets `window.__PLATFORM__='android'` before the app mounts, so every render-time `getPlatform()`/`isAndroid()` branch in the SHARED React code sees Android — the header drops its window buttons and the shell narrows the way the real phone app does; its own caveat says to film it at the real narrow width (390) because an import-time const (HeaderBar's toggleOnLeft) only reads correctly there. This is still Chrome/desktop rendering the shared bundle, NOT the actual Android WebView/Kotlin runtime — no native system chrome, safe-area insets, or the native first-run/auth paths, which stay unreachable without a real device or emulator build. `?platform=android` is a real, existing switch; no code was changed to add this plan.",
+ "shots": [
+  {
+   "name": "android-home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[aria-label='Open menu']"
+  },
+  {
+   "name": "android-menu",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    }
+   ]
+  },
+  {
+   "name": "android-settings",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    }
+   ],
+   "expect": "[aria-label='Close settings']"
+  },
+  {
+   "name": "android-assistant-settings-general-only",
+   "_why": "AssistantSettingsRow (AssistantSettings.tsx) filters `pages` to General ONLY on Android (`platform === 'android' ? p.id === 'general' : ...`) — Cloud providers/Local models/Permissions/Specialists 'arrive as the native runtime does' (source comment). This is the one visual proof that filter actually fires.",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Settings\").test(b.textContent.trim()))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('General') && !document.body.textContent.includes('Cloud providers')"
+  }
+ ]
+}

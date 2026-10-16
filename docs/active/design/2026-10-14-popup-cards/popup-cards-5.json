@@ -1,0 +1,61 @@
+{
+  "title": "Fast mode, rebuilt on the shared popup layout",
+  "key": "popup-cards-5",
+  "out": "popup-cards-5.review.html",
+  "images": "images/popup-cards-5",
+  "runs": {
+    "fm": "runs/fm"
+  },
+  "crops": {
+    "today": [
+      "fm",
+      "today",
+      "760x1050+0+0"
+    ],
+    "shared": [
+      "fm",
+      "shared",
+      "760x1050+0+0"
+    ],
+    "orange": [
+      "fm",
+      "orange",
+      "760x1050+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Fast mode",
+      "path": "Chat → model chip in the status bar → Fast mode switch (Claude Code sessions)",
+      "headline": "Fast mode, rebuilt to match the other one-job popups. Which main button?",
+      "notice": "What changed in both new versions: one width with the other popups; the three bits of words that each said \"it costs extra\" are now one line, one warning box with the prices in normal type, and how to turn it off; the buttons stack with the main one on top. Title \"Turn on Fast mode?\" to match its button. Every fact is still there.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today",
+          "summary": "As it is now: narrower, buttons side by side, prices in code-style type with a line inside the box, a one-of-a-kind orange button."
+        },
+        {
+          "id": "shared",
+          "label": "App's main button",
+          "crop": "shared",
+          "summary": "The theme's normal main button, like every other popup. The yellow warning box carries the \"this costs money\" message. I recommend this one.",
+          "risk": "The button no longer looks different from a free action; only the box and the words \"accept charges\" warn you."
+        },
+        {
+          "id": "orange",
+          "label": "Keep the orange",
+          "crop": "orange",
+          "summary": "Same new layout, but the main button stays orange, as an extra money warning.",
+          "risk": "The only orange button in the app, and it ignores the theme's colours (it stays orange on every theme)."
+        }
+      ]
+    }
+  ]
+}

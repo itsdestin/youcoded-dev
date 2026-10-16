@@ -1,0 +1,31 @@
+{
+ "deck": "first-run-5",
+ "started": "2026-10-05T02:44:42.892Z",
+ "submitted": "2026-10-05T02:47:26Z",
+ "cur": 2,
+ "answers": {
+  "P5-1": {
+   "note": "the spinner should be the same one we use everywhere else, to be clear put the grey sub-text below the bar, and the black main text above the bar",
+   "t": 1791168322075,
+   "v": "other",
+   "seconds": 39,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P5-2": {
+   "v": "yes",
+   "t": 1791168378800,
+   "seconds": 57,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P5-3": {
+   "note": "bigger",
+   "t": 1791168445102,
+   "v": "other",
+   "seconds": 66,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,242 @@
+{
+  "title": "Small fixes: errors you can act on, honest labels and words, and two alignment fixes",
+  "key": "small-fixes-1",
+  "out": "small-fixes-1.review.html",
+  "images": "images/small-fixes-1",
+  "runs": {
+    "before": "runs/sf1/before",
+    "after": "runs/sf1/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Fixed"
+  },
+  "themes": [
+    "halftone-dimension",
+    "meadow-mist",
+    "youcoded",
+    "youcoded-night"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "SF-0",
+      "surface": "Every fix on this page",
+      "path": "Read this first",
+      "words": true,
+      "headline": "Every fix here copies a rule you already approved and a screen that already does it. Here is the list.",
+      "changed": "1) Error boxes with nothing to press: the notice box with its own Try again inside, in place of the button that failed (guide \"A failed action replaces the buttons it came from\"; your approved failed install on plugin pages and Submit a ticket's failed send). Where trying again can't help, Report bug instead (error message standards). 2) Write card chip: says only what the tool's own answer says (error message standards, \"unknown is not none\"). 3) Backup & sync (i): words only. 4) Open tasks: the running task's words in the normal colour, with the green Working pill (guide \"status colours never in text\"; the sessions menu's Working pill). 5) Local engine pill: the name and pill on one centred row (Marketplace detail pages' name + status). 6) The practice app never opens an outside page. 7) The specialist card's wording.",
+      "notice": "Nothing on this page has a style of its own. The only open choice — what the Write card says when a file was replaced — is a question near the end.",
+      "yes": "Yes, that's the list",
+      "no": "No, something's off"
+    },
+    {
+      "id": "SF-1",
+      "surface": "Marketplace → an integration's details",
+      "path": "Marketplace → Integrations → Google Workspace, after an install that failed",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "marketplace/integration-detail#failed@panel",
+      "headline": "A failed integration install now says why with Try installing again inside the same box.",
+      "changed": "The reason sat in a red box with nothing to press, and the button sat separately at the top right. Now it is the plugin and theme pages' failed-install box: the reason and Try installing again together, in the button's place.",
+      "notice": "The same box you approved on the plugin pages."
+    },
+    {
+      "id": "SF-2",
+      "surface": "Settings → Backup & sync → Add a backup",
+      "path": "Backup & sync → ＋ Add a backup → GitHub → Start backup, when the backup can't be made",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#add-save-failed@panel",
+      "headline": "When a new backup can't be set up, the reason takes Start backup's place with Try again inside it.",
+      "changed": "The red box sat above Start backup with nothing to press. Now the failure replaces the button and carries Try again; the fields above stay editable, and Try again uses what they say now.",
+      "notice": "If you empty a field after a failure, the plain (greyed) Start backup comes back until it is filled.",
+      "risk": "The reason shown here is practice wording; the real app shows GitHub's own words."
+    },
+    {
+      "id": "SF-3",
+      "surface": "Settings → Backup & sync → Add a backup",
+      "path": "Backup & sync → ＋ Add a backup → Google Drive, when the helper tool won't install",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#add-install-failed@panel",
+      "headline": "A failed helper-tool install offers Install manually and Try again inside the box, not an underlined link.",
+      "changed": "It was a red box holding an underlined \"Install manually\" link, with Install now still above it. Now: Install manually (outlined) and Try again (filled) inside the box, in Install now's place.",
+      "notice": "Install manually still opens the helper tool's own install page in your browser."
+    },
+    {
+      "id": "SF-4",
+      "surface": "Assistant settings → Local models",
+      "path": "Local models → Download on a recommended model, when the download can't start",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/assistant/local#download-failed@panel",
+      "headline": "A model download that couldn't start shows its reason with Try again, in place of Download.",
+      "changed": "The reason was a red box with nothing to press, under a Download button. Now it is the slim error box inside the model's card with Try again, and Download hides until you press it.",
+      "notice": "The same happens for one version of a model in its opened list, and for Add vision and Delete on a downloaded model.",
+      "alsoChanges": [
+        "A model's version list",
+        "A downloaded model's buttons"
+      ]
+    },
+    {
+      "id": "SF-5",
+      "surface": "Assistant settings → Local models → Local engine",
+      "path": "Local models → Advanced → Set up (optional engine), when the check fails",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/assistant/local/engine-advanced#check-failed@panel",
+      "headline": "Local engine problems now carry Try again for whatever failed — install, update, restart or this check.",
+      "changed": "The red box under the engine had nothing to press. Now it is the slim error box with Try again, which repeats the exact thing that failed.",
+      "notice": "Shown with the practice failure's wording; the real app shows the engine's own words."
+    },
+    {
+      "id": "SF-6",
+      "surface": "Three more error boxes without a picture",
+      "path": "Phone → Connect to Desktop; Local models → Advanced; a downloaded model",
+      "words": true,
+      "headline": "Three more dead ends got their button, but the practice app can't show them, so they're described here.",
+      "changed": "1) Phone → Connect to Desktop, a saved computer that won't connect: the box now has Try again for that same computer (the saved-computer error right under it already did). 2) Local models → Advanced, a setting saved but not applied by the engine: the engine's own words with Report bug — nothing here can re-apply it, and the engine reads it at its next start. 3) A downloaded model whose download failed later: the reason with Report bug, since the app can't tell which download it was.",
+      "notice": "Same notice box as on the slides before. No guessed causes: each shows the real reason.",
+      "yes": "Yes, keep them",
+      "no": "No, change something"
+    },
+    {
+      "id": "SF-7",
+      "surface": "Settings → Backup & sync → (i)",
+      "path": "Settings → Backup & sync → the (i) at the top",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/sync#explainer@panel",
+      "highlight": "panel",
+      "headline": "The Backup & sync explainer now says exactly what is copied, and that other folders are not.",
+      "changed": "It said \"your conversations, projects, and files\" go to GitHub. Only the YouCoded folder in your home folder is synced: Personal (conversations, their names and tags, your devices, Pages) and each project in its Projects folder. Memory, instructions, skills and settings go only in the daily Google Drive / iCloud copy. Secret files and rebuildable folders are never copied.",
+      "notice": "A project you opened from somewhere else on your computer is now clearly not copied — that was always true, the words hid it.",
+      "risk": "Checked against the code; the old words also said memory and skills sync, which they don't."
+    },
+    {
+      "id": "SF-8",
+      "surface": "Status bar → Open tasks",
+      "path": "Status bar → the open tasks count, while a task is running",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "dev/open-tasks@panel",
+      "headline": "The running task is in normal words with the green Working pill, instead of blue italic text.",
+      "changed": "The running task's name was blue and italic, with a fixed blue dot. Now its name looks like every other task and the green Working pill — the sessions menu's — says it's running. Its circle is the open circle every unfinished task has.",
+      "notice": "Green Working matches the sessions menu and Specialists, where green means working."
+    },
+    {
+      "id": "SF-9",
+      "surface": "Assistant settings → Local models",
+      "path": "Local models → the Local engine card's top line",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "settings/assistant/local@320x50+500+205",
+      "headline": "The Stopped / Running pill now sits exactly level with \"Local engine\".",
+      "changed": "The pill sat inside the title's line of text, so it rode the letters' baseline about 1.4 points low. Now name and pill sit on one centred row, like a Marketplace detail page's name and status.",
+      "notice": "A one-pixel nudge. The screenshot checker now watches this row, so it can't drift again.",
+      "measured": "1.4px low at 1.5x before; 0 after",
+      "highlight": {
+        "box": [
+          3,
+          15,
+          52,
+          70
+        ]
+      }
+    },
+    {
+      "id": "SF-10",
+      "surface": "Chat → a Write tool card",
+      "path": "Any chat where the assistant writes a file",
+      "words": true,
+      "headline": "The Write card no longer says \"New file\" when it replaced a file. What should the replaced chip say?",
+      "today": "Every Write card wore a green \"New file\" chip, even when the assistant overwrote a file that already existed.",
+      "problem": "That's false for an overwrite, and a replaced file is the one you'd most want to notice.",
+      "proposal": "The chip now follows the tool's own answer: \"New file\" when it made one, an amber chip when it replaced one (the same amber as Edit's \"Replace all\"), and no chip while it runs or if it failed. Only the replaced chip's wording is open.",
+      "options": [
+        {
+          "id": "replaced",
+          "label": "Replaced file",
+          "recommended": true,
+          "pros": [
+            "Says plainly the old file is gone",
+            "Pairs with \"New file\""
+          ],
+          "cons": [
+            "Slightly longer"
+          ]
+        },
+        {
+          "id": "overwrote",
+          "label": "Overwrote file",
+          "pros": [
+            "The tool's own word"
+          ],
+          "cons": [
+            "More technical"
+          ]
+        },
+        {
+          "id": "updated",
+          "label": "Updated file",
+          "pros": [
+            "Softer"
+          ],
+          "cons": [
+            "Sounds like a small edit, but the whole file was replaced"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SF-11",
+      "surface": "Chat → a specialist that paused",
+      "path": "A specialist stopped because no low-cost model was chosen, then Choose specialist models",
+      "words": true,
+      "headline": "The paused specialist card's messages are reworded after the \"Try again\" sweep made them awkward.",
+      "changed": "\"couldn't start the new try\" → \"couldn't ask the assistant to start the specialist again\". \"The new try may still have been accepted\" → \"The request to start it again may have gone through\". \"Specialist will try again.\" → \"Specialist starts again soon.\" with \"The specialist starts again when the assistant finishes its current reply.\" \"Couldn't confirm the specialist is trying again.\" → \"Couldn't tell whether the specialist restarted.\"",
+      "notice": "These appear only after you choose a model from the card; the card itself is unchanged.",
+      "yes": "Yes, these read well",
+      "no": "No, reword"
+    },
+    {
+      "id": "SF-12",
+      "surface": "The screenshot tool (not the app)",
+      "path": "Behind the scenes",
+      "words": true,
+      "headline": "The practice app no longer opens real web pages, so screenshots stop opening a GitHub sign-in page.",
+      "changed": "A practice screen pressed \"Continue in GitHub\" on a ticket, which opened GitHub's real sign-in page in the screenshot browser and froze the screens after it. The practice app now opens nothing outside — it only notes the address — and the screenshot tool says if any screen tries.",
+      "notice": "Nothing changes in the real app; links there still open your browser.",
+      "yes": "Yes",
+      "no": "No"
+    },
+    {
+      "id": "SF-13",
+      "surface": "Planning",
+      "path": "The workspace's backlog",
+      "words": true,
+      "headline": "Recorded: tooling to make sessions follow the guide is deferred, in your words, until you revisit it.",
+      "changed": "Proposals 21–25 (a conventions list per part before building, design checks for hand-built rows and popup titles, live deck panes with practice settings, a load-aware screenshot tool) are marked deferred and filed as one parked backlog item quoting you.",
+      "notice": "Nothing was built for them.",
+      "yes": "Yes",
+      "no": "No"
+    }
+  ]
+}

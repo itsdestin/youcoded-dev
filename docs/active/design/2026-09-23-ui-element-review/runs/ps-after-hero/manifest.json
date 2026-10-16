@@ -1,0 +1,53 @@
+[
+  {
+    "name": "projects/files",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-hero/projects/files/midnight.png",
+    "ms": 2860,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 384,
+      "w": 1100,
+      "h": 507
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/files",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-hero/projects/files/youcoded.png",
+    "ms": 3811,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 384,
+      "w": 1100,
+      "h": 507
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/files",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps-after-hero/projects/files/youcoded-night.png",
+    "ms": 4036,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 384,
+      "w": 1100,
+      "h": 507
+    },
+    "parts": []
+  }
+]

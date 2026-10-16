@@ -1,0 +1,22 @@
+{
+  "title": "Larger popups — should they match Settings and small dialogs?",
+  "key": "ui-guide-project-popup-edge-1",
+  "out": "project-popup-edge.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 710},
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Project detail overlay",
+      "path": "Larger header above an independently scrolling detail body",
+      "hint": "Scroll inside each overlay to see its content reach the header and bottom. Scroll outside it to reach the next version. Try Meadow Mist, Halftone Dimension and a solid theme; choose Other if the edge needs tuning.",
+      "headline": "Should larger project-detail popups get this same divider and content fade?",
+      "risk": "The 42px fade softens the edge but makes the last visible lines faint until you scroll further. This preview changes no production styling and does not cover Tags or Marketplace.",
+      "live": {"surface": "project-popup-edge-calibration", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Today", "candidate": "today", "summary": "16px semibold title, full-width line, no scroll fade."},
+        {"id": "selected", "label": "Settings-style treatment", "candidate": "selected", "summary": "16px medium title, 8% tapered line, 42px content fade with 4% sides."}
+      ]
+    }
+  ]
+}

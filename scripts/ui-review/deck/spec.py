@@ -15,7 +15,7 @@ UI_REVIEW = os.path.dirname(HERE)
 DEFAULT_THEMES = ['midnight', 'light', 'creme', 'dark', 'halftone-dimension', 'meadow-mist']
 
 
-def is_shoot_crop_name(name):
+def is_shoot_crop_name(name, spec=None):
     """A shoot screen name (`"settings/sound"`) is the one crop-name shape no crops.json entry
     or spec `crops` override has ever used (checked repo-wide 2026-09-26, all "/"-free) — so an
     unrecognized name containing "/" is presumed to be one. Real existence is checked later,
@@ -23,8 +23,68 @@ def is_shoot_crop_name(name):
     FROM this module); this is only the fast, structural check that still catches a plain typo
     of a legacy crop name at validate() time, same as before shoot existed.
     A "#" marks one too (2026-10-02): a STATE of a screen (`first-run#authenticate`) needs no
-    "/", and every first-run screen was refused as an unknown crop before this."""
-    return '/' in (name or '') or '#' in (name or '')
+    "/", and every first-run screen was refused as an unknown crop before this.
+    A name a run's own manifest.json lists counts too, whatever its shape (2026-10-06,
+    project-switcher friction proposal 7): `projects` — the Project View — has neither mark,
+    and `projects@…` was refused. `spec` carries those names (load_spec, `_shoot_names`)."""
+    name = name or ''
+    if '/' in name or '#' in name:
+        return True
+    return bool(spec) and name.split('@')[0] in spec.get('_shoot_names', ())
+
+
+def run_screen_names(runs):
+    """Every screen name the shoot runs' own manifest.json files list (a run without one — an
+    old shots-<plan> run, or a folder not shot yet — adds nothing). Read here, not through
+    deck/crops.py, because crops.py imports from this module."""
+    names = set()
+    for folder in (runs or {}).values():
+        try:
+            with open(os.path.join(folder or '', 'manifest.json')) as f:
+                names.update(e.get('name') for e in json.load(f) if isinstance(e, dict) and e.get('name'))
+        except (OSError, ValueError, TypeError):
+            continue
+    return names
+
+
+def crop_errors(spec, crop, where):
+    """Errors for one step's (or variant's) `crop`: a known name, or a LIST of them composed
+    side by side (deck/crops.py compose_pieces). Each piece is a name or {"crop", "label"}.
+    WHY here as one function: three step kinds check a crop, and a list must never reach the
+    plain `crop in spec['_crops']` test (a list is unhashable — the build would crash, not refuse)."""
+    def unknown(name):
+        return name not in spec['_crops'] and not is_shoot_crop_name(name, spec)
+    if isinstance(crop, list):
+        if len(crop) < 2:
+            return [f'{where}: a list crop lays several pictures side by side — give at least two']
+        out = []
+        for i, piece in enumerate(crop):
+            name = piece.get('crop') if isinstance(piece, dict) else piece
+            if isinstance(piece, dict) and set(piece) - {'crop', 'label'}:
+                out.append(f'{where}: piece {i + 1} of the crop list carries only "crop" and "label"')
+            if not isinstance(name, str) or not name:
+                out.append(f'{where}: piece {i + 1} of the crop list needs a crop name (a list inside a list is not allowed)')
+                continue
+            if unknown(name):
+                out.append(f'{where}: unknown crop "{name}" in the crop list (a crops.json name or a shoot screen like "area/name")')
+            label = piece.get('label', '') if isinstance(piece, dict) else ''
+            if word_count(label) > 4:
+                out.append(f'{where}: piece {i + 1}\'s label is {word_count(label)} words — a caption, keep it to four')
+            for w in banned_in(label):
+                out.append(f'{where}: piece {i + 1}\'s label uses banned word "{w}"')
+        return out
+    if crop and unknown(crop):
+        return [f'{where}: unknown crop "{crop}" (add it to crops.json or the spec\'s "crops", '
+                f'or name a shoot screen like "area/name")']
+    return []
+
+
+def needs_no_highlight(crop, spec=None):
+    """A shoot screen boxes its own panel by default; a composite IS the focus. Only a legacy
+    (or unresolvable) single crop name still needs a highlight written out on one picture."""
+    return isinstance(crop, list) or is_shoot_crop_name(crop or '', spec)
+
+
 # Whole-word, case-insensitive. "px" and numbers are fine — measurements are wanted.
 # The marker a GENERATOR leaves where a session has to write the copy. Any field still
 # carrying it blocks the build (validate) — `selfie` writes the pictures, but only the session
@@ -53,8 +113,11 @@ INLINE_TARGET = {'today:': "the step's today field", 'problem:': "the step's pro
 RECOMMENDED_RE = re.compile(r'\(?recommended\)?', re.I)
 COUNT_WORD = {2: 'two', 3: 'three', 4: 'four'}
 HEADLINE_MAX = 25
-# The only capture names a deck or a slide may use. `today` is one picture; `before`+`after` is a pair.
+# The usual capture names: `today` is one picture; `before`+`after` is a pair. Any other short
+# name is allowed too (`round3`): WHY (marketplace-detail friction, proposal 9b) — a slide
+# comparing the latest round with an OLDER one had to borrow `today` and relabel it.
 RUN_NAMES = ('today', 'before', 'after')
+RUN_NAME_RE = re.compile(r'^[a-z][a-z0-9-]*$')
 RISK_WARN = 40
 # A contract row's `checkedBy` — who resolves it: a guard script, this deck's own answers,
 # a running app probe, or a person. Task 4 reads this to pick its resolver.
@@ -167,9 +230,9 @@ def load_spec(path):
         for k in ('images', 'runs'):
             if k not in spec or spec[k] is None:
                 raise SpecError(f'spec is missing "{k}"')
-    bad = [r for r in spec['runs'] if r not in RUN_NAMES]
+    bad = [r for r in spec['runs'] if not RUN_NAME_RE.match(r)]
     if bad:
-        raise SpecError('runs may only be named ' + ', '.join(RUN_NAMES) + ' — not ' + ', '.join(bad))
+        raise SpecError('a run is named with lowercase letters, digits and dashes (today, before, after, round3…) — not ' + ', '.join(bad))
     if not spec['runs']:
         raise SpecError('runs must name at least one capture (today, or before and after)')
     spec['_base'] = os.path.dirname(os.path.abspath(path))
@@ -187,6 +250,7 @@ def load_spec(path):
         shared = json.load(f)
     shared.pop('_comment', None)
     spec['_crops'] = {**shared, **spec.get('crops', {})}
+    spec['_shoot_names'] = run_screen_names(spec['runs'])
     spec.setdefault('themes', list(DEFAULT_THEMES))
     # "fixed" is the only value this key takes; anything else is a typo that would otherwise be
     # ignored in silence, and the deck would open on a theme the author thought they had pinned.
@@ -444,9 +508,14 @@ def clip_files(spec, step):
 
 
 def run_names(spec):
-    """Display order of the deck's runs: before then after when both exist, else as written."""
+    """Display order of the deck's runs: as written, except that `before` always comes just
+    before `after` when both exist (a slide reads older on the left, newer on the right)."""
     r = list(spec['runs'].keys())
-    return ['before', 'after'] if set(r) == {'before', 'after'} else r
+    if 'before' in r and 'after' in r:
+        at = min(r.index('before'), r.index('after'))
+        rest = [x for x in r if x not in ('before', 'after')]
+        return rest[:at] + ['before', 'after'] + rest[at:]
+    return r
 
 
 def step_runs(spec, st):
@@ -474,6 +543,9 @@ def banned_in(text):
     return [w for w in BANNED if re.search(r'(?<![\w-])' + re.escape(w) + r'(?![\w-])', low)]
 
 
+ALSO_WORDS_MAX = 6   # one screen name per entry, the way a person names it
+
+
 def _headline_and_words(st, sid, errors):
     """The two checks every step kind performs identically, verbatim, today.
 
@@ -486,6 +558,19 @@ def _headline_and_words(st, sid, errors):
     for k in TEXT_FIELDS:
         for w in banned_in(st.get(k)):
             errors.append(f'{sid}: {k} uses banned word "{w}"')
+    # `alsoChanges`: the other screens a SHARED change reaches, by the names a person knows them
+    # by. WHY (close-session friction, proposal 15): changing the close prompt's shared card
+    # changed Session details on four surfaces, and no slide could say "this also changes X".
+    also = st.get('alsoChanges')
+    if also is not None:
+        if not isinstance(also, list) or not also or not all(isinstance(x, str) and x.strip() for x in also):
+            errors.append(f'{sid}: alsoChanges is a list of screen names, e.g. ["Session details", "Resume → Organize"]')
+        else:
+            for x in also:
+                if word_count(x) > ALSO_WORDS_MAX:
+                    errors.append(f'{sid}: alsoChanges "{x}" is {word_count(x)} words — a screen name, {ALSO_WORDS_MAX} at most')
+                for w in banned_in(x):
+                    errors.append(f'{sid}: alsoChanges uses banned word "{w}"')
 
 
 def box_errors(box, sid):
@@ -572,28 +657,33 @@ def validate(spec):
         for k in ('surface', 'path', 'crop', 'headline', 'changed', 'notice'):
             if not st.get(k):
                 errors.append(f'{sid}: missing {k}')
-        if st.get('crop') and st['crop'] not in spec['_crops'] and not is_shoot_crop_name(st['crop']):
-            errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops", '
-                          f'or name a shoot screen like "area/name")')
+        errors.extend(crop_errors(spec, st.get('crop'), sid))
         _headline_and_words(st, sid, errors)
+        _validate_new(st, sid, two_runs, errors)
         hl = st.get('highlight', 'auto' if two_runs else None)
         if hl is None:
             # A shoot screen needs no highlight at all: its own panel is the default box
             # (deck/crops.py). Only a legacy (or unresolvable) crop name still requires one.
-            if not is_shoot_crop_name(st.get('crop') or ''):
+            if not needs_no_highlight(st.get('crop'), spec):
                 errors.append(f'{sid}: one picture and nothing to compare it with — this slide needs a highlight (selector or text)')
         elif hl == 'auto':
             if not two_runs:
                 errors.append(f'{sid}: "auto" highlight needs a before and an after run')
+        elif hl == 'panel':
+            # WHY (marketplace-detail friction, proposal 9d): a whole-page redesign changes 80–99%
+            # of every crop, so "auto" warned "name an element instead" on every slide, with no
+            # element to name. "panel" boxes the shoot screen's own panel in every run, quietly.
+            if isinstance(st.get('crop'), list) or not is_shoot_crop_name((st.get('crop') or '').split('@')[0], spec):
+                errors.append(f'{sid}: "panel" highlight needs ONE shoot screen crop (it boxes that screen\'s own panel)')
         elif isinstance(hl, dict):
             if not any(k in hl for k in ('selector', 'text', 'box')):
-                errors.append(f'{sid}: highlight must be "auto" or have selector, text or box')
+                errors.append(f'{sid}: highlight must be "auto", "panel" or have selector, text or box')
             elif 'box' in hl:
                 warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
                 _warn_whole_crop_box(hl, sid, warnings)
                 errors.extend(box_errors(hl['box'], sid))
         else:
-            errors.append(f'{sid}: highlight must be "auto" or an object')
+            errors.append(f'{sid}: highlight must be "auto", "panel" or an object')
         th = st.get('themes')
         if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
             errors.append(f'{sid}: themes must be a non-empty list of theme names')
@@ -604,6 +694,21 @@ def validate(spec):
     _images_folder_warning(spec, warnings)
     _stage_checklist(spec, errors)
     return errors, warnings
+
+
+def _validate_new(st, sid, two_runs, errors):
+    """`"new": true` — ONE picture of something already BUILT that has no "before" (a new state:
+    incognito, offline, a menu opened). It answers "Yes, keep it / No, remove it".
+    WHY (games-social friction, proposal 5): a one-picture slide is otherwise a BRIEF and reads
+    "Yes, build it / No, leave it" — the wrong words for a state already in the app, and every
+    new practice state of the Games round reached Destin that way."""
+    if 'new' not in st:
+        return
+    if st['new'] is not True:
+        errors.append(f'{sid}: "new" is true or absent')
+    elif two_runs:
+        errors.append(f'{sid}: "new" is for ONE picture with no before — a before/after slide already '
+                      f'reads keep / revert; drop "new" or show one run')
 
 
 def _validate_page(spec, st, sid, i, errors):
@@ -640,15 +745,15 @@ def _validate_decide(spec, st, sid, errors, warnings):
     for k in ('surface', 'path', 'crop', 'headline'):
         if not st.get(k):
             errors.append(f'{sid}: missing {k}')
-    if st.get('crop') and st['crop'] not in spec['_crops'] and not is_shoot_crop_name(st['crop']):
-        errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops", '
-                      f'or name a shoot screen like "area/name")')
+    errors.extend(crop_errors(spec, st.get('crop'), sid))
     _headline_and_words(st, sid, errors)
+    if 'new' in st:
+        errors.append(f'{sid}: "new" is for a one-picture keep-or-remove slide, not a decide step')
     hl = st.get('highlight')
     if hl is None:
         # A shoot screen defaults to its own panel as the highlight (deck/crops.py) — only a
         # legacy (or unresolvable) crop name still needs one written out.
-        if not is_shoot_crop_name(st.get('crop') or ''):
+        if not needs_no_highlight(st.get('crop'), spec):
             errors.append(f'{sid}: a decide step needs a highlight (it shows one picture, so there is nothing to diff)')
     elif not (isinstance(hl, dict) and any(k in hl for k in ('selector', 'text', 'box'))):
         errors.append(f'{sid}: highlight must have selector, text or box')
@@ -839,6 +944,8 @@ def _validate_choice(spec, st, sid, errors, warnings):
         if not st.get(k):
             errors.append(f'{sid}: missing {k}')
     _headline_and_words(st, sid, errors)
+    if 'new' in st:
+        errors.append(f'{sid}: "new" is for a one-picture keep-or-remove slide, not a choice')
     vs = st['variants']
     if not isinstance(vs, list) or len(vs) < 2:
         errors.append(f'{sid}: a choice step needs at least 2 variants')
@@ -854,8 +961,7 @@ def _validate_choice(spec, st, sid, errors, warnings):
         for k in ('label', 'crop', 'summary'):
             if not v.get(k):
                 errors.append(f'{sid}/{vid}: missing {k}')
-        if v.get('crop') and v['crop'] not in spec['_crops'] and not is_shoot_crop_name(v['crop']):
-            errors.append(f'{sid}/{vid}: unknown crop "{v["crop"]}" (or name a shoot screen like "area/name")')
+        errors.extend(crop_errors(spec, v.get('crop'), f'{sid}/{vid}'))
         for k in VARIANT_TEXT_FIELDS:
             for w in banned_in(v.get(k)):
                 errors.append(f'{sid}/{vid}: {k} uses banned word "{w}"')
@@ -970,7 +1076,7 @@ STAGES = {
                    not is_words(st) and not is_page(st) and len(step_runs(spec, st)) == 1)),
     'contract': ('the definition of done', lambda spec, st: is_contract(st)),
     'review': ('a change he can see',
-               lambda spec, st: is_clip(st) or is_live(st) or is_dev(st) or (
+               lambda spec, st: is_clip(st) or is_live(st) or is_dev(st) or st.get('new') is True or (
                    not is_words(st) and not is_page(st) and len(step_runs(spec, st)) == 2)),
     'accept': ('a statement to accept or reject',
                lambda spec, st: is_words(st) and not is_contract(st) and not st.get('today') and st.get('changed')),

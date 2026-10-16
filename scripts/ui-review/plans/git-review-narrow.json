@@ -1,0 +1,33 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 390,
+ "height": 844,
+ "boot": 3000,
+ "_why": "Phone-width variant of git-review.json (390px, matching narrow.json's convention — shot.mjs reads width/height at the PLAN level only, so this lives in its own file rather than a shot inside git-review.json). Session Files is reached through the overflow menu at this width, same as narrow.json's own session-files shot.",
+ "shots": [
+  {
+   "name": "git-review-narrow",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 900
+    },
+    {
+     "clickText": "ChatView.tsx",
+     "settle": 900
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Review Changes'))?.click()"
+    },
+    {
+     "wait": 700
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Reviewing changes for')"
+  }
+ ]
+}

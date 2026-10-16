@@ -27,7 +27,10 @@ note: |
   trigger), Toast.tsx (edge-docked notification), ZoomPill.tsx (corner-
   anchored in-pane control), ViewToggleHint.tsx (coach mark anchored to the
   view toggle), VoiceButton.tsx (card anchored above the mic), Tooltip.tsx
-  (hover hint anchored to its control). The full evidence for each is in the
+  (hover hint anchored to its control), ModelPickerPopup.tsx (2026-09-29,
+  ui-model-picker#MP-1: the model menu is position:fixed with left/bottom
+  computed from the status-bar model chip's getBoundingClientRect, no scrim —
+  it hangs above the chip like the sessions menu hangs from its pill). The full evidence for each is in the
   NOT_DIALOGS comments of tests/dialog-shell.test.tsx's git history.
   SHAPE: the retired test was `src.includes('<OverlayPanel')` on RAW text, so
   it matched a JSX tag whose name STARTS with OverlayPanel (open or
@@ -52,6 +55,7 @@ ignores:
   - "**/ViewToggleHint.tsx"
   - "**/VoiceButton.tsx"
   - "**/Tooltip.tsx"
+  - "**/ModelPickerPopup.tsx"
   - "**/components/artifact-views/**"
   - "**/components/assistant-settings/**"
   - "**/components/buddy/**"

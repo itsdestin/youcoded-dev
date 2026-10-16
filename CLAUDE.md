@@ -26,7 +26,7 @@ The app serves students, professionals and everyday AI users—not just develope
 
 Planning and versioning belong to the workspace; planned work is one card per piece in `cards/` (`node scripts/cards.mjs index` lists them). Single-repo implementation depth belongs in that repo's `docs/`.
 
-Registries are fetched at runtime. Bundled plugin definitions must agree across desktop and Android. **`youcoded-core` was ARCHIVED on GitHub 2026-09-20 (Destin): it is read-only, so a push, a release or a "mirror the fix into the legacy copy too" step now FAILS — hook fixes land in the app's bundled copies only (`desktop/hook-scripts/`, `app/src/main/assets/`, byte-identical, pinned by `write-guard-contract.test.ts`). Its clone URL still works, so v1.2.4 installs are unaffected.** The remaining retirement work — deleting the app's dead `youcoded-core`-aware branches, shipping in 1.3.1 — is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. Release coordination belongs to `youcoded-admin`.
+Registries are fetched at runtime. **`youcoded-core` was ARCHIVED on GitHub 2026-09-20 (Destin): it is read-only, so a push, a release or a "mirror the fix into the legacy copy too" step now FAILS — hook fixes land in the app's bundled `desktop/hook-scripts/` only (the Android app runs the desktop backend and installs the same files). Its clone URL still works, so v1.2.4 installs are unaffected.** The remaining retirement work — deleting the app's dead `youcoded-core`-aware branches, shipping in 1.3.1 — is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. Release coordination belongs to `youcoded-admin`.
 
 ## Working Rules
 
@@ -67,7 +67,7 @@ Commands, cleanup recipes and recovery: `docs/workspace-workflows.md` → Git, w
 
 Annotate non-trivial code edits with a **WHY** comment. Check cross-cutting consequences and desktop/Android parity after IPC changes.
 
-Never invent an error cause. Use `<ErrorState>`: specific accurate detail + Retry for recoverable failures; general non-committal errors with Report bug and Diagnose with Claude for unknown causes. See `docs/error-message-standards.md`.
+Never invent an error cause. Use `<ErrorState>` (`components/ui/states.tsx`), which draws the design guide's red-tinted notice box with its buttons inside at the right: specific accurate detail + Try again for recoverable failures; general non-committal errors with Report bug and Diagnose for unknown causes. See `docs/error-message-standards.md`.
 
 ## Workspace Setup
 
@@ -81,7 +81,7 @@ Choose the route by request (read-only review, edit, UI feature, fix-executing a
 
 ### New Features & UI/UX Changes
 
-UI design precedes backend implementation. Read `.claude/rules/feature-flow.md` and `docs/active/design/2026-08-25-ui-design-guide.md` before proposing a new interface. Opening questions use a questions deck; approved decisions become a contract. Show Before/After review decks—not galleries or prose substitutes: `preview` the built deck and read the contact sheet before he sees it, then `serve` it in the background and put the printed link in chat as the last line of your turn (it opens nothing itself); re-serve an already-answered deck with `serve --no-build`. Kinds, fields and refusals: `.claude/rules/review-deck.md`, depth in `scripts/ui-review/deck/AUTHORING.md`, starting points in `scripts/ui-review/templates/`. Motion/drag/hover use operable live steps. Approved UI is the backend's contract; reopening it requires the prescribed deck.
+UI design precedes backend implementation. Read `.claude/rules/feature-flow.md` and `docs/active/design/2026-10-13-ui-design-guide.md` before proposing a new interface, **and open two or three existing app surfaces that do the same job as references; name them when showing the work** (Destin, 2026-09-24). Opening questions use a questions deck; approved decisions become a contract. Show Before/After review decks—not galleries or prose substitutes: `preview` the built deck and read the contact sheet before he sees it, then `serve` it in the background and put the printed link in chat as the last line of your turn (it opens nothing itself); re-serve an already-answered deck with `serve --no-build`. Kinds, fields and refusals: `.claude/rules/review-deck.md`, depth in `scripts/ui-review/deck/AUTHORING.md`, starting points in `scripts/ui-review/templates/`. Motion/drag/hover use operable live steps. Approved UI is the backend's contract; reopening it requires the prescribed deck.
 
 Use the context-free UX tester before Destin's first deck and after implementation, a fresh code reviewer, and a fresh grader before acceptance. Briefs and execution: `scripts/ui-review/{ux-tester,code-reviewer,grader,contract-agent}.md`; full route: `.claude/rules/feature-flow.md`. This overrides generic brainstorming chat-question habits for YouCoded features.
 

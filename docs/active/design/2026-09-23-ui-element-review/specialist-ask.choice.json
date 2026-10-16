@@ -1,0 +1,45 @@
+{
+  "title": "Specialists — how a permission request sits on its card",
+  "key": "specialist-ask-choice",
+  "out": "specialist-ask.choice.html",
+  "images": "images/specialist-ask",
+  "runs": { "today": "runs/today" },
+  "themes": ["light", "midnight"],
+  "crops": {
+    "sp-today": ["sp", "today", "580x260+425+150"],
+    "sp-foot": ["sp", "foot", "580x260+425+150"],
+    "sp-top": ["sp", "top", "580x260+425+150"]
+  },
+  "steps": [
+    {
+      "id": "SA-1",
+      "surface": "Specialists",
+      "path": "Status bar → \"1 needs you\" → a specialist waiting for your OK",
+      "headline": "Which way should a specialist's permission request sit on its card?",
+      "notice": "References: both new versions use the slim notice box with its buttons inside, the look you approved for Cloud provider cards. The Yes / Always allow / No buttons are the same ones the chat's own permission prompt uses.",
+      "risk": "Nothing changes in the chat itself; only the Specialists popup.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sp-today",
+          "summary": "The whole card turns amber, and the request is a tinted strip welded to the card's bottom edge."
+        },
+        {
+          "id": "foot",
+          "label": "Notice at the bottom",
+          "crop": "sp-foot",
+          "summary": "The card keeps its normal outline. The request is a slim amber notice box inside the card, after Briefing and Activity, with its buttons on the same line.",
+          "risk": "With Activity opened, the request can be pushed below the fold of the popup."
+        },
+        {
+          "id": "top",
+          "label": "Notice at the top",
+          "crop": "sp-top",
+          "summary": "The same notice box, right under the specialist's name, before what it's doing and its Briefing and Activity.",
+          "risk": "It separates the name from the one-line \"what it's doing\" under it."
+        }
+      ]
+    }
+  ]
+}

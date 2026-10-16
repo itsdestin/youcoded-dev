@@ -28,3 +28,22 @@ test('large changed-file lists still schedule screen and journey verification', 
     rmSync(root, { recursive: true, force: true, maxRetries: 3 });
   }
 });
+
+// Close-session friction, proposal 18: a failed test run's files are rerun alone, and the
+// summary says which fail on their own and which only failed under load — never as a pass.
+import { failedFiles, verdict } from './lib/verify-rerun.mjs';
+
+test('the failed test files are read from a vitest log, each once', () => {
+  const log = [' FAIL  |unit| tests/a.test.ts > group > one', ' FAIL  tests/b.test.tsx > two', ' FAIL  |unit| tests/a.test.ts > group > three', '\x1b[31m × \x1b[39m|unit| src/c.test.ts > four', ' ✓ tests/d.test.ts'].join('\n');
+  assert.deepEqual(failedFiles(log), ['tests/a.test.ts', 'tests/b.test.tsx', 'src/c.test.ts']);
+});
+
+test('the rerun verdict names real failures and load-sensitive ones, and never calls either a pass', () => {
+  const first = ' FAIL  tests/a.test.ts > x\n FAIL  tests/b.test.ts > y';
+  const alone = ' FAIL  tests/a.test.ts > x';
+  assert.deepEqual(verdict(first, alone), [
+    'fails on its own too (a real failure): tests/a.test.ts',
+    'passed when rerun alone — load-sensitive, STILL TO FIX (a busy machine breaks it): tests/b.test.ts',
+  ]);
+  assert.deepEqual(verdict('nothing parsable', ''), ['could not tell which test files failed — read the full log']);
+});

@@ -1,0 +1,24 @@
+{
+  "title": "Review pages: designs on a choice slide side by side",
+  "key": "tooling-4",
+  "out": "tooling-4.review.html",
+  "images": "images/tooling-4",
+  "runs": { "today": "runs/tooling4-choice/both" },
+  "labels": { "today": "A pick-one slide with two designs, each folded and opened" },
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "crops": { "deck-before": ["deck", "before", "1440x900+0+0"], "deck-after": ["deck", "after", "1440x900+0+0"] },
+  "steps": [
+    {
+      "id": "T4-1",
+      "surface": "Review page",
+      "path": "Any pick-one slide whose designs are each two pictures (practice pictures shown)",
+      "crop": [{ "crop": "deck-before", "label": "Before" }, { "crop": "deck-after", "label": "After" }],
+      "new": true,
+      "headline": "On a pick-one slide, every design now sits side by side, even when each design is two pictures.",
+      "changed": "Designs on a pick-one slide are never stacked any more; they shrink until all of them fit in one row. Three tall designs open at the width of the row, and the pictures scroll for the rest.",
+      "notice": "Design A and Design B can be compared at a glance, with the answer buttons below them instead of covering the second one. They are smaller; the + button zooms in.",
+      "risk": "With many wide designs on a small window, each can get small enough to need the zoom."
+    }
+  ]
+}

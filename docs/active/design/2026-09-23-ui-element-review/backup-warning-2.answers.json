@@ -1,0 +1,22 @@
+{
+ "deck": "backup-warning-2",
+ "started": "2026-10-12T16:59:20.246Z",
+ "submitted": "2026-10-12T16:59:49Z",
+ "cur": 1,
+ "answers": {
+  "BW2-1": {
+   "v": "yes",
+   "t": 1791824370325,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BW2-2": {
+   "v": "yes",
+   "t": 1791824388709,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,51 @@
+{
+  "title": "Legal pages — lighter, smaller, softer",
+  "key": "website-legal-review-2",
+  "out": "website-legal.review-2.html",
+  "images": "images/website-legal.review-2",
+  "runs": {"before": "runs/round2-before", "after": "runs/round2-after"},
+  "labels": {"before": "Rejected first attempt", "after": "Minimal lavender redesign"},
+  "themes": ["cotton-candy-sky"],
+  "theme": "fixed",
+  "crops": {
+    "privacy-desktop": ["legal", "privacy-desktop", "1440x900+0+0"],
+    "terms-desktop": ["legal", "terms-desktop", "1440x900+0+0"],
+    "privacy-mobile": ["legal", "privacy-mobile", "390x844+0+0"],
+    "terms-mobile": ["legal", "terms-mobile", "390x844+0+0"]
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Website · Privacy policy",
+      "path": "Privacy — desktop",
+      "crop": "privacy-desktop",
+      "headline": "A small title, a soft lavender page, and room to read.",
+      "changed": "Removed the wallpaper, dark panels and oversized hero. The current website’s lowercase logo and lavender palette replace the older branding.",
+      "notice": "References: the live homepage’s logo, pastel palette and rounded navigation. The reading column stays unboxed; all legal wording and the September 15, 2026 date are unchanged.",
+      "risk": "Local preview only. The branch homepage is unchanged; no newer commits were merged.",
+      "runs": ["after", "before"]
+    },
+    {
+      "id": "L-2",
+      "surface": "Website · Terms of service",
+      "path": "Terms — desktop",
+      "crop": "terms-desktop",
+      "headline": "The terms get the same quiet layout and an always-available section index.",
+      "changed": "Small rounded headings, restrained dividers and a plain reading column replace the heavy cards. The index remains beside the text as you scroll.",
+      "notice": "All 17 sections and the September 3, 2026 effective date are preserved. The original Markdown remains the legal source.",
+      "risk": "About still opens GitHub. Its links will change only after you approve the pages.",
+      "runs": ["after", "before"]
+    },
+    {
+      "id": "L-3",
+      "surface": "Website · Phone layouts",
+      "path": "Privacy and Terms — phone",
+      "crop": [{"crop": "privacy-mobile", "label": "Privacy"}, {"crop": "terms-mobile", "label": "Terms"}],
+      "headline": "On phones, the pages stay simple and the index folds away.",
+      "changed": "The compact title brings the policy closer to the top. Both policies use the same light layout and an expandable section index.",
+      "notice": "Open “On this page” to jump to any section. Both pages work without JavaScript, including the policy switch and section links.",
+      "risk": "The documents remain long; no legal copy has been shortened.",
+      "runs": ["after", "before"]
+    }
+  ]
+}

@@ -111,7 +111,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     }
    ]
@@ -132,7 +132,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -157,7 +157,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -182,7 +182,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -207,7 +207,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -218,6 +218,7 @@
   },
   {
    "name": "e-settings-defaults",
+   "_why": "Session Defaults was folded into Assistant settings' General page (2026-09-05) \u2014 reopening the row (General is its default page) replaces the old separate popup.",
    "actions": [
     {
      "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
@@ -229,20 +230,13 @@
     },
     {
      "clickText": "Manage models\u2026",
-     "settle": 1500
-    },
-    {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
-     "settle": 700
-    },
-    {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Defaults\"))",
      "settle": 1500
     }
    ]
   },
   {
    "name": "e-settings-permissions",
+   "_why": "Permissions was folded into Assistant settings (2026-09-05) as a page, reached via its nav rail instead of a separate popup.",
    "actions": [
     {
      "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='New Session').click()",
@@ -257,12 +251,8 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
-     "settle": 700
-    },
-    {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Permissions\"))",
-     "settle": 1500
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Permissions\")",
+     "settle": 900
     }
    ]
   },
@@ -282,7 +272,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -307,7 +297,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -332,7 +322,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -357,7 +347,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -386,7 +376,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -419,7 +409,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -452,7 +442,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -489,7 +479,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -532,7 +522,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -591,7 +581,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {
@@ -620,7 +610,7 @@
      "settle": 1500
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/^Close (Assistant settings|Model Providers|dialog)/i.test(b.getAttribute('aria-label')||''))",
      "settle": 700
     },
     {

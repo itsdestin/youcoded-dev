@@ -1,0 +1,53 @@
+{
+  "title": "Privacy and terms — website pages",
+  "key": "website-legal-review",
+  "out": "website-legal.review.html",
+  "images": "images/website-legal.review",
+  "runs": {"after": "runs/after"},
+  "themes": ["golden-sunbreak"],
+  "theme": "fixed",
+  "crops": {
+    "privacy-desktop": ["legal", "privacy-desktop", "1440x900+0+0"],
+    "terms-desktop": ["legal", "terms-desktop", "1440x900+0+0"],
+    "privacy-mobile": ["legal", "privacy-mobile", "390x844+0+0"],
+    "terms-mobile": ["legal", "terms-mobile", "390x844+0+0"]
+  },
+  "steps": [
+    {
+      "id": "privacy",
+      "surface": "Website · Privacy policy",
+      "path": "New privacy page, replacing the GitHub reading experience",
+      "crop": "privacy-desktop",
+      "new": true,
+      "headline": "The privacy policy gets a calm, readable home on the website.",
+      "changed": "Website styling replaces the GitHub reading experience. The legal wording and effective date stay unchanged.",
+      "notice": "Jump between sections with the index. Visual references: the homepage’s floating navigation, prose panels, and footer.",
+      "risk": "This is a local preview; the new address will not be public until the website changes are published.",
+      "highlight": {"box": [34, 54, 53, 42]}
+    },
+    {
+      "id": "terms",
+      "surface": "Website · Terms of service",
+      "path": "New terms page, replacing the GitHub reading experience",
+      "crop": "terms-desktop",
+      "new": true,
+      "headline": "The terms use the same layout, with every section easy to find.",
+      "changed": "The terms receive the matching website treatment, with their original text and effective date preserved.",
+      "notice": "Switch policies or return home. After approval, About will open these website pages.",
+      "risk": "The original Markdown remains the source of truth; the website copies are generated from it.",
+      "highlight": {"box": [34, 54, 53, 42]}
+    },
+    {
+      "id": "mobile",
+      "surface": "Website · Phone layout",
+      "path": "Both new pages on a phone-sized screen",
+      "crop": [{"crop": "privacy-mobile", "label": "Privacy"}, {"crop": "terms-mobile", "label": "Terms"}],
+      "new": true,
+      "headline": "On phones, the section index folds away without hiding any policy text.",
+      "changed": "The reading column fits the screen, and the section navigation is available in an expandable index.",
+      "notice": "Both policies remain readable and navigable without JavaScript.",
+      "risk": "These are long documents, so a full read still requires scrolling.",
+      "highlight": {"box": [0, 44, 100, 10]}
+    }
+  ]
+}

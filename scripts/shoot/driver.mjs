@@ -22,9 +22,10 @@ export function appUrl(base, start) {
   return `${base}?${q}`;
 }
 
-/** Loads the practice app in `tab` as `start` describes, ready for the first step. */
-export async function openApp(tab, base, start) {
-  await tab.prepare({ theme: start.theme ?? 'meadow-mist', width: start.width ?? 1440, height: start.height ?? 900 });
+/** Loads the practice app in `tab` as `start` describes, ready for the first step.
+ *  `reducedEffects` turns on the app's Reduce visual effects setting first (see journeys.mjs). */
+export async function openApp(tab, base, start, { reducedEffects = false } = {}) {
+  await tab.prepare({ theme: start.theme ?? 'meadow-mist', width: start.width ?? 1440, height: start.height ?? 900, reducedEffects });
   await tab.navigate(appUrl(base, start));
   for (const t0 = Date.now(); ; await sleep(50)) {
     if (await tab.evaluate('!!window.__youcodedScreens && document.body.innerText.trim().length > 20', 5000).catch(() => false)) break;
@@ -40,7 +41,67 @@ export async function openScreen(tab, name) {
   await tab.still(3000);
 }
 
-export const describe = (t) => `${t.role} "${t.label}"${t.nth > 1 ? ` (#${t.nth})` : ''}`;
+/** A screen entry's `open` steps (the screen list's "open this first"), as driver steps.
+ *  A plain string is a click on the button a person sees with that label — `'Your status:
+ *  Online'` — because that is nearly every case; anything else is written as a journey step
+ *  (`{ do: 'click', target: { role, label } }`, `{ do: 'key', key: 'ArrowDown' }`).
+ *  WHY (games-social friction, proposal 9): every OPENED state (a menu, a popup, a folded card
+ *  opened) needed its own workbench switch in the app's production code (`?statusMenu=1`) —
+ *  code that exists only so a picture can be taken. A click replayed before the picture needs
+ *  none, and it opens the state the way a person does. */
+export function openSteps(open) {
+  if (open == null) return [];
+  if (!Array.isArray(open)) throw new Error('"open" is a list of steps (a button label, or a journey step)');
+  return open.map((s, i) => {
+    if (typeof s === 'string') {
+      if (!s.trim()) throw new Error(`open step ${i + 1} is an empty label`);
+      // `'Recent logs…'` (ending in "…") = the button whose name STARTS with that.
+      if (s.endsWith('…') && s.length > 1) return { do: 'click', target: { role: 'button', labelStarts: s.slice(0, -1), nth: 1 } };
+      return { do: 'click', target: { role: 'button', label: s, nth: 1 } };
+    }
+    if (!s || typeof s !== 'object' || typeof s.do !== 'string') throw new Error(`open step ${i + 1} needs "do" (or is a button label)`);
+    if (s.do === 'expect') throw new Error(`open step ${i + 1}: "expect" belongs in a journey — an open step only gets the screen ready`);
+    return s;
+  });
+}
+
+export const describe = (t) => `${t.role} ${t.labelStarts !== undefined ? `"${t.labelStarts}…"` : `"${t.label}"`}${t.nth > 1 ? ` (#${t.nth})` : ''}`;
+
+/** Does control `c` (from listControls) match a step's target? `label` is the whole accessible
+ *  name; `labelStarts` its beginning. WHY the prefix (submit-ticket friction, proposal 15): a
+ *  row's name is its title AND its hint, so giving a fold header a hint renamed it ("Optional AI
+ *  help Your assistant can…") and broke every test and open step that clicked it by name. */
+export function labelMatches(c, t) {
+  if (c.role !== t.role) return false;
+  // `spoken` (explore-page.mjs): the name without aria-hidden text — the browser's own name.
+  const names = [c.label, c.spoken].filter((n) => typeof n === 'string');
+  return t.labelStarts !== undefined ? names.some((n) => n.startsWith(t.labelStarts)) : names.includes(t.label);
+}
+
+/** The screen mark a screen entry is checked by: its own `mark` when it names one, else its
+ *  plain name (a `#state` is marked as its plain screen). WHY `mark` (submit-ticket friction,
+ *  proposal 18): a dialog that hands over to another (the ticket → Contribute) ends on the
+ *  OTHER dialog's mark, which the state could only be photographed under by borrowing a prop. */
+export function markOf(screen) {
+  return screen.mark || screen.name.split('#')[0];
+}
+
+/** The screens one side of a before/after takes, and the ones it skips: a state marked
+ *  `newIn: 'after'` opens something only the new code has, so the before side cannot show it
+ *  (close-session friction, proposal 20). `side` is 'before', 'after' or null (one run). */
+export function splitForSide(screens, side) {
+  if (side !== 'before') return { take: screens, skip: [] };
+  return { take: screens.filter((s) => s.newIn !== 'after'), skip: screens.filter((s) => s.newIn === 'after') };
+}
+
+const POINTER_STEPS = new Set(['click', 'double-click', 'right-click', 'hover', 'drag', 'scroll', 'type']);
+/** After these open steps, is the pointer resting on something it did not mean to hover?
+ *  True when the last step that moved the pointer was anything but a `hover`. WHY (proposal 14):
+ *  the clicked fold header kept its hover tint in the picture, which read as a selected row. */
+export function pointerRestsOnClick(steps) {
+  const last = [...steps].reverse().find((s) => POINTER_STEPS.has(s.do) && (s.do !== 'type' || s.target));
+  return !!last && last.do !== 'hover';
+}
 
 /** One step, in words — for step lines and failure reports. */
 export function stepText(s) {
@@ -144,7 +205,7 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
       await settle();
       await tab.evaluate(inPage(listLayers));
       ({ controls } = await tab.evaluate(inPage(listControls, { all: true })));
-      const same = controls.filter((c) => c.role === target.role && c.label === target.label);
+      const same = controls.filter((c) => labelMatches(c, target));
       const hit = same[(target.nth ?? 1) - 1] ?? same[0];
       if (hit) { const p = await tab.evaluate(inPage(locate, hit.n)); if (p && await tab.evaluate(inPage(hits, hit.n, p.x, p.y))) return p; }
       if (Date.now() - t0 > 5000) break;
@@ -175,7 +236,7 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
       for (; clock.live(); await sleep(200)) {
         await tab.evaluate(inPage(listLayers));
         const { controls } = await tab.evaluate(inPage(listControls, {}));
-        const there = controls.some((c) => c.role === step.control.role && c.label === step.control.label);
+        const there = controls.some((c) => labelMatches(c, step.control));
         if (there !== Boolean(step.not)) return;
         clock.see(await pageSignature());
       }
@@ -237,5 +298,11 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
     await tab.still(3000);
   }
 
-  return { perform, settle, where };
+  /** Moves the pointer off the page, so nothing keeps a hover look in the next picture. */
+  async function pointerAway() {
+    await mouse('mouseMoved', -1, -1);
+    pointer = { x: -1, y: -1 };
+  }
+
+  return { perform, settle, where, pointerAway };
 }

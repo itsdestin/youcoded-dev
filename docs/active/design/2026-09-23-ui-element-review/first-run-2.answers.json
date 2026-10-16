@@ -1,0 +1,54 @@
+{
+ "deck": "first-run-2",
+ "started": "2026-10-05T02:20:04.544Z",
+ "submitted": "2026-10-05T02:22:06Z",
+ "cur": 5,
+ "answers": {
+  "P2-1": {
+   "note": "this does not feel like it meets the spacing/etc guidlines we established in our brand materials. tagline is far too close to brand name.",
+   "t": 1791166850391,
+   "v": "other",
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P2-2": {
+   "v": "yes",
+   "t": 1791166889513,
+   "note": "square exclamation/error ixon, directly to the left of the setup stopped/git couldnt be installed message.",
+   "seconds": 39,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P2-3": {
+   "v": "pick",
+   "pick": "B",
+   "t": 1791166903395,
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P2-4": {
+   "v": "yes",
+   "t": 1791166917828,
+   "note": "also want to fix our callback screens in the browser",
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P2-5": {
+   "v": "yes",
+   "t": 1791166922213,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P2-6": {
+   "v": "yes",
+   "t": 1791166925660,
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

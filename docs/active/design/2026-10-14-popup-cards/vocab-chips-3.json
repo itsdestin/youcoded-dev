@@ -1,0 +1,53 @@
+{
+  "title": "Voice vocabulary and quick chips, built",
+  "key": "vocab-chips-3",
+  "out": "vocab-chips-3.review.html",
+  "images": "images/vocab-chips-3",
+  "runs": {
+    "before": "runs/r13/before",
+    "after": "runs/r13/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Chat → right-click the microphone → Voice vocabulary",
+      "crop": [
+        {
+          "crop": "chat/voice/vocabulary@panel",
+          "label": "Your words"
+        },
+        {
+          "crop": "chat/voice/vocabulary#empty@panel",
+          "label": "Empty"
+        }
+      ],
+      "headline": "Voice vocabulary, as you picked: one card like Tags, Enter adds, saves as you go.",
+      "changed": "Tag-sized chips, \"Add a word\" over one box (\"…then press Enter\"), the explanation in grey under it. No Save button or status line: each word saves the moment it's added or removed. An empty list says \"No words yet.\"",
+      "notice": "Closing the popup can no longer lose a change.",
+      "risk": "A removed word is saved as removed at once; add it again to undo."
+    },
+    {
+      "id": "B-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Quick chips",
+      "path": "Chat → Edit quick chips",
+      "crop": "chat/quick-chips@panel",
+      "headline": "Quick chips, as you picked: tag-shaped chips, plus your two fixes.",
+      "changed": "Chips are tag-shaped. The pencil on each chip now always shows, so there's no empty gap on the right. Adding is an \"Add a chip\" box like Tags and Voice: type a name, press Enter, and the add page opens with the name filled in. The how-to line sits under that box, as Voice's does.",
+      "notice": "The dashed \"+ Add a chip\" chip is gone; the box replaces it.",
+      "risk": "The pencil is always visible, so the chips are a little busier than before."
+    }
+  ]
+}

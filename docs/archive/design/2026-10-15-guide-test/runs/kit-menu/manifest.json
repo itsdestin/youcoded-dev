@@ -1,0 +1,70 @@
+[
+  {
+    "name": "pages/page/page-money",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-menu/pages/page/page-money/meadow-mist.png",
+    "ms": 2503,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-week-planner#menu-open",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-menu/pages/page/page-week-planner#menu-open/meadow-mist.png",
+    "ms": 2689,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-week-planner#menu-open",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-menu/pages/page/page-week-planner#menu-open/halftone-dimension.png",
+    "ms": 3399,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 256,
+      "y": 54,
+      "w": 1176,
+      "h": 838
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-10-15-guide-test/runs/kit-menu/pages/page/page-money/halftone-dimension.png",
+    "ms": 3734,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 256,
+      "y": 54,
+      "w": 1176,
+      "h": 838
+    },
+    "parts": []
+  }
+]

@@ -1,0 +1,104 @@
+[
+  {
+    "name": "projects/switcher#many",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after-small/projects/switcher#many/midnight.png",
+    "ms": 1050,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 26,
+      "y": 72,
+      "w": 589,
+      "h": 358
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after-small/projects/switcher/midnight.png",
+    "ms": 1061,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 26,
+      "y": 72,
+      "w": 589,
+      "h": 358
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after-small/projects/switcher/youcoded.png",
+    "ms": 1324,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 26,
+      "y": 72,
+      "w": 589,
+      "h": 358
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after-small/projects/switcher#many/youcoded-night.png",
+    "ms": 1334,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 26,
+      "y": 72,
+      "w": 589,
+      "h": 358
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after-small/projects/switcher/youcoded-night.png",
+    "ms": 1336,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 26,
+      "y": 72,
+      "w": 589,
+      "h": 358
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/switcher#many",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/ps2-after-small/projects/switcher#many/youcoded.png",
+    "ms": 1423,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 26,
+      "y": 72,
+      "w": 589,
+      "h": 358
+    },
+    "parts": []
+  }
+]

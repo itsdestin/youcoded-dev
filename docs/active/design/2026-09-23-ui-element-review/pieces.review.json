@@ -1,0 +1,340 @@
+{
+  "title": "Kinds of piece with no rule yet",
+  "key": "ui-element-review-pieces",
+  "out": "pieces.review.html",
+  "images": "images/pieces.review",
+  "runs": {
+    "before": "runs/pieces-before",
+    "after": "runs/pieces-after"
+  },
+  "labels": {
+    "before": "Today (10px)",
+    "after": "Smallest text 11px"
+  },
+  "themes": [
+    "meadow-mist",
+    "light"
+  ],
+  "crops": {
+    "e-lib": [
+      "empty-marketplace",
+      "library",
+      "700x330+380+150"
+    ],
+    "e-pages": [
+      "pages-empty-one-action",
+      "landing",
+      "640x360+400+290"
+    ],
+    "e-nosel": [
+      "pages-floating",
+      "bleed-idle",
+      "700x300+410+320"
+    ],
+    "e-resume": [
+      "tag-chip",
+      "tag-resume",
+      "700x300+620+300"
+    ],
+    "switcher": [
+      "overlays",
+      "projects-switcher",
+      "640x400+360+110"
+    ],
+    "signin": [
+      "chatgpt-signin",
+      "first-run-sign-in",
+      "640x780+400+60"
+    ],
+    "t-sync": [
+      "style-textfloor",
+      "settings-backup-sync",
+      "420x590+510+150"
+    ],
+    "t-spec": [
+      "style-textfloor",
+      "settings-remote-access",
+      "420x590+510+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "Q-1",
+      "surface": "Several screens",
+      "path": "Library, Pages, Resume \u2014 when a list is empty",
+      "headline": "Which look should an empty list or empty area use, everywhere?",
+      "notice": "The app has four different looks for \"nothing here yet\". Pick the one to use in all of them.",
+      "variants": [
+        {
+          "id": "text-link",
+          "label": "Plain text + link",
+          "crop": "e-lib",
+          "summary": "One grey line and a small outlined button (Library)."
+        },
+        {
+          "id": "card",
+          "label": "Card + one button",
+          "crop": "e-pages",
+          "summary": "A short explanation and one full-width filled button (Pages)."
+        },
+        {
+          "id": "two-line",
+          "label": "Title + hint",
+          "crop": "e-nosel",
+          "summary": "A bold line and a grey hint, no button (Pages, nothing picked)."
+        },
+        {
+          "id": "one-line",
+          "label": "One grey line",
+          "crop": "e-resume",
+          "summary": "Only a grey sentence in the middle (Resume, nothing picked)."
+        }
+      ],
+      "risk": "Different jobs may deserve different answers, e.g. card for first-time, one line for nothing picked. Choosing 'Other' and saying so is fine.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Today"
+      }
+    },
+    {
+      "id": "Q-2",
+      "surface": "Project switcher",
+      "path": "Ctrl+P or the project button",
+      "crop": "switcher",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          20
+        ]
+      },
+      "headline": "Should quick pop-up pickers get a title and \u2715 like other popups?",
+      "notice": "The switcher has a search box and \"Esc\" instead of a title and \u2715. The skills drawer, filters and tag notes are similar.",
+      "options": [
+        {
+          "id": "exempt",
+          "label": "Quick pickers stay light",
+          "pros": [
+            "Fast to use; search box is the header.",
+            "Closes on Esc or a click outside."
+          ],
+          "cons": [
+            "A few popups lack \u2715 while every other popup has one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all",
+          "label": "Every popup gets a title and \u2715",
+          "pros": [
+            "One rule, no exceptions.",
+            "A \u2715 is obvious on touch screens."
+          ],
+          "cons": [
+            "A title above a search box takes room and slows the picker."
+          ]
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Today"
+      }
+    },
+    {
+      "id": "Q-3",
+      "surface": "First-run sign-in",
+      "path": "Fresh install \u2192 sign-in",
+      "crop": "signin",
+      "highlight": {
+        "box": [
+          5,
+          45,
+          90,
+          50
+        ]
+      },
+      "headline": "Should one of the five sign-in choices be the main (filled) one?",
+      "notice": "All five are equal outlined pills. The guide says one filled button per view.",
+      "options": [
+        {
+          "id": "equal",
+          "label": "Keep five equal choices",
+          "pros": [
+            "No choice is pushed on anyone.",
+            "Fits people using a key or a local model."
+          ],
+          "cons": [
+            "Breaks \"one filled button\"; nothing stands out."
+          ]
+        },
+        {
+          "id": "fill-first",
+          "label": "Fill the subscription sign-in",
+          "pros": [
+            "Points most people to the easy path.",
+            "Follows the one-filled-button rule."
+          ],
+          "cons": [
+            "Favours one company's sign-in over the others."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "two-tier",
+          "label": "Sign-in accounts filled, other ways as small links",
+          "pros": [
+            "Two clear groups.",
+            "Fewer big buttons."
+          ],
+          "cons": [
+            "Hides the local-model and key paths a little."
+          ]
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Today"
+      }
+    },
+    {
+      "id": "T-1",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "t-sync",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Should the smallest text (hints, dates, counts) grow from 10px to 11px?",
+      "changed": "Every 10px hint, date and caption in the app becomes 11px. Nothing else changes.",
+      "notice": "Text under settings titles is a little bigger and easier to read; some rows are a few pixels taller.",
+      "risk": "About 460 places grow, so tight spots (status bar, chips, cards) may wrap or crowd; those would be checked before shipping.",
+      "themes": [
+        "meadow-mist"
+      ]
+    },
+    {
+      "id": "T-2",
+      "surface": "Remote Access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "t-spec",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "Same question on Remote Access: keep 10px, or 11px?",
+      "changed": "The hint lines and small labels here grow from 10px to 11px.",
+      "notice": "Hints under Password and Tailscale are easier to read; the popup is a little longer.",
+      "risk": "Busy screens get a little denser to scroll."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Progress and usage bars",
+      "path": "Proposed guide rule",
+      "headline": "Should a bar's number be normal grey text, with only the bar carrying colour?",
+      "changed": "Today the percentages beside usage bars are coloured text: green 34%, amber 12% (Cloud providers, the usage card, the status bar). New rule: the bar keeps its colour; the number is the normal grey.",
+      "notice": "Numbers become easier to read on pale themes; the colour still shows how full a bar is.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Small tags beside a title",
+      "path": "Proposed guide rule",
+      "headline": "Should the small tag beside a title (\"Optional\", \"Stopped\") be the same tinted pill as a status?",
+      "changed": "Today these are outlined boxes, plain grey words, or capitals. New rule: one small tinted pill in normal case, the same as \"Installed\".",
+      "notice": "Backups' \"Optional\" and the Local engine's \"Stopped\" would look like the Installed pill.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Status bar chips",
+      "path": "Proposed guide rule",
+      "headline": "Should status-bar chips use normal case, with only a real problem coloured as a tinted pill?",
+      "changed": "Today chips mix capitals (NORMAL, PERMISSION UNKNOWN), coloured values and dots. New rule: normal case and normal text colour; a problem shows as a tinted pill.",
+      "notice": "The status bar looks calmer; \"Permission unknown\" no longer shouts in red capitals.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Lists of things to switch on",
+      "path": "Proposed guide rule",
+      "headline": "Should a tick-box list (Customize status bar, bug-report options) use a settings-style row, tick box on the left?",
+      "changed": "Today these are hand-built small tick boxes with loose spacing. New rule: each item is a boxed row like a setting; the whole row is tappable; the tick box sits on the left.",
+      "notice": "Same look as the \"I understand\" line you picked earlier.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-5",
+      "words": true,
+      "surface": "Sliders",
+      "path": "Proposed guide rule",
+      "headline": "Should a slider have its label above it, the value at the right of the label, and the slider full width below?",
+      "changed": "Today (Theme editor) sliders sit beside their labels and don't line up. New rule follows your \"wide controls go below\" choice.",
+      "notice": "Sliders line up in one column.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-6",
+      "words": true,
+      "surface": "Errors inside the chat",
+      "path": "Proposed guide rule",
+      "headline": "Should an error or notice that appears in the chat use the same tinted notice box, with its buttons inside at the right?",
+      "changed": "Today chat errors (sign-in expired, out of credit, plan limit) are red text or a strip with a bare \"Details\" link.",
+      "notice": "The same box you picked for Backup & Sync; \"Upgrade plan\" and \"Details\" become real buttons inside it.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-7",
+      "words": true,
+      "surface": "Icon-only buttons",
+      "path": "Proposed guide rule",
+      "headline": "Should every icon-only button show its name when hovered, and be used only for things people already know?",
+      "changed": "Today many icon buttons (grid/list, pin, star, pencil) have no name.",
+      "notice": "Nothing changes visibly until you hover.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-8",
+      "words": true,
+      "surface": "Disabled buttons",
+      "path": "Proposed guide rule",
+      "headline": "Should a disabled main button say why, in one grey line beside or under it?",
+      "changed": "Today a greyed-out button (OpenRouter's key box, unavailable Resume) gives no reason.",
+      "notice": "A short grey line appears under such buttons.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-9",
+      "words": true,
+      "surface": "Surfaces that stay as they are",
+      "path": "Proposed guide rule",
+      "headline": "Should games, code diffs, file viewers, charts, the message box and chat bubbles stay exempt for now?",
+      "changed": "Like tool cards, permission prompts and the terminal, they are not covered by the guide yet, and no new screen should copy them.",
+      "notice": "The guide lists them as \"not final\"; nothing changes on screen.",
+      "yes": "Yes, a rule",
+      "no": "No, change it"
+    }
+  ]
+}

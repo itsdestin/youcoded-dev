@@ -1,0 +1,348 @@
+{
+  "title": "Four kinds of box \u2014 every Settings menu, today vs trial",
+  "key": "ui-four-kinds-trial",
+  "out": "four-kinds.review.html",
+  "images": "images/four-kinds.review",
+  "runs": {
+    "before": "runs/fk-before",
+    "after": "runs/fk-after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Trial"
+  },
+  "themes": [
+    "meadow-mist",
+    "light"
+  ],
+  "crops": {
+    "sync": [
+      "main",
+      "settings-backup-sync",
+      "420x590+510+150"
+    ],
+    "sync-err": [
+      "sync-oversize-fix",
+      "sync-error",
+      "420x590+510+150"
+    ],
+    "sync-over": [
+      "sync-oversize-fix",
+      "sync-oversize-open",
+      "420x590+510+150"
+    ],
+    "sync-det": [
+      "states-settings-repair",
+      "sync-show-details",
+      "420x590+510+150"
+    ],
+    "remote": [
+      "main",
+      "settings-remote-access",
+      "420x590+510+150"
+    ],
+    "remote-ready": [
+      "states-remote-access",
+      "remote-ready",
+      "420x590+510+150"
+    ],
+    "remote-nsu": [
+      "states-remote-access",
+      "remote-not-set-up",
+      "420x590+510+150"
+    ],
+    "local": [
+      "assistant-settings",
+      "assistant-local",
+      "820x700+310+100"
+    ],
+    "local-int": [
+      "overlays",
+      "local-models-resuming",
+      "820x700+310+100"
+    ],
+    "perm": [
+      "assistant-settings",
+      "assistant-permissions",
+      "820x700+310+100"
+    ],
+    "spec": [
+      "assistant-settings",
+      "assistant-specialists",
+      "820x700+310+100"
+    ],
+    "cloud": [
+      "assistant-settings",
+      "assistant-claude",
+      "820x700+310+100"
+    ],
+    "gen": [
+      "assistant-settings",
+      "assistant-general",
+      "820x700+310+100"
+    ],
+    "drawer": [
+      "main",
+      "settings-drawer",
+      "320x740+0+50"
+    ],
+    "account": [
+      "main",
+      "settings-account",
+      "420x590+510+150"
+    ],
+    "appear": [
+      "main",
+      "settings-appearance",
+      "420x590+510+150"
+    ],
+    "sound": [
+      "main",
+      "settings-sound",
+      "420x590+510+150"
+    ],
+    "about": [
+      "main",
+      "settings-about",
+      "420x590+510+150"
+    ],
+    "prefs": [
+      "main",
+      "preferences-config",
+      "420x590+510+150"
+    ],
+    "dev": [
+      "main",
+      "settings-development",
+      "420x590+510+150"
+    ],
+    "keys": [
+      "main",
+      "settings-keyboard-shortcuts",
+      "420x590+510+150"
+    ],
+    "buddy": [
+      "main",
+      "settings-buddy-floater",
+      "420x590+510+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "K-1",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync: keep the trial?",
+      "changed": "The big status box becomes one ordinary row with its switch. Devices, Projects and Conversations become fold-out rows listing their items. The backups list is plain rows.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-2",
+      "surface": "Backup & Sync \u2014 sync failing",
+      "path": "Backup & Sync when sync fails",
+      "crop": "sync-err",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 sync failing: keep the trial?",
+      "changed": "Same rebuild, with the error in the one notice box under the sync row.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-3",
+      "surface": "Backup & Sync \u2014 too big to sync",
+      "path": "Backup & Sync with oversize conversations",
+      "crop": "sync-over",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 too big to sync: keep the trial?",
+      "changed": "Same rebuild; the too-big warning stays the notice box you picked.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-4",
+      "surface": "Backup & Sync \u2014 details open",
+      "path": "Backup & Sync \u2192 Show details",
+      "crop": "sync-det",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 details open: keep the trial?",
+      "changed": "Same rebuild with the error details open.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-5",
+      "surface": "Remote Access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "remote",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Remote Access: keep the trial?",
+      "changed": "Its many hand-drawn status boxes share one look; the Add Device panel loses its grey background.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-6",
+      "surface": "Remote Access \u2014 ready",
+      "path": "Remote Access, set up and running",
+      "crop": "remote-ready",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Remote Access \u2014 ready: keep the trial?",
+      "changed": "Same rules in the running state.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-7",
+      "surface": "Remote Access \u2014 not set up",
+      "path": "Remote Access before setup",
+      "crop": "remote-nsu",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Remote Access \u2014 not set up: keep the trial?",
+      "changed": "Same rules before setup.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-8",
+      "surface": "Local models",
+      "path": "Assistant settings \u2192 Local models",
+      "crop": "local",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Local models: keep the trial?",
+      "changed": "The two big grey boxes around Local engine and Models are gone: a small label and plain rows under each.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-9",
+      "surface": "Local models \u2014 download problems",
+      "path": "Local models, scrolled to a paused and a damaged download",
+      "crop": "local-int",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Local models \u2014 download problems: keep the trial?",
+      "changed": "Same page lower down; problems stay notice boxes inside their row.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-10",
+      "surface": "Permissions",
+      "path": "Assistant settings \u2192 Permissions",
+      "crop": "perm",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Permissions: keep the trial?",
+      "changed": "Each folder was its own bordered card; now it is a row you tap open. The explainer box is plain text.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-11",
+      "surface": "Specialists",
+      "path": "Assistant settings \u2192 Specialists",
+      "crop": "spec",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Specialists: keep the trial?",
+      "changed": "The two boxes around the model tiers and the specialist list are gone: labels and rows only.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-16",
+      "surface": "Appearance",
+      "path": "Settings \u2192 Appearance",
+      "crop": "appear",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Appearance: keep the trial?",
+      "changed": "Small cleanups only.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it.",
+      "themes": [
+        "meadow-mist"
+      ]
+    },
+    {
+      "id": "K-22",
+      "surface": "Buddy settings",
+      "path": "Settings \u2192 Buddy",
+      "crop": "buddy",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Buddy settings: keep the trial?",
+      "changed": "Rows moved onto the shared row look.",
+      "notice": "Fewer kinds of box; every group is a small label with plain rows under it."
+    },
+    {
+      "id": "K-RULE",
+      "words": true,
+      "surface": "Design guide",
+      "path": "New rule",
+      "headline": "Should the four-kinds rule go in the guide for every Settings popup?",
+      "today": "Settings popups mix up to 12 kinds of box: wrapper cards, cards inside cards, icon cards, chip tabs, tables.",
+      "problem": "Each screen looks busy and different from the next, even after the earlier fixes.",
+      "proposal": "A Settings popup uses only a small label, a row, a notice box and buttons; grids of things you install may still use cards.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes, make it the rule",
+          "pros": [
+            "Every Settings popup looks calm and alike.",
+            "New screens have a clear recipe."
+          ],
+          "cons": [
+            "Some screens lose visual grouping they had."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "partly",
+          "label": "Only for some screens",
+          "pros": [
+            "Keeps boxes where you liked them."
+          ],
+          "cons": [
+            "The guide needs exceptions; screens drift again."
+          ]
+        },
+        {
+          "id": "no",
+          "label": "No, drop the trial",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "The busy screens stay busy."
+          ]
+        }
+      ]
+    }
+  ]
+}

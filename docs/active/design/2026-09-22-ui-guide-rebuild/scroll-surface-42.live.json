@@ -1,0 +1,32 @@
+{
+  "title": "Settings scroll fade — 42px with wider coverage",
+  "key": "ui-guide-scroll-surface-42-3",
+  "out": "scroll-surface-42.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "The scrolling edge beneath the title",
+      "hint": "Scroll inside each drawer to see the fade. Scroll outside to move to the next version. Switch between Meadow Mist, Halftone and a solid theme above.",
+      "headline": "Does the 42px fade cover enough of the content?",
+      "risk": "Review-only Settings comparison. The requested 10% side taper is slightly narrower than B's 12%; the 20% title-line taper is held constant, not approved. No production styling has changed, and other scroll surfaces still need review.",
+      "live": {"surface": "settings-taper-calibration", "round": 5},
+      "variants": [
+        {
+          "id": "reference-b",
+          "label": "Earlier option B",
+          "candidate": "reference-b",
+          "summary": "64px deep, with a 12% taper on each side. Here for a direct comparison."
+        },
+        {
+          "id": "requested-42",
+          "label": "42px, wider",
+          "candidate": "requested-42",
+          "summary": "42px deep, with a slightly narrower 10% side taper so more of each row fades out."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "title": "Submit a ticket — regrouped, review step redesigned (round 1)",
+  "key": "submit-ticket-1",
+  "out": "submit-ticket-1.review.html",
+  "images": "images/submit-ticket-1",
+  "runs": {
+    "before": "runs/st-before",
+    "after": "runs/st-after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "ST-1",
+      "surface": "Submit a ticket",
+      "path": "Settings → Help & feedback → Report a bug",
+      "crop": "settings/development/bug-report#filled-all@620x750+410+75",
+      "headline": "Writing a ticket: Bug or Feature comes first, and every note sits inside the card it is about.",
+      "changed": "The Bug/Feature switch moved to the top of the card. The tiny \"tickets are public\" line moved to the card's foot. The files note moved inside the \"Include with ticket\" card.",
+      "notice": "Same fields and tick boxes. When the button is grey, the card's last line also says why (\"Add a title and a description to carry on\")."
+    },
+    {
+      "id": "ST-2",
+      "surface": "Submit a ticket",
+      "path": "Report a bug → fill it in → Review ticket",
+      "crop": "settings/development/bug-report#review-logs@620x750+410+75",
+      "headline": "The review step now shows your ticket as it will read, then everything that goes with it, in one card.",
+      "changed": "Before, review showed the same editable boxes again (and Bug/Feature vanished). Now: your title with a Bug or Feature pill, your description, then a \"Sent with it\" card holding the version line and the logs.",
+      "notice": "To change the words you press Back to draft — the review step is for reading. The logs box can still be edited here."
+    },
+    {
+      "id": "ST-C1",
+      "surface": "Submit a ticket",
+      "path": "Report a bug → Review ticket, with logs ticked",
+      "headline": "How should the review step show what will be sent? Pick one.",
+      "variants": [
+        {
+          "id": "cards",
+          "label": "Everything shown",
+          "crop": "settings/development/bug-report#review-logs@620x820+410+40",
+          "summary": "Each attached piece is shown in full under \"Sent with it\". Longest, but nothing is hidden."
+        },
+        {
+          "id": "folded",
+          "label": "Folded rows",
+          "crop": "settings/development/bug-report#review-folded@620x820+410+40",
+          "summary": "Each piece is one row with a short summary (\"4 lines\"); click to read or edit it. Shortest, but you must open a row to see what is sent."
+        },
+        {
+          "id": "onepage",
+          "label": "One page",
+          "crop": "settings/development/bug-report#review-onepage@620x820+410+40",
+          "summary": "No review step: ticking a box shows what it adds right under it, and Submit is on the same page. Fewer clicks; the page gets long, and AI help moves onto it."
+        }
+      ]
+    },
+    {
+      "id": "ST-3",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Optional AI help",
+      "crop": "settings/development/bug-report#review-ai@620x760+410+70",
+      "headline": "Optional AI help: each action is one row — what it does on the left, its button on the right.",
+      "changed": "Two wide outlined buttons and a tiny warning line under the second became two rows: \"Improve the wording\" with Rewrite, and \"Let your assistant try to fix it\" with Start, each explained in a line.",
+      "notice": "Still folded until you open it, and still only on the review step."
+    },
+    {
+      "id": "ST-4",
+      "surface": "Submit a ticket",
+      "path": "Report a bug → Review ticket",
+      "crop": "settings/development/bug-report#review@620x590+410+155",
+      "headline": "Back to draft and Submit now sit side by side at the right, Submit on the right, like other wide popups.",
+      "changed": "They were two full-width buttons stacked, Submit on top. The design guide puts a pair side by side in a wide popup; this popup is wide.",
+      "notice": "At phone width they still stack full width, Submit on top. This reverses an older sign-off (\"Submit with Back to draft beneath it\").",
+      "highlight": {
+        "box": [
+          60,
+          85,
+          40,
+          15
+        ]
+      }
+    },
+    {
+      "id": "ST-5",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Submit fails",
+      "crop": "settings/development/bug-report#failed@620x660+410+120",
+      "headline": "When sending fails, one red box replaces the buttons: what GitHub said, with Back to draft and Try again inside it.",
+      "changed": "Before: a grey box at the top with a bold title, a centred Retry, and the Submit button gone from the bottom. Now the notice sits where the buttons were, with no title and no guessed cause.",
+      "notice": "Your words are untouched; Try again sends the same ticket again."
+    },
+    {
+      "id": "ST-6",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Submit with no network",
+      "crop": "settings/development/bug-report#offline@620x660+410+120",
+      "headline": "With no network, the box says so in plain words instead of \"getaddrinfo ENOTFOUND api.github.com\".",
+      "changed": "Shown only when the computer itself reports no network connection (the same rule as Games). Amber, like Games' no-internet box.",
+      "notice": "Any other failure still shows GitHub's own words, as in the slide before."
+    },
+    {
+      "id": "ST-7",
+      "new": true,
+      "surface": "Submit a ticket",
+      "path": "AI help → Let your assistant try to fix it → setup fails",
+      "runs": [
+        "after"
+      ],
+      "crop": "settings/development/bug-report#handover-failed@620x690+410+105",
+      "headline": "If the assistant can't set up a working copy, it now says that — not \"Your ticket wasn't sent\".",
+      "changed": "Before, this failure was headed \"Your ticket wasn't sent\" and its Retry sent the ticket. Now it names the setup failure, and Try again retries the setup.",
+      "notice": "Nothing is sent to GitHub by this action, so the box says your ticket was not sent."
+    },
+    {
+      "id": "ST-8",
+      "surface": "Submit a ticket",
+      "path": "Review ticket → Submit public ticket",
+      "crop": "settings/development/bug-report#sent@620x260+410+320",
+      "headline": "After sending, the result sits in one card, with Done and Open my ticket side by side.",
+      "changed": "The two sentences and two stacked buttons were loose on the popup. Now one card; Open my ticket (filled) on the right.",
+      "notice": "Same words."
+    },
+    {
+      "id": "ST-9",
+      "surface": "Submit a ticket",
+      "path": "Tick Screenshots or files → Continue in GitHub",
+      "crop": "settings/development/bug-report#browser@620x270+410+315",
+      "headline": "Finishing in GitHub: the same one card, Open it again and Done side by side.",
+      "changed": "Done was filled under an outlined button; it is now on the right, the filled side, in a card.",
+      "notice": "Same words, including the note when the link had to drop part of the ticket."
+    },
+    {
+      "id": "ST-10",
+      "surface": "Submit a ticket",
+      "path": "Submit public ticket, while it sends",
+      "crop": "settings/development/bug-report#sending@620x180+410+360",
+      "headline": "\"Sending your ticket…\" now sits in a card instead of floating in the middle of the popup.",
+      "changed": "The spinner line moved into a card at the top, left-aligned.",
+      "notice": "It only shows for a moment."
+    },
+    {
+      "id": "ST-11",
+      "surface": "Submit a ticket",
+      "path": "AI help → Let your assistant try to fix it",
+      "crop": "settings/development/bug-report#handing-over@620x210+410+345",
+      "headline": "Setting up a working copy: the spinner and its note share one card.",
+      "changed": "The centred spinner and the loose note under it are now one card.",
+      "notice": "Same words."
+    },
+    {
+      "id": "ST-12",
+      "surface": "Submit a ticket",
+      "path": "AI help → Let your assistant try to fix it → done",
+      "crop": "settings/development/bug-report#handed-over@620x210+410+345",
+      "headline": "\"Your assistant is on it\": one card with its Done button.",
+      "changed": "Same words and button, now in a card.",
+      "notice": "Nothing else changed."
+    },
+    {
+      "id": "ST-13",
+      "surface": "Submit a ticket",
+      "path": "An error's \"Report bug\" button (here, Office)",
+      "crop": "settings/development/bug-report#from-error@620x700+410+100",
+      "headline": "Reporting from an error now starts with \"This happened in Office.\" — it was supposed to, but never did.",
+      "changed": "A bug: the popup was ready before the error happened, so the starting line and the Diagnose shortcut never arrived. Both work now.",
+      "notice": "Diagnose with the assistant now opens on the review step with AI help open, as it promised. Words you already typed are never replaced."
+    },
+    {
+      "id": "ST-14",
+      "surface": "Submit a ticket",
+      "path": "Phone: Report a bug → Review ticket",
+      "crop": "settings/development/bug-report#phone-review@360x760+15+40",
+      "headline": "On a phone the review step uses the same cards, and the two buttons stack full width.",
+      "changed": "Same as the desktop review step, narrower.",
+      "notice": "Submit is on top when stacked."
+    },
+    {
+      "id": "ST-Q1",
+      "words": true,
+      "surface": "Submit a ticket",
+      "path": "Include with ticket → Error details and version",
+      "headline": "Should unticking \"Error details and version\" also stop the app version and computer type being added?",
+      "today": "Every bug ticket ends with a line like \"YouCoded v1.3.0 · desktop · linux 7.1\", added when it is sent, even when \"Error details and version\" is unticked.",
+      "problem": "Unticking the box suggests the version is left out, but the version and the computer's system name are still sent. Nothing on screen shows that line.",
+      "proposal": "Pick what should happen. Nothing has been changed yet; what is sent today is exactly as before.",
+      "options": [
+        {
+          "id": "obey",
+          "label": "Untick removes it",
+          "pros": [
+            "The tick box means what it says",
+            "Nothing about your computer goes out unless you chose it"
+          ],
+          "cons": [
+            "Tickets without a version are harder for maintainers to act on"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "show",
+          "label": "Always send, but show it",
+          "pros": [
+            "Maintainers always know the version",
+            "The review step lists the line, so nothing is hidden"
+          ],
+          "cons": [
+            "The tick box then only controls the error text, and needs a new name"
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Leave as is",
+          "pros": [
+            "No change"
+          ],
+          "cons": [
+            "The screen keeps saying less than what is sent"
+          ]
+        }
+      ]
+    }
+  ]
+}

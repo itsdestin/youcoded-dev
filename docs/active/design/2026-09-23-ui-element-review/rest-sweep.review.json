@@ -1,0 +1,79 @@
+{
+ "title": "The last Settings screens — ticket, contribute, connected services, package tier",
+ "key": "ui-rest-sweep",
+ "out": "rest-sweep.review.html",
+ "images": "images/rest-sweep.review",
+ "runs": {
+  "before": "runs/rs-before",
+  "after": "runs/rs-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Proposed"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight"
+ ],
+ "crops": {
+  "settings__development__bug-report": [
+   "rs",
+   "settings__development__bug-report",
+   "648x744+396+78"
+  ],
+  "settings__development__contribute": [
+   "rs",
+   "settings__development__contribute",
+   "468x376+486+262"
+  ],
+  "settings__account__connections": [
+   "rs",
+   "settings__account__connections",
+   "468x435+486+232"
+  ],
+  "settings__android__tier": [
+   "rs",
+   "settings__android__tier",
+   "388x368+526+266"
+  ]
+ },
+ "steps": [
+  {
+   "id": "RS-1",
+   "surface": "Submit a ticket",
+   "path": "Settings → Help & feedback → Report a bug",
+   "crop": "settings__development__bug-report",
+   "headline": "Submit a ticket: better?",
+   "changed": "A \"Your ticket\" card holds the public-ticket note, the Bug/Feature switch, Title and Description. An \"Include with ticket\" card holds the three tick boxes, now in the same row size as other choice lists. The edge padding matches other popups (it was doubled).",
+   "notice": "Same words and the same steps; only grouping and spacing change. The review step keeps its current look for now."
+  },
+  {
+   "id": "RS-2",
+   "surface": "Contribute to YouCoded",
+   "path": "Settings → Help & feedback → Contribute",
+   "crop": "settings__development__contribute",
+   "headline": "Contribute to YouCoded: better?",
+   "changed": "The explanation, \"How contributing works\" and the button sit in one card. As a small single-card popup it gets no label. The doubled edge padding is fixed.",
+   "notice": "Same words."
+  },
+  {
+   "id": "RS-3",
+   "surface": "Connected services",
+   "path": "Settings → Account → Connected services",
+   "crop": "settings__account__connections",
+   "headline": "Connected services: better?",
+   "changed": "An \"Accounts\" card holds the explanation and GitHub (as a nested box). \"KEYS SAVED FOR PAGES\" becomes a normal-case label over one card holding every saved key. The \"keychain\" warning becomes the standard warning box instead of amber text, and the red Disconnect / Delete key buttons now sit on the right of \"Never mind\".",
+   "notice": "The warning and the confirm buttons only show in those situations, so they are not in the picture."
+  },
+  {
+   "id": "RS-4",
+   "surface": "Package Tier (Android)",
+   "path": "Android: Settings → Package Tier",
+   "crop": "settings__android__tier",
+   "headline": "Package Tier (Android): better?",
+   "changed": "The three hand-drawn choice boxes become the app's standard choice rows (the same as Sound's list). The little \"Active\" tag goes — the filled circle shows which one is on.",
+   "notice": "In the practice app none is selected, so no circle is filled here; on a phone the current tier is."
+  }
+ ]
+}

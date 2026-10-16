@@ -1,0 +1,68 @@
+{
+ "deck": "guide-test-questions",
+ "started": "2026-10-15T02:10:30.145Z",
+ "submitted": "2026-10-15T02:21:54Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "t": 1792030913141,
+   "note": "a management surface for which tools/skills/mcp servers etc are automatically loaded in different projects. a new surface to manage model presets like system prompts, tool descriptions, output styles, etc",
+   "v": "other",
+   "seconds": 132,
+   "theme": "morning-rounds"
+  },
+  "C-2": {
+   "v": "other",
+   "t": 1792030913141,
+   "note": "idk",
+   "seconds": 132,
+   "theme": "morning-rounds"
+  },
+  "C-3": {
+   "v": "picks",
+   "picks": [
+    "quiz",
+    "notifications",
+    "reading-list"
+   ],
+   "t": 1792030913141,
+   "seconds": 132,
+   "theme": "morning-rounds"
+  },
+  "C-4": {
+   "v": "wrote",
+   "text": "i want to test by creating a full ui mockup of our \"agents and automations\" or \"autonomous assistants\" view. i also want to try 1) a new dashboard that consolidates the latest headlines in my chosen issue areas (technology, politics, finance) from nyt, politico, bbc, axios, etc 2) a page that would help me plan a trip to japan. should include potential flight dates with price history, potential cities on the iternary with primary attractions, food spots, and hotel locations/price estimates, etc 3) a page to help me estimate the price/performance of building a pc with different combination of new/used components. 5) a purchase tracker that sorts different kinds of expenses into different useful categories",
+   "t": 1792030913141,
+   "seconds": 132,
+   "theme": "morning-rounds"
+  },
+  "R-1": {
+   "v": "other",
+   "t": 1792030906128,
+   "note": "this should be a realistic representation of the actual ui design flow as it supposed to work. option b basically. make sure it doesn't look at any previous mockups of these exact screen types tho if weve done",
+   "seconds": 39,
+   "theme": "morning-rounds"
+  },
+  "R-2": {
+   "v": "other",
+   "t": 1792030906128,
+   "note": "random selection from the list each time. we should use fresh agents and ensure they cant actually see earlier rounds of the same page. fresh build each time i think. and we",
+   "seconds": 39,
+   "theme": "morning-rounds"
+  },
+  "R-3": {
+   "v": "pick",
+   "pick": "opus",
+   "t": 1792030906128,
+   "seconds": 39,
+   "theme": "morning-rounds"
+  },
+  "R-4": {
+   "v": "yes",
+   "t": 1792030906128,
+   "note": "but only ask at the end. the builders shouldnt know this is a test until after theyve built their ui",
+   "seconds": 39,
+   "theme": "morning-rounds"
+  }
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "title": "Provider cards \u2014 round 2",
+ "key": "ui-provider-notices-2",
+ "out": "provider-notices-2.review.html",
+ "images": "images/provider-notices-2.review",
+ "runs": {
+  "before": "runs/notice2-before",
+  "after": "runs/notice2-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Round 2"
+ },
+ "themes": [
+  "meadow-mist",
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "unchecked": [
+   "nt",
+   "unchecked",
+   "700x500+460+250"
+  ],
+  "rejected": [
+   "nt",
+   "rejected",
+   "700x500+460+250"
+  ],
+  "blocked": [
+   "nt",
+   "blocked",
+   "700x500+460+150"
+  ]
+ },
+ "steps": [
+  {
+   "id": "PN2-1",
+   "surface": "OpenRouter, key not checked",
+   "path": "Assistant settings \u2192 Cloud providers",
+   "crop": "unchecked",
+   "headline": "Text across the box, buttons at the bottom right \u2014 keep?",
+   "changed": "The amber box's sentence now runs the full width, with \"Replace key\" and \"Try again\" on their own line at the bottom right.",
+   "notice": "\"Today\" is the app as it is now, before either round."
+  },
+  {
+   "id": "PN2-2",
+   "surface": "OpenRouter, broken key",
+   "path": "Same card with a rejected key",
+   "crop": "rejected",
+   "headline": "Same layout for a broken key \u2014 keep?",
+   "changed": "The red box's sentence runs the full width; \"API Key\" and \"Sign in with OpenRouter\" sit below it at the right.",
+   "notice": "Expired, refused and wrong-kind keys follow the same layout."
+  },
+  {
+   "id": "PN2-3",
+   "surface": "ChatGPT, blocked",
+   "path": "ChatGPT card when OpenAI blocks the account",
+   "crop": "blocked",
+   "headline": "A one-line red box, Sign out back at the top \u2014 keep?",
+   "changed": "The box now holds only OpenAI's sentence, so it's one line tall. \"Sign out\" stays with My account at the top, since nothing inside the app can undo a block.",
+   "notice": "Only these provider cards use the below-layout; every other notice in the app is unchanged."
+  }
+ ]
+}

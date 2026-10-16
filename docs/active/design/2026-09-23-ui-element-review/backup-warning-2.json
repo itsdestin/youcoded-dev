@@ -1,0 +1,49 @@
+{
+ "title": "Where the backup warning lives — round 2: the tour stop and the top of Permissions",
+ "key": "backup-warning-2",
+ "out": "backup-warning-2.review.html",
+ "images": "images/backup-warning-2",
+ "runs": {
+  "before": "runs/bw2/before",
+  "after": "runs/bw2/after"
+ },
+ "labels": {
+  "before": "Round 1 / today",
+  "after": "Built"
+ },
+ "themes": [
+  "halftone-dimension",
+  "youcoded",
+  "creme"
+ ],
+ "stage": "review",
+ "steps": [
+  {
+   "id": "BW2-1",
+   "surface": "The buddy's tour",
+   "path": "Starts on its own after setup; again from Settings → Help & feedback → Show me around",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "crop": "tour/backups@480x250+930+520",
+   "headline": "The tour's new stop 6 of 9, right after Files, now built for real: your sentence, word for word.",
+   "changed": "The stop is now part of the tour for everyone who finishes setup (no practice switch). The Files tab stays ringed while the buddy says it.",
+   "notice": "The tour is one stop longer. Phone and browser users never get the tour; they see the Permissions notice instead, if they open it."
+  },
+  {
+   "id": "BW2-2",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Permissions",
+   "runs": [
+    "before",
+    "after"
+   ],
+   "crop": "settings/assistant/permissions@630x200+492+290",
+   "highlight": "panel",
+   "headline": "The backup warning now sits at the top of the Permission modes card, always shown.",
+   "changed": "Your sentence in the notice box, above Ask first, in the card's own text size. No button: this card only explains.",
+   "notice": "The card is about two lines taller; Always allowed moves down. The same words as the tour stop, from one place, so they can't drift apart."
+  }
+ ]
+}

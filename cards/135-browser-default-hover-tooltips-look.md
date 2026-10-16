@@ -48,3 +48,24 @@ Chats
 
 From the old roadmap (user-interface, status confirmed, seen on all, last checked 2026-09-01)
 Shared-control drift: screens that do not match the shared look (7 things). (a) The design check still lists ~530 places that override a shared button, type a size by hand or use an off-theme colour, each group needing a design call; (b) about twenty clickable non-buttons have no hover and no keyboard path (command drawer, resume rows, model picker, settings rows and more), plus spreadsheet sheet tabs and six buddy buttons; (c) two bare-triangle "Show details" dropdowns in Backup & Sync and two bare "›" openers (Sync Log, chat system marker) — Destin: "I HATE the bare dropdowns with a chevron" (G-29); (d) the files filter panel draws a 12 px chip instead of the shared 14 px pill; (e) a lit filter chip is 2 px shorter than an idle one (design-guide G-14); (f) the specialists chip and session strip draw their own badges instead of the shared one.
+
+Updated on the old roadmap after the move (master, merged in 2026-10-16)
+Shared-control drift: screens that do not match the shared look (9 things).
+(a) The design check still lists ~530 places that override a shared button, type a size by hand
+or use an off-theme colour, each group needing a design call; (b) about twenty clickable
+non-buttons have no hover and no keyboard path (command drawer, resume rows, model picker,
+settings rows and more), plus spreadsheet sheet tabs and six buddy buttons; (c) two bare-triangle
+"Show details" dropdowns in Backup & Sync and two bare "›" openers (Sync Log, chat system
+marker) — Destin: "I HATE the bare dropdowns with a chevron" (G-29); (d) the files filter
+panel draws a 12 px chip instead of the shared 14 px pill; (e) a lit filter chip is 2 px shorter
+than an idle one (design-guide G-14); (f) the specialists chip and session strip draw their
+own badges instead of the shared one; (g) buttons beside text in cards and rows are top-, centre- or
+bottom-aligned with no one rule (a model to download has its button at the top, the installed model
+under it is centred). Destin, 2026-10-13 (small-fixes-3#SF3-9): "just leave this for now, but keep a
+future roadmap item to do a full review and deal with top/center/bottom alignment for buttons by text"
+(survey: docs/active/design/2026-09-23-ui-element-review/button-alignment-survey.md); (h) the app has no
+shared icon set: about a hundred are drawn one by one, so the same idea looks different across screens
+and a badly drawn one (the theme page's heart, 2026-10-05) is caught only by eye; the `dev/icons`
+screenshot sheet shows them all at 48px meanwhile.
+`all` `confirmed` `P3` `checked 2026-10-13`
+

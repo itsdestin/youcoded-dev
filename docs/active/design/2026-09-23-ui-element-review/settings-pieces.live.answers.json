@@ -1,0 +1,66 @@
+{
+ "deck": "ui-element-review-settings-pieces",
+ "started": "2026-09-24T23:48:33.619Z",
+ "submitted": "2026-09-24T23:54:24Z",
+ "cur": 7,
+ "answers": {
+  "P-1": {
+   "v": "pick",
+   "pick": "row",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-2": {
+   "note": "the try again/details buttons should be inside the sync error box as in \"whole-card\". however, the sync error box should be a sub-box contained within the broader sync enable/disable container. text should be black/grey, not red, as it is for the other warnings i believe.",
+   "v": "other",
+   "seconds": 132,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "pick",
+   "pick": "outlined-full",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-4": {
+   "note": "these still seem like custom styles instead of using the existing warning/error style. this should look like back up and sync, with the options (cancel/resume) inside of the error/warning box. ",
+   "v": "pick",
+   "pick": "box",
+   "seconds": 63,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-5": {
+   "v": "pick",
+   "pick": "filled",
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-6": {
+   "v": "pick",
+   "pick": "boxed-left",
+   "note": "",
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-7": {
+   "note": "all of these options look cluttered/messy. also this doesn't even look like you based it on the real app ui? you just created your own settings menu? makes this impossible to review.",
+   "v": "other",
+   "seconds": 48,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-8": {
+   "v": "wrote",
+   "text": "not sure. unsure which screen we're referencing\n",
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

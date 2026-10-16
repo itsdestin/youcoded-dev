@@ -1,0 +1,58 @@
+{
+  "title": "PC build — a price/performance estimator (round 1, design D)",
+  "key": "gt-r1-pc-build-page.live",
+  "out": "gt-r1-pc-build-page.live.html",
+  "live": {
+    "worktree": "sessions/gt-r1-pc-build-page/youcoded"
+  },
+  "steps": [
+    {
+      "id": "D-1",
+      "surface": "PC build (a Page)",
+      "path": "Pages → PC build",
+      "headline": "PC build estimator: a build mixing new and used parts, compared on value.",
+      "hint": "Open Pages (grid button in the top bar), then PC build. Try New/Used switches, clicking a part name to pick another, the resolution switch, and the builds under the chart.",
+      "notice": "Builder's main guide gaps: the guide's section on Pages is three lines; the Pages style kit lacks switches, notices, menus and charts and contradicts the guide in places; nothing on charts or big numbers.",
+      "risk": "Where prices come from is undecided. Save as a new build and Try again aren't wired.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-2",
+      "surface": "PC build (a Page)",
+      "path": "Pages → PC build, first time",
+      "headline": "PC build estimator the first time.",
+      "hint": "Open Pages, then PC build.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "pagesPc": "empty"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    },
+    {
+      "id": "D-3",
+      "surface": "PC build (a Page)",
+      "path": "Pages → PC build, prices couldn't update",
+      "headline": "PC build estimator when prices couldn't be updated.",
+      "hint": "Open Pages, then PC build.",
+      "notice": "—",
+      "risk": "—",
+      "live": {
+        "app": "default",
+        "params": {
+          "pagesPc": "failed"
+        }
+      },
+      "yes": "Good first try",
+      "no": "Needs work"
+    }
+  ]
+}

@@ -343,12 +343,20 @@ and the waving arm detaches and flies off the body.
 The practice app's `?switch=` URL options — a `shoot` screen-list entry names them in `params`,
 a journey or `explore start --params` passes them, a scene puts them in its `base`.
 
+**An OPENED state needs no switch.** A menu opened, a card unfolded: give the screen entry
+`open: ['<button label>']` and `shoot` clicks it before the picture (`scripts/shoot/README.md` →
+"Open this first"). A switch is for practice DATA (signed in, offline, ten friends), not clicks.
+
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
 turn → red stalled card), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),
 `?marketplace=empty` (registry-less Marketplace/Library; the default is a sampled registry
 fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
-`?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
+`?install=fail|slow` (every plugin/theme install fails with a reason, or takes two minutes),
+`?mpUpdate=1` (installed Civic Report and Meadow Mist are older than their listing → Update),
+`?liked=1` (a theme page opens already liked) — Marketplace detail states, added 2026-10-05,
+`?officePort=<n>` (where the Office editor listens; `shoot` sets it when 4717 is another
+worktree's), `?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
 
 Provider and account state — **a shot of Settings → Cloud providers that omits these gets
 a card drawn in its EMPTY state, which reads as a missing feature rather than a missing
@@ -388,7 +396,38 @@ named tip after boot; a leftover `tour` from an earlier load can bleed into a la
 clear it with a fresh profile or no flag), `?localApps=found` (first-run Local Models: two
 model apps already detected running, vs. the default empty),
 `?screenFrame=cards|sheet|rail|bleed` (how the page view's panel and frame sit on a wallpaper
-in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships).
+in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships),
+`?pagesHome=<view>` (the practice home-devices Page: `refused` puts a website in its device
+address box so the refusal shows; `connected`, `edit`, `remote`, `group`, `device`, `camera`,
+`camera-events`, `camera-limited`, `view-<tab>`, `chips-<style>`, `settings`… open that state —
+the list is the comments at `pagesHome` in `dev/workbench/mock-shim.ts`),
+`?vocabulary=empty|stress` (the voice vocabulary list: none, or 1 200 phrases; it otherwise
+follows `?scenario=`).
+
+States a screen entry already uses (documented 2026-10-06; each lives in `dev/workbench/mock-shim.ts`):
+`?sync=ok|auth-error|oversize|removed` (Backup & sync: every space synced, GitHub sign-in
+expired, files too big, or two projects removed from every device — the default is the
+failing-sync state), `?announcement=1` (a current announcement, so the status bar's
+Announcement popup opens), `?handleMissing=1` (with `?signedIn=1`: a just-signed-in account
+with no handle, for the handle prompt), `?gpus=2` (a two-graphics-chip computer, so Settings →
+Performance shows its row), `?queueSends=1` (sends answer "queued", so typed messages wait in
+the strip above the message box), `?quit=ask` (plays the window's close button, for the
+quit warning), `?switchFit=summary|working|error` (every model switch asks first; the summary
+runs forever; or it fails — default: fits), `?adminPasswordFail=1` (the admin-password card's
+"ask expired" state), `?docCommentsFail=<code>` (every new document comment fails with that
+real error code, e.g. `file-open-elsewhere`), `?docCommentsDetached=1` (one comment whose
+quoted text is no longer in its file).
+
+Added by the UI consistency round (documented 2026-10-13; same file):
+`?friends=none|many|requests|lots` (with `?signedIn=1`: no friends, four friends showing every
+status, those plus a request each way, or a long list — unset is Jake alone),
+`?incognito=1` (start hidden from friends), `?network=offline` (no network: friends never
+connect, and a sent ticket fails with the request's own error), `?syncWarn=github|timeout`
+(Backup & sync: an old GitHub backup computers no longer copy to, or Google Drive's "timed out"
+warning), `?syncSetup=save-failed|install-failed|auth-failed` (the add-a-backup steps fail),
+`?devCopy=ready` (Contribute: YouCoded's code already on this computer), `?devOpen=fail`
+(Contribute's "open a session" fails, as with the CLI missing), `?ticket=hold` (Submit a
+ticket's sending and working-copy setup never finish, so their waiting states can be shot).
 
 Failure switches, for review shots of error states (added 2026-09-11):
 `?fail=<ns.method>[,<ns.method>…]` makes those channels REJECT from the very first call —

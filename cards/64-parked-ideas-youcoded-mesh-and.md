@@ -25,3 +25,13 @@ Chats
 
 From the old roadmap (native-harness › sessions, status parked, seen on all, last checked 2026-09-08)
 Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not a release promise). (a) "YouCoded Mesh" (Destin, 2026-09-08) picks a suitable device of yours for remote requests and scheduled duties without you managing which one; needs suitability, permissions and no duplicate runs designed. (b) "YouCoded Cloud" runs an automation when none of your devices is online, as an optional, possibly paid fallback after Mesh; needs consent, spending limits and privacy designed.
+
+Updated on the old roadmap after the move (master, merged in 2026-10-16)
+Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not a release promise).
+(a) "YouCoded Mesh" (Destin, 2026-09-08) picks a suitable device of yours for remote requests
+and scheduled duties without you managing which one; needs suitability, permissions and no
+duplicate runs designed.
+(b) "YouCoded Cloud" runs an automation when none of your devices is online, as an optional,
+possibly paid fallback after Mesh; needs consent, spending limits and privacy designed.
+`all` `parked` `P3` `checked 2026-09-08` `v1.4`
+

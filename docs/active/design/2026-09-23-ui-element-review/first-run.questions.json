@@ -1,0 +1,155 @@
+{
+  "title": "First-run setup screens — rebuilt with the new brand",
+  "key": "first-run-questions",
+  "out": "first-run.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "B-1", "words": true, "pick": "several",
+      "surface": "First-run setup", "path": "The screens a new user sees after installing, before the app opens",
+      "headline": "Which of the new brand pieces should the setup screens use?",
+      "today": "Every setup screen has the word 'YouCoded' in plain bold text at the top, then a checklist, a progress bar and buttons. None of the new brand pieces appear.",
+      "problem": "Setup is the very first thing a new person sees, and right now it looks like a plain settings page, not like the product the new logo and icon describe.",
+      "proposal": "Pick every piece you want on the setup screens. I'll draw each picked piece into mockups next.",
+      "options": [
+        {"id": "lockup", "label": "Stacked logo", "recommended": true,
+         "summary": "The glass icon with 'youcoded' and 'agents for everyone' under it, replacing the plain 'YouCoded' title.",
+         "pros": ["The first screen anyone sees carries the approved logo exactly.", "Replaces text that is there anyway, so nothing extra is added."],
+         "cons": ["Taller than today's title, so every screen's content sits a little lower."]},
+        {"id": "installer-icon", "label": "Installer icon while installing",
+         "summary": "The face rising out of the box, shown on the 'getting things ready' step instead of the logo.",
+         "pros": ["Says 'installing' in a picture, not words.", "Uses a piece you already approved."],
+         "cons": ["The top of the screen changes between steps, which can feel jumpy."]},
+        {"id": "face-states", "label": "The face reacting",
+         "summary": "The icon's face changes with the step: calm while working, a small check when done, a worried look on a failure.",
+         "pros": ["Friendly; tells you how things are going at a glance."],
+         "cons": ["New face drawings to design and approve first.", "Could feel childish to some users."]},
+        {"id": "brand-colours", "label": "Brand colours on buttons and bar",
+         "summary": "The purple-to-pink from 'you' on the progress bar and the focused button.",
+         "pros": ["Ties the whole screen to the logo."],
+         "cons": ["Setup would look unlike the app that opens right after it, until a theme is picked."]}
+      ]
+    },
+    {
+      "id": "B-2", "words": true,
+      "surface": "First-run setup", "path": "The background and colours of every setup screen",
+      "headline": "What colours should setup use?",
+      "today": "Setup forces the Crème theme (a warm off-white), whatever your computer's light or dark setting is, because no theme has been chosen yet.",
+      "problem": "Crème was chosen before the brand existed; it does not match the logo's lavender and purple.",
+      "proposal": "Three ways to colour it.",
+      "options": [
+        {"id": "brand-light", "label": "Brand lavender, always", "recommended": true,
+         "summary": "A pale lavender background like the logo boards, white cards, the logo in its normal colours.",
+         "pros": ["Matches the logo exactly; the logo was approved on exactly this kind of background.", "One look to design and test."],
+         "cons": ["Bright for someone whose computer is set to dark mode."]},
+        {"id": "follow-system", "label": "Follow light or dark",
+         "summary": "Brand lavender in light mode; a deep purple-black with the logo's white/lavender version in dark mode.",
+         "pros": ["Respects the person's own setting from the first second."],
+         "cons": ["Two looks to design and approve."]},
+        {"id": "keep-creme", "label": "Keep Crème",
+         "pros": ["No change to colours; only the logo is new."],
+         "cons": ["The purple logo on warm off-white may clash."]}
+      ]
+    },
+    {
+      "id": "B-3", "words": true,
+      "surface": "First-run setup", "path": "Headings and lines of text on the setup screens",
+      "headline": "Should the setup screens' headings use the logo's font (Outfit)?",
+      "today": "The app's text font is used everywhere; Outfit appears only inside the logo drawings.",
+      "problem": "A heading like 'Sign in' in the app font under an Outfit logo can look like two different products.",
+      "proposal": "Yes: the screen headings (e.g. 'Sign in', 'Getting things ready') use Outfit; small text stays in the app font. No: Outfit stays only in the logo. Either way the font file ships inside the app (it is free to bundle) so it shows with no internet."
+    },
+    {
+      "id": "P-2", "page": "How setup shows progress and asks you to sign in",
+      "intro": "These decide the layout under the logo."
+    },
+    {
+      "id": "L-1", "words": true,
+      "surface": "First-run setup", "path": "The 'getting things ready' step",
+      "headline": "How should setup show what it is installing?",
+      "today": "A list of rounded rows names each tool (Node.js, Git…) with 'installing…' or a version number, plus a bar with a percentage.",
+      "problem": "Most people don't know what Node.js or Git are, the rows look unlike any other list in the app, and on your Windows machine the bar sat at 23% after setup had already stopped.",
+      "proposal": "Three ways to show it.",
+      "options": [
+        {"id": "plain-line", "label": "One line and a bar", "recommended": true,
+         "summary": "'Getting things ready — step 2 of 3' and the bar; tool names only appear if one fails.",
+         "pros": ["Nothing to understand; just wait.", "The bar can't be confused for a list of problems."],
+         "cons": ["Someone curious can't see what is being installed while it happens."]},
+        {"id": "card-list", "label": "List in a card",
+         "summary": "Today's list, rebuilt as a normal app card with plain names ('Code tools', 'Version history').",
+         "pros": ["Shows what is happening at every moment."],
+         "cons": ["More to read on the very first screen."]},
+        {"id": "details-fold", "label": "Line, with details",
+         "summary": "The one line and bar, plus a 'Show details' fold-out with the list.",
+         "pros": ["Simple by default, full detail for the curious."],
+         "cons": ["One more control on the screen."]}
+      ]
+    },
+    {
+      "id": "L-2", "words": true,
+      "surface": "First-run setup", "path": "The progress bar when a step fails",
+      "headline": "When setup stops on an error, the bar stops looking busy.",
+      "changed": "Stated: on a failure the bar and its percentage are replaced by the error card, so nothing on screen suggests it is still working.",
+      "notice": "Today a stuck 23% bar sits above the error; after this you only see what went wrong and the 'Try again' button.",
+      "yes": "Holds", "no": "Keep the bar"
+    },
+    {
+      "id": "L-3", "words": true,
+      "surface": "First-run setup", "path": "The sign-in step",
+      "headline": "How should the five ways to sign in be laid out?",
+      "today": "Five identical outlined buttons in one column: Log in with Claude, ChatGPT, OpenRouter, Use a local model, Use an API key. You asked earlier that none look like the default.",
+      "problem": "Five equal buttons is a lot to scan, and the last two are a different kind of choice (no account needed).",
+      "proposal": "Two ways to lay it out.",
+      "options": [
+        {"id": "grouped", "label": "Two labelled groups", "recommended": true,
+         "summary": "'Sign in with a plan you pay for' (Claude, ChatGPT, OpenRouter) and 'Or without an account' (local model, API key), each with its own label.",
+         "pros": ["Says what each kind is before you read the buttons.", "Follows the guide's 'a label first' rule."],
+         "cons": ["Two labels added to the screen."]},
+        {"id": "one-column", "label": "Keep one column",
+         "pros": ["Already approved; nothing to relearn."],
+         "cons": ["No hint which buttons need an account."]}
+      ]
+    },
+    {
+      "id": "P-3", "page": "Errors and Windows setup",
+      "intro": "From your Windows screenshot, where Git failed to install."
+    },
+    {
+      "id": "E-1", "words": true,
+      "surface": "First-run setup", "path": "Windows computers without winget",
+      "headline": "If Windows' installer tool (winget) is missing, should setup download Node.js and Git directly instead?",
+      "today": "On Windows, setup installs Node.js and Git only through winget, a Microsoft tool that some computers don't have (school or work machines, some Windows editions). Without it, setup stops with a long red message telling you to go to the Microsoft Store.",
+      "problem": "That is what happened on your Windows machine: a new user would be stuck on the first screen with instructions they can't follow.",
+      "proposal": "Yes: when winget is missing, setup downloads the official ready-to-run versions of Node.js and Git into YouCoded's own folder (no admin password, nothing added to the Start menu) and carries on. No: keep winget only, with a clearer message."
+    },
+    {
+      "id": "E-2", "words": true,
+      "surface": "First-run setup", "path": "Any setup step that fails",
+      "headline": "A failure shows a short sentence and 'Try again', with the technical text behind 'Show details'.",
+      "changed": "Stated: errors become the app's standard error card: one plain sentence saying what failed, a 'Try again' button (sentence case), and the raw message and links folded under 'Show details'.",
+      "notice": "No more long red paragraphs with web addresses on the first screen; the full text is still one click away for support.",
+      "yes": "Holds", "no": "Fails"
+    },
+    {
+      "id": "P-4", "page": "How this gets built",
+      "intro": "Two practical calls."
+    },
+    {
+      "id": "C-1", "words": true,
+      "surface": "First-run setup", "path": "Where the logo drawing comes from",
+      "headline": "Use the brand drawings in setup now, without waiting for the brand work to be merged?",
+      "today": "The brand session (working in parallel) has put the new app, tray and installer icon files into the app on its own branch, not yet merged. The logo with 'youcoded' and the tagline isn't in the app anywhere yet.",
+      "problem": "Setup needs the logo now; waiting for the other branch could take a while.",
+      "proposal": "Yes: I build the logo for setup from the same approved drawing code (the glass face, Outfit lettering, your spacing picks), as one reusable piece, so the website or About page can use it later. The two branches don't touch the same files, so they merge cleanly. No: wait for the brand branch to land first."
+    },
+    {
+      "id": "C-2", "words": true,
+      "surface": "New session screen", "path": "The 'Start your first session' screen right after setup",
+      "headline": "Redo the 'Start your first session' screen in the same batch?",
+      "today": "Right after setup, the app shows 'Start your first session' with the grey robot buddy and the new-session form. It is still on the redesign list.",
+      "problem": "If setup gets the new brand and this screen doesn't, the jump from one to the other will be obvious.",
+      "proposal": "Yes: design both together so setup flows into it. No: setup first, this screen after."
+    }
+  ]
+}

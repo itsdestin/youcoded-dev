@@ -1,0 +1,93 @@
+{
+  "title": "Incognito presence and plain error boxes — round 5",
+  "key": "games-social-5",
+  "out": "games-social-5.review.html",
+  "images": "images/games-social-5",
+  "runs": {
+    "r4": "runs/gs4-after",
+    "r5": "runs/gs5-after",
+    "eb": "runs/gs5-errors/before",
+    "ea": "runs/gs5-errors/after"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "G5-1",
+      "surface": "Games",
+      "path": "Gamepad button, incognito, four friends",
+      "crop": "chat/games#incognito@420x220+1010+40",
+      "runs": [
+        "r4",
+        "r5"
+      ],
+      "labels": {
+        "r4": "Round 4",
+        "r5": "Round 5"
+      },
+      "headline": "Incognito now shows how many friends are online, while they still can't see you.",
+      "changed": "Your device connects to friends in a hidden mode: it hears who's online, and friends never see it. The line reads \"2 of 4 friends online · they can't see you\".",
+      "notice": "Connect 4 and Chess still say \"You're incognito\"; challenging stays off until you go online, because a challenge would reveal you."
+    },
+    {
+      "id": "G5-2",
+      "surface": "Games",
+      "path": "Gamepad button, incognito, card opened",
+      "crop": "chat/games#incognito-open@420x560+1010+40",
+      "runs": [
+        "r5"
+      ],
+      "headline": "Opened while incognito, each friend shows their real status again.",
+      "changed": "Online, In game and Offline pills are back while you're incognito; round 4 hid them because nothing about friends reached the app.",
+      "notice": "Only this device is hidden: if you're online on another device, friends see that one.",
+      "highlight": {
+        "box": [
+          2,
+          22,
+          96,
+          60
+        ]
+      },
+      "labels": {
+        "r5": "Round 5"
+      }
+    },
+    {
+      "id": "G5-3",
+      "surface": "Marketplace",
+      "path": "Marketplace → a plugin → install fails",
+      "crop": "marketplace/detail/install#failed@820x260+310+130",
+      "runs": [
+        "eb",
+        "ea"
+      ],
+      "labels": {
+        "eb": "Before",
+        "ea": "After"
+      },
+      "headline": "The install error loses its red title: one plain sentence with the real reason, and Retry install.",
+      "changed": "\"Couldn't install\" in red above the reason is gone; the reason itself is the sentence (it already says what failed).",
+      "notice": "Same red box and button; the words are all normal colour."
+    },
+    {
+      "id": "G5-4",
+      "surface": "Settings",
+      "path": "Settings → Assistant → Local → a model's settings",
+      "crop": "settings/assistant/local/model-settings@420x130+510+245",
+      "runs": [
+        "eb",
+        "ea"
+      ],
+      "labels": {
+        "eb": "Before",
+        "ea": "After"
+      },
+      "headline": "The local model's load error is one plain sentence too, with the engine's exact message after it.",
+      "changed": "\"This model failed to load last time\" was a red title; now it starts the sentence, in normal colour.",
+      "notice": "Every red notice box in the app now uses normal-colour words; the red stays in the box and its border."
+    }
+  ]
+}

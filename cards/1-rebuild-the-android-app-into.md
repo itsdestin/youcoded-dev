@@ -40,3 +40,22 @@ Chats
 
 From the old roadmap (perf, status needs-verify, seen on android, last checked 2026-10-04)
 On Android the phone app may be slow while a reply streams, and phones get full glass blur by default with nothing turning it down. Both found by reading code, not measured: each session runs two terminals and rebuilds the whole 2,000-line scrollback as text on every screen update on the touch thread, plus a once-a-second scan per session; output can be dropped when the screen falls behind; the phone is kept awake whenever a session exists and four polling loops per session never pause in the background; blur is the costliest effect on phone chips. Feel: hitches, a terminal that looks frozen then jumps, battery drain
+
+Updated on the old roadmap after the move (master, merged in 2026-10-16)
+Rebuild the Android app into a premium, complete mobile equivalent of desktop: the same
+built-in assistant, local models marked "not available on this device", updates and
+notifications that arrive, sharing into the app, real file access, touch-first input, and a
+Google Play listing instead of sideloading. Design-first: a rethought phone default (quick
+dispatch and search) with the full desktop-narrow UI still reachable. Since 2026-10-14 a
+clean rebuild (P1–P6): the phone runs the desktop's own backend headless inside the app,
+the old Kotlin app is deleted rather than migrated, and the newest Claude Code replaces the
+frozen 2.1.112. A0 phone experiments passed inside a real app sandbox on 2026-10-14.
+Destin 2026-10-14: "nobody is using the app rn … i don't want to build any intermediate
+fixes that we know we will rebuild later." P1–P3 merged 2026-10-15 (the backend runs on the
+phone, the Kotlin shell, the bundled programs). Next: P4, "not on this device" for desktop-only
+features (the sign-in screen still offers local models and says "this computer"), then P5
+phone-native features and the P6 Play listing. Before giving the app to anyone: Destin's company
+must have accepted Anthropic's Commercial Terms (shipping Claude Code inside a product requires it;
+code.claude.com/docs/en/legal-and-compliance), and the binary stays unmodified.
+`android` `in-flight` `P2` `checked 2026-10-15` → docs/active/plans/2026-10-14-android-clean-rebuild-plan.md
+

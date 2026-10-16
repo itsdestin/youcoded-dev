@@ -1,0 +1,65 @@
+{
+  "title": "Close session prompt — round 3: Session details gets \"In your lists\" with Mark complete",
+  "key": "close-session-3",
+  "out": "close-session-3.review.html",
+  "images": "images/close-session-3",
+  "runs": {
+    "before": "runs/cs3/before",
+    "after": "runs/cs3/after"
+  },
+  "labels": {
+    "before": "Round 2",
+    "after": "Proposed"
+  },
+  "themes": [
+    "creme",
+    "youcoded",
+    "youcoded-night",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "CS3-1",
+      "surface": "Session details",
+      "path": "Status bar → tags element (also Resume → Organize, the side panel, a project's conversation)",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/tags@460x560+490+170",
+      "highlight": "panel",
+      "headline": "Session details now has the close prompt's \"In your lists\" card: Pin to top and Mark complete together.",
+      "changed": "Pin to top was alone in an unlabelled card under \"Tags\". Now it sits under its own label, \"In your lists\", with Mark complete beside it — the same card as the close prompt, as you picked. Every place that opens Session details gets it.",
+      "notice": "Mark complete saves at once here, like the rest of Session details. Its line now says when it takes effect: \"Leaves it out of the resume list once it's closed, unless you turn on Show complete.\"",
+      "risk": "The popup is about 80 points taller (428 to 511)."
+    },
+    {
+      "id": "CS3-2",
+      "surface": "Session details",
+      "path": "Status bar → tags element → Mark complete",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "crop": "chat/tags#complete@460x560+490+170",
+      "headline": "Marking the session you're in complete is safe: nothing changes while it stays open.",
+      "changed": "The switch turns on and its check fills. Resume never lists a session that is open, and the tab, the session lists and the chat ignore the mark — so you keep working as before.",
+      "notice": "Once you close it, it stays out of Resume unless you turn on Show complete, and Welcome back offers it unticked. Turn the switch off to undo."
+    },
+    {
+      "id": "CS3-3",
+      "surface": "Close session prompt",
+      "path": "Close a session",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "crop": "chat/close-session@460x620+490+140",
+      "highlight": "auto",
+      "headline": "The close prompt's card is now the very same one, so its Mark complete line reads the same.",
+      "changed": "Only the line under Mark complete changed, to the shared wording. The prompt still saves nothing until you press Close session.",
+      "notice": "Nothing else moved."
+    }
+  ]
+}

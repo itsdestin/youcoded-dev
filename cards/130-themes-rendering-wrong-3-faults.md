@@ -45,3 +45,13 @@ Chats
 
 From the old roadmap (themes, status parked, seen on all, last checked 2026-09-01)
 Parked ideas: 3 theme ideas. (a) Destin's ask (2026-09-10): the taskbar and Dock icon should change with the theme, drawn from the new robot icon; today every theme shows the same lavender robot. (b) A theme's icon overrides are accepted and the Library shows a "custom icons" badge, but no icon ever changes; build it or remove the field (Destin: leave open — which icons, free-form or a fixed set; report: docs/active/investigations/2026-09-01-theme-icons-dead-field.md). (c) A third chrome layout with bare elements and no backgrounds or pills; the closest combination still leaves outlined ghost pills (report: docs/active/investigations/2026-09-01-chrome-style-bare.md).
+
+Updated on the old roadmap after the move (master, merged in 2026-10-16)
+Now that the UI consistency work has landed (2026-10-16, youcoded#626): a broad review, across every theme, of the colours,
+see-through levels and contrast used for each card level, then make the theme builder and
+its checks fast and accurate enough that a new theme comes out usable, with good contrast,
+on the first try (Destin, 2026-09-28). Starting point: on 2026-09-28 card fills measured
+only a shade off their background in all 8 themes tested, and the theme's own faint
+outline nearly vanished on three glass themes, so the app now forces a stronger shared outline
+`settings/themes` `all` `confirmed` `P3` `checked 2026-09-28`
+

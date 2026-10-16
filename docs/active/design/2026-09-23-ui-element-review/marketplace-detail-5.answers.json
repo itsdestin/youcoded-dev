@@ -1,0 +1,37 @@
+{
+ "deck": "marketplace-detail-5",
+ "started": "2026-10-05T07:38:19.541Z",
+ "submitted": "2026-10-05T07:39:40Z",
+ "cur": 3,
+ "answers": {
+  "M5-1": {
+   "v": "yes",
+   "t": 1791185932857,
+   "seconds": 33,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M5-2": {
+   "v": "yes",
+   "t": 1791185947279,
+   "seconds": 14,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M5-3": {
+   "v": "yes",
+   "t": 1791185966640,
+   "note": "it looks like the bottom of the claude chip is clipping",
+   "seconds": 19,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M5-4": {
+   "v": "yes",
+   "t": 1791185978490,
+   "seconds": 12,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

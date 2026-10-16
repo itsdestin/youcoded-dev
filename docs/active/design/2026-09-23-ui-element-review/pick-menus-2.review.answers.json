@@ -1,0 +1,39 @@
+{
+ "deck": "pick-menus-2",
+ "started": "2026-10-01T11:40:19.421Z",
+ "submitted": "2026-10-01T11:49:03Z",
+ "cur": 3,
+ "answers": {
+  "PM2-1": {
+   "v": "yes",
+   "t": 1790855003761,
+   "seconds": 184,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM2-2": {
+   "v": "other",
+   "t": 1790855094036,
+   "note": "want to se some alternatives",
+   "seconds": 90,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM2-3": {
+   "note": "i dont like the checkboxes, or the prominence of the archive button. i think priority should no longer show as a tag, but should now just become a pin and be a separate thing",
+   "t": 1790855215972,
+   "v": "other",
+   "seconds": 122,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM2-4": {
+   "note": "no. this doesn't match any other ui elements. look at our guide so far and fix this. font like the lines at the bottom right of notes box. why is it resizable lmao",
+   "t": 1790855341531,
+   "v": "other",
+   "seconds": 126,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

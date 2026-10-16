@@ -1,0 +1,35 @@
+{
+  "title": "Marketplace Details — should its outer header match?",
+  "key": "ui-guide-marketplace-detail-shell-1",
+  "out": "marketplace-detail-shell.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 710},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Marketplace skill details",
+      "path": "Marketplace → a skill → Details",
+      "hint": "Scroll inside the skill content, then scroll outside it to compare Today and Proposed. Try both at the top and bottom.",
+      "headline": "Which outer header and scroll edge works for a skill?",
+      "risk": "The skill data is a Workbench sample. The proposal changes only the outer Details header and scroll edge; the large skill name, trust line and actions remain as they are. No production detail styling changed.",
+      "live": {"surface": "marketplace-detail-header", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Today", "candidate": "today-skill", "summary": "18px semibold Details header, full-width divider and bare scrolling body."},
+        {"id": "proposed", "label": "Matching edge", "candidate": "proposed-skill", "summary": "16px medium Details header, 8% tapered line and unpainted 42px/4%-side content fade where scroll room remains."}
+      ]
+    },
+    {
+      "id": "T-1",
+      "surface": "Marketplace theme details",
+      "path": "Marketplace → a theme → Details",
+      "hint": "Compare the outer Details header above the theme name. Scroll inside the theme body; its edge fades only if more content is hidden.",
+      "headline": "Should the theme Details popup get the same outer header?",
+      "risk": "Theme details use a Workbench registry fixture with its preview image. Applying a theme, installing and voting are not under review; no production detail styling changed.",
+      "live": {"surface": "marketplace-detail-header", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Today", "candidate": "today-theme", "summary": "Existing 18px semibold Details header and full-width divider."},
+        {"id": "proposed", "label": "Matching edge", "candidate": "proposed-theme", "summary": "16px medium Details header and 8% tapered line; content fade only if the body overflows."}
+      ]
+    }
+  ]
+}

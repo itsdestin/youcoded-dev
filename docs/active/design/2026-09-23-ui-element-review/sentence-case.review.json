@@ -1,0 +1,133 @@
+{
+ "title": "Sentence case everywhere",
+ "key": "ui-sentence-case",
+ "out": "sentence-case.review.html",
+ "images": "images/sentence-case.review",
+ "runs": {
+  "before": "runs/sc-before",
+  "after": "runs/sc-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Sentence case"
+ },
+ "themes": [
+  "light"
+ ],
+ "crops": {
+  "settings": [
+   "sc",
+   "settings",
+   "1440x900+0+0"
+  ],
+  "chat__status-bar": [
+   "sc",
+   "chat__status-bar",
+   "1440x900+0+0"
+  ],
+  "welcome__new-session": [
+   "sc",
+   "welcome__new-session",
+   "1440x900+0+0"
+  ],
+  "chat__resume": [
+   "sc",
+   "chat__resume",
+   "1440x900+0+0"
+  ],
+  "settings__remote": [
+   "sc",
+   "settings__remote",
+   "1440x900+0+0"
+  ],
+  "library": [
+   "sc",
+   "library",
+   "1440x900+0+0"
+  ],
+  "settings__android__tier": [
+   "sc",
+   "settings__android__tier",
+   "1440x900+0+0"
+  ],
+  "chat__sessions": [
+   "sc",
+   "chat__sessions",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "SC-1",
+   "surface": "Settings list",
+   "path": "Settings (gear)",
+   "crop": "settings",
+   "headline": "Settings list: sentence case \u2014 keep?",
+   "changed": "\"Buddy Floater\", \"Backup & Sync\", \"Remote Access\", \"Keyboard Shortcuts\", \"Sync Failing\" \u2192 Buddy floater, Backup & sync, Remote access, Keyboard shortcuts, Sync failing.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-2",
+   "surface": "Status bar widget menu",
+   "path": "Status bar \u2192 pencil",
+   "crop": "chat__status-bar",
+   "headline": "Status bar widget menu: sentence case \u2014 keep?",
+   "changed": "The menu title \"Status Bar Widgets\" and widget names (\"Tags & Note\", \"5h Usage\", \"Session Cost\", \"Active Ratio\", \"Input Tokens\"\u2026) \u2192 Status bar widgets, Tags & note, 5h usage, Session cost, Active ratio, Input tokens; the effort chip at the bottom reads \"Auto effort\" everywhere.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-3",
+   "surface": "New session form",
+   "path": "Welcome screen",
+   "crop": "welcome__new-session",
+   "headline": "New session form: sentence case \u2014 keep?",
+   "changed": "\"Create Session\" \u2192 Create session.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-4",
+   "surface": "Resume",
+   "path": "Resume button",
+   "crop": "chat__resume",
+   "headline": "Resume: sentence case \u2014 keep?",
+   "changed": "\"Resume Session\" heading \u2192 Resume session.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-5",
+   "surface": "Remote access",
+   "path": "Settings \u2192 Remote access",
+   "crop": "settings__remote",
+   "headline": "Remote access: sentence case \u2014 keep?",
+   "changed": "The \"Remote Access\" title \u2192 Remote access (its button elsewhere now reads \"Set up remote access\"). The Settings list behind it shows the same change.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-6",
+   "surface": "Your library",
+   "path": "Marketplace \u2192 Library",
+   "crop": "library",
+   "headline": "Your library: sentence case \u2014 keep?",
+   "changed": "\"Your Library\" \u2192 Your library.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-7",
+   "surface": "Package tier",
+   "path": "Settings \u2192 Package tier (Android)",
+   "crop": "settings__android__tier",
+   "headline": "Package tier: sentence case \u2014 keep?",
+   "changed": "\"Developer Essentials\", \"Full Dev Environment\" \u2192 Developer essentials, Full dev environment (same on the Android setup screen).",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  },
+  {
+   "id": "SC-8",
+   "surface": "Sessions menu",
+   "path": "Session pill",
+   "crop": "chat__sessions",
+   "headline": "Sessions menu: sentence case \u2014 keep?",
+   "changed": "\"New Session\" \u2192 New session.",
+   "notice": "Only capital letters change \u2014 no words, sizes or places. Across the app about 150 screens changed this way; these are examples. Names stay capitalised: YouCoded, Claude Code, GitHub, Google Drive, Tailscale, OpenRouter, skill and theme names, and Fast mode."
+  }
+ ]
+}

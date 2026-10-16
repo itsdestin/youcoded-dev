@@ -1,0 +1,121 @@
+{
+  "title": "Card levels \u2014 your notes, fixed",
+  "key": "ui-card-levels-fixes",
+  "out": "card-levels-fixes.review.html",
+  "images": "images/card-levels-fixes.review",
+  "runs": {
+    "before": "runs/lv4-before",
+    "after": "runs/lv4-after"
+  },
+  "labels": {
+    "before": "You reviewed",
+    "after": "Fixed"
+  },
+  "themes": [
+    "meadow-mist",
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "sync-oversize-open": [
+      "lv",
+      "sync-oversize-open",
+      "640x800+400+50"
+    ],
+    "settings-backup-sync": [
+      "lv",
+      "settings-backup-sync",
+      "640x800+400+50"
+    ],
+    "remote-access": [
+      "lv",
+      "remote-access",
+      "640x800+400+50"
+    ],
+    "assistant-specialists": [
+      "lv",
+      "assistant-specialists",
+      "820x700+310+100"
+    ],
+    "account": [
+      "lv",
+      "account",
+      "640x800+400+50"
+    ],
+    "development": [
+      "lv",
+      "development",
+      "640x800+400+50"
+    ],
+    "assistant-cloud": [
+      "lv",
+      "assistant-cloud",
+      "820x700+310+100"
+    ]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "Backup & Sync \u2014 devices",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-oversize-open",
+      "headline": "Backup & Sync \u2014 devices: are your notes fixed?",
+      "changed": "Devices are bare names in one shared box, not three separate boxes.",
+      "notice": "Compared with the version you just reviewed."
+    },
+    {
+      "id": "F-2",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "settings-backup-sync",
+      "headline": "Backup & Sync: are your notes fixed?",
+      "changed": "First-level cards have their outline back.",
+      "notice": "Compared with the version you just reviewed."
+    },
+    {
+      "id": "F-3",
+      "surface": "Remote Access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "remote-access",
+      "headline": "Remote Access: are your notes fixed?",
+      "changed": "Outlines back; Tailscale and its Install button sit in a card.",
+      "notice": "Compared with the version you just reviewed."
+    },
+    {
+      "id": "F-4",
+      "surface": "Specialists",
+      "path": "Settings \u2192 Specialists",
+      "crop": "assistant-specialists",
+      "headline": "Specialists: are your notes fixed?",
+      "changed": "No \"Set to\" lines and no Clear button; each picker lists \"No selection\" first; the odd gap is gone.",
+      "notice": "Compared with the version you just reviewed."
+    },
+    {
+      "id": "F-5",
+      "surface": "Account",
+      "path": "Settings \u2192 Account",
+      "crop": "account",
+      "headline": "Account: are your notes fixed?",
+      "changed": "A normal-size button, standard text, one short line.",
+      "notice": "Compared with the version you just reviewed."
+    },
+    {
+      "id": "F-6",
+      "surface": "Development",
+      "path": "Settings \u2192 Development",
+      "crop": "development",
+      "headline": "Development: are your notes fixed?",
+      "changed": "Same margins and text sizes as the other Settings popups.",
+      "notice": "Compared with the version you just reviewed."
+    },
+    {
+      "id": "F-7",
+      "surface": "Cloud providers",
+      "path": "Settings \u2192 Cloud providers",
+      "crop": "assistant-cloud",
+      "headline": "Cloud providers: are your notes fixed?",
+      "changed": "First-level cards have their outline back.",
+      "notice": "Compared with the version you just reviewed."
+    }
+  ]
+}

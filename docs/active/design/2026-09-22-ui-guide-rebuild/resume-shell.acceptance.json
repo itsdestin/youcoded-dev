@@ -1,0 +1,25 @@
+{
+  "title": "Check the applied Resume Session popup",
+  "key": "ui-guide-resume-shell-acceptance-1",
+  "out": "resume-shell.acceptance.html",
+  "images": "images/resume-shell.acceptance",
+  "runs": {"today": "runs/resume-shell-acceptance"},
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "crops": {
+    "resume-before": ["resume-shell-acceptance", "before", "420x456+50+72"],
+    "resume-applied": ["resume-shell-acceptance", "applied", "420x456+50+72"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Resume Session list",
+      "path": "Checking the matching treatment you selected",
+      "headline": "Does the applied Resume Session header and list edge match your choice?",
+      "risk": "Actual popup crops show the list side; the full two-column popup is available separately. The transcript and controls are unchanged.",
+      "variants": [
+        {"id": "before", "label": "Before (for reference)", "crop": "resume-before", "summary": "Original 14px bold heading, 14% divider taper and painted 36px list-edge fade."},
+        {"id": "applied", "label": "Applied", "crop": "resume-applied", "summary": "Production 16px medium heading, 8% divider taper and conditional unpainted 42px/4%-side list fade."}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+ "deck": "ui-provider-notices-3",
+ "started": "2026-10-01T07:54:22.537Z",
+ "submitted": "2026-10-01T07:55:01Z",
+ "cur": 3,
+ "answers": {
+  "PN3-1": {
+   "v": "yes",
+   "t": 1790841267688,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN3-2": {
+   "v": "yes",
+   "t": 1790841286732,
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN3-3": {
+   "v": "yes",
+   "t": 1790841296518,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN3-4": {
+   "v": "yes",
+   "t": 1790841300871,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

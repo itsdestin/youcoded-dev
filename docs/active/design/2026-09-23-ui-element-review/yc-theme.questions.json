@@ -1,0 +1,89 @@
+{
+  "title": "A new YouCoded default theme — the questions first",
+  "key": "yc-theme-questions",
+  "out": "yc-theme.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "T-1", "words": true,
+      "surface": "Themes", "path": "Settings → Appearance, and what a new install opens in",
+      "headline": "Should the YouCoded theme come in a light version, a dark version, or both?",
+      "today": "Four built-in themes: Light, Dark, Midnight (the default for new installs) and Crème, all greys or warm off-white. The purple you like lives only in the Cotton Candy Sky community theme.",
+      "problem": "Setup is brand lavender, then the app opens in near-black Midnight. A YouCoded theme fixes that jump, but people who keep their computer dark may not want lavender.",
+      "proposal": "Three ways.",
+      "options": [
+        {"id": "both", "label": "A light and a dark pair", "recommended": true,
+         "summary": "'YouCoded' (lavender, like setup) and 'YouCoded Night' (deep purple-black, white/lavender text). A new install picks whichever matches the computer's light or dark setting.",
+         "pros": ["Setup flows straight into a matching screen for everyone.", "Dark-mode people get purple too, not grey."],
+         "cons": ["Two themes to design and approve instead of one."]},
+        {"id": "light", "label": "Light only",
+         "pros": ["One theme; the closest match to setup and the logo boards."],
+         "cons": ["Dark-mode users get a bright app on day one, or keep Midnight."]},
+        {"id": "dark", "label": "Dark only",
+         "pros": ["Keeps the app's dark feel, now purple."],
+         "cons": ["The lavender-to-dark jump after setup stays."]}
+      ]
+    },
+    {
+      "id": "T-2", "words": true,
+      "surface": "Themes", "path": "Behind the chat and the side panels",
+      "headline": "What should sit behind everything: a plain lavender gradient, or a picture?",
+      "today": "Built-in themes are flat colours. Community themes like Cotton Candy Sky have a wallpaper picture behind see-through panels. The app icon's face shows the current theme's picture, blurred.",
+      "problem": "The background sets the whole feel, and it also decides what the app icon's face shows in this theme.",
+      "proposal": "Two ways.",
+      "options": [
+        {"id": "gradient", "label": "Soft gradient", "recommended": true,
+         "summary": "The same lavender-to-pink glow as setup, drawn by the app (no picture).",
+         "pros": ["Matches setup exactly.", "Nothing to download; text stays easy to read everywhere."],
+         "cons": ["Plainer than a picture theme."]},
+        {"id": "picture", "label": "A purple picture",
+         "summary": "A new soft wallpaper (clouds, sky, abstract shapes) in the brand colours, behind see-through panels.",
+         "pros": ["Richer, more personal look.", "The icon's face shows it, blurred."],
+         "cons": ["A picture to choose or make and approve.", "Glass panels cost a little more to draw; Reduced effects turns them solid."]}
+      ]
+    },
+    {
+      "id": "T-3", "words": true,
+      "surface": "Themes", "path": "Every piece of text in the app",
+      "headline": "Should this theme use Outfit, the logo's font, for the whole app (code stays in the code font)?",
+      "today": "Built-in themes use a code-style font for all text, where every letter is the same width. Setup now uses Outfit everywhere (your earlier pick).",
+      "problem": "Setup in Outfit, then the app in a code font, is a second jump right after the first one.",
+      "proposal": "Yes: menus, chat and settings in Outfit; code blocks and the terminal keep the code font. No: the theme changes colours only."
+    },
+    {
+      "id": "T-4", "words": true,
+      "surface": "Mascot", "path": "The buddy on the welcome screen, the floating buddy window, the guided tour",
+      "headline": "How should the mascot match the app icon in this theme?",
+      "today": "Built-in themes show the grey robot buddy (body, arms, legs, flat face). The app icon is a glass face: soft blurred colour inside, dark oval eyes with one sparkle, a soft smile, a purple rim.",
+      "problem": "You want the mascot drawn in the icon's style. The buddy has poses (waving, curious, shocked) and moves in its floating window, so a new drawing needs every pose.",
+      "proposal": "Two ways.",
+      "options": [
+        {"id": "full", "label": "A full glass buddy", "recommended": true,
+         "summary": "Redraw the whole buddy (body, arms, legs, every pose) with the icon's glass face, eyes, smile and purple rim.",
+         "pros": ["The buddy and the icon look like the same character everywhere."],
+         "cons": ["The biggest job: its own design rounds before it's built."]},
+        {"id": "face", "label": "The icon's face only",
+         "summary": "Where a large mascot shows (welcome screen, tour), show the icon's glass face; the floating buddy keeps today's shape, tinted purple.",
+         "pros": ["Much quicker; matches the icon exactly where it's largest."],
+         "cons": ["Two different looks for the same character."]}
+      ]
+    },
+    {
+      "id": "T-5", "words": true,
+      "surface": "Themes", "path": "What new and existing users get",
+      "headline": "The YouCoded theme becomes the default for new installs only; people who already use the app keep their theme.",
+      "changed": "Stated: new installs open in YouCoded (or YouCoded Night, by T-1). Anyone already on Midnight or another theme stays there; YouCoded appears in their Appearance list to try. Cotton Candy Sky stays as it is.",
+      "notice": "Nobody's app changes look on its own after an update.",
+      "yes": "Holds", "no": "Switch everyone"
+    },
+    {
+      "id": "T-6", "words": true,
+      "surface": "Themes", "path": "Who builds it",
+      "headline": "Build the theme here, and leave the mascot's glass drawing to the brand session?",
+      "today": "This session is the design-consistency work (setup and welcome screens). The brand session working in parallel owns the logo, the icon and its per-theme versions.",
+      "problem": "The theme's colours and screens belong to the app's look, but the mascot drawing and the theme's icon belong to the brand work. Two sessions changing the same drawings would clash.",
+      "proposal": "Yes: I build the theme (colours, background, font, default for new installs) here and use the icon's existing drawing where it fits; the full glass buddy (T-4) goes to the brand session as a request. No: I do all of it here, mascot included."
+    }
+  ]
+}

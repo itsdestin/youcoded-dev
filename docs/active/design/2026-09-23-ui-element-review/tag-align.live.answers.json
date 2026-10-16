@@ -1,0 +1,16 @@
+{
+ "deck": "tag-align-live",
+ "started": "2026-10-04T07:55:49.773Z",
+ "submitted": "2026-10-04T07:56:57Z",
+ "cur": 0,
+ "answers": {
+  "TA-1": {
+   "v": "other",
+   "t": 1791100616796,
+   "note": "it looks fine here, but it seems like maybe the text or icon shifts up/down sometimes for some reason",
+   "seconds": 67,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

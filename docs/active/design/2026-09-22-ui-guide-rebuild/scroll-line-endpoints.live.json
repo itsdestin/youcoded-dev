@@ -1,0 +1,38 @@
+{
+  "title": "Settings title line — choose where it reaches full strength",
+  "key": "ui-guide-scroll-line-endpoints-7",
+  "out": "scroll-line-endpoints.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "Where the header line reaches full strength",
+      "hint": "Look just beneath Settings, then scroll inside each drawer and watch the line meet the fading content. Scroll outside it to reach the next version. Switch themes above.",
+      "headline": "Which line taper works with your selected scroll fade?",
+      "risk": "Review-only Settings comparison. The fade stays at your selected steady 42px depth and 4% side taper in every pane; only the header line changes. A Settings choice does not approve the wording of an app-wide rule, changes to dialogs, or production styling.",
+      "live": {"surface": "settings-taper-calibration", "round": 9},
+      "variants": [
+        {
+          "id": "line-quick",
+          "label": "Quick ends",
+          "candidate": "line-quick",
+          "summary": "Line reaches full strength 8% in from either side: mostly solid, with short tapered ends."
+        },
+        {
+          "id": "line-moderate",
+          "label": "Moderate ends",
+          "candidate": "line-moderate",
+          "summary": "Line reaches full strength 20% in from either side. This was held constant during the fade tests."
+        },
+        {
+          "id": "line-gradual",
+          "label": "Gradual ends",
+          "candidate": "line-gradual",
+          "summary": "Line reaches full strength 32% in from either side: a shorter solid middle."
+        }
+      ]
+    }
+  ]
+}

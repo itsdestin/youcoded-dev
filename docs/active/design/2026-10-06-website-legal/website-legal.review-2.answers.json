@@ -1,0 +1,30 @@
+{
+ "deck": "website-legal-review-2",
+ "started": "2026-10-06T10:54:44.351Z",
+ "submitted": "2026-10-06T10:56:00Z",
+ "cur": 2,
+ "answers": {
+  "L-1": {
+   "v": "yes",
+   "t": 1791284102591,
+   "seconds": 18,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "yes",
+   "t": 1791284120199,
+   "seconds": 18,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "L-3": {
+   "note": "change the dropdown styling and chevron. make it an expandable card",
+   "t": 1791284157036,
+   "v": "yes",
+   "seconds": 37,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  }
+ }
+}

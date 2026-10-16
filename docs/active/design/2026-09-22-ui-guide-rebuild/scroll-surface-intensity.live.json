@@ -1,0 +1,38 @@
+{
+  "title": "Settings scroll fade — same size, stronger effect",
+  "key": "ui-guide-scroll-surface-intensity-4",
+  "out": "scroll-surface-intensity.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "How quickly content disappears under the title",
+      "hint": "Scroll inside each drawer to reveal the fade, then outside it to reach the next version. Switch between Meadow Mist, Halftone and a solid theme above.",
+      "headline": "Does a stronger fade work without making it any bigger?",
+      "risk": "Review-only Settings comparison. Every version stays 42px deep with the same 10% side taper and the same provisional 20% title line. Only how quickly row content disappears within the fade changes. No production styling has changed; other scroll surfaces need their own check.",
+      "live": {"surface": "settings-taper-calibration", "round": 6},
+      "variants": [
+        {
+          "id": "curve-current",
+          "label": "Previous 42px",
+          "candidate": "curve-current",
+          "summary": "The version you just saw. Content fades steadily across the 42px edge."
+        },
+        {
+          "id": "curve-firmer",
+          "label": "A bit stronger",
+          "candidate": "curve-firmer",
+          "summary": "Same size. More of the content disappears near the edge, without adding a coloured strip."
+        },
+        {
+          "id": "curve-strongest",
+          "label": "Much stronger",
+          "candidate": "curve-strongest",
+          "summary": "Same size. Content disappears quickly near the edge, which might feel abrupt while scrolling."
+        }
+      ]
+    }
+  ]
+}

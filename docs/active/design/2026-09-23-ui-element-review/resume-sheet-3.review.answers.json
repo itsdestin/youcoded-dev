@@ -1,0 +1,17 @@
+{
+ "deck": "resume-sheet-3",
+ "started": "2026-10-04T09:04:59.908Z",
+ "submitted": "2026-10-04T09:06:05Z",
+ "cur": 0,
+ "answers": {
+  "RS3-1": {
+   "v": "pick",
+   "pick": "C",
+   "t": 1791104764303,
+   "note": "still need to reorganize it internally. and make sure it fits design guidelines. this still looks really weird",
+   "seconds": 64,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

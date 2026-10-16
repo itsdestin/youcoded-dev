@@ -7,11 +7,23 @@
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { cpus, loadavg, tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CHROME_FLAGS } from '../ui-review/cdp-helpers.mjs';
+
+// SHOOT_SCALE=1.5 photographs at a screen's pixel density instead of 1×. WHY: Destin's
+// laptop runs at 1.5×, where half-pixel offsets show that a 1× picture rounds away — a tag
+// icon measured centred at 1× still looked off to him (2026-10-04), and a chip's bottom
+// border clipped only at 1.5× (marketplace-detail-5#M5-3). The engine's own default stays 1
+// (explore, journeys, recordings); `shoot` raises it for review pictures with setShotScale().
+let SHOT_SCALE = Number(process.env.SHOOT_SCALE) > 0 ? Number(process.env.SHOOT_SCALE) : 1;
+/** The pixel density of every tab opened after this call. */
+export function setShotScale(n) { if (Number(n) > 0) SHOT_SCALE = Number(n); }
+/** The density pictures are being taken at — written into shoot's manifest so a reader can turn
+ *  its CSS-pixel boxes (a screen's panel) into picture pixels. */
+export function shotScale() { return SHOT_SCALE; }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -53,28 +65,50 @@ function fingerprint(desktop) {
   return h.digest('hex');
 }
 
-/** Builds (or reuses) the photo-only copy for a checkout. Returns its folder. */
+// How long a finished build may sit unused before a later build sweeps it. Far longer than any
+// run (a full `shoot --check` under load is ~4 minutes); a run touches its build when it starts.
+const BUILD_KEEP_MS = 6 * 3_600_000;
+
+/** Removes old photo-only builds in `home` (and the pre-2026-10-12 single `dist` folder), never
+ *  `current` and never one used within BUILD_KEEP_MS. Never throws. */
+export function sweepOldBuilds(home, current) {
+  for (const name of readdirSync(home)) {
+    const p = join(home, name);
+    if (p === current || !(name === 'dist' || name.startsWith('dist-'))) continue;
+    try { if (Date.now() - statSync(p).mtimeMs > BUILD_KEEP_MS) rmSync(p, { recursive: true, force: true }); } catch { /* in use or gone */ }
+  }
+}
+
+/** Builds (or reuses) the photo-only copy for a checkout. Returns its folder.
+ *
+ *  WHY a folder per build, never emptied (2026-10-12): several sessions shoot from ONE checkout.
+ *  The build used to be one `dist` folder rebuilt in place with `--emptyOutDir`, so when one
+ *  session's source edit triggered a rebuild, every other run serving that folder lost its files
+ *  mid-run — under load its screens missed their marks ("its mark is not on the page") and one
+ *  run crashed reading index.html. A build now goes to `dist-<fingerprint>`, written to a temporary
+ *  name and renamed into place when complete, and is only swept hours after its last use. */
 export async function ensureBuild(checkout, log = () => {}) {
   const desktop = join(checkout, 'desktop');
   const key = createHash('sha1').update(desktop).digest('hex').slice(0, 12);
   const home = join(CACHE, 'builds', key); mkdirSync(home, { recursive: true });
-  const dist = join(home, 'dist'); const stampFile = join(home, 'stamp');
   const want = fingerprint(desktop);
-  if (existsSync(join(dist, 'index.html')) && existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want) return dist;
+  const dist = join(home, `dist-${createHash('sha1').update(want).digest('hex').slice(0, 12)}`);
+  const ready = () => existsSync(join(dist, 'index.html'));
+  const use = () => { try { const now = new Date(); utimesSync(dist, now, now); } catch { /* fine */ } return dist; };
+  if (ready()) return use();
 
-  // One build at a time per checkout: a second `shoot` waits instead of racing the same folder.
+  // One build at a time per checkout: a second `shoot` waits instead of building the same thing twice.
   const lock = join(home, 'lock');
   for (let t0 = Date.now(); ; await sleep(200)) {
     try { mkdirSync(lock); break; } catch {
       if (Date.now() - t0 > 120_000) { rmSync(lock, { recursive: true, force: true }); continue; } // a crashed builder's lock
-      if (existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want && existsSync(join(dist, 'index.html'))) return dist;
+      if (ready()) return use();
     }
   }
   try {
-    // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start
-    // together in verify.sh; the second waited for the first's build, then rebuilt anyway —
-    // and --emptyOutDir wiped the folder the first was already serving (ENOENT index.html).
-    if (existsSync(join(dist, 'index.html')) && existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want) return dist;
+    // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start together
+    // in verify.sh; the second waited for the first's build, then built again for nothing.
+    if (ready()) return use();
     log(`building the photo-only copy of ${checkout}`);
     const t0 = Date.now();
     const vite = join(desktop, 'node_modules', 'vite', 'bin', 'vite.js');
@@ -82,15 +116,18 @@ export async function ensureBuild(checkout, log = () => {}) {
     // NODE_ENV and any VITE_* from the caller's shell are dropped: vitest's NODE_ENV=test
     // turns a build into a development build, and a stray VITE_ flag changes what ships.
     const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('VITE_') && k !== 'NODE_ENV'));
+    const tmp = `${dist}.tmp-${process.pid}`;
+    rmSync(tmp, { recursive: true, force: true });
     await new Promise((res, rej) => {
-      const p = spawn(process.execPath, [vite, 'build', '--outDir', dist, '--emptyOutDir', '--logLevel', 'error'], { cwd: desktop, env: { ...env, VITE_WORKBENCH: '1', VITE_SHOOT: '1' }, stdio: ['ignore', 'ignore', 'pipe'] });
+      const p = spawn(process.execPath, [vite, 'build', '--outDir', tmp, '--emptyOutDir', '--logLevel', 'error'], { cwd: desktop, env: { ...env, VITE_WORKBENCH: '1', VITE_SHOOT: '1' }, stdio: ['ignore', 'ignore', 'pipe'] });
       let err = ''; p.stderr.on('data', (d) => { err += d; });
       const timer = setTimeout(() => { p.kill(); rej(new Error('build took over 3 minutes')); }, 180_000);
       p.on('close', (code) => { clearTimeout(timer); code === 0 ? res() : rej(new Error(`build failed:\n${err.slice(-2000)}`)); });
     });
-    writeFileSync(stampFile, want);
+    renameSync(tmp, dist);   // complete or absent — a reader never sees a half-written build
     log(`built in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-    return dist;
+    sweepOldBuilds(home, dist);
+    return use();
   } finally { rmSync(lock, { recursive: true, force: true }); }
 }
 
@@ -101,11 +138,19 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
 /** Serves a folder on a port the computer picks. WHY: fixed ports collided between sessions. */
 export function serve(dist) {
   const server = createServer((req, res) => {
-    const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    let file = resolve(dist, '.' + (path === '/' ? '/index.html' : path));
-    if (!file.startsWith(dist) || !existsSync(file) || statSync(file).isDirectory()) file = join(dist, 'index.html');
-    res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'max-age=3600' });
-    res.end(readFileSync(file));
+    // WHY the catch: a file that vanished under the server (a build swept or rebuilt by another
+    // session) threw out of this handler and took the whole run down. It is an error answer now.
+    try {
+      const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+      let file = resolve(dist, '.' + (path === '/' ? '/index.html' : path));
+      if (!file.startsWith(dist) || !existsSync(file) || statSync(file).isDirectory()) file = join(dist, 'index.html');
+      const body = readFileSync(file);
+      res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'max-age=3600' });
+      res.end(body);
+    } catch (e) {
+      res.writeHead(500, { 'content-type': 'text/plain' });
+      res.end(`shoot could not read the file: ${e.message}`);
+    }
   });
   return new Promise((res) => server.listen(0, '127.0.0.1', () => res({ port: server.address().port, close: () => server.close() })));
 }
@@ -153,7 +198,9 @@ export async function backOff() {
 async function launchBrowser(width, height, record) {
   const profile = mkdtempSync(join(tmpdir(), 'youcoded-shoot-'));
   // Port 0 = Chrome picks a free debugging port and writes it to DevToolsActivePort.
-  const proc = spawn('google-chrome-stable', CHROME_FLAGS(width, height, 0, profile), { stdio: 'ignore' });
+  // The real density matches the one each tab emulates (prepare → deviceScaleFactor): see
+  // CHROME_FLAGS' `scale` for the misplaced pointer event a mismatch caused.
+  const proc = spawn('google-chrome-stable', CHROME_FLAGS(width, height, 0, profile, SHOT_SCALE), { stdio: 'ignore' });
   record.browsers.push({ pid: proc.pid, profile }); record.save();
   let port = 0;
   for (let i = 0; i < 100 && !port; i++) {
@@ -161,6 +208,23 @@ async function launchBrowser(width, height, record) {
   }
   if (!port) { proc.kill('SIGKILL'); throw new Error('Chrome did not start within 10 s'); }
   const conn = await connect(port);
+  // Close every page one of our tabs opens (window.open, a target=_blank link). WHY (2026-10-07):
+  // a screen opened github.com/login in a real window; it became the front tab of our tab's
+  // window, our page went `hidden`, and a hidden page runs no requestAnimationFrame — every later
+  // screen on that tab hung 20 s in the app's open step (0 frames, timers ticking). Under
+  // verify's load this failed shoot --check on 4–5 random screens a run. Pictures never need a
+  // second window, and closing it also keeps the run off the network. Engine-launched browsers
+  // only: an attached dev window (attachPage) is a real app and keeps its windows.
+  conn.onEvent((m) => {
+    const t = m.method === 'Target.targetCreated' ? m.params.targetInfo : null;
+    if (t && t.type === 'page' && t.openerId) {
+      // Say so (small-fixes-1): a screen that opens a page is a bug at its source — the practice
+      // app should never open one — and a silent close hid which screen did it.
+      console.error(`[shoot] closed a page a screen opened: ${t.url || '(no address yet)'}`);
+      conn.send('Target.closeTarget', { targetId: t.targetId }).catch(() => {});
+    }
+  });
+  await conn.send('Target.setDiscoverTargets', { discover: true });
   // WHY the catch: Chrome's helper processes outlive the SIGKILL by a beat and
   // keep writing into the profile, so its removal can throw ENOTEMPTY. That
   // failed a green run of explore.test.mjs on CI (2026-10-01, youcoded-dev#225).
@@ -176,11 +240,12 @@ async function connect(port) {
   const ver = await (await fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(5000) })).json();
   const ws = new WebSocket(ver.webSocketDebuggerUrl);
   await new Promise((r, j) => { ws.onopen = r; ws.onerror = () => j(new Error('could not connect to Chrome')); });
-  let id = 0; const pending = new Map(); const sessions = new Map();
+  let id = 0; const pending = new Map(); const sessions = new Map(); const browserEvents = new Set();
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
     if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); return; }
     if (m.sessionId) sessions.get(m.sessionId)?.(m);
+    else if (m.method) for (const f of browserEvents) f(m);
   };
   // WHY every command has a time limit: without one a single stuck page hung a whole
   // run forever (3 screens in the prototype; 16 of 303 jobs in the 9/23 sweep).
@@ -190,7 +255,7 @@ async function connect(port) {
     pending.set(i, { res: (v) => { clearTimeout(timer); res(v); }, rej: (e) => { clearTimeout(timer); rej(e); } });
     ws.send(JSON.stringify({ id: i, method, params, ...(sessionId ? { sessionId } : {}) }));
   });
-  return { send, sessions, close: () => { try { ws.close(); } catch { /* gone */ } } };
+  return { send, sessions, onEvent: (f) => browserEvents.add(f), close: () => { try { ws.close(); } catch { /* gone */ } } };
 }
 
 // "Still": no fetch in flight, no finite animation running, every image on the page finished
@@ -233,10 +298,13 @@ async function makeTab(b, targetId) {
     on: (f) => { listeners.add(f); return () => listeners.delete(f); },
     still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
     takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
-    async prepare({ theme, width: w, height: h }) {
-      if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); size = `${w}x${h}`; }
+    /** `reducedEffects`: turn on the app's own Reduce visual effects setting (its localStorage key)
+     *  before the page loads — journeys only; pictures leave it alone so they keep showing the glass. */
+    async prepare({ theme, width: w, height: h, reducedEffects = false }) {
+      if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
-      themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` })).identifier;
+      const effects = reducedEffects ? `localStorage.setItem('youcoded-reduced-effects','1');` : '';
+      themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});${effects}}catch{}` })).identifier;
     },
     navigate: (url) => send('Page.navigate', { url }),
     png: async (params = {}) => Buffer.from((await send('Page.captureScreenshot', { format: 'png', ...params }, 30_000)).data, 'base64'),

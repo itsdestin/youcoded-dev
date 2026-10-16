@@ -1,0 +1,205 @@
+{
+  "title": "The new design guide — section by section",
+  "key": "ui-guide-approval",
+  "out": "guide.review.html",
+  "steps": [
+    {
+      "id": "G-1",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: The taste",
+      "headline": "Should the guide say this about the taste?",
+      "changed": "Calm, quiet and consistent. One style per job, used everywhere that job appears. The theme decides colour and shape, so nothing hard-codes a colour, a pill or a corner size. Text is small, grey and normal-case unless it is the one thing to read; no spaced-out capitals, no redundant labels, one-line headers. Things you open or pick (cards) stand out; things you read past (rows, menus, notices) stay soft. When in doubt, remove rather than add.",
+      "notice": "Summarises your choices: one style per job, theme decides color and shape, no capitals, one-line headers, raised cards and soft rows.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-1",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 1",
+      "headline": "Should principle 1 read like this?",
+      "changed": "1. Find the job first. Before styling anything, find its job in the recipes below and use that recipe exactly. A new look is only justified by a new job — and then it is a new recipe Destin approves, not a one-off.",
+      "notice": "From your \"one style per job\" direction across every review.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-2",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 2",
+      "headline": "Should principle 2 read like this?",
+      "changed": "2. The theme paints and shapes everything. Colours come from theme tokens (canvas panel inset well accent fg fg-2 fg-muted fg-faint edge edge-dim and the derived set); status colours (green, red, amber, blue) are the only fixed hues. Corner roundness comes from the theme's shape setting: controls use the theme's control radius, containers its larger radii. Never write a fixed pill (rounded-full) or pixel radius on a control.",
+      "notice": "From your \"controls should take the theme's roundness\" answers and the Round pick.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-3",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 3",
+      "headline": "Should principle 3 read like this?",
+      "changed": "3. Quiet by default. Small grey labels, normal case. Show what the user needs to act on; drop metadata they did not ask for. Headers are one line.",
+      "notice": "From no capitals, one-line headers, and dropping the Project file metadata row.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-4",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 4",
+      "headline": "Should principle 4 read like this?",
+      "changed": "4. Three levels of heading, no more. See *Headings*. If a screen seems to need a fourth, it needs fewer sections instead.",
+      "notice": "From your ask for a simple large / medium / small heading set.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-5",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 5",
+      "headline": "Should principle 5 read like this?",
+      "changed": "5. Cards stand out; rows stay soft. Things you open are raised cards; lists of settings are soft boxed rows; pick-one menus are plain rows.",
+      "notice": "From your Raised cards, boxed Settings rows and plain menu rows picks.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-6",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 6",
+      "headline": "Should principle 6 read like this?",
+      "changed": "6. One main action per view. One filled button; everything else outlined or quiet.",
+      "notice": "From your outlined secondary-button pick; one filled button per view is carried over from today.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "P-7",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Principle 7",
+      "headline": "Should principle 7 read like this?",
+      "changed": "7. Every theme, every width. Check light, a dark theme and a wallpaper theme, and a 390px-wide phone view, before showing anyone.",
+      "notice": "Carried over from how screens are already checked; the three themes and phone width are the ones every review page used.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-9",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Full screens",
+      "headline": "Should the guide say this about full screens?",
+      "changed": "• The screen names itself centered in the window's top strip, small (14px medium), with its icon — reference: Pages → any page.  • The way out is a filled small button reading \"Esc · Back to chat\" (key first), top right of the strip.  • Big groups on the screen use the *Large* heading.",
+      "notice": "Your H-1 (centered with icon) and H-5 (Esc · Back to chat button) picks.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-10",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Popups and side panels",
+      "headline": "Should the guide say this about popups and side panels?",
+      "changed": "• Title: 16px semibold, one line, close ✕ button (28px, soft hover square) at the right, a tapered divider under the header (inset 16px, fading over its first and last 8%). Reference: Settings → Sound. Use the shared <Dialog>; never hand-roll a popup shell.  • When the body scrolls, fade the content at the hidden edge (42px, softened 4% at the sides); no fade when nothing is hidden. Never paint a solid strip.  • Every popup has the ✕ and closes on Esc.",
+      "notice": "Your H-2 title pick, B-1 close pick, and the header line and scroll fade you approved earlier.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-11",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Headings",
+      "headline": "Should the guide say this about headings?",
+      "changed": "Large — Big groups on a full screen (\"Favorites\", \"Destin's picks\"): 18px medium, fg.  Title — A popup or side panel's name: 16px semibold (above). Small label — A group inside a screen, popup or list (\"Volume\", \"Privacy\"): 12px medium, fg-muted, normal case, no letter-spacing. A small label that heads a section of reading text (About's \"Disclaimer\", \"Privacy\") also gets a soft underline under its words (edge colour, 4px below the text). Labels over short settings groups stay plain.",
+      "notice": "Your three-level ask, the no-capitals pick, and underlined words for reading sections.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-12",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Text and numbers",
+      "headline": "Should the guide say this about text and numbers?",
+      "changed": "• Body 14px fg; secondary text one grey (fg-muted); fg-faint only for disabled.  • Nothing below 11px carries information.  • A count beside a label or tab: the word, then a smaller faint number — \"Files 17\". In a summary line: bold number, grey word — \"17 files\". No brackets, no chips.",
+      "notice": "Counts come from your H-4 pick. One grey for secondary text and the 11px floor are carried over (cleanup, not a taste vote) — say No if you disagree.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-13",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Buttons and controls",
+      "headline": "Should the guide say this about buttons and controls?",
+      "changed": "• Shape: the theme's control radius for every button, tab, filter and search box (built-in themes: Round, 14px).  • Main action: filled accent. At most one per view.  • Everything less important beside it (Cancel, Preview, Not now): outlined — a thin border, never bare text.  • Destructive: red, filled only in a confirmation step.  • Close: the ✕ button, never a letter or text.  • Switching views or filters: the shared SegmentedTabs / FilterChip; all follow the control radius.",
+      "notice": "Roundness from the theme (Round), outlined secondary and the ✕. \"Red, filled only in a confirmation step\" is carried over from today — say No if you disagree.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-14",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Cards",
+      "headline": "Should the guide say this about cards?",
+      "changed": "• Anything you open, install or pick from a grid is a raised card: panel colour, thin edge-dim border, a medium shadow (0 4px 20px rgb(0 0 0 / .16), 0 1px 3px rgb(0 0 0 / .08)), the theme's card radius, 12px gap between cards. Reference: Your Library.  • No flat, tinted or borderless card variants.",
+      "notice": "Your Raised pick with the medium shadow.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-15",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Lists and menus",
+      "headline": "Should the guide say this about lists and menus?",
+      "changed": "• Settings-style lists (each row opens or changes a setting): boxed rows — each row a soft tinted box with a small gap. Reference: the Settings list. Use SettingRow.  • Pick-one menus and switchers (right-click menu, session list): plain rows — no box, no line; hover highlights; the selected row is visibly different from a hovered one.",
+      "notice": "Your boxed-settings / plain-menus picks. \"Selected row visibly different from hovered\" fixes a bug the review found.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-16",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Status and notices",
+      "headline": "Should the guide say this about status and notices?",
+      "changed": "• A status label is a small tinted pill in its status colour, normal case (\"Installed\"). A live status (a session Working / Inactive) carries its coloured dot inside the pill. Reference: the session list.  • A passive warning, info or danger notice is a tinted box with a matching border (Callout). Reference: Backup & Sync → \"conversations too big to sync\".  • Errors follow docs/error-message-standards.md (<ErrorState>).",
+      "notice": "Your tinted-pill and tinted-box picks.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-17",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: Building a Page",
+      "headline": "Should the guide say this about building a page?",
+      "changed": "Pages use the page kit's classes (.yc-button, .yc-card, .yc-title, .yc-muted…), which carry these recipes; theme colours and shape reach the page automatically. Follow this guide where a class leaves a choice open, and never restyle a kit class.",
+      "notice": "New: tells Page builders to use the Pages style kit, which will be updated to match these rules.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    },
+    {
+      "id": "G-18",
+      "words": true,
+      "surface": "Design guide",
+      "path": "Section: The checklist",
+      "headline": "Should the guide say this about the checklist?",
+      "changed": "☐ Every element matches a recipe here; nothing invented.  ☐ No hard-coded colour, pill or corner size; theme tokens and shape only.  ☐ No spaced-out capitals; headings from the three levels.  ☐ One filled button per view; popups have ✕ and close on Esc.  ☐ Checked in light, a dark theme, a wallpaper theme and at 390px wide.  ☐ Shown to Destin as pictures of the real screen, not described in words.",
+      "notice": "New: the last check before showing you anything; the last line is your standing preference for pictures over words.",
+      "yes": "Yes, keep",
+      "no": "No, change it"
+    }
+  ]
+}

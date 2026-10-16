@@ -1,0 +1,190 @@
+{
+  "title": "Section labels — capitals or not",
+  "key": "ui-element-review-labels",
+  "out": "labels.review.html",
+  "images": "images/labels.review",
+  "runs": {
+    "today": "runs/headings"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "today-settings-sound": [
+      "h",
+      "today-settings-sound",
+      "420x240+510+200"
+    ],
+    "caps-settings-sound": [
+      "h",
+      "caps-settings-sound",
+      "420x240+510+200"
+    ],
+    "plain-settings-sound": [
+      "h",
+      "plain-settings-sound",
+      "420x240+510+200"
+    ],
+    "today-settings-about": [
+      "h",
+      "today-settings-about",
+      "420x300+510+215"
+    ],
+    "caps-settings-about": [
+      "h",
+      "caps-settings-about",
+      "420x300+510+215"
+    ],
+    "plain-settings-about": [
+      "h",
+      "plain-settings-about",
+      "420x300+510+215"
+    ],
+    "today-marketplace": [
+      "h",
+      "today-marketplace",
+      "720x330+0+50"
+    ],
+    "caps-marketplace": [
+      "h",
+      "caps-marketplace",
+      "720x330+0+50"
+    ],
+    "plain-marketplace": [
+      "h",
+      "plain-marketplace",
+      "720x330+0+50"
+    ],
+    "today-view": [
+      "h",
+      "today-view",
+      "250x420+10+40"
+    ],
+    "caps-view": [
+      "h",
+      "caps-view",
+      "250x420+10+40"
+    ],
+    "plain-view": [
+      "h",
+      "plain-view",
+      "250x420+10+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Sound popup",
+      "path": "Settings → Sound",
+      "headline": "Sound popup: which small section labels look best?",
+      "notice": "Look at: VOLUME and NOTIFICATION above each group. Only the small labels change.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-settings-sound",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "caps",
+          "label": "Small capitals",
+          "crop": "caps-settings-sound",
+          "summary": "One style of small grey capitals everywhere (10px). Marketplace's bigger, darker capitals shrink to match."
+        },
+        {
+          "id": "plain",
+          "label": "No capitals",
+          "crop": "plain-settings-sound",
+          "summary": "The same labels in normal case: small grey 12px text, no spaced-out capitals."
+        }
+      ],
+      "risk": "This settles the smallest heading level. The larger ones are already set: popup titles (16px bold, you chose) and big groups on full screens (18px, like Destin's picks)."
+    },
+    {
+      "id": "L-2",
+      "surface": "About popup",
+      "path": "Settings → About",
+      "headline": "About popup: which small section labels look best?",
+      "notice": "Look at: DISCLAIMER and PRIVACY above each section. Only the small labels change.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-settings-about",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "caps",
+          "label": "Small capitals",
+          "crop": "caps-settings-about",
+          "summary": "One style of small grey capitals everywhere (10px). Marketplace's bigger, darker capitals shrink to match."
+        },
+        {
+          "id": "plain",
+          "label": "No capitals",
+          "crop": "plain-settings-about",
+          "summary": "The same labels in normal case: small grey 12px text, no spaced-out capitals."
+        }
+      ]
+    },
+    {
+      "id": "L-3",
+      "surface": "Marketplace",
+      "path": "The top of the Marketplace",
+      "headline": "Marketplace: which small section labels look best?",
+      "notice": "Look at: FEATURED over the banner. The large Destin's picks heading stays the same in all three. Only the small labels change.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-marketplace",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "caps",
+          "label": "Small capitals",
+          "crop": "caps-marketplace",
+          "summary": "One style of small grey capitals everywhere (10px). Marketplace's bigger, darker capitals shrink to match."
+        },
+        {
+          "id": "plain",
+          "label": "No capitals",
+          "crop": "plain-marketplace",
+          "summary": "The same labels in normal case: small grey 12px text, no spaced-out capitals."
+        }
+      ]
+    },
+    {
+      "id": "L-4",
+      "surface": "Pages",
+      "path": "The Pages sidebar",
+      "headline": "Pages: which small section labels look best?",
+      "notice": "Look at: PERSONAL and YOUCODED above each group of pages. Only the small labels change. In No capitals the second label shows as \"youcoded\" because the stored name is lowercase; a real build would write it \"YouCoded\".",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-view",
+          "summary": "How it looks now."
+        },
+        {
+          "id": "caps",
+          "label": "Small capitals",
+          "crop": "caps-view",
+          "summary": "One style of small grey capitals everywhere (10px). Marketplace's bigger, darker capitals shrink to match."
+        },
+        {
+          "id": "plain",
+          "label": "No capitals",
+          "crop": "plain-view",
+          "summary": "The same labels in normal case: small grey 12px text, no spaced-out capitals."
+        }
+      ]
+    }
+  ]
+}

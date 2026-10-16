@@ -1,0 +1,1483 @@
+{
+ "deck": "final-review",
+ "started": "2026-10-14T02:38:15.090Z",
+ "submitted": "2026-10-14T03:20:30Z",
+ "cur": 205,
+ "answers": {
+  "OV-1": {
+   "v": "yes",
+   "t": 1791945512692,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "OV-2": {
+   "v": "yes",
+   "t": 1791945530842,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-0": {
+   "v": "yes",
+   "t": 1791945533752,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-1": {
+   "v": "yes",
+   "t": 1791945567832,
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LK-2": {
+   "v": "yes",
+   "t": 1791945620263,
+   "seconds": 52,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-3": {
+   "v": "yes",
+   "t": 1791945633880,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-4": {
+   "v": "yes",
+   "t": 1791945672268,
+   "seconds": 38,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-5": {
+   "v": "yes",
+   "t": 1791945687663,
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-6": {
+   "v": "yes",
+   "t": 1791945695263,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-7": {
+   "v": "yes",
+   "t": 1791945721449,
+   "seconds": 26,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "LK-8": {
+   "v": "yes",
+   "t": 1791945736094,
+   "seconds": 15,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "CH-0": {
+   "v": "yes",
+   "t": 1791945744757,
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "CH-1": {
+   "v": "yes",
+   "t": 1791945763319,
+   "seconds": 19,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-2": {
+   "v": "yes",
+   "t": 1791945778862,
+   "seconds": 16,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-3": {
+   "v": "yes",
+   "t": 1791945791292,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-4": {
+   "v": "yes",
+   "t": 1791945807642,
+   "seconds": 16,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-5": {
+   "v": "other",
+   "t": 1791945845942,
+   "note": "may want to compare this against our tag menu side by side",
+   "seconds": 38,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-6": {
+   "note": "want to see next to tag edit menu",
+   "t": 1791945872012,
+   "v": "other",
+   "seconds": 26,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-7": {
+   "v": "yes",
+   "t": 1791945890861,
+   "seconds": 19,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-8": {
+   "v": "yes",
+   "t": 1791945903497,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-9": {
+   "v": "yes",
+   "t": 1791945909958,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-10": {
+   "v": "yes",
+   "t": 1791945940818,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-11": {
+   "v": "yes",
+   "t": 1791945955258,
+   "seconds": 27,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "note": "this details box is weird/unique i think?"
+  },
+  "CH-12": {
+   "v": "yes",
+   "t": 1791945962332,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-13": {
+   "v": "yes",
+   "t": 1791945978557,
+   "seconds": 16,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-14": {
+   "v": "yes",
+   "t": 1791946003162,
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-15": {
+   "v": "yes",
+   "t": 1791946016557,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-16": {
+   "v": "yes",
+   "t": 1791946021063,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-17": {
+   "note": "we should remove the weird color dots next ot the themes",
+   "t": 1791946055297,
+   "v": "other",
+   "seconds": 34,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-18": {
+   "v": "yes",
+   "t": 1791946073216,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-19": {
+   "v": "yes",
+   "t": 1791946076562,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-20": {
+   "v": "yes",
+   "t": 1791946082489,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-21": {
+   "v": "other",
+   "t": 1791946111355,
+   "note": "why is there even a popup if everything is saved? inherently removes the need for an unsaved changes popup",
+   "seconds": 29,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-22": {
+   "v": "yes",
+   "t": 1791946116696,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-23": {
+   "v": "yes",
+   "t": 1791946128565,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-24": {
+   "v": "yes",
+   "t": 1791946134278,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-25": {
+   "v": "yes",
+   "t": 1791946140228,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-26": {
+   "v": "yes",
+   "t": 1791946144468,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-27": {
+   "v": "yes",
+   "t": 1791946160019,
+   "seconds": 16,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-28": {
+   "v": "other",
+   "t": 1791946197950,
+   "note": "roadmap item: this particular popups needs additional ui/ux work",
+   "seconds": 38,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-29": {
+   "v": "other",
+   "t": 1791946241281,
+   "note": "this wasn't approved, i just said we need to revisit this later alongisde tool cards. which we still do. should be a roadmap item.",
+   "seconds": 43,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-30": {
+   "v": "yes",
+   "t": 1791946251749,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-31": {
+   "v": "yes",
+   "t": 1791946255491,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-32": {
+   "v": "yes",
+   "t": 1791946258094,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-33": {
+   "v": "yes",
+   "t": 1791946260311,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-34": {
+   "v": "yes",
+   "t": 1791946262965,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-35": {
+   "v": "yes",
+   "t": 1791946266633,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-36": {
+   "v": "yes",
+   "t": 1791946268042,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-37": {
+   "v": "yes",
+   "t": 1791946273032,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-40": {
+   "v": "yes",
+   "t": 1791946274308,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-41": {
+   "v": "yes",
+   "t": 1791946275385,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-42": {
+   "v": "yes",
+   "t": 1791946289339,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-43": {
+   "v": "yes",
+   "t": 1791946300559,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-44": {
+   "v": "yes",
+   "t": 1791946311965,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-45": {
+   "v": "yes",
+   "t": 1791946323876,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CH-46": {
+   "v": "yes",
+   "t": 1791946331529,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PU-0": {
+   "v": "yes",
+   "t": 1791946333566,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PU-1": {
+   "v": "yes",
+   "t": 1791946364627,
+   "note": "i want to fully rebuild the how context works popup at some point. roadmap item",
+   "seconds": 31,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PU-2": {
+   "v": "yes",
+   "t": 1791946384155,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-0": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1791946387373
+  },
+  "ST-1": {
+   "v": "yes",
+   "t": 1791946392372,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-2": {
+   "v": "yes",
+   "t": 1791946404197,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-3": {
+   "v": "yes",
+   "t": 1791946408318,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-4": {
+   "v": "yes",
+   "t": 1791946426072,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-5": {
+   "v": "yes",
+   "t": 1791946430852,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-6": {
+   "v": "yes",
+   "t": 1791946433552,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-7": {
+   "v": "yes",
+   "t": 1791946435328,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-8": {
+   "v": "yes",
+   "t": 1791946436856,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-9": {
+   "v": "yes",
+   "t": 1791946438624,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-10": {
+   "v": "yes",
+   "t": 1791946450160,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-11": {
+   "v": "yes",
+   "t": 1791946453173,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-12": {
+   "v": "yes",
+   "t": 1791946513238,
+   "note": "this skip permissions checkbox is in a card, but the earlier checkboxes on popups from a few screenshots ago were bare. lets compare these popups side by side",
+   "seconds": 60,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-13": {
+   "v": "yes",
+   "t": 1791946520257,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-14": {
+   "v": "yes",
+   "t": 1791946529323,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-15": {
+   "v": "yes",
+   "t": 1791946532345,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-16": {
+   "v": "yes",
+   "t": 1791946545792,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-17": {
+   "v": "yes",
+   "t": 1791946552009,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-18": {
+   "v": "yes",
+   "t": 1791946560635,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-19": {
+   "v": "yes",
+   "t": 1791946565323,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-20": {
+   "v": "yes",
+   "t": 1791946567907,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-21": {
+   "note": "i feel like the inside of this (i) popup for appearance needs similar grouping to our new about popup. probably other (i) popups with bare text as well",
+   "t": 1791946604154,
+   "v": "other",
+   "seconds": 36,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-22": {
+   "v": "yes",
+   "t": 1791946629439,
+   "note": "replace \"auto\" with \"theme\"",
+   "seconds": 25,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-23": {
+   "v": "yes",
+   "t": 1791946632752,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-24": {
+   "v": "yes",
+   "t": 1791946642824,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-25": {
+   "v": "yes",
+   "t": 1791946646648,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-26": {
+   "v": "yes",
+   "t": 1791946657091,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-27": {
+   "v": "yes",
+   "t": 1791946687136,
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-28": {
+   "v": "yes",
+   "t": 1791946705161,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-29": {
+   "v": "yes",
+   "t": 1791946711072,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "ST-30": {
+   "v": "other",
+   "t": 1791946739197,
+   "note": "buy me a coffer popup needs work. remove the exclamation triangle thing in front of tailscale not connected",
+   "seconds": 28,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-0": {
+   "v": "yes",
+   "t": 1791946742791,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-1": {
+   "v": "yes",
+   "t": 1791946751750,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-2": {
+   "v": "yes",
+   "t": 1791946759062,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-3": {
+   "v": "yes",
+   "t": 1791946764685,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-4": {
+   "v": "yes",
+   "t": 1791946781999,
+   "seconds": 17,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-5": {
+   "v": "yes",
+   "t": 1791946787673,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-6": {
+   "v": "yes",
+   "t": 1791946790169,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-7": {
+   "v": "yes",
+   "t": 1791946800150,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BK-8": {
+   "v": "yes",
+   "t": 1791946801797,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-0": {
+   "v": "yes",
+   "t": 1791946803600,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-1": {
+   "note": "i don't think i like the colored outlines on integration cards.",
+   "t": 1791946873237,
+   "v": "yes",
+   "seconds": 70,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-2": {
+   "note": "i think we can improve these marketplace theme cards a bit to slightly better match the cards used in the appearance panel currently?",
+   "t": 1791946906543,
+   "v": "other",
+   "seconds": 33,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-3": {
+   "v": "yes",
+   "t": 1791946917200,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-4": {
+   "v": "yes",
+   "t": 1791946920876,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-5": {
+   "v": "yes",
+   "t": 1791946925087,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-6": {
+   "v": "yes",
+   "t": 1791946932249,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-7": {
+   "v": "yes",
+   "t": 1791946946627,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-8": {
+   "v": "yes",
+   "t": 1791946956788,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-9": {
+   "v": "yes",
+   "t": 1791946964524,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-10": {
+   "v": "yes",
+   "t": 1791946970381,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-11": {
+   "v": "yes",
+   "t": 1791946981104,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-12": {
+   "v": "yes",
+   "t": 1791946986973,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-13": {
+   "v": "yes",
+   "t": 1791946990636,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-14": {
+   "v": "yes",
+   "t": 1791946994494,
+   "seconds": 4,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-15": {
+   "v": "yes",
+   "t": 1791947009628,
+   "seconds": 15,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "MK-16": {
+   "v": "yes",
+   "t": 1791947016705,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-0": {
+   "v": "yes",
+   "t": 1791947018021,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-1": {
+   "v": "yes",
+   "t": 1791947031993,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-2": {
+   "v": "yes",
+   "t": 1791947039855,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-3": {
+   "v": "yes",
+   "t": 1791947047022,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-4": {
+   "v": "yes",
+   "t": 1791947064934,
+   "seconds": 18,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-5": {
+   "v": "yes",
+   "t": 1791947090990,
+   "note": "remove the letter icon in front of each project",
+   "seconds": 26,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-6": {
+   "v": "yes",
+   "t": 1791947095927,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-7": {
+   "v": "other",
+   "t": 1791947137112,
+   "note": "same checkbox inconsistency. also noticing some popups put all bare text in boxes (about), while some like these leave bare text on the modal without its own container.",
+   "seconds": 41,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-8": {
+   "v": "other",
+   "t": 1791947158729,
+   "note": "this seems a little odd",
+   "seconds": 22,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PR-9": {
+   "v": "yes",
+   "t": 1791947160660,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-0": {
+   "v": "yes",
+   "t": 1791947162027,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-1": {
+   "v": "other",
+   "t": 1791947225104,
+   "note": "i'm noticing that here, and in the skills menu, the cards no longer separate from the main background surface. in every other menu (settings, etc) we explicitly made it so card separate from the background. we should make this more consistent so game/skill cards don't just look like bare outlines against the backgroun.",
+   "seconds": 63,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-2": {
+   "v": "yes",
+   "t": 1791947230824,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-3": {
+   "v": "yes",
+   "t": 1791947236228,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-4": {
+   "v": "yes",
+   "t": 1791947239641,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-5": {
+   "v": "yes",
+   "t": 1791947241725,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-6": {
+   "v": "yes",
+   "t": 1791947246832,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-7": {
+   "v": "yes",
+   "t": 1791947258940,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-8": {
+   "v": "yes",
+   "t": 1791947268899,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-9": {
+   "v": "yes",
+   "t": 1791947275774,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-10": {
+   "v": "yes",
+   "t": 1791947284158,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-11": {
+   "v": "yes",
+   "t": 1791947286172,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GM-12": {
+   "v": "yes",
+   "t": 1791947287360,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "OT-0": {
+   "v": "yes",
+   "t": 1791947288412,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "OT-1": {
+   "v": "yes",
+   "t": 1791947294272,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "OT-2": {
+   "v": "yes",
+   "t": 1791947320705,
+   "seconds": 24,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "OT-3": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "t": 1791947325242
+  },
+  "CT-0": {
+   "v": "yes",
+   "t": 1791947328545,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-1": {
+   "v": "yes",
+   "t": 1791947333360,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-2": {
+   "v": "yes",
+   "t": 1791947335229,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-3": {
+   "v": "yes",
+   "t": 1791947336448,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-4": {
+   "v": "yes",
+   "t": 1791947337684,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-5": {
+   "v": "yes",
+   "t": 1791947339873,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-6": {
+   "v": "yes",
+   "t": 1791947341955,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-7": {
+   "v": "yes",
+   "t": 1791947358860,
+   "seconds": 6,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-8": {
+   "v": "yes",
+   "t": 1791947383646,
+   "seconds": 35,
+   "theme": "halftone-dimension",
+   "zoom": 1,
+   "note": "these popups are stacking with no blur, which looks a bit cluttered. all other popups blur what's behind them as far as i'm aware. why are these different?"
+  },
+  "CT-9": {
+   "v": "yes",
+   "t": 1791947388493,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-10": {
+   "v": "yes",
+   "t": 1791947390858,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-11": {
+   "v": "yes",
+   "t": 1791947397876,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-12": {
+   "v": "yes",
+   "t": 1791947400843,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "CT-13": {
+   "v": "yes",
+   "t": 1791947402453,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "BD-1": {
+   "v": "yes",
+   "t": 1791947403507,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TR-0": {
+   "v": "yes",
+   "t": 1791947404557,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TR-1": {
+   "v": "yes",
+   "t": 1791947411732,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TR-2": {
+   "v": "yes",
+   "t": 1791947440839,
+   "seconds": 29,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TR-3": {
+   "v": "yes",
+   "t": 1791947442438,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TR-4": {
+   "v": "yes",
+   "t": 1791947463190,
+   "seconds": 21,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TR-5": {
+   "v": "yes",
+   "t": 1791947466124,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-0": {
+   "v": "yes",
+   "t": 1791947468482,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-1": {
+   "v": "yes",
+   "t": 1791947480885,
+   "seconds": 12,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-2": {
+   "note": "roadmap item, the side pane needs separate ui/ux work, particularly to make images look better nested fitted and to improve the bottom bar and our git surfaces",
+   "t": 1791947525341,
+   "v": "other",
+   "seconds": 44,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-3": {
+   "v": "yes",
+   "t": 1791947539640,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-4": {
+   "v": "yes",
+   "t": 1791947541000,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-5": {
+   "v": "yes",
+   "t": 1791947551187,
+   "seconds": 10,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-6": {
+   "note": "i'm realizing i really don't want esc/back to chat to be filled. it should be a light button like the old version was",
+   "t": 1791947592528,
+   "v": "other",
+   "seconds": 41,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "FV-7": {
+   "v": "other",
+   "t": 1791947603043,
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "GR-1": {
+   "v": "yes",
+   "t": 1791947611725,
+   "seconds": 9,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-0": {
+   "v": "yes",
+   "t": 1791947613134,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-1": {
+   "v": "yes",
+   "t": 1791947618292,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-2": {
+   "v": "yes",
+   "t": 1791947624991,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-3": {
+   "v": "yes",
+   "t": 1791947626586,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-4": {
+   "v": "yes",
+   "t": 1791947628152,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-5": {
+   "v": "yes",
+   "t": 1791947632782,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-6": {
+   "v": "yes",
+   "t": 1791947641033,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-7": {
+   "v": "yes",
+   "t": 1791947648460,
+   "seconds": 7,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-8": {
+   "v": "yes",
+   "t": 1791947649745,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-9": {
+   "v": "yes",
+   "t": 1791947650765,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-10": {
+   "v": "yes",
+   "t": 1791947651646,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-11": {
+   "v": "yes",
+   "t": 1791947652610,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-12": {
+   "v": "yes",
+   "t": 1791947653955,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-13": {
+   "v": "yes",
+   "t": 1791947657425,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-14": {
+   "v": "yes",
+   "t": 1791947658795,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-15": {
+   "v": "yes",
+   "t": 1791947659962,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "PG-16": {
+   "v": "yes",
+   "t": 1791947661528,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "AN-1": {
+   "v": "yes",
+   "t": 1791947663109,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "WK-1": {
+   "v": "yes",
+   "t": 1791947663953,
+   "seconds": 1,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TL-0": {
+   "note": "we can drop the ones with stronger tints, this would just be a waste/leftover if we arent adopting.",
+   "t": 1791947708857,
+   "v": "yes",
+   "seconds": 45,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TL-1": {
+   "v": "yes",
+   "t": 1791947710586,
+   "seconds": 2,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "DC-1": {
+   "v": "yes",
+   "t": 1791947775264,
+   "note": "the final major part of this work for me will be, in a new session, having a different session work on the final design guidance. we will test and iterate on the guide with a few different mock uis before we merge. you will help me create a handoff that explains where to find the branch and relevant documents so i can guide the new session on remaining work.",
+   "seconds": 65,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "WEB-1": {
+   "v": "yes",
+   "t": 1791947804891,
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "QS-0": {
+   "v": "yes",
+   "t": 1791947807825,
+   "seconds": 3,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "other",
+   "t": 1791947821869,
+   "note": "see prev note",
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "allow",
+   "t": 1791947826905,
+   "seconds": 5,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-3": {
+   "note": "that copt is wrong then. it should say at the top of your resumable sessions list. ",
+   "t": 1791947884060,
+   "v": "other",
+   "seconds": 57,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "privacy",
+   "t": 1791947930066,
+   "seconds": 46,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "off",
+   "t": 1791947943598,
+   "seconds": 14,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-6": {
+   "t": 1791947982162,
+   "note": "",
+   "v": "picks",
+   "picks": [
+    "F47"
+   ],
+   "seconds": 39,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1791948008288,
+   "seconds": 26,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "Q-8": {
+   "v": "yes",
+   "t": 1791948021394,
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "END-1": {
+   "v": "yes",
+   "t": 1791948029191,
+   "seconds": 8,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

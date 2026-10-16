@@ -1,0 +1,165 @@
+{
+  "title": "Tags & note — built for real, across the app",
+  "key": "tags-final",
+  "out": "tags-final.review.html",
+  "images": "images/tags-final",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "themes": [
+    "dark"
+  ],
+  "crops": {
+    "tags": [
+      "x",
+      "tags",
+      "440x520+500+150"
+    ],
+    "edit": [
+      "x",
+      "edit",
+      "440x600+500+150"
+    ],
+    "new": [
+      "x",
+      "new",
+      "440x600+500+150"
+    ],
+    "close": [
+      "x",
+      "close",
+      "360x320+550+300"
+    ],
+    "resume": [
+      "x",
+      "resume",
+      "420x480+225+250"
+    ],
+    "sessions": [
+      "x",
+      "sessions",
+      "400x340+520+35"
+    ],
+    "statusbar": [
+      "x",
+      "chat",
+      "520x40+0+865"
+    ],
+    "chips": [
+      "x",
+      "chat",
+      "520x110+45+110"
+    ]
+  },
+  "steps": [
+    {
+      "id": "TF-1",
+      "surface": "Tags & note",
+      "path": "Click the tag element in the bottom status bar",
+      "crop": "tags",
+      "headline": "The approved design, now the real popup: tag pills, \"+ New tag\", a Note card and Pin to top.",
+      "changed": "Every tag is a pill: × takes it off, + puts it on, grey means archived. Priority is gone from the list; it's the Pin to top switch now. No Done button — changes save as you make them. The pills now fill the row before wrapping (your round-15 note).",
+      "notice": "Everything about this session's tags is in one place, and nothing needs saving.",
+      "risk": "Clicking a tag's name opens its edit box; only the × or + switches it on or off."
+    },
+    {
+      "id": "TF-2",
+      "surface": "Tags & note",
+      "path": "Tags & note → click a tag (here \"bug\")",
+      "crop": "edit",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "highlight": {
+        "box": [
+          9,
+          32,
+          82,
+          44
+        ]
+      },
+      "headline": "Clicking a tag opens its edit box inside the Tags card, with a full colour picker.",
+      "changed": "Name, the ten colours plus a rainbow circle for any colour you like, Archived, then red Delete tag on the left and Cancel / Save on the right. Delete asks first.",
+      "notice": "Rename or recolour a tag without leaving the popup. Custom colours are new.",
+      "risk": "A custom colour isn't tuned per theme the way the ten are, so a very dark or very pale pick can be faint on some themes."
+    },
+    {
+      "id": "TF-3",
+      "surface": "Tags & note",
+      "path": "Tags & note → + New tag",
+      "crop": "new",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "highlight": {
+        "box": [
+          9,
+          32,
+          82,
+          33
+        ]
+      },
+      "headline": "\"+ New tag\" opens a New tag box in the same spot; the new tag goes straight onto this session.",
+      "changed": "Name and colour, red Cancel on the left, Create on the right. Create with no name shows a short red line instead of greying out.",
+      "notice": "Typing a new name in the search box and pressing Create still works too.",
+      "risk": ""
+    },
+    {
+      "id": "TF-4",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "crop": "resume",
+      "headline": "Resume's organize sheet is the same Tags, Note and Pin to top cards as the popup.",
+      "changed": "The old checkbox list, \"pins to top\" Priority row and \"Manage tags…\" link are gone. A pinned conversation shows a small pin in its top-right corner.",
+      "notice": "Organizing works the same wherever you do it: status bar, Resume, the close prompt, the side panel and Projects.",
+      "risk": "The sheet is taller than before, so on a small window you scroll a little more to reach the next conversation."
+    },
+    {
+      "id": "TF-5",
+      "surface": "Close session",
+      "path": "Close a session (the × on its tab)",
+      "crop": "close",
+      "headline": "The close prompt shows a pin instead of a yellow Priority tag, and tags in the new pill look.",
+      "changed": "The summary row reads: pin (if pinned), the tags, the note. The pencil opens the same shared editor with a Save button at the bottom.",
+      "notice": "Pinned and tagged are visibly two different things now.",
+      "risk": ""
+    },
+    {
+      "id": "TF-6",
+      "surface": "Session menu",
+      "path": "Click the session name at the top of the window",
+      "crop": "sessions",
+      "headline": "In the session list, tags use the new pill look and a pinned session shows a pin by its status.",
+      "changed": "Priority no longer appears as a tag. A session with 3 or more tags shows one small stacked-tags button that rolls out into the full tags when you point at it (no session in this sample has 3).",
+      "notice": "Long tag rows don't crowd the session name any more.",
+      "risk": "With 3+ tags you have to point at the stack to read them."
+    },
+    {
+      "id": "TF-7",
+      "surface": "Status bar",
+      "path": "The bottom strip of the window",
+      "crop": "statusbar",
+      "headline": "The status bar's tag element is now icons only: a pin, stacked tag colours, and a note page when there's a note.",
+      "changed": "\"Priority +1\" became a pin and one blue tag icon. Each icon appears only when it applies; with nothing set it reads \"Add tags\".",
+      "notice": "Narrower, and you can tell pinned, tagged and noted apart at a glance.",
+      "risk": "Tag names aren't shown in the strip; you see colours, and open the popup for names."
+    },
+    {
+      "id": "TF-8",
+      "surface": "Chat",
+      "path": "Conversation cards Claude shows in a reply",
+      "crop": "chips",
+      "headline": "Tags shown anywhere else in the app use the same new look.",
+      "changed": "The square boxes became the rounded pills with a coloured tag icon, matching the session status pills.",
+      "notice": "One tag look across the whole app.",
+      "risk": ""
+    }
+  ]
+}

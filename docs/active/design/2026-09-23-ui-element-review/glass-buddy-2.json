@@ -1,0 +1,27 @@
+{
+  "title": "The glass buddy — colour, outline, size",
+  "key": "glass-buddy-2",
+  "out": "glass-buddy-2.review.html",
+  "images": "images/glass-buddy-2",
+  "runs": {"before": "r/before", "after": "r/after"},
+  "themes": ["light"],
+  "crops": {"sheet": ["x", "sheet", "1280x512+0+0"], "welcome": ["x", "welcome", "1440x900+0+0"]},
+  "steps": [
+    {
+      "id": "GB2-1", "surface": "Mascot", "path": "Four faces, YouCoded on top and YouCoded Night below, beside the app icon",
+      "crop": "sheet",
+      "headline": "Thinner outlines like the icon's, and the icon's own colours in the face.",
+      "changed": "The outline is half as thick, the same share of the face as the icon's rim. The face now shows the icon's colour run, pink at the top through lavender to periwinkle at the bottom (taken from the icon itself), with the theme's picture faintly over it. Night uses a deeper version of the same run.",
+      "notice": "Side by side, the buddy and the icon read as the same character.",
+      "risk": "The face is now mostly the icon's colours rather than the theme picture, so it won't change much between the light and night themes beyond being darker."
+    },
+    {
+      "id": "GB2-2", "surface": "New session screen", "path": "The first screen after setup",
+      "crop": "welcome",
+      "headline": "A bigger buddy beside slightly smaller text.",
+      "changed": "The buddy box went up a size; the heading and line each went down a step, and the line now splits evenly over two lines.",
+      "notice": "The buddy leads; the text supports it.",
+      "risk": ""
+    }
+  ]
+}

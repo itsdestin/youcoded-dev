@@ -5,6 +5,8 @@ node scripts/shoot/shoot.mjs 'settings/*'                every Settings screen, 
 node scripts/shoot/shoot.mjs 'chat/menu/*' --themes all   any names, every theme
 node scripts/shoot/shoot.mjs --tag error-state            by tag
 node scripts/shoot/shoot.mjs 'settings/*' --before <base> --after .   side by side
+node scripts/shoot/shoot.mjs settings/about --before-file desktop/src/renderer/components/ui/FoldRow.tsx@HEAD
+                                                         before = this checkout with just that file from HEAD
 node scripts/shoot/shoot.mjs --list                       every screen name and its tags
 node scripts/shoot/shoot.mjs --all                        everything
 node scripts/shoot/shoot.mjs --check                      open every screen once (light); exit 1 on a miss
@@ -16,12 +18,33 @@ root). `master` means the shared checkout exactly as it sits on disk (it may be 
 build); for a clean base, make a worktree of it first (`workspace-start`). Each side is built
 on its own; `--before` also needs the base to have the screen list (merged 2026-09).
 
+**`--before-file <path>@<ref>`** (repeatable; path from the app checkout) makes the before side
+itself: a copy of the after checkout (default: this one) with only those files from `<ref>`, kept in
+`scratch/shoot-before-file/` and reused, so its build is cached. For a one-file change it replaces
+swapping the file by hand; `--before` rewinds every other change on the branch too.
+
+A screen name never has a space: an argument with one is refused (a zsh variable holding several
+names arrives as ONE argument — pass each separately, `${=VAR}`).
+
 Options: `--worktree <name|branch|path>` (default: the checkout next to this script) ·
-`--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24) ·
+`--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24; `all` = every theme the practice app has, read from it: the built-in ones plus the community ones, 14 on 2026-10-12) ·
 `--width N [--height N]` · `--contrast` · `--out <dir>` (default `scratch/shoot/<time>`).
 
+**Pictures are 1.5× by default** (Destin's screen density; a clipped chip border showed only there,
+2026-10-05): a 1440×900 screen is a 2160×1350 picture. `--check`, `--collect` and `--contrast` stay at
+1× (their boxes are read by a script); `SHOOT_SCALE=<n>` overrides both. The manifest records each
+picture's `scale`, and the review deck turns `panel` boxes (CSS pixels) into picture pixels with it.
+Chrome is launched at that density for real (`CHROME_FLAGS`' `scale`), not only told to pretend:
+with the real one left at 1, taking a picture sent a late pointer event to the hovered point ÷ 1.5,
+and a hover picture lit the row above (project switcher, 2026-10-06; pinned in `engine.test.mjs`).
+Text sits up to a pixel differently from 1.5× pictures taken before that date — compare a
+before/after only within pictures taken the same way.
+
 Output: `<out>/<screen name>/<theme>.png`, `manifest.json` (per picture: ok, reason, the
-screen's panel box, page errors), and a contact sheet per theme.
+screen's panel box, page errors), and a contact sheet per theme. **Re-shooting a few screens into
+an existing `--out` folder keeps its other pictures in the manifest** (a re-shot screen × theme
+replaces its record; one whose file is gone is dropped) — a deck reading that folder loses nothing.
+To start a folder over, delete it first.
 
 ## How it works
 
@@ -36,11 +59,77 @@ screen's panel box, page errors), and a contact sheet per theme.
 - **A `#state` name** (`settings/sync#oversize`) is the same screen under other practice data:
   the entry's `scenario`, `params` (mock-shim switches) or `session` (a practice session to
   select first).
-- **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes), serves
+- **Open this first** — an entry's `open: ['Your status: Online']` clicks that button (by the label a
+  person sees, like a journey) once the screen shows, then checks the screen is still showing and takes
+  the picture. Use it for an OPENED state (a menu, an unfolded card) instead of a workbench switch in the
+  app's code; a step may also be any journey step (`{ do: 'key', key: 'ArrowDown' }`). `expect` is
+  refused there — that belongs in a journey. A label ending in "…" (`'Recent logs…'`), or a
+  target's `labelStarts`, matches the START of a name — a row's name is its title and its hint
+  together, so a new hint no longer breaks every step that clicks it. A step may also use the name
+  the browser gives (text inside `aria-hidden` parts left out: `'Add a note'` finds "+ Add a note"). When the last pointer step
+  was a click, the pointer is then moved off the page, so the clicked row keeps no hover tint; a
+  closing `hover` step is kept (it is the point). Examples: `chat/games#status-menu`,
+  `marketplace/skills#account-menu`. It cannot reach what only exists once another part is open (the
+  friend details popup's opener lives inside the opened card, so that screen still uses `friendsOpen`).
+- **A state that ends on another dialog's mark** (the ticket handing over to Contribute) names it:
+  `mark: 'settings/help/contribute'`; shoot checks that mark instead of the state's plain name.
+- **A state only the new code has** (`newIn: 'after'`) is skipped on the before side of a
+  `--before/--after` (or `--before-file`) run, said in the log, instead of failing there.
+- **`waitMs`**: the screen is checked and its panel measured AFTER the wait, so the manifest's box is
+  the state photographed, not the spinner before it.
+- **Hover pictures need no `SHOOT_SCALE=1`** since 2026-10-06 (below): a hover at 1.5× lands on the
+  row pointed at.
+- **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes; each build in a
+  folder of its own, renamed into place when complete and never emptied while a run may serve it — several
+  sessions shoot from one checkout, and an in-place rebuild once pulled the files from under the others), serves
   it on a free port, and runs a few headless Chromes with private tabs sized from the core
   count. It waits for the screen to be still — no fetch in flight, animations done, images
   loaded — never a fixed time; every browser call has a time limit; a crashed run's browsers are
-  cleaned up by the next.
+  cleaned up by the next. **A page a tab opens (`window.open`, a link to GitHub) is closed at
+  once**: it became the front tab, our page went hidden, a hidden page draws no frames, and the
+  next screens on that tab hung 20 s each (`shoot --check` under load, 2026-10-07).
+
+## Checks every picture makes
+
+- **The screen is showing** — its mark is on screen and not covered (above).
+- **Look-alikes** — two screens whose 480px thumbnails match are compared again at full size
+  (more than 50 pixels differ → different). Declare `sameAs` only for screens that truly look the same.
+- **Parts agree** (`parts-agree.mjs`) — on marked rows (`data-parts-agree` — the shared notice's button
+  rows carry it — the Marketplace detail pages' `[data-detail-chips]` / `[data-detail-actions]`, and a
+  Marketplace card's `[data-trust]` chip row): every child is one height (within 1px), and in
+  a row that clips (a sideways scroller), every child keeps room inside the clip edge. A finding prints
+  `PARTS` and fails `--check`. Mark a chip or button row with `data-parts-agree="<name>"` to opt in.
+- **Centres agree** (same file) — for a row whose parts are DIFFERENT heights on purpose (a name beside
+  its status pill, a button beside two lines of text): every part on the first part's line shares one
+  centre line (within 1px). Words directly in the row count as a part; a wrapper holding one element is
+  looked through to it. Mark the row `data-centres-agree="<name>"` (the Games name + pill, friend rows,
+  your name + status, a detail page's name + status, Specialists' label + warnings, Settings → Local
+  models' "Local engine" + pill — 1.4px off at 1.5× until 2026-10-12, when the pill moved out of the
+  title's line of text onto a flex row). Prints `PARTS`.
+- **The Office editor** — Office screens need its server. Each run starts its own and stops it at the
+  end: on 4717 when free, otherwise on a free port, told to the app with `?officePort=`. It never
+  reuses or stops one it did not start — not even this checkout's, because the run that started it
+  stops it when that run ends (an overlapping run then lost every editor screen, 2026-10-13).
+
+## The icon sheet
+
+`shoot dev/icons` photographs every shared hand-drawn icon at 48px in one picture
+(`dev/workbench/IconSheet.tsx`, photo-only build). Look at it after drawing or changing an icon — a
+malformed drawing that reads fine at 12px is obvious there. Icons drawn inline inside a component are
+not on it; export them to put them on it.
+
+## Several designs of one real screen
+
+To show Destin two or three versions of a real screen (a Choice slide), not a mockup:
+1. Add a workbench-only switch in `desktop/src/renderer/workbench-mode.ts` — it returns the shipped
+   value outside the workbench and the photo-only build, so a typo shows the real screen
+   (`workbenchScreenFrame` is the model).
+2. Read it where the screen draws; build each version from the shared pieces.
+3. List one screen state per version in `screens/<area>.ts` with `params: { <switch>: '<value>' }`
+   (`settings/x#version-b`); the plain name shows the shipped one.
+4. Shoot them; a Choice slide names each as a variant `crop`. Cut a close-up with
+   `"crop": "<screen>@WxH+X+Y"` (deck AUTHORING.md) when the difference is small.
+5. When Destin picks, delete the switch, the losing branches and their screen states.
 
 ## Adding a screen
 
@@ -74,7 +163,8 @@ guide is `scripts/ui-review/tester-kit.md`.
 
 - **What the page is asked** lives in `explore-page.mjs`: what counts as a control (roles,
   real controls, pointer-cursor elements), what counts as a layer (layer roles, the overlay
-  system's `data-layer`, anything fixed to the window at z-index 30+), and the check that a
+  system's `data-layer`, anything fixed to the window at z-index 30+ — but a `role=listbox` only
+  when it floats: a list laid out inside a dialog is part of that dialog), and the check that a
   click lands on its control. Before any click the page must stop moving (two equal readings),
   and the point is re-checked: a late row once pushed the message box under a quick chip.
 - **A background helper** holds the app between steps (one per workspace worktree; `start`
@@ -109,6 +199,7 @@ with `explore` (start where a user starts, not with `--screen`), end with `expec
 then run `journeys.mjs <name>` three times.
 
 `shoot --check` also presses Escape once on every screen with something open and fails unless
-exactly the top layer closed.
+exactly the top layer closed — or, for a screen whose entry sets `escapeStepsBack: '<why>'` (a step
+inside a popup that owns its own ✕ and Escape, like the add-a-backup wizard), unless every layer stayed open.
 
 Spec: `docs/archive/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.

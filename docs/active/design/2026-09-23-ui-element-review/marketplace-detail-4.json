@@ -1,0 +1,117 @@
+{
+  "title": "Marketplace detail pages — round 4",
+  "key": "marketplace-detail-4",
+  "out": "marketplace-detail-4.review.html",
+  "images": "images/marketplace-detail-4",
+  "runs": {
+    "before": "runs/mkd3-after",
+    "after": "runs/mkd4-after"
+  },
+  "labels": {
+    "before": "Round 3",
+    "after": "Round 4"
+  },
+  "themes": [
+    "youcoded",
+    "youcoded-night",
+    "midnight"
+  ],
+  "crops": {
+    "chips-wrap": [
+      "chips",
+      "chips-wrap",
+      "270x240+0+0"
+    ],
+    "chips-facts": [
+      "chips",
+      "chips-facts",
+      "270x240+0+0"
+    ],
+    "chips-fewer": [
+      "chips",
+      "chips-fewer",
+      "270x240+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "M4-1",
+      "surface": "Marketplace",
+      "path": "Marketplace → Connect your stuff → Google Workspace",
+      "headline": "Three ways to line up the integration's tile, name, description and buttons. Which looks right?",
+      "notice": "All keep the big coloured tile. 'One row' is how the Account profile card and every settings row line up, so it is my pick by the guide.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "row",
+          "label": "One row",
+          "crop": "marketplace/integration-detail",
+          "summary": "Tile, then name and description, then Uninstall and Connect — all centred on one line. The shortest card."
+        },
+        {
+          "id": "block",
+          "label": "Tile centred",
+          "crop": "marketplace/integration-detail#block",
+          "summary": "The tile sits centred beside the name and description; the buttons get their own line at the right."
+        },
+        {
+          "id": "top",
+          "label": "Round 3",
+          "crop": "marketplace/integration-detail#top",
+          "summary": "The tile beside the name only; the description runs under both, buttons below."
+        }
+      ]
+    },
+    {
+      "id": "M4-2",
+      "surface": "Marketplace",
+      "path": "Any theme page → the top card on the right (here: Meadow Mist)",
+      "headline": "Three ways to fit the theme's chips in the narrow right column. Which looks better?",
+      "notice": "In all three the heart, star and share are back on the name's line, and the name only ever wraps between words.",
+      "runs": [
+        "after"
+      ],
+      "variants": [
+        {
+          "id": "wrap",
+          "label": "Chips wrap",
+          "crop": "chips-wrap",
+          "summary": "Author, downloads and likes as chips, allowed onto a second line instead of fading."
+        },
+        {
+          "id": "facts",
+          "label": "A facts line",
+          "crop": "chips-facts",
+          "summary": "No chips: 'by claude · 1,240 downloads · 88 likes' as one quiet line under the buttons.",
+          "risk": "Different from every other detail page, which keeps a chip row."
+        },
+        {
+          "id": "fewer",
+          "label": "Fewer chips",
+          "crop": "chips-fewer",
+          "summary": "Just the author and the likes, which fit on one line; downloads is dropped here.",
+          "risk": "The download count no longer shows on theme pages."
+        }
+      ]
+    },
+    {
+      "id": "M4-3",
+      "surface": "Marketplace",
+      "path": "Any theme page → the heart at the top of the top card",
+      "crop": "marketplace/theme-detail",
+      "headline": "The like button is now just a heart; its count is the '88 likes' chip, which changes the moment you click.",
+      "changed": "The other like-button styles are removed. When you like or unlike, the chip's number goes up or down at once, before the server answers, and goes back if it fails.",
+      "notice": "The heart fills with the accent colour when liked, like the star.",
+      "highlight": {
+        "box": [
+          60,
+          30,
+          18,
+          20
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "title": "Unsaved changes, rebuilt from the pieces you already approved — and the Update spacing measured",
+  "key": "close-session-6",
+  "out": "close-session-6.review.html",
+  "images": "images/close-session-6",
+  "runs": {
+    "before": "runs/cs6/before",
+    "after": "runs/cs6/after"
+  },
+  "labels": {
+    "before": "Round 5",
+    "after": "Proposed"
+  },
+  "themes": [
+    "halftone-dimension",
+    "creme",
+    "youcoded",
+    "youcoded-night"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "CS6-1",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit YouCoded, or close its last window, while a file you edited in YouCoded is unsaved",
+      "words": true,
+      "headline": "Every piece of the new Unsaved changes popup comes from something you already approved — here is the list.",
+      "changed": "1) Title: short, naming the popup — \"Unsaved changes\"; the count moves to the first line (guide: one-line popup titles; like Session details, Close session). 2) One card holding a box per file (your pick on round 5; the Games friends list). 3) Each file is the app's setting row — name, one grey line, its button at the right (guide Settings; Session details' \"In your lists\"). 4) A file's own main action is filled at the right, anything beside it outlined (guide Buttons; Games' Accept beside Decline). 5) A problem on a file is the slim notice box inside that file's box, its buttons inside it (decisions \"Problem on a list item\"; Model providers' broken key, Specialists' permission ask). 6) Scrolling is only the shared popup body fading into the shared footer — no fade of its own (the footer slot you approved on close-session-4). 7) Two footer buttons stack full width, main one on top (guide Buttons; the OpenRouter key popup).",
+      "notice": "Nothing on this popup is styled for it alone. The one thing no rule covered — what the \"OK\" button should say — is the question two slides on.",
+      "yes": "Yes, that's the list",
+      "no": "No, something is off"
+    },
+    {
+      "id": "CS6-2",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit with unsaved files",
+      "runs": ["before", "after"],
+      "crop": "app/unsaved-before-quit@460x620+490+140",
+      "highlight": "panel",
+      "headline": "The rebuilt popup: a short title, each file a setting row in its box, problems in the notice box inside it.",
+      "changed": "The title is \"Unsaved changes\" (was \"6 files have unsaved changes.\"). Each file has a plain line saying where it stands (\"Not saved yet\", \"The file is no longer there\"), its button at the right, and, when something is wrong, the notice box with its own buttons. \"Retry\" reads \"Try again\", as everywhere now. The popup is Close session's width.",
+      "notice": "Save on a file is filled — it is that file's main action, the same rule as Accept in the Games friends list."
+    },
+    {
+      "id": "CS6-3",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit with unsaved files, on a short window",
+      "runs": ["before", "after"],
+      "crop": "app/unsaved-before-quit#short@460x480+490+0",
+      "highlight": "panel",
+      "headline": "On a short window the list scrolls under the same fade every popup uses, into the pinned buttons.",
+      "changed": "No fade of its own any more: the popup body scrolls and fades into the footer exactly as Close session and Update available do.",
+      "notice": "At a normal window height most files fit without scrolling."
+    },
+    {
+      "id": "CS6-4",
+      "surface": "Unsaved changes before quitting",
+      "path": "Quit with unsaved files → OK",
+      "words": true,
+      "headline": "What should the popup's main button say? Today it reads \"OK\", which doesn't say what happens.",
+      "today": "The filled button at the bottom reads \"OK\". It closes the popup and takes you back to YouCoded, without quitting, so you can save the files.",
+      "problem": "\"OK\" could mean \"OK, quit\". The guide asks every button to say what happens on your computer, and this is the one label on the popup no rule settled.",
+      "proposal": "Name it for what it does. The outlined \"Discard and quit\" stays as it is.",
+      "options": [
+        {
+          "id": "back",
+          "label": "Go back and save",
+          "pros": ["Says you stay in YouCoded and what to do next"],
+          "cons": ["Longer than OK"],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep editing",
+          "pros": ["Short", "Plainly not a quit"],
+          "cons": ["Doesn't mention saving"]
+        },
+        {
+          "id": "ok",
+          "label": "Keep \"OK\"",
+          "pros": ["No change"],
+          "cons": ["Still reads as \"OK, quit\""]
+        }
+      ]
+    },
+    {
+      "id": "CS6-5",
+      "surface": "Update available",
+      "path": "Status bar → version chip, when an update is waiting",
+      "runs": ["after"],
+      "new": true,
+      "crop": "chat/update@640x380+400+260",
+      "headline": "The gap between the beta-builds card and Update now is 16 points — the same as other popups. Nothing changed.",
+      "changed": "Measured on the real screens at 1×: Update available, beta card to button, 16 points. Submit a ticket, \"Include with ticket\" card to Review ticket, 16. Close session, \"In your lists\" card to Close session, 16. The guide's gap between groups in a popup is 16.",
+      "notice": "If it still looks off to you, say how — closer, or further apart — and it will move in every popup at once, since they all share it."
+    }
+  ]
+}

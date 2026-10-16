@@ -1,0 +1,56 @@
+{
+  "title": "\"Pick what shows\" menus — built",
+  "key": "pick-menus-2",
+  "out": "pick-menus-2.review.html",
+  "images": "images/pick-menus-2",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light"],
+  "crops": {
+    "pm-sb": ["pm", "sb", "430x590+505+152"],
+    "pm-qc": ["pm", "qc", "430x500+505+200"],
+    "pm-tags": ["pm", "tags", "430x540+505+170"],
+    "pm-tagsedit": ["pm", "tagsedit", "430x560+505+168"]
+  },
+  "steps": [
+    {
+      "id": "PM2-1",
+      "surface": "Status bar widgets",
+      "path": "The pencil at the right end of the status bar",
+      "crop": "pm-sb",
+      "headline": "Labelled cards, a switch on each row, a hint under each name; the four fixed items are one line.",
+      "changed": "Tick boxes became switches on the right. Each (i) became a one-line hint under the name (the first sentence of what the (i) said; its \"Best for\" advice is gone). \"Always on\" is one sentence at the top. The theme cycle is a fold under the Theme row.",
+      "notice": "Switching something on or off works like the switches in Settings.",
+      "risk": "Taller rows: the menu scrolls further."
+    },
+    {
+      "id": "PM2-2",
+      "surface": "Quick chips",
+      "path": "The pencil at the end of the chips above the message box",
+      "crop": "pm-qc",
+      "headline": "Each chip shows its whole message, and the reorder grip and edit pencil are always visible.",
+      "changed": "Rows sit in a \"Your chips (7 of 10)\" card; each shows the name with its message under it (up to two lines). Clicking a row still opens it to edit; dragging the grip still reorders, but the grip and pencil no longer hide until you hover. \"+ Add Chip\" is an outlined \"+ Add a chip\" button.",
+      "notice": "You can see what each chip sends, and that chips can be reordered.",
+      "risk": "On a phone the row itself is the drag handle, as before."
+    },
+    {
+      "id": "PM2-3",
+      "surface": "Tags & note",
+      "path": "The tag chip in the status bar",
+      "crop": "pm-tags",
+      "headline": "Tags & note is two labelled cards, Tags and Note, in the standard popup frame; \"Manage tags…\" is gone.",
+      "changed": "Each tag has a \"…\" at the right. Archived tags are in a fold at the bottom of the Tags card. The popup now uses the same header and close button as every other popup.",
+      "notice": "Everything about tags in one place.",
+      "risk": "So far only this popup has it; the close-session prompt and Resume's Organize menu still use \"Manage tags…\" until you approve this."
+    },
+    {
+      "id": "PM2-4",
+      "surface": "Tags & note",
+      "path": "The tag chip in the status bar → the \"…\" on a tag",
+      "crop": "pm-tagsedit",
+      "headline": "The \"…\" opens that tag's colour, name, Archive and Delete right under it, instead of the separate Manage tags popup.",
+      "changed": "Before: Manage tags, a second popup with a name box and two buttons on every tag. After: the same controls, for one tag at a time, inside Tags & note. Delete still asks \"Delete?\" before deleting.",
+      "notice": "Renaming a tag no longer means leaving the popup you were in.",
+      "risk": "Delete is one click from the tick you use every day (it still needs a second click to confirm)."
+    }
+  ]
+}

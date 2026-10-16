@@ -1,0 +1,136 @@
+{
+  "title": "Appearance — the theme editor and the grouping",
+  "key": "appearance-questions",
+  "out": "appearance.questions.html",
+  "themes": ["light", "midnight"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "The theme editor (the pencil on your own themes)",
+      "intro": "The pencil appears only on themes you built yourself. Most of what it opens repeats Additional customizations; three things are only there."
+    },
+    {
+      "id": "AQ-1",
+      "words": true,
+      "surface": "Appearance",
+      "path": "Settings → Appearance → the pencil on a theme you built",
+      "headline": "What happens to the separate theme editor?",
+      "today": "The pencil opens \"Edit: <theme name>\": accent colour, roundness, particles, glass sliders, terminal sliders and Publish to Marketplace. Roundness and every glass and terminal slider also live in Additional customizations, where they apply to every theme.",
+      "problem": "Two places change the same things, and when Additional customizations is set, the editor's sliders go grey with a long note explaining why. You said you want this menu gone.",
+      "proposal": "Remove it, and move the few things only it has to the places in the next two questions.",
+      "options": [
+        {
+          "id": "remove",
+          "label": "Remove it",
+          "pros": ["One place for every look setting.", "No greyed-out sliders, no clashing values.", "The theme cards lose the pencil, so they're simpler."],
+          "cons": ["Changing your own theme's built-in roundness or glass now means asking Claude (the Additional customizations versions still work)."],
+          "recommended": true
+        },
+        {
+          "id": "slim",
+          "label": "Keep a slim one",
+          "summary": "The pencil stays on your own themes, but opens only accent colour, particles and Publish.",
+          "pros": ["Smallest change."],
+          "cons": ["Still a second, separate menu, which is what you didn't like."]
+        }
+      ]
+    },
+    {
+      "id": "AQ-2",
+      "words": true,
+      "pick": "several",
+      "surface": "Appearance",
+      "path": "Settings → Appearance → Additional customizations",
+      "headline": "If the editor goes, which of its settings should move into Additional customizations?",
+      "today": "Accent colour (the colour of buttons and highlights) and particles (falling snow, sparkles and so on) can only be changed in the editor, and only on themes you built.",
+      "problem": "Without the editor, there would be no hand control for them at all.",
+      "proposal": "Moved settings would start on Auto (the theme's own choice) and work on every theme, like the others there. Pick none and they're changed by asking Claude.",
+      "options": [
+        {
+          "id": "particles",
+          "label": "Particles",
+          "pros": ["Turn snow or sparkles on or off on any theme.", "A short row of pictures, like Message bubbles."],
+          "cons": ["One more row in the panel."],
+          "recommended": true
+        },
+        {
+          "id": "accent",
+          "label": "Accent colour",
+          "pros": ["Pick your favourite colour on any theme."],
+          "cons": ["On themes someone else designed, a picked colour can clash or make button text hard to read.", "A colour picker is a bigger, fiddlier control than the tile rows around it."]
+        },
+        {
+          "id": "neither",
+          "label": "Neither",
+          "pros": ["The panel stays the size it is."],
+          "cons": ["Changing them means asking Claude to edit your theme."]
+        }
+      ]
+    },
+    {
+      "id": "AQ-3",
+      "words": true,
+      "surface": "Appearance",
+      "path": "Settings → Appearance → a theme you built",
+      "headline": "Where should Publish to Marketplace be once the editor is gone?",
+      "today": "Publish sits at the bottom of the editor. It is also the Share button on the theme's page in Your library.",
+      "problem": "If the editor goes, Publish is only in Your library, which is easy to miss from Appearance.",
+      "proposal": "Two choices.",
+      "options": [
+        {
+          "id": "card-icon",
+          "label": "Share icon on the card",
+          "summary": "Your own themes show a small share icon where the pencil was; it opens the same publish screen.",
+          "pros": ["Visible right where you see your theme.", "Only on themes you made, so it says \"this one is yours\"."],
+          "cons": ["One more small icon on those cards, beside the star."],
+          "recommended": true
+        },
+        {
+          "id": "library-only",
+          "label": "Library only",
+          "pros": ["Theme cards stay as clean as the rest."],
+          "cons": ["You'd have to know to look in Your library."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Grouping the Appearance screen",
+      "intro": "Today: Themes, then Layout with a folded Additional customizations row (message bubbles, roundness, glass), then Effects & chat (Reduce visual effects, Message timestamps)."
+    },
+    {
+      "id": "AQ-4",
+      "words": true,
+      "surface": "Appearance",
+      "path": "Settings → Appearance",
+      "headline": "How should the rest of the screen, below Themes, be grouped?",
+      "today": "Layout's four tiles sit bare, then one folded row called \"Additional customizations\" hides bubbles, roundness and glass. Below it, \"Effects & chat\" mixes an accessibility switch with a chat setting.",
+      "problem": "\"Additional customizations\" doesn't say what's in it, the fold hides most settings, and the groups don't match what's inside them. You asked to rearrange and regroup this.",
+      "proposal": "Three ways to sort the same settings. In each, every group is a small label over a card, per the guide.",
+      "options": [
+        {
+          "id": "open-groups",
+          "label": "Named groups, nothing folded",
+          "summary": "Themes · Window (layout tiles, roundness) · Chat (message bubbles, timestamps) · Glass & effects (glass, Fine-tune, particles if moved, Reduce visual effects).",
+          "pros": ["Every setting visible, under a label that says what it is.", "No grab-bag row to open."],
+          "cons": ["A longer screen: about two screens of scrolling instead of one and a bit."],
+          "recommended": true
+        },
+        {
+          "id": "folded-groups",
+          "label": "Same groups, folded",
+          "summary": "The same four groups, but Window, Chat and Glass & effects each open and close like today's row.",
+          "pros": ["Short screen; you open only what you need."],
+          "cons": ["Settings stay hidden until you open them.", "Three folds instead of one."]
+        },
+        {
+          "id": "second-page",
+          "label": "A Customize page",
+          "summary": "Appearance shows Themes and Layout only; one \"Customize\" row opens a page with Chat and Glass & effects.",
+          "pros": ["The main screen is very short.", "Works like Fine-tune glass already does."],
+          "cons": ["Every tweak is one more click and a page change away."]
+        }
+      ]
+    }
+  ]
+}

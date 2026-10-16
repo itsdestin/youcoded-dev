@@ -393,6 +393,11 @@ async function main() {
     if (cmd === 'check') {
       const r = await readRoot(o, root);
       const errs = check(loadCards(r));
+      // WHY (2026-10-16): 14 older branches still edit the retired roadmap; merging one would quietly bring its
+      // files back and chats would start filing there again. CI runs this check on every change to master.
+      for (const old of ['ROADMAP.md', path.join('docs', 'roadmap')]) {
+        if (fs.existsSync(path.join(root, old))) errs.push(`${old}: the old roadmap was retired on 2026-10-15 — move its entries into cards (idea-intake skill) and delete it`);
+      }
       if (errs.length) { console.error(errs.join('\n')); process.exit(1); }
       console.log(`cards: ${loadCards(r).length} ok`); return;
     }

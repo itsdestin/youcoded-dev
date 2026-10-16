@@ -1,0 +1,202 @@
+{
+  "title": "Voice vocabulary and quick chips, redesigned to line up with tags",
+  "key": "vocab-chips-2",
+  "out": "vocab-chips-2.review.html",
+  "images": "images/vocab-chips-2",
+  "runs": {
+    "vc2": "runs/vc2"
+  },
+  "crops": {
+    "vv-today": [
+      "vc2",
+      "vv-today",
+      "1040x1220+0+0"
+    ],
+    "vv-new": [
+      "vc2",
+      "vv-new",
+      "1040x1220+0+0"
+    ],
+    "add-inside": [
+      "vc2",
+      "add-inside",
+      "1040x1220+0+0"
+    ],
+    "add-enter": [
+      "vc2",
+      "add-enter",
+      "1040x1220+0+0"
+    ],
+    "add-beside": [
+      "vc2",
+      "add-beside",
+      "1040x1220+0+0"
+    ],
+    "qc-today": [
+      "vc2",
+      "qc-today",
+      "1040x1220+0+0"
+    ],
+    "qc-new": [
+      "vc2",
+      "qc-new",
+      "1040x1220+0+0"
+    ],
+    "qc-pill": [
+      "vc2",
+      "qc-pill",
+      "1040x1220+0+0"
+    ],
+    "chip-before": [
+      "vc2",
+      "chip-before",
+      "1040x1220+0+0"
+    ],
+    "chip-today": [
+      "vc2",
+      "chip-today",
+      "1040x1220+0+0"
+    ],
+    "tag-edit": [
+      "vc2",
+      "tag-edit",
+      "1040x1220+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "K-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Quick chips → edit a chip",
+      "path": "Chat → Edit quick chips → the pencil on a chip",
+      "headline": "Which chip editor matches the tag editor better?",
+      "notice": "Each picture shows the chip editor beside a tag's edit box (Session details → click a tag), the closest similar popup.",
+      "variants": [
+        {
+          "id": "keep",
+          "label": "Keep today's",
+          "crop": [
+            {
+              "crop": "chip-today",
+              "label": "Chip editor"
+            },
+            {
+              "crop": "tag-edit",
+              "label": "Tag edit box"
+            }
+          ],
+          "summary": "Today (commit 7b41b47fe): a name over each box (Name, Message) and the switch and buttons inside the same box, exactly like the tag edit box. Most consistent; I recommend this one."
+        },
+        {
+          "id": "revert",
+          "label": "Go back",
+          "crop": [
+            {
+              "crop": "chip-before",
+              "label": "Chip editor"
+            },
+            {
+              "crop": "tag-edit",
+              "label": "Tag edit box"
+            }
+          ],
+          "summary": "Before: boxes with no names, the switch in a second box, buttons under the boxes.",
+          "risk": "Differs from the tag edit box in all three ways."
+        }
+      ]
+    },
+    {
+      "id": "D-1",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Chat → right-click the microphone → Voice vocabulary",
+      "headline": "Voice vocabulary, redesigned to line up with Tags.",
+      "notice": "Kept unique: no colours (a word is not a tag), no suggestions list, and the note that words are hints for Parakeet.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "vv-today",
+          "summary": "An unlabelled explanation box, \"Your words\", a box with an Add button beside it, a status line, and a Save button outside the box."
+        },
+        {
+          "id": "proposed",
+          "label": "Proposed",
+          "crop": "vv-new",
+          "summary": "One \"Your words\" box like the Tags box: tag-sized chips, \"Add a word\" over one box, the explanation as grey words under it. Each change saves at once like tags, so no Save button or status line. I recommend this one.",
+          "risk": "No way to back out of several edits at once; a removed word is gone (add it again)."
+        }
+      ]
+    },
+    {
+      "id": "D-2",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Typing a new word (\"Parakeet\" typed in each)",
+      "headline": "How should the Add button work? Pictures with a word typed in.",
+      "variants": [
+        {
+          "id": "inside",
+          "label": "Inside the box",
+          "crop": "add-inside",
+          "summary": "An Add button appears inside the box once you type, exactly like the tag box's Create. Enter also adds. Most like Tags; I recommend this one."
+        },
+        {
+          "id": "enter",
+          "label": "Enter only",
+          "crop": "add-enter",
+          "summary": "No button: the box says \"then press Enter\".",
+          "risk": "Someone who doesn't press Enter has nothing to click."
+        },
+        {
+          "id": "beside",
+          "label": "Beside the box",
+          "crop": "add-beside",
+          "summary": "Today's way: an outlined Add button next to the box.",
+          "risk": "Differs from the tag box."
+        }
+      ]
+    },
+    {
+      "id": "D-3",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Quick chips",
+      "path": "Chat → Edit quick chips",
+      "headline": "Quick chips, lined up with Tags. Which look?",
+      "notice": "Kept unique: the two shelves, dragging, the pencil on a chip, and the dashed \"+ Add a chip\" (like Tags' \"+ New tag\").",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "qc-today",
+          "summary": "The how-to line is small (11px) and inside the box."
+        },
+        {
+          "id": "hint-under",
+          "label": "Words under the box",
+          "crop": "qc-new",
+          "summary": "The how-to line moves under the box as 12px grey words, your rule. Chips keep the look of the real chips above the message box, so the editor previews what you'll see. I recommend this one."
+        },
+        {
+          "id": "pills",
+          "label": "Also tag-shaped chips",
+          "crop": "qc-pill",
+          "summary": "Same, plus chips shaped like tag chips (round, a little taller).",
+          "risk": "The chips no longer look like the ones above your message box."
+        }
+      ]
+    }
+  ]
+}

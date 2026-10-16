@@ -1,0 +1,36 @@
+{
+ "deck": "ui-element-review-lists",
+ "started": "2026-09-24T07:08:00.742Z",
+ "submitted": "2026-09-24T07:10:05Z",
+ "cur": 3,
+ "answers": {
+  "R-1": {
+   "v": "other",
+   "note": "confused about difference between a/b",
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "pick",
+   "pick": "plain",
+   "seconds": 22,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "other",
+   "note": "confused about difference between a/d",
+   "seconds": 44,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "other",
+   "note": "confused",
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

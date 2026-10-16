@@ -8,6 +8,7 @@
 //   shoot settings/sound settings/about --themes all  any names, every theme
 //   shoot --tag dialog --width 390                    by tag, at phone width
 //   shoot settings/* --before master --after <wt>     side by side, each side from its own checkout
+//   shoot settings/about --before-file desktop/src/renderer/components/ui/FoldRow.tsx@HEAD   before = this checkout with that one file from HEAD
 //   shoot --list                                      every screen name, with tags
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
@@ -21,16 +22,20 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve } from './engine.mjs';
+import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve, setShotScale, shotScale } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
+import { makeDriver, markOf, openSteps, pointerRestsOnClick, splitForSide, stepText } from './driver.mjs';
 import { ensureOfficeEditor } from './office-editor.mjs';
+import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
+import { mergeManifest, readManifest } from './manifest.mjs';
+import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
+import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
 // Destin, 2026-09-24: the two hardest themes (wallpaper, glass) are the default.
 const DEFAULT_THEMES = ['meadow-mist', 'halftone-dimension'];
-const ALL_THEMES = ['midnight', 'light', 'halftone-dimension', 'meadow-mist', 'creme', 'dark'];
 const CHECK_THEME = 'light';
 // Two pictures are "the same" when a 480-px-wide grey copy differs by under 0.01% on average (dim text on dark themes moves little).
 // WHY this fine: states that differ by one line of text (OpenRouter's 'key expired' vs
@@ -40,7 +45,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -53,19 +58,33 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--worktree') opt.worktree = next();
   else if (a === '--before') opt.before = next();
   else if (a === '--after') opt.after = next();
+  else if (a === '--before-file') opt.beforeFiles.push(parseBeforeFile(next()));
   else if (a === '--list') opt.list = true;
   else if (a === '--all') opt.all = true;
   else if (a === '--check') opt.check = true;
   else if (a === '-h' || a === '--help') { console.log(readHelp()); process.exit(0); }
   else if (a.startsWith('--')) die(`unknown option ${a} (see shoot --help)`);
+  // WHY (submit-ticket friction, proposal 17): a zsh variable holding several names arrives as
+  // ONE argument ("a/b c/d"); no screen name has a space, so say so instead of shooting nothing.
+  else if (/\s/.test(a)) die(`"${a}" has a space in it — no screen name does. Several names in one argument? Pass each as its own argument (in zsh: \${=VAR} or an array).`);
   else opt.names.push(a);
 }
 function die(msg) { console.error(`shoot: ${msg}`); process.exit(2); }
-function readHelp() { return spawnSync('sed', ['-n', '2,17p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, ''); }
+function readHelp() { return spawnSync('sed', ['-n', '2,18p', fileURLToPath(import.meta.url)], { encoding: 'utf8' }).stdout.replace(/^\/\/ ?/gm, ''); }
 
-const themes = opt.check ? [CHECK_THEME] : opt.themes === 'all' ? ALL_THEMES : opt.themes ? opt.themes.split(',') : DEFAULT_THEMES;
+// WHY 1.5× by default for review pictures (marketplace-detail friction, proposal 1): Destin
+// works at 1.5×, and a clipped chip border (M5-3) was invisible in every 1× picture read for
+// five rounds. Kept at 1× where boxes are read by a machine rather than a person: --check
+// (speed; nothing looks at the pixels), --collect (the design check crops by CSS-pixel boxes)
+// and --contrast (its report measures element boxes). SHOOT_SCALE in the environment wins.
+setShotScale(process.env.SHOOT_SCALE ? Number(process.env.SHOOT_SCALE) : (opt.check || opt.collect || opt.contrast) ? 1 : 1.5);
+
+// `--themes all` is filled in from the app itself once its first tab is open (themes.mjs).
+let themes = opt.check ? [CHECK_THEME] : opt.themes === 'all' ? null : opt.themes ? opt.themes.split(',') : DEFAULT_THEMES;
 const width = opt.width; const height = opt.height ?? (width < 640 ? 844 : 900);
 const log = (m) => console.error(`[shoot] ${m}`);
+// Where this run's Office editor listens (office-editor.mjs) — told to the app as ?officePort=.
+let officePort = null;
 
 // This checkout by default: inside a session worktree that is <worktree>/youcoded.
 function defaultCheckout() {
@@ -74,7 +93,7 @@ function defaultCheckout() {
 }
 
 // ─── One side: build, serve, list, shoot ─────────────────────────────────────
-async function side(checkout, outDir, pick) {
+async function side(checkout, outDir, pick, which = null) {
   const dist = await ensureBuild(checkout, log);
   const server = await serve(dist);
   const base = `http://127.0.0.1:${server.port}/index.html`;
@@ -88,15 +107,23 @@ async function side(checkout, outDir, pick) {
       await t.prepare({ theme: 'light', width: 1440, height: 900 });
       await t.navigate(`${base}?mode=workbench&child=1&latency=0`);
       screens = await waitFor(t, 'window.__youcodedScreens && window.__youcodedScreens.list()', 20_000);
+      // Every theme this app can show: its built-in themes + the practice backend's community ones.
+      if (!themes) {
+        themes = allThemes(builtinThemeSlugs(checkout), await t.evaluate(COMMUNITY_THEMES, 10_000).catch(() => []));
+        log(`--themes all: ${themes.length} themes (${themes.join(', ')})`);
+      }
     } finally { probe.close(); }
     if (!screens) return { missingList: true, results: [], server };
-    const chosen = pick(screens);
+    const picked = pick(screens);
+    // A state marked `newIn: 'after'` is skipped on the before side (driver.mjs splitForSide).
+    const { take: chosen, skip } = splitForSide(picked, which);
+    for (const s of skip) log(`skipped on the ${which} side: ${s.name} (new in the after side)`);
     if (opt.list) return { screens, results: [], server };
-    if (!chosen.length) return { screens, results: [], server, empty: true };
+    if (!chosen.length) return { screens, results: [], server, empty: !skip.length };
     const jobs = chosen.flatMap((s) => themes.map((theme) => ({ screen: s, theme })));
     // The Office editor, for the screens that show one (office-editor.mjs says why shoot owns it).
     if (chosen.some((s) => s.tags.includes('office'))) {
-      try { editor = await ensureOfficeEditor(checkout, log); } catch (e) { die(`the Office screens need the editor: ${e.message}`); }
+      try { editor = await ensureOfficeEditor(checkout, log); officePort = editor.port; } catch (e) { die(`the Office screens need the editor: ${e.message}`); }
     }
     const size = poolSize(jobs.length);
     log(`${chosen.length} screen(s) × ${themes.length} theme(s) = ${jobs.length} picture(s), ${size.browsers} browser(s) × ${Math.ceil(size.tabs / size.browsers)} tab(s)`);
@@ -163,12 +190,12 @@ const THUMB = (b64) => `(async () => { const img = new Image(); img.src = 'data:
 
 async function shootOne(tab, base, { screen, theme }, outDir) {
   const t0 = Date.now();
-  const r = { name: screen.name, theme, ok: false, reason: '', file: null, ms: 0, errors: [] };
+  const r = { name: screen.name, theme, ok: false, reason: '', file: null, ms: 0, errors: [], scale: shotScale() };
   try {
     // An entry may carry its own window (a phone screen); --width/--height apply otherwise.
     const w = screen.viewport?.width ?? width, h = screen.viewport?.height ?? height;
     await tab.prepare({ theme, width: w, height: h });
-    const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(screen.params ?? {}) });
+    const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(officePort ? { officePort: String(officePort) } : {}), ...(screen.params ?? {}) });
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
@@ -181,11 +208,46 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
       for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
         await tab.still(1500);
-        why = await tab.evaluate(MARK_CHECK(screen.name.split('#')[0]), 5000);   // a #state is marked as its plain screen
+        why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);   // a #state is marked as its plain screen, unless it names its own `mark`
         if (why?.panel) break;
       }
     }
+    // WHY keep looking, without opening again, up to 20 s from the first open (2026-10-12):
+    // the Office screens mark themselves only once the editor has drawn the file, and under a
+    // full `--check` at load ~20-60 the ~8 s the three presses above allow ran out — six
+    // Office screens failed "not showing" in verify and all opened in under 5 s alone. A
+    // screen that is truly missing still fails, just later; one that shows is unaffected.
+    for (const t2 = Date.now(); !why?.panel && Date.now() - t2 < 12_000;) {
+      await tab.still(1500);
+      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+    }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
+    // "Open this first" (screen list `open`): clicks replayed like a journey once the screen
+    // shows — a menu opened, a card unfolded — then the mark is checked again, so a step that
+    // closed or covered the screen fails here rather than photographing the wrong thing.
+    const steps = openSteps(screen.open);
+    if (steps.length) {
+      const driver = makeDriver(tab, { width: w, height: h });
+      for (const s of steps) {
+        try { await driver.perform(s); } catch (e) { throw new Error(`open step ${stepText(s)} failed: ${e.message}`); }
+      }
+      // The pointer would rest on the last thing clicked and paint its hover look into the
+      // picture (submit-ticket friction, proposal 14) — move it off the page. A `hover` step
+      // ending the list is kept: that hover is what the picture is for.
+      if (pointerRestsOnClick(steps)) { await driver.pointerAway(); await tab.still(1000); }
+      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      if (!why?.panel) throw new Error(`not showing after its open steps: ${why}`);
+    }
+    // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
+    // e.g. proving a failed-install notice is still there after its old 6-second timer. The mark
+    // is checked and the panel measured AFTER the wait (submit-ticket friction, proposal 16): the
+    // manifest held the pre-wait spinner's box, and the deck boxed the wrong size.
+    if (screen.waitMs) {
+      await new Promise((res) => setTimeout(res, screen.waitMs));
+      await tab.still(1500);
+      why = await tab.evaluate(MARK_CHECK(markOf(screen)), 5000);
+      if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
+    }
     r.panel = why.panel;
     // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
     // back with the theme's font on one side and the fallback on the other, at random. A
@@ -207,6 +269,8 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
+    // Parts agree (parts-agree.mjs): marked chip and button rows — one height, room inside a clip.
+    r.parts = partsFindings((await tab.evaluate(MEASURE_PARTS, 10_000).catch(() => null)) ?? []);
     // --collect <classes.json>: every visible element carrying one of those classes, with its
     // full class list and box — the design check (scripts/ui-review/design-check/) matches a
     // lint warning to its element by the whole class combination on the warned source line.
@@ -215,27 +279,32 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // the panel under it, not two at once. WHY (2026-09-26): ten dialogs got this wrong
     // before the shell took it over, and nothing noticed until a sweep like this one.
     if (opt.check) {
-      // Every layer with its real element's index into window.__exploreLayers (listLayers sets it).
-      const read = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.map((l, i) => ({ ...l, i })).filter((l) => l.kind !== 'tooltip');
+      // Tooltips and live status strips are not layers Escape closes. WHY status too (2026-10-05):
+      // the Marketplace footer strip ("Couldn't install …", role=status) reports the same failure
+      // the detail page shows, and closing the page puts that failure away (marketplace-context),
+      // so the strip rightly goes with it — that is the page closing, not a second layer.
+      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip' && l.kind !== 'status');
       const label = (ls) => ls.map((l) => `${l.kind} "${l.name}"`);
-      const first = await read();
-      const before = label(first);
-      if (first.length) {
-        // WHY identity, not names (2026-10-04): a layer's name is read from its text or its
-        // screen mark, and a mark that mounts a moment later renames the SAME panel ("Office
-        // Back to chat..." -> "office/document") — under load that read as "Escape closed two
-        // layers" on office/versions. So pin the real elements now and, after Escape, ask which
-        // of them are still on the page; names stay only for the error message.
-        await tab.evaluate(`window.__shootBefore = ${JSON.stringify(first.map((l) => l.i))}.map((i) => window.__exploreLayers[i]); 0`, 10_000);
+      const beforeLs = await layersNow();
+      const before = label(beforeLs);
+      if (before.length) {
         await tab.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
         await tab.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
         await tab.still(2000);
-        const after = await read();
-        const kept = JSON.parse(await tab.evaluate(`JSON.stringify(window.__shootBefore.map((e) => window.__exploreLayers.includes(e)))`, 10_000));
-        // Exactly the top one gone, every one under it still there, and nothing new opened.
-        await tab.evaluate('delete window.__shootBefore; 0', 10_000); // WHY (review F11): leave nothing of the check on the page
-        const ok = kept[0] === false && kept.slice(1).every(Boolean) && after.length === first.length - 1;
-        if (!ok) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${label(after).join(' › ') || 'nothing'}`);
+        const afterLs = await layersNow();
+        const after = label(afterLs);
+        // Same layers by IDENTITY (explore-page.mjs `uid`), not by name: a layer still loading
+        // may rename itself during the 2 s wait without being a different layer.
+        // `escapeStepsBack` (small-fixes-1): a step INSIDE a popup that owns Escape and its own ✕ —
+        // the add-a-backup wizard inside Backup & sync — goes back to the popup's main view, so
+        // every layer stays open. Checked as exactly that, not skipped.
+        if (screen.escapeStepsBack) {
+          const kept = afterLs.length === beforeLs.length && afterLs.every((l, i) => l.uid === beforeLs[i].uid);
+          if (!kept) throw new Error(`Escape should step back inside ${before[0]} and leave every layer open (${screen.escapeStepsBack}); open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        } else {
+          const same = afterLs.length === beforeLs.length - 1 && afterLs.every((l, i) => l.uid === beforeLs[i + 1].uid);
+          if (!same) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+        }
       }
     }
     r.ok = true;
@@ -261,6 +330,22 @@ function picker(screens) {
 }
 
 // ─── Reports ─────────────────────────────────────────────────────────────────
+// WHY a second, full-size look before calling two screens alike (marketplace-detail friction,
+// proposal 11): the 480px thumbnails cannot see a 40px button change — four real like-button
+// designs came back "LOOK-ALIKE" and needed a `sameAs` that described two different screens as
+// the same. Only a pair the thumbnails already call alike is compared again, pixel for pixel at
+// full size (2% grey tolerance for anti-aliasing): more than LOOKALIKE_PIXELS different pixels
+// means they differ. Without ImageMagick the thumbnail verdict stands.
+const LOOKALIKE_PIXELS = 50;
+function fullSizeAlike(a, b) {
+  // Pixels whose grey difference is over 2% (`compare -metric AE` reports in colour units on
+  // ImageMagick 7, not pixels, so the count is taken directly).
+  const r = spawnSync('magick', [a, b, '-compose', 'difference', '-composite', '-colorspace', 'gray', '-threshold', '2%', '-format', '%[fx:round(mean*w*h)]', 'info:'], { encoding: 'utf8' });
+  if (r.error || r.status !== 0) return true;
+  const n = Number(String(r.stdout).trim());
+  return !(n > LOOKALIKE_PIXELS);
+}
+
 function lookalikes(results, screens) {
   const same = new Map(screens.filter((s) => s.sameAs).map((s) => [s.name, s.sameAs.name]));
   const expected = (a, b) => same.get(a) === b || same.get(b) === a;
@@ -270,7 +355,7 @@ function lookalikes(results, screens) {
     for (let i = 0; i < got.length; i++) for (let j = i + 1; j < got.length; j++) {
       const a = got[i].thumb, b = got[j].thumb; if (a.length !== b.length) continue;
       let d = 0; for (let k = 0; k < a.length; k++) d += Math.abs(a[k] - b[k]);
-      if (d / a.length / 255 < LOOKALIKE && !expected(got[i].name, got[j].name)) out.push(`${got[i].name} = ${got[j].name} (${theme})`);
+      if (d / a.length / 255 < LOOKALIKE && !expected(got[i].name, got[j].name) && fullSizeAlike(got[i].file, got[j].file)) out.push(`${got[i].name} = ${got[j].name} (${theme})`);
     }
   }
   return out;
@@ -296,9 +381,18 @@ function summarize(label, { results, screens }, outDir) {
   for (const r of bad) console.log(`  NOT TAKEN  ${r.name} · ${r.theme} — ${r.reason}`);
   const same = lookalikes(results, screens);
   for (const s of same) console.log(`  LOOK-ALIKE ${s} — different screens, same picture. If that is expected, add sameAs to the screen list.`);
+  // A part that disagrees fails --check like a screen that did not open: it is a defect a
+  // person would see, found before anyone looks (parts-agree.mjs says which rows are read).
+  const parts = ok.flatMap((r) => (r.parts ?? []).map((p) => `${r.name} · ${r.theme} — ${p}`));
+  for (const p of parts) console.log(`  PARTS      ${p}`);
   const errs = ok.filter((r) => r.errors.length);
   for (const r of errs) console.log(`  PAGE ERROR ${r.name} · ${r.theme} — ${r.errors[0].split('\n')[0].slice(0, 160)}`);
-  writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(results.map(({ thumb, ...r }) => r), null, 2));
+  // A re-shoot into an existing run folder keeps that folder's other pictures in the manifest
+  // (manifest.mjs says why: a partial re-shoot used to drop them from the deck, silently).
+  const mf = join(outDir, 'manifest.json');
+  const { records, kept } = mergeManifest(readManifest(mf), results.map(({ thumb, ...r }) => r));
+  writeFileSync(mf, JSON.stringify(records, null, 2));
+  if (kept) console.log(`  kept ${kept} earlier picture(s) of this folder in its manifest (re-shot ones replaced)`);
   // --contrast: the painted-pixel report beside the pictures (text too faint on its own
   // background, per theme). Same report the old sweep wrote; it reads this manifest.
   if (opt.contrast) {
@@ -306,7 +400,7 @@ function summarize(label, { results, screens }, outDir) {
     writeFileSync(join(outDir, 'contrast.md'), rep.stdout || rep.stderr);
     log(`contrast report: ${join(outDir, 'contrast.md')}`);
   }
-  return { bad: bad.length, same: same.length };
+  return { bad: bad.length, same: same.length, parts: parts.length };
 }
 
 // ─── Before / after ─────────────────────────────────────────────────────────
@@ -315,7 +409,7 @@ function compare(before, after, outDir) {
   const dir = join(outDir, 'compare'); mkdirSync(dir, { recursive: true });
   const key = (r) => `${r.name}|${r.theme}`;
   const B = new Map(before.results.map((r) => [key(r), r])); const A = new Map(after.results.map((r) => [key(r), r]));
-  const placeholder = (text) => ['-size', `${width}x${height}`, 'xc:#333', '-gravity', 'center', '-fill', '#ddd', '-pointsize', '36', '-annotate', '0', text];
+  const placeholder = (text) => ['-size', `${Math.round(width * shotScale())}x${Math.round(height * shotScale())}`, 'xc:#333', '-gravity', 'center', '-fill', '#ddd', '-pointsize', '36', '-annotate', '0', text];
   for (const k of new Set([...B.keys(), ...A.keys()])) {
     const [name, theme] = k.split('|'); const b = B.get(k); const a = A.get(k);
     const leftSrc = b?.ok ? [b.file] : placeholder(b ? `Before: not taken\n${b.reason.slice(0, 60)}` : 'Not on the before side');
@@ -332,14 +426,24 @@ const outDir = opt.out ?? join(WORKSPACE, 'scratch', 'shoot', stamp);
 if (!opt.list && !opt.all && !opt.check && !opt.names.length && !opt.tags.length) die('name some screens (shoot --list), or pass --all / --check');
 
 const t0 = Date.now();
+// --before-file <path>@<ref> (repeatable): the before side is the after checkout (default:
+// this one) with only those files from <ref> — before-file.mjs says why.
+if (opt.beforeFiles.length) {
+  if (opt.before) die('--before-file makes its own before side; leave out --before');
+  const afterCheckout = opt.after ? resolveCheckout(opt.after) : defaultCheckout();
+  try { opt.before = prepareBeforeCopy(afterCheckout, opt.beforeFiles, join(WORKSPACE, 'scratch', 'shoot-before-file')); } catch (e) { die(e.message); }
+  opt.after = afterCheckout;
+  log(`before = ${afterCheckout} with ${opt.beforeFiles.map((f) => `${f.path}@${f.ref}`).join(', ')} (copy at ${opt.before})`);
+}
 if (opt.before || opt.after) {
   if (!opt.before || !opt.after) die('--before and --after go together');
   const results = {};
   for (const which of ['before', 'after']) {
     const checkout = resolveCheckout(opt[which]);
     const out = join(outDir, which); mkdirSync(out, { recursive: true });
-    const r = await side(checkout, out, picker);
+    const r = await side(checkout, out, picker, which);
     if (r.missingList) die(`the ${which} side (${checkout}) has no screen list yet — until phase 1 of shoot is merged there, compare with scripts/ui-review/record-pair.sh / montage-ab.sh`);
+    if (r.empty) die(`nothing matched on the ${which} side — no pictures taken`);
     results[which] = r;
   }
   summarize('before: ', results.before, join(outDir, 'before'));
@@ -358,7 +462,7 @@ if (opt.list) {
   process.exit(0);
 }
 if (r.empty) die('nothing matched');
-const { bad, same } = summarize('', r, outDir);
+const { bad, same, parts } = summarize('', r, outDir);
 if (!opt.check) for (const f of sheet(r.results, outDir)) console.log(`  contact sheet: ${f}`);
 console.log(`done in ${((Date.now() - t0) / 1000).toFixed(1)}s → ${outDir}`);
-process.exit(opt.check && (bad > 0 || same > 0) ? 1 : 0);
+process.exit(opt.check && (bad > 0 || same > 0 || parts > 0) ? 1 : 0);

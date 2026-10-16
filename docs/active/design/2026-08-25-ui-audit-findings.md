@@ -2,7 +2,7 @@
 status: active
 date: 2026-08-25
 owner: Destin (decisions) / Claude (audit)
-related: 2026-08-25-ui-design-guide.md, 2026-08-25-ui-audit/gallery.html
+related: ../archive/design/2026-08-25-ui-design-guide.md (superseded by 2026-10-13-ui-design-guide.md), 2026-08-25-ui-audit/gallery.html
 roadmap: "Whole-UI review pass once the consistency migration is complete" (ROADMAP.md, added 2026-07-24)
 ---
 

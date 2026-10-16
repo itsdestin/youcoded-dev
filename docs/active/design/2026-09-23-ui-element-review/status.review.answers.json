@@ -1,0 +1,22 @@
+{
+ "deck": "ui-element-review-status",
+ "started": "2026-09-24T07:49:30.348Z",
+ "submitted": "2026-09-24T07:51:49Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "i like how today looks for the session switcher working status. i think tinted pill looks good for installed.",
+   "v": "other",
+   "seconds": 116,
+   "theme": "light",
+   "zoom": 1
+  },
+  "W-1": {
+   "v": "pick",
+   "pick": "today",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

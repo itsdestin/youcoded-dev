@@ -1,0 +1,111 @@
+{
+ "title": "Popup spacing — the gaps between groups and boxes",
+ "key": "ui-popup-spacing",
+ "out": "popup-spacing.review.html",
+ "images": "images/popup-spacing.review",
+ "runs": {
+  "before": "runs/sp-before",
+  "after": "runs/sp-after"
+ },
+ "labels": {
+  "before": "Today (20px)",
+  "after": "16px"
+ },
+ "themes": [
+  "light",
+  "meadow-mist",
+  "midnight"
+ ],
+ "crops": {
+  "settings__sound": [
+   "sp",
+   "settings__sound",
+   "468x636+486+132"
+  ],
+  "settings__about": [
+   "sp",
+   "settings__about",
+   "468x636+486+132"
+  ],
+  "settings__performance": [
+   "sp",
+   "settings__performance",
+   "468x636+486+132"
+  ],
+  "settings__development": [
+   "sp",
+   "settings__development",
+   "468x485+486+208"
+  ],
+  "remote-6": [
+   "sp",
+   "remote-6",
+   "468x636+486+132"
+  ],
+  "remote-8": [
+   "sp",
+   "remote-8",
+   "468x636+486+132"
+  ]
+ },
+ "steps": [
+  {
+   "id": "SP-1",
+   "surface": "Sound",
+   "path": "Settings → Sound",
+   "crop": "settings__sound",
+   "headline": "Sound: 16px between groups, like your spacing rule?",
+   "changed": "The space between groups drops from 20px to 16px — your approved Settings rule (16px between groups). Seven popups use this shared spacing; Backup & Sync and Account already put 16px between their cards.",
+   "notice": "Only the gap between groups changes. The popup gets slightly shorter; nothing else moves."
+  },
+  {
+   "id": "SP-2",
+   "surface": "About",
+   "path": "Settings → About",
+   "crop": "settings__about",
+   "headline": "About: 16px between groups, like your spacing rule?",
+   "changed": "The space between groups drops from 20px to 16px — your approved Settings rule (16px between groups). Seven popups use this shared spacing; Backup & Sync and Account already put 16px between their cards.",
+   "notice": "Only the gap between groups changes. The popup gets slightly shorter; nothing else moves."
+  },
+  {
+   "id": "SP-3",
+   "surface": "Performance",
+   "path": "Settings → Performance",
+   "crop": "settings__performance",
+   "headline": "Performance: 16px between groups, like your spacing rule?",
+   "changed": "The space between groups drops from 20px to 16px — your approved Settings rule (16px between groups). Seven popups use this shared spacing; Backup & Sync and Account already put 16px between their cards.",
+   "notice": "Only the gap between groups changes. The popup gets slightly shorter; nothing else moves."
+  },
+  {
+   "id": "SP-4",
+   "surface": "Development",
+   "path": "Settings → Development",
+   "crop": "settings__development",
+   "headline": "Development: 16px between groups, like your spacing rule?",
+   "changed": "The space between groups drops from 20px to 16px — your approved Settings rule (16px between groups). Seven popups use this shared spacing; Backup & Sync and Account already put 16px between their cards.",
+   "notice": "Only the gap between groups changes. The popup gets slightly shorter; nothing else moves."
+  },
+  {
+   "id": "SP-5",
+   "surface": "Remote Access",
+   "path": "Settings → Remote Access",
+   "headline": "Boxes next to each other in one group: 6px or 8px apart?",
+   "notice": "Today the app mixes both. 8px: the Settings list, Cloud providers, Local models, Permissions. 6px: Remote Access, Preferences, Keyboard Shortcuts (Sound's list is 3–4px). Your earlier rule said 6px; the Settings list you just aligned uses 8px. Whichever you pick becomes the one gap everywhere.",
+   "risk": "The difference is 2px per gap — small on one screen, but it is what makes screens feel the same side by side.",
+   "variants": [
+    {
+     "id": "six",
+     "label": "6px apart",
+     "crop": "remote-6",
+     "summary": "Your earlier rule. The Settings list, Cloud providers, Local models and Permissions tighten slightly."
+    },
+    {
+     "id": "eight",
+     "label": "8px apart",
+     "crop": "remote-8",
+     "summary": "Matches the Settings list. Remote Access, Preferences, Shortcuts and Sound's list loosen slightly. My pick: the Settings list is the screen people see most."
+    }
+   ]
+  }
+ ]
+}

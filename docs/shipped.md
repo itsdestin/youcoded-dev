@@ -114,6 +114,8 @@ merge decision either way.
 - [x] 2026-10-05 remote-access — Some chat cards can sit in a different place on the phone than on the computer (itsdestin/youcoded#604 (f0b243fac))
 - [x] 2026-10-05 remote-access — An action whose answer never arrived is recorded but never shown (itsdestin/youcoded#604 (f0b243fac))
 - [x] 2026-10-05 operations — The new site header does not match the two logos nearest it, and both were consciously deferred on 2026-09-04 rather than decided (youcoded#606)
+- [x] 2026-10-14 other-features — A page can open the normal new-session window with a message waiting (one-time approval, read-only preview, caret at start); flaky ipc-handlers status-push test fixed (youcoded#623 `b58a0acae`, youcoded#622 `de6622f28`)
+- [x] 2026-10-16 other-features — Revisit the "Submit a ticket" screen (Settings → Help & feedback → Report a bug) (youcoded#626)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

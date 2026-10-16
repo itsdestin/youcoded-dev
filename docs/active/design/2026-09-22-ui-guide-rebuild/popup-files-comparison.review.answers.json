@@ -1,0 +1,38 @@
+{
+ "deck": "ui-guide-popup-files-comparison-1",
+ "started": "2026-09-23T20:41:44.393Z",
+ "submitted": "2026-09-23T20:45:58Z",
+ "cur": 3,
+ "answers": {
+  "P-1": {
+   "v": "other",
+   "note": "the header style should be consolidated for all four of htese into a single consistent size/style.",
+   "seconds": 62,
+   "theme": "halftone-dimension",
+   "zoom": 1.5
+  },
+  "P-2": {
+   "note": "somewhere between a/b/c. hard to triage with words along, kinda confused about the differences between these options in practice.",
+   "v": "other",
+   "seconds": 57,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "pick",
+   "pick": "separate-roles",
+   "note": "still need to visualize a/b to really understand the proposal",
+   "seconds": 39,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "F-1": {
+   "v": "pick",
+   "note": "want to refine the sizing/spacing a bit. i also don't like the separate divider line under the search input bar, and this header should have the new tapered style with our new fade.",
+   "seconds": 94,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "pick": "wide-preview"
+  }
+ }
+}

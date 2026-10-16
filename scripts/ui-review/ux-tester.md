@@ -24,7 +24,7 @@ run's accepted findings become contract rows.
 
 **After it reports:** mark every finding `accepted`, `rejected` or `already handled` on its
 line in the review file (`- U3 accepted — …`); a wording proposal is applied only after
-checking it against the design guide's banned-word list, and one that changes *meaning*
+checking it against the design guide's Text and numbers rules (sentence case, say what happens, plain words), and one that changes *meaning*
 rather than length goes on the review deck for Destin instead. Accepted findings from the
 second run become contract rows with `source: review:<file>#U<n>` (see
 `contract-agent.md`). The triage counts are the data that decide whether this reviewer earns

@@ -1,0 +1,303 @@
+{
+  "title": "Voice vocabulary vs tags and quick chips; the chip editor commit",
+  "key": "vocab-chips-1",
+  "out": "vocab-chips-1.review.html",
+  "images": "images/vocab-chips-1",
+  "runs": {
+    "before": "runs/r12/before",
+    "after": "runs/r12/after",
+    "today": "runs/r11"
+  },
+  "steps": [
+    {
+      "id": "K-1",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Before 7b41b47fe",
+        "after": "Today"
+      },
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Quick chips",
+      "path": "Chat → Edit quick chips → the pencil on a chip",
+      "crop": "chat/quick-chips/edit@panel",
+      "headline": "Keep the chip editor change (commit 7b41b47fe), or go back?",
+      "changed": "That change made the chip editor match a tag's edit box: names over the two boxes (\"Name\", \"Message\"), and the switch and buttons inside the same box. Before, the boxes had no names and the switch sat in a second box.",
+      "notice": "Yes keeps today's version; No puts back the one on the left.",
+      "risk": "You said this one is your call; nothing else depends on it."
+    },
+    {
+      "id": "V-1",
+      "runs": [
+        "today"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Chat → microphone menu → Voice vocabulary",
+      "crop": [
+        {
+          "crop": "chat/voice/vocabulary@panel",
+          "label": "Voice vocabulary"
+        },
+        {
+          "crop": "chat/tags#tag-edit@panel",
+          "label": "Tags"
+        },
+        {
+          "crop": "chat/quick-chips@panel",
+          "label": "Quick chips"
+        }
+      ],
+      "highlight": {
+        "box": [
+          0,
+          0,
+          34,
+          100
+        ]
+      },
+      "headline": "Should Voice vocabulary save as you go, like tags and quick chips?",
+      "today": "You add or remove words, then press Save at the bottom (outside the box). Tags and quick chips save each change at once.",
+      "problem": "It's the one editor of this kind with a Save button, and closing without pressing it loses your changes.",
+      "proposal": "Save each word as it's added or removed; drop the Save button and the \"No unsaved changes\" line.",
+      "options": [
+        {
+          "id": "save-as-you-go",
+          "label": "Save as you go",
+          "recommended": true,
+          "pros": [
+            "Same as tags and quick chips",
+            "Nothing lost by closing"
+          ],
+          "cons": [
+            "No way to back out of a batch of edits"
+          ]
+        },
+        {
+          "id": "keep-save",
+          "label": "Keep the Save button",
+          "pros": [
+            "Change several words, then commit once"
+          ],
+          "cons": [
+            "Different from the others",
+            "Easy to lose changes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V-2",
+      "runs": [
+        "today"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Chat → microphone menu → Voice vocabulary",
+      "crop": [
+        {
+          "crop": "chat/voice/vocabulary@panel",
+          "label": "Voice vocabulary"
+        },
+        {
+          "crop": "chat/tags#tag-edit@panel",
+          "label": "Tags"
+        },
+        {
+          "crop": "chat/quick-chips@panel",
+          "label": "Quick chips"
+        }
+      ],
+      "highlight": {
+        "box": [
+          0,
+          0,
+          34,
+          100
+        ]
+      },
+      "headline": "How should you add a word?",
+      "today": "A text box with a separate \"Add\" button beside it, and a hint line \"Press Enter to add\".",
+      "problem": "Tags add from one box (type, then Enter or pick), with no button beside it; quick chips use a \"+ Add a chip\" chip.",
+      "proposal": "One box like the tag box: type a word, press Enter, it becomes a chip.",
+      "options": [
+        {
+          "id": "one-box",
+          "label": "One box, Enter adds",
+          "recommended": true,
+          "pros": [
+            "Same as adding a tag",
+            "One less button"
+          ],
+          "cons": [
+            "Relies on knowing to press Enter (the box's placeholder says so)"
+          ]
+        },
+        {
+          "id": "keep-button",
+          "label": "Keep the Add button",
+          "pros": [
+            "Obvious for people who don't press Enter"
+          ],
+          "cons": [
+            "Differs from tags"
+          ]
+        },
+        {
+          "id": "add-chip",
+          "label": "A \"+ Add a word\" chip",
+          "pros": [
+            "Same as quick chips"
+          ],
+          "cons": [
+            "An extra click to start typing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V-3",
+      "runs": [
+        "today"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Chat → microphone menu → Voice vocabulary",
+      "crop": [
+        {
+          "crop": "chat/voice/vocabulary@panel",
+          "label": "Voice vocabulary"
+        },
+        {
+          "crop": "chat/tags#tag-edit@panel",
+          "label": "Tags"
+        },
+        {
+          "crop": "chat/quick-chips@panel",
+          "label": "Quick chips"
+        }
+      ],
+      "highlight": {
+        "box": [
+          0,
+          0,
+          34,
+          100
+        ]
+      },
+      "headline": "Where should the explanation go?",
+      "today": "A box with no label at the top (\"Add names, unusual words or phrases…\"), then a labelled \"Your words\" box.",
+      "problem": "Once one box has a label, every box should; and you asked for grey explanations to sit under the box they explain.",
+      "proposal": "Move the explanation under the add box as grey words, so the popup is one labelled \"Your words\" box.",
+      "options": [
+        {
+          "id": "under-box",
+          "label": "Grey words under the box",
+          "recommended": true,
+          "pros": [
+            "Matches your \"grey text under the box\" rule",
+            "One box instead of two"
+          ],
+          "cons": [
+            "Explanation is read after the words, not before"
+          ]
+        },
+        {
+          "id": "label-it",
+          "label": "Label it \"About\"",
+          "pros": [
+            "Keeps it first"
+          ],
+          "cons": [
+            "Two boxes for a small popup"
+          ]
+        },
+        {
+          "id": "subtitle",
+          "label": "Line under the title",
+          "pros": [
+            "Shortest"
+          ],
+          "cons": [
+            "Three sentences is long for a title line"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V-4",
+      "runs": [
+        "today"
+      ],
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ],
+      "surface": "Voice vocabulary",
+      "path": "Chat → microphone menu → Voice vocabulary",
+      "crop": [
+        {
+          "crop": "chat/voice/vocabulary@panel",
+          "label": "Voice vocabulary"
+        },
+        {
+          "crop": "chat/tags#tag-edit@panel",
+          "label": "Tags"
+        },
+        {
+          "crop": "chat/quick-chips@panel",
+          "label": "Quick chips"
+        }
+      ],
+      "highlight": {
+        "box": [
+          0,
+          0,
+          34,
+          100
+        ]
+      },
+      "headline": "Should the word chips look like tag chips?",
+      "today": "Your words are plain chips with an ×. Tag chips carry their colour and an ×; quick chips are plain and draggable.",
+      "problem": "Three chip looks across the three editors.",
+      "proposal": "Keep plain chips (words have no colour), but give them the tag chip's exact size and × so the two read as one family.",
+      "options": [
+        {
+          "id": "tag-size",
+          "label": "Tag chip size and ×",
+          "recommended": true,
+          "pros": [
+            "One chip family across editors"
+          ],
+          "cons": [
+            "A small visual change only"
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No change"
+          ],
+          "cons": [
+            "Chips differ slightly between editors"
+          ]
+        }
+      ]
+    }
+  ]
+}

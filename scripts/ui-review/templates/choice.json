@@ -47,7 +47,7 @@
           "label": "Arrow only",
           "_comment_label": "label: the design's name, two or three words. Never write '(recommended)' here — there is no such flag on a choice; say it in the summary.",
           "crop": "send-plain",
-          "_comment_crop": "crop: this design's own picture. Every design needs one.",
+          "_comment_crop": "crop: this design's own picture. Every design needs one. A LIST of names lays several pictures side by side as one (a folded + opened pair): [\"a\", {\"crop\": \"b\", \"label\": \"Opened\"}]. Give every design the same size of picture, or the build warns the row will be cut off.",
           "summary": "An arrow in a circle, no words. The smallest of the three.",
           "_comment_summary": "summary: one or two sentences on what this design is and what it costs.",
           "measured": "40 px wide",
