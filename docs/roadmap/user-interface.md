@@ -9,6 +9,17 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       On hold since 2026-09-18 (Destin); resumes with the rest of phase 5
       `settings` `all` `blocked` `P1` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
+- [ ] Design guide: 6 questions fresh builders raised that Destin has not ruled on (guide test,
+      2026-10-15/16; notes in docs/archive/design/2026-10-15-guide-test/r1, r2). (a) Where a new
+      feature lives: a Page, a built-in Page or its own screen (3 of 5 round-2 builders unsure; one felt
+      a 4th permanent top-bar icon was the only allowed way in). (b) Cards inside the chat have no
+      recipe; the level-1 card vanishes inside a bubble. (c) "Every group gets a label and a box" and
+      "a lone button is full width" made screens boxy and heavy (3 builders). (d) "One filled button per
+      row in a list of actions" let seven cards each carry a bright button. (e) No neutral notice tone
+      (info takes the accent, pink in Halftone). (f) No recipe for big summary numbers, scores, or "pick
+      a card, the rest shows its details". Settle on a questions page, then a round-3 guide test.
+      `ui-guide` `all` `confirmed` `P3` `checked 2026-10-16`
+
 - [ ] Error messages still guess at causes in many places.
       The app-wide re-audit is done and batch 1 of 7 (seventeen messages that stated something false)
       shipped 2026-09-11. Left: Android and crash plumbing, one Report/Diagnose block, "couldn't
