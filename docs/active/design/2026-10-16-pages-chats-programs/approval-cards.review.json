@@ -1,0 +1,43 @@
+{
+  "title": "Pages: two new permissions on the approval card",
+  "key": "pages-chats-programs-cards",
+  "out": "approval-cards.review.html",
+  "images": "images/approval-cards.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "Built"
+  },
+  "themes": [
+    "morning-rounds",
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "YouCoded Pages",
+      "path": "Opening a page that asks to see your chats, a program and new conversations (sample 'Work board')",
+      "crop": "pages/page/page-work-board",
+      "headline": "A page that wants your chats and a program says so on the usual card, in plain sentences, before it opens.",
+      "changed": "Two new lines join the card. Chats: what it can see and change, and what it can't (what was said, renaming, deleting). Program: the file's name, the blunt 'anything your account can do', and three plain consequences. Because this page can also run a program, a quiet line warns it could send your chat list off this computer.",
+      "notice": "Same card, buttons and order as every other page permission; nothing opens until Allow. Editing the program file later brings this card back.",
+      "risk": "The card is taller when a page asks for both; on a small window it scrolls.",
+      "yes": "Keep it",
+      "no": "Change it"
+    },
+    {
+      "id": "S-2",
+      "surface": "YouCoded Pages",
+      "path": "Opening a project page that only looks at that project's chats (sample 'Project chats')",
+      "crop": "pages/page/page-project-chats",
+      "headline": "A page that only looks at one project's chats asks for exactly that, and says it can't change anything.",
+      "changed": "The page names its project, so the card says 'your chats in youcoded'. Look-only pages say they cannot change anything. With no other permissions there is no 'could send your chat list' line.",
+      "notice": "You can tell at a glance a narrow page from one that reaches everything.",
+      "risk": "",
+      "yes": "Keep it",
+      "no": "Change it"
+    }
+  ]
+}
