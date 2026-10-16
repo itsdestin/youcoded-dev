@@ -19,7 +19,7 @@ screenshot you can open.
 
 ## How to look at the pictures
 
-- **Gallery (start here):** `docs/active/design/2026-08-25-ui-audit/gallery.html` — one
+- **Gallery (start here):** `docs/archive/design/2026-08-25-ui-audit/gallery.html` — one
   row per surface, every theme side by side. Open the file path in the app's file viewer or
   a browser. Each picture is named `<plan>-<surface>`: `main-` (screens, settings, overlays
   reached from the chat), `overlays-` (context menus, prompts, wizard, project overlays…),

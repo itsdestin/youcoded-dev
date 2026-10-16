@@ -10,7 +10,7 @@ stage: home-device connection, live socket and camera video on master since 2026
 
 Destin approved the twelve-part plain-language scope summary in conversation on 2026-09-15: “okay, i think this looks good!” This records product scope, not approved screen designs, a technical implementation contract, permission to implement, or shipping authorization.
 
-Opening decisions are preserved in `docs/active/design/2026-09-15-youcoded-pages/youcoded-pages.questions.answers.json`. Subsequent conversation clarified page isolation, computer programs, live themes, general connections and custom services. Those clarifications are recorded here, not fabricated as answers in the opening deck. Visual review and the sourced contract remain required before implementation.
+Opening decisions are preserved in `docs/archive/design/2026-09-15-youcoded-pages/youcoded-pages.questions.answers.json`. Subsequent conversation clarified page isolation, computer programs, live themes, general connections and custom services. Those clarifications are recorded here, not fabricated as answers in the opening deck. Visual review and the sourced contract remain required before implementation.
 
 ## Product
 

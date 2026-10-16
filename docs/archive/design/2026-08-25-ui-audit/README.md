@@ -1,0 +1,104 @@
+---
+status: superseded (see the 2026-10-16 document sweep) — archived 2026-10-16
+---
+# UI audit 2026-08-25 — screenshot evidence
+
+> Pages dated before 2026-08-27 were built by the v1 `review-cards.py` / `review-page.py`, which no longer exist in that form; their JSON specs stay as the record of what was asked. New decks use the v2 tool (`phase-c-review-v2.json` is the template; `scripts/ui-review/README.md`).
+
+- `gallery.html` — every captured surface, all themes side by side. Open the file in the
+  app's file viewer or a browser. Names are `<plan>-<surface>` (`main-`, `overlays-`,
+  `narrow-`, `tall-`, `latency-`, `marketplace-` from the workbench sweep; `live-` and
+  `e-` from the real app); the findings doc cites them. `marketplace-*` exists because
+  youcoded PR #326 gave the workbench registry data — before that those surfaces were
+  empty in every theme.
+- `phase-a-review.html` (spec `phase-a-review.json`; built by `python3 scripts/ui-review/review-page.py build <spec>` from `images/phase-a/`) — the
+  review page Destin decided Phase A on: per change, the problem with numbers, the exact
+  edit, 1:1 before/after crops, risks, alternatives, and an approve/reject control that
+  assembles a copyable feedback block. **This is the template for every later phase** —
+  a gallery of shrunken windows with no rationale was rejected as a review surface.
+- `phase-b-brief.html` / `phase-b-review.html` (specs `phase-b-brief.json`, `phase-b-review.json`) —
+  the Phase B brief (problems only, from master) and the review page it led to. Both carry a
+  banner with the decisions (P-15 approved as revised, P-18 approved, P-10 rejected; youcoded #328).
+- `phase-c-cards.html` (spec `phase-c-cards.json`, built by `scripts/ui-review/review-cards.py`, crops in
+  `images/phase-c/` from `scratch/ui-phase-c-baseline/`, a sweep of master at `c04739df`) — the Phase C
+  brief as a **deck**: 16 points on 5 screens, one point per step, one ring on the target, Yes/No. A
+  prose-first brief and a board-of-cards layout were both rejected the same day; the deck is the
+  template from here on. Decided 2026-08-27: 13 of 16 points yes.
+- `phase-c-review.html` (spec `phase-c-review.json`, crops in `images/phase-c-review/` from
+  `scratch/ui-phase-c-baseline/` vs `scratch/ui-phase-c-after/`, branch `feat/ui-phase-c`) — the Phase C
+  review deck: Before/After flip per point for the 13 built changes, plus two question steps
+  (P-21 #2 re-explained, P-3 #2 glass sliders on flat themes). Decided 2026-08-27: all yes with
+  four refinements.
+- `phase-c-review2.html` (spec `phase-c-review2.json`, `scratch/ui-phase-c-after/` vs
+  `scratch/ui-phase-c-after2/`) — round 2: hover-only star + taller preview cards, greyed pencil
+  with tooltip, the marketplace type switch as the Library pill (“Plugins”), and the P-21 #2
+  mock-up (theme cards reserve their text rows). Decided 2026-08-27: all yes, reservation reverted;
+  Phase C merged as youcoded #332.
+- `phase-d-brief.html` (spec `phase-d-brief.json`, one-run “today” deck from `scratch/ui-phase-d-today/`,
+  master `40feb750`) — the Phase D brief: 8 points (welcome gear, attachment chips, find bar, skills
+  drawer ×3, terminal ×2 from a real-app capture in one theme — the first per-step `themes` use).
+  Decided 2026-08-27: 4 yes, 1 no, 3 “other” (frame instead of a gear; mock-ups wanted for chips and
+  the terminal backing; terminal width to reproduce first).
+- `phase-d-review.html` (spec `phase-d-review.json`, `scratch/ui-phase-d-today/` vs
+  `scratch/ui-phase-d-after/`) — the four built changes. Decided: all yes except the find bar
+  (“keep it a bordered pill, just don’t overlap my message”).
+- `phase-d-review2.html` — the find bar as a bordered pill in its own reserved lane. Yes.
+- `phase-d-mockups.html` (spec `phase-d-mockups.json`, from `scratch/ui-phase-d-mockups/`) — the
+  first **choice-step** deck: two questions, several pictures each, pick one (attachment chip
+  A/B/C; terminal backing today/scrim/90%/100%). Decided: chip C with rendered markdown; terminal
+  “panel, at 80%” (after a scrim-vs-panel explanation in chat).
+- `phase-d-review3.html` (`scratch/ui-phase-d-before-final/` vs `scratch/ui-phase-d-after3/`) — chips
+  and terminal as built. Yes, yes. Phase D merged as youcoded #339.
+- `phase-e-brief.html` (spec `phase-e-brief.json`, one-run “today” deck from `scratch/ui-phase-e-today/`,
+  master `c16d38f1`) — the Phase E brief: 4 points (shortcuts list, all-sessions menu, Model
+  Providers scroll cue, Model Providers button shapes). Decided 2026-08-28: P-7 and P-8 yes,
+  both P-4 halves no. The audit's fourth Phase E item (the word `undefined` in the local-models
+  list) was dropped BEFORE the brief: a fresh capture showed the list had been rewritten and no
+  longer prints it.
+- `phase-e-review.html` (`scratch/ui-phase-e-today/` vs `scratch/ui-phase-e-after/`) — the two
+  built changes. Both yes; P-8 with a redesign of the row (“sessions should stick to 1 line,
+  project should go below on second line… new dot+text in a pill… small file icon before the
+  project name and tag icons on the right”).
+- `phase-e-review2.html` (`scratch/ui-phase-e-after/` vs `scratch/ui-phase-e-after2/`) — the row
+  rebuilt to that sketch, plus a **choice step** on the one state he had not named: give amber
+  its own word, or fold it into red's. Yes, and **pick A** (five words). The choice's pictures
+  come from a dev-only page, `?mode=workbench&child=1&view=session-pills`, which renders the
+  shipping pill in all five states with `?pills=four|five` as the A/B.
+- `phase-e-review3.html` (`scratch/ui-phase-e-after2/` vs `scratch/ui-phase-e-after3/`) — tags as
+  named chips instead of coloured dots. Yes. Phase E merged as youcoded #347.
+- `coverage.md` — machine-generated: which planned surfaces were verified in which themes
+  (the original pass: 103 of 104 — "Known Issues" opens an external link; the latest full sweep
+  of master, 2026-08-26 after Phase B, verified 112 of 112). `contrast.md` — the painted-pixel
+  contrast probe's raw output (over-reports on glass themes; read, don't paste).
+- `images/` — the JPEG sheets the gallery shows (~13 MB, **git-ignored** on purpose, same
+  convention as the perf-lab screenshots; they exist on the machine that ran the audit).
+- Full-resolution PNG originals live in `scratch/ui-review-2026-08-25/` (workbench sweep)
+  and `scratch/ui-audit-2026-08-25/shots-e*/` (real app), both git-ignored.
+
+**(2026-09-26: the sweep below is retired — regenerate with `node scripts/shoot/shoot.mjs --all --themes all --contrast --worktree <worktree>`; see `.claude/skills/ui-review/SKILL.md`.)** Originally: **Regenerate everything:** `bash scripts/ui-review/run-review.sh <worktree>` (≈15 min), then
+copy `sheets/*.jpg` here and run `python3 scripts/ui-review/make-gallery.py images gallery.html`.
+The real-app plans need the dev instance described in `scripts/ui-review/README.md`.
+
+## Second pass (later on 2026-08-25)
+
+The capture driver was rebuilt to verify itself (`scripts/ui-review/shot.mjs`); every
+surface listed below as "not captured" was then captured and verified in all six themes —
+the `overlays-*` sheets — and a live session on the real app produced the `live-*` sheets.
+The machine-generated record of that pass (39 covered, 2 real-app shots that had nothing
+to open) was `coverage-second-pass.md`, since deleted; `coverage.md` beside this file is the
+record that survives. The section below is kept as history.
+
+## Not captured by the FIRST rig (pulled from the gallery 2026-08-25)
+
+A pixel-diff found sheets that were really just the parent screen because the click or
+keystroke missed. They were removed so nothing here is mislabelled. **No finding rests on
+them.** Surfaces still unreviewed as a result: right-click context menus (chat, session tab,
+composer, file row); close-session prompt; expanded "thinking" block; Shift session switcher;
+composer attachments; context pill; theme-cycle editor; first-run wizard; a permission prompt
+inside a chat transcript; the stalled-turn card; Projects "Add project" and project-detail
+overlays; Development → Report a bug / Contribute sub-screens; Model Providers → OpenRouter
+and Local tabs (the dialog itself was captured); workbench Marketplace detail/filter overlays
+(the real-app pass covers plugin detail). The `scenario-refused/no-providers/stress` sheets
+were also dropped — those scenarios change resume/permissions data, not the transcript, so
+they are identical to home by design. The Terminal view is blank in the workbench (no PTY)
+and is not a finding.

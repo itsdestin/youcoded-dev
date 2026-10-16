@@ -94,7 +94,7 @@ relevant when touching specific directories:
 
 Use the `**/` prefix form. youcoded-dev learned this the hard way: 100 of its 134
 rule globs are `youcoded/desktop/...` and **never fire inside a worktree**, which is
-where all real work happens (`docs/active/investigations/2026-08-31-session-retrospective-workspace-friction.md`,
+where all real work happens (`docs/archive/investigations/2026-08-31-session-retrospective-workspace-friction.md`,
 Theme A). JLBC keeps worktrees under `~/ask-the-budget-az-worktrees/`, outside the
 repo, so the rules must live in the worktree too — they will, since `.claude/` is
 committed.

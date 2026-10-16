@@ -49,7 +49,7 @@ park hidden views.
 - **Cycle 1 (per-token costs) SHIPPED** 2026-08-28 — youcoded #342 (`97600ddd`), on pinning
   tests; the rig is blind to the per-token path by construction (it streams whole turns).
 - **Cycles 2 and 3** (paged history, park hidden views) are next:
-  `docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md`,
+  `docs/archive/handoffs/2026-08-27-perf-cycle-1-handoff.md`,
   `docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md`. No branch open on 2026-09-01.
 
 The rig still **understates** real use: fixtures are lighter than real transcripts (code

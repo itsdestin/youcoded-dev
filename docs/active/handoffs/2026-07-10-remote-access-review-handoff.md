@@ -26,7 +26,7 @@ status: active
 >   deliberately deferred the unification on 2026-08-06 because `folders:rename` over the
 >   WebSocket has zero test coverage — **write that test first**.
 > - **Finding 4 — OPEN.** This is Commit 2 of
->   `docs/active/plans/2026-07-20-remote-hydration-pr-spec.md`; nothing shipped
+>   `docs/archive/plans/2026-07-20-remote-hydration-pr-spec.md`; nothing shipped
 >   (no `hydrates` flag, no `hydrationPending`, 500 ms timer still at `remote-server.ts:758`).
 > - **Finding 5 — OPEN and tracked nowhere.** `transcript-watcher.ts:35` is still a bare
 >   `const timestamp = Date.now();`. This is the only finding in this doc with no ROADMAP

@@ -1,0 +1,92 @@
+[
+  {
+    "name": "pages/page/page-project-chats",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/work-cards-20261014/docs/active/design/2026-10-16-pages-chats-programs/runs/after/pages/page/page-project-chats/midnight.png",
+    "ms": 1279,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-project-chats",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/work-cards-20261014/docs/active/design/2026-10-16-pages-chats-programs/runs/after/pages/page/page-project-chats/light.png",
+    "ms": 1297,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-work-board",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/work-cards-20261014/docs/active/design/2026-10-16-pages-chats-programs/runs/after/pages/page/page-work-board/light.png",
+    "ms": 1332,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-work-board",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/work-cards-20261014/docs/active/design/2026-10-16-pages-chats-programs/runs/after/pages/page/page-work-board/midnight.png",
+    "ms": 1364,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-project-chats",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/work-cards-20261014/docs/active/design/2026-10-16-pages-chats-programs/runs/after/pages/page/page-project-chats/morning-rounds.png",
+    "ms": 1831,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  },
+  {
+    "name": "pages/page/page-work-board",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/work-cards-20261014/docs/active/design/2026-10-16-pages-chats-programs/runs/after/pages/page/page-work-board/morning-rounds.png",
+    "ms": 1833,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    }
+  }
+]

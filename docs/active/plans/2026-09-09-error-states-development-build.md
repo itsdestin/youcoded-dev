@@ -8,7 +8,7 @@ date: 2026-09-09
 **Units B and C are what remains.** For unit B, start at
 `docs/active/investigations/2026-09-10-error-inventory/README.md` — a re-audit of today's code
 that supersedes the line numbers and verdicts below. The older audit
-(`docs/active/investigations/2026-09-08-error-states-development-audit.md`) remains the source
+(`docs/archive/investigations/2026-09-08-error-states-development-audit.md`) remains the source
 of the E-IDs cited here, but at least one of them (the remote-shim replay) is already fixed.
 
 Unit A's records are archived and read-only now:

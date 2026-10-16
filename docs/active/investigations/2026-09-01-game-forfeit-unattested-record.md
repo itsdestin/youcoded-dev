@@ -58,5 +58,5 @@ serialise the read-then-write; both interleavings traced). Retries are idempoten
 sides of settlement (`matchIsRecorded` before, per-account overwrite inside the slot). The
 score upsert's tiebreak timestamp only moves on a genuine improvement.
 
-Related: `docs/active/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md` puts this
+Related: `docs/archive/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md` puts this
 in Tier 3 (needs a design pass first).

@@ -87,7 +87,7 @@ block a page from reaching the internet (decided 2026-09-17: no blocking work in
 Proving page: something that needs nothing from outside — a timer, a paint page, a notes
 board. Destin's analytics dashboard is Phase 2's proving page, not Phase 1's.
 
-Design record: `docs/active/design/2026-09-15-youcoded-pages/` (the questions deck and its
+Design record: `docs/archive/design/2026-09-15-youcoded-pages/` (the questions deck and its
 answers, then the shell's review decks).
 
 Shell deck, round 1 (2026-09-16, `youcoded-pages-shell.review.answers.json`): the top-bar
