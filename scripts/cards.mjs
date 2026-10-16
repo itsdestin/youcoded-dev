@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // cards.mjs — the work cards: one small file per piece of work, in cards/ at the workspace root.
 //
-// WHY (Destin, 2026-10-14, docs/active/specs/2026-10-14-work-cards.md): no single name followed a piece of work
+// WHY (Destin, 2026-10-14, docs/archive/specs/2026-10-14-work-cards.md): no single name followed a piece of work
 // from idea to chat to merge, and nothing stopped two chats starting the same thing. Destin never thinks in
 // cards ("i just want to be able to dump ideas as i have done previously, and you figure out how to
 // group/organize"): the idea-intake skill reads `index`, proposes a filing, and on his yes runs `new`.

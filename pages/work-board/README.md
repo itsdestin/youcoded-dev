@@ -1,7 +1,7 @@
 # Work board — Destin's own YouCoded page for every piece of work
 
 The management page (Today, Screens, Big picture) as a YouCoded Page in Destin's personal Pages folder.
-Decided 2026-10-16 (`docs/active/design/2026-10-16-manage-page/work-cards-next.questions.answers.json`):
+Decided 2026-10-16 (`docs/archive/design/2026-10-16-manage-page/work-cards-next.questions.answers.json`):
 his own page, not built into the app, using only abilities any page can ask for.
 
 | File | What it is |
@@ -9,7 +9,7 @@ his own page, not built into the app, using only abilities any page can ask for.
 | `page.json` | name, icon, and the three permissions: see and change chats, run `work-items.mjs`, start a conversation |
 | `page.html` | a shell: asks the program for the page and puts it in place |
 | `work-items.mjs.template` | the program; `scripts/install-work-board.mjs` writes it as `work-items.mjs` with this workspace's path |
-| `renderer/` | draws the page (`build.py --page-mode`), from the items in `cards/`; the design record (decks, answers, reviews) stays in `docs/active/design/2026-10-12-management-surface/` |
+| `renderer/` | draws the page (`build.py --page-mode`), from the items in `cards/`; the design record (decks, answers, reviews) stays in `docs/archive/design/2026-10-12-management-surface/` |
 
 The program's logic is `scripts/work-items-program.mjs` (tests beside it): draws the page, saves bulk edits
 and pauses straight to master once master carries the items (`scripts/cards-master.mjs`), and hands the page

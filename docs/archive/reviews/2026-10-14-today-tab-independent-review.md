@@ -1,9 +1,9 @@
 ---
 date: 2026-10-14
-status: draft
+status: applied and shipped (the Work board, merged 2026-10-16) — archived 2026-10-16
 type: review
 topic: Independent review of the management page's Today tab — where row buttons come from, several conversations on one piece of work, copy, layout
-reviewed: docs/active/design/2026-10-12-management-surface/mockup.html (build.py, tooltips.py), screenshot /tmp/claude-1000/today-review/top.png (all folds open, 1440 wide)
+reviewed: docs/archive/design/2026-10-12-management-surface/mockup.html (build.py, tooltips.py), screenshot /tmp/claude-1000/today-review/top.png (all folds open, 1440 wide)
 ---
 
 # Today tab — independent review

@@ -1,6 +1,6 @@
 ---
 date: 2026-10-14
-status: active — built (cards/, cards.mjs, idea intake, Work board); merges with session/work-cards-20261014
+status: shipped (youcoded-dev session/work-cards-20261014, merged 2026-10-16) — archived 2026-10-16
 type: spec
 topic: Work cards — one small file per piece of work, tied to one branch, done when that branch merges. The facts layer the management page reads.
 origin: Destin's answers to the management-surface independent review deck, 2026-10-14

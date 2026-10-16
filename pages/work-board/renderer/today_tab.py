@@ -1,4 +1,4 @@
-"""The Today tab, rebuilt from the independent review (docs/active/reviews/2026-10-14-today-tab-independent-review.md)
+"""The Today tab, rebuilt from the independent review (docs/archive/reviews/2026-10-14-today-tab-independent-review.md)
 and Destin's answers (today-review.questions.answers.json: all eight recommended options).
 
 WHY one module with one table of states (Q-1, Q-3): Destin asked "where these action buttons come from,

@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: Pages can now ask to see and change chats and to run a program from their own folder (youcoded, merged 2026-10-16)
+Next: a release carrying them; then merge wecoded-marketplace session/page-skill-chats-programs (the skill update) and install the Work board
 Blocked: nothing recorded.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.

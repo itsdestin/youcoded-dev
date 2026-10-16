@@ -8,7 +8,7 @@ description: Use when Destin dumps an idea for YouCoded — something he wants b
 Destin never thinks in cards (2026-10-14: "i just want to be able to dump ideas as i have done previously,
 and you figure out how to group/organize/rearrange things as cards and such and make suggestions"). Cards
 are your bookkeeping: `cards/<n>-<name>.md`, managed by `scripts/cards.mjs`. Spec:
-`docs/active/specs/2026-10-14-work-cards.md`.
+`docs/archive/specs/2026-10-14-work-cards.md`.
 
 ## 1. Read what already exists
 

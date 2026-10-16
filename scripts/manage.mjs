@@ -2,7 +2,7 @@
 // manage.mjs — the live management page: every work card, and the tick-box bulk edits, saved without a chat.
 //
 // WHY (Destin, 2026-10-15/16): "build the real page" — the approved management page
-// (drawn by pages/work-board/renderer/, all three tabs; designed in docs/active/design/2026-10-12-management-surface/)
+// (drawn by pages/work-board/renderer/, all three tabs; designed in docs/archive/design/2026-10-12-management-surface/)
 // with Today read from cards/.
 // Bulk edit is in v1 by his call ("you should build the bulk edit into v1"): tick items, then Combine,
 // Move to stage or Delete. Edits go through cards.mjs (all-or-nothing, rules checked), then are committed

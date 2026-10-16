@@ -1,6 +1,6 @@
 ---
 date: 2026-10-16
-status: active — built on session/work-cards-20261014 (both repos), not merged (as of 2026-10-16)
+status: shipped (youcoded-dev and youcoded session/work-cards-20261014, merged 2026-10-16); left: an app release, then installing the Work board in Destin's Pages folder and publishing the page-builder skill (#90) — archived 2026-10-16
 type: spec
 topic: Pages read and change chats, pages run approved programs, and the management page becomes Destin's own page kept true by chats
 origin: Destin's goals (2026-10-16 chat) and work-cards-next.questions.answers.json; Pages scope §5/§9 (docs/archive/specs/2026-09-15-youcoded-pages-scope.md)

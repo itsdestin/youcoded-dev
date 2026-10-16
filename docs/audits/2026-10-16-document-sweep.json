@@ -1540,7 +1540,7 @@
    ]
   },
   {
-   "path": "docs/active/reviews/2026-10-14-today-tab-independent-review.md",
+   "path": "docs/archive/reviews/2026-10-14-today-tab-independent-review.md",
    "verdict": "active-stale",
    "evidence": "Frontmatter status: draft with proposals P1-P8 as if open. They went through the today-review and today-rebuild 1-3 decks (answered) and were built (30f66fba: one label decides each row's main button; Pause\u2026 and Close\u2026 are the only stop words). That is on session/work-cards-20261014, not yet on master.",
    "fix": "Set status to applied (built on session/work-cards-20261014, pending merge); archive as shipped after merge.",

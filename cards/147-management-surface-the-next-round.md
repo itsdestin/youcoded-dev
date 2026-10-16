@@ -12,8 +12,8 @@ side: screens
 vision: together.workflow.surface
 ---
 Progress
-Done: nothing yet.
-Next: start a new session on part 3 once parts 1 and 2 are scoped.
+Done: the Work board runs as Destin's own YouCoded page (merged 2026-10-16)
+Next: the three follow-ups below, starting with a full human review in a new session
 Blocked: nothing.
 
 Chats
