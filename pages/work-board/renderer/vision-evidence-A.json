@@ -1,0 +1,1910 @@
+{
+ "nodes": {
+  "chat.converse.cloud": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Sign in with ChatGPT, sign in with OpenRouter and model chips for DeepSeek, Llama, Mistral and others shipped."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Sign in with ChatGPT",
+     "date": "2026-09-05",
+     "note": "A ChatGPT plan's own models appear in the picker."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/assistant/cloud",
+     "date": null,
+     "note": "The Cloud providers settings page exists."
+    }
+   ],
+   "why": "Shipped in 1.3.0: Claude, a ChatGPT plan and OpenRouter all appear in the model picker. OpenAI's newer official ChatGPT sign-in is built but switched off on purpose.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.model.any",
+     "because": "Same model picker and provider list."
+    },
+    {
+     "id": "chat.harness.tokens",
+     "because": "Each provider caches repeat requests differently."
+    }
+   ]
+  },
+  "chat.converse.local": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Browse or search for models, download them, and chat fully offline; the engine runs itself."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/assistant/local",
+     "date": null,
+     "note": "Local models settings page exists."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "The model list says whether a model FITS and nothing about whether it will be fast",
+     "date": "2026-09-06",
+     "note": "Open: no speed hint on local models yet."
+    }
+   ],
+   "why": "Shipped in 1.3.0: download a model to your computer and chat offline. Still missing: a hint of how fast a model will be on your machine.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.model.free",
+     "because": "Local models are today's only free-to-run option."
+    },
+    {
+     "id": "yours.model.any",
+     "because": "Same picker."
+    },
+    {
+     "id": "chat.harness.tokens",
+     "because": "Small models need leaner prompts."
+    }
+   ]
+  },
+  "chat.converse.native": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "A built-in assistant that runs conversations inside YouCoded with tools, permissions and helpers."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat#native",
+     "date": null,
+     "note": "The native chat screen exists."
+    }
+   ],
+   "why": "Shipped in 1.3.0: YouCoded has its own assistant that works without Claude Code; Claude Code sessions still work as before.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.harness.parity",
+     "because": "Parity is the work of making this match Claude Code."
+    }
+   ]
+  },
+  "chat.converse.voice": {
+   "status": "done",
+   "since": "2026-09-05",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Speak your messages instead of typing them",
+     "date": "2026-09-05",
+     "note": "Microphone in the message box; words appear as you talk."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Desktop custom voice vocabulary",
+     "date": "2026-10-07",
+     "note": "Right-click the mic to teach it your words."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Phone voice and mic: three gaps",
+     "date": "2026-09-10",
+     "note": "Open: phone and browser voice has gaps."
+    }
+   ],
+   "why": "Shipped: press the mic and talk; desktop also lets you add your own words. Voice on the phone still has three known gaps.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "everywhere.platforms.android",
+     "because": "Phone voice is a separate set of gaps."
+    }
+   ]
+  },
+  "chat.converse.multi": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Move a session to a new or another window; many sessions at once."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Dragging a session pill into another window did nothing on Linux/Wayland",
+     "date": "2026-09-04",
+     "note": "Drag between windows fixed on Linux."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/sessions",
+     "date": null,
+     "note": "Session list menu exists."
+    }
+   ],
+   "why": "Shipped in 1.3.0: keep many chats open across different projects and move them between windows.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "agents.background.view",
+     "because": "Both answer 'what is running right now'."
+    }
+   ]
+  },
+  "chat.converse.resume": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Resume browser with a preview of what was said, tags and rename; year-long history."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/resume",
+     "date": null,
+     "note": "Resume browser screen exists."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Resume browser and conversation lists: eight clarity gaps",
+     "date": "2026-10-05",
+     "note": "Open: polish gaps, not blockers."
+    }
+   ],
+   "why": "Shipped in 1.3.0: a browser of past chats with a preview, then pick one back up.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "sync.follow.chats",
+     "because": "Resuming on another device uses the same saved records."
+    },
+    {
+     "id": "chat.steer.memory",
+     "because": "Chat Search is how an assistant could recall old chats."
+    }
+   ]
+  },
+  "chat.steer.instructions": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "A line above every conversation shows what instructions, rules and skills the assistant started with."
+    },
+    {
+     "kind": "screen",
+     "ref": "projects/context/editor",
+     "date": null,
+     "note": "Project instructions editor exists."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/session-context",
+     "date": null,
+     "note": "'What the assistant was given' panel exists."
+    }
+   ],
+   "why": "Shipped in 1.3.0: edit a project's instruction files in the app and see exactly what the assistant was given.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "projects.folder.context",
+     "because": "Same editor."
+    },
+    {
+     "id": "projects.units.instructions",
+     "because": "Reusable instructions would build on the same files."
+    }
+   ]
+  },
+  "chat.steer.memory": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Project View has an Instructions & Memories tab to read and edit memory notes."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Parked ideas: native sessions and helpers (g) and (j)",
+     "date": "2026-08-16",
+     "note": "Parked: one-tap 'remember this', and chat search as a tool for the YouCoded assistant."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "ROADMAP.md: Comprehensive Workspace paragraph",
+     "date": null,
+     "note": "States plainly: there is no agent memory yet."
+    }
+   ],
+   "why": "You can read and edit memory notes today, but the YouCoded assistant does not yet learn things about you by itself; that is parked.",
+   "needs": [
+    {
+     "id": "chat.converse.resume",
+     "because": "The planned way to recall old chats is Chat Search as a tool."
+    }
+   ],
+   "shares": [
+    {
+     "id": "projects.folder.context",
+     "because": "Memory notes live in the same tab."
+    },
+    {
+     "id": "projects.folder.builtin",
+     "because": "'Your Assistant' is meant to hold what it knows about you."
+    }
+   ],
+   "partial": true
+  },
+  "chat.steer.permissions": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Permission cards name the tool; 'Always allow' is scoped and every grant is listed and revocable."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/assistant/permissions",
+     "date": null,
+     "note": "Permissions settings page exists."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Admin commands work from chat",
+     "date": "2026-09-27",
+     "note": "Password card, every admin command asks first."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "After picking a wide 'Always allow'... a later command that looks",
+     "date": "2026-10-05",
+     "note": "Open release blocker: a wide grant can be chained past."
+    }
+   ],
+   "why": "Shipped in 1.3.0: the assistant asks before acting and you can review and revoke every standing permission. One 1.3.1 blocker about wide 'Always allow' grants is open.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "pages.connect.connections",
+     "because": "Both are 'approve once, revoke later' controls."
+    },
+    {
+     "id": "marketplace.setup.install",
+     "because": "Plugins also need clear permissions."
+    }
+   ]
+  },
+  "chat.steer.skills": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Typing a skill name starts it as a labelled card; project skills load."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/skills",
+     "date": null,
+     "note": "Skills drawer exists."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/commands",
+     "date": null,
+     "note": "Commands drawer exists."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "native-only users need a YouCoded-owned skills home",
+     "date": "2026-09-05",
+     "note": "Open 1.3.1 blocker: no YouCoded-owned place for personal skills."
+    }
+   ],
+   "why": "Shipped in 1.3.0: browse and run skills and slash commands from the chat. A YouCoded-owned home for your own skills is still a 1.3.1 blocker.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "marketplace.browse.skills",
+     "because": "Skills come from the marketplace."
+    },
+    {
+     "id": "projects.controls.skills",
+     "because": "Per-project switches decide which skills load."
+    }
+   ]
+  },
+  "chat.steer.specialists": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "The assistant can hire helper sessions with their own limited permissions, shown as cards."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/specialists",
+     "date": null,
+     "note": "Helpers popup exists."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/assistant/specialists",
+     "date": null,
+     "note": "Helpers settings page exists."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-08-11-native-specialists-design.md",
+     "date": "2026-08-11",
+     "note": "Approved design."
+    }
+   ],
+   "why": "Shipped in 1.3.0: the assistant hands work to helper agents, even cheaper models, and you see them as cards. Plans and budgets for fan-outs are a separate unmerged piece.",
+   "needs": [
+    {
+     "id": "chat.converse.native",
+     "because": "Helpers exist only inside YouCoded's own assistant."
+    }
+   ],
+   "shares": [
+    {
+     "id": "projects.units.agent",
+     "because": "A helper is today's closest thing to a reusable agent."
+    },
+    {
+     "id": "agents.unit.recipe",
+     "because": "A helper file is name + instructions + tools + model, which is the recipe."
+    },
+    {
+     "id": "projects.controls.agents",
+     "because": "Project helper files."
+    }
+   ]
+  },
+  "chat.steer.plans": {
+   "status": "building",
+   "since": "2026-09-05",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "feat/specialists-plans-ui (youcoded)",
+     "date": "2026-09-24",
+     "note": "138 commits not on master; first 2026-09-05, last 2026-09-24."
+    },
+    {
+     "kind": "branch",
+     "ref": "feat/specialists-plans-5b (youcoded)",
+     "date": "2026-09-16",
+     "note": "45 more commits, earlier stage of the same work."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Specialists stage two — plans",
+     "date": "2026-09-04",
+     "note": "Open P2 decision: plan card with a spending ceiling."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-15-specialist-budget-permission-design.md",
+     "date": "2026-09-15",
+     "note": "Active design for approving more helpers."
+    }
+   ],
+   "why": "A plan card that shows a worst-case cost before a big fan-out is built on a side branch with 138 commits, untouched since Sept 24 and waiting on your decisions.",
+   "needs": [
+    {
+     "id": "chat.steer.specialists",
+     "because": "Plans are made of helper hires."
+    }
+   ],
+   "shares": [
+    {
+     "id": "agents.unit.workflows",
+     "because": "A multi-step plan with different helpers is a workflow."
+    },
+    {
+     "id": "agents.background.scheduled",
+     "because": "Budgets as hard stops are wanted for automations too."
+    }
+   ]
+  },
+  "chat.harness.tokens": {
+   "status": "building",
+   "since": "2026-09-10",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Prompt caching requested from Anthropic, speculative decoding, 8-bit conversation cache."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Six of the eight remaining cache breakers",
+     "date": "2026-09-10",
+     "note": "Cloud caching finally switched on."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Cloud model context management and cache/token efficiency",
+     "date": "2026-09-17",
+     "note": "Open P2: OpenRouter and local not yet measured."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md",
+     "date": "2026-09-09",
+     "note": "Active follow-ups handoff."
+    }
+   ],
+   "why": "Big wins shipped (cheaper repeat requests, faster local generation), but the work is a running program: OpenRouter and local models are not yet measured.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.converse.local",
+     "because": "Small models need lean prompts."
+    },
+    {
+     "id": "yours.model.free",
+     "because": "A good free model depends on this."
+    }
+   ]
+  },
+  "chat.harness.evals": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/harness/eval/ (youcoded)",
+     "date": null,
+     "note": "A built-in evaluator that scores models on cases."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: harness evaluator can now report OpenRouter's own per-request cost",
+     "date": "2026-09-01",
+     "note": "Evaluator reports real cost."
+    }
+   ],
+   "why": "A developer-side evaluator exists to score how well a model answers; it is run when you choose (it costs money) and users never see it.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "together.workflow.verify",
+     "because": "Both are ways of checking, not features users click."
+    }
+   ]
+  },
+  "chat.harness.parity": {
+   "status": "building",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "Native Runtime Parity Program",
+     "date": "2026-09-01",
+     "note": "Open P1, in flight, 1.3.1 blocker."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-01-agent-platform-vision-and-state.md",
+     "date": "2026-09-01",
+     "note": "Active vision doc whose section 5.1 is the parity list."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/plans/2026-09-16-simplification-phases.md",
+     "date": "2026-09-18",
+     "note": "Phase 5 (split native runtime) on hold since Sept 18."
+    }
+   ],
+   "why": "Making YouCoded's own assistant match Claude Code feature for feature is the largest open chunk. It has no branch of its own; the related cleanup has been on hold since Sept 18.",
+   "needs": [
+    {
+     "id": "chat.converse.native",
+     "because": "Parity is measured against this runtime."
+    }
+   ],
+   "shares": []
+  },
+  "chat.harness.compaction": {
+   "status": "done",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: local model forgot the request mid first turn; compaction now waits near the limit",
+     "date": "2026-09-23",
+     "note": "Compaction keeps one summary plus recent messages (youcoded#559)."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Long conversations compact before anything is trimmed."
+    }
+   ],
+   "why": "Shipped: long chats compact into a summary instead of dropping old messages. Restoring recently used files after compaction is still open.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.harness.tokens",
+     "because": "Compaction is a token-saving tool."
+    }
+   ]
+  },
+  "chat.files.drawer": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Every file a conversation created, edited, read or deleted with previews."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/files",
+     "date": null,
+     "note": "Files drawer screen exists."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/files-drawer-honesty (youcoded)",
+     "date": "2026-09-11",
+     "note": "4 fix commits not yet merged."
+    }
+   ],
+   "why": "Shipped in 1.3.0: a drawer of every file the conversation touched. Four small honesty fixes sit on an unmerged branch.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "projects.folder.files",
+     "because": "Same file viewers."
+    }
+   ]
+  },
+  "chat.files.office": {
+   "status": "done",
+   "since": "2026-10-02",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: A full office suite inside the app",
+     "date": "2026-10-02",
+     "note": "Word, Excel and PowerPoint editing (youcoded#598)."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Document comments, like Google Docs or Word",
+     "date": "2026-09-29",
+     "note": "Highlight, comment, resolve."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Office editor: seven small faults / Office: four safety and privacy edge cases",
+     "date": "2026-10-05",
+     "note": "Open polish items."
+    }
+   ],
+   "why": "Merged on Oct 2: open and edit Word, Excel and PowerPoint files inside the app. It is on master but not yet in a released version.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.everyone.ostools",
+     "because": "This is the 'open-source Office' piece."
+    }
+   ]
+  },
+  "chat.files.cloud": {
+   "status": "building",
+   "since": "2026-09-15",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/onedrive-no-auto-download (youcoded and youcoded-dev)",
+     "date": "2026-09-15",
+     "note": "One commit each, marked paused: 'Resume only on user instruction'."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/design (cloud-download-consent decks, on that branch)",
+     "date": "2026-09-15",
+     "note": "Design decks answered; some regressions unapproved."
+    }
+   ],
+   "why": "Work to stop OneDrive files downloading by surprise was started and paused Sept 15; nothing is on master.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "pages.connect.files",
+     "because": "Both are about touching files you did not create in the app."
+    }
+   ]
+  },
+  "projects.folder.context": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Project View hub with Instructions & Memories tab and a description that syncs."
+    },
+    {
+     "kind": "screen",
+     "ref": "projects/context/editor",
+     "date": null,
+     "note": "Instruction editor screen exists."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/project-context.ts",
+     "date": "2026-06-14",
+     "note": "CLAUDE.md, AGENTS.md, rules and memory editing."
+    }
+   ],
+   "why": "Shipped in 1.3.0: each project has a tab to read and edit its instructions and memories.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.steer.instructions",
+     "because": "Same editor."
+    },
+    {
+     "id": "chat.steer.memory",
+     "because": "Memories live here."
+    }
+   ]
+  },
+  "projects.folder.files": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Project Files browses one folder at a time; search inside files."
+    },
+    {
+     "kind": "screen",
+     "ref": "projects/files",
+     "date": null,
+     "note": "Files tab exists."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "searching a big project stops early",
+     "date": "2026-09-18",
+     "note": "Open P1 blocker: file search stops at 2,000 files, text at 200 matches."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-18-project-files-background-index.md",
+     "date": "2026-09-18",
+     "note": "Draft design for a background file index."
+    }
+   ],
+   "why": "Shipped in 1.3.0: browse and search a project's files. For very big projects search is incomplete, a 1.3.1 blocker with a draft fix.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.files.drawer",
+     "because": "Same viewers."
+    }
+   ]
+  },
+  "projects.folder.sync": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Projects and conversations kept in step between your machines through your own GitHub account."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/sync",
+     "date": null,
+     "note": "Backup and sync settings exist."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/ui-consistency-audit (youcoded)",
+     "date": "2026-10-05",
+     "note": "Unmerged: sync pills on the project switcher."
+    }
+   ],
+   "why": "Shipped in 1.3.0: projects follow you to your other computers through your own GitHub account. Sync warnings on the project list are on an unmerged branch.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "sync.follow.projects",
+     "because": "The very same feature seen from the Sync pillar."
+    },
+    {
+     "id": "sync.mesh.backup",
+     "because": "Backup everywhere builds on it."
+    }
+   ]
+  },
+  "projects.folder.builtin": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "Every install should come with a built-in project, 'Your Assistant'",
+     "date": "2026-09-19",
+     "note": "Open P1 decision, 1.3.1 blocker; no code found on master."
+    }
+   ],
+   "why": "A built-in 'Your Assistant' project in every install is a 1.3.1 blocker on the roadmap with no work started.",
+   "needs": [
+    {
+     "id": "projects.folder.context",
+     "because": "It would be a project with its instructions and memory editor."
+    }
+   ],
+   "shares": [
+    {
+     "id": "chat.steer.memory",
+     "because": "Meant to hold what it knows about you."
+    },
+    {
+     "id": "chat.steer.instructions",
+     "because": "Home for global instructions."
+    },
+    {
+     "id": "sync.mesh.anydevice",
+     "because": "Later the main assistant takes a phone request and hands it to the right project."
+    }
+   ]
+  },
+  "projects.controls.skills": {
+   "status": "building",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/plugin-project-controls (youcoded, draft PR #571)",
+     "date": "2026-09-24",
+     "note": "21 commits not on master, built and passing its checks."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Per-project skills and tools",
+     "date": "2026-10-05",
+     "note": "Open P1, 'do next' in Destin's 10-05 triage; waits for his review of each new screen and an update to the one-core merge."
+    }
+   ],
+   "why": "Choosing which skills and tools each project may use is built and sitting in a draft pull request since Sept 24, waiting on your screen review.",
+   "needs": [
+    {
+     "id": "chat.steer.skills",
+     "because": "It switches skills on and off."
+    }
+   ],
+   "shares": [
+    {
+     "id": "marketplace.setup.install",
+     "because": "New downloads would ask which projects get them."
+    },
+    {
+     "id": "projects.controls.agents",
+     "because": "Same per-project idea for helpers."
+    }
+   ]
+  },
+  "projects.controls.agents": {
+   "status": "done",
+   "since": "2026-08-16",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/harness/specialists/definition-files.ts (youcoded)",
+     "date": "2026-08-16",
+     "note": "Reads helper files from a project's .claude/agents folder."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Helpers can be defined by your own files."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Parked ideas: native sessions and helpers (m)",
+     "date": "2026-08-16",
+     "note": "Parked: a project-level helpers folder and screen."
+    }
+   ],
+   "why": "A project can carry its own helper files today, but only by hand-written files; there is no screen to manage them per project.",
+   "needs": [
+    {
+     "id": "chat.steer.specialists",
+     "because": "Project helpers are helpers."
+    }
+   ],
+   "shares": [
+    {
+     "id": "projects.units.agent",
+     "because": "The project/agent overlap Destin described."
+    }
+   ],
+   "partial": true
+  },
+  "projects.units.agent": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "Parked ideas: native sessions and helpers (i) and (l)",
+     "date": "2026-08-16",
+     "note": "Parked: custom harness builder, and 'Assistants made of Duties' as the unit for automations; captured, not designed."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-01-agent-platform-vision-and-state.md",
+     "date": "2026-09-01",
+     "note": "Active vision doc for the agent platform."
+    }
+   ],
+   "why": "A saved, reusable agent does not exist; the closest thing is a helper file, and the larger 'Assistants made of Duties' idea is parked until you rule on it.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "agents.unit.recipe",
+     "because": "Same concept stated twice."
+    },
+    {
+     "id": "chat.steer.specialists",
+     "because": "Helper files are the nearest piece."
+    }
+   ]
+  },
+  "projects.units.instructions": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Reusable instructions you attach to different agents or projects exist only in your words; 'shareable knowledge packs' is a one-line parked idea.",
+   "needs": [
+    {
+     "id": "projects.units.agent",
+     "because": "Needs an agent to attach to."
+    }
+   ],
+   "shares": [
+    {
+     "id": "chat.steer.instructions",
+     "because": "Would reuse the same files."
+    }
+   ]
+  },
+  "projects.units.rules": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "A clear rule for who wins when project and agent disagree exists only in your words.",
+   "needs": [
+    {
+     "id": "projects.units.agent",
+     "because": "No agent object to conflict with yet."
+    },
+    {
+     "id": "projects.units.instructions",
+     "because": "Needs both sides defined."
+    }
+   ],
+   "shares": []
+  },
+  "yours.look.themes": {
+   "status": "done",
+   "since": "2026-04-21",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.1.2]",
+     "date": "2026-04-21",
+     "note": "Theme Builder and marketplace publisher built in."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Preview cards, readable text in every built-in theme, Reduced Effects."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/appearance",
+     "date": null,
+     "note": "Appearance page exists."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Minimalist layout, one set of Look choices",
+     "date": "2026-09-26",
+     "note": "Redesigned Appearance panel."
+    }
+   ],
+   "why": "Shipped since April: built-in and community themes, installable from the marketplace.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "marketplace.browse.themes",
+     "because": "Same catalogue."
+    },
+    {
+     "id": "marketplace.publish.share",
+     "because": "Themes are published like skills."
+    },
+    {
+     "id": "pages.build.theme",
+     "because": "Pages pick up the colours."
+    }
+   ]
+  },
+  "yours.look.buddy": {
+   "status": "done",
+   "since": "2026-04-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.1.0]",
+     "date": "2026-04-20",
+     "note": "The buddy mascot first shipped."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Every mascot redrawn, eight expressions, new characters."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Buddy can live as a taskbar or menu-bar icon",
+     "date": "2026-10-03",
+     "note": "Minimize-to-tray."
+    }
+   ],
+   "why": "Shipped since April: the mascot floats above your desktop, shows when a session needs you, and has a character per theme.",
+   "needs": [],
+   "shares": []
+  },
+  "yours.look.finetune": {
+   "status": "done",
+   "since": "2026-09-26",
+   "evidence": [
+    {
+     "kind": "screen",
+     "ref": "settings/appearance/edit",
+     "date": null,
+     "note": "Theme editor screen exists."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Minimalist layout, one set of Look choices",
+     "date": "2026-09-26",
+     "note": "Look choices apply over any theme."
+    }
+   ],
+   "why": "A theme editor and a set of Look choices let you adjust any theme; not independently confirmed beyond the screen list.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.look.themes",
+     "because": "Edits themes."
+    }
+   ]
+  },
+  "yours.model.any": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Local models, ChatGPT plan, OpenRouter and Claude in one picker."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/model-picker",
+     "date": null,
+     "note": "Model picker exists."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/model-picker-tags (youcoded)",
+     "date": "2026-09-11",
+     "note": "4 commits for cost/intelligence/speed tags, unmerged."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Model rows in the picker carry no cost or intelligence tags",
+     "date": "2026-09-11",
+     "note": "Open."
+    }
+   ],
+   "why": "Shipped in 1.3.0: switch between providers and models freely. Cost and quality tags on each model are designed but unmerged.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.converse.cloud",
+     "because": "Same picker."
+    },
+    {
+     "id": "chat.converse.local",
+     "because": "Same picker."
+    }
+   ]
+  },
+  "yours.model.free": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "A free model good enough for daily use is a hope in your words; local models run free today but the roadmap has no 'good enough' target.",
+   "needs": [
+    {
+     "id": "chat.converse.local",
+     "because": "Local models are the only free path now."
+    }
+   ],
+   "shares": [
+    {
+     "id": "chat.harness.tokens",
+     "because": "Small models need lean prompts to be useful."
+    }
+   ]
+  },
+  "yours.model.data": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Conversations and projects sync through your own GitHub account."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Whole repository relicensed to MIT."
+    }
+   ],
+   "why": "Your conversations are saved on your devices and synced through your own GitHub, not YouCoded's servers; a one-click export was not found.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "sync.mesh.cloud",
+     "because": "A personal cloud is the further step."
+    }
+   ],
+   "partial": true
+  },
+  "yours.everyone.student": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "A student's ready-made setup (documents, study pages, weekly research agents) exists only in your words.",
+   "needs": [
+    {
+     "id": "agents.background.scheduled",
+     "because": "Weekly research needs scheduled agents."
+    },
+    {
+     "id": "pages.build.create",
+     "because": "Study pages are Pages."
+    }
+   ],
+   "shares": [
+    {
+     "id": "yours.everyone.developer",
+     "because": "Both are bundles of tools for a type of person."
+    }
+   ]
+  },
+  "yours.everyone.developer": {
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Review and commit changed files, code editor with syntax highlighting, terminal view."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-07-23-statusbar-git-branch-popup-design.md",
+     "date": "2026-07-23",
+     "note": "Git branch popup in the status bar."
+    }
+   ],
+   "why": "Developer tools are built in (terminal, code editor, git review and commit); there is no 'developer pack' you choose at setup.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "projects.folder.files",
+     "because": "Same editor."
+    }
+   ],
+   "partial": true
+  },
+  "yours.everyone.ostools": {
+   "status": "building",
+   "since": "2026-10-02",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: A full office suite inside the app",
+     "date": "2026-10-02",
+     "note": "Office replacement merged."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Pages can reach one approved device at home (Home Assistant)",
+     "date": "2026-10-07",
+     "note": "Home page for Destin."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: The Money page: a Plaid bank connection for pages",
+     "date": "2026-10-08",
+     "note": "Money page for Destin."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/plans/2026-09-16-youcoded-pages-phasing.md",
+     "date": "2026-09-16",
+     "note": "Active Pages plan."
+    }
+   ],
+   "why": "Office, Home Assistant and a bank (Plaid) page all exist, but the last two are hand-installed pages for you; others cannot get them yet.",
+   "needs": [
+    {
+     "id": "pages.connect.money",
+     "because": "Money page."
+    },
+    {
+     "id": "pages.connect.home",
+     "because": "Home page."
+    },
+    {
+     "id": "marketplace.browse.pages",
+     "because": "Others need to find and install pages."
+    }
+   ],
+   "shares": [
+    {
+     "id": "chat.files.office",
+     "because": "The Office piece."
+    }
+   ]
+  },
+  "chat.converse": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Sign in with ChatGPT, sign in with OpenRouter and model chips for DeepSeek, Llama, Mistral and others shipped."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Browse or search for models, download them, and chat fully offline; the engine runs itself."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "A built-in assistant that runs conversations inside YouCoded with tools, permissions and helpers."
+    }
+   ],
+   "why": "All six ways to talk to an assistant are shipped; phone voice has gaps.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "chat.converse.cloud",
+    "chat.converse.local",
+    "chat.converse.native",
+    "chat.converse.voice",
+    "chat.converse.multi",
+    "chat.converse.resume"
+   ]
+  },
+  "chat.steer": {
+   "status": "building",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "A line above every conversation shows what instructions, rules and skills the assistant started with."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Project View has an Instructions & Memories tab to read and edit memory notes."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Permission cards name the tool; 'Always allow' is scoped and every grant is listed and revocable."
+    }
+   ],
+   "why": "Five of six steering controls are shipped; plans and budgets are on an unmerged branch and memory is only partly there.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "chat.steer.instructions",
+    "chat.steer.memory",
+    "chat.steer.permissions",
+    "chat.steer.skills",
+    "chat.steer.specialists",
+    "chat.steer.plans"
+   ]
+  },
+  "chat.harness": {
+   "status": "building",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Prompt caching requested from Anthropic, speculative decoding, 8-bit conversation cache."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/harness/eval/ (youcoded)",
+     "date": null,
+     "note": "A built-in evaluator that scores models on cases."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Native Runtime Parity Program",
+     "date": "2026-09-01",
+     "note": "Open P1, in flight, 1.3.1 blocker."
+    }
+   ],
+   "why": "Compaction and evals are done; token savings and native parity are ongoing programs.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "chat.harness.tokens",
+    "chat.harness.evals",
+    "chat.harness.parity",
+    "chat.harness.compaction"
+   ]
+  },
+  "chat.files": {
+   "status": "building",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Every file a conversation created, edited, read or deleted with previews."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: A full office suite inside the app",
+     "date": "2026-10-02",
+     "note": "Word, Excel and PowerPoint editing (youcoded#598)."
+    },
+    {
+     "kind": "branch",
+     "ref": "session/onedrive-no-auto-download (youcoded and youcoded-dev)",
+     "date": "2026-09-15",
+     "note": "One commit each, marked paused: 'Resume only on user instruction'."
+    }
+   ],
+   "why": "The files drawer and Office are shipped; OneDrive handling is paused.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "chat.files.drawer",
+    "chat.files.office",
+    "chat.files.cloud"
+   ]
+  },
+  "projects.folder": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Project View hub with Instructions & Memories tab and a description that syncs."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Project Files browses one folder at a time; search inside files."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Projects and conversations kept in step between your machines through your own GitHub account."
+    }
+   ],
+   "why": "Instructions, files and sync are shipped; the built-in 'Your Assistant' project is only planned.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "projects.folder.context",
+    "projects.folder.files",
+    "projects.folder.sync",
+    "projects.folder.builtin"
+   ]
+  },
+  "projects.controls": {
+   "status": "building",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/plugin-project-controls (youcoded, draft PR #571)",
+     "date": "2026-09-24",
+     "note": "21 commits not on master, built and passing its checks."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/harness/specialists/definition-files.ts (youcoded)",
+     "date": "2026-08-16",
+     "note": "Reads helper files from a project's .claude/agents folder."
+    }
+   ],
+   "why": "Per-project skills are a built draft pull request; project helpers work only by files.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "projects.controls.skills",
+    "projects.controls.agents"
+   ]
+  },
+  "projects.units": {
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "Parked ideas: native sessions and helpers (i) and (l)",
+     "date": "2026-08-16",
+     "note": "Parked: custom harness builder, and 'Assistants made of Duties' as the unit for automations; captured, not designed."
+    }
+   ],
+   "why": "Reusable agents, reusable instructions and a precedence rule are only parked ideas and your words.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "projects.units.agent",
+    "projects.units.instructions",
+    "projects.units.rules"
+   ]
+  },
+  "yours.look": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.1.2]",
+     "date": "2026-04-21",
+     "note": "Theme Builder and marketplace publisher built in."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.1.0]",
+     "date": "2026-04-20",
+     "note": "The buddy mascot first shipped."
+    },
+    {
+     "kind": "screen",
+     "ref": "settings/appearance/edit",
+     "date": null,
+     "note": "Theme editor screen exists."
+    }
+   ],
+   "why": "Themes, buddy and theme editing are shipped.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "yours.look.themes",
+    "yours.look.buddy",
+    "yours.look.finetune"
+   ]
+  },
+  "yours.model": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Local models, ChatGPT plan, OpenRouter and Claude in one picker."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Conversations and projects sync through your own GitHub account."
+    }
+   ],
+   "why": "Switching models and owning your data are shipped; a good free model is a hope.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "yours.model.any",
+    "yours.model.free",
+    "yours.model.data"
+   ]
+  },
+  "yours.everyone": {
+   "status": "building",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Review and commit changed files, code editor with syntax highlighting, terminal view."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: A full office suite inside the app",
+     "date": "2026-10-02",
+     "note": "Office replacement merged."
+    }
+   ],
+   "why": "Developer tools exist; open-source Office, home and bank pages exist but are hand-installed; the student setup is only a vision.",
+   "needs": [],
+   "shares": [],
+   "rollup_of": [
+    "yours.everyone.student",
+    "yours.everyone.developer",
+    "yours.everyone.ostools"
+   ]
+  }
+ },
+ "added": [
+  {
+   "parent": "chat.converse",
+   "id": "chat.converse.queue",
+   "title": "Stop button and a queue for messages sent while it answers",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Messages sent mid-answer line up and can be edited or cancelled."
+    }
+   ],
+   "why": "Shipped in 1.3.0: you can type ahead while it works and stop it with one button."
+  },
+  {
+   "parent": "chat.converse",
+   "id": "chat.converse.search",
+   "title": "Search all your past conversations",
+   "status": "done",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Chat Search phase 1 and 2",
+     "date": "2026-09-01",
+     "note": "Searchable index with tag, note and flag writes."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Chat Search with Preview and Resume from a result."
+    }
+   ],
+   "why": "Shipped: find an old chat by what was said and jump back into it."
+  },
+  {
+   "parent": "chat.converse",
+   "id": "chat.converse.tags",
+   "title": "Tags and notes on any conversation",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Coloured tags and notes shown in the status bar and resume list."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/tags",
+     "date": null,
+     "note": "Tags dialog exists."
+    }
+   ],
+   "why": "Shipped in 1.3.0: label your chats and find them by label."
+  },
+  {
+   "parent": "chat.converse",
+   "id": "chat.converse.usage",
+   "title": "See your usage and limits across providers",
+   "status": "building",
+   "since": "2026-09-29",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/usage-visibility-20260929 (youcoded)",
+     "date": "2026-09-29",
+     "note": "3 commits: a mockup of usage popups and a Usage tab; your review-deck answers recorded."
+    }
+   ],
+   "why": "A usage and limits view is mocked up on a side branch from Sept 29; no real data behind it yet."
+  },
+  {
+   "parent": "chat.steer",
+   "id": "chat.steer.given",
+   "title": "See exactly what the assistant was given",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Panel behind a line above every chat lists instructions, rules, skills left out."
+    },
+    {
+     "kind": "screen",
+     "ref": "chat/session-context",
+     "date": null,
+     "note": "Screen exists."
+    }
+   ],
+   "why": "Shipped in 1.3.0: a panel shows what the assistant started with and what was left out."
+  },
+  {
+   "parent": "chat.steer",
+   "id": "chat.steer.websearch",
+   "title": "Web search and page reading",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "With your own Tavily or Exa key, entered and tested in Settings."
+    }
+   ],
+   "why": "Shipped in 1.3.0: the assistant can search the web if you supply a key."
+  },
+  {
+   "parent": "chat.steer",
+   "id": "chat.steer.skillshome",
+   "title": "A YouCoded-owned home for your own skills",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "native-only users need a YouCoded-owned skills home",
+     "date": "2026-09-05",
+     "note": "Open P1 1.3.1 blocker, 'top priority' in the 10-05 triage."
+    }
+   ],
+   "why": "Today your own skills live only in Claude Code's folder; a YouCoded home is a 1.3.1 blocker not yet built."
+  },
+  {
+   "parent": "chat.files",
+   "id": "chat.files.comments",
+   "title": "Comments on documents, like Google Docs",
+   "status": "done",
+   "since": "2026-09-29",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Document comments, like Google Docs or Word",
+     "date": "2026-09-29",
+     "note": "Highlight, comment, reply, resolve, by you or the assistant (youcoded#587)."
+    }
+   ],
+   "why": "Merged Sept 29: leave notes on a document that you or the assistant can answer."
+  },
+  {
+   "parent": "projects.folder",
+   "id": "projects.folder.review",
+   "title": "Review changes and commit from the project",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Changed files, include in commit, commit or discard with confirmation."
+    }
+   ],
+   "why": "Shipped in 1.3.0: see what changed in a project and save it to version history."
+  },
+  {
+   "parent": "projects.folder",
+   "id": "projects.folder.switcher",
+   "title": "Project switcher with sync status and remove",
+   "status": "building",
+   "since": "2026-10-05",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/ui-consistency-audit (youcoded)",
+     "date": "2026-10-05",
+     "note": "'project switcher round 1': sync pills, Current pill, Remove for every project; part of a 209-commit branch."
+    },
+    {
+     "kind": "screen",
+     "ref": "projects/switcher",
+     "date": null,
+     "note": "A switcher screen already exists on master."
+    }
+   ],
+   "why": "A better project list is on a large unmerged branch, along with many unrelated changes."
+  },
+  {
+   "parent": "projects.folder",
+   "id": "projects.folder.bigsearch",
+   "title": "Search very large projects completely",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "searching a big project stops early",
+     "date": "2026-09-18",
+     "note": "Open P1 1.3.1 blocker."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-18-project-files-background-index.md",
+     "date": "2026-09-18",
+     "note": "Draft, with four open questions."
+    }
+   ],
+   "why": "A fix that makes search cover every file is designed in a draft and waits on four of your answers."
+  },
+  {
+   "parent": "projects.folder",
+   "id": "projects.folder.nofolder",
+   "title": "Chats with no project, becoming an incognito mode",
+   "status": "done",
+   "since": "2026-09-11",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "A 'No folder' choice that runs in an empty folder the app owns."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "The 'No folder' choice on the new-session form",
+     "date": "2026-09-19",
+     "note": "Open P1: never tested; to become incognito."
+    }
+   ],
+   "why": "Shipped Sept 11 but untested; you want to rethink it as incognito."
+  },
+  {
+   "parent": "projects.controls",
+   "id": "projects.controls.mcp",
+   "title": "Connect tool servers (MCP) from a settings screen",
+   "status": "planned",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "MCP servers can only be set up by hand-editing a config file",
+     "date": "2026-09-01",
+     "note": "Open P2; postponed until after 1.3.1 on 10-05."
+    }
+   ],
+   "why": "Today tool servers need hand-edited files; a settings screen is postponed."
+  },
+  {
+   "parent": "yours.look",
+   "id": "yours.look.minimal",
+   "title": "One set of Look choices over every theme",
+   "status": "done",
+   "since": "2026-09-26",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Minimalist layout, one set of Look choices",
+     "date": "2026-09-26",
+     "note": "youcoded#569."
+    }
+   ],
+   "why": "Shipped Sept 26: choose layout and look separately from the theme."
+  },
+  {
+   "parent": "yours.look",
+   "id": "yours.look.themebuilder",
+   "title": "Describe a theme and the assistant builds it",
+   "status": "done",
+   "since": "2026-04-21",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.1.2]",
+     "date": "2026-04-21",
+     "note": "Theme Builder built in."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Theme-builder skill end-to-end run",
+     "date": "2026-09-02",
+     "note": "Destin has run it."
+    }
+   ],
+   "why": "Shipped: ask for a vibe and get a full theme pack."
+  },
+  {
+   "parent": "yours.look",
+   "id": "yours.look.reduced",
+   "title": "Reduced Effects switch",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Reduced Effects also stops animation a community theme adds."
+    }
+   ],
+   "why": "Shipped in 1.3.0: turn down animation for comfort or speed."
+  },
+  {
+   "parent": "yours.model",
+   "id": "yours.model.tags",
+   "title": "Cost, intelligence and speed tags on each model",
+   "status": "building",
+   "since": "2026-09-11",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/model-picker-tags (youcoded)",
+     "date": "2026-09-11",
+     "note": "4 commits, mockup and UX fixes, unmerged."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "Model rows in the picker carry no cost or intelligence tags",
+     "date": "2026-09-11",
+     "note": "Open."
+    }
+   ],
+   "why": "Tags that help you choose a model are designed and built on a branch idle since Sept 11."
+  },
+  {
+   "parent": "yours.model",
+   "id": "yours.model.localsettings",
+   "title": "Choose how a local model runs",
+   "status": "done",
+   "since": "2026-09-20",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md [1.3.0] (youcoded, origin/master)",
+     "date": "2026-09-20",
+     "note": "Context length, how long it stays loaded, graphics layers; applied without restart."
+    }
+   ],
+   "why": "Shipped in 1.3.0: tune each downloaded model."
+  }
+ ],
+ "insights": {
+  "chat": [
+   "Of 19 features under chat, 14 are shipped (two of them only partly), 4 are being built and 1 is only planned; nothing is purely your words, so chat is the most complete pillar.",
+   "Plans and budgets before big work has 138 unmerged commits on a side branch since Sept 5, last touched Sept 24; it waits on your stage-two decisions, not on engineering.",
+   "The assistant remembering things about you is the biggest hollow spot: you can edit memory notes, but nothing makes the YouCoded assistant learn on its own, and the roadmap only parks it.",
+   "Native parity (the YouCoded assistant matching Claude Code) is the largest open program and has no branch of its own; the cleanup that unblocks it has been on hold since Sept 18.",
+   "Office editing and document comments reached master on Sept 29 and Oct 2 but are not in a released version; the last release, 1.3.0, was Sept 20.",
+   "OneDrive handling was paused Sept 15 on a branch that says 'resume only on user instruction'; nothing exists on master."
+  ],
+  "projects": [
+   "Per-project skills and tools is built (21 commits, draft pull request #571) and waiting on your review of each screen; it also has to be brought up to date with the Oct 4 one-core merge, and your Oct 5 triage said 'do next'.",
+   "The built-in 'Your Assistant' project is a 1.3.1 blocker with no code; three other things lean on it: assistant memory, global instructions, and later phone requests handed to the right project.",
+   "The project-versus-agent overlap you described has no object behind it: the nearest piece is helper files, and project helpers work only by hand-written files with no screen.",
+   "Three vision items under 'how projects, agents and instructions fit' (agent, reusable instructions, who-wins rule) form a chain, and the first link, a reusable agent, is only a parked idea.",
+   "Search in big projects stops at 2,000 files; a draft fix is waiting on four of your answers.",
+   "Sync pills for the project list sit on a 209-commit unmerged branch (ui-consistency-audit) mixed with many unrelated changes."
+  ],
+  "yours": [
+   "Look-and-feel is the most finished pillar: themes, theme editing, theme builder and the buddy have all been shipped since April or September.",
+   "Any model, no single provider is shipped (Claude, ChatGPT, OpenRouter, local); cost and quality tags for the picker are designed but have sat unmerged since Sept 11.",
+   "A free model that is good enough exists only as your hope; local models run free today, but the roadmap shows only fit warnings, not speed, and nothing aims at 'good enough'.",
+   "Office, Home Assistant and bank (Plaid) pages exist, but the last two are hand-installed for you; making them available to everyone depends on Pages and the marketplace, which are outside this pillar.",
+   "The student and developer setups are really bundles of tools for a type of person; no 'profile' idea exists in the roadmap, and the student bundle depends on scheduled agents that are not built.",
+   "OpenAI's newer official ChatGPT sign-in is built but switched off by your choice, to keep free plans and usage bars."
+  ]
+ }
+}

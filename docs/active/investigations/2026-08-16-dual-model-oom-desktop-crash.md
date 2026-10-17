@@ -8,6 +8,8 @@ tags: [local-models, memory, strix-halo, oom, engine]
 
 # Two large models at once took down the desktop (2026-08-16)
 
+> **Status 2026-10-16:** Destin has answered the open decision: warn, and let him choose (recorded in card #48(a)); the guard's numbers were fixed 2026-09-05. Still true on master as last checked: `MODELS_MAX = 2` in `engine-supervisor.ts` and no reader of the unified-memory (GTT) ceiling. Tracked in card #48(a) and card #47. The roadmap references below are retired.
+
 Loading Qwen3.5-122B and Qwen3.6-35B concurrently exhausted the machine's memory,
 triggered the kernel OOM killer, and killed YouCoded, Chrome, Steam, and Plasma's
 desktop shell. Root cause verified from kernel logs; YouCoded's memory guard was
@@ -33,12 +35,12 @@ of event.
 > ceiling is still never read; `checkMemoryForLoad` still computes
 > `capacity = totalMemBytes + (totalVramBytes ?? 0)` off TOTAL memory (`fit-estimator.ts`), and the
 > over-commit path still returns a dismissible `'tight'` warning ending "You can still continue."
-> Tracked on `ROADMAP.md` as an open `bug` `#local-models` `#engine` `#memory`. **Blocked on
-> Destin**, not on build effort: decisions (a) auto-unload vs. toast vs. hard-block and (b) whether
+> Tracked as card #48(a) (formerly an open roadmap bug). **Was blocked on
+> Destin (now answered: warn and let him choose)**, not on build effort: decisions (a) auto-unload vs. toast vs. hard-block and (b) whether
 > a single model is capped by the GPU-pool ceiling are both explicitly "do not guess". Until one of
 > those is answered, the same two models will take the desktop down again.
 
-**History:** filed 2026-08-16 (ROADMAP bug, hit live by Destin); re-verified unfixed 2026-08-26; re-verified again 2026-09-01 during the roadmap migration — `MODELS_MAX = 2` (`engine-supervisor.ts:48`, passed as `--models-max` at :304), `capacity = totalMemBytes + (totalVramBytes ?? 0)` (`fit-estimator.ts:66`), "You can still continue." (`fit-estimator.ts:92`), `readAmdSysfsVram` reading `mem_info_vram_total` (`gpu-detector.ts:140-149`) are all still present, and `rg -i gtt desktop/src` still finds no reader of `mem_info_gtt_total`. No commit since 2026-08-16 touched the guard. Roadmap entry: `docs/roadmap/local-models.md`, status `decision`.
+**History:** filed 2026-08-16 (then a roadmap bug, hit live by Destin); re-verified unfixed 2026-08-26; re-verified again 2026-09-01 during the roadmap migration — `MODELS_MAX = 2` (`engine-supervisor.ts:48`, passed as `--models-max` at :304), `capacity = totalMemBytes + (totalVramBytes ?? 0)` (`fit-estimator.ts:66`), "You can still continue." (`fit-estimator.ts:92`), `readAmdSysfsVram` reading `mem_info_vram_total` (`gpu-detector.ts:140-149`) are all still present, and `rg -i gtt desktop/src` still finds no reader of `mem_info_gtt_total`. No commit since 2026-08-16 touched the guard. Roadmap entry: `docs/roadmap/local-models.md`, status `decision`.
 
 ## What actually happened
 
@@ -123,8 +125,8 @@ verdict `tight` — still only a soft, dismissible warning. Four structural prob
    (`engine-supervisor.ts:43`) — its own comment reasons in 8 GB terms ("two 8GB
    models already hurt"). Two 70 GB models are inside the limit, so LRU eviction
    never fired. **Still true 2026-09-23**: unchanged by the 2026-09-05 rewrite,
-   and this is the concrete anchor for why the roadmap item stays open as a
-   `decision` — see the "PARTLY ADDRESSED" note above.
+   and this is the concrete anchor for why card #48(a) stays open as a
+   decision — see the "PARTLY ADDRESSED" note above.
    <!-- claim: {"path": "youcoded/desktop/src/main/engine/engine-supervisor.ts", "contains": "const MODELS_MAX = 2;"} -->
 2. **The guard doesn't know the GPU pool has its own ceiling.** It treats a
    unified-memory machine as having `totalMem` available, but GPU-offloaded weights

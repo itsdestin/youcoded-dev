@@ -1,6 +1,6 @@
 # Guide wording after selected screens
 
-**Status: waiting for the `ui-guide-wording-round2` answer file.** This is a two-page, words-only review of candidate rules, not an edit to the published guide.
+**Status 2026-10-16: answered and superseded.** The answers file exists (`docs/active/design/2026-09-22-ui-guide-rebuild/rule-words-round2.questions.answers.json`) and the guide was rebuilt as `docs/active/design/2026-10-13-ui-design-guide.md` (approved 2026-10-14). COUNT-1 ("Session Files (12)" vs the no-parentheses count rule) was not confirmed settled by the new guide; it is filed in card #150. Earlier line, kept for history: waiting for the `ui-guide-wording-round2` answer file. This is a two-page, words-only review of candidate rules, not an edit to the published guide.
 
 - **T-01/r4** distinguishes the accepted 16px-medium Settings title from 16px-semibold shared Dialog titles, keeps the 56px minimum and About's body-first version, and excludes unreviewed subtitles/custom shells. T-02/r2 is the only previously approved exact wording.
 - **P-04/r1** documents only the accepted project-scoped context-file detail; global-file warnings and metadata, Projects → Files and underlying data are excluded.

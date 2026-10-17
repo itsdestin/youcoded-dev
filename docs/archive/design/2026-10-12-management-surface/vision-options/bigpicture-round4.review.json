@@ -1,0 +1,138 @@
+{
+ "title": "Big picture, round 4: popups, Foundations structure, map + lists",
+ "key": "bigpicture-round4-review",
+ "out": "bigpicture-round4.review.html",
+ "images": "images/bigpicture-round4.review",
+ "runs": {
+  "before": "runs/round3",
+  "after": "runs/round4"
+ },
+ "labels": {
+  "before": "Round 3",
+  "after": "Round 4"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "journeys-detail": [
+   "vision",
+   "journeys-detail",
+   "1440x900+0+0"
+  ],
+  "stack": [
+   "vision",
+   "stack",
+   "1440x900+0+0"
+  ],
+  "stack-detail": [
+   "vision",
+   "stack-detail",
+   "1440x900+0+0"
+  ],
+  "wiring": [
+   "vision",
+   "wiring",
+   "1440x900+0+0"
+  ],
+  "wiring-detail": [
+   "vision",
+   "wiring-detail",
+   "1440x900+0+0"
+  ],
+  "wiring-part": [
+   "vision",
+   "wiring-part",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Big picture → any view → click an item",
+   "crop": "journeys-detail",
+   "headline": "Details open in a large centred popup instead of a side panel.",
+   "changed": "The popup follows the app's detail-page layout: titled by kind (\"Feature details\"), a top card with the name, its status and its place in the plan, then two columns of labelled cards: what you see (its screens, the work on them) on the left, how it connects on the right.",
+   "notice": "Clicking a connected item inside the popup swaps to it; a back arrow appears at the top left. A screenshot opens on top of the popup, and closing it returns here.",
+   "risk": "The popup covers the page, so you can't see the list behind while reading details."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Big picture → Foundations, as it opens",
+   "crop": "stack",
+   "headline": "Foundations: a one-sentence summary, then \"Build these first\" as folded rows.",
+   "changed": "A summary card says how many linked things are unbuilt, how many could start now, and how many the top five would unblock. The top five are folded rows; the rest of the lists are below, renamed \"Could start now\", \"Waiting on something\", \"Already built\".",
+   "notice": "The answer to \"what should be built next\" is still the first thing you read, now with the reason in one sentence above it."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-3",
+   "path": "Big picture → Foundations, the first item opened",
+   "crop": "stack-detail",
+   "headline": "Opening one shows what it frees up, in words.",
+   "changed": "Under \"Once it exists, these can move\": each thing that needs it directly, with what else it still waits on, or \"Nothing else missing: it could start next\". Then how many more sit further up, and a button for its full details.",
+   "notice": "Round 3 said \"unblocks 13\"; now you see which ones."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-4",
+   "path": "Big picture → How it works, as it opens",
+   "crop": "wiring",
+   "headline": "How it works, a hybrid: the map is back on top, lists below.",
+   "changed": "Round 2's boxes and lines, redrawn in the app's look: each part a box with its status, a line per connection, faint where not built. Below it, the paths and the parts as folded rows, as in round 3.",
+   "risk": "The map has no detail of its own; it points into the rows below. If you would rather have two separate views (map / list), say so.",
+   "notice": "You see the whole shape at a glance again, without the round 2 clutter beside it."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-5",
+   "path": "Big picture → How it works → open \"Follow a message\"",
+   "crop": "wiring-detail",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "Opening a path lights its route on the map.",
+   "changed": "Opening \"Follow a message\" darkens the lines and boxes it passes through and fades the rest. Its steps are listed right under the map.",
+   "notice": "Close the path and the map goes back to normal. With two ways open (Claude Code and YouCoded's engine), both routes light.",
+   "highlight": {
+    "box": [
+     12,
+     19,
+     76,
+     62
+    ]
+   }
+  },
+  {
+   "surface": "Management page",
+   "id": "A-6",
+   "path": "Big picture → How it works → click the Sync box on the map",
+   "crop": "wiring-part",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "Clicking a box on the map opens that part's row below.",
+   "changed": "The page jumps to the part and opens it: what it is made of, what it talks to, and the ideas that rest on it (click one for its popup).",
+   "risk": "The jump is instant; there is no animation back up to the map.",
+   "highlight": {
+    "box": [
+     12,
+     15,
+     76,
+     74
+    ]
+   },
+   "notice": "The map and the lists are one thing: every box leads to its row."
+  }
+ ]
+}

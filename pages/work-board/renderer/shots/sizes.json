@@ -1,0 +1,2855 @@
+{
+"settings/account/connections": {
+"w": 436,
+"h": 403,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/local/engine-advanced": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/local": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter/key": {
+"w": 356,
+"h": 306,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/account#signed-in": {
+"w": 436,
+"h": 441,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/specialists": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/permissions": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/permissions/skip-confirm": {
+"w": 356,
+"h": 380,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/claude-code/sign-out": {
+"w": 356,
+"h": 211,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/account": {
+"w": 436,
+"h": 321,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/local/model-settings": {
+"w": 436,
+"h": 510,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings": {
+"w": 328,
+"h": 900,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/general": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/permissions#folder-open-hover": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/buddy": {
+"w": 356,
+"h": 315,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/general#step-guard-failed": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/appearance/about": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sound": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync#ok": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/permissions#load-failed": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/specialists#load-failed": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/performance": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/performance#fold-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/appearance": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync#auth-error": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/performance#fold-open-hover": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync#log-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/appearance#custom-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/help": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/remote": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report": {
+"w": 616,
+"h": 701,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync#oversize": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#from-error": {
+"w": 616,
+"h": 757,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#feature": {
+"w": 616,
+"h": 628,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync/remove-backend": {
+"w": 356,
+"h": 216,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/appearance#finetune-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#filled": {
+"w": 616,
+"h": 684,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#review-logs": {
+"w": 616,
+"h": 524,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#review-error": {
+"w": 616,
+"h": 584,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#review": {
+"w": 616,
+"h": 468,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#filled-all": {
+"w": 616,
+"h": 766,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/sync#removed": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#review-files": {
+"w": 616,
+"h": 550,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#failed": {
+"w": 616,
+"h": 530,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#review-logs-open": {
+"w": 616,
+"h": 638,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#sent-strong": {
+"w": 616,
+"h": 303,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"settings/development/bug-report#offline": {
+"w": 616,
+"h": 530,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#handed-over": {
+"w": 616,
+"h": 303,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#small": {
+"w": 640,
+"h": 480,
+"crop": false,
+"win": [
+640,
+480
+]
+},
+"settings/development/bug-report#handover-downloading": {
+"w": 616,
+"h": 641,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#handover": {
+"w": 616,
+"h": 641,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute": {
+"w": 436,
+"h": 443,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#sent": {
+"w": 616,
+"h": 303,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#sending": {
+"w": 616,
+"h": 173,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute#ready": {
+"w": 436,
+"h": 308,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute#walkthrough": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#phone-review": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"settings/development/bug-report#browser": {
+"w": 616,
+"h": 303,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#review-ai": {
+"w": 616,
+"h": 641,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute#downloading": {
+"w": 436,
+"h": 205,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#small-review": {
+"w": 640,
+"h": 480,
+"crop": false,
+"win": [
+640,
+480
+]
+},
+"settings/development/contribute#open-failed": {
+"w": 436,
+"h": 319,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/shortcuts": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute#failed": {
+"w": 436,
+"h": 341,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/donate": {
+"w": 356,
+"h": 236,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute#open-failed-details": {
+"w": 436,
+"h": 347,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/about": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/about#account-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/about#fold-hover": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/about#stats-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/android/tier": {
+"w": 356,
+"h": 284,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/contribute#failed-details": {
+"w": 436,
+"h": 403,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/about#licenses-open": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/chatgpt#signed-out": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/chatgpt#waiting": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/android/connect-desktop": {
+"w": 436,
+"h": 331,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/chatgpt#blocked": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#none": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#waiting": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/development/bug-report#handover-ready": {
+"w": 616,
+"h": 641,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#failed": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#verified": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#rejected": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#expired": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#wrong-type": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/cloud/openrouter#unchecked": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/sessions": {
+"w": 400,
+"h": 393,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/rename-session": {
+"w": 436,
+"h": 238,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/switcher": {
+"w": 400,
+"h": 393,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session": {
+"w": 436,
+"h": 590,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session#note": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session#bare": {
+"w": 436,
+"h": 597,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"chat/find": {
+"w": 1000,
+"h": 45,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/skills": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session#tag-edit": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session#note-typing": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/commands": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/model-picker": {
+"w": 400,
+"h": 321,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/overflow": {
+"w": 224,
+"h": 226,
+"crop": true,
+"win": [
+390,
+844
+]
+},
+"chat/model-picker/fast-mode": {
+"w": 356,
+"h": 431,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/model-picker/switch-model": {
+"w": 356,
+"h": 220,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/preferences": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/open-tasks": {
+"w": 436,
+"h": 154,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume": {
+"w": 1000,
+"h": 689,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/tags": {
+"w": 436,
+"h": 547,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume#stress": {
+"w": 1000,
+"h": 689,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/tags#complete": {
+"w": 436,
+"h": 547,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/status-bar": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/announcement": {
+"w": 436,
+"h": 152,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/status-bar/themes": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/context": {
+"w": 356,
+"h": 392,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/session-context": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/quick-chips": {
+"w": 436,
+"h": 433,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/quick-chips/edit": {
+"w": 436,
+"h": 345,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/quick-chips/add": {
+"w": 436,
+"h": 545,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/session-context#ancestors": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/tags#note-typing": {
+"w": 436,
+"h": 603,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/quit-sessions": {
+"w": 436,
+"h": 216,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/session-context#skill-open-hover": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/first-time-warning/skip-permissions": {
+"w": 436,
+"h": 342,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/first-time-warning/full-auto": {
+"w": 436,
+"h": 451,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/first-time-warning/small-model": {
+"w": 436,
+"h": 293,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files": {
+"w": 496,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/menu/assistant": {
+"w": 216,
+"h": 112,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"welcome": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/games": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/menu/composer": {
+"w": 216,
+"h": 149,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/terminal": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/menu/user": {
+"w": 216,
+"h": 112,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"welcome/new-session": {
+"w": 400,
+"h": 221,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"marketplace": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/menu/code": {
+"w": 216,
+"h": 149,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"library": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/menu/file": {
+"w": 216,
+"h": 149,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"handle-prompt": {
+"w": 356,
+"h": 238,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat#native": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#questions-native": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#questions-cc": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#chatgpt-plan-limit": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#openrouter-key-expired": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#openrouter-key-rejected": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#stalled": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#chatgpt": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#openrouter-request-refused": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#openrouter-credit-short": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-handoff": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-reasoning-stop": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-skill-first": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-approval": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-skills-chain": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-deliverables": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-mix": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-skills-spread": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#detect-prerequisites": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#install-prerequisites": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-silent-steps": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#authenticate": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#installing": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#signin-payg": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#install-failed": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#authenticate-chatgpt": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"first-run#setup-installing": {
+"w": 800,
+"h": 440,
+"crop": false,
+"win": [
+800,
+440
+]
+},
+"first-run#setup-done": {
+"w": 800,
+"h": 680,
+"crop": false,
+"win": [
+800,
+680
+]
+},
+"chat/games#degraded": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#signed-in": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#empty": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat#statusbar-cc": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#statusbar-local": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#statusbar-metered": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#statusbar-delegated": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#statusbar-unpriced": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/close-session#meta-unreadable": {
+"w": 436,
+"h": 372,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume#load-failed": {
+"w": 1000,
+"h": 689,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/tags#load-failed": {
+"w": 436,
+"h": 449,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/flappy": {
+"w": 436,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/flappy#alone": {
+"w": 436,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/skills#load-failed": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/games/2048": {
+"w": 456,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/flappy/play": {
+"w": 436,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/chess": {
+"w": 536,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/chess/lobby": {
+"w": 536,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/connect-four": {
+"w": 436,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/connect-four/lobby": {
+"w": 436,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#friends": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#no-friends": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#requests": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"chat/games#signed-out-phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"chat/games#small": {
+"w": 640,
+"h": 480,
+"crop": false,
+"win": [
+640,
+480
+]
+},
+"chat/games/chess/lobby#friends": {
+"w": 536,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/chess/lobby#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"chat/games/chess/lobby#no-friends": {
+"w": 536,
+"h": 719,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#long": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#incognito-open": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#incognito": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#offline": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games/friend": {
+"w": 356,
+"h": 253,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/games#status-menu": {
+"w": 436,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/takeover/confirm": {
+"w": 436,
+"h": 152,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/takeover/force": {
+"w": 436,
+"h": 244,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/takeover/undeliverable": {
+"w": 436,
+"h": 244,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/takeover/claim-denied": {
+"w": 436,
+"h": 152,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume/preview": {
+"w": 1000,
+"h": 689,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume/organize": {
+"w": 436,
+"h": 547,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume/pick-model": {
+"w": 436,
+"h": 175,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/resume/preview#stress": {
+"w": 1000,
+"h": 689,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/update": {
+"w": 616,
+"h": 353,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/specialists": {
+"w": 616,
+"h": 820,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-sent-chart": {
+"w": 496,
+"h": 693,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-sent-diagram": {
+"w": 496,
+"h": 693,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-sent-pdf": {
+"w": 496,
+"h": 693,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-sent-plan": {
+"w": 496,
+"h": 693,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-launch-brief": {
+"w": 496,
+"h": 693,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-q3-sales-comments": {
+"w": 496,
+"h": 693,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/skills": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat/files/edit/a-sent-plan": {
+"w": 496,
+"h": 653,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat/files/open/a-launch-brief#git-review": {
+"w": 496,
+"h": 763,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/themes": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"marketplace/search": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail/member": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail/bundle": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail/caution": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-detail": {
+"w": 836,
+"h": 450,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail/connection": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/skills#account-menu": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"marketplace/integration-detail": {
+"w": 836,
+"h": 377,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-detail/not-installed": {
+"w": 836,
+"h": 441,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"marketplace/detail#small": {
+"w": 640,
+"h": 480,
+"crop": false,
+"win": [
+640,
+480
+]
+},
+"marketplace/theme-detail#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"marketplace/theme-detail/not-installed#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"marketplace/detail/install": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail/install#failed": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/skills#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"marketplace/detail/install#slow": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail#update": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-detail/install#failed": {
+"w": 836,
+"h": 490,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-detail/install": {
+"w": 836,
+"h": 441,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-detail#liked": {
+"w": 836,
+"h": 450,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-detail#update": {
+"w": 836,
+"h": 496,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/share": {
+"w": 356,
+"h": 390,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace/theme-share": {
+"w": 436,
+"h": 330,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"marketplace#empty": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"library#empty": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"library/themes": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"marketplace/detail/install#failed-later": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"library#load-failed": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"library/themes#load-failed": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"projects/files": {
+"w": 1000,
+"h": 469,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/files/filter": {
+"w": 280,
+"h": 242,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/conversations": {
+"w": 1000,
+"h": 469,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/files#description-edit": {
+"w": 1000,
+"h": 476,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/conversations/preview": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"projects/context": {
+"w": 1000,
+"h": 469,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/context/how": {
+"w": 836,
+"h": 670,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/context/editor": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"projects/switcher": {
+"w": 656,
+"h": 423,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/switcher#many": {
+"w": 656,
+"h": 584,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/switcher#pointed": {
+"w": 656,
+"h": 423,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/remove/synced": {
+"w": 436,
+"h": 568,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/remove": {
+"w": 356,
+"h": 428,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/add": {
+"w": 432,
+"h": 335,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/files#not-synced": {
+"w": 1000,
+"h": 501,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/remove/missing": {
+"w": 356,
+"h": 268,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/turn-on-sync": {
+"w": 436,
+"h": 290,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/files/folder/docs": {
+"w": 1000,
+"h": 469,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"projects/files/folder/Locked": {
+"w": 1000,
+"h": 469,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"pages#empty": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-week-planner": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-paint": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-weather": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/focus/page-focus-timer": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-task-board": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-task-board#phone-keys": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-link-reader": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-headlines": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-analytics": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"office/first-run": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/page/page-trip-board": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"office/home": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/library/connections": {
+"w": 436,
+"h": 404,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"pages/library": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/library/edit": {
+"w": 436,
+"h": 312,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"office/versions": {
+"w": 436,
+"h": 413,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"office/document": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/create": {
+"w": 436,
+"h": 312,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"office/document-comments": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"office/spreadsheet": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages#phone": {
+"w": 136,
+"h": 810,
+"crop": true,
+"win": [
+390,
+844
+]
+},
+"pages/library#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"office/spreadsheet-comments": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"pages/focus/page-focus-timer#phone": {
+"w": 390,
+"h": 844,
+"crop": false,
+"win": [
+390,
+844
+]
+},
+"app/unsaved-before-quit#short": {
+"w": 356,
+"h": 400,
+"crop": true,
+"win": [
+1440,
+480
+]
+},
+"app/unsaved-before-quit": {
+"w": 356,
+"h": 492,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"office/presentation": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"app/unsaved-before-quit#rows": {
+"w": 356,
+"h": 492,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"app/unsaved-before-quit/after-restart": {
+"w": 356,
+"h": 492,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"app/unsaved-before-quit/discard": {
+"w": 356,
+"h": 492,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"app/unsaved-before-quit/all-saved": {
+"w": 356,
+"h": 152,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"dev/icons": {
+"w": 1000,
+"h": 903,
+"crop": false,
+"win": [
+1440,
+1300
+]
+},
+"dev/pills": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"dev/pills#strong": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"dev/open-tasks": {
+"w": 436,
+"h": 604,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"tour/files": {
+"w": 368,
+"h": 161,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"tour/backups": {
+"w": 368,
+"h": 180,
+"crop": true,
+"win": [
+1440,
+900
+]
+},
+"chat#bubbles-edit-approval": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"chat#backup-first-change": {
+"w": 1000,
+"h": 625,
+"crop": false,
+"win": [
+1440,
+900
+]
+},
+"settings/assistant/permissions#backup-note": {
+"w": 836,
+"h": 716,
+"crop": true,
+"win": [
+1440,
+900
+]
+}
+}

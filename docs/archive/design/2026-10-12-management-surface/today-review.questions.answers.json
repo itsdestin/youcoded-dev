@@ -1,0 +1,65 @@
+{
+ "deck": "today-review-proposals",
+ "started": "2026-10-14T21:04:23.073Z",
+ "submitted": "2026-10-14T21:07:49Z",
+ "cur": 3,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "labels",
+   "t": 1792011921565,
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "menu",
+   "t": 1792011921565,
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "inline",
+   "t": 1792011921565,
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "timeline",
+   "t": 1792011935060,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "by-state",
+   "t": 1792011994278,
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "fixed",
+   "t": 1792011994278,
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "same",
+   "t": 1792011994278,
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "Q-8": {
+   "v": "pick",
+   "t": 1792012068529,
+   "note": "i want to make sure we're not overly dumbing down the copy though. i'm not an idiot. \"merge to master\" is a clearer and better button name than \"put this in the app?\"",
+   "seconds": 74,
+   "theme": "morning-rounds",
+   "pick": "all"
+  }
+ }
+}

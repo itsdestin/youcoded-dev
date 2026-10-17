@@ -1,0 +1,23 @@
+---
+id: 87
+title: Assistant's web browser: eight follow-ups
+stage: planning
+priority: P3
+tags: other-features, misc, feature
+branch: 87-browser-follow-ups-the-assistant
+roadmap: other-features: Browser follow-ups (the assistant's own browser, shipped 202
+created: 2026-10-15
+summary: The new built-in browser lacks phone support, file uploads, tab extras and hand-testing on Mac and Windows.
+area: Chat
+side: both
+vision: chat.steer.websearch
+---
+Progress
+Done: nothing recorded.
+Next: not decided.
+Blocked: nothing recorded.
+
+Chats
+
+From the old roadmap (other-features › misc, status confirmed, seen on all, last checked 2026-10-14)
+Browser follow-ups (the assistant's own browser, shipped 2026-10-14): 8 items left out. (a) Phones and the Android app get no Browser controls or live picture; a phone watching a computer chat cannot answer a Browser card (the call gives up after 90 seconds). (b) Attaching a local file to a website (upload) was cut for safety; needs its own design. (c) Panel tabs: no drag to reorder, no reopening a closed tab (Ctrl+Shift+T), no site icons (showing them means the app contacts each site). (d) My Chrome is Experimental: never run against Destin's own Chrome's remote-debugging switch; no Chrome tab group marks the assistant's tabs. (e) Sign-ins are shared by all chats; per-chat storage was deferred. (f) Specialists (helper agents) don't get the Browser. (g) The Browser download (when no Chrome/Edge/Chromium/ Brave is installed) is verified on Linux only. (h) Never tried by hand: macOS and Windows; a Google password step; middle-click or Ctrl+click on a link; the pointer shape over links (not passed to the panel).

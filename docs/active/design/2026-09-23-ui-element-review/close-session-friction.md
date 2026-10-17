@@ -262,7 +262,7 @@ Added after the follow-up rounds (4–6) — **deferred, 2026-10-12.** Destin: "
 tooling to actually get sessions to use the guide and meet standards later. for now, we should
 just continue to focus on current app design and the ui guide." Proposals 21–25, and any similar
 "make sessions follow the guide" tooling, wait for that revisit; filed as one parked item in
-`docs/roadmap/dev-workspace.md` (rigs).
+card #150 (design guide tooling).
 
 21. **Brief: a conventions list per part, before building** — for every piece of a screen (title,
     container, row, row actions, problems, scrolling, footer) name its guide section or decisions row

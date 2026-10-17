@@ -2,12 +2,12 @@
 title: Performance program — current state and next steps
 status: active
 date: 2026-09-29
-last_updated: 2026-10-04
+last_updated: 2026-10-16
 ---
 
 # Start here: performance status
 
-**The authorized closeout is complete. The broader performance program remains open.** This page is the current restart point; the backlog is `docs/roadmap/perf.md`.
+**The authorized closeout is complete. The broader performance program remains open.** This page is the current restart point; the backlog is the performance cards: #93, #94, #96, #98, #99, #100, #101, #109 and #110 (`node scripts/cards.mjs index`).
 
 ## Merged and cleaned up
 
@@ -38,7 +38,7 @@ The three items under "Next performance work" below were **not** that session's 
 
 1. **Remeasure hidden-history typing stalls on current master.** The old source showed synchronous hidden first-page Markdown work; upstream rendering/loading code has changed since those experiments. Establish a fresh cause before restoring any candidate.
 2. **Investigate intermittent switch/resize stalls and approximately 1 Hz callback episodes.** Historical slow cases remain unexplained; successful short runs are not a general resolution.
-3. **Measure cold Find indexing and lifecycle costs separately.** First query, streaming refresh and reopened-search retention remain open. Searching never-loaded history is a separate scope item in `docs/roadmap/chat-data.md`.
+3. **Measure cold Find indexing and lifecycle costs separately.** First query, streaming refresh and reopened-search retention remain open. Searching never-loaded history is a separate scope item in card #3.
 
 Other coverage remains in perf: long soak/retained-memory slopes, giant bodies, sustained terminal output with typing, expensive tool churn, private sync interference, effects-heavy native presentation, native drag/resize, and Android/remote motion. These are coverage gaps, not all confirmed defects. Long soak was explicitly deferred. Native compositor feedback and renderer callbacks are not certified FPS or input-to-photon measurements.
 

@@ -1,0 +1,108 @@
+{
+ "title": "Today tab, round 2: clearer buttons",
+ "key": "today-rebuild-2-review",
+ "out": "today-rebuild-2.review.html",
+ "images": "images/today-rebuild-2.review",
+ "runs": {
+  "before": "runs/today-after",
+  "after": "runs/today-after2"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "Now"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "top": [
+   "today",
+   "top",
+   "1440x900+0+0"
+  ],
+  "needs": [
+   "today",
+   "needs",
+   "1440x900+0+0"
+  ],
+  "open": [
+   "today",
+   "open",
+   "1440x900+0+0"
+  ],
+  "working": [
+   "today",
+   "working",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Today, as it opens",
+   "crop": "top",
+   "headline": "Round chips, \"Not backed up\" beside the name, ⋯ first, and buttons that say what they do.",
+   "changed": "Every tag chip now has the theme's round shape. \"Unsaved changes\" became \"Not backed up\" and sits beside the name, next to the status label: it warns about the copy on this computer (changes not committed or not pushed), not about the work's progress. ⋯ moved to the left of the buttons. Open became \"View chats\"; Review became \"Open review deck\".",
+   "notice": "\"Needs your look\" is about the work (screens wait for your approval); \"Not backed up\" is about safety (changes that exist only on this computer). Pointing at each says so."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Today → Needs you, ⋯ opened on Sync safety",
+   "crop": "needs",
+   "headline": "Pause… and Close… now say exactly what they do, right in the menu.",
+   "changed": "Pause…: marks it paused on its card, with your reason; its branch, copy and pull request stay exactly as they are. Close…: saves unsaved changes to a backup branch, closes its pull request, removes its copy from this computer and marks the card closed; the branch stays on GitHub.",
+   "notice": "Every main button's hover now names its real effect too, e.g. Merge to master: \"Merges its pull request into master, then deletes the branch.\""
+  },
+  {
+   "surface": "Management page",
+   "id": "A-3",
+   "path": "Today → Being worked on → View chats",
+   "crop": "working",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "\"Join chat\" is now \"Go to chat\": it switches to the conversation that is working on it.",
+   "changed": "A working chat offers Go to chat (it is open now); a past chat offers Resume chat (reopens it where it left off). The section line reads \"A chat worked on these in the last 24 hours.\"",
+   "notice": "Idle work's main button is now \"Resume latest chat\"; Paused work's is \"Unpause\".",
+   "risk": "Go to chat assumes the working conversation is open on this computer; one running on another device would need its own wording.",
+   "highlight": {
+    "box": [
+     12,
+     15,
+     76,
+     37
+    ]
+   }
+  },
+  {
+   "surface": "Management page",
+   "id": "A-4",
+   "path": "Today → Everything else → Helper agents → View chats",
+   "crop": "open",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "View chats opens the list inside the row; every chat button says Resume chat.",
+   "changed": "The button toggles between View chats and Hide chats. Inside: progress, the three conversations with Resume chat each, and Start another chat on this card.",
+   "notice": "Nothing opens a separate window or GitHub: View chats only unfolds this row.",
+   "highlight": {
+    "box": [
+     13,
+     22,
+     74,
+     48
+    ]
+   }
+  }
+ ]
+}

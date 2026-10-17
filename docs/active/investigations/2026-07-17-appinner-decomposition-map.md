@@ -4,17 +4,18 @@ status: active
 
 # AppInner Decomposition Map
 
+> **Status 2026-10-16:** tranche 1 shipped (f1ab07fc); tranches 2-4 are not done and are tracked by card #60 (split up the oversized code: chat engine and app shell). `App.tsx` is now about 4,692 lines on master (it was 3,356 when this was mapped), so re-anchor by symbol name, never by line number. Kept active as the cluster map.
+
 > **Tranche 1 SHIPPED 2026-07-17** (youcoded merge `f1ab07fc`; plan archived at `docs/archive/plans/2026-07-17-appinner-tranche1-perf.md`). Tranches 2-4 remain.
 >
 > **Re-verified 2026-08-26 — keep active.** Tranches 2–4 are still open and ARE tracked
-> (`ROADMAP.md` → "Staged AppInner decomposition (App.tsx) — tranche 1 SHIPPED, 2–4 remain",
-> which names this file as its cluster map). Live input to open work; do not archive until
+> (card #60, which now carries the old roadmap item "Staged AppInner decomposition"). Live input to open work; do not archive until
 > tranche 4 lands or is formally dropped. Note the doc's own caution: it was mapped on a
 > different branch, so **re-anchor by symbol name, not line number** — `App.tsx` is ~3,679 lines
 > today against the 3,356 recorded here.
 
 **Date:** 2026-07-17
-**Status:** Investigation — extraction map for the staged decomposition of `AppInner` in `youcoded/desktop/src/renderer/App.tsx`. Feeds the ROADMAP item "Staged AppInner decomposition". Mapped on branch `feat/buddy-feedback-tuning` (line numbers will drift as that branch and master evolve — re-anchor by symbol name, not line, when executing).
+**Status:** Investigation — extraction map for the staged decomposition of `AppInner` in `youcoded/desktop/src/renderer/App.tsx`. Feeds card #60 (the old roadmap item "Staged AppInner decomposition"). Mapped on branch `feat/buddy-feedback-tuning` (line numbers will drift as that branch and master evolve — re-anchor by symbol name, not line, when executing).
 
 ## Why
 
@@ -82,7 +83,7 @@ Return structure: framed-shell active-session branch (2613–2848: chrome-glass,
 1. **`<WelcomeScreen>`** — child component owning the `welcome*` state cluster. (~250 lines.)
 2. **Session-scoped hooks** — `useSessionModel`, `useSessionPermissionMode`, `useSessionStatuses`+sounds (together, R1), `useMarketplaceNav`, `useTakeoverPrompt`, `useCompactionWatchdog`, small EASY clusters. (~500 lines across 2–3 PRs.)
 3. **Callback-stabilization pass** — hoist inline render closures (HeaderBar handlers, StatusBar `onDispatch`, `CloseSessionPrompt.onConfirm`, `ModelPickerPopup.onSelectModel`) to `useCallback`. Prerequisite for any memo perf win.
-4. **Perf isolation** — extract `BottomChrome` and `ContentArea` children with `React.memo` + the now-stable callbacks. This is where the keystroke-re-render win lands. (Related: the ROADMAP's separate "App-root useChatStateMap subscription refactor" from the 2026-07-10 review is the *other* half of the perf story.)
+4. **Perf isolation** — extract `BottomChrome` and `ContentArea` children with `React.memo` + the now-stable callbacks. This is where the keystroke-re-render win lands. (Related: the separate "App-root useChatStateMap subscription refactor" (card #94) from the 2026-07-10 review is the *other* half of the perf story.)
 5. **(Optional, dedicated) session event bridge** — `useSessionEventBridge`/`useSessionRegistry` for the giant mount effect + ownership wiring. Highest risk (R3, R4, R7, R9, R10 all live here); only attempt with its own plan and review. Stages 0–4 are worthwhile without it.
 
 Floor after stages 0–4: AppInner ~2,000–2,100 lines with the two HARD anchors intact — acceptable; the trunk being one readable file is defensible the same way `SessionService.kt` is.

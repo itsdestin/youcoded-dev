@@ -137,7 +137,7 @@ tests never ran on Windows.
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
 website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` now reads
-the `/releases` list; revert when 1.3.1 ships — `docs/roadmap/dev-workspace.md`).
+the `/releases` list; revert when 1.3.1 ships — tracked as a card, `node scripts/cards.mjs index`).
 
 **Only an official release reaches an install that is not ON the beta channel, and no
 published build had that channel until `1.3.0-beta.86` (2026-09-19).** The channel shipped

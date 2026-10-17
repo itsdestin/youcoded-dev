@@ -7,6 +7,8 @@ topic: the prompt Destin pastes into a fresh session to settle what gates specia
 
 # Prompt: settle what gates plans, then start designing them
 
+> **Status 2026-10-16:** still valid as a paste-in prompt; the live item is card #74, still gated on Destin's decisions. Where the prompt says to serve the question deck, use the current flow: build with `preview`, read the contact sheet, then `serve` it in the background (see `.claude/rules/review-deck.md`); the old `review-cards.py serve` wording is out of date.
+
 Paste everything below the line into a new session. It is written for a session
 with no context. It leads with a question deck because five decisions are owed,
 and four or more questions never go in chat.
@@ -65,8 +67,8 @@ Wait for the deck to be submitted. Then:
 
 **3. Record every answer** in `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`
 §9 (strike the row, add the decision and the date to §8) and in the matching
-`docs/roadmap/native-harness.md` entries (the "Assistants made of Duties" item and the
-"Specialists stage two" item). Run `node scripts/roadmap-check.mjs --fix`. Commit from a
+cards (the roadmap became cards on 2026-10-15: "Specialists stage two" is `cards/74-specialists-stage-two-plans-the.md`;
+find the "Assistants made of Duties" one with `node scripts/cards.mjs index`). Run `node scripts/cards.mjs check`. Commit from a
 worktree, never the main checkout.
 
 **4. Start stage two under `.claude/rules/feature-flow.md`.** Its opening questions go

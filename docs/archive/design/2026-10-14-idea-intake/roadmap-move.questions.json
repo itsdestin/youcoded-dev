@@ -1,0 +1,334 @@
+{
+ "title": "Moving the roadmap into work items",
+ "key": "roadmap-move-review",
+ "out": "roadmap-move.questions.html",
+ "themes": [
+  "light",
+  "midnight"
+ ],
+ "stage": "ask",
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Three pairs that look like one piece of work",
+   "intro": "Rule: Planning items may not overlap. These pairs overlap enough that the reviewer suggests merging each into one."
+  },
+  {
+   "id": "M-1",
+   "words": true,
+   "surface": "Work items",
+   "path": "Merging two items",
+   "headline": "Merge #47 and #136 into one item?",
+   "today": "#47 · Planning · P2 — The model list says whether a model FITS and nothing about whether it will be fast\n\n#136 · Exploring · P2 — Model rows in the picker carry no cost or intelligence tags, so choosing means knowing the names",
+   "problem": "Both describe the same strip of tags on each model row in the picker: 47 is the speed tag and 136 is the cost and intelligence tags meant to sit beside it, so they need one design.",
+   "proposal": "Keep #47, fold #136's text into it, and remove #136. Nothing is lost: the merged item keeps both descriptions.",
+   "options": [
+    {
+     "id": "merge",
+     "label": "Merge them",
+     "pros": [
+      "One item for one piece of work."
+     ],
+     "cons": [
+      "They can no longer be tracked separately."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep both",
+     "pros": [
+      "They stay separate."
+     ],
+     "cons": [
+      "Two items describe overlapping work."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M-2",
+   "words": true,
+   "surface": "Work items",
+   "path": "Merging two items",
+   "headline": "Merge #100 and #105 into one item?",
+   "today": "#100 · Planning · P3 — Theme and animation costs on screen (3 things)\n\n#105 · Exploring · P3 — Themes may cost more graphics work than they should; all found by reading except the first real-GPU readings…",
+   "problem": "Both are about themes costing too much graphics work (animated mascots, always-running effects, blur), and 100 itself says its findings now live in 105.",
+   "proposal": "Keep #100, fold #105's text into it, and remove #105. Nothing is lost: the merged item keeps both descriptions.",
+   "options": [
+    {
+     "id": "merge",
+     "label": "Merge them",
+     "pros": [
+      "One item for one piece of work."
+     ],
+     "cons": [
+      "They can no longer be tracked separately."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep both",
+     "pros": [
+      "They stay separate."
+     ],
+     "cons": [
+      "Two items describe overlapping work."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M-3",
+   "words": true,
+   "surface": "Work items",
+   "path": "Merging two items",
+   "headline": "Merge #102 and #103 into one item?",
+   "today": "#102 · Planning · P3 — Session switching: measured slow cases and decisions (6 things)\n\n#103 · Exploring · P3 — Session-strip motion cost (owner decision): the session pill resizing and the chat-arrival fade run style and…",
+   "problem": "Card 102's item (e) is the same session-pill resize and chat-arrival fade cost that 103 asks Destin to decide on.",
+   "proposal": "Keep #102, fold #103's text into it, and remove #103. Nothing is lost: the merged item keeps both descriptions.",
+   "options": [
+    {
+     "id": "merge",
+     "label": "Merge them",
+     "pros": [
+      "One item for one piece of work."
+     ],
+     "cons": [
+      "They can no longer be tracked separately."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "keep",
+     "label": "Keep both",
+     "pros": [
+      "They stay separate."
+     ],
+     "cons": [
+      "Two items describe overlapping work."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S-1",
+   "words": true,
+   "surface": "Work items",
+   "path": "Stages the reviewer corrected",
+   "headline": "Seven items were moved to a different stage than their old roadmap status suggested.",
+   "changed": "#25 → Exploring: Destin parked the usage-analytics gap 'as its own conversation'; nothing about what to collect has been decided.\n\n#61 → Exploring: Agents and Automations waits on a ruling about its basic building block that is 'captured, not designed', so its shape is still open.\n\n#136 → Exploring: The model-row tags are explicitly undesigned: where the numbers come from and whether they fit a row are open questions.\n\n#55 → Planning: The sign-in fix is already designed (device-flow to loopback proof); what remains is building and rolling it out.\n\n#58 → Planning: Destin agreed the built-in 'Your Assistant' project as a 1.3.1 blocker with a clear shape; only the name is unsettled.\n\n#31 → Planning: The Play listing steps are concrete and unblocked (account, upload, forms); it is low priority, not undecided.\n\n#20 → Planning: Nobody is building it: the feature flow is finished and waiting for the first small UI feature to trial it on.",
+   "notice": "Exploring = not settled yet. Planning = agreed, ready to plan the build.",
+   "yes": "Agree",
+   "no": "Some are wrong"
+  },
+  {
+   "id": "S-2",
+   "words": true,
+   "surface": "Work items",
+   "path": "Things that must come first",
+   "headline": "Four items now say what has to exist before them.",
+   "changed": "#117 needs #115: A phone browser can only use the microphone on an encrypted connection, which 115 builds.\n\n#86 needs #61: Item (f), sending automation results to Telegram, Discord or email, says it waits until Agents and Automations exists.\n\n#61 needs #63: Agents and Automations is blocked on Destin's 'Assistants made of Duties' ruling, which is parked as 63(l).\n\n#64 needs #61: Mesh and Cloud decide where scheduled duties and automations run, so the automations themselves must exist first.",
+   "notice": "Plus 19 pairs that only touch now carry a \"See also\" note on each, so a chat working on one sees the other.",
+   "yes": "Agree",
+   "no": "Some are wrong"
+  },
+  {
+   "id": "P-2",
+   "page": "Every item, by old roadmap area (1 of 4)",
+   "intro": "Each old roadmap entry is now one item with a stage. Say Something's off and name the number in the note."
+  },
+  {
+   "id": "A-1",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: native-harness",
+   "headline": "native-harness: 21 items. Filed right?",
+   "changed": "#57 · Planning · P1 — The \"No folder\" choice on the new-session form (shipped 2026-09-11) was never tested or thought through…\n#58 · Planning · P1 — Every install should come with a built-in project, \"Your Assistant\" (name not final), in the Projects list…\n#59 · Agentic buildout · P1 — Native Runtime Parity Program — everything that still separates a native session from a Claude Code one…\n#60 · Planning · P1 — The one object that runs a native conversation is 4,756 lines because it also runs the helper agents…\n#61 · Exploring · P2 — Agents & Automations — a third top-level view beside Chat and Projects where work runs on a schedule or…\n#62 · Planning · P3 — Native chat: small faults and polish — 8 things\n#63 · Exploring · P3 — Parked ideas: native sessions and helpers — 13 things\n#64 · Exploring · P3 — Parked ideas: YouCoded Mesh and Cloud — 2 things (v1.4, not a release promise)\n#65 · Planning · P1 — The assistant cannot search the WeCoded marketplace, so when it lacks a capability it reaches for a script or…\n#66 · Planning · P3 — Tools and permissions: small faults and checks — 6 things\n#67 · Exploring · P3 — Parked ideas: tools, secrets and sandboxing — 9 things\n#68 · Planning · P1 — After picking a wide \"Always allow\" (any `npm run`, pushing to one branch), a later command that looks…\n#69 · Planning · P2 — Cloud model context management and cache and cost efficiency — one item so the fixes are specced together\n#70 · Planning · P3 — Settings the user cannot change yet — 3 things\n#71 · Planning · P3 — Helpers: permissions, reports and cost — 4 things\n#72 · Agentic buildout · P3 — After the assistant uses 30 specialists in one session, let the user approve just the next helper or waive…\n#73 · Planning · P2 — Helper (specialist) transcripts pile up in the sessions folder forever — no way to delete one, and closing…\n#74 · Exploring · P2 — Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user approves a card, the…\n#75 · Agentic buildout · P1 — Per-project skills and tools: each project chooses which skills, plugins and tool connections the assistant…\n#76 · Planning · P2 — MCP servers can only be set up by hand-editing a config file — no settings screen to add, edit or remove one,…\n#77 · Planning · P1 — v1.3.1 release blocker — native-only users need a YouCoded-owned skills home",
+   "notice": "13 Planning, 3 Agentic buildout, 5 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-2",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: dev-workspace",
+   "headline": "dev-workspace: 20 items. Filed right?",
+   "changed": "#13 · Planning · P3 — Flaky and load-sensitive tests: 9 that fail on CI or only in full-suite runs\n#14 · Planning · P3 — Test-suite cleanup work: 8 things left over from the simplification plans\n#15 · Planning · P3 — Test and check gaps: 8 places where nothing guards a behaviour\n#16 · Planning · P3 — Cross-platform first-run testing: 5 open pieces\n#17 · Planning · P2 — Dev instance: 11 faults where it touches the real app or its launcher fails\n#18 · Planning · P3 — Screenshot, review-deck and workbench tooling: 10 faults\n#19 · Planning · P3 — Workspace tooling friction: 7 things\n#20 · Planning · P3 — The feature flow (questions deck, review rounds, contract, graded acceptance) is built but has never run end…\n#21 · Agentic buildout · P3 — Session-strip motion review: re-author as live pick-one steps\n#22 · Planning · P1 — Session work lost or stranded: 6 ways a session's work or worktree goes missing\n#23 · Planning · P3 — Roadmap and docs drift: 9 upkeep items\n#24 · Planning · P3 — Path-scoped rules not reaching sessions: 2 findings\n#25 · Exploring · P2 — We can see how many people open the app and nothing else\n#26 · Exploring · P3 — Parked ideas: 10 dev-workspace ideas\n#27 · Planning · P2 — The public Office add-on repo (youcoded-office) once held a personal budget memo of Destin's as a test file\n#28 · Planning · P1 — Mac installers: nothing is signed or notarized, and a Mac download may open as \"broken\"\n#29 · Planning · P1 — Waiting on CI runs eats whole sessions\n#30 · Planning · P2 — Re-work the release method: releases tag master directly, so each ships all ~3,200 commits since v1.2.4 and…\n#31 · Planning · P2 — No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires a verified…\n#32 · Planning · P3 — Release and build upkeep: 6 loose ends",
+   "notice": "17 Planning, 1 Agentic buildout, 2 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-3",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: perf",
+   "headline": "perf: 19 items. Filed right?",
+   "changed": "#93 · Planning · P1 — v1.3.1 blocker, blocked on simplification phase 5: leftover whole-file reads and memory waste\n#94 · Planning · P1 — The app still feels sluggish: chat-switch pauses and typing interruptions (4 things, work in progress)\n#95 · Planning · P3 — Main process: freezes and resource growth that can hit every window (5 things)\n#96 · Planning · P3 — Measuring rig: scenarios not yet measured (5 things)\n#97 · Planning · P3 — Measuring rig: instruments that can mislead (8 things)\n#98 · Planning · P3 — Sync: growth and duplication decisions (3 things; the history-size decision moved to sync)\n#99 · Planning · P3 — Phone and remote: wasted work and slow starts (6 things)\n#100 · Planning · P3 — Theme and animation costs on screen (3 things)\n#101 · Planning · P3 — Files and Office editors: slow and memory-hungry cases (6 things)\n#102 · Planning · P3 — Session switching: measured slow cases and decisions (6 things)\n#103 · Exploring · P3 — Session-strip motion cost (owner decision): the session pill resizing and the chat-arrival fade run style and…\n#104 · Exploring · P3 — Hitch recorder, owner decisions: (a) the recorder is always on (`YOUCODED_HITCH_LOG=0` is the only off…\n#105 · Exploring · P3 — Themes may cost more graphics work than they should; all found by reading except the first real-GPU readings…\n#106 · Planning · P3 — Terminal flow control (held-back program output), long-chat and other perf work from the 2026-10-04 review…\n#107 · Planning · P3 — Windows, macOS and phone verification before release: the terminal speed brake was checked by reading only on…\n#108 · Planning · P3 — With 17 or more Claude Code sessions open, terminals fight over graphics\n#109 · Planning · P3 — Launch takes about 1.3 s and the single 3.19 MB main script costs roughly 0.31 s of it to evaluate\n#110 · Planning · P3 — Comparing two large, unrelated files in an edit card freezes the app: 0.65 s at 2,000 lines, 4.3 s at 5,000,…\n#111 · Planning · P3 — On Android the phone app may be slow while a reply streams, and phones get full glass blur by default with…",
+   "notice": "16 Planning, 3 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-4",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: user-interface",
+   "headline": "user-interface: 14 items. Filed right?",
+   "changed": "#133 · Planning · P1 — The settings screen exists twice, once for desktop and once for phone\n#134 · Planning · P1 — Error messages still guess at causes in many places\n#135 · Planning · P2 — Browser-default hover tooltips look foreign to the app\n#136 · Exploring · P2 — Model rows in the picker carry no cost or intelligence tags, so choosing means knowing the names\n#137 · Planning · P3 — Hard-to-read text: low contrast and unclear marks (4 things)\n#138 · Planning · P3 — Shared-control drift: screens that do not match the shared look (7 things)\n#139 · Planning · P3 — Phone-width and touch polish (3 groups)\n#140 · Planning · P2 — Messages vanish from an open chat: the chat panel emptied behind \"Start a conversation\" mid-conversation for…\n#141 · Planning · P3 — Chat view glitches (2 things)\n#142 · Planning · P3 — Dialogs, help bubbles and window drag (3 things)\n#143 · Planning · P3 — Small missing conveniences and copy fixes (4 things)\n#144 · Planning · P3 — Unfinished whole-UI cleanup (2 things)\n#145 · Exploring · P3 — Parked ideas: motion, voice and chat images (5 things)\n#146 · Planning · P3 — After the window reloads it returns to the first session instead of the one you were on",
+   "notice": "12 Planning, 2 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "P-3",
+   "page": "Every item, by old roadmap area (2 of 4)",
+   "intro": "Each old roadmap entry is now one item with a stage. Say Something's off and name the number in the note."
+  },
+  {
+   "id": "A-5",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: files",
+   "headline": "files: 10 items. Filed right?",
+   "changed": "#33 · Planning · P1 — v1.3.1 release blocker: searching a big project stops early, for file names and for text inside files\n#34 · Planning · P1 — Files: five ways work can be silently lost\n#35 · Planning · P2 — Office: four safety and privacy edge cases\n#36 · Planning · P3 — Office editor: seven small faults\n#37 · Planning · P3 — Office saving: four leftovers and stale warnings\n#38 · Planning · P3 — File viewer gaps: four things Office and the viewer do not cover\n#39 · Planning · P3 — Document comments: two gaps\n#40 · Planning · P3 — A file chip in chat for a file outside the project folder fails with \"Couldn't open README.md — the file…\n#41 · Planning · P3 — Files Claude makes, changes or deletes by running a command or script never show in the chat's files list or…\n#42 · Exploring · P3 — Parked ideas: files pane and editor (nine things)",
+   "notice": "9 Planning, 1 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-6",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: other-features",
+   "headline": "other-features: 9 items. Filed right?",
+   "changed": "#84 · Planning · P3 — Accounts: silent sign-out and Phase 2 leftovers (2 items)\n#85 · Planning · P3 — Buddy window: 3 open items\n#86 · Exploring · P3 — Parked ideas: 7 features, none started\n#87 · Planning · P3 — Browser follow-ups (the assistant's own browser, shipped 2026-10-14): 8 items left out\n#88 · Planning · P3 — Small items: 2\n#89 · Exploring · P2 — Explore bringing YouCoded to iOS\n#90 · Agentic buildout · P2 — YouCoded Pages: let people create and install their own native-looking pages, from dashboards and paint…\n#91 · Planning · P2 — YouCoded Pages follow-ups: 7 decisions and sightings\n#92 · Agentic buildout · P3 — A plain \"Terminal\" choice when starting a new session — a bare terminal as a YouCoded session, no assistant…",
+   "notice": "5 Planning, 2 Exploring, 2 Agentic buildout",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-7",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: remote-access",
+   "headline": "remote-access: 9 items. Filed right?",
+   "changed": "#112 · Planning · P2 — Phone and computer parity: what is still missing after one-core (youcoded#604), four things\n#113 · Exploring · P3 — Parked ideas: remote access, decided to leave as is (three things)\n#114 · Planning · P2 — Remote access \"just doesn't work sometimes\" and the phone gives nothing to act on\n#115 · Planning · P2 — Browser encryption (the optional second level) is an approved design with nothing behind it\n#116 · Planning · P3 — Remote setup screen: four clarity gaps (beta tester, 2026-09-10)\n#117 · Planning · P3 — Phone voice and mic: three gaps\n#118 · Planning · P3 — Phone browser: two display and loading faults\n#119 · Exploring · P3 — Idea (Destin, 2026-09-08): sign in to a YouCoded account and reach your computer without installing Tailscale\n#120 · Planning · P3 — The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that…",
+   "notice": "7 Planning, 2 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-8",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: sync",
+   "headline": "sync: 9 items. Filed right?",
+   "changed": "#121 · Exploring · P2 — Two devices editing the same file: no way in the app to see or resolve the conflict\n#122 · Exploring · P2 — Very long conversations (over 50 MB) stop updating on your other devices\n#123 · Planning · P2 — Personal sync history only grows, and a first download of it shows nothing (2 things)\n#124 · Planning · P2 — Sync security gaps: three things that could expose secrets or let one device pose as another\n#125 · Planning · P3 — Same conversation on two computers: four gaps in warnings and takeover\n#126 · Planning · P3 — Backup & Sync panel: three wording and status gaps\n#127 · Planning · P3 — Sync housekeeping: six leftovers and rare edge cases\n#128 · Planning · P3 — Starring a model as a favourite on one device leaves the model picker on your other device empty until you…\n#129 · Exploring · P3 — Parked ideas: sync (four things)",
+   "notice": "3 Exploring, 6 Planning",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "P-4",
+   "page": "Every item, by old roadmap area (3 of 4)",
+   "intro": "Each old roadmap entry is now one item with a stage. Say Something's off and name the number in the note."
+  },
+  {
+   "id": "A-9",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: chat-data",
+   "headline": "chat-data: 7 items. Filed right?",
+   "changed": "#2 · Planning · P1 — v1.3.1 release blocker: the replayed-turn record's type is ambiguous (D11 in the simplification plan)\n#3 · Planning · P3 — Resume browser and conversation lists: eight clarity gaps\n#4 · Planning · P3 — Session naming: four loose ends\n#5 · Planning · P3 — Search gaps: three things search cannot find or answer\n#6 · Exploring · P3 — Every replayed chat bubble is stamped with the moment you opened the session, not when it was said, so with…\n#7 · Planning · P3 — Rare chat oddities, not yet reproduced (three things)\n#8 · Exploring · P3 — Parked ideas: conversation lists (two things)",
+   "notice": "5 Planning, 2 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-10",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: local-models",
+   "headline": "local-models: 6 items. Filed right?",
+   "changed": "#45 · Planning · P1 — Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…\n#46 · Planning · P1 — The file downloader exists three times (model files, engine, voice assets) and the checksum helper four…\n#47 · Planning · P2 — The model list says whether a model FITS and nothing about whether it will be fast\n#48 · Exploring · P3 — Local engine: 3 open decisions\n#49 · Planning · P3 — Local models screen: 3 small faults\n#50 · Exploring · P3 — Parked ideas: 2 local-model ideas",
+   "notice": "4 Planning, 2 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-11",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: marketplace",
+   "headline": "marketplace: 6 items. Filed right?",
+   "changed": "#51 · Planning · P3 — Catalog listings and previews: 3 small faults\n#52 · Exploring · P3 — Parked ideas: 4 marketplace ideas, none designed\n#53 · Planning · P3 — Admin analytics, comments and service upkeep: 6 small faults\n#54 · Planning · P2 — The \"Likely safe\" badge claims more than the scan checks: it only looks for leaked secrets and file shapes\n#55 · Planning · P2 — Harden account sign-in against link-based account takeover\n#56 · Planning · P3 — Installing and library: 3 faults",
+   "notice": "5 Planning, 1 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-12",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: operations",
+   "headline": "operations: 6 items. Filed right?",
+   "changed": "#78 · Agentic buildout · P1 — Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing\n#79 · Planning · P3 — Landing page: 4 faults\n#80 · Exploring · P3 — Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from new accounts,…\n#81 · Planning · P3 — Website analytics monitoring: 2 follow-ups, not approval gates\n#82 · Exploring · P3 — Free \"Z13 tablet kit\" as a marketing post: package Destin's ROG Flow Z13 setup so any Z13 owner on…\n#83 · Exploring · P3 — Parked: landing copy note, recorded so it is not re-derived",
+   "notice": "1 Agentic buildout, 2 Planning, 3 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "P-5",
+   "page": "Every item, by old roadmap area (4 of 4)",
+   "intro": "Each old roadmap entry is now one item with a stage. Say Something's off and name the number in the note."
+  },
+  {
+   "id": "A-13",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: claude-code-integration",
+   "headline": "claude-code-integration: 4 items. Filed right?",
+   "changed": "#9 · Planning · P3 — Sending messages to Claude Code: 2 unproven faults\n#10 · Planning · P3 — Prompt and question cards that stick or vanish: 3 faults\n#11 · Planning · P3 — Claude Code integration: 5 small faults\n#12 · Exploring · P3 — Parked ideas: 5 Claude Code ideas",
+   "notice": "3 Planning, 1 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-14",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: themes",
+   "headline": "themes: 3 items. Filed right?",
+   "changed": "#130 · Planning · P3 — Themes rendering wrong: 3 faults\n#131 · Planning · P3 — Themes to verify, not build: 3 checks\n#132 · Exploring · P3 — Parked ideas: 3 theme ideas",
+   "notice": "2 Planning, 1 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-15",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: games",
+   "headline": "games: 2 items. Filed right?",
+   "changed": "#43 · Planning · P3 — A friend running a hand-written client can post a forfeit \"win\" against you the moment you go offline, and it…\n#44 · Exploring · P3 — Idea: bind the dedicated Copilot/AI key on Windows laptops (and others) to open and close the games panel;…",
+   "notice": "1 Planning, 1 Exploring",
+   "yes": "Looks right",
+   "no": "Something's off"
+  },
+  {
+   "id": "A-16",
+   "words": true,
+   "surface": "Work items",
+   "path": "Old roadmap area: android-only",
+   "headline": "android-only: 1 items. Filed right?",
+   "changed": "#1 · Agentic buildout · P2 — Rebuild the Android app into a premium, complete mobile equivalent of desktop: the same built-in assistant,…",
+   "notice": "1 Agentic buildout",
+   "yes": "Looks right",
+   "no": "Something's off"
+  }
+ ]
+}

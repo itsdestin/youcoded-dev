@@ -8,6 +8,8 @@ topic: START HERE for the one-core work — the remote-access refactor (R0–R6,
 
 # One core, every screen — START HERE
 
+> **Status 2026-10-16:** R0-R6 are merged (2026-10-05, youcoded#604 and youcoded-dev#237). The A-phases (Android) were replaced: the Android app was rebuilt 2026-10-14/15 following `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`, on the desktop backend, and the Kotlin copies are deleted. The order table below is the 2026-09-24 plan, kept for history; "Now" and "next" rows are no longer current. Card #1 (Android) now points at the clean-rebuild plan. Owed after the merge: the real-phone pass and the Claude Code capture re-recording (card #112), and the Phase 5 tidy-up (card #60).
+
 **What this is.** The computer's window, a phone browser and the Android app each have their
 own hand-written copy of every feature. This work replaces the copies with one assistant core
 and one feature list that every screen reaches. It runs as two plans that share phase ids:
@@ -34,9 +36,9 @@ Rows with the same **When** can run side by side (R0–R6 are built and land tog
 | **Now** | A0 | Phone experiments: Node + harness from inside the app; `nodejs-mobile` compared; app size | — | — |
 | **Now** | A1 | Play packaging: every program inside the app, no first-run download, consent screen, `specialUse` property | — | Play |
 | **Now** | — | Skill-settings wipe fix on Android (destroys data; not worth waiting for A3) | — | — |
-| Done | R0 | Edit-lock check in `close-out.sh` (lock retired 2026-10-04); the owed real-phone pass moved to after the merge (roadmap, remote-access). Branches editing the door files did NOT block — they are rewritten onto the new layout after the merge | — | — |
+| Done | R0 | Edit-lock check in `close-out.sh` (lock retired 2026-10-04); the owed real-phone pass moved to after the merge (card #112). Branches editing the door files did NOT block — they are rewritten onto the new layout after the merge | — | — |
 | Now, any time | A5 (design only) | Phone default-UI mockup round and other A5 design decks | — | — |
-| After A1 | A6 | Google Play listing (Android decision 6: list right after A1, or wait for A4) | A1 | v1.3.1 roadmap item |
+| After A1 | A6 | Google Play listing (Android decision 6: list right after A1, or wait for A4) | A1 | v1.3.1 (card #31) |
 | Done | R1 | Hoist the runtime out of the desktop door; `Platform` interface; runtime loads with no Electron | R0 | v1.3.1 |
 | Done | R2 | One contract; `window.claude` typed from it; object arguments | R1 | v1.3.1 |
 | Done | R3 | Move feature families into the table, lowest risk first; native family group last | R2 | v1.3.1 |
@@ -57,7 +59,7 @@ branches through `simplify-sync-fix6`, with master merged in. **Nothing is merge
 so.** Each run's log is in the plan's R3/R4/R5/R6 sections.
 - **Owed after the merge, not before:** Destin's real-phone pass; a real Android device check;
   re-recording the Claude Code capture corpus on the current version; the Phase 5 tidy-up the last
-  run listed (all four are filed in `docs/roadmap/`). Parked by Destin: the shared blue "seen" dot;
+  run listed (all four are filed as cards #1, #60 and #112). Parked by Destin: the shared blue "seen" dot;
   `folders:add` stays as it is.
 - **Next:** the plan is archived (merged 2026-10-05, youcoded#604 and youcoded-dev#237); then the Android rebuild's A-phases (A0 and A1 can
   start any time; A2 is unblocked once this merge lands, since R3's last group is in it).
@@ -79,4 +81,4 @@ order above:
 | Android handoff 2026-09-10 "step 4" (`harness-host.ts` copying the remote dispatcher) | A2. Nothing is copied: the phone runs the shared door. Archived: `docs/archive/handoffs/2026-09-10-android-rebuild-START-HERE.md` |
 | Audit §7a–7e step list | A2 (7a, 7b, 7c), A5 (7e), A6 (Play) |
 | Simplification Phase 4 run list (D2, D1, D3, M5) | R1, R2 + R3, R4 |
-| Remote roadmap "protocol" items (resume, per-session delivery, versioning, one-window state, instant buttons) | R4, R5, R6. Each roadmap entry names its phase |
+| Remote-access "protocol" items (resume, per-session delivery, versioning, one-window state, instant buttons) | R4, R5, R6. The old roadmap entries each named their phase; they are now cards #112-#119 |

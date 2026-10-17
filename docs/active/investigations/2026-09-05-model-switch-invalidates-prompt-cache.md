@@ -8,6 +8,8 @@ tags: [native-runtime, cost, cache, model-picker]
 
 # Switching models invalidates the prompt cache — what the first post-switch message costs
 
+> **Status 2026-10-16:** findings still hold. The suggested warning (tell the user in the model picker that switching re-prefills the conversation, and offer to compact first) is not built and not approved; it is filed in card #69 (cloud model context and cache costs), with the model-picker side in card #47.
+
 Asked by Destin: does switching OpenRouter / local models on a conversation invalidate the
 cache, and is the first message after a switch particularly expensive?
 
@@ -65,7 +67,7 @@ Consequences visible in existing code:
 
 ## Relation to existing backlog
 
-- The Cache efficiency item (`native-harness.md` → `## cost`, 2026-08-17) is about leaving
+- The cache efficiency work (card #69; formerly a roadmap item, 2026-08-17) is about leaving
   cache hits on the table; this is its inverse — cache invalidation that is *certain*, not a
   missed opportunity. Related but distinct.
 - The mid-turn-model-swap repricing item is about a turn already streaming when the switch
@@ -73,7 +75,7 @@ Consequences visible in existing code:
 
 ## Suggested UX direction (not approved)
 
-`native-harness.md` → `## cost`: on switching models mid-conversation, show a warning in the
+Card #69: on switching models mid-conversation, show a warning in the
 model picker estimating the first post-switch message's cost (cloud: re-prefill at the new
 input rate; local: full re-prefill time), with an offer to compact first — or at minimum a
 "this switch re-prefills the whole conversation" notice when the conversation is long.

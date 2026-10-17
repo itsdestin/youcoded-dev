@@ -7,6 +7,8 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 # Simplification phases — implementation plan
 
+> **Status 2026-10-16:** phases 1a, 1b, T, 2, 3 merged (youcoded#497-#499, #503, #504); phase 4 (R1-R6, one core for desktop and phone) merged as youcoded#604 on 2026-10-05, so the "IN FLIGHT / awaiting Destin's merge" wording below is out of date. Phase 5 (structure B: D4, D7, D8, D11, D12, W5) is on hold and tracked by card #60. The Android rebuild (D9) now follows `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`, not the archived 2026-09-24 plan.
+
 > **For agentic workers:** one phase = one worker in its own worktree. Read `.claude/rules/test-suite-hygiene.md` (every guard below must be shown red once, then green — paste that run), the rules `docs/MAP.md` names for each file you edit, and `docs/PITFALLS.md` before the first edit. Item ids (W, D, M, B, G) are defined in the audit; this plan does not restate their evidence.
 
 **Source:** `docs/active/investigations/2026-09-16-simplification-audit.md` (read against app master `912d0972`). This plan's phase list **supersedes the audit's §8**.
@@ -143,7 +145,7 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 **Must run alone.** Nothing else merges into `main/ipc-handlers.ts` or `main/remote-server.ts` during R1–R2; during R3 the lock covers only the family being moved. R4 does not edit them.
 
-**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/archive/plans/2026-09-24-android-rebuild-plan.md`, A2–A4) serves over a local socket, and remote access already ships and pays the drift daily. A 1.3.1 release blocker; held 2026-09-18, hold lifted 2026-09-29 (Destin); roadmap items: `docs/roadmap/remote-access.md` (`## one-core`) and the phase 5 items in native-harness, user-interface, local-models and chat-data.
+**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/archive/plans/2026-09-24-android-rebuild-plan.md`, A2–A4) serves over a local socket, and remote access already ships and pays the drift daily. A 1.3.1 release blocker; held 2026-09-18, hold lifted 2026-09-29 (Destin); tracked now as cards #112-#119 (remote access) and card #60 (phase 5).
 
 **Gate for the phase.** G2's line budgets drop for `ipc-handlers.ts` and `remote-server.ts` on every run (the worker lowers the budget; never leaves headroom). B1's 1a fix is deleted when its group moves. Dev-instance check after the last D1 run: a phone session (remote web) opens Resume, installs a skill, pages history.
 
@@ -178,7 +180,7 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 ## Not scheduled (recorded so the list stays honest)
 
-D9 (Android rebuild — now phase A3 of `docs/archive/plans/2026-09-24-android-rebuild-plan.md`), D10 (measured; **reversed 2026-09-29 by Destin** — R2 generates preload's list from the contract as static code, still explicitly enumerated), W26 (replaced by the two guards), M6 (`YOUCODED_NATIVE` half-enforced flag — retire or enforce at one chokepoint; one line, whenever a Phase 4 run passes it), M9 beyond G1's ratchet, B4 (in-view class after compaction — filed with the smoothness sweep's D-batch), B5 (`stableStringify` in `chat-reducer.ts:1115` — one line, take it in 1a if the worker has room, else file), G5–G8, G10–G12, and the unread native turn loop (`harness-session.ts:2263-3719`).
+D9 (Android rebuild — now follows `docs/active/plans/2026-10-14-android-clean-rebuild-plan.md`), D10 (measured; **reversed 2026-09-29 by Destin** — R2 generates preload's list from the contract as static code, still explicitly enumerated), W26 (replaced by the two guards), M6 (`YOUCODED_NATIVE` half-enforced flag — retire or enforce at one chokepoint; one line, whenever a Phase 4 run passes it), M9 beyond G1's ratchet, B4 (in-view class after compaction — filed with the smoothness sweep's D-batch), B5 (`stableStringify` in `chat-reducer.ts:1115` — one line, take it in 1a if the worker has room, else file), G5–G8, G10–G12, and the unread native turn loop (`harness-session.ts:2263-3719`).
 
 ## State
 
@@ -189,5 +191,5 @@ D9 (Android rebuild — now phase A3 of `docs/archive/plans/2026-09-24-android-r
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
-| 4 | IN FLIGHT — hold lifted 2026-09-29 (Destin: "i want to do the remote stuff"). R1 built and reviewed ("ship") 2026-09-29 on app branch `session/simplify-r1` (`3cad11b4`), awaiting Destin's merge; R2 next. Still a 1.3.1 release blocker. Runs as R1–R4 of the remote-access refactor plan; branches editing the door files do not block R1 — they rebase after R2 (Destin, 2026-09-29) |
+| 4 | MERGED 2026-10-05 (R1-R6 as youcoded#604). Older note: IN FLIGHT — hold lifted 2026-09-29 (Destin: "i want to do the remote stuff"). R1 built and reviewed ("ship") 2026-09-29 on app branch `session/simplify-r1` (`3cad11b4`), awaiting Destin's merge; R2 next. Still a 1.3.1 release blocker. Runs as R1–R4 of the remote-access refactor plan; branches editing the door files do not block R1 — they rebase after R2 (Destin, 2026-09-29) |
 | 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition). W1 + W6 shipped early 2026-09-26 (youcoded#573) |

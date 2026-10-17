@@ -84,4 +84,4 @@ specified here: `close-out.sh` refuses (or warns loudly) when the worktree it is
 remove has uncommitted files, and `workspace-start` says something when it recreates a key
 whose manifest disappeared recently.
 
-Filed in `docs/roadmap/dev-workspace.md` → knowledge.
+Filed as card #22 ("Six ways a work session's progress can go missing").

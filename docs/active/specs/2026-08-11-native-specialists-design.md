@@ -8,10 +8,12 @@ research: docs/archive/investigations/2026-08-11-subagent-platform-research.md
 relates:
   - docs/archive/specs/2026-07-19-native-workflow-orchestration-design.md  # §Decisions ratifies its open decision 1, moots 2
   - docs/archive/plans/2026-08-11-native-sessions-remaining-work.md        # this is Step 9 (M7)
-  - docs/active/specs/2026-07-30-permission-ask-timeout-design.md        # §5 timeout-redirect builds on its deny-message mechanism
+  - docs/archive/specs/2026-07-30-permission-ask-timeout-design.md        # §5 timeout-redirect builds on its deny-message mechanism
 ---
 
 # Native specialists — subagents and plans for the native harness
+
+> **Status 2026-10-16:** stage one (specialists) is fully on master (Settings section, hooks and reducer paths merged across youcoded#430, #453, #456, #489, #491, #574); the old "plan 1c built but unmerged" note below is out of date and the branch is gone. Stage two (plans: approve a multi-step job up front) is unbuilt and tracked by card #74.
 
 > **Status 2026-08-26:** `status:` corrected from `draft` to `active` — this spec
 > was approved 2026-08-11 and stage one is most of the way built. Stage-one

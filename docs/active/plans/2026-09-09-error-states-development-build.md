@@ -5,10 +5,12 @@ date: 2026-09-09
 
 # Error states, reporting and contribution — the build plan
 
-**Units B and C are what remains.** For unit B, start at
+> **Status 2026-10-16:** unit B is what remains, and it is card #134 (only batch 1 of 7 has merged, youcoded 72bd4093). Unit C (pinning the roadmap on GitHub Issues) is obsolete: the roadmap was retired 2026-10-15 and replaced by work cards. Dropped, not to be built.
+
+**Unit B is what remains (unit C is dropped; see the status above).** For unit B, start at
 `docs/active/investigations/2026-09-10-error-inventory/README.md` — a re-audit of today's code
 that supersedes the line numbers and verdicts below. The older audit
-(`docs/active/investigations/2026-09-08-error-states-development-audit.md`) remains the source
+(`docs/archive/investigations/2026-09-08-error-states-development-audit.md`) remains the source
 of the E-IDs cited here, but at least one of them (the remote-shim replay) is already fixed.
 
 Unit A's records are archived and read-only now:
@@ -82,7 +84,7 @@ Destin asked for four things. They are not one feature and must not share a cont
 |---|---|---|---|
 | **A** | Development screens made real (goals 2 + 3) | ~1 build stage | Contract deck, signed |
 | **B** | App-wide error states (goal 1) | Much larger; per-surface programme | Its own contract, per surface group |
-| **C** | Roadmap pinned on GitHub Issues (goal 4) | ~30 min | **Destin's explicit approval — it writes to his public repo** |
+| **C** | ~~Roadmap pinned on GitHub Issues (goal 4)~~ OBSOLETE: roadmap retired 2026-10-15 | ~30 min | **Destin's explicit approval — it writes to his public repo** |
 
 A is the one the approved designs cover. B is the biggest of the four and currently at zero.
 C is trivial but touches a live public repo, so it never happens unasked.
@@ -201,7 +203,7 @@ family in that list is complete** — it is a starting inventory, not coverage.
 
 E-16 is **rejected**: `RatingSubmitModal` does not exist. Do not migrate it.
 
-## Step 4 — unit C, the roadmap pin
+## Step 4 — unit C, the roadmap pin (OBSOLETE: roadmap retired 2026-10-15; do not run)
 
 Only on Destin's explicit go-ahead. Approved shape: pin a canonical **link**, not a mirrored
 copy of the roadmap body. Nothing here touches the public repo before he says so.

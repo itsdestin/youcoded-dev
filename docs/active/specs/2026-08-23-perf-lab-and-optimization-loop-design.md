@@ -6,12 +6,13 @@ topic: Perf lab + autonomous optimization loop for the desktop app
 
 # Perf Lab & Autonomous Optimization Loop — Design
 
+> **Status 2026-10-16:** the rig was built and has been in use since 2026-08-27 (`scripts/perf-lab/`, dozens of runs in `perf-reports/`, PR #250 and later). The state of the optimization loop and the Round-0 gate now lives in `docs/active/investigations/2026-09-29-performance-status.md`; open performance work is in cards #94, #96 and #104.
+
 > **STATUS 2026-08-26:** promoted `draft` → `active` — the decisions below were made with Destin
 > on 2026-08-23, the implementation plan derived from them
 > (`docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md`) was reviewed and revised
 > 2026-08-25, and a handoff prompt was written 2026-08-26 to run it on a second Linux device.
-> **No rig or measurement exists yet** (`ls scripts/perf-lab perf-reports` → no such directory;
-> no `perf/optimization-pass` branch), and the Round-0 human gate has not been reached.
+> **No rig or measurement existed yet at that date** (since built; see the status above).
 
 ## Goal
 
@@ -147,7 +148,7 @@ From the 2026-08-23 scout (file:line refs verified then):
    no blank-window flash (screenshot gate + a first-paint mark keep this honest).
 2. **No renderer code-splitting** — `React.lazy` in only 2 files; no
    `manualChunks` in `vite.config.ts`; settings drawer always mounted
-   (ROADMAP:409). Split rarely-used surfaces *without* first-open flashes
+   (old roadmap note, now covered by card #109). Split rarely-used surfaces *without* first-open flashes
    (preload split chunks in idle time after boot).
 3. **History reload re-reads everything** — `session-browser.ts:660`
    `loadHistory` reads the whole JSONL per call even for `count=10`;
@@ -157,7 +158,7 @@ From the 2026-08-23 scout (file:line refs verified then):
    async read.
 4. **Chatsearch full startup scan** — `chatsearch-index/index-service.ts:271`
    scans at boot; candidate: delay until idle or make incremental.
-5. **Session switching** — previously fixed to ~0.5 ms median (ROADMAP:312);
+5. **Session switching** — previously fixed to ~0.5 ms median (old roadmap note, now covered by card #94);
    expect baseline to confirm and route effort elsewhere. The workload journey
    still watches it for regressions.
 

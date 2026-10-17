@@ -6,7 +6,9 @@ spec: docs/active/specs/2026-08-17-search-scope-and-timeout-design.md
 
 # Grep/Glob Search Scope + Timeout (Chunk A) Implementation Plan
 
-> **EXECUTION STATE (verified 2026-08-26): NOT STARTED. 0 of 29 steps done; no code, no branch, no worktree.**
+> **Status 2026-10-16:** the timeout tasks are superseded: Grep/Glob already have a 180-second deadline (youcoded#562, commit db1f8110e, `SEARCH_TIMEOUT_MS` in `tools/registry.ts`). Only the scope-default tasks (`resolveSearchRoot`: a bare search should start at the git repo root, not a huge non-git home folder) are still not built; they are tracked in card #66. The execution-state note below is from 2026-08-26 and is out of date.
+
+> **OLDER EXECUTION STATE (verified 2026-08-26; superseded by the 2026-10-16 status above): NOT STARTED. 0 of 29 steps done; no code, no branch, no worktree.**
 > - None of the plan's new symbols exist on master:
 >   `git grep -n 'toolTimeoutMs\|combineSignals\|forwardAbortSignal\|resolveSearchRoot' origin/master -- desktop/src`
 >   → no hits. `git grep -n 'timeout' origin/master -- desktop/src/main/harness/tools/grep.ts
@@ -19,7 +21,7 @@ spec: docs/active/specs/2026-08-17-search-scope-and-timeout-design.md
 > - **Chunk B has no plan.** It is specified only inside the parent spec
 >   (`docs/active/specs/2026-08-17-search-scope-and-timeout-design.md` §"Chunk B", lines ~194–321:
 >   gitignore/hidden semantics + Glob rewrite + opt-in). No Chunk B implementation plan exists, and
->   `grep -rn -i 'chunk b' ROADMAP.md` returns nothing — the roadmap does not know about the split.
+>   no tracker item knew about the split (the roadmap is retired; card #66 now carries the scope half).
 > - Blocked on nothing but scheduling: no human gate, no dependency. It is a ready-to-run plan.
 
 

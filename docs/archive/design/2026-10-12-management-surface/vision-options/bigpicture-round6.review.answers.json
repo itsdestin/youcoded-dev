@@ -1,0 +1,22 @@
+{
+ "deck": "bigpicture-round6-review",
+ "started": "2026-10-14T19:06:33.948Z",
+ "submitted": "2026-10-14T19:06:57Z",
+ "cur": 1,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "t": 1792004804688,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "t": 1792004816475,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

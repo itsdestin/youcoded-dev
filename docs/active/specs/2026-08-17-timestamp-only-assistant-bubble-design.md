@@ -32,7 +32,7 @@ tags: [renderer, chat, ui, reliability]
 > plan left implementation-ready). **Next step: build work only — no open questions.** The
 > three user checkpoints were resolved by Destin 2026-08-17.
 
-> **Source:** investigation `docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md`
+> **Source:** investigation `docs/archive/investigations/2026-08-17-timestamp-only-assistant-bubble.md`
 > (CONFIRMED 2026-08-17, code-verified). ROADMAP Bugs entry 2026-08-17.
 > Scope chosen by Destin: view-layer fix (primary) **+** reducer guard (defense-in-depth) **+** pinning tests.
 

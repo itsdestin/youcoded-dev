@@ -179,5 +179,5 @@ models, is what makes it learnable.
   rationale so the next session doesn't re-litigate it.
 - `docs/PITFALLS.md` — one cross-cutting entry: "file tools are absolute-only; Bash
   cwd persists scoped; never resolve file-tool paths against `shellCwd`."
-- This plan moves to `docs/archive/` on merge; the ROADMAP item (the file-tools/
-  `shellCwd` decision) flips to `[x]`.
+- This plan moves to `docs/archive/` on merge; the card for the file-tools/
+  `shellCwd` decision, if one is open, is closed with `node scripts/cards.mjs close <id> --ref …`.

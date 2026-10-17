@@ -1,0 +1,122 @@
+{
+ "title": "Today tab, round 3: four stages, problems as markers",
+ "key": "today-rebuild-3-review",
+ "out": "today-rebuild-3.review.html",
+ "images": "images/today-rebuild-3.review",
+ "runs": {
+  "before": "runs/today-after2",
+  "after": "runs/today-after3"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "Now"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "top": [
+   "today",
+   "top",
+   "1440x900+0+0"
+  ],
+  "needs": [
+   "today",
+   "needs",
+   "1440x900+0+0"
+  ],
+  "build": [
+   "today",
+   "build",
+   "1440x900+0+0"
+  ],
+  "rest": [
+   "today",
+   "rest",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Today, as it opens",
+   "crop": "top",
+   "headline": "Your four stages replace the situation labels; sections are the stages.",
+   "changed": "Every piece of work is in one of four stages: Planning, Agentic buildout, Human polish & review, Merged. Today opens on Start here, then \"Human polish & review\" (8). \"Needs your look\", \"Ready to merge\", \"Idle\" and \"No finish line\" are gone; there is no \"Your turn\" marker.",
+   "notice": "Inside a stage's own section, rows don't repeat the stage label: the heading says it. Start here and the Paused list (which mixes stages) still show it.",
+   "risk": "Nothing is Merged in this Oct 12 snapshot, so there is no Merged section yet; merged work shows in \"Since the last release\"."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Today → Human polish & review",
+   "crop": "needs",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "In your stage, the filled button is the next step: review, merge, or go back to the chat.",
+   "changed": "Sync safety (reviewed, checks pass) offers Merge to master. Project skills (deck unanswered) offers Open review deck. Rows a chat is on now offer Go to chat. Everything else offers Resume latest chat. Hovering the button says why it is that one.",
+   "notice": "Problems sit beside the name as separate markers: Not backed up (amber), Checks failing (red), Working (live).",
+   "highlight": {
+    "box": [
+     12,
+     10,
+     76,
+     85
+    ]
+   }
+  },
+  {
+   "surface": "Management page",
+   "id": "A-3",
+   "path": "Today → Agentic buildout",
+   "crop": "build",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "Agentic buildout: what chats are building, with problems marked.",
+   "changed": "Seven pieces of work. Sync retry shows the red Checks failing marker and offers Fix failing checks; Helper agents and Bundled skill content show Not backed up.",
+   "notice": "Newest first in every section.",
+   "highlight": {
+    "box": [
+     12,
+     10,
+     76,
+     86
+    ]
+   }
+  },
+  {
+   "surface": "Management page",
+   "id": "A-4",
+   "path": "Today → Planning and Paused, opened",
+   "crop": "rest",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "headline": "Planning and Paused are folded below; paused work keeps its stage and its reason.",
+   "changed": "Planning (1): Offline use. Paused (1): OneDrive, which shows its stage (Agentic buildout), Checks failing and Paused, with \"Paused because: known regressions…\" and an Unpause button.",
+   "notice": "Tidy up, Bugs and Since the last release are unchanged.",
+   "highlight": {
+    "box": [
+     12,
+     33,
+     76,
+     37
+    ]
+   }
+  }
+ ]
+}

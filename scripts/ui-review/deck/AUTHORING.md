@@ -5,7 +5,7 @@ file, the printed summary and every command. Read on demand; the short version �
 pick, and the six rules — is `.claude/rules/review-deck.md`. Design:
 `docs/archive/specs/2026-09-04-review-deck-consistency-design.md`, on top of
 `docs/archive/specs/2026-08-27-review-deck-v2-design.md` and
-`docs/active/specs/2026-09-01-feature-flow-design.md`.
+`docs/archive/specs/2026-09-01-feature-flow-design.md`.
 
 Copy a template from `scripts/ui-review/templates/` — one per kind, every field filled and
 explained in place. `_comment` keys (at any depth, including `_comment_<field>`) are stripped

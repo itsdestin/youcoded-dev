@@ -1,0 +1,66 @@
+{
+ "title": "Big picture, round 5: Areas matches the other views",
+ "key": "bigpicture-round5-review",
+ "out": "bigpicture-round5.review.html",
+ "images": "images/bigpicture-round5.review",
+ "runs": {
+  "before": "runs/round5-before",
+  "after": "runs/round5"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "Now"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "stage": "review",
+ "crops": {
+  "areas": [
+   "vision",
+   "areas",
+   "1440x900+0+0"
+  ],
+  "area-open": [
+   "vision",
+   "area-open",
+   "1440x900+0+0"
+  ],
+  "blocked": [
+   "vision",
+   "blocked",
+   "1440x900+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "surface": "Management page",
+   "id": "A-1",
+   "path": "Big picture → Areas, as it opens",
+   "crop": "areas",
+   "headline": "Areas, first view: status pills in \"What most things are waiting on\".",
+   "changed": "Each row there now ends with the same tinted status pill as the other three views, instead of a small dot at the start. \"Became real in the last month\" lost its dots: every row there exists, so a mark on each said nothing.",
+   "notice": "The mission card and the area cards are unchanged."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-2",
+   "path": "Big picture → Areas → open Sync and Mesh, first group opened",
+   "crop": "area-open",
+   "headline": "Inside an area: folded groups of rows instead of boxes of chips.",
+   "changed": "Each group (\"Everything follows you\") is one folded row with \"4 of 9 exist\". Opened, it lists its items as rows with a status pill and which line of work they belong to, plus a button for the group's details.",
+   "notice": "Same look as Journeys, Foundations and How it works. Click any row for its popup.",
+   "risk": "The lines that used to connect related items when you clicked one are gone; the popup lists what an item needs and what needs it instead."
+  },
+  {
+   "surface": "Management page",
+   "id": "A-3",
+   "path": "Big picture → Areas → What's blocked",
+   "crop": "blocked",
+   "headline": "The three quick lists use the same rows and pills.",
+   "changed": "What's blocked, Built twice and Shipped this month show boxed rows with a pill; names in \"Waits on\" are separated by semicolons, since the names themselves contain commas.",
+   "notice": "Nothing else on these lists changed."
+  }
+ ]
+}

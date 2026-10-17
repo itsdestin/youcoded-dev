@@ -6,10 +6,12 @@ tags: [harness, tools, grep, glob, scope, timeout, reliability]
 
 # Spec: Grep/Glob default scope + per-tool timeout (split into two independently shippable chunks)
 
-> **STATUS (verified 2026-08-26): neither chunk is built.** Chunk A has a reviewed, ready
+> **Status 2026-10-16:** the timeout half shipped in a different shape than designed: youcoded#562 (commit db1f8110e) gives Grep and Glob a 180-second deadline that ends the search, not the turn. Only the default-scope half (Chunk A: a bare Grep/Glob should not start from a huge non-git home folder) is still unbuilt; it is tracked in card #66 (From the 2026-10-16 document sweep). The older note below is kept for history and is no longer true.
+
+> **OLDER STATUS (verified 2026-08-26, now out of date; see the 2026-10-16 status above): neither chunk was built.** Chunk A has a reviewed, ready
 > implementation plan (`docs/active/plans/2026-08-17-search-scope-timeout-chunk-a.md`) with 0 of 29
 > steps done and no branch. **Chunk B has no plan at all** — it exists only as the section below, and
-> the ROADMAP carries no item for either chunk or for the A/B split. `git grep -n 'toolTimeoutMs'
+> there was no tracker item for either chunk or for the A/B split. `git grep -n 'toolTimeoutMs'
 > origin/master -- desktop/src` → no hits; Grep/Glob remain unbounded on master, so the motivating
 > incident (a 181-second Grep from a non-git `$HOME` cwd) is still reproducible today.
 

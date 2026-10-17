@@ -1,0 +1,1918 @@
+{
+ "date": "2026-10-16",
+ "checked": 198,
+ "findings": [
+  {
+   "path": "docs/archive/specs/2026-05-20-floating-glass-theme-design.md",
+   "verdict": "unsure",
+   "evidence": "Draft since 2026-05-20. git grep on youcoded origin/master for floating-glass / OS-wallpaper-read (getDesktopWallpaper, desktopWallpaper) finds nothing; the only 'glass' hits are unrelated glassmorphism flags and the 'Meadow Mist' glass theme. No card in cards/ mentions it. Could not tell whether it was dropped or just never built.",
+   "fix": "Ask Destin: build it (file a card) or archive as dropped; either way flip status from draft.",
+   "lost_followups": [
+    "whole Floating Glass theme (OS wallpaper as app background) -> none"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-07-10-phase2-conversation-sync-design.md",
+   "verdict": "shipped",
+   "evidence": "Header already says IMPLEMENTED. Merged PRs: youcoded#116 (Plan 2a, 2026-07-12), #121 (Plan 2b leases, 2026-07-14), #126 (Plan 2c legacy demolition, 2026-07-15).",
+   "fix": "Move to docs/archive/specs/ with status: shipped (youcoded#116, #121, #126); frontmatter still says active.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-07-23-statusbar-git-branch-popup-design.md",
+   "verdict": "active-ok",
+   "evidence": "Header: 'Approved design, pre-implementation'. Still true: on origin/master StatusBar.tsx has only the static gitBranch chip (line 878); no branch popup component, no ahead/behind git status IPC. #537 and a86205d9d only changed the chip's visibility. No card.",
+   "fix": "Optionally add a card so the approved design is not only a spec.",
+   "lost_followups": [
+    "clickable git branch popup (ahead/behind, dirty count, PR status) -> none"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-07-30-permission-ask-timeout-design.md",
+   "verdict": "shipped",
+   "evidence": "The 2h app-owned hold is on master: commit 7e66a43cf 'the app owns the permission-ask clock (port of PR #278, main + Android)', merged via youcoded#562 (2026-09-24). hook-relay.ts APP_HOLD_MS = 7_200_000, relay-blocking.js default 9000000, PERMISSION_EXPIRED handled in chat-reducer/ToolCard. PR #278 itself was CLOSED unmerged, so the status block that calls #278 'open' is false. shipped.md 2026-09-24 line confirms.",
+   "fix": "Archive with status: shipped (youcoded#562 / 7e66a43cf); replace the 'open as PR #278' status block and pr: frontmatter. Native-lane clock reconciliation the block mentions has no card.",
+   "lost_followups": [
+    "decide whether native PermissionBroker clock policy (root ask no timeout; specialist ask 5 min) should match the hook-relay 2h policy -> none"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-08-05-chat-search-design.md",
+   "verdict": "active-stale",
+   "evidence": "Banner says 'phase 2 (the write outbox) ... unbuilt'. Phase 2 shipped: shipped.md lines 'Chat Search phase 2: writes' (youcoded#346 db4ed2b4; wecoded-marketplace#70, chatsearch 0.2.0) and session references (#343). Phase 3 (digests, the open marker, --state open) still unbuilt: no digest code in desktop/src/main.",
+   "fix": "Rewrite the banner: phases 1 and 2 shipped (#282, #346); only phase 3 (digests) remains; point it at a card.",
+   "lost_followups": [
+    "chat-search phase 3 digests (open marker, --state open) -> none (card #3 covers only Resume-browser content search)"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-08-11-native-specialists-design.md",
+   "verdict": "active-stale",
+   "evidence": "Banner says plan 1c 'BUILT BUT UNMERGED ... feat/specialists-1c-ui, no PR'. On origin/master SpecialistsSection.tsx, useSpecialists.ts and specialist reducer paths exist and many specialist PRs merged (#430, #453, #456, #489, #491, #574). No specialists-1c remote branch remains. Stage two (plans) is still unbuilt.",
+   "fix": "Update banner: stage one fully on master; stage two (plans) tracked by card #74. Update the ROADMAP/step-9 relates links.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-08-11-presence-self-healing-design.md",
+   "verdict": "active-ok",
+   "evidence": "Top status block (2026-09-24) is accurate: Parts 1-2 built (youcoded#562, 533ede75a); Part 4 (silent 401) tracked by card #55 item (a), which names the friends-seen-offline symptom. The older 2026-08-26 'NOT BUILT' block below is labelled history but could confuse a skim.",
+   "fix": "Optionally delete the superseded 2026-08-26 block; swap the 2 ROADMAP mentions for card #55.",
+   "lost_followups": [
+    "friends-panel status line (Part 3) -> #55 (closest; not explicit)"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-08-17-search-scope-and-timeout-design.md",
+   "verdict": "active-stale",
+   "evidence": "Banner says 'neither chunk is built ... Grep/Glob remain unbounded'. False now: youcoded#562 commit db1f8110e 'give Grep and Glob a 180 s deadline that ends the search, not the turn' - SEARCH_TIMEOUT_MS = 180_000 in tools/registry.ts, used by grep.ts and glob.ts caps.timeoutMs; shipped.md 2026-09-24 marks the 'Grep from home directory hangs for hours' item closed. That is the spec's Chunk B in spirit. Chunk A (default search scope / resolveSearchRoot) is not built (no hits).",
+   "fix": "Rewrite banner: timeout half shipped as db1f8110e (#562) in a different shape than designed; only the default-scope half (Chunk A) remains; remove 'ROADMAP carries no item'.",
+   "lost_followups": [
+    "Chunk A: bare Grep/Glob should not default to a huge non-git home folder -> none"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-08-17-timestamp-only-assistant-bubble-design.md",
+   "verdict": "active-ok",
+   "evidence": "Banner (2026-08-26) still true: git grep bubbleHasVisibleContent on origin/master returns nothing. Work is tracked as card #7 item (b) 'empty timestamp-only assistant bubble above a permission card'.",
+   "fix": "Replace 'ROADMAP Bugs entry' line with 'card #7 (b)'; also card #7 cites the investigation path, which is fine.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-08-23-perf-lab-and-optimization-loop-design.md",
+   "verdict": "active-stale",
+   "evidence": "Banner says 'No rig or measurement exists yet (ls scripts/perf-lab perf-reports -> no such directory)'. Now perf-reports/ holds dozens of runs from 2026-08-27 on (cycle1, cycle2, stream-fix, etc.), scripts/perf-lab exists, and git log shows perf-lab commits (8e8a2e08, 2eaa4782, 317bf2f0 MAP rows) and PR #250. Cards #94, #96, #104 carry follow-ups.",
+   "fix": "Rewrite banner: rig built and used from 2026-08-27; status of the optimization loop and Round-0 gate now lives in docs/active/investigations/2026-09-29-performance-status.md and cards #94/#96.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-08-31-codex-session-provider-design.md",
+   "verdict": "active-stale",
+   "evidence": "Frontmatter points at ROADMAP.md:1280 and ROADMAP.md (retired 2026-10-15). Banner says parked 2026-09-04 (accurate). Cards: only #63 (parked native-session ideas) mentions Codex. No code for a codex provider on master.",
+   "fix": "Replace roadmap:/supersedes_cost_shape: ROADMAP.md refs with the card (#63 or a new card); keep status draft/parked.",
+   "lost_followups": [
+    "Codex-the-agent as a session provider -> #63 (only mentioned inside a parked-ideas bundle)"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-09-01-agent-platform-vision-and-state.md",
+   "verdict": "active-stale",
+   "evidence": "States 'ROADMAP.md stays the only list of open items; every open item named here exists there under the same title' (line 20) and says 'Open, in the roadmap' (lines 154, 198, 348, 432). Roadmap retired 2026-10-15; items are now cards (e.g. #59, #61, #63, #64, #74). Dated claims were last verified 2026-09-04 and some Android claims (SessionService.kt) are about Kotlin code deleted in the Oct 14-15 rebuild.",
+   "fix": "Change 'ROADMAP.md' to 'cards/ (node scripts/cards.mjs index)'; re-date or drop the Android Kotlin state claims; map the named open items to card ids.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-09-01-feature-flow-design.md",
+   "verdict": "shipped",
+   "evidence": "The pipeline the design specifies exists on master of youcoded-dev: contract step and checker (scripts/ui-review/deck/contract.py def check_contract, commit 211fae77), contract agent prompt (7257b710, scripts/ui-review/contract-agent.md), grader.md, ux-tester.md, code-reviewer.md, close-out contract section, .claude/rules/feature-flow.md. Remaining: first end-to-end trial = card #20.",
+   "fix": "Archive with status: shipped (211fae77, 7257b710; trial pending #20); frontmatter still draft. Deferred P5/P6/'You pick' have no cards; note them in the archive header.",
+   "lost_followups": [
+    "P5 show-the-interpretation-before-work step -> none",
+    "'You pick' delegated-decision option on questions -> none",
+    "'review the roadmap, pick 10 things, fix them' goal (section 8) -> none",
+    "first real end-to-end trial of the flow -> #20"
+   ]
+  },
+  {
+   "path": "docs/archive/specs/2026-09-08-repository-public-truth-audit-design.md",
+   "verdict": "unsure",
+   "evidence": "Design merged as youcoded-dev#71 (2209809b). No resulting audit report found in docs/audits/, docs/active/investigations/, docs/archive/investigations/, and no card mentions it. Cannot tell if the audit was never run or its report was lost.",
+   "fix": "Ask Destin whether the audit is still wanted: run it (card) or archive as dropped.",
+   "lost_followups": [
+    "running the public-truth/cleanup audit itself -> none"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-09-09-remote-access-first-milestone.md",
+   "verdict": "shipped",
+   "evidence": "Banner says all three batches shipped 2026-09-10/11; merges 1235472a2 (batch 1) and 01b288572 (batches 2 and 3) are on youcoded history; the follow-on refactor R1-R6 merged as youcoded#604 (2026-10-05). The 'Next milestones' (uploads/imports, safe editing, etc.) are carried by card #112 (uploads item) and #115/#117.",
+   "fix": "Archive with status: shipped (01b288572, #604); delete the 7 ROADMAP mentions; point 'Next milestones' to cards #112/#115.",
+   "lost_followups": [
+    "safe editing over remote -> none explicit (#112 covers uploads/parity)"
+   ]
+  },
+  {
+   "path": "docs/active/specs/2026-09-15-specialist-budget-permission-design.md",
+   "verdict": "active-ok",
+   "evidence": "Approved design not built: git grep for the card copy ('trying to hire', 'Waive cap') finds nothing on origin/master; native-session-host.ts reserveSpecialist still refuses at capacity. Tracked by card #70 (text: 'After the assistant uses 30 specialists ... approve just the next helper or waive the limit').",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-09-15-youcoded-pages-scope.md",
+   "verdict": "active-ok",
+   "evidence": "Approved scope reference; stage line (home-device connection on master since 2026-10-07, youcoded#611) is accurate. Open work lives in cards #90 and #91. Two stray mentions of the roadmap (line 114 'Pages roadmap', line 139 'open roadmap item').",
+   "fix": "Reword the two roadmap mentions to 'card #90/#91'.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/specs/2026-09-18-project-files-background-index.md",
+   "verdict": "active-stale",
+   "evidence": "Still status: draft 'build brief'. Its first stage shipped: youcoded#536 'Project Files: browse one folder at a time - any size, any depth, no gate' (2026-09-19). The shared background index for search/counts remains: card #33 (release blocker 'search stops early in big projects') cites this spec as its report.",
+   "fix": "Change status to active and add a banner: browsing shipped in #536; background index/search remains = card #33.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-04-21-deprecate-youcoded-core.md",
+   "verdict": "active-ok",
+   "evidence": "Top banner (2026-09-20+) is current: Phase 1 shipped in v1.3.0, youcoded-core archived; Phase 2 (delete dead youcoded-core-aware branches) still pending - origin/master desktop/src still has youcoded-core references in hook-reconciler.ts, legacy-cleanup.ts, main.ts, marketplace-file-reader.ts, skill-provider.ts. CLAUDE.md names this plan as governing it. Older 2026-08-26 gate-status banner below says 'Release N never shipped' - historical but false now.",
+   "fix": "Delete or collapse the 2026-08-26 'GATE STATUS' block so only the current banner remains.",
+   "lost_followups": [
+    "Phase 2: delete dead youcoded-core branches in 1.3.1 -> none (no card)"
+   ]
+  },
+  {
+   "path": "docs/active/plans/2026-07-18-multi-model-cwd-contract.md",
+   "verdict": "active-ok",
+   "evidence": "Status block (2026-08-26) still true: git grep 'workdir|cwd-rules' on origin/master desktop/src returns nothing. Parent youcoded#174 merged. Tracked loosely by card #59 ('cwd contract' in its list).",
+   "fix": "Replace 'ROADMAP line 30' with 'card #59'.",
+   "lost_followups": [
+    "Bash workdir param / canonical <cwd-rules> block / loud relative-path rule -> #59 (named only in a list)"
+   ]
+  },
+  {
+   "path": "docs/active/plans/2026-07-20-remote-hydration-pr-spec.md",
+   "verdict": "shipped",
+   "evidence": "Banner says commits 2 and 3 unshipped; they are now on master: 4f9320217 'the phone says when it is ready, and the host holds everything until then', 9b02964f6 'chat/terminal switch stays on its own screen', e7e2282c3 'the phone's copy of a conversation comes from whichever window holds it' (all ancestors of origin/master; shipped.md 2026-09-23). Group/message ids now carry ID_EPOCH (chat-reducer.ts:30-36).",
+   "fix": "Archive with status: shipped (4f9320217, 9b02964f6, e7e2282c3); remove the 'open question is still open' text.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-07-31-permission-ask-timeout.md",
+   "verdict": "shipped",
+   "evidence": "Same work as the spec: 7e66a43cf (port of PR #278) via youcoded#562, merged 2026-09-24. PR #278 is CLOSED, not open; branch feat/permission-ask-timeout/worktree perm-timeout are gone or dead.",
+   "fix": "Archive with status: shipped (7e66a43cf, #562); the status block saying 'open as PR #278' is false.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-08-17-search-scope-timeout-chunk-a.md",
+   "verdict": "active-stale",
+   "evidence": "Banner: 'NOT STARTED, 0 of 29 steps ... Grep and Glob are still unbounded'. False: db1f8110e (#562) gave Grep/Glob a 180 s deadline (SEARCH_TIMEOUT_MS in registry.ts; ctx.toolTimeoutMs exists as a test override). The plan's timeout half is therefore done in a different form; its scope-default half (resolveSearchRoot) is still not built.",
+   "fix": "Rewrite banner and mark the timeout tasks superseded by db1f8110e; keep only the scope-default tasks, or archive and file a card.",
+   "lost_followups": [
+    "default search scope for bare Grep/Glob -> none"
+   ]
+  },
+  {
+   "path": "docs/active/plans/2026-08-17-timestamp-only-assistant-bubble.md",
+   "verdict": "active-ok",
+   "evidence": "Same as its spec: bubbleHasVisibleContent still absent on origin/master; tracked by card #7 (b).",
+   "fix": "Replace the 2 ROADMAP mentions with card #7.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-01-feature-flow-plan.md",
+   "verdict": "shipped",
+   "evidence": "Tasks 0-7 are on master: Task 3 contract step (deck/contract.py), Task 4 check_contract/acceptance (211fae77), Task 5 close-out.sh contract section, Task 6 contract agent dry-run (7257b710), Task 7 rule/skill/docs (.claude/rules/feature-flow.md). Task 8 (run the flow once end to end) not done = card #20.",
+   "fix": "Archive with status: shipped (211fae77, 7257b710); note Task 8 pending as card #20; frontmatter still draft.",
+   "lost_followups": [
+    "Task 8: end-to-end trial on a real feature -> #20"
+   ]
+  },
+  {
+   "path": "docs/active/plans/2026-09-01-feature-flow-redesign.md",
+   "verdict": "superseded",
+   "evidence": "Same goal as 2026-09-01-feature-flow-design.md (design) and 2026-09-01-feature-flow-plan.md (plan), both of which are the versions that were built; this redesign is the earlier research draft (status draft, 'Frontier-AI-Lab-Assistant session 2026-08-31'). 11 ROADMAP mentions.",
+   "fix": "Archive with status: superseded by feature-flow-design.md / feature-flow-plan.md.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-09-error-states-development-build.md",
+   "verdict": "active-stale",
+   "evidence": "Says 'Units B and C are what remains' and 'Batch 2 is next'. Card #134 confirms only batch 1 of 7 merged (youcoded 72bd4093) so B is accurate; but unit C 'Roadmap pinned on GitHub Issues' (line 85, Step 4 line 204) is moot because the roadmap was retired 2026-10-15 and replaced by cards.",
+   "fix": "Strike unit C / Step 4 as obsolete (roadmap retired); point unit B at card #134.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md",
+   "verdict": "active-stale",
+   "evidence": "Active and genuinely mid-flight (test files 892 -> 783 merged 2026-09-18; clusters remain). But its line 242 tells sessions to record progress in 'cards/14-test-suite-cleanup-work-8.md'; no such file exists (cards/13-flaky-and-load-sensitive-tests.md is the test card and contains '(b) finish Plan C'). Also 5 roadmap mentions.",
+   "fix": "Change card pointer to cards/13-flaky-and-load-sensitive-tests.md (card #13); reword roadmap mentions.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-16-simplification-phases.md",
+   "verdict": "active-stale",
+   "evidence": "State table says Phase 4 'IN FLIGHT ... R1 awaiting Destin's merge'. Phase 4 (R1-R6 one core) merged as youcoded#604 on 2026-10-05. Phases 1a, 1b, T, 2, 3 are merged (#497-#499, #503, #504). Phase 5 (structure B) is on hold; card #60 ('Split up the oversized code') carries it. The 'Android rebuild D9 -> phase A3 of archived 2026-09-24 plan' is also superseded by 2026-10-14-android-clean-rebuild-plan.md.",
+   "fix": "Update Phase 4 row to merged (#604); point Phase 5 at card #60 and D9 at the 10-14 Android plan.",
+   "lost_followups": [
+    "Phase 5 structure B (D4, D7, D8, D11, D12, W5) -> #60"
+   ]
+  },
+  {
+   "path": "docs/active/plans/2026-09-16-source-grep-classification.md",
+   "verdict": "superseded",
+   "evidence": "Data snapshot for Plan B (source-text test sweep), which is archived as docs/archive/plans/2026-09-16-ci-followups-B-source-grep-sweep.md; the sweep and its conversions have run ('sweep ledger' merged).",
+   "fix": "Move to docs/archive/plans/ next to Plan B; no status line exists.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-16-test-inventory.md",
+   "verdict": "active-stale",
+   "evidence": "Generated snapshot 2026-09-18 ('725 test files, 9929 cases'); origin/master now has well over 1000 files under desktop/tests and Plan C itself says to regenerate before use. Plan C is still active so the file is still referenced.",
+   "fix": "Regenerate with node scripts/test-inventory.mjs or add a banner 'snapshot 2026-09-18, do not trust counts'; no status frontmatter.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-16-youcoded-pages-phasing.md",
+   "verdict": "active-stale",
+   "evidence": "'Where to pick up (2026-09-23)' still lists the home-network connection as 'Next build' and 'Released? Phase 2 ... in no app release yet'; the 2026-10-07 update above it says the connection merged (youcoded#611). Also lines 29, 31, 180, 181, 252 send sessions to the roadmap / docs/roadmap/other-features.md. Phases 3 and 4 open; live work is cards #90 and #91.",
+   "fix": "Delete the stale 'Where to pick up' block; replace roadmap refs with cards #90/#91.",
+   "lost_followups": [
+    "Pages on a phone (phone width, remote pages) and page deleted while open -> #90/#91 (confirm)",
+    "publish the page-builder skill connections update -> none seen"
+   ]
+  },
+  {
+   "path": "docs/active/plans/2026-09-23-minimalist-header-ink-implementation.md",
+   "verdict": "shipped",
+   "evidence": "Built in the theme-minimal-chrome worktree and merged: youcoded#569 (29c6f5ca5). origin/master has desktop/src/renderer/themes/wallpaper-header-ink.ts, hooks/use-wallpaper-header-ink.ts, HeaderBar.tsx use, float-chrome.css (first added in 58085dbb1). No status frontmatter.",
+   "fix": "Archive with status: shipped (youcoded#569).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-23-ui-guide-selected-screen-treatments.md",
+   "verdict": "superseded",
+   "evidence": "Frontmatter already says status: superseded; the dialog/About/Project-context/Session-Files polish was folded into the UI consistency audit work (youcoded#626, 2026-10-16: popups, one scroll fade).",
+   "fix": "Move to docs/archive/plans/ (it is already marked superseded but still lives in active/).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-09-29-history-rendering-and-stalls.md",
+   "verdict": "active-stale",
+   "evidence": "Status says active but the body says 'Paused renderer experiments - not accepted fixes ... Destin requested a pause'. Restart authority is docs/active/investigations/2026-09-29-performance-status.md; open slowdowns are cards #93, #94, #96.",
+   "fix": "Set status: paused and name cards #93/#94 as the live tracker.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/plans/2026-10-14-android-clean-rebuild-plan.md",
+   "verdict": "active-ok",
+   "evidence": "Progress block current: P1-P3 merged as youcoded#625 / youcoded-dev#258; P4-P6 pending; tracked by card #1 whose text matches. One naming mismatch: card #112 says 'phases A2 to A4 of the Android rebuild' but this plan uses P1-P6.",
+   "fix": "Fix card #112's 'A2 to A4' to the P-numbers (P-phases of this plan).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-07-10-remote-access-review-handoff.md",
+   "verdict": "active-stale",
+   "evidence": "Banner says Finding 1 only half fixed ('severity-HIGH half is unfixed'). origin/master chat-reducer.ts:34 and :87 now build group-/turn- ids with ID_EPOCH (WHY comments cite hydrated host), so Finding 1 is fully fixed. Finding 5 still open (transcript-watcher.ts:97 bare Date.now()). Finding 4 still open (no hydrationPending anywhere in desktop/src). PTY_BUFFER_SIZE no longer exists in desktop/src, so Finding 2's cited lines are gone (not verified whether the buffer problem moved). Banner cites ROADMAP.md:91 and 'ROADMAP patch', both retired.",
+   "fix": "Rewrite the banner: Finding 1 fixed (chat-reducer.ts ID_EPOCH on group/turn ids), Finding 5 and 4 open, Finding 2 lines moved; replace ROADMAP references with card ids.",
+   "lost_followups": [
+    "Finding 5: transcript-watcher.ts:97 uses Date.now() instead of the event timestamp -> none",
+    "Finding 3: remote-server hand-rolled defaults/folders copies; write folders:rename WS test first -> none",
+    "Finding 4: remote hydration commit 2 (hydrates flag) -> closest #99 (phone watching a chat)"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-07-10-review-followups.md",
+   "verdict": "active-stale",
+   "evidence": "Header itself recommends moving to archive and re-filing the six items as ROADMAP #tech-debt entries (roadmap retired). Re-checked on master: detectOrphan only a tombstone (project-manager.ts:150); sync-spaces poll still live but now engine.ts:138 (note 'don't touch, Phase 2 in flight' is stale); readPerSession helper still absent; marketplace:get-config chain still wired (preload.ts:179, remote-shim.ts:2272, backend-contract.ts:259); TerminalView still only onContextLoss.",
+   "fix": "Re-file the surviving items as cards (or one housekeeping card), then archive this doc and drop the ROADMAP #tech-debt advice.",
+   "lost_followups": [
+    "hidden-xterm WebGL detach -> closest #19 (loose match, unconfirmed)",
+    "buildStatusData triplicated read loop / readPerSession -> none",
+    "FOLDERS_LIST path-equality should use canonicalize() -> none",
+    "dormant marketplace:get-config/set-config chain: delete-or-keep decision for Destin -> none",
+    "sync-spaces 120s idle poll now free to pick up -> none"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-07-10-sync-completion-handoff.md",
+   "verdict": "active-stale",
+   "evidence": "Sync Phase 2 shipped (PRs #116/#121/#126), credential rework PRs #201-203, native sync parity #212, native-session safety #177; Gate D closed 2026-07-30. 48KB doc, body still describes 'remaining before v1.3'; cites ROADMAP.md:503 and ROADMAP v1.3 line. Only two checks remain open and are asks, not build work.",
+   "fix": "Archive as shipped (sync-spaces 2a/2b/2c, #126) after filing the two open checks as cards.",
+   "lost_followups": [
+    "Gate C: Destin confirms GitHub row in Account > Connected accounts shows an in-app sign-in -> none",
+    "fresh VM with no gh installed first real push (build >= 647bd242) -> closest #16 (first-time setup untested)",
+    "remote .git history compaction (named deferred manual procedure) -> none"
+   ]
+  },
+  {
+   "path": "docs/archive/handoffs/2026-08-16-specialists-1c-testing-checklist.md",
+   "verdict": "unsure",
+   "evidence": "Header says none of the 15 checks were run as of 2026-08-26 (agent did a partial boot-only pass). No result tables checked for later fill-in and no card references it; specialists plan 1c itself merged. I did not find evidence either way that the checks were run later.",
+   "fix": "Ask Destin whether to run it (check 9b first) or retire it; if retired, archive with a note that the checks were never run.",
+   "lost_followups": [
+    "run the 15 hands-on checks, 9b (helper permission leak) first -> none (nearest #71 helpers: permissions, reports, cost)"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-26-open-work-state-of-play.md",
+   "verdict": "superseded",
+   "evidence": "Point-in-time review of 16 branches/12 PRs; its own successors 2026-08-27-open-work-inventory and 2026-08-31-open-work-inventory supersede it; open work now lives in cards/ (97 cards). Mentions 206 open roadmap items (roadmap retired 2026-10-15).",
+   "fix": "Archive as superseded by cards/ (status: superseded).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-26-open-workstreams.html",
+   "verdict": "superseded",
+   "evidence": "HTML view of the same 2026-08-26 snapshot ('206 open roadmap items', ROADMAP.md tracking); replaced by later inventories and cards/.",
+   "fix": "Archive with the state-of-play doc.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-26-perf-loop-operating-manual.md",
+   "verdict": "superseded",
+   "evidence": "65KB manual for an autonomous session; its next_step (cycle-1 handoff) shipped as PR #342 (merged 2026-08-28). Perf lab is on master (scripts/perf-lab/, README, MAP row); later cycles (cycle 3, realism, hitch recorder) happened. Mentions ROADMAP entries.",
+   "fix": "Archive; point readers to scripts/perf-lab/README.md and cards #93/#94/#96.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-oom-read-class-session-handoff.md",
+   "verdict": "shipped",
+   "evidence": "Fix is youcoded PR #335 (MERGED 2026-08-27, readSidecarShared); docs/shipped.md lines 237-241 record the OOM fix. Paged-history spec is already in docs/archive/specs. Android artifact-store item concerned Kotlin code that was deleted in the Android rebuild.",
+   "fix": "Move to docs/archive/handoffs with status: shipped (youcoded#335); roadmap pointers are dead.",
+   "lost_followups": [
+    "Android artifact store write queue/read guard -> moot (Kotlin deleted), none",
+    "paged conversation history -> no card matched 'paged'; unsure whether shipped, closest #93"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-open-work-inventory.md",
+   "verdict": "superseded",
+   "evidence": "Self-declares supersedes 08-26 doc and is itself superseded by 2026-08-31-open-work-inventory; lists branches/worktrees as of 08-27; roadmap flip instructions.",
+   "fix": "Archive as superseded by cards/.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md",
+   "verdict": "shipped",
+   "evidence": "Its own frontmatter: cycle_1_result SHIPPED 2026-08-28; youcoded PR #342 MERGED (2026-08-28T01:19Z), commits c5e1e2d3/4935e8d0/047da493. Status still 'active'. Cites ROADMAP #ci Windows failures (since fixed, PR #363).",
+   "fix": "Archive with status: shipped (youcoded#342).",
+   "lost_followups": [
+    "rig is blind to the per-token path ('file the rig issue') -> closest #96 (speed testing: misleading tools)"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-perf-lab-session-status.md",
+   "verdict": "active-stale",
+   "evidence": "Status says history up to 2026-08-27 evening; MAP.md still lists it as a depth doc for the perf lab. Cycle 1 shipped (#342) and the lab has grown since (hitch recorder, realism preset, cycle 3).",
+   "fix": "Add a banner: historical, current state is scripts/perf-lab/README.md and cards #93/#94/#96; fix the MAP row accordingly.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-30-landing-redesign-iteration-handoff.md",
+   "verdict": "shipped",
+   "evidence": "Says 'Nothing in youcoded/docs/ has been changed' and mockup-only. youcoded master commit 868bcf3bd 'feat(site): ship the landing-page redesign at youcoded.ai' shipped it; later site commits followed. shipped.md line 46 notes the redesign.",
+   "fix": "Archive with status: shipped (youcoded 868bcf3bd); its 'do not touch youcoded/docs' line is now false.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-31-codex-spec-review.md",
+   "verdict": "active-ok",
+   "evidence": "Companion to docs/active/specs/2026-08-31-codex-session-provider-design.md, which is still in active/specs; records cuts. No Codex provider code on master (only incidental mentions). Not read as stale.",
+   "fix": "",
+   "lost_followups": [
+    "Codex session provider implementation -> closest #63 (parked ideas, mentions only)"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md",
+   "verdict": "shipped",
+   "evidence": "Same redesign as the 08-30 handoff: shipped by youcoded 868bcf3bd; says the real page 'has not been touched and must not be until Destin says'. Variant B parked.",
+   "fix": "Archive with status: shipped (youcoded 868bcf3bd).",
+   "lost_followups": [
+    "landing page remaining faults (phone videos, long text, iOS asterisk) -> #79"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-31-open-work-inventory.md",
+   "verdict": "superseded",
+   "evidence": "Point-in-time 2026-08-31 inventory; running sessions and worktrees it lists are long gone; open work is cards/.",
+   "fix": "Archive as superseded by cards/.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-09-04-specialists-stage-two-START-HERE.md",
+   "verdict": "active-stale",
+   "evidence": "Stage two (plans) still has no code on master (no plan executor found); card #74 'Helper plans' (stage: explore) is the live item and lists work branches. Doc mentions roadmap 3 times.",
+   "fix": "Replace roadmap pointers with card #74; keep as the reading list.",
+   "lost_followups": [
+    "stage-two decisions owed by Destin -> #74"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md",
+   "verdict": "active-stale",
+   "evidence": "Paste-in prompt; one roadmap mention; refers to 'python3 scripts/ui-review/review-cards.py serve', which I did not verify still exists (CLAUDE.md now describes preview/serve deck commands). Card #74 says still gated on Destin's decisions.",
+   "fix": "Update the deck command to the current preview/serve flow and replace the roadmap mention with card #74.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md",
+   "verdict": "active-stale",
+   "evidence": "Banner is accurate (merged youcoded#464, MERGED 2026-09-10; expectedRebuild at harness-session.ts:1857), but the body still says 'eight remaining ways' and has roadmap mentions. Open: item 8 UI and local cache_n measurement; card #69 holds the cache-efficiency work and links this doc as its report.",
+   "fix": "Add a line at the top of the body: items 1-4, 6, 7 done, 5 dropped; remaining work tracked in #69.",
+   "lost_followups": [
+    "item 8 UI deck (four options) -> #69",
+    "local cache_n measurement pass -> #69"
+   ]
+  },
+  {
+   "path": "docs/active/handoffs/2026-09-24-one-core-START-HERE.md",
+   "verdict": "active-stale",
+   "evidence": "Order table says 'Now: A0, A1 ...' and 'A2 next', and says 'Nothing is merged until Destin says so'. R0-R6 merged 2026-10-05 (youcoded#604, youcoded-dev#237, per its own Next line); the A-phases were replaced by docs/active/plans/2026-10-14-android-clean-rebuild-plan.md and the Android app was rebuilt Oct 14-15. Cites the archived 2026-09-24 android plan. Card #1 still links it as its report.",
+   "fix": "Replace the status block with: R0-R6 merged; Android now follows the 2026-10-14 clean rebuild plan; repoint card #1's report.",
+   "lost_followups": [
+    "Owed after merge: real-phone pass, re-record Claude Code capture corpus, Phase 5 tidy-up -> closest #1 / #112"
+   ]
+  },
+  {
+   "path": "docs/active/prototypes/2026-07-20-session-switch-animation.html",
+   "verdict": "superseded",
+   "evidence": "Mockup of session-switch animation; archived spec docs/archive/specs/2026-08-31-session-strip-and-switch-motion-design.md and card #21 (stage merged, 'redo the review ... as live pick-one step') carry the work forward.",
+   "fix": "Archive with the motion work.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/archive/prototypes/2026-08-26-permission-copy-review.html",
+   "verdict": "unsure",
+   "evidence": "Static copy-review page for permission cards. Only found references in the 08-27/08-31 inventories; recent permission-card work merged (session/always-allow-card), but I did not confirm this copy was adopted.",
+   "fix": "Ask whether the copy was applied; archive if so.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/prototypes/2026-08-27-deck-mockup-g.html",
+   "verdict": "superseded",
+   "evidence": "Mockup for adaptive review-deck layout; referenced from docs/archive/specs/2026-08-27-review-deck-v2-design.md and scripts/ui-review/deck/page.css now exists with adaptive layout.",
+   "fix": "Archive together with the .py generator.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/prototypes/2026-08-27-deck-mockup-g.py",
+   "verdict": "superseded",
+   "evidence": "Generator for the deck-mockup-g html; hard-codes /home/destin/youcoded-dev/docs/active/design/2026-08-25-ui-audit images path (ui audit docs later archived); deck system lives in scripts/ui-review/deck.",
+   "fix": "Archive with the html.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/prototypes/2026-09-29-paused-rendering",
+   "verdict": "active-ok",
+   "evidence": "README accurate as recovery material (snapshot only, never apply full patch); points to active docs docs/active/investigations/2026-09-29-performance-status.md and docs/active/plans/2026-09-29-history-rendering-and-stalls.md, both present. Paused experiments not shipped.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/prototypes/2026-10-14-android-a0-spike",
+   "verdict": "active-ok",
+   "evidence": "Throwaway A0 spike source; the active Android clean-rebuild plan (A0 results section) points here for rebuild steps; README accurate (status active for reference).",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/prototypes/landing-redesign-mockups",
+   "verdict": "shipped",
+   "evidence": "Handoff docs say mockup-only; youcoded master 868bcf3bd shipped the redesign at youcoded.ai. Parked variants remain.",
+   "fix": "Archive the folder with status: shipped (youcoded 868bcf3bd), unless more landing iteration is planned under #79.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-07-17-appinner-decomposition-map.md",
+   "verdict": "active-stale",
+   "evidence": "Header says tranches 2-4 are 'tracked in ROADMAP.md -> Staged AppInner decomposition' and App.tsx is '~3,679 lines'; ROADMAP.md is retired and App.tsx is 4,692 lines on origin/master. Tranche 1 shipped (f1ab07fc). Tranches 2-4 not done.",
+   "fix": "Replace the ROADMAP.md pointer with card #60 (split up the oversized code: chat engine and app shell) and update the line count; keep active as the cluster map.",
+   "lost_followups": [
+    "Tranches 2-4 of AppInner extraction -> #60 (closest; does not name this map)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-07-19-remote-access-ui-state-hydration.md",
+   "verdict": "shipped",
+   "evidence": "Remote refactor 'one-core' merged as itsdestin/youcoded PR #237 (workspace merge 56c9e767, later #604 ref); plan docs/archive/plans/2026-09-24-remote-access-refactor-plan.md has status: shipped and R5 (session record + numbered event log) closes findings 3-4; 500 ms replay timer removed in 4f9320217 (per the remote-first-connect doc, re-verified 2026-09-23); archive/plans/2026-07-19-remote-hydration-single-source-of-truth.md exists.",
+   "fix": "Move to docs/archive/investigations/ with status: shipped (youcoded#237); header still says the 500 ms timer and ROADMAP.md:543/511 are live, which is false. (Related active plan docs/active/plans/2026-07-20-remote-hydration-pr-spec.md should be checked the same way.)",
+   "lost_followups": [
+    "Finding 5: terminal replay as one multi-MB blob -> #99 (closest, phone/remote slow starts), not verified"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-07-28-agent-harness-frontier-research.md",
+   "verdict": "active-stale",
+   "evidence": "Review banner says 'ROADMAP.md context + knowledge app features item names this document'; roadmap retired. The ideas now live as card #63 item (g) (context and knowledge as product surfaces). Spec docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md is archived.",
+   "fix": "Change banner to point at card #63(g) instead of ROADMAP.md; otherwise it is a valid dated reference.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-08-09-native-skip-permissions.md",
+   "verdict": "active-stale",
+   "evidence": "Banner says nothing is tracked, 'absent from ROADMAP.md', and the Skip Permissions tooltip falsehood 'is still shipping' / should be filed. Tooltip fixed: docs/shipped.md line 205 (youcoded PR #376, 2026-09-01). Now tracked: card #66(e) (no bypass mode, report 2026-09-01-native-no-bypass-mode.md) and card #63(i) (sandbox / scratch workspace cites this doc). NativePermissionMode on master still has no 'bypass'.",
+   "fix": "Rewrite the banner: tooltip fixed (#376), step 1 -> card #66(e), sandbox/scratch idea -> card #63(i); drop the 'file on ROADMAP.md' instruction.",
+   "lost_followups": [
+    "rm analyzer + stale PermissionOverrides (steps 2-4) -> #63(i) covers sandbox only; rm analyzer/overrides none"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md",
+   "verdict": "active-stale",
+   "evidence": "Says 'Tracked on ROADMAP.md as an open bug' and 'Destin has not chosen' unload vs toast vs refuse. Card #48(a) records the choice: 'warn and let me choose'. Guard numbers fixed 2026-09-05; MODELS_MAX = 2 still at engine-supervisor.ts:161 and no GTT reader (not re-verified beyond the constant).",
+   "fix": "Replace ROADMAP references with card #48(a) and record Destin's answer (warn, let him choose); say which of the 4 defects remain.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md",
+   "verdict": "shipped",
+   "evidence": "Banner says NOT BUILT as of 2026-08-26. Commit 807fe9b66 (2026-09-02, on origin/master) 'whitespace-only chunks never open a bubble; hollow bubbles get no shell': reducer drops blank deltas and AssistantTurnBubble gives no shell to a bubble whose only content is an awaiting-approval tool, moving footer/timestamp to the last shown bubble - exactly this bug. Test tests/bubble-grouping-scenarios.test.tsx.",
+   "fix": "Archive with status: shipped (807fe9b66); also archive docs/active/plans/2026-08-17-timestamp-only-assistant-bubble.md and docs/active/specs/2026-08-17-timestamp-only-assistant-bubble-design.md; delete item (b) from card #7 (it still lists this as open).",
+   "lost_followups": [
+    "card #7(b) still lists it as open -> needs closing"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md",
+   "verdict": "shipped",
+   "evidence": "The doc says these corrections 'must land in scripts/perf-lab/README.md (Task 12) and the operating manual'. README.md now has the node --test glob guidance (lines ~1068-1073) and the perf lab ran cycles 1-3 (youcoded#342, #591). It is a record against an archived plan (docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md).",
+   "fix": "Archive as shipped (folded into scripts/perf-lab/README.md); handoffs that link it must be repointed.",
+   "lost_followups": [
+    "Section 17 residual: first paint waits on a `claude auth status` call (3 s cap) -> #109 (make the app open faster), unverified"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-08-27-perf-defect-classes.md",
+   "verdict": "active-stale",
+   "evidence": "Register of ~dozens of 'found by code sweep, not yet measured' instances dated 2026-08-27. Since then the performance program ran (youcoded#342, #591; docs/archive/investigations/2026-09-26-performance-history-audit*, 2026-10-04-performance-gap-review) and open items moved to cards #93, #94, #96, #98, #99, #101, #106, #109, #110. Still referenced by active handoffs and 2026-09-01-ui-sluggishness-render-cost.md.",
+   "fix": "Add a banner: verification states are as of 2026-08-27; current open perf work lives in cards #93/#94/#96/#109; remaining instances need re-verification before use.",
+   "lost_followups": [
+    "individual register instances not individually carded -> #93/#94/#98 (closest)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-08-31-marketplace-featuring-recommendations.md",
+   "verdict": "active-ok",
+   "evidence": "status: draft is accurate: featured.json on wecoded-marketplace origin/master is unchanged (hero still civic-report; last edit 477afae). The recommendations were never applied or decided. Only 'roadmap' mentions are suggested follow-ups at lines 279, 383, 624-626.",
+   "fix": "Change the 'Roadmap:' suggestions to card references (#51, #52).",
+   "lost_followups": [
+    "Re-curate featured.json (unhide google-services, spotify-services, youcoded-chatsearch; fix hero) -> none",
+    "Nine featured items show 'Not checked' -> #51 (Likely safe badge) partly",
+    "Disclose MCP-server capabilities in the 'What this can do' panel -> #51(a) partly",
+    "Install path for MCP servers -> #51 Docker item (a)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-08-31-session-retrospective-workspace-friction.md",
+   "verdict": "superseded",
+   "evidence": "Draft observation log whose premise ('nothing implemented') is out of date: ROADMAP dedup advice (F5) is moot (roadmap retired 2026-10-15), close-out sequence (F3) now exists as scripts/close-out.sh and the wrap-up skill, feature-flow redesign (docs/active/specs/2026-09-01-feature-flow-design.md) cites it. Remaining open point F1 (rules not matching worktree paths) is card #24.",
+   "fix": "Archive as superseded by close-out.sh, wrap-up skill, feature-flow design and cards #19/#24.",
+   "lost_followups": [
+    "F1 path-scoped rules vs worktree paths -> #24",
+    "F2 'prove the guard fails without the fix' -> none/#19",
+    "F4 CI triage control-run recipe -> #29/#13 (unverified)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-artifact-viewer-spikes.md",
+   "verdict": "active-ok",
+   "evidence": "Suspects still present: hastText(node) in the pre renderer at MarkdownContent.tsx:428 on origin/master; tracked by card #101 which links it. No measured results.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-asar-ships-tests.md",
+   "verdict": "active-stale",
+   "evidence": "Says 47 .test.js files ship and 'narrow tsconfig include' is the fix. On master desktop/tsconfig.json now excludes src/**/*.test.ts(x) (commit b1840ab34), so test files no longer compile into dist; electron-builder still has `dist/**/*` (only dist/main/harness/eval excluded) so the 19 dist/renderer/dev/workbench files likely still ship (not re-measured).",
+   "fix": "Re-measure the asar and rewrite: tests fixed by tsconfig exclude; workbench files remain (if still true). Card #29 links it.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-buddy-chat-input-bar-pty-gate.md",
+   "verdict": "active-ok",
+   "evidence": "BuddyChat.tsx on master still renders `<InputBar sessionId={viewedSession} compact />` (line 178) with no getSessionState/onSendBlocked. Card #85(a) tracks and links it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-chat-file-chip-allowlist.md",
+   "verdict": "shipped",
+   "evidence": "Allowlist replaced: commit a51246e85 'every file type is clickable; the viewer says what it can't show' (Destin decision 2026-09-05); useInlineFilepathDetector.ts on master now uses an extension-shape test (EXT_SHAPE_RE) and no WHITELIST; follow-ups 12bd9dbfb (extensionless files) and 6b017c501 (paths with spaces).",
+   "fix": "Archive with status: shipped (a51246e85). No card links it.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-chat-float-stacking.md",
+   "verdict": "active-ok",
+   "evidence": "Latent audit still open; fixed pair (#260 7cecca1a) still in globals.css .jump-to-bottom rules. Card #7(a) links it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-chrome-style-bare.md",
+   "verdict": "shipped",
+   "evidence": "Built under the name `float`: theme-types.ts on master `ChromeStyle = 'default' | 'floating' | 'float'` with comment explaining why it is not called minimal; commit 58085dbb1 'float chrome style - every control floats on the wallpaper'. Doc says only two values exist.",
+   "fix": "Archive with status: shipped (58085dbb1, as chrome-style 'float'); the theme-builder Kit preset part not checked. Card #130 links it - confirm whether it still lists this.",
+   "lost_followups": [
+    "theme-builder Kit preset + manifest-template.jsonc for 'float' not verified -> none"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-field-surface-invisible-on-inset.md",
+   "verdict": "active-ok",
+   "evidence": "FIELD_SURFACE on master is still 'bg-inset border border-edge-card rounded-lg' (field.ts:29; border added 2026-09-28) - decision on the primitive not taken. Card #135 links it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-fixed-sleeps-and-mcp-wiring-import.md",
+   "verdict": "active-ok",
+   "evidence": "Accurate with its own 2026-09-02 update; card #13 links it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-game-forfeit-unattested-record.md",
+   "verdict": "active-stale",
+   "evidence": "Line 10 'Roadmap entry: docs/roadmap/games.md' points at the retired roadmap. Content true: presence-room.ts still has liveSocketsFor(opponent) guard at line 511, no checkRateLimit, and no shipping client sends game-forfeit. Card #43 tracks it.",
+   "fix": "Replace the Roadmap entry line with card #43.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md",
+   "verdict": "active-ok",
+   "evidence": "lease-client.ts renewTick on master still rewrites the lease file when the hub reply is null (`r === null` branch) with no check of the on-disk holder. Card #125(a) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-light-theme-brand-colours.md",
+   "verdict": "active-ok",
+   "evidence": "KNOWN_LIGHT_THEME_GAP guard still in tests/brand-colour-modes.test.ts. Card #130 tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-markdown-image-capability.md",
+   "verdict": "active-stale",
+   "evidence": "Says MarkdownContent has 'no img entry and no urlTransform' and no width constraint. On master mdComponents has an `img` override (ChatImage) with `max-w-full`, and remote http(s) images are click-to-load. Local absolute-path images still not resolved through readBinary/blob (not checked in depth).",
+   "fix": "Update 'why it works' and 'unfit' sections: width and network-image handling exist; remaining gap is local-path resolution and telling models about it. Card #145 links it.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-marketplace-catalog-payload-size.md",
+   "verdict": "active-ok",
+   "evidence": "Worker catalog route on master has no `since` parameter or slim variant (grep). Card #99(e) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-marketplace-docker-mcp-install.md",
+   "verdict": "active-ok",
+   "evidence": "plugin-installer.ts still falls to `Unknown source type` default (line 614). Card #51(a) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-marketplace-installed-plugin-turns-unsafe.md",
+   "verdict": "active-ok",
+   "evidence": "No install-vs-scan comparison found; card #51(c) tracks it (not re-verified in code beyond the earlier note).",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-marketplace-plugins-install-into-cc-owned-dir.md",
+   "verdict": "active-ok",
+   "evidence": "YOUCODED_MARKETPLACE_ROOT still under PLUGIN_CACHE_DIR/'marketplaces' (claude-code-registry.ts:44). Card #51(b) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-marketplace-public-sub-registry-layer-e.md",
+   "verdict": "active-ok",
+   "evidence": "Parked; card #52(b) tracks it and links the doc.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-marketplace-report-a-comment.md",
+   "verdict": "active-ok",
+   "evidence": "No comment_id anywhere under worker/ on master. Card #51(d) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-misleading-error-audit.md",
+   "verdict": "superseded",
+   "evidence": "'Open: the audit itself' is done: card #134 says the app-wide re-audit is done and batch 1 shipped 2026-09-11 (inventory at docs/active/investigations/2026-09-10-error-inventory/). Master now has 82 <ErrorState sites (doc says 10), preload.ts:989 strips the 'Error invoking remote method' prefix (instance 2 fixed), and RatingSubmitModal no longer has the TypeError offline branch (instance 1 not re-checked in wrap()).",
+   "fix": "Archive as superseded by card #134 and the 2026-09-10 error inventory; docs/error-message-standards.md links it and must be repointed.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-model-favourites-localstorage-only.md",
+   "verdict": "active-ok",
+   "evidence": "FAV_KEY 'youcoded-model-favorites' still localStorage-only (ModelPicker.tsx:201). Card #47 covers the empty picker on a second device but does not link this report.",
+   "fix": "Optionally link this report from card #47.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-multi-model-cwd-contract.md",
+   "verdict": "active-ok",
+   "evidence": "No `workdir` param or `<cwd-rules>` on master (grep of harness/tools and harness). Card #66(b) tracks it with the Destin decision.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-native-mcp-phase-2.md",
+   "verdict": "active-stale",
+   "evidence": "Line 10 'Roadmap entry: docs/roadmap/native-harness.md -> ## skills-mcp' points at the retired roadmap. Content true: no mcp:* IPC on master, mcp-registry.ts still says upsert() has no caller. Closest cards: #59 (names 'MCP phase 2') and #75/#76.",
+   "fix": "Replace the roadmap pointer with card #59; nothing links this report yet.",
+   "lost_followups": [
+    "latent upsert()/fromStored deletion of hand-edited entries (must fix before shipping the screen) -> none"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-native-no-bypass-mode.md",
+   "verdict": "active-ok",
+   "evidence": "NativePermissionMode still 3 members (permission-types.ts:7); session-create-args forces skipPermissions false for native. Card #66(e) tracks it. (App.tsx:2507 line reference is outdated.)",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md",
+   "verdict": "active-ok",
+   "evidence": "run.mjs still saves a real native session as native-chat.png; card #96(c) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-permission-near-miss-silent.md",
+   "verdict": "active-ok",
+   "evidence": "No nearMiss field in permission code on master (subject-glob veto comment only). Card #66 summary and line 35 cover it but do not link this report.",
+   "fix": "Link this report from card #66.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-queued-message-attachments-lost-on-edit.md",
+   "verdict": "active-ok",
+   "evidence": "queuedMessages still `{queueId, content, timestamp}` (chat-types.ts:447). Card #62(a) tracks it.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md",
+   "verdict": "active-ok",
+   "evidence": "Accurate: header records the 500 ms timer fix (4f9320217) and the open white-screen bottleneck; card #99(b) tracks the open part.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-remote-unbridged-channels.md",
+   "verdict": "superseded",
+   "evidence": "Its banner already says channel decisions moved to R6 of the one-core plan; that work merged (youcoded#237 / #604). Master has desktop/src/main/ipc/channel-table.ts, and the remaining phone gaps are card #112 (a)-(d). The unbridged-channel list and 'six shim methods' count are dated 2026-09-01.",
+   "fix": "Archive as superseded by the one-core refactor (docs/archive/plans/2026-09-24-remote-access-refactor-plan.md) and card #112; docs/active/specs/2026-09-09-remote-access-first-milestone.md links it.",
+   "lost_followups": [
+    "'+ Add file' uploads then fails over remote / six methods with no shim entry -> #112(d) (closest, unverified)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-rename-a-conversation.md",
+   "verdict": "shipped",
+   "evidence": "Manual rename built: commit 3ed731842 'session naming with user overrides that automatic naming cannot replace'; master has SessionRenameDialog (ResumeBrowser.tsx:1707), naming-core.ts normalizeManualName/isManuallyNamed; spec archived at docs/archive/specs/2026-09-08-session-naming-design.md. Doc says no rename channel exists.",
+   "fix": "Archive with status: shipped (3ed731842). Loose ends already in card #4.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-replayed-bubbles-stamped-with-replay-time.md",
+   "verdict": "active-ok",
+   "evidence": "origin/master transcript-watcher.ts:97 still has `const timestamp = Date.now()` and emits it; recordedAt is parsed but unused for events. Card #2 carries it (status blocked, two decisions).",
+   "fix": "Optional: add the card #2 id to the header so the doc and card point at each other.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-search-transcript-content-from-resume-browser.md",
+   "verdict": "active-ok",
+   "evidence": "ResumeBrowser.tsx on master has only a name/path/tag search pill; chatsearch index not wired to it. Card #3 item (a) names this doc.",
+   "fix": "Header says 'old ROADMAP.md L1285'; harmless history.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-social-401-silent-signout.md",
+   "verdict": "active-stale",
+   "evidence": "handler-utils.ts on master (makeClearSessionOn401) logs a WARN on 401 sign-out (youcoded#386 940afe79); only the user-facing notice is missing. Card #55 (a) covers the notice.",
+   "fix": "Opening 'Mechanism' line 'Nothing announces it: no toast, no log line' is false; say 'log line shipped (#386); only the on-screen notice is still owed (card #55)'.",
+   "lost_followups": [
+    "user-facing sign-out notice -> #55"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md",
+   "verdict": "active-ok",
+   "evidence": "native-session-host.ts destroy still only de-registers from childrenOf; no delete-conversation feature. Card #71 (helper leftover records) covers it, blocked on a general delete-conversation feature.",
+   "fix": "",
+   "lost_followups": [
+    "general delete-conversation feature (the blocker) -> none (#71 only notes it as blocked)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md",
+   "verdict": "active-ok",
+   "evidence": "SyncPanel.tsx on master still only shows a transient conflict note; no resolver component found by grep. Card #121 names this doc.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-terminal-pty-column-count.md",
+   "verdict": "active-ok",
+   "evidence": "TerminalView.tsx on master still returns early when clientWidth===0 (line 390) with the debounced/deduped resize; hypothesis never proven; only seen in xvfb dev instance.",
+   "fix": "",
+   "lost_followups": [
+    "prove/disprove the PTY-width hypothesis with a resize log -> #18 (rig faults) / #106 loosely; no card names it"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md",
+   "verdict": "active-stale",
+   "evidence": "youcoded 0211a9a5a 'Reduced Effects now stops theme-injected animation' (theme-engine.ts ANIMATION_DECL); sanitizeCSS still does not cap animation. Card #100 (b) is the remaining cost.",
+   "fix": "Statement that Reduced Effects 'would NOT switch a theme's own animation off' is now false; add a status note that 0211a9a5a fixed the Reduced-Effects path, and only the always-on cap remains (card #100 b).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-theme-icons-dead-field.md",
+   "verdict": "active-ok",
+   "evidence": "No renderer consumer of theme.icons on master (only theme-types.ts and theme-asset-resolver.ts). Card #130 item (b) is this exact wire-or-remove decision.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-transcript-storage-long-term.md",
+   "verdict": "active-ok",
+   "evidence": "snapshot-retention/GitHub-store design unchanged; card #98 (a) covers growth and needs a choice.",
+   "fix": "",
+   "lost_followups": [
+    "design a different long-term store for transcript bytes ('every transcript on every device') -> #98 only partly (pruning choice); none for the new store"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md",
+   "verdict": "active-stale",
+   "evidence": "Doc's own banner says cycle 2 paged history (youcoded #349) and cycle 3 folding (#398) shipped; body 'Plan and progress' still says 'Cycles 2 and 3 are next ... No branch open'. Ongoing sluggishness is card #94.",
+   "fix": "Rewrite 'Plan and progress': cycles 1-3 shipped (#342, #349, #398); remaining work lives in card #94.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-03-arizona-llc-formation-guide.md",
+   "verdict": "active-ok",
+   "evidence": "LLC formed 2026-09-03 (Articles/EIN PDFs exist in ~/Documents/destins-adventures-llc). Doc is a step guide plus running-the-company reference (taxes, city rules); no stale next-steps or roadmap pointers.",
+   "fix": "Optional: note that formation is done and the guide is now reference.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-03-formalization-costs-and-risks.md",
+   "verdict": "active-stale",
+   "evidence": "Frontmatter `roadmap: docs/roadmap/dev-workspace.md`; body line 79 'Every remaining launch item: roadmap v1.3 flag' and line 48 'docs/roadmap/other-features.md' point at the retired roadmap. Status block of 2026-10-01 is current. Open items live in cards #28 (Apple signing), #31 (Play listing, trademark), #45.",
+   "fix": "Replace roadmap pointers with cards #28/#31; mark the 09-03 'Destin next' list as historical.",
+   "lost_followups": [
+    "trademark search/filing -> #31 (mentioned)",
+    "Stripe/Buy Me a Coffee switch to company, Cloudflare token roll -> none"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-03-jlbc-tooling-cross-pollination.md",
+   "verdict": "active-stale",
+   "evidence": "status: draft proposal about a different repo (JLBC); Part 3 says ROADMAP.md is 714 KB and needs a summary - the roadmap was retired 2026-10-15. No card tracks any of the transfers. Part 2 items (control reruns, longitudinal eval archive, autouse isolation) not found in harness-evaluator.md.",
+   "fix": "Add a status note: Part 3 is moot (roadmap retired into cards); say whether the rest is still wanted, else archive as superseded/declined.",
+   "lost_followups": [
+    "Part 2: run-a-control rule, eval trend archive, autouse test isolation -> none",
+    "Part 1 items for JLBC repo -> none (other repo)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md",
+   "verdict": "active-stale",
+   "evidence": "Fix merged 2026-09-04 (youcoded 2c369762, ad-hoc signing + verify-mac-signature.sh); doc still status active. Remaining (real Developer ID/notarization, updater re-quarantine) is card #28. Line 174 points at docs/roadmap/other-features.md.",
+   "fix": "Mark the incident fixed (2c369762), point remaining work at card #28, drop the roadmap pointer; consider archiving as shipped.",
+   "lost_followups": [
+    "unsigned announcement banner fetch -> none found (was in other-features roadmap)",
+    "updater should verify SHA-256 like the engine does -> #28 loosely"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-04-local-model-runner-audit.md",
+   "verdict": "active-stale",
+   "evidence": "Doc itself says sections 1-3 are dated and mostly built on feat/local-engine-upgrades; line 23 says 'two roadmap items link here'. Open parity gaps and dual-model decision are card #48 (and #47).",
+   "fix": "Replace 'two roadmap items' with cards #48/#47.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-05-model-switch-invalidates-prompt-cache.md",
+   "verdict": "active-stale",
+   "evidence": "'Suggested UX direction' and 'Relation to existing backlog' point at native-harness.md -> ## cost (retired roadmap). No card mentions a switch-model cost warning (grep of cards for model switch/cache found only #69 on other cache work).",
+   "fix": "Point backlog reference at card #69 or file the warning idea as a new item.",
+   "lost_followups": [
+    "warn in model picker that switching re-prefills the conversation, offer compact first -> none (nearest #69)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-05-native-guidance-followups.md",
+   "verdict": "active-stale",
+   "evidence": "Says 'runtime changes below are roadmap-only'; the requirements (command hooks in native sessions, rules before first write, capability summary, rule diagnostics) are referenced by cards #63 (d) and #19; no native hook dispatcher found in harness code on master.",
+   "fix": "Replace 'roadmap-only' / 'context-and-knowledge roadmap idea' wording with card #63/#19.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-08-error-states-development-audit.md",
+   "verdict": "superseded",
+   "evidence": "'audit in progress' but 2026-09-10-error-inventory/README.md states it supersedes this doc's line numbers and verdicts; batch 1 shipped (72bd4093b). Work is now card #134.",
+   "fix": "Archive with status superseded by docs/active/investigations/2026-09-10-error-inventory + card #134; keep E-01..E-10 reporting findings if the contribution/report-bug work isn't carried elsewhere.",
+   "lost_followups": [
+    "Report-bug flow gaps E-01..E-08 (no catch, logs sent to AI before review, no attachments) -> #134 only loosely; no card for reporting flow"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md",
+   "verdict": "active-stale",
+   "evidence": "Companion to the eight cache breakers; six shipped 2026-09-10 (youcoded#464, #461) and compaction shipped #559; remaining pieces are card #69. Doc status active with no progress note.",
+   "fix": "Add a status banner: breakers shipped in #461/#464, remaining in card #69.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-09-small-model-context-truncation.md",
+   "verdict": "active-ok",
+   "evidence": "Card #63 (a) says redesign has seven decisions and a deck, nothing answered; matches doc 'parked'.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-10-error-inventory",
+   "verdict": "active-ok",
+   "evidence": "README: batch 1 (17 messages) merged 2026-09-11 (72bd4093b); card #134 says six of seven batches remain and links this report.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-16-ci-test-health.md",
+   "verdict": "shipped",
+   "evidence": "youcoded#490 (master green on Linux/Windows/macOS, new Desktop CI) merged 2026-09-16 and youcoded-dev#111; follow-ups in #619. desktop-ci.yml on master.",
+   "fix": "Archive with status shipped (youcoded#490, youcoded-dev#111); the decisions list can stay as a note.",
+   "lost_followups": [
+    "branch protection / required check; 112 source-grep test files; Android CI bundle scope -> none (card #13 is flaky tests only)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-16-simplification-audit.md",
+   "verdict": "active-ok",
+   "evidence": "Evidence base for active plan docs/active/plans/2026-09-16-simplification-phases.md; phases 1-3 shipped (youcoded#497-504), remaining items cards #13/#96, plus archived remote/android plans.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-16-smoothness-sweep.md",
+   "verdict": "active-ok",
+   "evidence": "Status banners updated through 2026-09-29 (A5 #566, B #561, wheel #589); leftover open items map to cards #94, #99, #100, #101.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md",
+   "verdict": "active-stale",
+   "evidence": "Last line: 'Filed in docs/roadmap/dev-workspace.md -> knowledge'; that file is gone. Card #22 'Six ways a work session's progress can go missing' now holds it.",
+   "fix": "Change last line to card #22.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md",
+   "verdict": "active-stale",
+   "evidence": "Text says 'open, on roadmap' and cites roadmap sync.md; conversation handoff with confirmed transfer shipped youcoded#557 (2026-09-24), which addresses H2/H3-type final-flush issues. Cards #124/#125 hold the remaining gaps.",
+   "fix": "Add a status banner: which findings #557 closed; replace roadmap refs with #125/#124.",
+   "lost_followups": [
+    "H1/H4 two resumes pass the gate before a lease is claimed; H5 lease-expiry split-brain; M2 unauthenticated lease identity -> #125 partly; none explicit",
+    "H6 Android in cross-device sync -> #1/#124 loosely"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md",
+   "verdict": "shipped",
+   "evidence": "youcoded#553 b6f94e1d: session-id header sent (providers/chatgpt-model.ts:152); docs/shipped.md 2026-09-23 entry. <env>-last landed (ENV_OPEN in prompt-assembly.ts).",
+   "fix": "Archive with status shipped (youcoded#553), together with its four luna-*.jsonl result files.",
+   "lost_followups": [
+    "helpers fork from parent's cached opening (item 8, 'likely dropped') -> none"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-handoff-message-freshness.md",
+   "verdict": "shipped",
+   "evidence": "youcoded#557 'Conversation handoff: confirmed transfer between computers' merged 2026-09-24; handoff-receipt/handoff-transcript/handoff-transport.ts exist on master.",
+   "fix": "Archive with status shipped (youcoded#557). Line 41 'filed under docs/roadmap/sync.md as needs-verify' is dead.",
+   "lost_followups": [
+    "verify helper/ledger history survives handoff (needs-verify) -> none"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-lifecycle-results.jsonl",
+   "verdict": "shipped",
+   "evidence": "Raw data rows for 2026-09-23-chatgpt-cache-affinity.md (fix shipped youcoded#553); no status of its own.",
+   "fix": "Move to docs/archive/investigations/ together with the chatgpt-cache-affinity doc.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-repeat-results.jsonl",
+   "verdict": "shipped",
+   "evidence": "Raw data rows for 2026-09-23-chatgpt-cache-affinity.md (fix shipped youcoded#553); no status of its own.",
+   "fix": "Move to docs/archive/investigations/ together with the chatgpt-cache-affinity doc.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-repeat-results-session-id-fix.jsonl",
+   "verdict": "shipped",
+   "evidence": "Raw data rows for 2026-09-23-chatgpt-cache-affinity.md (fix shipped youcoded#553); no status of its own.",
+   "fix": "Move to docs/archive/investigations/ together with the chatgpt-cache-affinity doc.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-tool-loop-results.jsonl",
+   "verdict": "shipped",
+   "evidence": "Raw data rows for 2026-09-23-chatgpt-cache-affinity.md (fix shipped youcoded#553); no status of its own.",
+   "fix": "Move to docs/archive/investigations/ together with the chatgpt-cache-affinity doc.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-24-main-blocking-calls-triage.md",
+   "verdict": "active-ok",
+   "evidence": "Batches partly done (B4 part, six batches per smoothness-sweep); remaining work in cards #93 and #13 which cite this doc.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-26-startup-resume-real-scale.md",
+   "verdict": "active-stale",
+   "evidence": "Header: fixes shipped (youcoded#573) but 'stays active only because two roadmap items point here' (Resume loads forever, mascot full refresh). Those are now cards #7, #96, #100.",
+   "fix": "Replace 'two roadmap items' with cards #7/#100/#96.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-29-performance-evidence-index.md",
+   "verdict": "active-ok",
+   "evidence": "Local evidence dir /home/destin/youcoded-perf-evidence/performance-history-audit-2026-10-03 exists; maps paths for the paused-rendering prototype still in docs/active/prototypes.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-09-29-performance-status.md",
+   "verdict": "active-stale",
+   "evidence": "Line 10 'backlog is docs/roadmap/perf.md' and 'docs/roadmap/chat-data.md' - roadmap retired; perf work is cards #93 #94 #96 #98 #99 #100 #101 #109. last_updated 2026-10-04 though text covers 2026-10-08 merge.",
+   "fix": "Point backlog at cards (#94 and the perf-tagged items) and refresh last_updated.",
+   "lost_followups": [
+    "hidden-history typing stalls remeasure, cold Find indexing -> #94/#96 (named)"
+   ]
+  },
+  {
+   "path": "docs/active/investigations/2026-09-29-perf-roadmap-consolidation.md",
+   "verdict": "superseded",
+   "evidence": "Migration ledger from old roadmap areas into docs/roadmap/perf.md; that roadmap was retired 2026-10-15 and replaced by cards (perf cards #93-#110).",
+   "fix": "Archive as superseded by cards/.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/2026-10-13-command-file-tracking.md",
+   "verdict": "active-ok",
+   "evidence": "artifact-tool-use-tracker.ts on master still has TRACKED_TOOLS = Write/Edit/MultiEdit/Read/SendUserFile; Bash not tracked. Parked by Destin 2026-10-13; card #41 cites this doc.",
+   "fix": "",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/investigations/harness-eval-runs",
+   "verdict": "active-ok",
+   "evidence": "Live output folder written by harness-eval.mjs and eval/matrix.ts (docs/active/investigations/harness-eval-runs/<date>/). Contains 4 real reports (2026-08-13, 2026-09-05) and 2 test-debris files (2026-08-25 and 2026-08-26 report-unit-test-plan.md contain only 'SENTINEL' text).",
+   "fix": "Delete the two SENTINEL files (test debris); optionally archive reports older than the live rule's needs.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-25-ui-audit",
+   "verdict": "superseded",
+   "evidence": "Evidence gallery/decks for the 2026-08-25 audit; phases A-E merged (youcoded #327, #328, #332, #339, #347); its design guide was replaced by 2026-10-13-ui-design-guide.md.",
+   "fix": "Archive with the findings doc; its README still cites the retired v1 deck tools.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-25-ui-audit-findings.md",
+   "verdict": "active-stale",
+   "evidence": "Header says status: active and 'roadmap: ... (ROADMAP.md)'; Phases A-E are marked DONE/SHIPPED inside (#327,#328,#332,#339,#347). Phase F (P-17, phone-width fade/scroll/hit areas) has no shipped mark, no PR found by gh search and no card. related: points to a superseded guide.",
+   "fix": "Stamp status: shipped (phases A-E) with PRs, drop the ROADMAP.md header line, and either file P-17 as a card or mark it dropped.",
+   "lost_followups": [
+    "Phase F P-17 phone-width clipping/edge-fade/hit areas -> none"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-08-26-download-resume",
+   "verdict": "shipped",
+   "evidence": "docs/shipped.md: unified model row with partial-download Resume/Delete (youcoded 6d4adf16; models:resume 7f4d8fd5).",
+   "fix": "Archive with status: shipped (youcoded 6d4adf16, 7f4d8fd5).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-26-statusbar-relevance",
+   "verdict": "shipped",
+   "evidence": "youcoded #340 'Status bar: numbers that are true' (2026-08-28); shipped.md also lists #487/#340 context-chip work; workspace dc9ab471 'close out the status-bar accounting work'.",
+   "fix": "Archive with status: shipped (youcoded #340, #487).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-27-chatsearch-refs-gate",
+   "verdict": "shipped",
+   "evidence": "Chat Search session references (Preview/Resume from a hit) shipped: youcoded#343 3b759931, wecoded-marketplace#68 (docs/shipped.md); chatsearch skill in marketplace.",
+   "fix": "Archive with status: shipped (youcoded#343).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-27-marketplace-overhaul",
+   "verdict": "shipped",
+   "evidence": "youcoded #366 'feat(marketplace): overhaul - catalog-backed cards, trust badges, What this can do, feedback' merged 2026-08-31; #368 follow-up bugs.",
+   "fix": "Archive with status: shipped (youcoded #366, #368).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-28-ask-question-other",
+   "verdict": "shipped",
+   "evidence": "youcoded #355 / 7bf9c8613 'question cards get an Other choice and a per-question note box'.",
+   "fix": "Archive with status: shipped (youcoded #355).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-28-bash-background",
+   "verdict": "shipped",
+   "evidence": "youcoded #361 'Background Bash: a command can outlive its call (ledger G-1)' merged 2026-08-28.",
+   "fix": "Archive with status: shipped (youcoded #361).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-08-28-chip-edit",
+   "verdict": "shipped",
+   "evidence": "youcoded #359 'Edit an existing quick chip's prompt' merged 2026-08-28; later reworked by 5c2ea4ea1/7b41b47fe.",
+   "fix": "Archive with status: shipped (youcoded #359).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-09-01-feature-flow",
+   "verdict": "shipped",
+   "evidence": "The four assumptions became the feature-flow rule: workspace 09ce0286 (.claude/rules/feature-flow.md exists); questions deck answered/submitted.",
+   "fix": "Archive with status: shipped (workspace 09ce0286).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-09-04-mascot-restyle",
+   "verdict": "shipped",
+   "evidence": "Duplicate: docs/archive/design/2026-09-04-mascot-restyle/ already holds this folder's answers plus DECISIONS.md stamped status: shipped; workspace PR #51 merged design/mascot-restyle; buddy art on master (ea3ebdee9, 91581f57c).",
+   "fix": "Delete this active leftover (the questions deck is already in the archived copy) or move it there.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-09-05-dev-dashboard",
+   "verdict": "active-stale",
+   "evidence": "Deck answered 2026-09-05 (build a real YouCoded screen, launch/stop dev servers, run all check suites, show saved/pushed/merged). No dashboard in scripts/ or cards/; only mention is wrap-ups. The management page (cards) shows branch status but not launching or suites.",
+   "fix": "Add a README stating 'decided, never built' with a card, or drop it with a reason.",
+   "lost_followups": [
+    "Dev dashboard: launch dev copies, run check suites, show branch saved/pushed/merged -> none (#17/#19 closest, neither covers it)"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-05-specialists-plans",
+   "verdict": "active-ok",
+   "evidence": "Decisions answered 2026-09-05; plans (approve a multi-step helper job) not built; card #74 'Helper plans' carries the work and links these branches/docs.",
+   "fix": "",
+   "lost_followups": [
+    "Plans work tracked -> #74"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-09-small-model-context",
+   "verdict": "active-ok",
+   "evidence": "Only Q-1 (both-ends) answered, submitted null; skills still tail-cut; rework parked in b118266a. Card #63 item (a) says 'redesign has seven decisions and a deck'.",
+   "fix": "",
+   "lost_followups": [
+    "Seven small-model context decisions (cut skills/rules, floor, mid-chat switch) -> #63 (item a); #59 related"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-10-android-rebuild",
+   "verdict": "superseded",
+   "evidence": "Five pre-work decisions for the Android rebuild; replaced by docs/active/plans/2026-10-14-android-clean-rebuild-plan.md and youcoded #604 (one core) / #625 (phone runs the desktop backend); card #1 tracks the rest.",
+   "fix": "Archive with status: superseded by the clean-rebuild plan and #625.",
+   "lost_followups": [
+    "Rest of Android rebuild -> #1"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-10-app-themed-tooltips",
+   "verdict": "shipped",
+   "evidence": "app-themed hover hints merged (session/app-themed-tooltips, 9043d7dfb); desktop/src/renderer/components/ui/Tooltip.tsx exists; #583 fixed z-order 2026-09-28.",
+   "fix": "Archive with status: shipped (9043d7dfb, #583).",
+   "lost_followups": [
+    "Browser hover tooltips look -> #135 (separate)"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-15-youcoded-pages",
+   "verdict": "shipped",
+   "evidence": "Pages Phase 1 youcoded #507 (2026-09-17), Phase 2 connections #552 (2026-09-23), home device #611, Money page; floating-theme choice built in #507.",
+   "fix": "Archive with status: shipped (#507, #552, #611); remaining phases live in card #90.",
+   "lost_followups": [
+    "Pages next phases and follow-ups -> #90"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-21-lease-handoff",
+   "verdict": "shipped",
+   "evidence": "youcoded #557 'Conversation handoff: confirmed transfer between computers, pending tab' merged 2026-09-24; shipped.md 2026-09-23 line.",
+   "fix": "Archive with status: shipped (youcoded #557, wecoded-marketplace #101).",
+   "lost_followups": [
+    "Same conversation on two computers -> #125 (separate)"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-09-22-ui-guide-rebuild",
+   "verdict": "superseded",
+   "evidence": "Research and popup/scroll-fade decks for the guide rebuild (evidence.md, rules.md, claim-index.md all say status: active, 'not an approved guide'). Replaced by 2026-10-13-ui-design-guide.md (approved 2026-10-14); scroll fade and popups shipped in youcoded #626 (merged 2026-10-16).",
+   "fix": "Archive with status: superseded by the 2026-10-13 guide; shipped in #626.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-09-23-release-1.3.1-triage",
+   "verdict": "superseded",
+   "evidence": "Triage deck 'What has to be done before 1.3.1 ships?' was applied to the roadmap (49335e0e); the roadmap was retired 2026-10-15 for cards, where blockers carry tags (e.g. #93 v1.3.1 blocker, release-blocker tag). No v1.3.1 tag yet.",
+   "fix": "Archive with status: superseded by cards.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-09-23-ui-element-review",
+   "verdict": "active-stale",
+   "evidence": "The review shipped as youcoded #626 (merged 2026-10-16) and backlog rows are mostly done, but decisions.md (status: active) is the cited source of every rule in the live 2026-10-13 guide, so it must stay; several files carry status: active and point at docs/roadmap/ (submit-ticket-friction.md, close-session-friction.md, decisions.md line 220 'keep a future roadmap item').",
+   "fix": "Keep decisions.md as a live reference; archive the rest as shipped (#626); replace docs/roadmap mentions with the cards. Line 34 'Chat question cards not approved' remains open.",
+   "lost_followups": [
+    "Chat question cards revisit -> #10 / #149",
+    "Buttons beside text alignment review -> #150"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r5-phone-record-questions.answers.json",
+   "verdict": "shipped",
+   "evidence": "R5 phone/computer-agree questions answered 2026-10-01; implemented in one-core youcoded #604 (merged 2026-10-05; commit 9125d64a R5-4a).",
+   "fix": "Archive with status: shipped (#604).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r5-phone-record-questions.json",
+   "verdict": "shipped",
+   "evidence": "Same deck as its answers file; one-core #604 (R5).",
+   "fix": "Archive together with its answers file.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r6-phone-abilities-questions.answers.json",
+   "verdict": "shipped",
+   "evidence": "R6 phone abilities answered 2026-10-01; plan commit bc5f7563, built in #604 (R6-3); remaining gaps card #112.",
+   "fix": "Archive with status: shipped (#604).",
+   "lost_followups": [
+    "Phone/computer parity gaps -> #112"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r6-phone-abilities-questions.json",
+   "verdict": "shipped",
+   "evidence": "Same deck as its answers file; #604.",
+   "fix": "Archive together with its answers file.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-04-one-core-merge-review",
+   "verdict": "shipped",
+   "evidence": "Pre-merge decision deck for one core; youcoded #604 merged 2026-10-05.",
+   "fix": "Archive with status: shipped (#604).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-04-sheet-viewer-windowing",
+   "verdict": "shipped",
+   "evidence": "5e5a05eb6 'CSV and XLSX viewers draw only the visible cells' is an ancestor of origin/master; zero-hitch program youcoded #616; deck answered all six approved (e0976f37).",
+   "fix": "Archive with status: shipped (5e5a05eb6, #616).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/archive/design/2026-10-06-website-legal",
+   "verdict": "active-stale",
+   "evidence": "status.md says 'status: active ... Nothing is published ... saved locally in app commit 2d01f74f3'. 2d01f74f3 is now on origin/master, docs/privacy.html and docs/terms.html are in the repo, and https://youcoded.ai/privacy.html returns 200.",
+   "fix": "Rewrite status.md (or archive) as shipped (2d01f74f3); remove the 'not published' and 'do not treat entire branch' warnings.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-13-ui-design-guide.md",
+   "verdict": "active-stale",
+   "evidence": "Live design guide, approved 2026-10-14, so keep active. But its open-questions table and provenance still say 'dev-workspace roadmap' (Q8) and 'keep a future roadmap item' (Q1).",
+   "fix": "Change those to point at card #150 'Design guide: six open questions'; the guide itself stays.",
+   "lost_followups": [
+    "Open guide questions Q1-Q19 -> #150 (title says six; the table lists more)"
+   ]
+  },
+  {
+   "path": "docs/active/design/2026-10-14-idea-intake",
+   "verdict": "shipped",
+   "evidence": "Work cards replaced the roadmap (workspace 35373123 import, 36e19d52 triage); the idea-intake skill exists in .claude/skills; roadmap-move deck (26 questions) answered and applied.",
+   "fix": "Archive with status: shipped (workspace 35373123, 36e19d52).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-14-popup-cards",
+   "verdict": "shipped",
+   "evidence": "popup-card rule, vocab chips, Browser settings in Assistant settings all in youcoded #626 (merged 2026-10-16); f5d328a44/253c34c63/971c8dce5 on master; guide updated (9ee18027).",
+   "fix": "Archive with status: shipped (#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/design/2026-10-15-android-icon",
+   "verdict": "shipped",
+   "evidence": "Themed monochrome icon on master (7830083cb, 52d08ee03 2026-10-15). Destin's answer was 'other' (outline for light, solid for dark); final build is solid in both because Android takes one themed icon.",
+   "fix": "Archive with status: shipped (52d08ee03); note the final differs from the pick.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md",
+   "verdict": "superseded",
+   "evidence": "Header says status: active; ranks 258 open ROADMAP.md items by line number (L####). ROADMAP.md and docs/roadmap were retired 2026-10-15 and replaced by cards/ (97 cards); the line numbers and counts no longer exist.",
+   "fix": "Archive with status: superseded (roadmap retired 2026-10-15, replaced by cards/).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-engine-slot-count-code-review.md",
+   "verdict": "shipped",
+   "evidence": "Triage line: fix youcoded 047eba65 (verified ancestor of origin/master), merged 2026-09-05. The follow-on it filed (slot count read before model loads) shipped as #480 510fe0f5 on 2026-09-16 (archived shipped log).",
+   "fix": "Move to docs/archive/reviews/ with status: shipped (youcoded 047eba65).",
+   "lost_followups": [
+    "follow-on 'count is read before model loads' -> already shipped (#480), no open work"
+   ]
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-feature-flow-two-reviewers-code-review.md",
+   "verdict": "shipped",
+   "evidence": "Triage line: fix youcoded-dev 58045ca (verified ancestor of origin/master), merged 2026-09-05.",
+   "fix": "Move to docs/archive/reviews/ with status: shipped (youcoded-dev 58045ca).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-specialists-ledger-bugs-code-review.md",
+   "verdict": "shipped",
+   "evidence": "Triage: fixes youcoded 7d3cc64d and 44b7d5e0, both ancestors of origin/master; merged 2026-09-05.",
+   "fix": "Move to docs/archive/reviews/ with status: shipped (youcoded 7d3cc64d, 44b7d5e0). Its line 'filed on docs/roadmap/native-harness.md' points at the retired roadmap.",
+   "lost_followups": [
+    "F3 pre-existing replay race, filed on the old roadmap native-harness -> none found in cards (searched replay/race/SPECIALIST_RUN_CHANGED); #71 Helpers and #62 Chat on own engine are nearest, neither mentions it"
+   ]
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-stage-two-probes-code-review.md",
+   "verdict": "shipped",
+   "evidence": "Triage: fix youcoded 0e2fd9cd (ancestor of origin/master; probe-prefix-fanout.mjs on master), merged 2026-09-05.",
+   "fix": "Move to docs/archive/reviews/ with status: shipped (youcoded 0e2fd9cd).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-10-remote-batch-2-3-ux-review-1-shots",
+   "verdict": "shipped",
+   "evidence": "Folder of 25 screenshots for the remote batch 2-3 UX review. The review text is already in docs/archive/reviews/2026-09-10-remote-batch-2-3-ux-review-1.md and the batch's spec/design are archived; these shots were left behind in active.",
+   "fix": "Move the shots folder next to the archived review in docs/archive/reviews/.",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-custom-popups-after-review.md",
+   "verdict": "shipped",
+   "evidence": "Review of Marketplace file viewer header and Tags & note fade; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-custom-popups-ux-review-1.md",
+   "verdict": "shipped",
+   "evidence": "Review of the pre-build UX pass for those treatments; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-dialog-treatment-code-review.md",
+   "verdict": "shipped",
+   "evidence": "Review of the shared Dialog.tsx/Dialog.css taper; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-dialog-treatment-ux-review-2.md",
+   "verdict": "shipped",
+   "evidence": "Review of the shared Dialog post-build check; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-marketplace-detail-after-review.md",
+   "verdict": "shipped",
+   "evidence": "Review of the Marketplace Details outer shell; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-marketplace-detail-ux-review-1.md",
+   "verdict": "shipped",
+   "evidence": "Review of the Marketplace Details header first pass; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-header-fade-ux-review-1.md",
+   "verdict": "shipped",
+   "evidence": "Review of the About popup header/fade; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-project-popup-after-review.md",
+   "verdict": "shipped",
+   "evidence": "Review of ProjectDetailOverlay header/fade; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-project-popup-edge-ux-review-1.md",
+   "verdict": "shipped",
+   "evidence": "Review of the Project-detail header/fade pre-build pass; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-resume-shell-applied.md",
+   "verdict": "shipped",
+   "evidence": "Review of the Resume Session shell (ResumeBrowser.css); no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-resume-shell-ux-review-1.md",
+   "verdict": "shipped",
+   "evidence": "Review of the Resume Session pre-deck UX check; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-ui-guide-selected-screens-built.md",
+   "verdict": "shipped",
+   "evidence": "Review of the About / Project context file / Session Files built treatments; no frontmatter. Built on session/ui-consistency-audit and landed in youcoded PR #626 (merge 596c54681, session/ui-consistency-audit); ResumeBrowser.css, ui/Dialog.css and the custom-popup/dialog/resume-shell tests exist on origin/master. Destin accepted the treatments 2026-09-23. (Later work swapped the painted fade for the one CSS .scroll-mask, ace62e7db.) Inferred from file presence and merge, not a line-by-line check of each component.",
+   "fix": "Add frontmatter and archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-files-comparison.md",
+   "verdict": "superseded",
+   "evidence": "status: active, but it is round 1 of a design-choice series; rounds 2 and 3 followed, the picks were built (B-1..B-3 accepted) and merged in youcoded#626, and the guide was replaced by docs/active/design/2026-10-13-ui-design-guide.md (approved 2026-10-14).",
+   "fix": "Archive with status: superseded (rounds 2-3 and the 2026-10-13 guide).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-files-round2.md",
+   "verdict": "superseded",
+   "evidence": "status: active, says 'No production change or guide rule is approved until Destin submits'; round 3 and the built selected screens (youcoded#626) overtook it.",
+   "fix": "Archive with status: superseded (round 3, shipped in youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-files-round3.md",
+   "verdict": "shipped",
+   "evidence": "Picks (H-3 body, P-4 quiet, F-3 center, then P-5 no-meta) were built and accepted in ui-guide-selected-screens-built (B-1..B-3 Yes) and landed in youcoded#626. Text still says 'Pending: Destin's picks' and 'not final production acceptance'.",
+   "fix": "Archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-project-context-metadata.md",
+   "verdict": "shipped",
+   "evidence": "The P-5 no-meta pick was built as B-2 (project-scoped context file omits the metadata row), accepted 2026-09-23 22:27 UTC, landed in youcoded#626.",
+   "fix": "Archive with status: shipped (youcoded#626).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-ui-guide-rule-words-round1.md",
+   "verdict": "superseded",
+   "evidence": "Round 1 wording answered (T-02/r2 Yes, others deferred to round 2). The guide was later fully replaced by docs/active/design/2026-10-13-ui-design-guide.md (approved 2026-10-14). status: active in popup-files docs is inaccurate.",
+   "fix": "Archive with status: superseded (2026-10-13 guide).",
+   "lost_followups": []
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-ui-guide-wording-round2.md",
+   "verdict": "active-stale",
+   "evidence": "Status line: 'waiting for the ui-guide-wording-round2 answer file'. The answers file exists (design/2026-09-22-ui-guide-rebuild/rule-words-round2.questions.answers.json) and the guide was replaced (2026-10-13-ui-design-guide.md, approved 2026-10-14).",
+   "fix": "Change status to answered and archive as superseded by the 2026-10-13 guide.",
+   "lost_followups": [
+    "COUNT-1 'Session Files (12)' vs G-19 no-parentheses count rule -> not found in cards; #149/#150 (design guide questions) are nearest but do not name it. Not verified whether the new guide settled it"
+   ]
+  },
+  {
+   "path": "docs/active/reviews/2026-10-14-bigpicture-ux-review-1.md",
+   "verdict": "active-ok",
+   "evidence": "Review of the Big picture page; each item has an accepted/rejected decision. Page was built in rounds 4-6 (9f5e5ec6, 832e05d0, 1baa7a4d) on session/work-cards-20261014, which is NOT on master yet (45727e28, 30f66fba not ancestors of origin/master). Record of in-flight work.",
+   "fix": "When the work-cards branch merges, archive with status: shipped (<merge ref>).",
+   "lost_followups": [
+    "U7 Systems click-to-zoom hand check -> #147 part 3 (full human review of the page)"
+   ]
+  },
+  {
+   "path": "docs/archive/reviews/2026-10-14-today-tab-independent-review.md",
+   "verdict": "active-stale",
+   "evidence": "Frontmatter status: draft with proposals P1-P8 as if open. They went through the today-review and today-rebuild 1-3 decks (answered) and were built (30f66fba: one label decides each row's main button; Pause\u2026 and Close\u2026 are the only stop words). That is on session/work-cards-20261014, not yet on master.",
+   "fix": "Set status to applied (built on session/work-cards-20261014, pending merge); archive as shipped after merge.",
+   "lost_followups": [
+    "P3 show every conversation that worked on a piece of work -> #147 is nearest; not confirmed built or carded"
+   ]
+  }
+ ],
+ "archived": [
+  {
+   "path": "docs/active/specs/2026-07-10-phase2-conversation-sync-design.md",
+   "status": "shipped (#116, #121, #126) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/specs/2026-07-30-permission-ask-timeout-design.md",
+   "status": "shipped (7e66a43cf, #278, #562) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/specs/2026-09-01-feature-flow-design.md",
+   "status": "shipped (211fae77, 7257b710, #20) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/specs/2026-09-09-remote-access-first-milestone.md",
+   "status": "shipped (1235472a2, 01b288572, #604) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-07-20-remote-hydration-pr-spec.md",
+   "status": "shipped (4f9320217, 9b02964f6, e7e2282c3) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-07-31-permission-ask-timeout.md",
+   "status": "shipped (7e66a43cf, #278, #562) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-09-01-feature-flow-plan.md",
+   "status": "shipped (211fae77, 7257b710, #20) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-09-01-feature-flow-redesign.md",
+   "status": "superseded (feature-flow-design) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-09-16-source-grep-classification.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-09-23-minimalist-header-ink-implementation.md",
+   "status": "shipped (#569, 29c6f5ca5, 58085dbb1) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/plans/2026-09-23-ui-guide-selected-screen-treatments.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-26-open-work-state-of-play.md",
+   "status": "superseded (cards/ (status: superseded)) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-26-open-workstreams.html",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-26-perf-loop-operating-manual.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-oom-read-class-session-handoff.md",
+   "status": "shipped (#335) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-open-work-inventory.md",
+   "status": "superseded (cards/) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md",
+   "status": "shipped (#342, c5e1e2d3, 4935e8d0) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-30-landing-redesign-iteration-handoff.md",
+   "status": "shipped (868bcf3bd) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md",
+   "status": "shipped (868bcf3bd) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/handoffs/2026-08-31-open-work-inventory.md",
+   "status": "superseded (cards/) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/prototypes/2026-07-20-session-switch-animation.html",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/prototypes/2026-08-27-deck-mockup-g.html",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/prototypes/2026-08-27-deck-mockup-g.py",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/prototypes/landing-redesign-mockups",
+   "status": "shipped (868bcf3bd, #79) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-07-19-remote-access-ui-state-hydration.md",
+   "status": "shipped (#237, 56c9e767, #604) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-08-17-timestamp-only-assistant-bubble.md",
+   "status": "shipped (807fe9b66) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md",
+   "status": "shipped (#342, #591) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-08-31-session-retrospective-workspace-friction.md",
+   "status": "superseded (close-out) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-chat-file-chip-allowlist.md",
+   "status": "shipped (a51246e85, 12bd9dbfb, 6b017c501) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-chrome-style-bare.md",
+   "status": "shipped (58085dbb1, #130) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-misleading-error-audit.md",
+   "status": "superseded (card #134 and the 2026-09-10 error inventory) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-remote-unbridged-channels.md",
+   "status": "superseded (the one-core refactor (docs/archive/plans/2026-09-24-remote-access-refactor-plan) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-01-rename-a-conversation.md",
+   "status": "shipped (3ed731842) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-08-error-states-development-audit.md",
+   "status": "superseded (docs/active/investigations/2026-09-10-error-inventory + card #134) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-16-ci-test-health.md",
+   "status": "shipped (#490, #111, #619) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md",
+   "status": "shipped (#553, b6f94e1d) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-handoff-message-freshness.md",
+   "status": "shipped (#557) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-lifecycle-results.jsonl",
+   "status": "shipped (#553) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-repeat-results.jsonl",
+   "status": "shipped (#553) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-repeat-results-session-id-fix.jsonl",
+   "status": "shipped (#553) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-23-luna-tool-loop-results.jsonl",
+   "status": "shipped (#553) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/investigations/2026-09-29-perf-roadmap-consolidation.md",
+   "status": "superseded (cards/) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-25-ui-audit",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-26-download-resume",
+   "status": "shipped (6d4adf16, 7f4d8fd5) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-26-statusbar-relevance",
+   "status": "shipped (#340, #487) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-27-chatsearch-refs-gate",
+   "status": "shipped (#343, 3b759931, #68) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-27-marketplace-overhaul",
+   "status": "shipped (#366, #368) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-28-ask-question-other",
+   "status": "shipped (#355, 7bf9c8613) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-28-bash-background",
+   "status": "shipped (#361) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-08-28-chip-edit",
+   "status": "shipped (#359, 5c2ea4ea1, 7b41b47fe) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-01-feature-flow",
+   "status": "shipped (09ce0286) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-04-mascot-restyle",
+   "status": "shipped (#51, ea3ebdee9, 91581f57c) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-10-android-rebuild",
+   "status": "superseded (the clean-rebuild plan and #625) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-10-app-themed-tooltips",
+   "status": "shipped (9043d7dfb, #583) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-15-youcoded-pages",
+   "status": "shipped (#507, #552, #611) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-21-lease-handoff",
+   "status": "shipped (#557, #101) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-22-ui-guide-rebuild",
+   "status": "superseded (the 2026-10-13 guide) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-23-release-1.3.1-triage",
+   "status": "superseded (cards) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r5-phone-record-questions.answers.json",
+   "status": "shipped (#604, 9125d64a) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r5-phone-record-questions.json",
+   "status": "shipped (#604) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r6-phone-abilities-questions.answers.json",
+   "status": "shipped (bc5f7563, #604, #112) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-01-r6-phone-abilities-questions.json",
+   "status": "shipped (#604) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-04-one-core-merge-review",
+   "status": "shipped (#604) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-04-sheet-viewer-windowing",
+   "status": "shipped (5e5a05eb6, #616, e0976f37) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-14-idea-intake",
+   "status": "shipped (35373123, 36e19d52) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-14-popup-cards",
+   "status": "shipped (#626, f5d328a44, 253c34c63) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-10-15-android-icon",
+   "status": "shipped (7830083cb, 52d08ee03) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-engine-slot-count-code-review.md",
+   "status": "shipped (047eba65, #480, 510fe0f5) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-feature-flow-two-reviewers-code-review.md",
+   "status": "shipped (58045ca) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-specialists-ledger-bugs-code-review.md",
+   "status": "shipped (7d3cc64d, 44b7d5e0) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-04-stage-two-probes-code-review.md",
+   "status": "shipped (0e2fd9cd) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-10-remote-batch-2-3-ux-review-1-shots",
+   "status": "shipped (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-custom-popups-after-review.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-custom-popups-ux-review-1.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-dialog-treatment-code-review.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-dialog-treatment-ux-review-2.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-marketplace-detail-after-review.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-marketplace-detail-ux-review-1.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-header-fade-ux-review-1.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-project-popup-after-review.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-project-popup-edge-ux-review-1.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-resume-shell-applied.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-resume-shell-ux-review-1.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-ui-guide-selected-screens-built.md",
+   "status": "shipped (#626, 596c54681, ace62e7db) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-files-comparison.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-files-round2.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-popup-files-round3.md",
+   "status": "shipped (#626) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-project-context-metadata.md",
+   "status": "shipped (#626) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/reviews/2026-09-23-ui-guide-rule-words-round1.md",
+   "status": "superseded (see the 2026-10-16 document sweep) \u2014 archived 2026-10-16"
+  },
+  {
+   "path": "docs/active/design/2026-09-05-dev-dashboard",
+   "status": "superseded (by the Work board page, pages/work-board/, 2026-10-16) \u2014 archived 2026-10-16"
+  }
+ ]
+}

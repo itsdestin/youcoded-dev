@@ -82,7 +82,7 @@ jobs:
       # does not silently skip them.
       - name: Test the workspace hooks
         if: ${{ !cancelled() }}
-        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/roadmap-edit-check.test.mjs
+        run: node --test .claude/hooks/context-inject.test.mjs .claude/hooks/glob-guard.test.mjs .claude/hooks/cards-edit-check.test.mjs
 
       # The workbench boot check reported "All 16 workbench routes mount cleanly"
       # against a port nothing was serving — verified 2026-09-02 on a dead port,
@@ -234,7 +234,7 @@ jobs:
         run: bash scripts/ui-review/tests/resolve-checkout.test.sh
 
       # The pre-merge report must say whether the branch still merges cleanly — two branches
-      # passed every check on 2026-09-04 and conflicted on the generated roadmap table at merge.
+      # passed every check on 2026-09-04 and conflicted on the (since retired) generated roadmap table at merge.
       - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-conflict.test.sh
@@ -266,18 +266,18 @@ jobs:
       - name: Verify anchors, MAP paths, and store budgets
         run: node scripts/audit-anchors.mjs --no-diff
 
-      # The roadmap tool's own tests gate its run, same reasoning as the anchor checker.
-      - name: Test roadmap-check
+      # The work cards replaced the roadmap on 2026-10-15. The card tool's own tests gate
+      # its run, same reasoning as the anchor checker.
+      - name: Test the card tool
         if: ${{ !cancelled() }}
-        run: node --test scripts/roadmap-check.test.mjs
+        run: node --test scripts/cards.test.mjs
 
-      # Structure errors fail CI. Broken claims and count drift are LISTED and never fail
-      # it — a rotted claim is the roadmap asking to be re-verified, which is the design
-      # working, and a count drift must not go red for every other session (spec §5).
-      # Dormant (one line, exit 0) until the migration branch creates docs/roadmap/.
-      - name: Roadmap structure
+      # Every card parses, every stage is known, every "needs"/"related" names a card that
+      # exists, and no two Planning-or-later cards overlap. The edit hook catches this in the
+      # session that wrote the card; this is the backstop for shell and app-agent writes.
+      - name: Cards check
         if: ${{ !cancelled() }}
-        run: node scripts/roadmap-check.mjs --quiet
+        run: node scripts/cards.mjs check
 
       # check.sh falls back to `npx --yes @ast-grep/cli` when the binary is
       # absent, which re-resolves the package on every invocation. Installing it

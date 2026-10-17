@@ -332,6 +332,12 @@ class AppServingTests(unittest.TestCase):
         return load_spec(live_spec(self.tmp, live={'worktree': tree}))
 
     def test_a_served_deck_answers_app_index_and_an_asset_with_the_right_type(self):
+        # WHY the skip (2026-10-15): a docs-only workspace (workspace-start with no component repos) has
+        # no youcoded/desktop beside these scripts, so build_app had nothing to build and the test
+        # ERRORED in every such session. With the app present it runs exactly as before.
+        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        if not os.path.isdir(os.path.join(root, 'youcoded', 'desktop')):
+            self.skipTest('no youcoded/desktop checkout in this workspace (docs-only session)')
         spec = self._live_spec_for_this_worktree()
         dist = build_app(spec, log=lambda m: None)
         asset = next(f for f in os.listdir(os.path.join(dist, 'assets')) if f.endswith('.js'))

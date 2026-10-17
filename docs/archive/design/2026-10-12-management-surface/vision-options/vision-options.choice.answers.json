@@ -1,0 +1,30 @@
+{
+ "deck": "vision-options-choice",
+ "started": "2026-10-14T16:38:34.419Z",
+ "submitted": "2026-10-14T16:46:48Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "v": "picks",
+   "t": 1791996188409,
+   "note": "these are all interesting and useful in their own ways. i think i would want to be able to kinda switch between any/all of them, and have them all kinda pull from the same underlying data",
+   "picks": [
+    "wiring",
+    "stack",
+    "journeys",
+    "zoom"
+   ],
+   "seconds": 274,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-2": {
+   "note": "these are all much more confusing. i think they are all good in spirit, but the actual ui/ux of these pages is just a bit overwhelming and unclear/confusing.",
+   "t": 1791996407177,
+   "v": "other",
+   "seconds": 219,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

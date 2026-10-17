@@ -1,0 +1,58 @@
+{
+ "deck": "idea-intake-trial",
+ "started": "2026-10-15T04:33:48.469Z",
+ "submitted": "2026-10-15T04:45:50Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1792039498222,
+   "seconds": 134,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1792039498222,
+   "note": "this almost makes me think we might need a new pre-planning class of items, like \"Preliminary Exploration\" for things that i really haven't yet fleshed out or thought through. sometimes i just say shit, but the way i describe the idea isn't the best approach or well considered, just something i want on paper. i will usually clearly state that i haven't considered it well and want to think about/explore further later. and a bunch of these \"Preliminary Exploration\" items might overlap/intersect/contradict eachother, whereas planning items should never be slightly more ready to think through the build/implementation and consolidate exploration items. planning items shouldnt be able to contradict or overlap eachother. this assistants/duties thing is one example of a feature i've probably described in half a dozen different ways at different points in time? unless you feel differently, idk",
+   "seconds": 134,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "no",
+   "t": 1792039498222,
+   "note": "this says \"roadmap only, no card\". i thought we were kind of replacing the old roadmap, are we not? did i misunderstand something?",
+   "seconds": 134,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1792039498222,
+   "seconds": 134,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1792039498222,
+   "seconds": 134,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1792039549089,
+   "note": "still confused. thought we were obsoleting old roadmap?",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "right",
+   "t": 1792039549089,
+   "seconds": 26,
+   "theme": "morning-rounds"
+  }
+ }
+}

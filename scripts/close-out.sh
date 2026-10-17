@@ -65,7 +65,7 @@ if [[ "$BRANCH" == "${BASE#origin/}" || "origin/$BRANCH" == "$BASE" ]]; then
   note "$BRANCH IS the default branch of $REPO — there is nothing to close out."
   note "A session that worked directly on it has no branch to delete, no worktree"
   note "to remove and no dead name to fix. Run this against a FEATURE branch, or"
-  note "skip the git half entirely and do the docs/roadmap hygiene by hand."
+  note "skip the git half entirely and do the docs/cards hygiene by hand."
   exit 0
 fi
 
@@ -265,7 +265,7 @@ fi
 
 echo
 echo "Contract"
-# The contract is the definition of done for a feature (docs/active/specs/2026-09-01-feature-flow-design.md).
+# The contract is the definition of done for a feature (docs/archive/specs/2026-09-01-feature-flow-design.md).
 # It names its branch, so this is the ONLY lookup — no "branch" field, no contract, and the
 # note below says so rather than guessing which deck folder this work came from.
 # Fix: a fixed-string match on `"branch": "$BRANCH"` missed a contract written without the
@@ -320,10 +320,10 @@ if [[ "$MERGED" == yes ]]; then
   # git grep, not rg: the CI runner has no ripgrep, and an empty LOCAL there made
   # every doc read as "fixed in this checkout" (caught by this file's own guard,
   # 2026-09-18). --untracked so a doc written but not yet committed still counts.
-  LOCAL=$(git -C "$WORKSPACE" grep -l --untracked -F "$BRANCH" -- docs/active docs/roadmap 2>/dev/null \
+  LOCAL=$(git -C "$WORKSPACE" grep -l --untracked -F "$BRANCH" -- docs/active 2>/dev/null \
     | sed "s|^|$WORKSPACE/|" | sort || true)
   if git -C "$WORKSPACE" rev-parse --verify -q "$WS_BASE" >/dev/null 2>&1; then
-    REMOTE=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active docs/roadmap 2>/dev/null \
+    REMOTE=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active 2>/dev/null \
       | sed "s|^$WS_BASE:|$WORKSPACE/|" | sort || true)
     DEAD=$(comm -12 <(printf '%s\n' "$LOCAL") <(printf '%s\n' "$REMOTE") | sed '/^$/d')
     PENDING=$(comm -13 <(printf '%s\n' "$LOCAL") <(printf '%s\n' "$REMOTE") | sed '/^$/d')
@@ -381,13 +381,22 @@ fi
 
 # WHY single quotes around the inner placeholder: nested double quotes ended the string early,
 # so bash read `<commit or PR>` as a redirect from a file named "commit" and never printed the note.
-note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index); if the work was ONE lettered point of a bundled entry, delete that clause and add the shipped.md line by hand instead"
+# WHY look the card up (2026-10-15, cards replaced the roadmap): a card records its branch as
+# `branch: <id>-<slug>`, so the note can name the exact command; when no card names this branch
+# (a session/... branch, or work filed before cards) it says how to find the id instead.
+CARD_FILE=$(grep -lxF "branch: $BRANCH" "$WORKSPACE"/cards/*.md 2>/dev/null | head -1 || true)
+CARD_ID=$(sed -n 's/^id: *//p' "$CARD_FILE" 2>/dev/null | head -1 || true)
+if [[ -n "$CARD_ID" ]]; then
+  note "card: close #$CARD_ID in the SAME session — node scripts/cards.mjs close $CARD_ID --ref '<commit or PR>' (stage → merged, adds the docs/shipped.md line)"
+else
+  note "card: close the card for this work in the SAME session — node scripts/cards.mjs close <id> --ref '<commit or PR>' (find the id with node scripts/cards.mjs index; stage → merged, adds the docs/shipped.md line)"
+fi
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
 # WHY (2026-10-03, Office close-out): the build plan's "Not in this plan" list (four designed
 # features) was about to be archived with nothing on the roadmap — a future session reading the
-# archived spec would assume they exist. Deferred work must land on the roadmap first.
-note "archiving a plan/spec: file every deferred item (\"Not in this plan\", \"later\", \"follow-up\") on the roadmap first"
+# archived spec would assume they exist. Deferred work must be filed first (as cards, since 2026-10-15).
+note "archiving a plan/spec: file every deferred item (\"Not in this plan\", \"later\", \"follow-up\") as a card first (idea-intake skill)"
 
 echo
 echo "Deploy"

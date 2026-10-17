@@ -3,7 +3,9 @@ status: active
 ---
 # Native guidance follow-ups — deferred 2026-09-05
 
-Destin approved removing the workspace's retired search integration and cleaning up active guidance now; runtime changes below are roadmap-only. This records requirements, not an approved implementation design.
+> **Status 2026-10-16:** still not built: no native command-hook dispatcher on master. The requirements here (command hooks in native sessions, rules before the first write, a capability summary, rule diagnostics) are carried by cards #63(d) and #19.
+
+Destin approved removing the workspace's retired search integration and cleaning up active guidance now; runtime changes below are card-only (cards #63 and #19). This records requirements, not an approved implementation design.
 
 ## Source observations
 
@@ -32,7 +34,7 @@ Generate compact session facts from actual runtime state: active runtime, expose
 
 ### Instruction provenance
 
-Extend the existing context-and-knowledge roadmap idea with bounded diagnostics: source, trigger, load time, skipped/truncated status and reason. Verify resume, rule changes and worktree switching. This is diagnostic provenance, not another always-injected log or a duplicate full request recorder.
+Extend the existing context-and-knowledge idea (card #63(g)) with bounded diagnostics: source, trigger, load time, skipped/truncated status and reason. Verify resume, rule changes and worktree switching. This is diagnostic provenance, not another always-injected log or a duplicate full request recorder.
 
 ### Workflow routing
 

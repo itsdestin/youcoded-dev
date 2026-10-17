@@ -34,7 +34,7 @@ git -C "$TMP/ws/youcoded" push -q origin master
 git -C "$TMP/ws/youcoded" branch -q -D "$BR"
 
 # A plan naming the branch lands in docs/active/ on the workspace.
-mkdir -p "$TMP/ws/docs/active/plans" "$TMP/ws/docs/roadmap"
+mkdir -p "$TMP/ws/docs/active/plans"
 printf -- '---\nstatus: active\n---\nbranch %s\n' "$BR" > "$TMP/ws/docs/active/plans/p.md"
 git -C "$TMP/ws" add docs && git -C "$TMP/ws" commit -qm plan && git -C "$TMP/ws" push -q origin master
 

@@ -229,7 +229,7 @@ scenario (CI runs one) and six is green, so this was left rather than restructur
 speculation. If it ever fails on real CI, the fix is to restructure the mock so the import
 can move to module scope — **not** to raise the number again.
 
-Both are tracked in `docs/roadmap/dev-workspace.md` → `## tests`.
+Both were tracked on the old roadmap (dev-workspace → tests); open work is now a card (`node scripts/cards.mjs index`).
 
 **`tests/xterm-webgl-mipmap-patch.test.ts` failing is environmental:** that checkout's
 `node_modules` never had the postinstall patch. Run `node scripts/patch-xterm-webgl-mipmap.js`

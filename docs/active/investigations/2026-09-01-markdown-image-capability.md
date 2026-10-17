@@ -7,6 +7,8 @@ topic: A model can already show an image in chat by accident — what it would t
 
 # "The model can show you an image in chat" — accidental today
 
+> **Status 2026-10-16:** partly built since: markdown images now go through an `img` override (`ChatImage`) with `max-w-full`, and remote http(s) images are click-to-load, so the "no `img` entry" and "no width constraint" statements below are out of date. Still open: resolving a local absolute path through `readBinary` into a `blob:` URL (dev/prod parity) and telling models they can show an image; not re-checked in depth. Tracked in card #145.
+
 **Observed (2026-07-19):** Claude wrote a plain markdown image (`![alt](/tmp/…/final.png)`)
 in a reply and the packaged app rendered it inline, full-bleed. Destin: nifty, worth having on
 purpose — eventually tell models "you can show the user an image by X". Not now; parked.
@@ -14,7 +16,7 @@ purpose — eventually tell models "you can show the user an image by X". Not no
 ## Why it works today (none of it designed)
 
 `MarkdownContent.tsx` runs react-markdown with a module-scope `mdComponents` override table
-that has **no `img` entry and no `urlTransform`** (still true 2026-09-01). react-markdown's
+that had **no `img` entry and no `urlTransform`** (true 2026-09-01; an `img` override has been added since, see the status above). react-markdown's
 default transform only blocks dangerous *protocols*; `/tmp/…` has no colon, so it passes
 through verbatim as `<img src="/tmp/…">`. Production loads the renderer with `win.loadFile`
 (`main.ts`), so the origin is `file://` and a root-relative src resolves to a real path.
@@ -27,7 +29,7 @@ through verbatim as `<img src="/tmp/…">`. Production loads the renderer with `
    `ArtifactThumbnail.tsx` explicitly avoid `file://` and read bytes over
    `window.claude.artifacts.readBinary()` into a same-origin `blob:` URL. Markdown images
    route around all of it.
-3. **No width constraint.** The only `img` rule is scoped to the DOCX viewer, so a 1500 px
+3. **No width constraint** (fixed since: the `ChatImage` override has `max-w-full`). The only `img` rule is scoped to the DOCX viewer, so a 1500 px
    screenshot overflows the chat bubble — which is exactly what happened.
    <!-- claim: {"path": "youcoded/desktop/src/renderer/styles/globals.css", "contains": "\\.doc-html img \\{ max-width: 100%"} -->
 

@@ -3,13 +3,16 @@ title: Perf lab — session status and handoff
 status: active
 date: 2026-08-27
 plan: docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md
-corrections: docs/active/investigations/2026-08-26-perf-lab-plan-corrections.md
-manual: docs/active/handoffs/2026-08-26-perf-loop-operating-manual.md
+corrections: docs/archive/investigations/2026-08-26-perf-lab-plan-corrections.md
+manual: docs/archive/handoffs/2026-08-26-perf-loop-operating-manual.md
 ---
+
+> **Status 2026-10-16:** historical, written 2026-08-27. Cycle 1 shipped (youcoded#342) and the lab has grown since (hitch recorder, realism preset, cycle 3). The current state is `scripts/perf-lab/README.md` and cards #93, #94 and #96.
+
 
 > **2026-08-27 evening — Destin approved cards 1–3.** The plan for the first optimization
 > cycle, with everything a fresh session needs, is
-> `docs/active/handoffs/2026-08-27-perf-cycle-1-handoff.md`. Start there; this document is
+> `docs/archive/handoffs/2026-08-27-perf-cycle-1-handoff.md`. Start there; this document is
 > the history behind it.
 
 # Perf lab — where this stands

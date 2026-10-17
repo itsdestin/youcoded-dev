@@ -1,0 +1,5 @@
+// work-items.mjs — the Work board page's program (see page.json). It runs the board's tool from the YouCoded
+// workspace, where the logic and its tests live: scripts/work-items-program.mjs. Written by
+// scripts/install-work-board.mjs; the workspace path below is the one it was installed from.
+const { main } = await import('file://__WORKSPACE__/scripts/work-items-program.mjs');
+await main('__WORKSPACE__');

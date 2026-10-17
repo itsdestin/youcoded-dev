@@ -1,0 +1,52 @@
+{
+ "deck": "work-items-triage",
+ "started": "2026-10-16T16:45:29.181Z",
+ "submitted": "2026-10-16T16:48:17Z",
+ "cur": 4,
+ "answers": {
+  "Q-2": {
+   "note": "Trust you judgement",
+   "t": 1792169226024,
+   "v": "other",
+   "seconds": 95,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "skip",
+   "seconds": 51,
+   "theme": "morning-rounds",
+   "t": 1792169275388
+  },
+  "Q-6": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "morning-rounds",
+   "t": 1792169276124
+  },
+  "Q-8": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "morning-rounds",
+   "t": 1792169276768
+  },
+  "Q-kind": {
+   "note": "Trust your judgement for all of these",
+   "t": 1792169296129,
+   "v": "skip",
+   "seconds": 6,
+   "theme": "morning-rounds"
+  },
+  "Q-close": {
+   "v": "skip",
+   "seconds": 6,
+   "theme": "morning-rounds",
+   "t": 1792169296129
+  },
+  "Q-explore": {
+   "v": "skip",
+   "seconds": 6,
+   "theme": "morning-rounds",
+   "t": 1792169296129
+  }
+ }
+}

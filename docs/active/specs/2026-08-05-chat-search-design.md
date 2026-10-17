@@ -4,8 +4,8 @@ status: active
 
 > **Phase 1 SHIPPED 2026-08-06** — index + read-only CLI: youcoded#282 (merge
 > `2f8b5671`) and wecoded-marketplace#66. This spec stays active because it
-> still governs **phase 2** (the write outbox) and **phase 3** (digests), both
-> unbuilt. Plan + execution notes: `docs/archive/plans/2026-08-05-chatsearch-phase1-plan.md`.
+> still governs **phase 3** (digests), which is unbuilt (phase 2, the write outbox, shipped
+> later; see the status above). Plan + execution notes: `docs/archive/plans/2026-08-05-chatsearch-phase1-plan.md`.
 > Two things phase 1 ships deliberately inert, awaiting phase 3: the `○` open
 > marker, and `--state open`, which answers "cannot be determined yet" rather
 > than returning zero results.
@@ -24,13 +24,15 @@ status: active
 
 # Chat Search — design
 
+> **Status 2026-10-16:** phases 1 and 2 shipped (phase 1: youcoded#282 and wecoded-marketplace#66; phase 2, the write outbox and session references: youcoded#346, wecoded-marketplace#70, chatsearch 0.2.0). Only phase 3 (digests, the open marker, `--state open`) is still unbuilt; it is tracked in card #3 (From the 2026-10-16 document sweep).
+
 A token-efficient search layer over every past YouCoded conversation, reachable
 from both Claude Code and native harness sessions. It answers "I vaguely
 remember working on X — did we finish it, and do the docs reflect the latest
 conversation about it?" and supports bulk tag/note management through
 conversation.
 
-**This is a backstop, not the primary knowledge mechanism.** `ROADMAP.md`,
+**This is a backstop, not the primary knowledge mechanism.** the work cards (`cards/`),
 `docs/`, the rules ladder, and pinning tests remain the system of record. Chat Search
 exists for what those miss: work the assistant forgot to record, and sessions
 that were interrupted before anything got written down.
@@ -40,7 +42,7 @@ that were interrupted before anything got written down.
 ## Problem
 
 Knowledge capture in this workspace is deliberate — a session is supposed to
-land its outcome in `ROADMAP.md`, a doc, a rule, or a test. Two failure modes
+land its outcome in a card, a doc, a rule, or a test. Two failure modes
 escape that:
 
 1. **The assistant forgets to record.** Nothing in the repo reflects the work.
@@ -62,7 +64,7 @@ the first half plus the pointer.
 
 ## Non-goals
 
-- **Not a replacement for `ROADMAP.md` or the docs.** No feature here should
+- **Not a replacement for the cards or the docs.** No feature here should
   make it more attractive to skip recording an outcome.
 - **Not an in-app UI.** The index could later back a Resume Browser search box;
   that is out of scope. This ships agent-facing only.

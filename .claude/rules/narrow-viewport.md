@@ -75,7 +75,7 @@ current one — reads correct either way in source, wrong only in the running ap
 Remote trap: the server sends `platform: 'desktop'` and the shim adopts it unless
 `preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone
 browser. Feature-detect — but not with `pointer: coarse`, see below. ·
-`docs/roadmap/remote-access.md`.
+open work: cards tagged `remote-access` (`node scripts/cards.mjs index`).
 
 **`pointer: coarse` is the PRIMARY pointer only — false on a touchscreen laptop.**
 Chromium reports "fine" whenever any touchpad or mouse-like device exists (the Z13

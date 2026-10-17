@@ -1,0 +1,31 @@
+{
+ "deck": "bigpicture-round5-review",
+ "started": "2026-10-14T18:59:59.991Z",
+ "submitted": "2026-10-14T19:01:36Z",
+ "cur": 2,
+ "answers": {
+  "A-1": {
+   "note": "how does this interact/differ from the today tab? ",
+   "t": 1792004446026,
+   "v": "other",
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-2": {
+   "note": "you can remove the key at the top now that we're using proper status chips. don't like the fingernail styling on the quote",
+   "t": 1792004488243,
+   "v": "other",
+   "seconds": 42,
+   "theme": "light",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "yes",
+   "t": 1792004495258,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

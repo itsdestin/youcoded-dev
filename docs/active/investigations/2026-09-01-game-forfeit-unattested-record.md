@@ -7,7 +7,7 @@ topic: Head-to-head relay — a forfeit is recorded on one client's word, and ne
 
 # `game-forfeit` records a permanent match on one client's say-so; `game-result`/`game-forfeit` are uncapped
 
-**Roadmap entry:** `docs/roadmap/games.md`.
+**Tracked as:** card #43 (the old roadmap entry was retired 2026-10-15).
 **History:** added 2026-08-31 (found reviewing wecoded-marketplace#78); re-verified against
 today's code 2026-09-01.
 
@@ -58,5 +58,5 @@ serialise the read-then-write; both interleavings traced). Retries are idempoten
 sides of settlement (`matchIsRecorded` before, per-account overwrite inside the slot). The
 score upsert's tiebreak timestamp only moves on a genuine improvement.
 
-Related: `docs/active/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md` puts this
+Related: `docs/archive/reviews/2026-08-31-roadmap-open-item-difficulty-ranking.md` puts this
 in Tier 3 (needs a design pass first).

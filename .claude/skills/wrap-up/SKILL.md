@@ -10,8 +10,8 @@ closes, that knowledge is gone. Two prior retrospectives proved the failure mode
 written down, never closed, rediscovered twice.
 
 **This is a PROCESS, not a report generator.** Within an authorized editing session,
-every recommendation ends **applied**, **a dated roadmap entry** (`docs/roadmap/<area>.md`
-— `ROADMAP.md` → "Filing an item"), or **dropped with a reason**. For a read-only session,
+every recommendation ends **applied**, **a card** (`cards/` — the idea-intake skill), or
+**dropped with a reason**. For a read-only session,
 report the recommendation and ask before recording or applying it; wrap-up does not widen
 what Destin authorized.
 
@@ -60,7 +60,7 @@ X and the code did Y" is.
 5. **What did Destin say that is filed nowhere?** Product ideas, priorities, a reaction to a
    design, "next time do X" — these leak exactly like findings do; five of his ideas once sat
    unpushed on one machine. A preference goes to `~/system/` or a rule; a product idea to
-   `docs/roadmap/<area>.md`, in his words, this session.
+   a card (idea-intake skill), in his words, this session.
 
 ## Step 2 — verify before you recommend
 
@@ -95,7 +95,7 @@ A numbered list, ordered by friction removed. Per item, three short lines:
 1. **What to change** — the concrete edit, file named.
 2. **Why, in plain terms** — no jargon: what went wrong this session, what a future session
    will experience differently, and the cost where you measured it.
-3. **Where it lands** — `applied now` / `roadmap` / `dropped: <reason>`.
+3. **Where it lands** — `applied now` / `card` / `dropped: <reason>`.
 
 Say "nothing worth changing" when that is honest — inventing recommendations to fill a list
 poisons the ones that matter. A short session can end here.
@@ -106,7 +106,7 @@ When edits are authorized, retrospective changes stay on the same session branch
 
 - Sub-repo edits (a pinning test, an ast-grep rule, a WHY comment) → the session's feature
   branch in that repo.
-- Workspace edits (rules, scripts, `docs/`, roadmap, this skill) → the session's workspace
+- Workspace edits (rules, scripts, `docs/`, `cards/`, this skill) → the session's workspace
   branch, or one worktree off `origin/master` if it has none. **Never commit in the shared
   `youcoded-dev` checkout — a pre-commit hook refuses it.**
 
@@ -116,11 +116,15 @@ Then:
   are enforced) plus `node --test scripts/*.test.mjs .claude/hooks/*.test.mjs` if you touched
   either. Never report a change as done on the strength of having written it — quote what
   the check returned.
-- **Roadmap:** the area file whose `Filing test:` says yes; **dedupe by file or symbol name,
+- **The item this chat worked on** (Destin, plan deck Q-4, 2026-10-16): write its progress note —
+  `node scripts/cards.mjs progress <id> --done "…" --next "…" --blocked "…"` — and, if the work stops on
+  purpose, `node scripts/cards.mjs pause <id> --reason "…"`. A chat that never joined an item joins it now:
+  `node scripts/cards.mjs link <id> --branch <its branch> --line "<what it did>"`.
+- **Card:** `node scripts/cards.mjs index` first; **dedupe by file or symbol name,
   not by symptom** — searching `flaky` instead of `sync-spaces-engine` filed a duplicate.
-  A small finding becomes one more lettered clause in its theme's bundled entry, not a new
-  entry (the roadmap is budgeted at 150 entries and was 423 before 2026-10-05); a new entry
-  is `P3` unless it blocks the next release or Destin named it.
+  A small finding that an existing card covers goes into that card's text, not a new card;
+  otherwise `node scripts/cards.mjs new … --tags dev-workspace` (idea-intake skill), then
+  `node scripts/cards.mjs check`.
 - **Dropped:** say so in your reply, with the reason. An unrecorded rejection gets re-argued.
 - **When editing is authorized:** append this session's entry to `docs/wrap-ups.md` — its header explains the format. In a read-only session, give the retrospective in chat and ask before recording it. The ledger is Step 1 for the next editing session.
 
@@ -175,8 +179,8 @@ bash scripts/close-out.sh <branch> [<repo>]     # repo: a sub-repo name, or `wor
 ```
 
 **Address every line within the authorized scope; report the rest.** A `TODO` is not permission to edit or ship beyond the task. A `--` line is a judgement it
-deliberately refuses to make — make it only with evidence: close the roadmap item **if the work actually
-shipped** (`node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`, then archive its
+deliberately refuses to make — make it only with evidence: close the card **if the work actually
+shipped** (`node scripts/cards.mjs close <id> --ref "<commit or PR>"`, then archive its
 report); give the subsystem a `docs/MAP.md` row
 ("no rule" is an answer, "no row" is not); move `status: shipped` docs to `docs/archive/`
 and repoint cross-links — but a doc describing work still in review stays in `docs/active/`,

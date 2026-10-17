@@ -7,6 +7,8 @@ topic: Community theme custom_css can carry unbounded animations the sanitizer n
 
 # Community themes can inject arbitrary `@keyframes` — the sanitizer never looks at `animation`
 
+> **Status 2026-10-16:** partly fixed: Reduced Effects now stops theme-injected animation (youcoded 0211a9a5a, `ANIMATION_DECL` in `theme-engine.ts`), so the statement below that it "would NOT switch a theme's own animation off" is out of date. `sanitizeCSS` still does not cap animation itself, so only the always-on cost remains; that is card #100(b).
+
 **History:** added 2026-08-07. Re-checked 2026-09-01 — `sanitizeCSS` and `sanitizeRigSvg`
 are unchanged since; no shipped theme uses `animation` in its `custom_css`.
 

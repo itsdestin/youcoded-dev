@@ -7,6 +7,8 @@ tags: [cache, prompt-caching, kv-cache, compaction, openrouter, anthropic, local
 
 # How other harnesses handle the eight cache breakers, and the best version for YouCoded
 
+> **Status 2026-10-16:** six of the eight breakers shipped 2026-09-10 (youcoded#461, #464) and compaction shipped (#559). What remains is card #69.
+
 Companion to `docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md`
 (the eight items) and `docs/archive/investigations/2026-08-17-cache-efficiency.md` (provider
 rules and the stable-prefix playbook). This document answers three questions Destin asked on

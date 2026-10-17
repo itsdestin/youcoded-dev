@@ -1,0 +1,401 @@
+{
+ "title": "Work items: what to combine, close and move",
+ "key": "work-items-triage",
+ "out": "work-items-triage.questions.html",
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "steps": [
+  {
+   "id": "P-1",
+   "page": "Combine: Chat",
+   "intro": "Tick every combination you agree with. A combined item keeps all the text of each item it absorbs."
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Work items",
+   "path": "Chat items on the management page",
+   "pick": "several",
+   "headline": "Which chat items should be combined?",
+   "today": "These 21 items are separate entries in Planning; most are already bundles of several small jobs.",
+   "problem": "Items that would be built in the same piece of work, or that describe the same thing, crowd the list and could be started twice by two chats.",
+   "proposal": "Each tick combines that group into its first-named item under the new name shown. Untick any you want kept apart.",
+   "options": [
+    {
+     "id": "c3-8-5",
+     "label": "Past conversations: browse, search and organize",
+     "summary": "Combines #3 Past conversations list: eight confusing spots; #8 Ideas: organizing past conversations; #5 Search: three things it cannot find. Why: All three change the same past-conversations list and its search."
+    },
+    {
+     "id": "c2-6",
+     "label": "Reopened chats: wrong labels and wrong times",
+     "summary": "Combines #2 Release blocker: replayed chat turns are mislabeled; #6 Old messages show the reopen time, not when sent. Why: Both are faults in how an old chat is rebuilt when you reopen it."
+    },
+    {
+     "id": "c7-9-140-141",
+     "label": "Chat view glitches: vanishing, stuck or misdrawn messages",
+     "summary": "Combines #7 Rare chat glitches that can't be reproduced yet; #9 Messages to Claude Code: two unconfirmed glitches; #140 Messages sometimes vanish from an open chat; #141 Chat view: two display glitches. Why: All four are display faults in the open chat, mostly hard to reproduce."
+    },
+    {
+     "id": "c66-68",
+     "label": "Assistant tools and permissions: faults and unclear \"Always ",
+     "summary": "Combines #66 Assistant tools and permissions: six small faults; #68 Explain why an \"Always allow\" didn't cover a command. Why: Both are about permission prompts and what \"Always allow\" covers."
+    },
+    {
+     "id": "c63-67",
+     "label": "Ideas for the assistant, its helpers and its tools",
+     "summary": "Combines #63 Ideas for the assistant and its helpers (13); #67 Ideas for assistant tools and safety (nine). Why: Two idea lists about the same assistant features."
+    },
+    {
+     "id": "c70-72",
+     "label": "Settings you can't change yet, including the helper limit",
+     "summary": "Combines #70 Settings you can't change yet (three); #72 Let you allow more helpers after the limit of 30. Why: The helper limit of 30 is one of the fixed settings the other item lists."
+    },
+    {
+     "id": "c71-73",
+     "label": "Helpers: permissions, reports, cost and leftover records",
+     "summary": "Combines #71 Helpers: permissions, reports and cost (four); #73 Clean up leftover helper chat records. Why: Both clean up how helper chats run and what they leave behind."
+    },
+    {
+     "id": "c59-76",
+     "label": "YouCoded's own engine matches Claude Code, with a tool-conne",
+     "summary": "Combines #59 Make YouCoded's own engine match Claude Code; #76 A settings screen for tool connections. Why: The missing tool-connections screen is one of the gaps the parity work lists."
+    },
+    {
+     "id": "c60-144",
+     "label": "Split up the oversized code (chat engine and app shell)",
+     "summary": "Combines #60 Split up the oversized chat engine code; #144 Finish the whole-app cleanup: two pieces left. Why: Same kind of job: breaking two very large files into parts."
+    }
+   ]
+  },
+  {
+   "id": "P-3",
+   "page": "Combine: Files, models and marketplace",
+   "intro": "Tick every combination you agree with. A combined item keeps all the text of each item it absorbs."
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Work items",
+   "path": "Files, models and marketplace items on the management page",
+   "pick": "several",
+   "headline": "Which files, models and marketplace items should be combined?",
+   "today": "These 25 items are separate entries in Planning; most are already bundles of several small jobs.",
+   "problem": "Items that would be built in the same piece of work, or that describe the same thing, crowd the list and could be started twice by two chats.",
+   "proposal": "Each tick combines that group into its first-named item under the new name shown. Untick any you want kept apart.",
+   "options": [
+    {
+     "id": "c34-37",
+     "label": "Files and Office saving: ways work can be lost",
+     "summary": "Combines #34 Files: five ways work can be silently lost; #37 Office saving: leftover copies and stale warnings. Why: Both are about saves that leave stale copies or lose edits."
+    },
+    {
+     "id": "c35-36",
+     "label": "Office editor: faults, safety and privacy gaps",
+     "summary": "Combines #35 Office documents: four safety and privacy gaps; #36 Office editor: seven small faults. Why: Same editor, same code."
+    },
+    {
+     "id": "c38-42",
+     "label": "File viewer and files pane: missing file kinds and ideas",
+     "summary": "Combines #38 File viewer: four kinds of files it can't fully handle; #42 Ideas for the files pane and editor (nine). Why: Both extend the same files pane and viewer."
+    },
+    {
+     "id": "c45-46",
+     "label": "Downloads: one shared downloader, with Gemma's licence shown",
+     "summary": "Combines #45 Show Google's licence terms when downloading Gemma; #46 One shared downloader for models, engine and voice. Why: The licence screen belongs in the download flow the shared downloader rebuilds."
+    },
+    {
+     "id": "c48-49-50",
+     "label": "Local models: open decisions, faults and ideas",
+     "summary": "Combines #48 Local models: three open decisions; #49 Local models screen: three small faults; #50 Ideas for local models (two). Why: Three lists about the same Local models screen."
+    },
+    {
+     "id": "c47-128",
+     "label": "Model picker: empty on new devices, and speed/cost tags",
+     "summary": "Combines #47 Model picker: speed, cost and smarts tags; #128 Model picker is empty on a new or second device. Why: Same picker."
+    },
+    {
+     "id": "c51-53-54-56",
+     "label": "Marketplace: listing, install and admin faults, and the \"Lik",
+     "summary": "Combines #51 Marketplace listings: three small faults; #53 Marketplace admin and comments: six small faults; #54 Make the \"Likely safe\" badge earn its name; #56 Installing and library: three faults. Why: All are fixes to marketplace screens and its server."
+    },
+    {
+     "id": "c52-65",
+     "label": "Marketplace ideas, including the assistant searching it",
+     "summary": "Combines #52 Ideas for the marketplace (four); #65 Let the assistant search the marketplace. Why: Both add new ways to find things in the marketplace."
+    },
+    {
+     "id": "c130-131-132",
+     "label": "Themes: display faults, checks and ideas",
+     "summary": "Combines #130 Themes: three display faults; #131 Themes: three things to check; #132 Themes: three parked ideas. Why: Three lists about themes."
+    },
+    {
+     "id": "c135-137-138",
+     "label": "Shared look: app hover hints, readable contrast, screens tha",
+     "summary": "Combines #135 Replace plain browser hover hints with the app's own; #137 Hard-to-read text: four contrast problems; #138 Screens that do not match the shared look. Why: All three bring screens in line with the UI design guide."
+    }
+   ]
+  },
+  {
+   "id": "P-5",
+   "page": "Combine: Devices, speed and sync",
+   "intro": "Tick every combination you agree with. A combined item keeps all the text of each item it absorbs."
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Work items",
+   "path": "Devices, speed and sync items on the management page",
+   "pick": "several",
+   "headline": "Which devices, speed and sync items should be combined?",
+   "today": "These 22 items are separate entries in Planning; most are already bundles of several small jobs.",
+   "problem": "Items that would be built in the same piece of work, or that describe the same thing, crowd the list and could be started twice by two chats.",
+   "proposal": "Each tick combines that group into its first-named item under the new name shown. Untick any you want kept apart.",
+   "options": [
+    {
+     "id": "c93-95",
+     "label": "Background freezes, memory growth and whole-file reads",
+     "summary": "Combines #93 Stop reading whole files and wasting memory; #95 Background freezes and memory growth. Why: Reading whole files is one cause of the freezes and memory growth."
+    },
+    {
+     "id": "c94-102",
+     "label": "Switching sessions and typing still feel slow",
+     "summary": "Combines #94 App still feels sluggish: switching and typing; #102 Switching sessions: remaining slow cases. Why: Both measure and fix the same session switch."
+    },
+    {
+     "id": "c106-108",
+     "label": "Terminal: rough edges and lag with many sessions open",
+     "summary": "Combines #106 Terminal output: leftover rough edges; #108 Lag with 17 or more Claude Code sessions open. Why: Same terminal code."
+    },
+    {
+     "id": "c96-97-107",
+     "label": "Speed testing: unmeasured cases, misleading tools, other sys",
+     "summary": "Combines #96 Speed testing: five situations not yet measured; #97 Speed testing: eight tools that can mislead; #107 Test speed fixes on Windows, Mac and phones. Why: All three are about how speed is measured."
+    },
+    {
+     "id": "c98-122-123",
+     "label": "Sync: growth, very long chats and the first download",
+     "summary": "Combines #98 Sync: three growth and duplication questions; #122 Very long conversations stop syncing to other devices; #123 Sync history grows forever; first download shows nothing. Why: All three are about sync size and history."
+    },
+    {
+     "id": "c121-126",
+     "label": "Sync conflicts and the Backup & Sync panel's wording",
+     "summary": "Combines #121 See and resolve sync conflicts between two devices; #126 Backup & Sync panel: three wording and status gaps. Why: Conflicts are shown in that same panel."
+    },
+    {
+     "id": "c125-129",
+     "label": "Same chat on two computers: warnings and takeover ideas",
+     "summary": "Combines #125 Same chat open on two computers: four warning gaps; #129 Sync: four parked ideas. Why: The takeover ideas answer the same two-computer problem."
+    },
+    {
+     "id": "c99-120",
+     "label": "Phone watching a chat: wasted work, slow and garbled starts",
+     "summary": "Combines #99 Phone and remote: wasted work and slow starts; #120 Phone joining late may see garbled start of a chat. Why: Both are about a phone joining a running chat."
+    },
+    {
+     "id": "c114-116",
+     "label": "Remote setup: clearer screen and why the phone can't connect",
+     "summary": "Combines #114 Explain why the phone cannot reach the computer; #116 Remote setup screen: four clarity gaps. Why: Same setup screen."
+    },
+    {
+     "id": "c111-1",
+     "label": "Fold the old Android lag report into the Android rebuild",
+     "summary": "Combines #111 Android may lag while a reply streams and drain battery; #1 Rebuild the Android app to match desktop. Why: The code it describes (the old phone-only chat service) was deleted in the rebuild; only its blur and battery checks still apply."
+    }
+   ]
+  },
+  {
+   "id": "P-7",
+   "page": "Combine: Workspace, release and website",
+   "intro": "Tick every combination you agree with. A combined item keeps all the text of each item it absorbs."
+  },
+  {
+   "id": "Q-8",
+   "words": true,
+   "surface": "Work items",
+   "path": "Workspace, release and website items on the management page",
+   "pick": "several",
+   "headline": "Which workspace, release and website items should be combined?",
+   "today": "These 19 items are separate entries in Planning; most are already bundles of several small jobs.",
+   "problem": "Items that would be built in the same piece of work, or that describe the same thing, crowd the list and could be started twice by two chats.",
+   "proposal": "Each tick combines that group into its first-named item under the new name shown. Untick any you want kept apart.",
+   "options": [
+    {
+     "id": "c13-14",
+     "label": "Unreliable tests and test cleanup",
+     "summary": "Combines #13 Nine unreliable automatic tests; #14 Test cleanup: eight leftovers from the simplification. Why: Same test suite work."
+    },
+    {
+     "id": "c19-23-26",
+     "label": "Workspace tools: annoyances, docs upkeep and ideas",
+     "summary": "Combines #19 Workspace tool annoyances: seven things; #23 Roadmap and docs upkeep: nine items; #26 Ideas: ten workspace improvements. Why: Three lists about the same workspace tooling; some parts named the old roadmap, which is gone."
+    },
+    {
+     "id": "c29-30-32",
+     "label": "Release pipeline: faster test runs, bug-fix releases, build ",
+     "summary": "Combines #29 Make waiting on automatic test runs faster; #30 Let small bug-fix releases ship on their own; #32 Release and build upkeep: six loose ends. Why: All three change how releases are built and checked."
+    },
+    {
+     "id": "c31-78",
+     "label": "Public launch: company paperwork and the Google Play listing",
+     "summary": "Combines #31 Put the Android app on Google Play; #78 Launch paperwork: company and trademark. Why: Play needs the paperwork first (a D-U-N-S number)."
+    },
+    {
+     "id": "c79-81-83",
+     "label": "Website: landing page fixes, visitor stats and how it leads",
+     "summary": "Combines #79 Website: four fixes to the landing page; #81 Website visitor stats: two checks left; #83 Note: don't lead the website with unique extras. Why: Same landing page."
+    },
+    {
+     "id": "c55-84",
+     "label": "Accounts: sign-in loophole and silent sign-outs",
+     "summary": "Combines #55 Close a sign-in loophole that can hijack accounts; #84 Accounts: silent sign-out and leftover fixes. Why: Same sign-in code."
+    },
+    {
+     "id": "c57-58",
+     "label": "\"No folder\" chats and a built-in \"Your Assistant\" project",
+     "summary": "Combines #57 Test \"No folder\" chats and turn them into incognito; #58 A built-in \"Your Assistant\" project on every install. Why: Both decide where a chat with no project lives."
+    },
+    {
+     "id": "c90-91",
+     "label": "Pages: the next phases and seven follow-ups",
+     "summary": "Combines #90 Pages: the next phases; #91 Pages: seven follow-ups and decisions. Why: Same feature."
+    }
+   ]
+  },
+  {
+   "id": "P-9",
+   "page": "Close, move and label",
+   "intro": "What the agents found already done, what is only an idea, and a kind for every item."
+  },
+  {
+   "id": "Q-close",
+   "words": true,
+   "surface": "Work items",
+   "path": "#21 on the management page",
+   "headline": "Close #21 \"Redo the review of the session-switch animation\" as done?",
+   "today": "The item asks for the session-switch animation to be reviewed as live options to pick between.",
+   "problem": "That review happened: rounds 10 and 11 were live pick-one steps, you signed off round 11, and it shipped on Sept 3 (workspace commit 0eee2ed6, app pull request #404).",
+   "proposal": "Yes: it moves to Merged with that commit recorded in the shipped list. No: it stays in Planning."
+  },
+  {
+   "id": "Q-explore",
+   "words": true,
+   "surface": "Work items",
+   "path": "Planning on the management page",
+   "pick": "several",
+   "headline": "Which of these idea lists should move back to Preliminary exploration?",
+   "today": "These items sit in Planning, but each is a list of ideas or parked thoughts nobody has decided to build.",
+   "problem": "Planning is meant to hold work that is thought through and doesn't overlap. Ideas there make it look like far more is ready than is.",
+   "proposal": "Each tick moves that item to Preliminary exploration, where overlap is allowed. Nothing is deleted. (Where an item is also in a combination above, the combined item moves.)",
+   "options": [
+    {
+     "id": "e8",
+     "label": "Ideas: organizing past conversations",
+     "summary": "#8: Still open. These are optional ideas for later: open the top search result with Enter, folders, selecting many conversations at once, and richer sorting."
+    },
+    {
+     "id": "e12",
+     "label": "Ideas: five more Claude Code features",
+     "summary": "#12: Five loose ideas, none started. It should stay an idea-stage item and be reviewed later, not planned now."
+    },
+    {
+     "id": "e26",
+     "label": "Ideas: ten workspace improvements",
+     "summary": "#26: This is a parked list of ideas, none started; it can stay as a list for later."
+    },
+    {
+     "id": "e42",
+     "label": "Ideas for the files pane and editor (nine)",
+     "summary": "#42: A list of nine saved ideas for the files area. None is clearly built. It is a parking list, so it should stay as exploration and not be built as one piece."
+    },
+    {
+     "id": "e44",
+     "label": "Idea: a laptop's AI key opens the games panel",
+     "summary": "#44: An unrefined idea to make a laptop's dedicated AI key open the games panel; nothing has been built and it is not decided."
+    },
+    {
+     "id": "e50",
+     "label": "Ideas for local models (two)",
+     "summary": "#50: Both ideas are parked and not built; the background option only makes sense if demand shows up."
+    },
+    {
+     "id": "e52",
+     "label": "Ideas for the marketplace (four)",
+     "summary": "#52: Four parked ideas, none designed. Only a minor Spotify problem may already be fixed by an earlier cleanup. These are ideas, not bugs, and should stay parked."
+    },
+    {
+     "id": "e63",
+     "label": "Ideas for the assistant and its helpers (13)",
+     "summary": "#63: A bundle of 13 saved ideas for the assistant and its helpers; none are built, several feed other planned work."
+    },
+    {
+     "id": "e64",
+     "label": "Ideas: YouCoded Mesh and Cloud",
+     "summary": "#64: A future idea for your devices to share work automatically, with an optional paid cloud fallback. It depends on automations being built first, and nothing exists yet."
+    },
+    {
+     "id": "e67",
+     "label": "Ideas for assistant tools and safety (nine)",
+     "summary": "#67: Nine saved ideas about the assistant's tools and safety; one is close to shipped (the computer-password card), the rest are not built."
+    },
+    {
+     "id": "e80",
+     "label": "Automate moderating the r/youcoded subreddit",
+     "summary": "#80: Automating the repetitive parts of running the subreddit (turning posts into roadmap entries, marking fixes). Reddit no longer gives new API access, so it would have to use Reddit's built-in mod tools. Still exploring."
+    },
+    {
+     "id": "e82",
+     "label": "Share Destin's Z13 tablet setup as a free kit",
+     "summary": "#82: A free setup package for other owners of this laptop model, plus a post to promote YouCoded. It needs a one-command installer, licence notices for the swipe keyboard, a fresh-install test and a support plan before anything is posted. Still exploring."
+    },
+    {
+     "id": "e86",
+     "label": "Parked ideas: seven features not started",
+     "summary": "#86: Most of these seven ideas are not started; the first-run screen is partly there in a different form, and the banner item is a security gap worth a look later."
+    },
+    {
+     "id": "e89",
+     "label": "Explore a YouCoded app for iPhone",
+     "summary": "#89: A study of how to offer a real iPhone app, not a build. It is postponed until after the next release, so nothing is started."
+    },
+    {
+     "id": "e113",
+     "label": "Remote access: three ideas left as they are",
+     "summary": "#113: Three small phone quirks Destin chose to leave alone; nothing to build unless he reopens them."
+    },
+    {
+     "id": "e119",
+     "label": "Reach your computer by signing in, without Tailscale",
+     "summary": "#119: A long-term idea to reach your computer by signing in instead of installing Tailscale; nothing has been built and it is not scheduled."
+    },
+    {
+     "id": "e129",
+     "label": "Sync: four parked ideas",
+     "summary": "#129: Four unrelated ideas for later: a way to hand over chats when the sync service is down, a redesign of backup restore, a no-GitHub sync option, and a per-computer hardware summary. None are built."
+    },
+    {
+     "id": "e132",
+     "label": "Themes: three parked ideas",
+     "summary": "#132: Three ideas: the taskbar and Dock icon changing with the theme is mostly done; theme icon overrides now work; a bare-looking layout with no backgrounds is not started. Still parked, so it should stay as exploration."
+    },
+    {
+     "id": "e145",
+     "label": "Motion, voice and chat images: five parked ideas",
+     "summary": "#145: Five parked ideas. The panel animation was built, then reverted and set aside; the rest have not been started."
+    }
+   ]
+  },
+  {
+   "id": "Q-kind",
+   "words": true,
+   "surface": "Work items",
+   "path": "Every item's chips on the management page",
+   "headline": "Should every item show whether it is a bug, a feature, a polish change or housekeeping?",
+   "today": "Items show their part of the app and their side (UI/UX Only, Backend Only, or both), but not what kind of work they are. The agents labelled all 143: 58 bugs, 46 features, 16 polish, 23 housekeeping (work you never see in the app).",
+   "problem": "You can't filter to \"just the bugs\" or see at a glance whether something is broken or optional.",
+   "proposal": "Yes: each item gets one of these four as a tag, so the existing tag filter shows \"bug\" etc. A combined item takes \"bug\" if any part is a bug. No: the labels are thrown away."
+  }
+ ]
+}

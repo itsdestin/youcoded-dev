@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-10-07
-related: redesign-backlog.md row 13, submit-ticket-1.json, docs/roadmap/other-features.md (misc)
+related: redesign-backlog.md row 13, submit-ticket-1.json, the Submit-a-ticket revisit is done (redesign-backlog row 13); the old roadmap entry is retired
 ---
 
 # Submit a ticket — where the guide helped, and where it didn't

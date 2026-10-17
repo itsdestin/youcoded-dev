@@ -2,6 +2,9 @@
 status: active
 ---
 
+> **Status 2026-10-16:** the six surviving items are re-filed as cards, so the "re-file as ROADMAP #tech-debt" advice below is done. Hidden-terminal graphics detach goes to card #106; the sync-spaces 120-second idle poll (now at `sync-spaces/engine.ts:138`, and free to pick up because sync Phase 2 shipped) goes to card #127; the status-data read loop, the folder path comparison and the dormant `marketplace:get/set-config` delete-or-keep decision go to card #151. Re-checked on master: `detectOrphan` is only a tombstone, the `readPerSession` helper is still absent, and `TerminalView` still only handles `onContextLoss`. Items about Kotlin (`SessionService.kt`) are moot: the Android app was rebuilt 2026-10-14/15 on the desktop backend and that code is deleted.
+
+
 > **Status re-verified 2026-08-26 against `origin/master` `dbbb9139`.** Corrections to the
 > body below, each backed by a `git grep … origin/master`:
 >
@@ -33,7 +36,7 @@ status: active
 >
 > With the Kotlin item struck, everything left here is opportunistic cleanup with no
 > deadline. Recommend moving to `docs/archive/handoffs/` and re-filing the six surviving
-> items as ROADMAP `#tech-debt` entries, so the workspace has one ledger instead of two.
+> items as cards (done 2026-10-16, see the status above), so the workspace has one ledger instead of two.
 
 
 # Master Review — Deferred Follow-ups (non-remote)
@@ -53,8 +56,8 @@ Nothing below is urgent or broken; these are net-improvement opportunities the r
 
 Low-risk but pure-churn; best done in a quiet window, NOT during the sync-gated release.
 
-- **DROPPED 2026-07-24** — assessed low-value and dropped (see ROADMAP 2026-07-24 deferred-perf entry): **`ipc-handlers.ts` is one 2,674-line `registerIpcHandlers` function** with ~177 handlers. It already has 27 `// ---` section markers = ready-made module seams. Split into `register<Domain>Handlers(ctx)` modules (leaf domains first: theme marketplace, skills, dev, artifacts). **Caveat:** `tests/ipc-channels.test.ts` asserts channel presence *in ipc-handlers.ts* — update its file list in the same commit.
-- **DROPPED 2026-07-24** — assessed low-value and dropped (see ROADMAP 2026-07-24 deferred-perf entry): **`SessionService.kt handleBridgeMessage` is one ~2,700-line `when` (191 cases).** Keep the `when` as a thin dispatch table (message-type string literals must stay in the file so the `ipc-channels.test.ts` parity grep passes) and move case bodies to private funs grouped by domain.
+- **DROPPED 2026-07-24** — assessed low-value and dropped (see the old roadmap's 2026-07-24 deferred-perf entry): **`ipc-handlers.ts` is one 2,674-line `registerIpcHandlers` function** with ~177 handlers. It already has 27 `// ---` section markers = ready-made module seams. Split into `register<Domain>Handlers(ctx)` modules (leaf domains first: theme marketplace, skills, dev, artifacts). **Caveat:** `tests/ipc-channels.test.ts` asserts channel presence *in ipc-handlers.ts* — update its file list in the same commit.
+- **DROPPED 2026-07-24** — assessed low-value and dropped (see the old roadmap's 2026-07-24 deferred-perf entry): **`SessionService.kt handleBridgeMessage` is one ~2,700-line `when` (191 cases).** Keep the `when` as a thin dispatch table (message-type string literals must stay in the file so the `ipc-channels.test.ts` parity grep passes) and move case bodies to private funs grouped by domain.
 - ~~**`SessionService.kt` `publishPluginViaGh` / `publishThemeViaGh` (~110 duplicated lines)**~~ **RESOLVED** — dedup shipped in PR #207 `82552cee`. Original text: extract a shared `GhPublisher` helper (`runGh`, `uploadDir`, shared `sensitivePatterns`). Same-file same-language dup, not a documented TS/Kotlin parity mirror. Behavior must not change (linker64 exec path).
 - ~~**`App.tsx` `AppInner` is ~2,500 lines / 46 useState / 47 useEffect.**~~ **RESOLVED (tranche 1) 2026-07-17** — shipped in youcoded merge `f1ab07fc`; remaining tranches tracked in `docs/active/investigations/2026-07-17-appinner-decomposition-map.md`. Original text: Extract self-contained clusters into custom hooks (`useStatusData`, `useWindowTopology`, `useMarketplaceNav`, `useResumeFlow`). Overlaps with the perf refactor above — do them together. Don't touch chat-reducer wiring or the `RemoteSnapshotExporter` mount (PITFALLS-pinned).
 - **`SettingsPanel.tsx` (2,489 lines)** — AndroidSettings/DesktopSettings duplicate identical `defaults`/overlay state + the Development-button JSX. Extract a shared `useSettingsDefaults()` hook + `<OtherSection>`; the platform fork itself is legitimate.
@@ -63,7 +66,7 @@ Low-risk but pure-churn; best done in a quiet window, NOT during the sync-gated 
 
 ## Small decisions still open
 
-- **`ConfigForm.tsx` was deleted; the `marketplace:get/set-config` IPC chain (4 surfaces incl. Android) was kept dormant.** If config-schema plugins are definitively off the roadmap, delete the whole chain (touches SessionService.kt + the parity test). Otherwise leave as-is.
+- **`ConfigForm.tsx` was deleted; the `marketplace:get/set-config` IPC chain (4 surfaces incl. Android) was kept dormant.** If config-schema plugins are definitively not wanted, delete the whole chain (touches SessionService.kt + the parity test). Otherwise leave as-is.
 - **Kotlin `ProjectManager.kt` still has `detectOrphan` / `rebuildIndex` mirrors** of the TS functions deleted in this pass (never called in production). Prune them in an Android session; PITFALLS §"Project View sidebar count" already notes this.
 
 ## Where the shipped work lives

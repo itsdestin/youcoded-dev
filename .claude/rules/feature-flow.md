@@ -24,7 +24,7 @@ verify:
 
 # Feature flow — the deck is the one surface
 
-Design: `docs/active/specs/2026-09-01-feature-flow-design.md`. Order: questions → mockups →
+Design: `docs/archive/specs/2026-09-01-feature-flow-design.md`. Order: questions → mockups →
 UX tester 1 → review deck(s) → contract → design + capped review → build → code reviewer +
 UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 

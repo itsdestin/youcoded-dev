@@ -93,6 +93,6 @@ DIAGNOSTIC. A missing provider figure is an absent key, never `0`. · why: a dis
 our bug, and silence must never read as "we checked and it matched" · guard:
 `provider-cost-check.test.ts`.
 
-**Known gaps** are tracked in `docs/roadmap/native-harness.md`, not here.
+**Known gaps** are tracked as cards tagged `native-harness` (`node scripts/cards.mjs index`), not here.
 
 Depth: `docs/archive/specs/2026-08-25-status-bar-session-relevance-design.md`.

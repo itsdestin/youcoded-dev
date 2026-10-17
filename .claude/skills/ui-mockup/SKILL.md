@@ -20,7 +20,7 @@ Short route for small work.
 
 ## Before drawing anything: the questions deck
 
-Step 2 of the feature flow (`docs/active/specs/2026-09-01-feature-flow-design.md` §5) is a
+Step 2 of the feature flow (`docs/archive/specs/2026-09-01-feature-flow-design.md` §5) is a
 deck, not a chat. Copy `scripts/ui-review/templates/questions.json` to
 `docs/active/design/<date>-<feature>/<feature>.questions.json` — one `"words": true` step per
 question, each saying what exists today, what goes wrong (`problem`) and what would change
@@ -165,9 +165,9 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    against the built branch) in parallel, each with a budget; mark every finding line in
    their review files; fix the accepted ones; hand the review files to the contract agent so
    accepted findings become `review:` rows.
-5. File a roadmap entry for anything the contract agent listed under `## Not covered` that is
-   real work rather than a question for the next round (`docs/roadmap/<area>.md`
-   — `ROADMAP.md` → "Filing an item"), and follow the workspace knowledge rules (pinning test >
+5. File a card for anything the contract agent listed under `## Not covered` that is
+   real work rather than a question for the next round (idea-intake skill,
+   `node scripts/cards.mjs new`), and follow the workspace knowledge rules (pinning test >
    ast-grep rule > WHY comment > path-scoped rule) for anything durable.
 6. At the end: dispatch the grader (`scripts/ui-review/grader.md`, a fresh agent) to write
    `<feature>.contract.verdicts.json`, run `review-cards.py acceptance`, serve the acceptance

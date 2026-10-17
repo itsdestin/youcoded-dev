@@ -2,7 +2,7 @@
 #
 # (run-dev.sh still carries its own copy. This header claimed both used it from
 # the day it was written; corrected 2026-09-10, and folding run-dev into it is
-# filed in docs/roadmap/dev-workspace.md rather than done here — it is the
+# filed as dev-workspace work rather than done here — it is the
 # launcher that paints a real window on Destin's desktop.)
 #
 # WHY it is shared: run-workbench had its own three-line version that only knew

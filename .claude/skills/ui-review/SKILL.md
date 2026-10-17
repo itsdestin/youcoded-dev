@@ -8,7 +8,7 @@ description: Autonomous whole-app UI review — screenshot every YouCoded surfac
 Pictures come from `shoot` and click-throughs from `explore` (`scripts/shoot/README.md`);
 decks from `scripts/ui-review/` (README there). This skill is the procedure around them.
 Standard: `docs/active/design/2026-10-13-ui-design-guide.md`. Last full review and its
-ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
+ledger: `docs/archive/design/2026-08-25-ui-audit-findings.md`.
 
 ## 1. Capture (no judgement yet)
 
@@ -52,7 +52,7 @@ ledger: `docs/active/design/2026-08-25-ui-audit-findings.md`.
 - Copy the contact sheets into `docs/active/design/<date>-ui-audit/` (images
   git-ignored by the existing rule; a README naming the `shoot` command regenerates them).
 - Update the design guide only for rules Destin decided; cite the decisions row (`docs/active/design/2026-09-23-ui-element-review/decisions.md`).
-- Roadmap entry: the whole-UI review item (in `docs/roadmap/dev-workspace.md` → `## rigs`) gets an update line pointing at the docs.
+- Card: the item for the whole-UI review gets an update line pointing at the docs (`node scripts/cards.mjs index`; today #135, "Shared look").
 
 ## 4. Improve (when asked, or as the follow-up)
 
@@ -79,7 +79,7 @@ then a **review page** — never a gallery, never a chat summary:
    timeout; 3 = another process already serves this spec — neither 2 nor 3 carries answers, do not
    invent a result) (`wait <spec>` if you lost the process). Never ask him to paste anything.
 4. Act on the summary exactly (`Other` + note = change it as described); record decisions in the
-   findings ledger row, the guide, the roadmap entry. Merge, archive, clean up.
+   findings ledger row, the guide, the card. Merge, archive, clean up.
 
 ## Red flags
 

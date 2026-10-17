@@ -1,0 +1,1528 @@
+{
+ "nodes": {
+  "pages": {
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: YouCoded Pages, Phase 1",
+     "date": "2026-09-17",
+     "note": "The Pages button, page view, pins, page data and the page-builder skill are merged."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0 'Since the beta'",
+     "date": "2026-09-20",
+     "note": "Release notes say Pages shipped in 1.3.0 (desktop only)."
+    }
+   ],
+   "why": "Small apps you ask the assistant to build, living inside YouCoded and following its look.",
+   "needs": [],
+   "shares": [],
+   "note": "Pillar rollup: the shell and connections are built; files, assistant tasks and marketplace are not."
+  },
+  "pages.build": {
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: YouCoded Pages, Phase 1",
+     "date": "2026-09-17",
+     "note": "The Pages button, page view, pins, page data and the page-builder skill are merged."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/renderer/components/pages/PagesView.tsx",
+     "date": "2026-09-16",
+     "note": "Pages screen exists on master."
+    }
+   ],
+   "why": "You describe a page in chat and get a working one that matches your theme.",
+   "needs": [],
+   "shares": [],
+   "note": "Capability is done except ready-made blocks/templates and the guided setup, which are separate features below."
+  },
+  "pages.connect": {
+   "status": "done",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Pages Phase 2 (youcoded#552)",
+     "date": "2026-09-23",
+     "note": "Connections with an approval card are merged."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Pages reach a home device",
+     "date": "2026-10-07",
+     "note": "Home device, live connection and camera merged."
+    }
+   ],
+   "why": "A page can reach real services, a home device or a bank, but only through doors the app approves.",
+   "needs": [],
+   "shares": [],
+   "note": "Merged to master but in no numbered release yet (1.3.0 shipped 2026-09-20, before Phase 2)."
+  },
+  "pages.agents": {
+   "status": "done",
+   "since": "2026-10-08",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/claude-code-pages-mcp.ts",
+     "date": "2026-10-08",
+     "note": "The assistant can list pages and read or change their saved data."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: 'YouCoded Pages' (in-flight, v1.3.2)",
+     "date": "2026-09-23",
+     "note": "Entry says Phases 3-4 are next; Destin postponed them to 1.3.2/1.3.3 on 2026-10-05."
+    }
+   ],
+   "why": "Pages and the assistant working together; only the 'assistant edits page data' part exists.",
+   "needs": [],
+   "shares": [],
+   "note": "Only one of four features is built."
+  },
+  "pages.apps": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Bring any open-source app in as a page, including ones that need a server.",
+   "needs": [],
+   "shares": [],
+   "note": "Nothing built or filed. Pages are single-file web pages today."
+  },
+  "marketplace": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0 'Marketplace and skills'",
+     "date": "2026-09-20",
+     "note": "Rebuilt marketplace with 4,100+ listings, trust information and thumbs up/down."
+    },
+    {
+     "kind": "shipped",
+     "ref": "feat/marketplace-overhaul-ui merged (youcoded#366)",
+     "date": "2026-08-31",
+     "note": "The overhaul merged on this date."
+    }
+   ],
+   "why": "One store for skills, plugins, themes and more.",
+   "needs": [],
+   "shares": [],
+   "note": "Pillar rollup: browsing and installing are done; publishing beyond skills/themes, forks and Pages are not."
+  },
+  "marketplace.browse": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0",
+     "date": "2026-09-20",
+     "note": "Rebuilt catalogue with filters, hero and rails."
+    }
+   ],
+   "why": "Find and install free things, including themes.",
+   "needs": [],
+   "shares": []
+  },
+  "marketplace.publish": {
+   "status": "building",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/skill-share.ts, theme-marketplace-provider.ts publishTheme",
+     "date": "2026-04-07",
+     "note": "Skills can be shared by link and themes can be published through a pull request."
+    }
+   ],
+   "why": "Putting your own work in the store; works for skills and themes only.",
+   "needs": [],
+   "shares": [],
+   "note": "Capability partly done. No unmerged branch for forks/family/pages. Marked building only because sharing exists; the rest is vision."
+  },
+  "marketplace.setup": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0",
+     "date": "2026-09-20",
+     "note": "'What this can do' panel before install."
+    }
+   ],
+   "why": "Installing is one click with the permissions spelled out; the assistant-led setup is not built.",
+   "needs": [],
+   "shares": []
+  },
+  "social": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Games arcade",
+     "date": "2026-08-31",
+     "note": "Friends plus a four-game arcade ship on desktop and Android."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "ROADMAP.md 'Social AI' paragraph",
+     "date": null,
+     "note": "Owner's own status paragraph."
+    }
+   ],
+   "why": "Friends, who is online, and games together.",
+   "needs": [],
+   "shares": [],
+   "note": "Pillar rollup: friends and games done; messages, sharing and feeds are not."
+  },
+  "social.friends": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Games arcade",
+     "date": "2026-08-31",
+     "note": "Arcade with friend leaderboards."
+    }
+   ],
+   "why": "You can add friends, see who is online and play against them.",
+   "needs": [],
+   "shares": []
+  },
+  "social.feeds": {
+   "status": "planned",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Parked ideas (g) fediverse page",
+     "date": "2026-09-01",
+     "note": "Parked idea only."
+    }
+   ],
+   "why": "Your own feeds from the open social web; only a parked idea exists.",
+   "needs": [],
+   "shares": []
+  },
+  "pages.build.create": {
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: YouCoded Pages, Phase 1",
+     "date": "2026-09-17",
+     "note": "The Pages button, page view, pins, page data and the page-builder skill are merged."
+    },
+    {
+     "kind": "code",
+     "ref": "wecoded-marketplace/wecoded-pages-plugin/skills/page-builder",
+     "date": "2026-09-17",
+     "note": "The /page-builder skill ships in the marketplace repo (wecoded-marketplace#97)."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0 'Since the beta'",
+     "date": "2026-09-20",
+     "note": "Release notes say Pages shipped in 1.3.0 (desktop only)."
+    }
+   ],
+   "why": "Describe a page in chat and the assistant builds, edits or deletes it.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.steer.skills",
+     "because": "The builder is a skill; same skill machinery as every other skill."
+    }
+   ]
+  },
+  "pages.build.theme": {
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: YouCoded Pages, Phase 1",
+     "date": "2026-09-17",
+     "note": "The Pages button, page view, pins, page data and the page-builder skill are merged."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/renderer/components/pages/page-theme.ts",
+     "date": "2026-09-16",
+     "note": "Pages receive the current theme live."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: pages frost over theme wallpaper",
+     "date": "2026-10-07",
+     "note": "Optional see-through glass over the theme wallpaper."
+    }
+   ],
+   "why": "A page looks like part of the app and changes when you change theme.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.look.themes",
+     "because": "Pages read the same theme data as the rest of the app."
+    }
+   ]
+  },
+  "pages.build.blocks": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Ready-made building blocks and template styles for pages.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "marketplace.browse.pages",
+     "because": "Templates would most naturally be pages from the marketplace."
+    }
+   ],
+   "note": "Only a shared style sheet (page-kit.ts) exists; Destin asked for 'richer sample pages' in deck round 1 and 'better icons' (roadmap follow-up g). No blocks or templates built."
+  },
+  "pages.build.setup": {
+   "status": "building",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "wecoded-marketplace: session/youcoded-pages-phase2",
+     "date": "2026-09-23",
+     "note": "Builder skill 0.2.0 teaches connections and key setup; finished but held for the release."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: 'Pages follow-ups' (a)",
+     "date": "2026-10-08",
+     "note": "Says merge it with the release and also teach home-device, live and camera connections first."
+    }
+   ],
+   "why": "The assistant helps you set up a page's accounts and keys; the skill update is finished but held.",
+   "needs": [
+    {
+     "id": "pages.connect.connections",
+     "because": "The setup teaches the connection approval flow."
+    }
+   ],
+   "shares": [
+    {
+     "id": "marketplace.setup.walkthrough",
+     "because": "Same idea: the assistant walks you through setup."
+    }
+   ]
+  },
+  "pages.connect.connections": {
+   "status": "done",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Pages Phase 2 (youcoded#552)",
+     "date": "2026-09-23",
+     "note": "Approval card, blocked-by-default, one checked request door, keys in the keychain."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/pages/page-fetch.ts",
+     "date": "2026-09-19",
+     "note": "The request door."
+    },
+    {
+     "kind": "screen",
+     "ref": "workbench screens/pages.ts",
+     "date": null,
+     "note": "Pages screens exist in the screen list."
+    }
+   ],
+   "why": "A page can ask for a web service; you approve once and the app keeps the key, never the page.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "marketplace.browse.integrations",
+     "because": "Connections are described in three places: page approval, marketplace listing, Settings."
+    },
+    {
+     "id": "marketplace.setup.install",
+     "because": "Pages reuse the marketplace 'What this can do' wording (CapabilityList)."
+    },
+    {
+     "id": "chat.steer.permissions",
+     "because": "Standing grants are another place you approve what the assistant or page may do."
+    }
+   ],
+   "note": "Merged, but in no numbered release yet."
+  },
+  "pages.connect.money": {
+   "status": "done",
+   "since": "2026-10-08",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: The Money page",
+     "date": "2026-10-08",
+     "note": "Plaid bank connection for pages plus Destin's hand-installed Money page (youcoded#615)."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/pages/plaid.ts",
+     "date": "2026-10-08",
+     "note": "Bank connection code."
+    }
+   ],
+   "why": "The app can connect a page to your bank; only Destin's own Money page uses it today.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.everyone.ostools",
+     "because": "Open tools replacing paid money apps."
+    }
+   ],
+   "note": "The connection ships; the Money page itself is personal, not distributed, and the roadmap says not for the marketplace. Banks linked 10-06 kept only 30 days of history."
+  },
+  "pages.connect.home": {
+   "status": "done",
+   "since": "2026-10-07",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Pages reach one approved device at home",
+     "date": "2026-10-07",
+     "note": "Home Assistant approval with address and key (youcoded#611)."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Pages follow-ups (b), (c)",
+     "date": "2026-10-08",
+     "note": "Deferred Home page items; a rare hostile-network gap waits for Destin's OK."
+    }
+   ],
+   "why": "A page can control one device at home, like your lights and cameras.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.everyone.ostools",
+     "because": "Home Assistant replaced by an open-source page."
+    }
+   ],
+   "note": "The Home page is hand-installed, not shipped. Android and phone unverified."
+  },
+  "pages.connect.live": {
+   "status": "done",
+   "since": "2026-10-07",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: live connection and camera video",
+     "date": "2026-10-07",
+     "note": "Live connection for pages, camera video, recorded clips."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/pages/page-live-socket.ts",
+     "date": "2026-10-04",
+     "note": "Live socket code."
+    }
+   ],
+   "why": "A page can show live data and camera video, played by the app so the page never holds the feed.",
+   "needs": [],
+   "shares": []
+  },
+  "pages.connect.files": {
+   "status": "planned",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: 'YouCoded Pages' (in-flight, v1.3.2)",
+     "date": "2026-09-23",
+     "note": "Entry says Phases 3-4 are next; Destin postponed them to 1.3.2/1.3.3 on 2026-10-05."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/plans/2026-09-16-youcoded-pages-phasing.md",
+     "date": null,
+     "note": "Phase table: 1 and 2 built, 3 (files, assistant tasks) and 4 (marketplace) open."
+    }
+   ],
+   "why": "Letting a page open or keep access to a folder you choose; not started.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.files.drawer",
+     "because": "Same files the app already shows."
+    }
+   ],
+   "note": "Phase 3, postponed to 1.3.2/1.3.3."
+  },
+  "pages.agents.attached": {
+   "status": "planned",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: 'YouCoded Pages' (in-flight, v1.3.2)",
+     "date": "2026-09-23",
+     "note": "Entry says Phases 3-4 are next; Destin postponed them to 1.3.2/1.3.3 on 2026-10-05."
+    },
+    {
+     "kind": "spec",
+     "ref": "docs/active/specs/2026-09-15-youcoded-pages-scope.md section 10",
+     "date": "2026-09-15",
+     "note": "Background work per page approved in scope; closed-app scheduling not promised."
+    }
+   ],
+   "why": "An agent that keeps a page updated while you are away; only 'later' in the plan.",
+   "needs": [
+    {
+     "id": "agents.unit.recipe",
+     "because": "There is no reusable agent object to attach."
+    },
+    {
+     "id": "agents.background.scheduled",
+     "because": "Scope says to coordinate with Agents and Automations, which has no design."
+    }
+   ],
+   "shares": [
+    {
+     "id": "agents.unit.inpages",
+     "because": "Same idea in the agents pillar."
+    }
+   ]
+  },
+  "pages.agents.tools": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Buttons on a page that the assistant can press from chat ('turn on the lights').",
+   "needs": [
+    {
+     "id": "pages.connect.home",
+     "because": "The lights example needs the home connection."
+    }
+   ],
+   "shares": [
+    {
+     "id": "pages.agents.mcp",
+     "because": "Both give the assistant a way to act through a page."
+    }
+   ],
+   "note": "Today the assistant can only read and change a page's saved data; it cannot press anything."
+  },
+  "pages.agents.mcp": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "A tool server delivered with a page.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "pages.agents.chat",
+     "because": "The one page server the app does ship."
+    }
+   ],
+   "note": "Only the app's own page-data server exists."
+  },
+  "pages.agents.chat": {
+   "status": "done",
+   "since": "2026-10-08",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/claude-code-pages-mcp.ts",
+     "date": "2026-10-08",
+     "note": "Assistant lists pages and reads/updates their data; update asks permission."
+    },
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: The Money page",
+     "date": "2026-10-08",
+     "note": "Landed in the same merge (youcoded#615)."
+    }
+   ],
+   "why": "You can tell the assistant 'add eggs to my grocery page' and the page updates.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.steer.permissions",
+     "because": "Updates use the ordinary permission card."
+    }
+   ],
+   "note": "Built for Claude Code sessions; I did not confirm the built-in assistant gets it. Each change asks permission."
+  },
+  "pages.apps.convert": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Pull an open-source project in and convert it into a page.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.everyone.ostools",
+     "because": "This is how open tools would arrive."
+    }
+   ],
+   "note": "Not in any doc; the builder only writes pages from a description."
+  },
+  "pages.apps.server": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Pages that need their own server or database.",
+   "needs": [
+    {
+     "id": "pages.connect.files",
+     "because": "A server would need permission to run on the computer, a new kind of door."
+    }
+   ],
+   "shares": [
+    {
+     "id": "marketplace.publish.anything",
+     "because": "Hosting things that need a server."
+    }
+   ],
+   "note": "Scope lists 'optional computer programs' under Later with no phase; page data is a small file beside the page. Pages cannot run programs or keep a database."
+  },
+  "pages.apps.interpage": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Pages that work with other pages and projects.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "projects.folder",
+     "because": "Pages already live inside project folders."
+    }
+   ],
+   "note": "A page belongs to a project only by living in its folder; pages cannot see each other. The assistant's page-data tool can read any page."
+  },
+  "marketplace.browse.skills": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0 'Marketplace and skills'",
+     "date": "2026-09-20",
+     "note": "Rebuilt catalogue with origin badges."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/shared/catalog-types.ts",
+     "date": "2026-08-27",
+     "note": "Five kinds: plugin, skill, specialist, connection, prompt."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Installing and library",
+     "date": "2026-09-01",
+     "note": "314 Docker-packaged connections cannot be installed; plugins vanish when Claude Code refreshes its list."
+    }
+   ],
+   "why": "Browse and install skills, commands and plugins.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.steer.skills",
+     "because": "What you install shows up as skills."
+    }
+   ]
+  },
+  "marketplace.browse.themes": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/theme-marketplace-provider.ts",
+     "date": "2026-04-07",
+     "note": "Theme registry provider."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0 'Look and feel'",
+     "date": "2026-09-20",
+     "note": "Theme preview cards in the picker."
+    }
+   ],
+   "why": "Browse and install community themes.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "yours.look.themes",
+     "because": "Same themes, two doors in."
+    }
+   ]
+  },
+  "marketplace.browse.pages": {
+   "status": "planned",
+   "since": "2026-09-23",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: 'YouCoded Pages' (in-flight, v1.3.2)",
+     "date": "2026-09-23",
+     "note": "Entry says Phases 3-4 are next; Destin postponed them to 1.3.2/1.3.3 on 2026-10-05."
+    },
+    {
+     "kind": "plan",
+     "ref": "docs/active/plans/2026-09-16-youcoded-pages-phasing.md",
+     "date": null,
+     "note": "Phase table: 1 and 2 built, 3 (files, assistant tasks) and 4 (marketplace) open."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/shared/catalog-types.ts",
+     "date": "2026-08-27",
+     "note": "The five browsable kinds do not include Pages."
+    }
+   ],
+   "why": "Pages are not in the store yet; planned as Phase 4.",
+   "needs": [
+    {
+     "id": "marketplace.publish.share",
+     "because": "Nobody can publish a page yet."
+    },
+    {
+     "id": "pages.connect.connections",
+     "because": "An installed page must ask again when it needs more."
+    }
+   ],
+   "shares": [
+    {
+     "id": "marketplace.browse.themes",
+     "because": "A new kind, like themes, with its own registry."
+    }
+   ]
+  },
+  "marketplace.browse.integrations": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "wecoded-marketplace/integrations/index.json + desktop/src/main/integration-installer.ts",
+     "date": "2026-04-22",
+     "note": "Installable integrations (Apple, Google...)."
+    },
+    {
+     "kind": "code",
+     "ref": "catalog-types.ts: 'Connection' kind",
+     "date": "2026-08-27",
+     "note": "Tool servers appear as Connections."
+    }
+   ],
+   "why": "Integrations and connections can be browsed and installed.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "pages.connect.connections",
+     "because": "Page connections are a different list that never appears in the store."
+    },
+    {
+     "id": "marketplace.setup.walkthrough",
+     "because": "Rebuild research proposes assistant-led sign-in."
+    }
+   ],
+   "note": "An integrations rebuild is researched on unmerged branch session/integrations-research (docs only, 2026-09-27)."
+  },
+  "marketplace.browse.curated": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "wecoded-marketplace/featured.json, curated-defaults.json",
+     "date": "2026-09-26",
+     "note": "Editorial featured list and default skills."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/renderer/components/marketplace/MarketplaceHero.tsx",
+     "date": "2026-08-31",
+     "note": "Hero and rails."
+    }
+   ],
+   "why": "A hand-picked shelf at the top of the store.",
+   "needs": [],
+   "shares": [],
+   "note": "The 2026-08-31 featuring investigation found no popularity data (every item installed once), so the shelf is purely editorial."
+  },
+  "marketplace.browse.fromchat": {
+   "status": "planned",
+   "since": "2026-09-05",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "native-harness.md tools: 'v1.3.1 release blocker' marketplace search tool",
+     "date": "2026-09-05",
+     "note": "Assistant cannot search the store yet; P1, v1.3.1."
+    },
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/harness/prompts/shared-doctrine.ts",
+     "date": "2026-09-05",
+     "note": "Prompt comment waits for this tool."
+    }
+   ],
+   "why": "When the assistant lacks a power, it should check the store first; not built.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "chat.steer.skills",
+     "because": "Search would find skills."
+    }
+   ]
+  },
+  "marketplace.publish.share": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/skill-share.ts + ShareSheet.tsx",
+     "date": "2026-04-06",
+     "note": "Skills and plugins share by youcoded:// link."
+    },
+    {
+     "kind": "code",
+     "ref": "theme-marketplace-provider.ts publishTheme",
+     "date": "2026-04-07",
+     "note": "Themes publish by pull request."
+    },
+    {
+     "kind": "code",
+     "ref": "wecoded-marketplace/wecoded-marketplace-publisher",
+     "date": "2026-09-20",
+     "note": "Publisher plugin guides plugin submission."
+    }
+   ],
+   "why": "You can publish a skill, plugin or theme; pages cannot be published yet.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "together.contribute.source",
+     "because": "Both go through GitHub."
+    }
+   ],
+   "note": "Publishing needs a GitHub account and ends in a pull request, not a button."
+  },
+  "marketplace.publish.fork": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Fork something, customize it, publish your version.",
+   "needs": [
+    {
+     "id": "marketplace.publish.share",
+     "because": "You must be able to publish first."
+    }
+   ],
+   "shares": [
+    {
+     "id": "marketplace.publish.family",
+     "because": "A fork needs a parent link, which is the family tree."
+    }
+   ],
+   "note": "In code 'fork' only means copying the registry on GitHub to open a pull request. No product-level fork of a listing."
+  },
+  "marketplace.publish.family": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "See a page's variants and its parent, like a family tree.",
+   "needs": [
+    {
+     "id": "marketplace.publish.fork",
+     "because": "No forks means no family."
+    }
+   ],
+   "shares": [],
+   "note": "Registry entries have no parent or variant field."
+  },
+  "marketplace.publish.reviews": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0",
+     "date": "2026-09-20",
+     "note": "Thumbs up and down with comments."
+    },
+    {
+     "kind": "code",
+     "ref": "FeedbackSection.tsx, ReportReviewButton.tsx",
+     "date": "2026-08-27",
+     "note": "Helpful percent, comments, flag-a-review button."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Admin analytics, comments (c)(d)",
+     "date": "2026-09-01",
+     "note": "You cannot delete your own comment or report a comment."
+    }
+   ],
+   "why": "Rate with a thumb and leave comments; thumbs need install plus sign-in.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "marketplace.publish.bugs",
+     "because": "Reviews are where people already complain about a broken listing."
+    },
+    {
+     "id": "together.contribute.bugs",
+     "because": "Two ways to say something is wrong."
+    }
+   ],
+   "note": "Roadmap says you cannot report a comment, yet a flag button exists on reviews; not reconciled here."
+  },
+  "marketplace.publish.bugs": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Report a bug on a page or plugin from inside the app.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "together.contribute.bugs",
+     "because": "The existing report flow could carry a listing id."
+    },
+    {
+     "id": "marketplace.publish.reviews",
+     "because": "Reviews vs bug reports overlap."
+    }
+   ],
+   "note": "App-wide Report a bug goes to YouCoded's GitHub issues, not a listing's author."
+  },
+  "marketplace.publish.anything": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Host anything, including things that need a server.",
+   "needs": [
+    {
+     "id": "pages.apps.server",
+     "because": "Servers are not possible for pages."
+    }
+   ],
+   "shares": [
+    {
+     "id": "sync.mesh.cloud",
+     "because": "A personal cloud is the other hosting idea."
+    }
+   ],
+   "note": "Closest roadmap item: parked 'WeCoded as a public registry others can read (Layer E)'; it does not host servers."
+  },
+  "marketplace.setup.install": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0",
+     "date": "2026-09-20",
+     "note": "'What this can do' panel and visible trust information."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: 'Likely safe' badge claim",
+     "date": "2026-09-23",
+     "note": "Badge only checks secrets and file shapes; P2, postponed."
+    }
+   ],
+   "why": "Install in one click after reading what it can do.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "pages.connect.connections",
+     "because": "Same approval language."
+    },
+    {
+     "id": "chat.steer.permissions",
+     "because": "Permissions the plugin is given afterwards."
+    }
+   ]
+  },
+  "marketplace.setup.walkthrough": {
+   "status": "building",
+   "since": "2026-09-27",
+   "evidence": [
+    {
+     "kind": "branch",
+     "ref": "session/integrations-research (youcoded-dev)",
+     "date": "2026-09-27",
+     "note": "Docs-only research and an 'everyday actions' proposal; no code."
+    }
+   ],
+   "why": "The assistant sets a plugin up for you; only research exists so far.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "pages.build.setup",
+     "because": "Same walkthrough idea for pages."
+    }
+   ],
+   "note": "Treated as building because a branch with active design exists, but it is research, not product."
+  },
+  "social.friends.add": {
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/social-handlers.ts, ipc/social.ts",
+     "date": "2026-07-09",
+     "note": "Friend requests by handle, friends list, online status."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Accounts (a)(b)",
+     "date": "2026-09-01",
+     "note": "Silent sign-out; friends screen buried in game lobby code."
+    }
+   ],
+   "why": "Add friends by handle and see when they are online.",
+   "needs": [],
+   "shares": [
+    {
+     "id": "marketplace.publish.reviews",
+     "because": "Same YouCoded sign-in."
+    }
+   ]
+  },
+  "social.friends.games": {
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Games arcade",
+     "date": "2026-08-31",
+     "note": "Connect 4, chess vs friends; Flappy, 2048 solo with leaderboards (youcoded#369)."
+    },
+    {
+     "kind": "roadmap",
+     "ref": "games.md",
+     "date": "2026-09-01",
+     "note": "A forfeit win can be faked by a modified client."
+    }
+   ],
+   "why": "Play chess and Connect 4 with friends and compare scores.",
+   "needs": [],
+   "shares": []
+  },
+  "social.friends.dm": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Direct messages between friends.",
+   "needs": [
+    {
+     "id": "social.friends.add",
+     "because": "Needs the friends list and sign-in."
+    }
+   ],
+   "shares": [
+    {
+     "id": "social.friends.share",
+     "because": "Both need delivery between accounts."
+    }
+   ],
+   "note": "Only a chat inside a game match exists (GameChat.tsx)."
+  },
+  "social.friends.share": {
+   "status": "planned",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Parked ideas (a)",
+     "date": "2026-09-24",
+     "note": "Share a document through your account with comments; needs online storage and permissions."
+    }
+   ],
+   "why": "Sharing things with friends; only a parked document-sharing idea exists.",
+   "needs": [
+    {
+     "id": "social.friends.add",
+     "because": "Needs friends."
+    },
+    {
+     "id": "sync.follow.projects",
+     "because": "Needs online storage."
+    }
+   ],
+   "shares": [
+    {
+     "id": "marketplace.publish.share",
+     "because": "Link sharing already exists, to anyone."
+    }
+   ],
+   "note": "Today's skill share links go to anyone, not to friends."
+  },
+  "social.feeds.fediverse": {
+   "status": "planned",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Parked ideas (g)",
+     "date": "2026-09-01",
+     "note": "A fediverse page; waits for Pages sign-in, picture loading, background refresh."
+    }
+   ],
+   "why": "A feed page for open social networks; parked.",
+   "needs": [
+    {
+     "id": "pages.connect.connections",
+     "because": "Needs sign-in connections."
+    },
+    {
+     "id": "pages.agents.attached",
+     "because": "Needs background refresh."
+    }
+   ],
+   "shares": [],
+   "note": "Nothing about AT protocol found."
+  },
+  "social.feeds.wrap": {
+   "status": "planned",
+   "since": "2026-10-08",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Pages follow-ups (d)",
+     "date": "2026-10-08",
+     "note": "A web browser as a page: big sites refuse to show inside another page, so a website view would be needed."
+    }
+   ],
+   "why": "Using existing social sites inside the app; needs a website view.",
+   "needs": [
+    {
+     "id": "pages.build.create",
+     "because": "Would be a page."
+    }
+   ],
+   "shares": [
+    {
+     "id": "pages.connect.live",
+     "because": "Sites embed only through a special view."
+    }
+   ]
+  },
+  "social.feeds.algorithms": {
+   "status": "vision",
+   "since": null,
+   "evidence": [],
+   "why": "Your own feed ranking with transparency.",
+   "needs": [
+    {
+     "id": "social.feeds.fediverse",
+     "because": "Needs a feed to rank."
+    }
+   ],
+   "shares": []
+  }
+ },
+ "added": [
+  {
+   "parent": "pages.build",
+   "id": "pages.build.library",
+   "title": "Pages screen with pins and a side panel",
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: YouCoded Pages, Phase 1",
+     "date": "2026-09-17",
+     "note": "The Pages button, page view, pins, page data and the page-builder skill are merged."
+    }
+   ],
+   "why": "A library of pages, up to four pinned beside Projects, opening edge to edge."
+  },
+  {
+   "parent": "pages.build",
+   "id": "pages.build.data",
+   "title": "Page data saved beside the page and synced",
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: YouCoded Pages, Phase 1",
+     "date": "2026-09-17",
+     "note": "The Pages button, page view, pins, page data and the page-builder skill are merged."
+    }
+   ],
+   "why": "What a page remembers lives in its folder and follows you."
+  },
+  {
+   "parent": "pages.build",
+   "id": "pages.build.edit",
+   "title": "Edit, rename, delete and 'put it back' by chat",
+   "status": "done",
+   "since": "2026-09-17",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "wecoded-pages-plugin/skills/page-builder/SKILL.md",
+     "date": "2026-09-17",
+     "note": "Skill covers edit/rename/delete/history."
+    }
+   ],
+   "why": "Change a page by talking; git history is the undo."
+  },
+  {
+   "parent": "pages.connect",
+   "id": "pages.connect.glass",
+   "title": "See-through pages over the theme wallpaper",
+   "status": "done",
+   "since": "2026-10-07",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md 2026-10-07",
+     "date": "2026-10-07",
+     "note": "Appearance switch 'Show theme background behind pages'."
+    }
+   ],
+   "why": "Pages can show your wallpaper behind them."
+  },
+  {
+   "parent": "pages.connect",
+   "id": "pages.connect.homepage",
+   "title": "Home page (Home Assistant), hand-installed",
+   "status": "done",
+   "since": "2026-10-07",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md 2026-10-07",
+     "date": "2026-10-07",
+     "note": "Lights, media, TV remote, thermostat, cameras, scenes."
+    }
+   ],
+   "why": "Destin's smart-home page; not distributed to users."
+  },
+  {
+   "parent": "pages.connect",
+   "id": "pages.connect.moneypage",
+   "title": "Money page, hand-installed",
+   "status": "done",
+   "since": "2026-10-08",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md 2026-10-08",
+     "date": "2026-10-08",
+     "note": "Net worth, spending, subscription review."
+    }
+   ],
+   "why": "Destin's finance page; roadmap says not for the marketplace."
+  },
+  {
+   "parent": "pages.connect",
+   "id": "pages.connect.analytics",
+   "title": "Analytics dashboard page",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "youcoded-dev/Pages/analytics",
+     "date": "2026-09-17",
+     "note": "Owner dashboard page connected to YouCoded's admin service."
+    }
+   ],
+   "why": "The proving page for connections; owner-only."
+  },
+  {
+   "parent": "pages.build",
+   "id": "pages.build.phone",
+   "title": "Pages on a phone and over remote access",
+   "status": "planned",
+   "since": "2026-10-08",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Pages follow-ups (e)",
+     "date": "2026-10-08",
+     "note": "Narrow layout never designed; connected pages never tried remotely."
+    }
+   ],
+   "why": "The scope promised small screens; not true yet."
+  },
+  {
+   "parent": "marketplace.browse",
+   "id": "marketplace.browse.kinds",
+   "title": "Six kinds in one store",
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "catalog-types.ts, MarketplaceFilterBar.tsx",
+     "date": "2026-08-27",
+     "note": "Plugins, skills, specialists, connections, prompts, themes."
+    }
+   ],
+   "why": "Filter the store by kind of thing."
+  },
+  {
+   "parent": "marketplace.publish",
+   "id": "marketplace.publish.links",
+   "title": "Share a skill or plugin by link",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/skill-share.ts",
+     "date": "2026-04-06",
+     "note": "youcoded://skill/... deep link."
+    }
+   ],
+   "why": "Send someone a link that installs your skill."
+  },
+  {
+   "parent": "marketplace.publish",
+   "id": "marketplace.publish.themes",
+   "title": "Publish a theme from the app",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "theme-marketplace-provider.ts publishTheme",
+     "date": "2026-04-07",
+     "note": "Theme pack goes to the registry as a pull request."
+    }
+   ],
+   "why": "Share a theme you built."
+  },
+  {
+   "parent": "marketplace.setup",
+   "id": "marketplace.setup.updates",
+   "title": "Update button and Updates tab",
+   "status": "done",
+   "since": "2026-08-30",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Theme Update badge",
+     "date": "2026-09-01",
+     "note": "Update badge is a working button."
+    },
+    {
+     "kind": "changelog",
+     "ref": "CHANGELOG.md 1.3.0",
+     "date": "2026-09-20",
+     "note": "Update actually updates."
+    }
+   ],
+   "why": "Installed things update from the card or the Library."
+  },
+  {
+   "parent": "marketplace.setup",
+   "id": "marketplace.setup.unsafe",
+   "title": "Warn when an installed plugin turns unsafe",
+   "status": "planned",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Installing and library (c)",
+     "date": "2026-09-01",
+     "note": "Nothing warns you today."
+    }
+   ],
+   "why": "Library rows never change when a plugin is later flagged."
+  },
+  {
+   "parent": "marketplace.browse",
+   "id": "marketplace.browse.promptpacks",
+   "title": "Packs that replace the assistant's instructions",
+   "status": "planned",
+   "since": "2026-08-27",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Parked ideas (a)",
+     "date": "2026-08-27",
+     "note": "Needs a safety boundary, preview and revert."
+    }
+   ],
+   "why": "Install a different personality or toolset like a theme."
+  },
+  {
+   "parent": "marketplace.publish",
+   "id": "marketplace.publish.tipjar",
+   "title": "Tip jar splitting donations among authors",
+   "status": "planned",
+   "since": "2026-08-27",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Parked ideas (c)",
+     "date": "2026-08-27",
+     "note": "No usage signal and no author payouts exist."
+    }
+   ],
+   "why": "Thank the people whose packs you use."
+  },
+  {
+   "parent": "marketplace.publish",
+   "id": "marketplace.publish.publicregistry",
+   "title": "WeCoded as a public registry others can read",
+   "status": "planned",
+   "since": "2026-08-27",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Parked ideas (b)",
+     "date": "2026-08-27",
+     "note": "After trust and abuse handling exist."
+    }
+   ],
+   "why": "Let other apps use the same store."
+  },
+  {
+   "parent": "social.friends",
+   "id": "social.friends.presence",
+   "title": "Online status, last seen and incognito",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/main/presence-socket.ts, ipc/game.ts",
+     "date": "2026-07-22",
+     "note": "Presence with incognito switch."
+    }
+   ],
+   "why": "See who is around; hide yourself if you like."
+  },
+  {
+   "parent": "social.friends",
+   "id": "social.friends.arcade",
+   "title": "The four-game arcade with leaderboards",
+   "status": "done",
+   "since": "2026-08-31",
+   "evidence": [
+    {
+     "kind": "shipped",
+     "ref": "docs/roadmap/shipped.md: Games arcade",
+     "date": "2026-08-31",
+     "note": "Connect 4, chess, Flappy, 2048."
+    }
+   ],
+   "why": "Games docked beside the chat."
+  },
+  {
+   "parent": "social.friends",
+   "id": "social.friends.gamechat",
+   "title": "Chat inside a match",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "code",
+     "ref": "desktop/src/renderer/components/game/GameChat.tsx",
+     "date": "2026-04-06",
+     "note": "In-match chat only."
+    }
+   ],
+   "why": "The only chat between players today."
+  },
+  {
+   "parent": "social.friends",
+   "id": "social.friends.forfeit",
+   "title": "Forfeit wins cannot be trusted",
+   "status": "planned",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "games.md",
+     "date": "2026-09-01",
+     "note": "One client's word; ROADMAP.md calls it blocking."
+    }
+   ],
+   "why": "A modified app could post a fake win."
+  },
+  {
+   "parent": "social.friends",
+   "id": "social.friends.signin",
+   "title": "Sign-in with GitHub for the YouCoded account",
+   "status": "done",
+   "since": null,
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "marketplace.md: Harden account sign-in",
+     "date": "2026-09-10",
+     "note": "Takeover hardening is P2, deferred."
+    }
+   ],
+   "why": "One account for comments, friends, games and sync."
+  },
+  {
+   "parent": "social.friends",
+   "id": "social.friends.signout",
+   "title": "Notice when you are silently signed out",
+   "status": "planned",
+   "since": "2026-09-01",
+   "evidence": [
+    {
+     "kind": "roadmap",
+     "ref": "other-features.md: Accounts (a)",
+     "date": "2026-09-01",
+     "note": "Friends see you offline forever; no on-screen notice."
+    }
+   ],
+   "why": "You find out only by opening the friends panel."
+  }
+ ],
+ "insights": {
+  "pages": [
+   "Pages live inside a sandbox that is the whole safety story and also the ceiling: a page cannot touch files, tools or the assistant. Nearly every vision item (files, assistant tasks, attached agents, servers, converted apps) means building another approved door; only four doors exist (web requests, a home device, live feeds and camera, a bank).",
+   "Connections, the Home page and the Money page are merged to master but in no numbered release: 1.3.0 (2026-09-20) came before Phase 2 (2026-09-23). The builder-skill update that teaches connections is finished and held on a marketplace branch for the release.",
+   "Home and Money are Destin's hand-installed personal pages; nothing ships them, and the roadmap says Money is not for the marketplace. The only planned path for anyone else to get a page is Phase 4, which is not designed.",
+   "Connections are set up in three styles of place: the page's approval card, the marketplace 'What this can do' wording (the page card borrows it) and assistant permission grants. They are not one list yet.",
+   "Weather, task board, trip board, paint and headlines pages do not exist as shipped pages; they appear only as sample pages in review decks. Pages are desktop only and the phone layout was never designed.",
+   "Pages talk to the rest of the app only through their folder and the page-data tool for the assistant; no link to agents, skills or sessions exists. Agent features under Pages depend on an agent object that does not exist."
+  ],
+  "marketplace": [
+   "The store is big (4,100+ listings in the app) but the 2026-08-31 check found no popularity data at all, so featured items are editorial. The registry repo itself holds only 359 hand-managed entries; the rest is mirrored.",
+   "Pages are not a kind of thing in the store. The store has five kinds plus themes; adding Pages means a new kind across the app, the service and the publisher, plus the unresolved trust-on-update design.",
+   "'Fork' in the code only means copying the registry on GitHub to open a pull request; there is no fork or family tree of listings, and no parent field to build one on.",
+   "Reviews, thumbs and bug reports are separate: the store has thumbs and comments (and a flag on reviews), the app's Report a bug goes to YouCoded's own GitHub, and nothing sends a problem to a listing's author.",
+   "The 'Likely safe' badge only checks for leaked secrets and file shapes, a gap that matters more once pages or servers can be published.",
+   "Assistant search of the store is a 1.3.1 blocker and unbuilt; two other setup helpers (assistant-led setup, integrations rebuild) exist only as research."
+  ],
+  "social": [
+   "Social is real but narrow: friends by handle, online status, and four games on desktop and Android, all tied to the same GitHub sign-in as marketplace comments and likes.",
+   "There are no direct messages and no sharing with friends. The only chat is inside a game, and share links go to anyone, not to a friend.",
+   "Both feeds ideas are really Pages features: the parked fediverse page waits on Pages sign-in and background refresh, and wrapping existing social sites waits on a website view that Pages cannot do yet.",
+   "The social base has open trust gaps: forfeit wins can be faked, a rejected call signs you out silently, account takeover via the sign-in link is rated medium and deferred, and the friends screen is buried inside the game lobby code.",
+   "Anything new (messages, sharing, feeds) would sit on the same small Cloudflare service and sign-in, so account safety work comes first."
+  ]
+ }
+}

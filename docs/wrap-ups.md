@@ -12,11 +12,11 @@ One entry per session, kept to a handful of lines:
 
 ```
 ## YYYY-MM-DD — what the session was doing (branch, or "no branch")
-- <finding, one line> → applied: <file> | roadmap: <area file> | dropped: <reason>  [cost, if measured]
+- <finding, one line> → applied: <file> | card: #<id> | dropped: <reason>  [cost, if measured]
 - deleted/merged: <what got smaller>, or "none found"
 ```
 
-Do not edit past entries. A finding that recurs gets a NEW line saying so, on the day it
+Entries before 2026-10-15 say `roadmap:` — the work cards replaced the roadmap that day. Do not edit past entries. A finding that recurs gets a NEW line saying so, on the day it
 recurred — the repetition is the data.
 
 ---
@@ -850,7 +850,7 @@ recurred — the repetition is the data.
 - Current live branding differs from this preserved branch; rejected dark first attempt was not the design authority → applied: inspected live and branch screenshots, used light lavender with current logo, left homepage/history untouched. Asset provenance is in `youcoded/docs/legal-assets/README.md`. Goal: avoid another stale-site redesign.
 - Preserve legal wording/dates and open website policies on both platforms → applied: independent Markdown-fidelity tests and desktop/Android About click tests, observed red before green; native disclosure has an accessible decorative chevron. Approval records include Destin's expandable-card preference. Goal: automate the invariants.
 - RECURRENCE: invalid Grep types and full-window review crops wasted calls; existing tool schema/authoring guidance already explain both → dropped new guidance; focused card crop made the follow-up comparison visible. No additional always-loaded rule.
-- Two verification runs each timed out opening one different screen; all other gates passed → unresolved evidence in `docs/active/design/2026-10-06-website-legal/status.md`. Dropped speculative timeout/concurrency changes from this task: root cause unproven, unrelated work must be preserved, separate investigation offered but not authorized. Not filed as a roadmap flake or claimed fixed.
+- Two verification runs each timed out opening one different screen; all other gates passed → unresolved evidence in `docs/archive/design/2026-10-06-website-legal/status.md`. Dropped speculative timeout/concurrency changes from this task: root cause unproven, unrelated work must be preserved, separate investigation offered but not authorized. Not filed as a roadmap flake or claimed fixed.
 - deleted/merged: removed the rejected wallpaper, dark panels and large hero styling; reused the generator and shared CSS for both policies. No further consolidation found.
 
 ## 2026-10-04 — brand icons built: glass app icon, theme icons on taskbar/Dock/tray, Mac Liquid Glass, a macOS 26 VM (session/brand-identity-v2, youcoded + wecoded-themes + workspace)

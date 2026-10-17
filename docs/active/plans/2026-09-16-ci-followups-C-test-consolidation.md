@@ -3,6 +3,8 @@ status: active
 ---
 # CI follow-ups C — file tests by feature, then consolidate the suite
 
+> **Status 2026-10-16:** mid-flight: test files went from 892 to 783 (merged 2026-09-18); more clusters remain. Progress is tracked in card #13 (`cards/13-flaky-and-load-sensitive-tests.md`, item (b) "finish Plan C").
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** New tests go into the file named for the thing they test, test names state behaviour, and the existing one-file-per-task sprawl (826 files, 62% in name clusters, 24 files for one 36-line module) is merged into one file per module or surface — without losing a single test (Destin's deck answer Q-5, 2026-09-16: "adopt the rule and consolidate now").
@@ -18,7 +20,7 @@ status: active
 - **Regenerate the inventory first** (`node scripts/test-inventory.mjs <worktree>/youcoded/desktop > docs/active/plans/2026-09-16-test-inventory.md`) and work from THAT; the committed one is a snapshot from before Plan B.
 - **Moves change no assertion.** A consolidation commit contains only: whole `describe`/`it` blocks moved, imports merged, duplicated `beforeEach`/helper setup collapsed into one, and comment lines deleted. If a test needs a behaviour change to survive the move, that is a separate commit with its own message, before or after the move.
 - **The count is the contract.** Before each cluster: `npx vitest run <the cluster's files> 2>&1 | grep 'Tests  '`. After: the same command on the target file(s). The passed count must be equal. Write both numbers into the commit message.
-- **Anything that names a moved file follows it.** After every move: `rg -n '<old basename without extension>' <worktree> --glob '!docs/archive/**' --glob '!node_modules'` — hits in `docs/MAP.md`, `.claude/rules/*.md` (`verify:` blocks and prose), `youcoded/docs/**`, `scripts/**` are updated in the same commit; hits in `docs/roadmap/**`, `docs/wrap-ups.md`, `docs/active/investigations/**` are history and stay. `node scripts/audit-anchors.mjs --no-diff` must not report `anchors` failures for the moved file (a `missing: youcoded/desktop/tests/<old>` line means you missed one).
+- **Anything that names a moved file follows it.** After every move: `rg -n '<old basename without extension>' <worktree> --glob '!docs/archive/**' --glob '!node_modules'` — hits in `docs/MAP.md`, `.claude/rules/*.md` (`verify:` blocks and prose), `youcoded/docs/**`, `scripts/**` are updated in the same commit; hits in `cards/**`, `docs/wrap-ups.md`, `docs/active/investigations/**` are history and stay. `node scripts/audit-anchors.mjs --no-diff` must not report `anchors` failures for the moved file (a `missing: youcoded/desktop/tests/<old>` line means you missed one).
 - **Stage by explicit path**, never `git add -A`. `// WHY` on any non-trivial edit. Commit messages end with `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>` (or the model in use).
 - **Verify** `bash scripts/verify.sh <worktree>/youcoded` after every cluster; `--full` plus `gh workflow run desktop-ci.yml --ref <branch>` before every PR. Master is protected: read a red check, never re-run it blind.
 - Opening PRs is authorised (Destin, 2026-09-16); merging is not — each PR ends with a chat report and **ready to merge?**. The clusters are independent: while one PR waits, start the next cluster on a fresh branch off `origin/master`.
@@ -125,7 +127,7 @@ Run the checker: expected `OK` under both headings. Invert: put `(T99)` into one
 ## A test lives with its feature and is named for its behaviour
 **Invariant:** a new test goes in `tests/<module>.test.ts` (or `tests/<Surface>.test.tsx`),
 the file named for what it renders or calls — never a new file per task. Its title states the
-behaviour; no dates, `§`, task ids or review rounds (those go in git history and the roadmap).
+behaviour; no dates, `§`, task ids or review rounds (those go in git history and the cards).
 Shared setup lives in `tests/helpers/`. **Why:** 826 files, 62% in name clusters, 24 files for
 one 36-line module (2026-09-16). **Guard:** `scripts/ast-grep/rules/test-name-describes-behaviour.yml`.
 ```
@@ -237,9 +239,9 @@ Order (from the 2026-09-16 inventory; re-read the regenerated one): `remote-` 54
 
 Total cases at the start of Plan C (Task 1 Step 5's full run) minus every deleted title named in the commit messages (`git log --grep 'deleted' --format=%B origin/master..HEAD | rg -c '^- deleted'` after you have listed them that way) equals today's `Tests N passed`. Write the arithmetic into the final PR body.
 
-- [ ] **Step 3: Close the roadmap and the plan**
+- [ ] **Step 3: Close the card and the plan**
 
-In `docs/roadmap/dev-workspace.md` → tests, delete the entries this plan resolved (search the file for `one file per task`, `826`, `consolidat`); append one closure line to `docs/roadmap/shipped.md`. Set this plan's `status:` to `shipped` and move it to `docs/archive/plans/`; the inventory script stays (it is now the suite's own health check — add a line to `docs/workspace-workflows.md` → Local build & test: "`node scripts/test-inventory.mjs` shows which test files share a subject; a new cluster is a rule violation, not a style choice").
+The old roadmap became cards on 2026-10-15: record what this plan resolved in `cards/13-flaky-and-load-sensitive-tests.md` (card #13) (search it for `one file per task`, `826`, `consolidat`); when the card's work is all done, `node scripts/cards.mjs close 14 --ref "<commit or PR>"`. Set this plan's `status:` to `shipped` and move it to `docs/archive/plans/`; the inventory script stays (it is now the suite's own health check — add a line to `docs/workspace-workflows.md` → Local build & test: "`node scripts/test-inventory.mjs` shows which test files share a subject; a new cluster is a rule violation, not a style choice").
 
 - [ ] **Step 4: Final PR and stop**
 

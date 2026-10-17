@@ -8,8 +8,10 @@ tags: [agents, harness, workflow, productivity, practices]
 
 # What the best agent operators actually do
 
-> **REVIEW 2026-08-26 — KEEP ACTIVE. Live input to open work.** `ROADMAP.md`'s
-> "context + knowledge app features" item names this document as its background, and its five
+> **Status 2026-10-16:** still a valid dated reference (it describes other people's harnesses). The ideas it fed are now item (g) of card #63 (context and knowledge as product surfaces); the old roadmap item that named this document was retired 2026-10-15.
+
+> **REVIEW 2026-08-26 — KEEP ACTIVE. Live input to open work.** Card #63 item (g)
+> (the old roadmap's "context + knowledge app features" item) names this document as its background, and its five
 > sequenced ideas (ContextPopup as a real surface → correction capture → work state as an object →
 > shareable knowledge packs → provenance/revocation) come out of Part 2 here. Re-archive together
 > with `docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md` when that item

@@ -1,0 +1,84 @@
+{
+ "deck": "work-cards-next-questions",
+ "started": "2026-10-16T16:48:21.065Z",
+ "submitted": "2026-10-16T16:59:48Z",
+ "cur": 3,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "page-says",
+   "t": 1792169357089,
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "read-write",
+   "t": 1792169357089,
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1792169357089,
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "yes",
+   "t": 1792169747036,
+   "seconds": 130,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "master-direct",
+   "t": 1792169747036,
+   "seconds": 130,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "via-chat",
+   "t": 1792169747036,
+   "seconds": 130,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "your-page",
+   "t": 1792169909446,
+   "note": "I never asked for this t9 bebuiltin",
+   "seconds": 81,
+   "theme": "morning-rounds"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "like-a-page",
+   "t": 1792169909446,
+   "seconds": 81,
+   "theme": "morning-rounds"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "finish-first",
+   "t": 1792169986879,
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "live-now",
+   "t": 1792169986879,
+   "seconds": 26,
+   "theme": "morning-rounds"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1792169986879,
+   "note": "Iwill deal withtheselater",
+   "seconds": 26,
+   "theme": "morning-rounds"
+  }
+ }
+}
