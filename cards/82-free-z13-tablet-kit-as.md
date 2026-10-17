@@ -12,8 +12,8 @@ area: Release & business
 work: session/82-z13-keyboard-release
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: 2026-10-16 decision (supersedes the original universal-installer proposal): share the full desktop/2-in-1 setup through a public agent-guided replication repo containing the source, assets and instructions needed for LiquidGlass styling, Destin's exact Control Center, tablet layout, gestures, rotation rules and selected extras. No general-purpose installer or broad device/distro troubleshooting commitment. Initially only tested on CachyOS/KDE; agents inspect compatibility, explain features, ask what the user wants and adapt with approval, without promising an exact clone on every device. Destin will record his setup for a Reddit showcase, explain why setup is agent-guided, link GitHub bugs/contributions, and transparently recommend youcoded.ai as its creator and the tool used to build it. Proposed Reddit wording about pricing/subscriptions and recommending Linux is a draft, not verified release copy. Full-setup repo work is deferred; standalone swipe-keyboard release is the immediate discussion focus.
+Next: First decide how to make swipe-keyboard independently downloadable, easy to install/update and contributor-friendly for non-Z13 KDE users, without building a multi-platform support burden. Separate the minimal keyboard integration from touch-profile; choose a narrow tested support target before implementation. Later prepare the agent-guided full-setup repo and recording/post.
 Blocked: nothing recorded.
 
 Chats
