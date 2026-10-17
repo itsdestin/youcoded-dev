@@ -1,7 +1,7 @@
 ---
 id: 153
 title: Work items, the Work board, and pages that see chats and run programs
-stage: polish
+stage: merged
 tags: dev-workspace, pages, feature
 vision: pages.build.create
 branch: 153-work-items-the-work-board
