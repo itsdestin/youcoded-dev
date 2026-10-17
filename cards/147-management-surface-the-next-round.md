@@ -10,6 +10,7 @@ summary: Three follow-ups: rebuild priority and version tags, make Screens compl
 area: Developer tools
 side: screens
 vision: together.workflow.surface
+work: session/work-cards-20261014
 ---
 Progress
 Done: the Work board runs as Destin's own YouCoded page (merged 2026-10-16)
@@ -17,6 +18,7 @@ Next: the three follow-ups below, starting with a full human review in a new ses
 Blocked: nothing.
 
 Chats
+- 2026-10-17 session/work-cards-20261014: built the Work board this round builds on (merged 2026-10-16)
 
 What it covers (Destin, 2026-10-16)
 1. Rebuild priority and version tagging for the new management surfaces. Both were scrapped from the
