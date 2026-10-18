@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2
+work: session/release-1-3-2, session/29-beta-counter-reset
 ---
 Progress
 Done: YouCoded v1.3.1 published from approved candidate via PR #628. Both official release workflows passed; downloaded desktop installers match the valid signed updater manifest; Android APK/AAB signatures and corresponding-source checksum/binary hashes verified.
@@ -18,6 +18,7 @@ Next: Current-build 1.3.1 release is complete. Keep broader release-pipeline imp
 Blocked: No remaining 1.3.1 publication blocker. Separate dependency/workspace improvements remain review-only.
 
 Chats
+- 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
 
 From the old roadmap (dev-workspace › release, status confirmed, seen on n/a, last checked 2026-09-20)
