@@ -12,7 +12,7 @@ work: session/google-connections-planning, session/155-google-files
 ---
 Progress
 Done: Recovered decisions and historical findings into master planning: #155 files first; #156 Calendar; #157 Gmail; #158 Microsoft/Apple; #159 contacts/tasks; #160 desktop-control exploration. Linked existing #90 Pages, #124 credential-sync deferral, #47 model-data policy disclosures, #87 shipped-browser follow-ups, #51 Todoist/Messages findings. Approved direction distinguished from proposals and stale research. No app code, live accounts or settings changed.
-Next: Answer the optional built-in-browser question (separate website sign-in, wider access than attached files); then mock approved per-chat selected files, original-save default and Google opening in the real renderer. No backend implementation yet.
+Next: Complete real-renderer mockups, fresh UX tester, then numbered before/after design deck. Decisions settled: attach-per-chat; update original by default with copy choice; open Google externally only. Backend begins only after UI contract approval.
 Blocked: No implementation blocker established; UI contract and exact OAuth/data-policy checks still required.
 
 Chats
