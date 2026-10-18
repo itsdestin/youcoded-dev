@@ -41,7 +41,7 @@ test('memory growth per hour is first minute -> last minute of each hour', () =>
 
 test('causeOfFrame reads plainly', () => {
   assert.match(causeOfFrame({ d: 300, sl: 250, sc: [] }), /style & layout/);
-  assert.match(causeOfFrame({ d: 300, sl: 0, sc: [] }), /no script of ours/);
+  assert.match(causeOfFrame({ d: 300, sl: 0, sc: [] }), /unattributed.*no script timing recorded/);
   assert.match(causeOfFrame({ d: 300, sl: 0, sc: [{ d: 280, fl: 200, fn: 'measure', src: 'a.js' }] }), /forced layout inside measure/);
 });
 
@@ -92,7 +92,8 @@ test('a request is named only if it started inside the stall, worded as a maybe'
 
 test('the text report says stall lengths are approximate', () => {
   const { rows } = readLines([sample], 0);
-  assert.match(render(analyse(rows), 0), /accurate to about \+\/- 50 ms/);
+  assert.match(render(analyse(rows), 0), /timer-only measurements are lower bounds/);
+  assert.doesNotMatch(render(analyse(rows), 0), /accurate to about \+\/- 50 ms/);
 });
 
 // ── Switching sessions (switch marks, 2026-10-05) ────────────────────────────────────────────────────────────────────
