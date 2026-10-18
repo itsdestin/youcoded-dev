@@ -1,0 +1,20 @@
+{
+  "title": "Linux updates — current action in the button only",
+  "key": "linux-update-feedback-3",
+  "out": "linux-update-feedback.review-3.html",
+  "images": "images/linux-update-feedback.review-3",
+  "stage": "review",
+  "runs": { "before": "runs-3/before", "after": "runs-3/after" },
+  "themes": ["light", "midnight", "halftone-dimension", "meadow-mist"],
+  "steps": [
+    {
+      "id": "LU-2",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer",
+      "crop": "chat/update#installing@640x180+400+490",
+      "headline": "The button shows the current action. Nothing expands or appears underneath.",
+      "changed": "Removed Details and all helper text. The button updates with the installer's latest reported action.",
+      "notice": "Same button styling throughout. Errors keep the handling you already approved. Scripted preview; no real installation."
+    }
+  ]
+}

@@ -10,13 +10,29 @@ why: Destin, 2026-10-16: "are you sure its being fixed? i dont see any agents ru
 summary: A chat on YouCoded's own engine can stop before the job is done while saying work is still running.
 area: Chat
 side: behind
+work: session/148-harness-performance-lab
 ---
 Progress
-Done: nothing yet.
-Next: not decided.
-Blocked: nothing.
+Done: Gemini text transport retry passed within original USD10 cap using refreshed endpoint-specific pricing and USD0.47 reservation; no old hold reclaimed. Actual native Qwen two-turn client check failed upstream before any tool/verifier result, retained USD0.50. Fixed gateway budget denials to non-retryable402 and now retain upstream HTTP status. 21 focused tests pass. All five text canaries validated; actual OpenRouter usage USD0.000041446.
+Next: Obtain sufficient approved reservation headroom, then diagnose native tool/continuity request failure with improved diagnostics and validate Pi/OpenCode conversations before full suite.
+Blocked: Conservative ledger USD9.734296196, remaining USD0.265703804 under unchanged USD10 cap; this is not actual spending. Unknown failure holds retained. Gateway/container network stopped. Comprehensive readiness false; no full evaluation.
 
 Chats
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
 
 From the old roadmap (moved 2026-10-16)
 Native sessions stop working before the job is done, and say it is still going. Destin,

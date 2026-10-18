@@ -1,24 +1,23 @@
 ---
 id: 33
-title: Release blocker: search stops early in big projects
+title: Search stops early in big projects
 stage: planning
 priority: P1
 tags: files, projects, desktop, bug
-release: v1.3.1
 report: docs/active/specs/2026-09-18-project-files-background-index.md
 branch: 33-v1-3-1-release-blocker
 roadmap: files: v1.3.1 release blocker: searching a big project stops early,
 created: 2026-10-15
-summary: In big projects, file search stops at 2,000 files and text search at 200 matches, with no way to see the rest.
+summary: File discovery can be incomplete and text search stops at 200 matches; complete search remains future work, not a 1.3.1 gate.
 area: Files & documents
 side: both
 platform: Desktop only
 vision: projects.folder.bigsearch
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Release audit confirmed the remaining limitation; Destin explicitly deferred this item from 1.3.1. No implementation was shipped or marked fixed.
+Next: Remain open for future scoped work; not a gate for the current 1.3.1 candidate.
+Blocked: Not blocking 1.3.1 by explicit decision. Future product/design choices remain separate.
 
 Chats
 

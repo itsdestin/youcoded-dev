@@ -6,7 +6,7 @@ This file now holds **only cross-repo invariants** — constraints that span two
 
 ## Releases
 
-- **CI stamps the Android version: `versionName` from the tag or `<base>.<run>`, `versionCode` = `100 + run_number` of `android-release.yml`.** Hand-set values in the gradle file are local-only. *Why:* every beta shipped as `20 / 1.2.4`; a run counter is monotonic, as Play requires. *Guard:* `desktop/tests/android-shell.test.ts`.
+- **Android CI stamps `versionName` from the tag or release-scoped beta resolver; `versionCode` = `100 + run_number` of `android-release.yml`.** Visible beta numbers reset after official releases; `versionCode` must keep increasing for Android upgrades. Hand-set Gradle values are local-only. *Guard:* `desktop/tests/android-shell.test.ts`, `scripts/beta-version.test.mjs` (app repo).
 - **One `vX.Y.Z` tag on youcoded master ships all platforms.** It triggers both `android-release.yml` and `desktop-release.yml` → a single GitHub Release with APK/AAB + Win/Mac/Linux installers. *Why:* coordinated cross-platform release. *Guard:* CI workflows.
 - **Desktop version comes from the git tag, not `package.json`.** CI extracts the version from the tag and patches `package.json` during build. *Guard:* `desktop-release.yml`.
 - **`youcoded-core` is archived and read-only, never a release target.** Hook fixes land in the app's bundled `desktop/hook-scripts/` (the phone installs the same files), not the old plugin. *Guard:* `youcoded/desktop/tests/write-guard-contract.test.ts` and `.claude/rules/youcoded-toolkit.md`.
