@@ -16,9 +16,9 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Pages can now ask to see and change chats and to run a program from their own folder (youcoded, merged 2026-10-16)
-Next: a release carrying them; then merge wecoded-marketplace session/page-skill-chats-programs (the skill update) and install the Work board
-Blocked: nothing recorded.
+Done: YouCoded 1.3.1 released with Pages chats/program/startSession abilities. Held connections, start-session and chats/program skill updates published in wecoded-marketplace#110 (Page Builder 0.2.0), with corrected permission examples and source-reviewed home-device/socket/video reference. Work board tests passed 9/9; current app master CI passed Linux, macOS, Windows and Android.
+Next: Work board installation is queued after natural YouCoded exit via user unit youcoded-work-board-postrelease-131; receipt: /home/destin/.cache/youcoded-postrelease-131/install-result.json. After reopening, approve its chat/program/session permissions and check the board and status-bar repo chip visually. Broader Pages phases/follow-ups remain open.
+Blocked: No merge blocker. Work board runtime verification awaits after-exit installation and user approval; no live app mutation performed.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
