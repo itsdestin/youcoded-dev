@@ -10,6 +10,7 @@ why: Destin, 2026-10-16: "are you sure its being fixed? i dont see any agents ru
 summary: A chat on YouCoded's own engine can stop before the job is done while saying work is still running.
 area: Chat
 side: behind
+work: session/148-harness-performance-lab
 ---
 Progress
 Done: nothing yet.
@@ -17,6 +18,7 @@ Next: not decided.
 Blocked: nothing.
 
 Chats
+- 2026-10-18 session/148-harness-performance-lab: chat started
 
 From the old roadmap (moved 2026-10-16)
 Native sessions stop working before the job is done, and say it is still going. Destin,
