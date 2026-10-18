@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Reproduced Resume all serial barrier (only one of three creates starts while first is blocked); implemented concurrent independent restores, FIFO ownership prompts and history-isolation tests. Existing native resume/background safety subset: 48 passed.
+Next: Finish fresh-review transfer-deferral regression and final desktop verification; changes remain local and unshipped.
+Blocked: No live-app testing or deployment performed.
 
 Chats
 - 2026-10-18 session/welcome-back-recovery: Investigating and fixing serial crash recovery with concurrent restore and ownership/message safety tests
