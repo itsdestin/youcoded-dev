@@ -11,6 +11,7 @@ summary: Old password files may stay in sync history, Android backups copy servi
 area: Devices & sync
 side: behind
 vision: sync.added.securitygaps
+work: session/google-connections-planning
 ---
 Progress
 Done: nothing recorded.
@@ -18,6 +19,7 @@ Next: check it still happens.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/google-connections-planning: Recovered parked connection-sync idea: Google/Outlook/iCloud connections remain per-device; user explicitly deferred syncing sign-ins because of risk (September 27: "i dont want to deal with the risk rn"). Not approved implementation and not a prerequisite for #155-159. Future design must examine credential transport/storage; paired-phone use of a host connection is distinct from copying credentials. Source: cceb33f0:docs/roadmap/sync.md and docs/active/design/2026-09-26-everyday-actions/proposal.md section 8. Preservation only.
 
 From the old roadmap (sync, status needs-verify, seen on all, last checked 2026-09-21)
 Sync security gaps: three things that could expose secrets or let one device pose as another. (a) A project where an older app version uploaded a password file (like `.env`) keeps that copy online and in history; new edits stay on the device, but removing it means rewriting the project's history on every device (decided out of scope, 2026-09-23). (b) The Android app's GitHub backup copies `mcp.json` (which can hold service keys) and settings into the backup repository; the desktop app no longer has this backup. (c) The sync worker accepts whatever device id a lease message claims without checking the signed-in connection, so a client in your account could act as another of your devices (decided 2026-09-21 to file as a potential issue, not fix now; report: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md).
