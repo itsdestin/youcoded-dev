@@ -13,8 +13,8 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset
 ---
 Progress
-Done: Implemented release-scoped beta numbering across desktop and Android workflows; auto-select next patch; 11 resolver tests and parsed workflow guards pass, verify.sh and actionlint pass; read-only GitHub preview gives 1.3.2-beta.1 for all next beta paths.
-Next: Independent review, then await Destin's decision on the local changes; no build dispatch or publication.
+Done: Release-scoped beta numbering implemented across all three workflows. 12 resolver tests and 64 focused updater/workflow/Android-identity tests pass; actionlint passes. Independent-review findings on newly created workflows and future-prefix collisions reproduced and corrected. Actual GitHub-history preview: next beta is 1.3.2-beta.1.
+Next: Finish final independent re-review and desktop/docs checks; fix remains local and uncommitted, no dispatch or publication.
 Blocked: No remaining 1.3.1 publication blocker. Separate dependency/workspace improvements remain review-only.
 
 Chats
