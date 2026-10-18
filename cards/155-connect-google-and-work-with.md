@@ -11,8 +11,8 @@ why: Destin, 2026-10-17: "i want a simple and straightforward integration with g
 work: session/google-connections-planning, session/155-google-files
 ---
 Progress
-Done: Recovered decisions and historical findings into master planning: #155 files first; #156 Calendar; #157 Gmail; #158 Microsoft/Apple; #159 contacts/tasks; #160 desktop-control exploration. Linked existing #90 Pages, #124 credential-sync deferral, #47 model-data policy disclosures, #87 shipped-browser follow-ups, #51 Todoist/Messages findings. Approved direction distinguished from proposals and stale research. No app code, live accounts or settings changed.
-Next: Complete real-renderer mockups, fresh UX tester, then numbered before/after design deck. Decisions settled: attach-per-chat; update original by default with copy choice; open Google externally only. Backend begins only after UI contract approval.
+Done: Company Google project youcoded/558270007163 under youcoded.ai verified; five document/Picker APIs enabled; billing disabled. Real desktop native-assistant service/UI/tool wired, private OAuth config outside repo. Typecheck and 90 focused tests passed. Separate Google Files dev window opened at Connected services; user sign-in test pending. Not yet verified against a live Google document.
+Next: Finish three accepted static-review fixes (copy stale-content check, Sheets batch save, missing-file listing), rerun full verification, then live selected-file read/approved save with user. Desktop native slice only; Claude Code relay, phone authorization and broad formatting remain incomplete. See session/155-google-files docs/active/design/2026-10-17-google-files/build-status.md.
 Blocked: No implementation blocker established; UI contract and exact OAuth/data-policy checks still required.
 
 Chats
