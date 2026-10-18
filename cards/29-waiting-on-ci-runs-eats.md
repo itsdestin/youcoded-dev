@@ -14,9 +14,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Candidate fixes are backed up on release/1.3.1-preflight-20261016. Full Windows/macOS/Linux desktop CI passed at cbb1f4473; local Android runtime and 108 unit-test executions passed. Dependency-source implementation is reviewed and still local-only.
+Next: Finish actual Android APK/source-archive preflight; review older v1.3.1 blocker cards against current code; complete Apple signing after activation and obtain final release go/no-go.
+Blocked: Publication held by Destin until paid Apple Developer membership activates; Apple signing credentials and final publication approval are not yet present.
 
 Chats
 - 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
