@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery
 ---
 Progress
-Done: Reproduced Resume all serial barrier (only one of three creates starts while first is blocked); implemented concurrent independent restores, FIFO ownership prompts and history-isolation tests. Existing native resume/background safety subset: 48 passed.
-Next: Finish fresh-review transfer-deferral regression and final desktop verification; changes remain local and unshipped.
-Blocked: No live-app testing or deployment performed.
+Done: Concurrent recovery implemented; 83 focused regressions and 48 native resume/background safety tests passed. Fresh reviewer has no outstanding findings after explicit second-transfer deferral fix. Existing admission, writer ownership and transcript paths preserved.
+Next: Resolve intermittent unrelated Pages Kit menu screenshot failure, then rerun final full desktop verification.
+Blocked: Final verification: screenshot pair occasionally looks identical; a worker is investigating the capture-readiness race. Recovery code is local, uncommitted and unshipped.
 
 Chats
 - 2026-10-18 session/welcome-back-recovery: Investigating and fixing serial crash recovery with concurrent restore and ownership/message safety tests
