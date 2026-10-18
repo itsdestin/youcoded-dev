@@ -12,7 +12,7 @@ created: 2026-10-15
 summary: Pages work today; next comes letting pages run assistant tasks, use files and be shared, plus seven follow-ups and decisions.
 area: Pages
 side: both
-work: session/page-start-session, session/ha-pages-connection
+work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
@@ -23,6 +23,7 @@ Blocked: nothing recorded.
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
+- 2026-10-18 session/google-connections-planning: Recovered later idea, not implemented scope: unified calendar/to-do Pages across providers, with a local holding space that can show an action waiting for another device (for example Apple Reminders waiting for the Mac). User requested this as a later follow-up; exact queue/sync design is unapproved. Depends on relevant connection capabilities (#156/#158/#159), NOT on syncing credentials. Source: 109a2161:docs/active/design/2026-09-26-everyday-actions/questions.answers.json Q-actions; proposal.md section 6. Preservation only; this session is not building Pages.
 
 From the old roadmap (other-features › misc, status in-flight, seen on all, last checked 2026-09-23)
 YouCoded Pages: let people create and install their own native-looking pages, from dashboards and paint studios to specialized assistants, and pin favorites beside Projects. Scope approved (live themes, personal and project pages, marketplace pages, controlled outside access); desktop and paired remote first. Phase 1 (shell, page view, pins, creator skill, page data, floating themes) and Phase 2 (connections and refresh) are on master; Destin tested a live dashboard and a keyed weather page. 2026-10-07: a page's home-device connection (approval with address + key), a live connection for pages, camera video played by the app, see-through page glass and the hand-installed Home Assistant Home page merged (youcoded#611, youcoded-dev#244) (record: docs/archive/handoffs/2026-10-05-home-page-state.md). Next: Phases 3–4 (model tasks, files, marketplace); later, chat-alongside visual editing and durable automation. 2026-10-08: the Money page (Plaid bank connection for pages, bills and subscription review) merged (youcoded#615), kept as Destin's personal page, not for the marketplace. Destin 2026-10-05 triage (roadmap-triage-2026-10-05#16): next phases postponed — "finsih in 1.3.2/1.3.3"
