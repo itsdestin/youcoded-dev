@@ -35,8 +35,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  anchors:
-    name: Anchors and invariants
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      lane: ${{ steps.route.outputs.lane }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Install workflow contract parser
+        # WHY: actual YAML fields must be checked; text matches accepted a disabled gate.
+        run: |
+          python3 -m venv "$RUNNER_TEMP/ci-yaml"
+          "$RUNNER_TEMP/ci-yaml/bin/pip" install --disable-pip-version-check 'PyYAML==6.0.3'
+          echo "CI_YAML_PYTHON=$RUNNER_TEMP/ci-yaml/bin/python" >> "$GITHUB_ENV"
+      - name: Test CI routing and completion
+        run: node --test scripts/ci-workspace.test.mjs
+      - name: Classify candidate changes
+        id: route
+        run: node scripts/ci-workspace.mjs changes
+
+  # WHY: progress/link edits need graph validation, not unrelated rigs or clones.
+  cards:
+    needs: changes
+    if: needs.changes.outputs.lane == 'cards'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Validate the complete candidate card graph
+        # WHY --root: the ordinary read command follows master; CI must check THIS candidate.
+        run: node scripts/cards.mjs check --root .
+
+  full:
+    name: Full workspace checks
+    needs: changes
+    if: needs.changes.outputs.lane == 'full'
     runs-on: ubuntu-latest
 
     steps:
@@ -277,7 +316,7 @@ jobs:
       # session that wrote the card; this is the backstop for shell and app-agent writes.
       - name: Cards check
         if: ${{ !cancelled() }}
-        run: node scripts/cards.mjs check
+        run: node scripts/cards.mjs check --root .
 
       # check.sh falls back to `npx --yes @ast-grep/cli` when the binary is
       # absent, which re-resolves the package on every invocation. Installing it
@@ -298,3 +337,20 @@ jobs:
       - name: Executable invariants (ast-grep)
         if: ${{ !cancelled() }}
         run: bash scripts/ast-grep/check.sh
+
+  # WHY: skipped/failed routing must never masquerade as a successful fast lane.
+  # Preserve the existing public check name for every route, including errors.
+  anchors:
+    name: Anchors and invariants
+    if: always()
+    needs: [changes, cards, full]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Require the selected checks to succeed
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/ci-workspace.mjs gate
