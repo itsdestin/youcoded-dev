@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2, session/29-beta-counter-reset
+work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths
 ---
 Progress
 Done: Beta-numbering subtask shipped: app PR633 (7b994067d) and workspace PR269 merged. Visible beta counters reset per official release; next line selected automatically. 14 resolver tests, local desktop verification, Desktop and Android PR CI, workflow lint and documentation CI passed.
@@ -18,6 +18,7 @@ Next: Remaining release-pipeline work on this umbrella card stays open. CI perfo
 Blocked: No blocker for beta-numbering subtask.
 
 Chats
+- 2026-10-18 session/29-ci-fastpaths: chat started
 - 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/29-beta-counter-reset: chat started
 - 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
