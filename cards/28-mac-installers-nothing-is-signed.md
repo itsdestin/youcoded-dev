@@ -17,9 +17,9 @@ work: session/auto-update-roadmap-20261014, session/release-1-3-2
 vision: everywhere.added.macsign
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: yes — the old roadmap marked it blocked; see below.
+Done: Destin reports Developer Program signup completed and USD99 paid; account currently says payment processing may take up to24h. Existing ad-hoc signing and absence of Apple CI secrets verified; no configuration changed.
+Next: Once membership is active, prepare a public CSR, obtain Developer ID Application certificate and notarization credentials securely, then verify actual signed/notarized Mac builds.
+Blocked: Apple payment/enrollment activation pending; do not treat the older refusal note as the latest status. Publication remains held by request.
 
 Chats
 - 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
