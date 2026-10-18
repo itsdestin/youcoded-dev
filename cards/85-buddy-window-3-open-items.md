@@ -20,6 +20,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/85-windows-131-regressions: Windows buddy and send failures fixed and VM-verified; watcher blocking probes replaced; local app commit 6df630783.
 - 2026-10-18 session/85-windows-131-regressions: chat started
 
 From the old roadmap (other-features › buddy, status confirmed, seen on desktop, last checked 2026-09-01)
