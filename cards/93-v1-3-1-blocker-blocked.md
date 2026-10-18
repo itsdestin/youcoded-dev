@@ -21,6 +21,7 @@ Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. O
 Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified. Current additional work has no implementation blocker; original incident remains unconfirmed and the installed app is unchanged. Android runtime packaging needs apk-version tooling.
 
 Chats
+- 2026-10-18 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/85-windows-131-regressions: Merged watcher responsiveness/ordering fixes in youcoded#632 (1e8797ec3). User reported OneDrive downloads freezing the app/computer; authenticated OneDrive hydration remains unverified and the unfinished cloud-download-consent work is not claimed implemented. See docs/archive/plans/2026-10-18-windows-131-regressions.md; this does not close the broader freeze items.
 - 2026-10-18 session/93-file-viewer-freezes: Remaining audit-only leads: engine/rocm-prereqs.ts and models/gpu-detector.ts still use synchronous hardware subprocess probes; renderer/hooks/useInlineFilepathDetector.ts repeatedly scans earlier matches for overlap on large path lists. Neither was established as the image-opening freeze cause or fixed in this branch; retain for targeted reproduction, not a closed incident.
 - 2026-10-18 session/93-file-viewer-freezes: chat started
