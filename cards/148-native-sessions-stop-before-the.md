@@ -13,9 +13,9 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Added offline evidence scoring for follow-through/recovery/safety, success within named time/token/cost budgets, coherent edit chains and per-input request counts, progress versus final messages, configuration comparability, grader disagreement/order bias/human calibration, and unified concise report. Fresh review fixes applied. 101 Node tests, 28 Python tests and desktop verify pass. OpenRouter key saved privately; metadata check valid with USD20 non-resetting cap, zero usage. No new paid evaluation calls.
-Next: Finish shared OpenRouter cumulative-budget transport and stateful competitor evidence collection before full multi-model run; retain incomplete background/stale-race/threshold-context/human-calibration coverage as explicit gates.
-Blocked: No credential blocker. Comprehensive readiness remains false; account key limit does not enlarge approved pilot spend. Source local/uncommitted; newer master changes require integration review before shipping.
+Done: Built shared OpenRouter proxy and durable exclusive budget ledger; fixed review findings for stale-lock races, directory fsync, backpressure cancellation and exposure opt-in. Added stateful client run/resume composition plus actual native offline scenarios for stale-write rejection, root clarification oracle, background continuation and automatic context pressure. 131 Node tests, 36 Python tests, desktop verify pass. Tiny route canaries: Haiku/Luna/DeepSeek/Qwen pass; Gemini404 retained reservation. OpenRouter reported total USD0.000034946, no full evaluation.
+Next: Resolve Gemini route canary within reconciled/approved budget; validate actual client tool/continuity routes and equivalent competitor fault evidence, then freeze held-out suite before full multi-model numbers. Evidence in EXECUTION.md and 2026-10-18-openrouter-transport-preflight.md.
+Blocked: Full readiness intentionally false. Conservative cumulative ledger is USD9.234289696 including prior and unknown/error upper reservations, not actual bill. Gateway stopped cleanly. Source local/uncommitted; account capUSD20 does not authorize expanding pilot capUSD10.
 
 Chats
 - 2026-10-18 session/148-harness-performance-lab: chat started
