@@ -12,7 +12,7 @@ work: session/google-connections-planning, session/155-google-files
 ---
 Progress
 Done: Recovered decisions and historical findings into master planning: #155 files first; #156 Calendar; #157 Gmail; #158 Microsoft/Apple; #159 contacts/tasks; #160 desktop-control exploration. Linked existing #90 Pages, #124 credential-sync deferral, #47 model-data policy disclosures, #87 shipped-browser follow-ups, #51 Todoist/Messages findings. Approved direction distinguished from proposals and stale research. No app code, live accounts or settings changed.
-Next: Design the connection/account and select-create-edit-save flow. Resolve account routing, file access versus chat attachment lifetime, reconnect/revocation, action approvals, conflict handling, desktop/Android/remote and both assistant engines. Reuse old capability knowledge, not the old broad OAuth scopes. Then approve implementation plan.
+Next: Await the three design choices in docs/active/design/2026-10-17-google-files/google-files.questions.json on session/155-google-files: reuse across chats, original/copy default, external opening/in-app preview. Context.md records current Google desktop/mobile picker constraints (system browser, drive.file-only flow, consent when adding files). Then mock the UI and obtain approval before backend implementation.
 Blocked: No implementation blocker established; UI contract and exact OAuth/data-policy checks still required.
 
 Chats
