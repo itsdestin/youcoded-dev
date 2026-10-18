@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Close-out report for a merged branch. READ-ONLY — it changes nothing, and it
-# ALWAYS EXITS 0. It is advisory; do not gate anything on its exit code.
+# Advisory close-out report for a branch. Refreshes local Git metadata
+# (fetch/prune); does not edit working files, merge, push, or delete local
+# branches/worktrees. ALWAYS EXITS 0; do not gate anything on its exit code.
 #
 # Usage: bash scripts/close-out.sh <branch> [<repo-dir>]
 #   e.g. bash scripts/close-out.sh feat/games-arcade-shell youcoded
