@@ -63,7 +63,8 @@ export function onMaster(workspace, message, edit, { remote = 'origin', branch =
     const paths = [CARDS_DIR, SHIPPED].filter((p) => fs.existsSync(path.join(dir, p)));
     git(dir, ['add', '-A', '--', ...paths]);
     if (!git(dir, ['status', '--porcelain', '--', ...paths])) return { result, commit: null, pushed: false };
-    git(dir, ['commit', '-q', '-m', `${message}\n\nCo-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>`, '--', ...paths]);
+    // WHY: automatic card saves must keep the same required footer as manual assistant commits.
+    git(dir, ['commit', '-q', '-m', `${message}\n\nCo-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>\n\nSubmitted via YouCoded Assistant`, '--', ...paths]);
     try {
       git(dir, ['push', '-q', remote, `HEAD:${branch}`]);
       return { result, commit: git(dir, ['rev-parse', '--short', 'HEAD']), pushed: true };

@@ -11,7 +11,7 @@
     { "typeSlow": "chart this for me so i can actually read it", "cps": 32 },
     { "key": "Enter", "settle": 300 },
     { "waitForText": "you can edit it right here", "timeout": 25000, "settle": 500 },
-    { "click": "button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']", "settle": 600 },
+    { "click": "button[title='Session files'], button[aria-label='Session files'], button[data-hint='Session files']", "settle": 600 },
     { "clickText": "Q3-sales.html", "settle": 1100 },
     { "click": "button[title='Hide list'], button[data-hint='Hide list']", "settle": 600 },
     { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Edit')", "settle": 700 },

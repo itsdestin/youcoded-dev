@@ -39,6 +39,7 @@ test('an item change lands on master at once, from the dedicated copy', () => {
   assert.equal(r.pushed, true);
   assert.ok(fs.existsSync(path.join(ws, MASTER_COPY, '.git')));
   assert.deepEqual(remoteCards(remote).map((c) => c.title), ['First item', 'Second item']);
+  assert.ok(git(remote, 'log', '-1', '--format=%B').endsWith('Submitted via YouCoded Assistant'));
 });
 
 test('a change that breaks a rule reaches nothing', () => {
