@@ -16,9 +16,9 @@ vision: chat.converse
 work: session/93-session-freezes
 ---
 Progress
-Done: Targeted 1.3.1 freeze hardening implemented and independently reviewed on session/93-session-freezes: missed-stall timer detection, bounded severe-detail slots, off-thread session discovery, content-free setup/keychain timings, and honest report attribution. Review P1 (worker termination could hang queue) reproduced and fixed. Final desktop verify all green: 3475 passed, 37 skipped; 17 report tests and 36 Android shell tests pass. Compiled recorder caught 2303 ms deliberate stall. Plan/evidence: docs/active/plans/2026-10-17-session-freezes.md.
-Next: Code is saved locally, uncommitted and unshipped. Original 27-second incident root cause is NOT confirmed; improved diagnostics can distinguish remaining causes after deployment. Broader existing card items remain open.
-Blocked: No implementation decision needed. Production effectiveness and original incident attribution remain unverified; no live-app changes or shipping authorized.
+Done: Session-start hardening merged in itsdestin/youcoded#629 (bc9e43752), with desktop and Android CI passing. Includes off-thread skill/context discovery, bounded worker retirement, reliable timer-only stall detection, severe-detail reservation, and content-free setup/keychain timings. Reviewed locally: 3475 tests passed, 37 skipped; 36 Android shell tests and 17 report tests passed. Implementation record: docs/archive/plans/2026-10-17-session-freezes.md.
+Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. Original 27-second production incident remains unconfirmed; use improved diagnostics after the next app release. Broader card items stay open.
+Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified.
 
 Chats
 - 2026-10-18 session/93-session-freezes: chat started
