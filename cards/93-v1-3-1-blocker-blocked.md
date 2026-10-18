@@ -16,9 +16,9 @@ vision: chat.converse
 work: session/93-session-freezes
 ---
 Progress
-Done: Investigated installed 1.3.1 freeze after native session creation; reproduced a histogram-reset blind spot. Isolated branch now records timer lateness, reserves severe hitch details, moves session skill/context discovery off-thread, and logs slow setup/keychain stages without contents. Compiled recorder catches a 2.3 s test block; exact 27 s incident cause remains unconfirmed. Plan: docs/active/plans/2026-10-17-session-freezes.md.
-Next: Finish independent review and final verification of session/93-session-freezes; no commit, merge or release yet. Existing broader card items remain open.
-Blocked: No user input needed for this implementation; diagnosis of the original severe incident remains limited by old recorder data.
+Done: Targeted 1.3.1 freeze hardening implemented and independently reviewed on session/93-session-freezes: missed-stall timer detection, bounded severe-detail slots, off-thread session discovery, content-free setup/keychain timings, and honest report attribution. Review P1 (worker termination could hang queue) reproduced and fixed. Final desktop verify all green: 3475 passed, 37 skipped; 17 report tests and 36 Android shell tests pass. Compiled recorder caught 2303 ms deliberate stall. Plan/evidence: docs/active/plans/2026-10-17-session-freezes.md.
+Next: Code is saved locally, uncommitted and unshipped. Original 27-second incident root cause is NOT confirmed; improved diagnostics can distinguish remaining causes after deployment. Broader existing card items remain open.
+Blocked: No implementation decision needed. Production effectiveness and original incident attribution remain unverified; no live-app changes or shipping authorized.
 
 Chats
 - 2026-10-18 session/93-session-freezes: chat started
