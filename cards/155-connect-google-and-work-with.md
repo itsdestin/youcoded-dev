@@ -17,6 +17,7 @@ Blocked: No implementation blocker established; UI contract and exact OAuth/data
 
 Chats
 - 2026-10-18 session/155-google-files: chat started
+- 2026-10-18 session/155-google-files: chat started
 - 2026-10-18 session/155-google-files: Second submitted decision: google-files-browser-question#Q-browser = external-only. First release opens Google in the normal system browser; no assistant-browser action. UI-only mockups now in progress, with fake accounts/files/actions; real Google scopes/API constraints being checked independently. Baseline chat and Connected services captured 8/8 across light/midnight/meadow-mist/halftone-dimension. Dependency build blocker resolved inside isolated worktree only.
 - 2026-10-18 session/155-google-files: Submitted google-files-questions answers: attach-per-chat, original, google. User asked whether Google could open in YouCoded browser. Checked source: desktop URL opening exists, but persistent website sign-ins are shared across chats and separate from file-scoped connector OAuth. Additional optional-browser choice in docs/active/design/2026-10-17-google-files/google-files.browser-question.json; Google sign-in/editor compatibility not live-tested. Original submitted answers preserved unchanged.
 - 2026-10-18 session/155-google-files: chat started
