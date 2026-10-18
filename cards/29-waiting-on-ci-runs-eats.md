@@ -13,8 +13,8 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset
 ---
 Progress
-Done: YouCoded v1.3.1 published from approved candidate via PR #628. Both official release workflows passed; downloaded desktop installers match the valid signed updater manifest; Android APK/AAB signatures and corresponding-source checksum/binary hashes verified.
-Next: Current-build 1.3.1 release is complete. Keep broader release-pipeline improvements open; Mac signing targets 1.3.2 (#28) and DOCX hardening is deferred (#161).
+Done: Implemented release-scoped beta numbering across desktop and Android workflows; auto-select next patch; 11 resolver tests and parsed workflow guards pass, verify.sh and actionlint pass; read-only GitHub preview gives 1.3.2-beta.1 for all next beta paths.
+Next: Independent review, then await Destin's decision on the local changes; no build dispatch or publication.
 Blocked: No remaining 1.3.1 publication blocker. Separate dependency/workspace improvements remain review-only.
 
 Chats
