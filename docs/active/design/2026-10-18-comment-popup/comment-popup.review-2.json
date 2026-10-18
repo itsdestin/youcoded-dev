@@ -1,0 +1,33 @@
+{
+  "title": "File comments — no slim rail",
+  "key": "comment-popup-review-2",
+  "out": "comment-popup.review-2.html",
+  "images": "images/comment-popup.review-2",
+  "runs": { "before": "runs-2/before", "after": "runs-2/after" },
+  "themes": ["light", "halftone-dimension"],
+  "live": { "worktree": "/home/destin/youcoded-dev/worktrees/sessions/39-comment-popup/youcoded" },
+  "steps": [
+    {
+      "id": "3",
+      "surface": "Files",
+      "path": "Open a document → Comments → Shrink panel → hover a highlight",
+      "crop": "chat/files/open/a-launch-brief#collapsed-comments",
+      "headline": "The narrow view keeps hoverable highlights, with no slim comment rail.",
+      "changed": "Shrinking now returns to the normal hover-comment view instead of leaving the marker strip behind. The full comments panel is still available through Comments.",
+      "notice": "The document gets its width back. Hover a marked passage or cell to read its comment; the floating card uses the same frosting as the approved comment composer and right-click menus.",
+      "risk": "On touchscreens, tap a highlight to open the comment card instead of hovering. This changes only the narrow view; the full comments panel keeps its existing layout.",
+      "highlight": { "box": [66, 29, 33, 50] }
+    },
+    {
+      "id": "4",
+      "surface": "Files",
+      "path": "Session files → launch-brief.docx → Comments → Shrink panel",
+      "headline": "Try expanding and shrinking comments, then hover a marked passage.",
+      "hint": "Open Session files and choose launch-brief.docx. Press Comments to open the full panel, then Shrink panel. The slim strip should be gone and hovering marked text should show its comment. Press Comments again: the full panel should reopen on the first click.",
+      "changed": "Shrink leaves Comments mode rather than keeping an invisible panel state. The next Comments click can open the full panel normally.",
+      "notice": "There are two views now: hover comments while narrow, and the full comments panel when expanded.",
+      "risk": "Practice files and a fake backend only; this preview does not change your real documents. The previously approved comment-composer frosting is retained.",
+      "live": { "app": "default" }
+    }
+  ]
+}
