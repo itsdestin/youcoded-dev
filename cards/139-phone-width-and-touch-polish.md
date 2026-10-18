@@ -19,6 +19,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/139-touch-session-scroll: Fix active-session list touch scrolling on Android and remote access: finger swipes scroll, taps switch; preserve mouse and header-pill drags. Five regression tests added; verification in progress.
 - 2026-10-18 session/139-touch-session-scroll: chat started
 
 From the old roadmap (user-interface, status confirmed, seen on all, last checked 2026-09-10)
