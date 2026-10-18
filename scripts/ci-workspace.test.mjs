@@ -182,7 +182,7 @@ test('workflow keeps expensive clones out of cards and validates the checked-out
   assert.doesNotMatch(cards.steps.map(step => step.run || '').join('\n'), /git clone|audit-anchors|prune-worktrees|perf-lab/);
   assert.equal(full.needs, 'changes');
   assert.equal(full.if, "needs.changes.outputs.lane == 'full'");
-  for (const command of ['scripts/audit-anchors.test.mjs', 'scripts/workspace-start.test.mjs', 'scripts/workspace-sync.test.mjs', 'scripts/prune-worktrees.test.mjs', 'scripts/cards.test.mjs', 'scripts/perf-lab/tests/', 'scripts/shoot/tests/', 'scripts/luna/', 'python3 -m unittest', 'scripts/check-doc-commands.mjs', 'scripts/audit-anchors.mjs --no-diff', 'scripts/ast-grep/check.sh']) assert.ok(hasCommand(full, command), `full lane executes ${command}`);
+  for (const command of ['scripts/audit-anchors.test.mjs', 'scripts/workspace-start.test.mjs', 'scripts/workspace-sync.test.mjs', 'scripts/prune-worktrees.test.mjs', 'scripts/cards.test.mjs', 'scripts/vm/*.test.mjs', 'scripts/perf-lab/tests/', 'scripts/shoot/tests/', 'scripts/luna/', 'python3 -m unittest', 'scripts/check-doc-commands.mjs', 'scripts/audit-anchors.mjs --no-diff', 'scripts/ast-grep/check.sh']) assert.ok(hasCommand(full, command), `full lane executes ${command}`);
   assert.ok(hasCommand(full, 'node scripts/cards.mjs check --root .'));
 });
 
