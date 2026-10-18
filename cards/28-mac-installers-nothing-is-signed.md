@@ -13,7 +13,7 @@ summary: Mac downloads aren't signed by Apple, so they can open as "broken"; App
 area: Leaving & updating
 side: behind
 platform: Mac only
-work: session/auto-update-roadmap-20261014
+work: session/auto-update-roadmap-20261014, session/release-1-3-2
 vision: everywhere.added.macsign
 ---
 Progress
@@ -22,6 +22,7 @@ Next: not decided.
 Blocked: yes — the old roadmap marked it blocked; see below.
 
 Chats
+- 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
 
 From the old roadmap (dev-workspace › release, status blocked, seen on n/a, last checked 2026-09-04)
 Mac installers: nothing is signed or notarized, and a Mac download may open as "broken". Since 2026-07-23 a dependency update stopped the Mac build being stamped, so macOS rejects it and the "Open Anyway" button vanished (terminal command only; in-app updates hit it too). Fix merged 2026-09-04 (build checks its own seal, fails if it cannot sign); still open: a Mac confirming "Open Anyway" is back on a build cut after it (test run 33921417200). Signing is blocked: Apple refused the LLC's account on 2026-10-01; retry from an Apple device or via Apple Support, then it is CI wiring. Windows is done (signed "Destin Moss"). (report: docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md)
