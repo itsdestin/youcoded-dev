@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset
 ---
 Progress
-Done: Beta numbering fix complete locally. All three workflows automatically choose the next patch and reset visible beta numbers after official releases. 14 resolver tests, 64 focused updater/workflow tests, required verify.sh, actionlint and docs anchors pass. Independent final review has no remaining important findings. Deleted workflow records fail safely; Android install counter stays monotonic.
-Next: Await Destin's decision on the local uncommitted changes. No code commit, push, dispatch or publication performed.
-Blocked: No remaining 1.3.1 publication blocker. Separate dependency/workspace improvements remain review-only.
+Done: Beta-numbering subtask shipped: app PR633 (7b994067d) and workspace PR269 merged. Visible beta counters reset per official release; next line selected automatically. 14 resolver tests, local desktop verification, Desktop and Android PR CI, workflow lint and documentation CI passed.
+Next: Remaining release-pipeline work on this umbrella card stays open. CI performance audit delivered in chat; optimization changes await Destin's approval.
+Blocked: No blocker for beta-numbering subtask.
 
 Chats
 - 2026-10-18 session/29-beta-counter-reset: chat started
