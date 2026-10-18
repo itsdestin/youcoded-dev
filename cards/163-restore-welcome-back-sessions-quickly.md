@@ -1,7 +1,7 @@
 ---
 id: 163
 title: Restore Welcome back sessions quickly and safely
-stage: build
+stage: polish
 tags: chat-data, desktop, performance, bug
 vision: chat.converse.resume
 branch: 163-restore-welcome-back-sessions-quickly
