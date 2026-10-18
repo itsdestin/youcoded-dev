@@ -15,6 +15,7 @@ side: behind
 platform: Mac only
 work: session/auto-update-roadmap-20261014, session/release-1-3-2
 vision: everywhere.added.macsign
+paused: Awaiting Apple Developer payment/enrollment activation and certificate access; no signing configuration changed.
 ---
 Progress
 Done: Destin reports Developer Program signup completed and USD99 paid; account currently says payment processing may take up to24h. Existing ad-hoc signing and absence of Apple CI secrets verified; no configuration changed.
