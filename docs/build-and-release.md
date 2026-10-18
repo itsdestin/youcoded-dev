@@ -15,7 +15,7 @@ The Android release workflow (`android-release.yml`) still invokes the script as
 CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml:40-46`). Local `package.json` version is not the source of truth.
 
 ### Android version is stamped in CI
-Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
+`android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or the release-scoped beta version for a manual dispatch; see **Betas number themselves** below) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. Only the visible beta number resets; never reset `versionCode`. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
 ### Office add-on is fetched per platform at build time
 `npm run build` starts with `node scripts/fetch-office.mjs --release --required`, which downloads every bundle `desktop/office-pin.json` pins for the build machine's OS into `desktop/office-build/<platform>-<arch>/` (the Mac runner gets both `darwin-x64` and `darwin-arm64`); `electron-builder.yml` packs `office-build/${platform}-${arch}` as the installer's `resources/office`. A platform with no pin (ARM Linux: upstream ships no converter) builds without Office and the app opens Office files with the default app. Bumping the add-on means: bump `version` in the add-on's own `PIN.json`, push a `vX.Y.Z` tag to `itsdestin/youcoded-office` (its CI builds all four platforms and smoke-tests each converter on its own OS before publishing the release with a `SHA256SUMS`), then set `version` and every platform's `url` and `sha256` in `desktop/office-pin.json` (all four: `linux-x64`, `darwin-x64`, `darwin-arm64`, `win32-x64`) and run `node scripts/fetch-office.mjs`. As of 2026-10-02 the pin is **v0.1.41**. The Windows bundle ships the Visual C++ runtime DLLs beside `x2t.exe` (a clean Windows PC lacks them; add-on v0.1.40) and its CI fails if any DLL is unshipped. On Mac, `electron-builder.yml` re-signs only the converter (`x2t` and its dylibs) and `scripts/office-packaged-smoke.mjs` runs the packaged x2t in the Mac CI jobs. `desktop/office-addon/` is only the dev copy for this machine. Depth: `youcoded/docs/office.md`.
@@ -82,9 +82,9 @@ AppImage was testable pre-v1.3.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "\\*\\.pacman"} -->
 
 ```bash
-# No number to type: the build stamps <base>.<run number> itself, e.g. 1.3.1-beta.87.
-# `base` defaults to 1.3.1-beta and only needs passing when the release line moves —
-# and it MUST still sort above the latest release (see the trap below).
+# No version to type: blank `base` automatically selects the next patch beta line.
+# After release 1.3.1: 1.3.2-beta.1, .2, ...; after 1.3.2: 1.3.3-beta.1.
+# An explicit `base` must match the automatically selected next-patch prefix.
 gh workflow run desktop-test-build.yml --repo itsdestin/youcoded --ref <branch>
 
 gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
@@ -127,8 +127,8 @@ if the result does not verify against the public key built into the app, and upl
 the proof the release key works before a release depends on it. Attach both files to the
 pre-release so its downloads can be checked; the website ignores them, since it picks files by
 extension. Branch dispatches skip the job and produce three artifacts, not four. The manifest
-covers **desktop installers only** — the Android APK is not in it. Android betas are numbered from
-their own run counter (beta.80 desktop shipped beside APK `1.3.0-beta.26`); say so in the notes.
+covers **desktop installers only** — the Android APK is not in it. Each workflow has its own
+release-scoped beta counter, so desktop and Android numbers can differ; say so in the notes.
 The beta.78 and beta.80 Windows installers were built with `skip_windows_tests=true`, so their
 tests never ran on Windows.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "youcoded-release-manifest"} -->
@@ -145,9 +145,9 @@ on 2026-09-13, after `1.3.0-beta.80` was built, so every published build before 
 `/releases/latest` and can never be offered a beta — the beta testers on .72–.80 have to
 reinstall from youcoded.ai once, and a pre-release cannot deliver a fix to them. **That is
 what an official release is for, and 1.3.0 (2026-09-20) is the one that moves v1.2.4 users
-and those testers forward.** Betas run on the `1.3.1-beta` line from here: the beta line is
-always one patch AHEAD of the last release, so a beta is never offered a downgrade and the
-next release ends the run.
+and those testers forward.** Blank `base` now advances the beta line automatically to one patch
+AHEAD of the latest official release, so a beta is never offered a downgrade and the next
+release ends the run.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
@@ -163,16 +163,17 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
 `.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
-Give it the `base` input (default `1.3.1-beta`) and it stamps `<base>.<run_number>` into the APK,
-the way `desktop-test-build.yml` does; the outputs are named after the version.
+Leave `base` blank to select the next patch automatically; an explicit prefix must match
+that next-patch `X.Y.Z-beta` line. It uses the same release-scoped policy as `desktop-test-build.yml`; the outputs are
+named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
 
 **`android-test-build.yml` stamps too, since 2026-09-13 — it was the last build path that did
 not.** Its APKs used to inherit the hand-set `versionName` in `app/build.gradle.kts` (`1.2.4`, the
 May release), so every dogfood build reported itself to analytics as a 1.2.4 build — a 1.3 beta
 landing in your own version breakdown as last spring's release. It now takes the same `base` input
-and stamps `<base>.<run_number>`; the build type adds `-dev` / `-releasetest` on top, so the APKs
-read `1.3.0-beta.12-dev`. **`versionCode` is deliberately left alone**: these install as separate
+and uses the shared release-scoped beta resolver; the build type adds `-dev` / `-releasetest`
+on top, e.g. `1.3.2-beta.1-dev` after official release 1.3.1. **`versionCode` is deliberately left alone**: these install as separate
 apps, so Play never sees the number, and raising it would block installing a LOCAL build (still the
 hand-set `20`) over a CI one, because Android refuses a lower `versionCode`.
 <!-- verify: {"path": "youcoded/.github/workflows/android-test-build.yml", "contains": "Stamp dogfood version"} -->
@@ -197,10 +198,23 @@ state doesn't. Quit the running app before launching a beta: two instances on on
 over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
-**Betas number themselves (2026-08-15).** The workflow appends its own GitHub run counter to the
-`base` prefix (`1.3.1-beta` → `1.3.1-beta.87`, `.88`, …), so every beta sorts above the previous one
-and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
-share a name — or a hand-typed number sort *below* the installed one — is gone.
+**Betas number themselves, resetting after each official release.** All three beta build paths
+use `youcoded/scripts/beta-version.mjs` through `.github/actions/beta-version`. Blank `base`
+selects the next patch after the highest published official release: release `1.3.1` →
+`1.3.2-beta.1`, `.2`, …; release `1.3.2` → `1.3.3-beta.1`. Explicit prefixes must match that
+next-patch line: reusing a future-version prefix across releases could otherwise duplicate
+a beta version when its counter resets.
+
+The number is the workflow's lifetime run number minus its last run number from before the
+official release's publication. Each workflow counts separately; failed/cancelled attempts
+reserve numbers, while reruns keep the original version because resolution uses the original
+run's creation time. Drafts and prereleases do not reset it. A workflow introduced after a
+release counts from its first run. **Preserve workflow run records:** every resolution checks
+that the retained run count matches the lifetime counter and fails if records were deleted.
+Otherwise a shifted baseline could reuse another build's version, even for queued first
+attempts. Expiring logs/artifacts is fine. Desktop resolves once for all installers and their
+signed manifest. Android's internal `versionCode` remains monotonic.
+<!-- verify: {"path": "youcoded/scripts/beta-version.mjs", "contains": "resolveBetaVersion"} -->
 
 **How the app orders versions (2026-09-11).** One `compareVersions` (`update-manifest-verify.ts`)
 serves both the update check (`update-release-status.ts`) and the install gate, and it orders the
