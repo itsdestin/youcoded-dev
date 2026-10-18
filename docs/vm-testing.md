@@ -1,13 +1,13 @@
 # VM Testing (Linux host) — installer, first-run, and sign-in flows
 
-How to spin up clean Windows and Linux virtual machines on the current dev machine (CachyOS, Ryzen AI Max+ 395, 121 GB RAM) to test YouCoded's installers, prerequisite installer, setup wizard, and sign-in flows without ever touching the live app or the host's `~/.claude`.
+How to use the Windows 11, Ubuntu 24.04, Fedora 44 KDE and macOS Tahoe test guests on the current dev machine (CachyOS, Ryzen AI Max+ 395, 121 GB RAM) to test YouCoded's installers, prerequisite installer, setup wizard, and sign-in flows without ever touching the live app or the host's `~/.claude`.
 
 > **History:** the archived `docs/archive/local-dev-vm.md` covered the same goal for a **Windows host** (VirtualBox + `docs/archive/setup-test-vm.ps1`, moved out of `scripts/` 2026-09-23 since this path was never used). That path was blocked by the Hyper-V conflict (`docs/archive/investigations/2026-04-29-vbox-hyperv-conflict.md`) and never used. None of that applies here — this host runs native KVM with no competing hypervisor, so installs run at full speed (~20–30 min for Windows, once, then snapshot-revert in seconds). The snapshot-revert methodology and "when to use this" list carry over.
 
 ## Quick loop — `scripts/vm/vm.sh` (start here)
 
 Since 2026-10-01 this is how a session puts a build in front of Destin, or checks one itself, on
-any of the three guests. Use it whenever a change touches what a new user sees **before the app's
+any of the four guests. Use it whenever a change touches what a new user sees **before the app's
 own UI**: installer, signing (SmartScreen / Gatekeeper), first launch, prerequisite install,
 sign-in, first chat. **After any signing change, run the first-run wall on Windows and Mac with a
 build that carries it** — that is the only place the user-facing result is visible.
@@ -22,15 +22,16 @@ scripts/vm/vm.sh win stop             # throw the session away; next start is pr
 |---|---|---|---|---|
 | Windows 11 | `win` | ~5 s | SPICE viewer (`spicy`), close/reopen freely with `view` | QEMU agent (runs as SYSTEM) |
 | Ubuntu 24.04 | `ubuntu` | ~3 s | SPICE viewer | SSH `youcoded-testin@127.0.0.1:22221`, passwordless sudo |
+| Fedora 44 KDE | `fedora` (also `kde`, `fedora-kde`) | Cold boot; resettable disk-only baseline, no RAM save image | Requested normal start: QEMU GTK + GL; `--headless`: EGL/render-only, `shot` via guest Spectacle | SSH `keyboardtest@127.0.0.1:22227`, dedicated `~/vms/fedora-44-kde/id_ed25519`; passwordless sudo in this test guest |
 | macOS 26 Tahoe | `mac` (or `tahoe`) | — (no ready state yet) | QEMU's own GTK window (GL on); closing it stops the guest | SSH `yctesting@127.0.0.1:22223`, passwordless sudo. The only Mac since 2026-10-04 (the Sonoma VM was deleted to free disk): it has Liquid Glass and the icon looks (Default/Dark/Clear/Tinted). Leave **Reduce transparency off** — the glass is what it tests |
 
-All SSH uses `~/vms/vm-key` (host-only keypair). `load` takes `release`, `beta`, a tag (`v1.3.0`),
+Ubuntu/macOS SSH uses `~/vms/vm-key` (host-only keypair); Fedora uses its dedicated identity and known-host file in `~/vms/fedora-44-kde/`. `load` takes `release`, `beta`, a tag (`v1.3.0`),
 `run:<CI run id>` (test-build artifacts) or a local file; Linux defaults to the AppImage
-(`VM_LINUX_FMT='*.deb'` for the deb). `--headless` on `start` skips the window when a session only
+(`VM_LINUX_FMT='*.deb'` for deb, `VM_LINUX_FMT='*.rpm'` for Fedora rpm). `--headless` on `start` skips the window when a session only
 needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `save-ready`.
 
 **How it works, and the traps it encodes** (each has a WHY comment in the script):
-- **"ready" = a RAM snapshot** (`<vm>/ready.state`, 3–7 GB) paired with the disk snapshot `ready`.
+- **For the legacy Windows/Ubuntu/macOS path, "ready" = a RAM snapshot** (`<vm>/ready.state`, 3–7 GB) paired with the disk snapshot `ready`.
   It only works with a migratable machine, so `vm.sh` launches its own copy of quickemu's
   generated `<vm>.sh` with: no `+invtsc` / `migratable=no` / `hv_passthrough` (explicit Hyper-V
   enlightenments instead), 8 GB RAM instead of 32, and the Mac's `virtio-sound` swapped for Intel
@@ -45,14 +46,35 @@ needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `sav
 - **Files arrive over HTTP from `~/vms/serve`** (host `127.0.0.1:8010`, guest `10.0.2.2:8010`) and
   get the browser's mark: Windows `Zone.Identifier` (ZoneId=3), Mac `com.apple.quarantine`. Without
   it SmartScreen and Gatekeeper never assess the file, which is the whole point.
-- **Each guest has a fixed SSH forward** (22220 Windows, 22221 Ubuntu, 22223 Mac); quickemu gave
+- **Each guest has a fixed SSH forward** (22220 Windows, 22221 Ubuntu, 22223 Mac, localhost-only 22227 Fedora); quickemu gave
   Windows and Mac the same port, so the second to start died.
 - **Without a ready state, `start` boots the disk as it is** (setup mode) — it never reverts to
   `clean`, because that erased a half-finished Mac setup once.
 
-Re-creating a ready state: `start` (boots the current disk), get the desktop how you want it,
-then `save-ready` (stops the guest, ~1 min). Older disk snapshots (`clean`, Mac's
-`beta8-signed-in-2026-07-20`) are untouched and still usable with `qemu-img snapshot -a`.
+For the legacy guests, re-create a ready state with `start` (boots the current disk), get the desktop how you want it, then `save-ready` (stops the guest, ~1 min). Older disk snapshots (`clean`, Mac's `beta8-signed-in-2026-07-20`) are untouched and still usable with `qemu-img snapshot -a`.
+
+### Fedora KDE: reusable disk-only baseline
+
+Use the preserved guest at **`~/vms/fedora-44-kde/`**, not the old keyboard verification cache. It is an installed, updated Fedora 44 KDE Wayland desktop with the normal `keyboardtest` account, not a live ISO or an app-specific drawing. It was used for real keyboard acceptance; availability alone does not establish all YouCoded Fedora flows.
+
+```bash
+bash scripts/vm/vm.sh fedora start --headless
+bash scripts/vm/vm.sh fedora exec 'rpm -q kwin qt6-qtbase'
+bash scripts/vm/vm.sh fedora shot fedora-desktop
+bash scripts/vm/vm.sh fedora stop
+```
+
+`disk.qcow2` + `OVMF_VARS.4m.fd` are the saved baseline. Tests use `session.qcow2` and `session-vars.fd`, so changes do not modify the baseline and no multi-gigabyte RAM image is needed. `stop` discards that session; `stop --keep` intentionally preserves it. A stopped session left by interruption is not silently overwritten on `start`.
+
+To deliberately update the baseline: make changes, `stop --keep`, then `save-ready` **while stopped**. Promotion converts/checks/compares before replacing the baseline, and retains the previous image for verification. Never edit, reset, compact or promote an in-use disk. Confirm the new baseline boots before removing its previous backup.
+
+The preserved baseline occupies about 10 GiB on the host. Its compacted image passed `qemu-img check` and content comparison before promotion, then real KDE/SSH boot, inspected Spectacle capture and disposable-marker reset. The guest has no swipe extension or old build roots; release/source/log evidence is retained outside it. `load` was verified with a real RPM over HTTP and records Linux's `user.xdg.origin.url` through GIO's native `xattr::xdg.origin.url` namespace; stock KDE does not provide the assumed GVfs `metadata::download-uri` backend. This is origin metadata, not Windows SmartScreen or macOS quarantine.
+
+`start` waits for a positive SSH readiness probe (bounded at about 90 seconds), so an immediate `exec`/`shot`/`load` need not guess a boot delay. On timeout it retains the session rather than deleting it. A slow stop similarly retains state until the guest is confirmed gone; retry `stop` after inspecting status.
+
+Normal `start` opens the requested GTK VM window; `--headless` stays off the host desktop. A headless instance cannot gain a GTK window in place: use `shot` or stop/restart in normal mode. Spectacle runs inside Fedora because QEMU's GL scanout may return `no surface` for monitor `screendump`; a missing QMP surface is not proof of a black guest desktop.
+
+The test account has dedicated host-only SSH credentials and guest-only passwordless sudo. No host agent forwarding or real personal accounts are copied in. Do not commit VM keys/passwords/disks. The idle watcher source is `scripts/vm/idle-pause.sh`; its backed-up, atomically installed user-service copy recognizes Fedora's localhost SSH forward and dedicated key when resuming its clock. It preserves paused retry state until the monitor confirms a successful resume. The existing 30-minute idle policy is unchanged.
 
 ## Why VMs
 
@@ -71,7 +93,7 @@ then `save-ready` (stops the guest, ~1 min). Older disk snapshots (`clean`, Mac'
 | Win11 guest | **provisioned + `clean` snapshot; revert→boot verified (~50 s to desktop)** |
 | Ubuntu 24.04 guest | **provisioned + `clean` snapshot; revert→boot verified (~45 s to desktop)** |
 
-Both guests are ready to test against right now — `~/vms/windows-11.conf`, `~/vms/ubuntu-24.04.conf`.
+Those are the dated July provisioning results, not a current four-guest readiness check. The Windows/Ubuntu configs remain `~/vms/windows-11.conf` and `~/vms/ubuntu-24.04.conf`; use the Quick loop inventory above for macOS and the preserved Fedora KDE guest. In particular, old RAM snapshots can depend on their QEMU machine version; Fedora's disk-only reset does not depend on those snapshots.
 
 ## One-time setup
 
@@ -196,14 +218,14 @@ qcow2 file locking means a revert against a running VM **errors rather than corr
 Cosmetic aftermath: crash-y testing leaves Ubuntu showing *"System program problem detected"* (apport
 caught a killed/core-dumping process). It's test debris, not a guest fault, and reverting clears it.
 
-### The black screen is `spice` + GL, NOT GL itself — don't over-correct like I did
+### Historical SPICE/GL black screen — do not generalize to every GL backend
 
 **Symptom:** with quickemu's SPICE default, GL selects `-display egl-headless`, which on this host's
 Radeon 8060S renders **a permanently black screen** the moment the guest leaves text mode — in the
 viewer *and* in `screendump`, so you can't see what's wrong. The VM is alive at high CPU and looks
 exactly like a hang. Cost an hour to spot.
 
-**The fix is picking a working display path, not disabling GL globally:**
+This was the older SPICE/GL configuration, not all headless GL: the preserved Fedora 44 guest now renders with `virtio-vga-gl` + `egl-headless,rendernode=/dev/dri/renderD128`, and guest Spectacle captures its desktop. QEMU GL `screendump` returning `no surface` is a different limitation. **Pick a working display/device path; do not disable GL globally:**
 
 | display | GL | result |
 |---|---|---|
@@ -231,7 +253,8 @@ One VM per package format we ship (`youcoded/desktop/electron-builder.yml`: AppI
 ```bash
 cd ~/vms
 quickget ubuntu 24.04      # deb + AppImage testing (the mainstream case)
-quickget fedora 42         # rpm (optional)
+# Fedora 44 KDE already exists: bash scripts/vm/vm.sh fedora start
+# Do not download/recreate it merely to test an rpm.
 quickget archlinux latest  # pacman artifact (optional — never test it on the host)
 printf 'gl="off"\n' >> ubuntu-24.04.conf
 quickemu --vm ubuntu-24.04.conf --display gtk
@@ -401,6 +424,7 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 |---|---|---|
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
 | ubuntu-24.04 | `youcoded-testin` | `youcodedtesting` |
+| fedora-44-kde | `keyboardtest` (autologin; dedicated SSH key; guest-only passwordless sudo) | Private local fixture file in the guest folder; never put it in this public guide |
 | macos-tahoe | `yctesting` (admin; vm-key installed; passwordless sudo) | `youcodedtesting` (vm.sh's default Mac user) |
 
 The Ubuntu username really is `youcoded-testin` — read from `getent passwd 1000`, not from memory
@@ -611,7 +635,8 @@ Closed — see `docs/shipped.md`.
 | Sync enable on a fresh account/device | any | sync-spaces provisioning, second-device convergence (use two VMs!) |
 | deb install, menu entry, frameless caption buttons | Ubuntu | Linux `showCaptionButtons` pitfall — Linux must get window controls |
 | AppImage on stock Ubuntu 24.04 | Ubuntu | libfuse2 is NOT preinstalled — confirm our AppImage story survives this |
-| rpm / pacman artifacts | Fedora / Arch | dependency lists in `electron-builder.yml` (the AUR `libappindicator-gtk3` trap) |
+| rpm / KDE Wayland / touchscreen behavior | Preserved Fedora 44 KDE (`vm.sh fedora`) | Native dependencies and real KDE user-session behavior; verify each app flow rather than inferring it from VM availability |
+| pacman artifacts | Separate Arch guest/root when needed | dependency lists in `electron-builder.yml` (the AUR `libappindicator-gtk3` trap); never install a test package on the host |
 
 Two-device sync testing is a standout use: two VMs (or VM + host dev instance) give a true second machine for lease/takeover and conversation-store convergence without borrowing hardware.
 
@@ -624,8 +649,7 @@ Do these interactively in the VM window with real credentials (Destin drives; th
 
 ## Claude-driven testing
 
-Use `scripts/vm/vm.sh` (Quick loop above): `--headless` start, `shot`, `exec`, and for Ubuntu/Mac
-SSH with `~/vms/vm-key`. Keys and typing without remote access: `scripts/vm/vmctl.sh keys|type`
+Use `scripts/vm/vm.sh` (Quick loop above): `--headless` start, `shot`, `exec`; Ubuntu/Mac SSH uses `~/vms/vm-key`, while Fedora uses `~/vms/fedora-44-kde/id_ed25519` and port 22227. Fedora `shot` retrieves a guest Spectacle PNG; the monitor screenshot recipe below is for the older non-GL-scanout guests. Keys and typing without remote access: `scripts/vm/vmctl.sh keys|type`
 (set `VMCTL_VM`). Two monitor-socket traps still apply when driving by hand: keep the socket open
 for the reply (`( echo cmd; sleep 1 ) | socat - unix-connect:<sock>`), and `quit` ends the guest —
 which is exactly what `vm.sh stop` uses it for. The whole-path automated test is a parked
