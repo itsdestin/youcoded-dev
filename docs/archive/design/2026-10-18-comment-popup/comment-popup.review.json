@@ -1,0 +1,33 @@
+{
+  "title": "File comments — frosting and opening reliably",
+  "key": "comment-popup-review",
+  "out": "comment-popup.review.html",
+  "images": "images/comment-popup.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light", "midnight", "meadow-mist", "halftone-dimension"],
+  "live": { "worktree": "/home/destin/youcoded-dev/worktrees/sessions/39-comment-popup/youcoded" },
+  "steps": [
+    {
+      "id": "1",
+      "surface": "Files",
+      "path": "Open a document → select text → Add comment",
+      "crop": "chat/files/open/a-launch-brief#new-comment",
+      "headline": "The comment box frosts the text behind it instead of letting words show straight through.",
+      "changed": "The box now floats above the file pane’s visual layers. It keeps the same theme-controlled glass, border and shadow as the file and code right-click menus used as references.",
+      "notice": "The document text behind the box no longer competes with what you are typing. This follows the guide’s shared, theme-painted popup surface.",
+      "risk": "Solid themes stay solid, and Reduced effects still controls blur. These pictures select the whole document only to make text behind the box easy to compare.",
+      "highlight": { "box": [66.5, 63, 19, 11] }
+    },
+    {
+      "id": "2",
+      "surface": "Files",
+      "path": "Session files → q3-sales-by-rep.xlsx → Comments → Shrink panel → right-click a cell → Add comment",
+      "headline": "Try adding a comment after shrinking the Comments panel back to its marker rail.",
+      "hint": "Open Session files, choose q3-sales-by-rep.xlsx, press Comments, then Shrink panel. Right-click a cell and choose Add comment. A focused typing box should open beside the rail. You can also test the frosted box in normal Reading mode.",
+      "changed": "A new comment now opens its typing box even when Comments mode is still active but only the slim rail is visible.",
+      "notice": "You no longer need an extra click on the new marker to begin typing. Resizing does not replay an already-handled popup.",
+      "risk": "This is the shared renderer with practice files and a fake backend; it does not save comments into your real documents.",
+      "live": { "app": "default" }
+    }
+  ]
+}
