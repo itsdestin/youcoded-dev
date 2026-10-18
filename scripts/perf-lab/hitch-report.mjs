@@ -50,7 +50,8 @@ const bucket = (n) => (n <= 0 ? 'no sessions' : n === 1 ? '1 session' : n <= 3 ?
 export function causeOfFrame(e) {
   const top = e.sc?.[0];
   if (e.sl >= e.d * 0.4 && (!top || top.d < e.d * 0.4)) return 'style & layout (the browser recomputing the page)';
-  if (!top) return 'drawing / browser work (no script of ours was running)';
+  // WHY: absent script attribution is not proof of GPU work or an idle JS thread.
+  if (!top) return 'unattributed (no script timing recorded)';
   if (top.fl >= top.d * 0.5 && top.fl >= 30) return `forced layout inside ${top.fn || top.iv || 'a function'} (${top.src})`;
   return `${top.fn || top.iv || top.it || 'unnamed code'} (${top.src || 'unknown file'})`;
 }
@@ -244,11 +245,11 @@ export function render(a, bad) {
   const bw = buildWarning(a.build);
   if (bw) { o.push(bw); o.push(''); }
   o.push('THE SHORT VERSION');
-  o.push('  (engine-stall lengths are accurate to about +/- 50 ms)');
+  o.push('  (engine-stall lengths are approximate; timer-only measurements are lower bounds)');
   o.push(`  ${t.freezes} screen freezes of 0.1 s or longer, and ${t.stalls} time(s) the app's engine stopped answering. Together: ${sec(t.frozenMs)} frozen.`);
   o.push(`  ${t.slowInputs} key presses/clicks took over 0.1 s to show a result.`);
   o.push(`  Smaller hiccups (0.05-0.1 s): ${t.mediumFrames} of them, ${sec(t.mediumFramesMs)} in all.`);
-  if (t.droppedDetail) o.push(`  (${t.droppedDetail} further hitches${t.overflowMs ? `, ${sec(t.overflowMs)} frozen,` : ''} were counted but not written out in detail, by design: the file keeps at most 30 detailed entries a minute.)`);
+  if (t.droppedDetail) o.push(`  (${t.droppedDetail} further hitches${t.overflowMs ? `, ${sec(t.overflowMs)} frozen,` : ''} were counted but not written out in detail, by design: detail is rate-limited per window; newer recorders reserve five extra slots for severe hitches.)`);
   o.push('');
   if (a.worst.length) {
     o.push('THE WORST ONES');
