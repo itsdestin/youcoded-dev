@@ -9,9 +9,9 @@ why: On Linux, Launch installer gives no real feedback after I enter my sudo pas
 work: session/162-linux-update-feedback
 ---
 Progress
-Done: All UI items approved: initial review LU-3/LU-4 yes; revision 2 LU-1/LU-5 yes; final button-only revision 3 LU-2 yes (submitted 2026-10-18 18:55). Implemented current action in original button only; no expandable section or helper text. Required desktop verify passed and fresh review found no blockers.
-Next: Implementation and UI review complete. App changes remain uncommitted and unshipped; no commit, push or merge authorized.
-Blocked: Before shipping, reconcile newer master and reverify. Real privileged installer deliberately not exercised on the working app.
+Done: Implemented and approved all UI items (LU-3/LU-4 first review, LU-1/LU-5 second, LU-2 final). Button-only current action; regression tests, desktop verification and fresh review passed. Wrap-up recorded in session docs/wrap-ups.md; audit 573/573 anchors and 1081/1081 MAP paths passed. Existing #22 records recurring unsafe close-out verdict.
+Next: Work is complete and approved locally. App implementation plus workspace review/decision records remain uncommitted; awaiting explicit commit/publication authorization. No shipping performed.
+Blocked: Newer master must be reconciled and verification rerun before shipping. Real privileged package replacement/relaunch deliberately not exercised. Keep both session worktrees; close-out incorrectly calls unchanged base tips landed.
 
 Chats
 - 2026-10-18 session/162-linux-update-feedback: chat started
