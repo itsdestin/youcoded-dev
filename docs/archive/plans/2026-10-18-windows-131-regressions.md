@@ -55,7 +55,7 @@ The capture bootstrap now uses slash-normalized Windows trust keys and recognize
 ## Verification
 
 - Final `bash scripts/verify.sh youcoded --full`: exit 0; 1,163 test files passed, 3 skipped; 20,434 tests passed, 47 skipped. Types, knip, lint, design lint, ast-grep, screen opening and journeys passed.
-- Final cross-platform CI: [run 39165972346](https://github.com/itsdestin/youcoded/actions/runs/39165972346). At merge, Windows/macOS were green and the PR's Linux/Android checks were green; a duplicate Linux dispatch build was still running. Session-local verification logs lived under `scratch/verify-20261018-135606-3014742/` and are not a permanent archive.
+- Final cross-platform CI: [run 39165972346](https://github.com/itsdestin/youcoded/actions/runs/39165972346). The complete Windows/Linux/macOS matrix passed. At merge, Windows/macOS and the PR's Linux/Android checks were already green; the duplicate Linux dispatch build completed successfully afterward. Session-local verification logs lived under `scratch/verify-20261018-135606-3014742/` and are not a permanent archive.
 - Backend and final renderer builds succeeded. Renderer build retains existing optimizer/chunk-size warnings.
 - Independent reviews of buddy, terminal changes and final watcher revision found no remaining actionable defects.
 - `git diff --check` passed. Merge compatibility was checked without performing a merge.
