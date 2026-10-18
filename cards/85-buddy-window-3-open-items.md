@@ -15,9 +15,9 @@ vision: yours.look.buddy
 work: session/85-windows-131-regressions
 ---
 Progress
-Done: App commit 6df630783: buddy painted-body hits, Windows terminal input/initial-size fixes, async bounded watcher probes. Full desktop verify: 20,402 passed; real Windows click/drag, normal send, popup retry and watcher events passed.
-Next: Review the single local app branch session/85-windows-131-regressions. Nothing merged or released; other card items are unchanged.
-Blocked: Authenticated OneDrive hydration is not reproduced; valid signing does not guarantee SmartScreen reputation.
+Done: Windows regression fixes merged to remote app master via https://github.com/itsdestin/youcoded/pull/632 (1e8797ec3). Buddy click/drag, normal sends and Send anyway VM-verified; watcher ordering/concurrency regressions pinned. Final local full verification: 20,434 passed; Windows/macOS and required Linux/Android CI passed.
+Next: This session is closed. The three original buddy items below remain open and unchanged; do not mark them completed by PR #632. A new installer release is a separate action.
+Blocked: No blocker for the merged fixes. SmartScreen reputation is external; remaining authenticated OneDrive validation is recorded against #93.
 
 Chats
 - 2026-10-18 session/85-windows-131-regressions: chat started
