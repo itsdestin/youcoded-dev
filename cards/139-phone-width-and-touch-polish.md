@@ -19,6 +19,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/139-touch-session-scroll: Implemented touch scrolling in the active-session list; taps switch, mouse and header-pill drags preserved. Five new regressions; all 44 switcher tests and desktop verify passed, including screen/journey checks. Android JVM tests passed (36 per variant); APK packaging blocked by apk version-tool gate; physical touch unverified. App changes remain local and uncommitted.
 - 2026-10-18 session/139-touch-session-scroll: Fix active-session list touch scrolling on Android and remote access: finger swipes scroll, taps switch; preserve mouse and header-pill drags. Five regression tests added; verification in progress.
 - 2026-10-18 session/139-touch-session-scroll: chat started
 
