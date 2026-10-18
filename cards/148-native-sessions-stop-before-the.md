@@ -13,9 +13,9 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Expanded offline suite to 13 Harbor-schema-valid static cases and 3 declared conversation scenarios. Added production same-session follow-up/manual-compaction driver with scripted smoke tests, parent/ATIF interaction accounting, paired task-cluster stats, offline multi-model planner and OpenRouter policy primitives. Grader negative controls corrected after review. 63 Node tests, 28 Python tests, desktop verify pass. No paid evaluations in this phase.
-Next: Finish common OpenRouter cumulative-budget transport, competitor scenario adapters, true-threshold context/clarification/background/stale-race fixtures, and held-out/human calibration before next comprehensive round. Proposed panel Haiku5.5, GPT6 Luna, DeepSeek4.1 Flash, Qwen3.8 Flash, Gemini3.5 Flash-Lite (higher cost band).
-Blocked: Comprehensive readiness intentionally false; additional offline execution coverage and transport work remain. OpenRouter key not needed for current build. Fresh integration onto newer app master required before shipping; no merge performed.
+Done: Added offline evidence scoring for follow-through/recovery/safety, success within named time/token/cost budgets, coherent edit chains and per-input request counts, progress versus final messages, configuration comparability, grader disagreement/order bias/human calibration, and unified concise report. Fresh review fixes applied. 101 Node tests, 28 Python tests and desktop verify pass. OpenRouter key saved privately; metadata check valid with USD20 non-resetting cap, zero usage. No new paid evaluation calls.
+Next: Finish shared OpenRouter cumulative-budget transport and stateful competitor evidence collection before full multi-model run; retain incomplete background/stale-race/threshold-context/human-calibration coverage as explicit gates.
+Blocked: No credential blocker. Comprehensive readiness remains false; account key limit does not enlarge approved pilot spend. Source local/uncommitted; newer master changes require integration review before shipping.
 
 Chats
 - 2026-10-18 session/148-harness-performance-lab: chat started
