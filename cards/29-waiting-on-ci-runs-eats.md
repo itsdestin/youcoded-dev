@@ -11,6 +11,7 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
+work: session/release-1-3-2
 ---
 Progress
 Done: nothing recorded.
@@ -18,6 +19,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
 
 From the old roadmap (dev-workspace › release, status confirmed, seen on n/a, last checked 2026-09-20)
 Waiting on CI runs eats whole sessions. Destin, 2026-09-20: "just fixing a few minor test issues and such has seemingly eaten over an hour of our time today just waiting around on runs. is there any way we could improve this in the future for better/faster iteration and fixes?" Two answers he liked, neither built: (1) a NIGHTLY rehearsal build from master that publishes nothing and notifies on failure (the launch check runs in no other workflow and sat broken from 2026-09-16); (2) a way to run ONE test file on ONE OS instead of a ~15-minute three-OS matrix
