@@ -13,9 +13,9 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Ran Anthropic Haiku 5.5 only: three task types verified successfully; one earlier coding run hit four-request cap; one zero-request adapter setup failure fixed. 14 model requests; rate-card estimate USD 0.00632507, pessimistic token estimate USD 0.21916345 (not provider billing). Fixed direct-provider registration and preserved worker errors. 32 Node tests, 4 adapter tests, desktop verify pass.
-Next: Add common Haiku-only and cumulative-budget enforcement for competitor clients, then run matched-model comparisons. First measured optimization candidates: fixed schema overhead and Read-before-Edit recovery waste.
-Blocked: No credential blocker. Approved pilot ceiling remains USD 10 total, despite supplied key account limit of USD 200. Comparator spending must use the same bounded envelope; no competitor inference performed yet.
+Done: Expanded offline suite to 13 Harbor-schema-valid static cases and 3 declared conversation scenarios. Added production same-session follow-up/manual-compaction driver with scripted smoke tests, parent/ATIF interaction accounting, paired task-cluster stats, offline multi-model planner and OpenRouter policy primitives. Grader negative controls corrected after review. 63 Node tests, 28 Python tests, desktop verify pass. No paid evaluations in this phase.
+Next: Finish common OpenRouter cumulative-budget transport, competitor scenario adapters, true-threshold context/clarification/background/stale-race fixtures, and held-out/human calibration before next comprehensive round. Proposed panel Haiku5.5, GPT6 Luna, DeepSeek4.1 Flash, Qwen3.8 Flash, Gemini3.5 Flash-Lite (higher cost band).
+Blocked: Comprehensive readiness intentionally false; additional offline execution coverage and transport work remain. OpenRouter key not needed for current build. Fresh integration onto newer app master required before shipping; no merge performed.
 
 Chats
 - 2026-10-18 session/148-harness-performance-lab: chat started
