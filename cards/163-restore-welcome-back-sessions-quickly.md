@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery
 ---
 Progress
-Done: Concurrent recovery implemented; 83 focused regressions and 48 native resume/background safety tests passed. Fresh reviewer has no outstanding findings after explicit second-transfer deferral fix. Existing admission, writer ownership and transcript paths preserved.
-Next: Resolve intermittent unrelated Pages Kit menu screenshot failure, then rerun final full desktop verification.
-Blocked: Final verification: screenshot pair occasionally looks identical; a worker is investigating the capture-readiness race. Recovery code is local, uncommitted and unshipped.
+Done: Concurrent crash recovery implemented and independently reviewed. Final desktop verify exited 0: 2,416 tests passed (36 skipped), types/test types, knip/lint/design lint/ast-grep, 391/391 screen captures and journeys. Separate focused recovery suites: 83 passed; native resume/background subset: 48 passed. Fixed timer-based screenshot-fixture race exposed by verification, with red/green test and visual check.
+Next: User review; changes remain on local session/welcome-back-recovery, uncommitted and unshipped.
+Blocked: No implementation blocker. Actual power-cut recovery on installed app and Android build were not tested; live app untouched.
 
 Chats
 - 2026-10-18 session/welcome-back-recovery: Investigating and fixing serial crash recovery with concurrent restore and ownership/message safety tests
