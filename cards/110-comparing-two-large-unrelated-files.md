@@ -16,9 +16,9 @@ vision: chat.converse
 work: session/93-file-viewer-freezes
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Implemented and independently reviewed on session/93-file-viewer-freezes; not committed or installed. Isolated Electron 10,000-line comparison: typing wait 11,693 ms before versus 47 ms while worker computation continued; complete 20,000-row result retained. All desktop verification passed: 5,306 tests passed, 36 skipped; worker production asset executed successfully.
+Next: Owner review and separately authorized publication/release. Keep the original image-opening incident distinct; its cause remains unconfirmed.
+Blocked: No implementation blocker. Installed app is unchanged; Windows/macOS and phone runtime have not been exercised here.
 
 Chats
 - 2026-10-18 session/93-file-viewer-freezes: Implemented exact background comparisons with bounded small fast path, cancellation, hidden-chat handling and regression tests.
