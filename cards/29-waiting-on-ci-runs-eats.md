@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths
 ---
 Progress
-Done: Beta-numbering subtask shipped: app PR633 (7b994067d) and workspace PR269 merged. Visible beta counters reset per official release; next line selected automatically. 14 resolver tests, local desktop verification, Desktop and Android PR CI, workflow lint and documentation CI passed.
-Next: Remaining release-pipeline work on this umbrella card stays open. CI performance audit delivered in chat; optimization changes await Destin's approval.
-Blocked: No blocker for beta-numbering subtask.
+Done: CI first pass implemented locally: fail-closed desktop classifier, cheap preflight, parallel full test/installer jobs, stable completion gates, PR-only stale-run cancellation, candidate-root whole-graph card-only workspace lane. Independent task and final reviews approved. Local445 workspace tests,26 app policy/beta tests,9 workflow guards and required desktop verify pass.
+Next: Authorize implementation commits/candidate pushes and GitHub CI validation without merging, to prove actual status/scheduling/fresh packaging and measure timing. Broader selectors/sharding/caches/protection migration remain deferred.
+Blocked: No local implementation blocker; remote acceptance awaits candidate-publication authorization.
 
 Chats
 - 2026-10-18 session/29-ci-fastpaths: chat started
