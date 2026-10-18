@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# vm.sh — fast hands-on install testing in the quickemu guests. See docs/vm-testing.md → "Quick loop".
+# vm.sh — hands-on install testing. See docs/vm-testing.md → "Quick loop".
+# Fedora aliases: fedora|fedora-kde|kde use fedora.sh's disk-only reset flow (no RAM snapshots).
+# Fedora: stop --keep retains a session; save-ready promotes it only while stopped.
 #
 #   vm.sh <win|ubuntu|mac|tahoe> start [--headless]   restore the saved "ready" desktop (seconds) and open
 #                                               a window for Destin; cold-boots `clean` if no ready state
@@ -20,6 +22,11 @@
 #
 # A bash script on purpose: Claude Code's Bash tool runs zsh here (see vmctl.sh's header).
 set -euo pipefail
+
+# WHY dispatch before setup: Fedora must never create or read another guest's quickemu state.
+case "${1:-}" in
+  fedora|fedora-kde|kde) shift; exec bash "$(dirname "$0")/fedora.sh" "$@" ;;
+esac
 
 VMS=${VM_HOME:-$HOME/vms}
 SHOTS=${VM_SHOTS:-/tmp/vm-shots}
