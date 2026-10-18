@@ -11,7 +11,7 @@ summary: The new built-in browser lacks phone support, file uploads, tab extras 
 area: Chat
 side: both
 vision: chat.steer.websearch
-work: session/google-connections-planning
+work: session/google-connections-planning, session/87-browser-tool-robustness
 ---
 Progress
 Done: nothing recorded.
@@ -19,6 +19,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/87-browser-tool-robustness: chat started
 - 2026-10-18 session/google-connections-planning: Reconciled September integrations research: its proposed browser build is historical, because the built-in browser subsequently shipped October 14. Remaining browser work stays here; do not restart the old CLI-first proposal. Desktop/computer control is a distinct exploration, not delivered by this browser feature. Source: 9470bbe1:docs/active/investigations/2026-09-26-integrations-rebuild/research/05-browser-computer-use.md. Preservation only.
 
 From the old roadmap (other-features › misc, status confirmed, seen on all, last checked 2026-10-14)
