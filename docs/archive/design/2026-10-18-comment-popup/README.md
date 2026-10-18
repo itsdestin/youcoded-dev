@@ -1,7 +1,9 @@
 ---
-status: active
+status: shipped
 date: 2026-10-18
 work-item: 39
+shipped: https://github.com/itsdestin/youcoded/pull/636
+commit: f61cab2eea49ab5a932a91a8b8d1ac993585f26c
 ---
 
 # File comment popup
