@@ -225,17 +225,15 @@ test('setup and startup use one repository inventory', () => {
   assert.doesNotMatch(script, /itsdestin\/youcoded:master/);
 });
 
-test('provisions node_modules as a hardlink farm for a configured component', t => {
-  const f = fixture(t), app = f.repo('app', 'master', path.join(f.root, 'youcoded'));
+test('does not copy an unversioned installed directory from the shared checkout', t => {
+  const f = fixture(t);
+  f.repo('app', 'master', path.join(f.root, 'youcoded'));
   const srcModules = path.join(f.root, 'youcoded', 'desktop', 'node_modules', 'dep');
   fs.mkdirSync(srcModules, { recursive: true });
   fs.writeFileSync(path.join(srcModules, 'index.js'), 'module code\n');
   const out = f.ok('alpha', ['youcoded']);
-  const destModules = path.join(out.repositories.youcoded.path, 'desktop', 'node_modules', 'dep', 'index.js');
-  assert.equal(fs.readFileSync(destModules, 'utf8'), 'module code\n');
-  // Hard linked, not a copy: same inode as the source.
-  assert.equal(fs.statSync(destModules).ino, fs.statSync(path.join(srcModules, 'index.js')).ino);
-  assert.match(JSON.stringify(out.repositories.youcoded.provisioned), /desktop\/node_modules \(hardlinked\)/);
+  assert.equal(fs.existsSync(path.join(out.repositories.youcoded.path, 'desktop', 'node_modules')), false);
+  assert.equal(fs.readFileSync(path.join(srcModules, 'index.js'), 'utf8'), 'module code\n');
 });
 
 test('a component with no installed deps and a resume both provision nothing', t => {
@@ -252,122 +250,48 @@ test('a component with no installed deps and a resume both provision nothing', t
   assert.equal(fs.existsSync(path.join(resumed.repositories.youcoded.path, 'desktop', 'node_modules')), false);
 });
 
-// Stands in for `npm pack <spec> --pack-destination <dir> --silent`: records what
-// it was asked for, builds a one-file tarball, prints its name like npm does.
-const FAKE_NPM = `#!/bin/sh
-echo "$@" >> "$NPM_LOG"
-spec="$2"; dest="$4"
-case "$spec" in broken@*|brokenold@*) exit 1;; esac
-name="\${spec%@*}"; version="\${spec##*@}"
-work="$dest/work-$$"; mkdir -p "$work/package"
-printf '{"name":"%s","version":"%s"}\\n' "$name" "$version" > "$work/package/package.json"
-printf 'fetched cli\\n' > "$work/package/cli.js"
-file="$(echo "$name" | sed 's/^@//; s#/#-#')-$version.tgz"
-tar -czf "$dest/$file" -C "$work" package
-rm -rf "$work"
-echo "$file"
-`;
-
-test('fetches required packages the shared install lacks, into fresh directories', t => {
-  // WHY: the shared checkout's install lags master, so a dependency master added
-  // since is absent from the hardlink farm (dompurify, three sessions, 2026-09-11).
+test('an incomplete npm project fails startup and leaves its worktree resumable', t => {
   const f = fixture(t), app = f.repo('app', 'master', path.join(f.root, 'youcoded'));
-  const lock = { lockfileVersion: 3, packages: {
-    '': { name: 'app' },
-    'node_modules/dep': { version: '1.0.0' },
-    'node_modules/newdep': { version: '2.0.0' },
-    'node_modules/@scope/scoped': { version: '3.0.0' },
-    'node_modules/optdep': { version: '1.0.0', optional: true },
-    'node_modules/otheros': { version: '1.0.0', os: [`!${process.platform}`] },
-    'node_modules/broken': { version: '1.0.0' },
-    // A native binary for THIS machine: optional, but tagged with its os/cpu.
-    'node_modules/nativebin': { version: '1.0.0', optional: true, os: [process.platform], cpu: [process.arch] },
-    'node_modules/othercpu': { version: '1.0.0', optional: true, os: [process.platform], cpu: [`!${process.arch}`] },
-    // Installed at an older MAJOR: replaced; its nested dependency is kept.
-    'node_modules/majordep': { version: '6.0.3', bin: { majortool: 'cli.js' } },
-    'node_modules/majordep/node_modules/inner': { version: '1.0.0' },
-    // Installed a minor behind: left alone.
-    'node_modules/minordep': { version: '1.5.0' },
-    // Older major, but the download fails: the working old copy stays.
-    'node_modules/brokenold': { version: '2.0.0' },
-    // A fetched package with a command gets its node_modules/.bin link.
-    'node_modules/tooldep': { version: '1.0.0', bin: { tool: 'cli.js' } },
-  } };
   fs.mkdirSync(path.join(app.seed, 'desktop'));
-  fs.writeFileSync(path.join(app.seed, 'desktop', 'package-lock.json'), JSON.stringify(lock));
-  git(app.seed, 'add', '.'); git(app.seed, 'commit', '-m', 'lock'); git(app.seed, 'push', 'origin', 'master');
-  git(path.join(f.root, 'youcoded'), 'pull', '-q');
-  const srcDep = path.join(f.root, 'youcoded', 'desktop', 'node_modules', 'dep');
-  fs.mkdirSync(srcDep, { recursive: true });
-  fs.writeFileSync(path.join(srcDep, 'package.json'), '{"version":"1.0.0"}\n');
-  const srcModules = path.join(f.root, 'youcoded', 'desktop', 'node_modules');
-  const plant = (rel, version) => {
-    fs.mkdirSync(path.join(srcModules, rel), { recursive: true });
-    fs.writeFileSync(path.join(srcModules, rel, 'package.json'), `{"version":"${version}"}\n`);
-  };
-  plant('majordep', '5.9.3');
-  fs.writeFileSync(path.join(srcModules, 'majordep', 'cli.js'), 'shared old cli\n');
-  plant('majordep/node_modules/inner', '1.0.0');
-  plant('minordep', '1.4.0');
-  plant('brokenold', '1.0.0');
-  fs.mkdirSync(path.join(srcModules, '.bin'));
-  fs.symlinkSync('../majordep/cli.js', path.join(srcModules, '.bin', 'majortool'));
-  const bin = path.join(f.dir, 'bin'), log = path.join(f.dir, 'npm.log');
+  fs.writeFileSync(path.join(app.seed, 'desktop', 'package-lock.json'), JSON.stringify({ lockfileVersion: 3, packages: {} }));
+  git(app.seed, 'add', '.'); git(app.seed, 'commit', '-m', 'incomplete dependency inputs'); git(app.seed, 'push', 'origin', 'master');
+  const failed = f.start('alpha', ['youcoded']);
+  assert.notEqual(failed.status, 0);
+  assert.match(failed.stderr, /Both package.json and package-lock.json are required/);
+  assert.equal(fs.existsSync(path.join(f.root, 'worktrees', 'sessions', 'alpha', 'youcoded')), true);
+  const manifest = JSON.parse(fs.readFileSync(path.join(f.root, '.git', 'youcoded-sessions', 'alpha.json')));
+  assert.ok(manifest.repositories.youcoded);
+});
+
+test('matching sessions reuse an exact dependency source without sharing writable files', t => {
+  const f = fixture(t), app = f.repo('app', 'master', path.join(f.root, 'youcoded'));
+  const project = path.join(app.seed, 'desktop');
+  fs.mkdirSync(project);
+  const pkg = { name: 'fixture-app', version: '1.0.0', dependencies: { dep: '1.5.0' } };
+  fs.writeFileSync(path.join(project, 'package.json'), JSON.stringify(pkg));
+  fs.writeFileSync(path.join(project, 'package-lock.json'), JSON.stringify({ lockfileVersion: 3, packages: { '': pkg, 'node_modules/dep': { version: '1.5.0' } } }));
+  git(app.seed, 'add', '.'); git(app.seed, 'commit', '-m', 'dependency inputs'); git(app.seed, 'push', 'origin', 'master');
+  const shared = path.join(f.root, 'youcoded', 'desktop', 'node_modules', 'dep');
+  fs.mkdirSync(shared, { recursive: true });
+  fs.writeFileSync(path.join(shared, 'package.json'), JSON.stringify({ name: 'dep', version: '1.4.0' }));
+  const bin = path.join(f.dir, 'bin'), count = path.join(f.dir, 'installs');
   fs.mkdirSync(bin);
-  fs.writeFileSync(path.join(bin, 'npm'), FAKE_NPM, { mode: 0o755 });
-
-  const result = spawnSync(process.execPath, [cli, '--root', f.root, '--session', 'alpha', '--json', 'youcoded'],
-    { env: { ...env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, NPM_LOG: log }, encoding: 'utf8' });
-  assert.equal(result.status, 0, result.stderr);
-  const out = JSON.parse(result.stdout);
-  const modules = path.join(out.repositories.youcoded.path, 'desktop', 'node_modules');
-  for (const [name, version] of [['newdep', '2.0.0'], ['@scope/scoped', '3.0.0']]) {
-    const manifest = path.join(modules, name, 'package.json');
-    assert.equal(JSON.parse(fs.readFileSync(manifest, 'utf8')).version, version);
-    assert.equal(fs.statSync(manifest).nlink, 1); // its own inode — no other checkout sees it
-  }
-  // Untagged optional and other-platform entries are never asked for; a failed fetch leaves no empty folder.
-  for (const skipped of ['optdep', 'otheros', 'othercpu', 'broken']) assert.equal(fs.existsSync(path.join(modules, skipped)), false);
-  const asked = fs.readFileSync(log, 'utf8');
-  assert.doesNotMatch(asked, /optdep|otheros|othercpu|\bdep@|minordep|inner@/);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'nativebin', 'package.json'), 'utf8')).version, '1.0.0');
-
-  // The major-version replacement: new version here, nested dependency carried over,
-  // and the SHARED copy's file untouched (same content, still hardlinked to it).
-  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'majordep', 'package.json'), 'utf8')).version, '6.0.3');
-  assert.equal(fs.readFileSync(path.join(modules, 'majordep', 'cli.js'), 'utf8'), 'fetched cli\n');
-  assert.equal(fs.readFileSync(path.join(srcModules, 'majordep', 'cli.js'), 'utf8'), 'shared old cli\n');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(srcModules, 'majordep', 'package.json'), 'utf8')).version, '5.9.3');
-  assert.equal(fs.existsSync(path.join(modules, 'majordep', 'node_modules', 'inner', 'package.json')), true);
-  assert.deepEqual(fs.readdirSync(modules).filter(n => n.includes('.replaced-')), []);
-  // Minor drift is left as the shared install has it; a failed replacement keeps the old copy.
-  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'minordep', 'package.json'), 'utf8')).version, '1.4.0');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'brokenold', 'package.json'), 'utf8')).version, '1.0.0');
-
-  // Commands: the fetched tool gets a link and an executable target; the existing link stays.
-  if (process.platform !== 'win32') {
-    assert.equal(fs.readlinkSync(path.join(modules, '.bin', 'tool')), path.join('..', 'tooldep', 'cli.js'));
-    assert.ok(fs.statSync(path.join(modules, 'tooldep', 'cli.js')).mode & 0o111);
-    assert.equal(fs.readlinkSync(path.join(modules, '.bin', 'majortool')), '../majordep/cli.js');
-    assert.equal(fs.existsSync(path.join(srcModules, '.bin', 'tool')), false);
-  }
-
-  const notes = JSON.stringify(out.repositories.youcoded.provisioned);
-  assert.match(notes, /fetched 4 package\(s\) the shared install lacks \(newdep@2\.0\.0, tooldep@1\.0\.0, nativebin@1\.0\.0, @scope\/scoped@3\.0\.0\)/);
-  assert.match(notes, /replaced 1 package\(s\) the shared install has at an incompatible version \(majordep 5\.9\.3→6\.0\.3\)/);
-  if (process.platform !== 'win32') assert.match(notes, /linked 1 missing command\(s\) \(tool\)/);
-  assert.match(notes, /could not fetch broken@1\.0\.0, brokenold@2\.0\.0/);
-
-  // Resume tops up too: a package master added after creation is fetched on the next start.
-  const lock2 = { ...lock, packages: { ...lock.packages, 'node_modules/latedep': { version: '1.0.0' } } };
-  fs.writeFileSync(path.join(out.repositories.youcoded.path, 'desktop', 'package-lock.json'), JSON.stringify(lock2));
-  const again = spawnSync(process.execPath, [cli, '--root', f.root, '--session', 'alpha', '--json', 'youcoded'],
-    { env: { ...env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, NPM_LOG: log }, encoding: 'utf8' });
-  assert.equal(again.status, 0, again.stderr);
-  const resumed = JSON.parse(again.stdout).repositories.youcoded;
-  assert.equal(resumed.status, 'resumed');
-  assert.match(JSON.stringify(resumed.provisioned), /fetched 1 package\(s\) the shared install lacks \(latedep@1\.0\.0\)/);
-  assert.equal(fs.existsSync(path.join(modules, 'latedep', 'package.json')), true);
+  const fake = path.join(f.dir, 'npm.cjs');
+  fs.writeFileSync(fake, `const fs=require('node:fs');const path=require('node:path');if(process.argv.includes('--version')){console.log('12.2.0');process.exit(0)}if(process.argv.includes('config')){console.log('/nonexistent-fixture-global.npmrc');process.exit(0)}if(!process.argv.includes('ci'))process.exit(2);fs.appendFileSync(process.env.INSTALL_COUNT,'ci\\n');fs.mkdirSync('node_modules/dep',{recursive:true});fs.writeFileSync('node_modules/dep/package.json',JSON.stringify({name:'dep',version:'1.5.0'}));fs.writeFileSync('node_modules/dep/index.js','original dependency');`);
+  fs.writeFileSync(path.join(bin, 'npm'), `#!/bin/sh\nexec '${process.execPath}' '${fake}' "$@"\n`, { mode: 0o755 });
+  const run = (session) => spawnSync(process.execPath, [cli, '--root', f.root, '--session', session, '--json', 'youcoded'], { env: { ...env, PATH: `${bin}${path.delimiter}${env.PATH}`, INSTALL_COUNT: count }, encoding: 'utf8' });
+  const a = run('alpha');
+  assert.equal(a.status, 0, a.stderr);
+  const alpha = path.join(JSON.parse(a.stdout).repositories.youcoded.path, 'desktop', 'node_modules', 'dep');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(alpha, 'package.json'))).version, '1.5.0');
+  const b = run('beta');
+  assert.equal(b.status, 0, b.stderr);
+  const beta = path.join(JSON.parse(b.stdout).repositories.youcoded.path, 'desktop', 'node_modules', 'dep');
+  assert.equal(fs.readFileSync(count, 'utf8'), 'ci\n');
+  assert.notEqual(fs.statSync(path.join(alpha, 'index.js')).ino, fs.statSync(path.join(beta, 'index.js')).ino);
+  fs.writeFileSync(path.join(alpha, 'index.js'), 'session patch');
+  assert.equal(fs.readFileSync(path.join(beta, 'index.js'), 'utf8'), 'original dependency');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(shared, 'package.json'))).version, '1.4.0');
 });
 
 test('a held startup lock refuses the call and is not deleted', t => {

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // Session startup provisions new worktrees; maintenance of shared checkouts stays in setup.sh.
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
 import { sweep, formatSweep } from './prune-worktrees.mjs';
+import { provisionDependencies } from './workspace-dependencies.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
 function git(root, ...args) {
@@ -51,228 +51,26 @@ function save(file, state) {
   fs.renameSync(temp, file);
 }
 
-/**
- * node_modules directories a freshly created component worktree inherits from
- * its source checkout, as hardlink farms (`cp -al`).
- *
- * WHY this exists (2026-09-07): a new session worktree has no dependencies, so
- * the first `npx vitest` / `tsc` dies with `Cannot find module` until the model
- * discovers — out of band, from PITFALLS.md — that it must hand-copy them. That
- * is a guaranteed dead-end on every fresh JS session. Copying here turns "read
- * the docs, then run a command" into "it just works."
- *
- * WHY hardlinks (`cp -al`) and never a symlink: a symlinked node_modules lets
- * `npm ci` / Gradle's bundleWebUi follow the link and empty the SHARED copy for
- * every worktree at once (verify.sh prints the same warning). Hardlinks share
- * inodes with the source, which the patcher rule already handles by replacing
- * files rather than writing in place. Cross-filesystem sources fall back to a
- * plain recursive copy — slower but correct.
- *
- * Best-effort by design: a source without that directory (most repos have no
- * installed deps at all) contributes nothing, and a copy failure warns rather
- * than aborting the whole startup over a cache that can be rebuilt with npm ci.
- */
-const NODE_MODULES_PROVISIONS = {
-  youcoded: ['desktop'],
-};
+// Only configured npm projects are provisioned; other components have no dependency step.
+const NODE_MODULES_PROVISIONS = { youcoded: ['desktop'] };
 
-function copyTree(src, dest) {
-  try {
-    execFileSync('cp', ['-al', src, dest], { stdio: ['ignore', 'pipe', 'pipe'] });
-    return 'hardlinked';
-  } catch {
-    // EXDEV (source on another filesystem) or an older cp: hard links are an
-    // optimization, not a requirement — fall back to a real copy.
-    execFileSync('cp', ['-a', src, dest], { stdio: ['ignore', 'pipe', 'pipe'] });
-    return 'copied';
-  }
-}
-
-/**
- * Fetches the packages a component's package-lock.json requires but its
- * hardlink farm lacks, each into a directory that did not exist before.
- *
- * WHY (2026-09-11): the farm is a copy of whatever was last installed in the
- * shared checkout — 213 commits behind master that day — so a dependency added
- * to master since then is simply absent, and the first test run dies at import
- * (`Failed to resolve import "dompurify"`; 85 suites in one session). Three
- * sessions hit it that day, and each found the manual recipe only after the
- * failure. `npm install` cannot be the fix: it rewrites
- * node_modules/.package-lock.json IN PLACE through the shared inode
- * (PITFALLS.md → Worktrees). `npm pack` + `tar` into a fresh directory creates
- * inodes only this worktree sees.
- *
- * What counts as a gap, and why each (2026-09-16, a fresh worktree whose
- * types and lint checks could not run at all):
- *  - MISSING required, this-platform packages.
- *  - MISSING optional packages that name this os/cpu/libc — the native
- *    binaries tools load at startup (`@typescript/native-preview-linux-x64`,
- *    `@oxlint/binding-linux-x64-gnu`). Untagged optionals stay skipped: they
- *    are wasm fallbacks and helpers for binaries this machine does not use.
- *  - A MAJOR-version mismatch (a minor one below 1.0) — `typescript` sat at
- *    5.9.3 when master wanted 6.0.3 and failed on the new config. Patch and
- *    minor drift is still left alone: 22 packages drifted that way and loaded
- *    fine. A replaced package's old directory is renamed away, never written
- *    into, because its files are hardlinks shared with every other worktree;
- *    its own nested node_modules is carried over.
- *  - A top-level package's command (`node_modules/.bin/<name>`) that is
- *    absent — fetched packages got none, so `npx oxlint` said "command not
- *    found". The link is a new directory entry; a target's mode is only set
- *    when the file is this worktree's own inode.
- * Best-effort like the copy: a failed fetch is a note.
- */
-const MAX_FILLED_PACKAGES = 15;
-function platformAllows(list, value) {
-  if (!Array.isArray(list)) return true;
-  if (list.includes(`!${value}`)) return false;
-  const allowed = list.filter(item => !item.startsWith('!'));
-  return allowed.length === 0 || allowed.includes(value);
-}
-function hostLibc() {
-  if (process.platform !== 'linux') return null;
-  return process.report?.getReport?.().header?.glibcVersionRuntime ? 'glibc' : 'musl';
-}
-function incompatible(installed, wanted) {
-  const [a, b] = [installed, wanted].map(v => String(v).split('.'));
-  return a[0] !== b[0] || (a[0] === '0' && a[1] !== b[1]);
-}
-function installedVersion(dir) {
-  try { return JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).version ?? null; } catch { return null; }
-}
-function linkMissingCommands(componentDir, lock) {
-  if (process.platform === 'win32') return []; // npm writes .cmd shims there; not reproduced here
-  const linked = [];
-  const binDir = path.join(componentDir, 'node_modules', '.bin');
-  for (const [key, entry] of Object.entries(lock.packages ?? {})) {
-    // Only top-level packages own a command in node_modules/.bin.
-    if (!entry?.bin || !key.startsWith('node_modules/') || key.indexOf('node_modules/', 1) !== -1) continue;
-    const pkgDir = path.join(componentDir, key);
-    if (!exists(pkgDir)) continue;
-    const bins = typeof entry.bin === 'string' ? { [key.split('/').pop()]: entry.bin } : entry.bin;
-    for (const [command, rel] of Object.entries(bins)) {
-      const link = path.join(binDir, command);
-      const target = path.join(pkgDir, rel);
-      if (exists(link) || !exists(target)) continue;
-      try {
-        fs.mkdirSync(binDir, { recursive: true });
-        fs.symlinkSync(path.relative(binDir, target), link);
-        // A fetched file is our own inode (nlink 1); a hardlinked one already
-        // carries the shared install's mode and must not be chmodded for all.
-        if (fs.statSync(target).nlink === 1) fs.chmodSync(target, fs.statSync(target).mode | 0o111);
-        linked.push(command);
-      } catch { /* best-effort: the package itself is still usable */ }
-    }
-  }
-  return linked;
-}
-export function fillMissingPackages(componentDir, label = path.basename(componentDir)) {
-  let lock;
-  try { lock = JSON.parse(fs.readFileSync(path.join(componentDir, 'package-lock.json'), 'utf8')); } catch { return []; }
-  const libc = hostLibc();
-  const gaps = [];
-  for (const [key, entry] of Object.entries(lock.packages ?? {})) {
-    // inBundle packages arrive inside their parent's tarball; link entries are workspaces.
-    if (!key.startsWith('node_modules/') || !entry?.version || entry.link || entry.inBundle) continue;
-    if (!platformAllows(entry.os, process.platform) || !platformAllows(entry.cpu, process.arch)) continue;
-    if (libc && !platformAllows(entry.libc, libc)) continue;
-    const dir = path.join(componentDir, key);
-    const name = key.slice(key.lastIndexOf('node_modules/') + 'node_modules/'.length);
-    const spec = `${name}@${entry.version}`;
-    if (!exists(dir)) {
-      const nativeForThisHost = entry.os || entry.cpu || entry.libc;
-      if (entry.optional && !nativeForThisHost) continue;
-      gaps.push({ key, spec, replace: null });
-      continue;
-    }
-    const have = installedVersion(dir);
-    if (have && incompatible(have, entry.version)) gaps.push({ key, spec, replace: have });
-  }
-  const notes = [];
-  if (gaps.length > MAX_FILLED_PACKAGES) {
-    // Deleting a hardlink farm only drops link counts, so a real install is safe from here.
-    return [`${label}/node_modules is missing or outdated in ${gaps.length} packages, too many to fetch one by one — delete it and run npm ci in ${componentDir}`];
-  }
-  // Parents before their nested packages: a replaced parent carries its nested
-  // node_modules over, and a fetched child needs its parent's directory.
-  gaps.sort((x, y) => x.key.length - y.key.length);
-  const filled = [], replaced = [], failed = [];
-  let scratch;
-  if (gaps.length) try {
-    scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'workspace-deps-'));
-    for (const { key, spec, replace } of gaps) {
-      const dest = path.join(componentDir, key);
-      const aside = replace ? `${dest}.replaced-${process.pid}` : null;
-      try {
-        // shell on Windows only: npm is npm.cmd there, which Node will not spawn without one.
-        const file = execFileSync('npm', ['pack', spec, '--pack-destination', scratch, '--silent'],
-          { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000, shell: process.platform === 'win32' })
-          .trim().split('\n').pop().trim();
-        // Fetched BEFORE the old copy moves: a failed download leaves it untouched.
-        if (aside) fs.renameSync(dest, aside);
-        fs.mkdirSync(dest, { recursive: true });
-        execFileSync('tar', ['-xzf', path.join(scratch, file), '-C', dest, '--strip-components=1'], { stdio: ['ignore', 'pipe', 'pipe'] });
-        if (aside) {
-          const nested = path.join(aside, 'node_modules');
-          if (exists(nested) && !exists(path.join(dest, 'node_modules'))) fs.renameSync(nested, path.join(dest, 'node_modules'));
-          fs.rmSync(aside, { recursive: true, force: true }); // unlinks this worktree's names only
-          replaced.push(`${spec.slice(0, spec.lastIndexOf('@'))} ${replace}→${spec.slice(spec.lastIndexOf('@') + 1)}`);
-        } else {
-          filled.push(spec);
-        }
-      } catch {
-        // Never leave an empty directory behind: the next check would read it as installed.
-        if (aside && exists(aside)) {
-          fs.rmSync(dest, { recursive: true, force: true });
-          fs.renameSync(aside, dest); // put the working old version back
-        } else if (!aside) {
-          fs.rmSync(dest, { recursive: true, force: true });
-        }
-        failed.push(spec);
-      }
-    }
-  } catch (error) {
-    return [`${label}/node_modules: could not check for missing packages (${String(error.message).trim()})`];
-  } finally {
-    if (scratch) fs.rmSync(scratch, { recursive: true, force: true, maxRetries: 3 });
-  }
-  const linked = linkMissingCommands(componentDir, lock);
-  if (filled.length) notes.push(`${label}/node_modules: fetched ${filled.length} package(s) the shared install lacks (${filled.join(', ')})`);
-  if (replaced.length) notes.push(`${label}/node_modules: replaced ${replaced.length} package(s) the shared install has at an incompatible version (${replaced.join(', ')})`);
-  if (linked.length) notes.push(`${label}/node_modules: linked ${linked.length} missing command(s) (${linked.join(', ')})`);
-  if (failed.length) notes.push(`${label}/node_modules: could not fetch ${failed.join(', ')} — node scripts/fill-missing-deps.mjs ${componentDir}`);
-  return notes;
+// Compatibility entry point for scripts/fill-missing-deps.mjs: exact provisioning, not
+// selective npm-pack repairs. Failures deliberately propagate to the command's exit code.
+export function fillMissingPackages(componentDir) {
+  return provisionDependencies(componentDir, path.join(commonDir(componentDir), 'youcoded-dependencies'));
 }
 
 function provisionNodeModules(name, source, destination) {
   const notes = [];
   for (const sub of NODE_MODULES_PROVISIONS[name] ?? []) {
-    const srcModules = path.join(source, sub, 'node_modules');
-    if (!exists(srcModules) || !fs.lstatSync(srcModules).isDirectory() || fs.lstatSync(srcModules).isSymbolicLink()) continue;
-    const destModules = path.join(destination, sub, 'node_modules');
-    if (exists(destModules)) continue; // resume, or a prior partial run — leave it alone
-    try {
-      // The sub-dir (e.g. desktop/) may not exist as a real directory yet — a
-      // worktree's .gitignore can exclude the whole component, so git creates
-      // only the tracked files' parents. cp cannot create node_modules into a
-      // missing parent, so make it first.
-      fs.mkdirSync(path.dirname(destModules), { recursive: true });
-      notes.push(`${sub}/node_modules (${copyTree(srcModules, destModules)})`);
-    } catch (error) {
-      notes.push(`${sub}/node_modules (FAILED: ${String(error.message).trim()} — run 'cd ${path.join(destination, sub)} && npm ci')`);
-      continue;
-    }
-    notes.push(...fillMissingPackages(path.join(destination, sub), sub));
+    // WHY use the destination's inputs: a resumed branch can require older dependencies
+    // than today's shared master. Immutable generations serve both without changing either.
+    notes.push(...provisionDependencies(path.join(destination, sub), path.join(commonDir(source), 'youcoded-dependencies')));
   }
   return notes;
 }
 function topUpNodeModules(name, destination) {
-  const notes = [];
-  for (const sub of NODE_MODULES_PROVISIONS[name] ?? []) {
-    const modules = path.join(destination, sub, 'node_modules');
-    if (!exists(modules) || !fs.lstatSync(modules).isDirectory()) continue; // absent, or a link to someone else's
-    notes.push(...fillMissingPackages(path.join(destination, sub), sub));
-  }
-  return notes;
+  return provisionNodeModules(name, destination, destination);
 }
 // WHY (2026-09-20): a shared component checkout is not only a git object source.
 // Analytics reads built-in themes and the analytics salt straight off its WORKING TREE,
@@ -419,10 +217,8 @@ export function startWorkspace({ root, session, repos = [] }) {
         }
         const entry = state.repositories[name];
         if (entry) {
-          // WHY top up on resume (2026-09-16): a resumed worktree that merged
-          // master since creation can lack or mis-version what master added —
-          // the same gaps creation fills. Only an existing node_modules is
-          // touched; a component that never had one is left alone.
+          // Recompute from this preserved branch's inputs, not the shared master's.
+          // Unmanaged or locally patched dependencies are preserved and reported, never replaced.
           const toppedUp = topUpNodeModules(name, destination);
           result.repositories[name] = { path: destination, branch, status: 'resumed', ...(toppedUp.length ? { provisioned: toppedUp } : {}), ...(refreshed ? { shared: refreshed } : {}) };
           continue;
@@ -448,8 +244,8 @@ export function startWorkspace({ root, session, repos = [] }) {
         // Record each successful component immediately: later failures preserve work and
         // a retry resumes what succeeded. A crash before this save fails closed on collision.
         save(manifest, state);
-        // After the manifest is saved: dependency provisioning is a convenience on
-        // top of a committed worktree, so its failures must not roll the worktree back.
+        // Save ownership first: dependency failure exits nonzero but leaves a resumable
+        // worktree, rather than rolling back source files or claiming a ready environment.
         const provisioned = provisionNodeModules(name, source, destination);
         result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}), ...(refreshed ? { shared: refreshed } : {}) };
       }

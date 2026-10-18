@@ -82,17 +82,17 @@ isolated standalone candidate; even a clean textual candidate requires semantic 
 not applied. Conflicts stay in that private candidate. A failed Git update is reported with the
 actual resulting state and is never automatically rolled back over possible concurrent edits.
 
-Dependencies for a configured component are provisioned automatically at creation as a
-**hardlink farm** (`cp -al`) from the source checkout — currently `youcoded/desktop/node_modules`.
-The startup output lists what was linked as `deps: <path> (hardlinked|copied)`, then any top-up:
-missing required packages and this machine's native binaries are fetched, packages a major version
-behind the lockfile are replaced (the old directory is renamed away and removed, never written into),
-and missing `node_modules/.bin` commands are linked. A resumed session gets the same top-up of its
-existing `node_modules`; a component with no installed deps provisions nothing. The dependency safety rules in
-`docs/PITFALLS.md` → Worktrees still apply to these hardlinked copies (hardlinks share inodes, so a
-dependency patcher must replace files rather than write in place; do not run `npm ci` /
-`bundleWebUi` against them). No shared source files, staged edits, local commits or untracked files
-are cleaned up. Git's remote refs and worktree metadata do change.
+### Dependencies
+
+Configured npm projects (currently `youcoded/desktop`) use a reusable source under the component repository's common Git directory, `youcoded-dependencies/<fingerprint>/`. Startup does **not** copy the shared checkout's potentially stale `node_modules`.
+
+The fingerprint uses the destination's `package.json`, exact lockfile, local `.npmrc`, scripts tree, Node/npm versions, ABI, OS/architecture/libc, install flags and relevant configuration/build-environment hashes. Credentials participate only as hashes, never readable completion metadata. Different branches/toolchains keep different generations. Local/file/workspace dependencies currently fail with an explicit unsupported-input error rather than being reused without a complete input snapshot.
+
+A missing generation is installed once with `npm ci` in private staging, including development/platform-optional packages and approved install scripts. A per-fingerprint lock coordinates sessions; a bounded lock wait reports contention without deleting another owner's lock. Required package versions, command links and Electron runtime presence are checked. Completion metadata and a dependency-tree hash are written before publication. Failed or partial installs are not published and startup exits nonzero, retaining the worktree and its ownership manifest for retry.
+
+Each session receives an independent copy-on-write/full copy, **not mutable hardlinks or a symlink to the source**. An exact source hit works without downloading packages again, including offline; an offline miss must install successfully from existing npm/download caches or fail. Matching managed resumes verify their contents. Changed inputs prepare another generation before replacing an unchanged managed installation. Unmanaged installs, older hardlink farms and locally patched dependencies are left untouched and reported: inspect and move them aside before retrying, never overwrite their contents in place.
+
+The source cache is outside tracked files; no shared source files, staged edits, local commits or untracked files are cleaned up. Older worktrees can still have hardlinked dependencies and remain subject to `docs/PITFALLS.md` → Worktrees. Git's remote refs and worktree metadata do change.
 
 ## Reports, recovery and cleanup
 

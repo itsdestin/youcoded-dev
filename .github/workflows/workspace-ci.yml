@@ -107,7 +107,7 @@ jobs:
       # runs on every push/PR/schedule, same as the other suites above.
       - name: Test workspace-start
         if: ${{ !cancelled() }}
-        run: node --test scripts/workspace-start.test.mjs
+        run: node --test scripts/workspace-start.test.mjs scripts/workspace-dependencies.test.mjs
 
       # prune-worktrees.mjs is the tool that decides which of the ~60 accumulated worktrees
       # are safe to delete — a wrong "safe" verdict here destroys someone's unpushed work, so
