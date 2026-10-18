@@ -13,9 +13,9 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: nothing yet.
-Next: not decided.
-Blocked: nothing.
+Done: Built isolated production-runtime harness lab, SDK-attempt accounting, paired reports, Harbor adapter and three pilot tasks. Added report-delivery lifecycle regression; original incident not reproduced. 28 Node lab tests, 3 Harbor adapter tests and desktop verify pass.
+Next: Run container end-to-end smoke, then an approved capped matched-model pilot; expand held-out tasks before public claims. Continue original false-waiting investigation from actual traces.
+Blocked: Current account cannot access Docker socket. Paid provider runs require separately approved cap/key. Source work remains local and uncommitted.
 
 Chats
 - 2026-10-18 session/148-harness-performance-lab: chat started
