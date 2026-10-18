@@ -4,21 +4,20 @@ title: Reopened chats: wrong labels and wrong times
 stage: planning
 priority: P1
 tags: chat-data, desktop, chat, bug
-release: v1.3.1
 report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 2-v1-3-1-release-blocker
 roadmap: chat-data: v1.3.1 release blocker: the replayed-turn record's type is a
 created: 2026-10-15
-summary: Reopened chats can mislabel replayed turns and show the reopen time instead of when each message was sent; must be fixed before 1.3.1.
+summary: Some reopened chats can show reopen-time timestamps; replay typing still needs cleanup. Deferred from 1.3.1 by Destin.
 area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse.resume
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: yes — the old roadmap marked it blocked; see below.
+Done: Release audit confirmed the remaining limitation; Destin explicitly deferred this item from 1.3.1. No implementation was shipped or marked fixed.
+Next: Remain open for future scoped work; not a gate for the current 1.3.1 candidate.
+Blocked: Not blocking 1.3.1 by explicit decision. Future product/design choices remain separate.
 
 Chats
 
