@@ -11,6 +11,7 @@ summary: Marketplace fixes: listings that undersell, install and library faults,
 area: Marketplace & library
 side: screens
 vision: marketplace.browse, marketplace.setup.install
+work: session/google-connections-planning
 ---
 Progress
 Done: nothing recorded.
@@ -20,6 +21,7 @@ Blocked: nothing recorded.
 See also #130: Both are about theme preview pictures being unreliable (51b in the marketplace, 130a for themes you build yourself), and Destin asked to fix the whole class.
 
 Chats
+- 2026-10-18 session/google-connections-planning: Recovered TWO distinct historical findings to re-verify, not fixed or previously covered: (1) Todoist API-key setup rejected by the plugin-only integration installer; (2) Google Messages advertised broader platform support but shipped a Windows-only gmessages.exe, plus stale iMessage copy. Keep outside the Google connection rebuild. Source: 109a2161:docs/roadmap/marketplace.md and docs/active/investigations/2026-09-26-integrations-rebuild/research/01-current-integrations.md. These were September source findings, not current reproductions; recheck before fixes. Preservation only.
 
 From the old roadmap (marketplace › catalog, status confirmed, seen on all, last checked 2026-09-01)
 Catalog listings and previews: 3 small faults. (a) The "What this can do" panel under-reported capable plugins; four now show their real shell/network/key lines, but `desktop-commander` lists only "Connects to the internet" + "Adds 6 skills" — unverified whether that is honest. (b) Theme previews (Devil's Garden, Kuromi Dreamer) showed a blank band in the app; they now fall back to colour swatches, but whether the pictures load is unverified. Destin 2026-09-02: "previews in general are unreliable (not always created or shown correctly); fix the class". (c) A theme installed from a preview can keep the old mascot after its first release (Morning Rounds: Update hidden because both versions said 1.0.0); prevent it without forcing every new theme to bump.
