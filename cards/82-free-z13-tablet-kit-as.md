@@ -12,9 +12,9 @@ area: Release & business
 work: session/82-z13-keyboard-release
 ---
 Progress
-Done: Prepared unpublished swipe-keyboard 0.1.0-2 safety candidate: stale-gesture focus/password fix, selection guards, bounded gestures, privacy-safe logging, diagnostics and optional YouCoded assistance. Both native builds/tests passed; exact RPM passed real KDE touchscreen/KWrite, privacy, geometry/long-touch recovery, reinstall/reboot, wrong-order recovery and clean removal. Evidence: swipe-keyboard/docs/pre-reddit-verification.md. Dedicated test VM stopped; installed host setup untouched.
-Next: Owner review/publication decision before Reddit; current GitHub v0.1.0-1 downloads do not include these fixes.
-Blocked: Source changes and candidate files are local/uncommitted; no push, tag or release upload authorized.
+Done: Published Swipe Keyboard v0.1.0-r3 at https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.1.0-r3 from source commit 0f458bb. All seven uploaded asset digests verified. Exact Arch package tested across Qt6.11/KF6.27 and Qt6.12/KF6.31; installed/activated on Destin CachyOS without OS update. All 96 installed payload files match; live KWin process loads system plugin; recording off; legacy files/settings/recordings preserved in private migration backup. Final Fedora RPM real KDE touchscreen/KWrite checks pass. Dedicated test VM stopped. Old release marked superseded, not overwritten.
+Next: Destin can try swipe/candidate/backspace on the device and use the public release/setup links for the first Reddit post. Draft supplied separately; no Reddit post submitted. Maintenance/update automation is follow-up #165; broader tablet kit/video remain deferred.
+Blocked: No release or installation blocker. Human touchscreen feedback on the device remains a user check.
 
 Chats
 - 2026-10-18 session/82-z13-keyboard-release: chat started
