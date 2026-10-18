@@ -14,9 +14,9 @@ vision: everywhere.platforms.android
 work: session/139-touch-session-scroll
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Active-session list touch scrolling fixed and merged: https://github.com/itsdestin/youcoded/pull/634 (b8111dc3e). Swipe to scroll and tap to switch; mouse and header-pill drags preserved. Desktop verify and desktop/Android CI passed, including Android releaseTest APK build. Physical touch-device check remains unverified.
+Next: Remaining wording, wrapping, clipping, and touch-target polish described below; this focused scroll fix does not close the broader card.
+Blocked: No blocker for the merged touch-scroll fix.
 
 Chats
 - 2026-10-18 session/139-touch-session-scroll: chat started
