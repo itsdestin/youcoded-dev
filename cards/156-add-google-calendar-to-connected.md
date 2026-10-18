@@ -11,7 +11,7 @@ why: Destin approved Calendar next after the Google files-first milestone on 202
 ---
 Progress
 Done: nothing yet.
-Next: plan it.
+Next: Design the Calendar follow-up after #155. Listed September actions are candidates only; the approved decision is sequencing and reuse of Google accounts, not a final Calendar action list or permission set.
 Blocked: waits on #155.
 
 Chats
