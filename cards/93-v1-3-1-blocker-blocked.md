@@ -13,7 +13,7 @@ area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse
-work: session/93-session-freezes
+work: session/93-session-freezes, session/93-file-viewer-freezes
 ---
 Progress
 Done: Session-start hardening merged in itsdestin/youcoded#629 (bc9e43752), with desktop and Android CI passing. Includes off-thread skill/context discovery, bounded worker retirement, reliable timer-only stall detection, severe-detail reservation, and content-free setup/keychain timings. Reviewed locally: 3475 tests passed, 37 skipped; 36 Android shell tests and 17 report tests passed. Implementation record: docs/archive/plans/2026-10-17-session-freezes.md.
@@ -21,6 +21,7 @@ Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. O
 Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified.
 
 Chats
+- 2026-10-18 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-session-freezes: chat started
 - 2026-10-18 session/93-session-freezes: chat started
 
