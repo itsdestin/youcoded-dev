@@ -43,6 +43,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 2
+          # WHY: the first trial spent 68s checking out media for this tiny policy.
+          # checkout uses blob:none for sparse inputs; Git trees still cover every path.
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/workspace-ci.yml
+            /scripts/ci-workspace.mjs
+            /scripts/ci-workspace.test.mjs
+            /scripts/cards.mjs
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -65,6 +73,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          sparse-checkout-cone-mode: false
+          # Keep ALL cards and both retirement guards, not only changed records.
+          sparse-checkout: |
+            /cards/
+            /scripts/cards.mjs
+            /ROADMAP.md
+            /docs/roadmap/
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -352,6 +368,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # No media/card payload is consumed by the dependency-result gate.
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/ci-workspace.mjs
       - uses: actions/setup-node@v7
         with:
           node-version: 22

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, renameSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, renameSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -23,13 +23,13 @@ function fixture(t, files = { 'cards/1-one.md': 'before\n' }) {
   for (const [path, content] of Object.entries(files)) put(root, path, content);
   const commit = () => { git(root, 'add', '--all'); git(root, 'commit', '-qm', 'Fixture\n\nSubmitted via YouCoded Assistant'); return git(root, 'rev-parse', 'HEAD'); };
   const base = commit();
-  function run({ eventName = 'push', event, before = base, after = git(root, 'rev-parse', 'HEAD'), rawEvent, checkout = root } = {}) {
+  function run({ eventName = 'push', event, before = base, after = git(root, 'rev-parse', 'HEAD'), rawEvent, checkout = root, script = SCRIPT } = {}) {
     const payload = event ?? (eventName === 'pull_request' ? { pull_request: { base: { sha: before }, head: { sha: after } } } : { before, after });
     const eventPath = join(root, 'event.json');
     const output = join(root, 'output');
     writeFileSync(eventPath, rawEvent ?? JSON.stringify(payload));
     writeFileSync(output, '');
-    const result = spawnSync(process.execPath, [SCRIPT, 'changes'], { cwd: checkout, encoding: 'utf8', env: { ...process.env, GITHUB_EVENT_NAME: eventName, GITHUB_EVENT_PATH: eventPath, GITHUB_SHA: git(checkout, 'rev-parse', 'HEAD'), GITHUB_OUTPUT: output } });
+    const result = spawnSync(process.execPath, [script, 'changes'], { cwd: checkout, encoding: 'utf8', env: { ...process.env, GITHUB_EVENT_NAME: eventName, GITHUB_EVENT_PATH: eventPath, GITHUB_SHA: git(checkout, 'rev-parse', 'HEAD'), GITHUB_OUTPUT: output } });
     return { ...result, output: readFileSync(output, 'utf8') };
   }
   return { root, base, commit, run };
@@ -173,6 +173,72 @@ function jobs() {
 }
 const runnable = (step) => step['continue-on-error'] !== true && [undefined, '${{ !cancelled() }}'].includes(step.if);
 const hasCommand = (job, command) => job.steps.some(step => runnable(step) && step.run?.includes(command));
+const checkout = (job) => job.steps.find(step => step.uses === 'actions/checkout@v7');
+const sparsePaths = (job) => {
+  const options = checkout(job).with;
+  assert.equal(options?.['sparse-checkout-cone-mode'], false);
+  assert.equal(typeof options?.['sparse-checkout'], 'string');
+  return options['sparse-checkout'].trim().split('\n').map(line => line.trim());
+};
+
+function sparseFixture(t, name, extra = {}) {
+  const files = {
+    'cards/1-one.md': '---\nid: 1\ntitle: One\nstage: explore\n---\n',
+    'cards/2-two.md': '---\nid: 2\ntitle: Two\nstage: explore\nneeds: 1\n---\n',
+    'docs/unrelated.png': 'media is not a helper-job input\n',
+    'scripts/unrelated.mjs': 'unrelated code\n',
+    '.github/workflows/workspace-ci.yml': readFileSync(WORKFLOW, 'utf8'),
+    'scripts/ci-workspace.mjs': readFileSync(SCRIPT, 'utf8'),
+    'scripts/ci-workspace.test.mjs': readFileSync(fileURLToPath(import.meta.url), 'utf8'),
+    'scripts/cards.mjs': readFileSync(CARDS, 'utf8'),
+    ...extra,
+  };
+  const f = fixture(t, files);
+  put(f.root, 'cards/2-two.md', files['cards/2-two.md'] + 'Changed progress.\n'); f.commit();
+  git(f.root, 'config', 'uploadpack.allowFilter', 'true');
+  const dir = join(f.root, 'sparse');
+  execFileSync('git', ['clone', '-q', '--no-checkout', '--filter=blob:none', '--depth=2', pathToFileURL(f.root).href, dir], { stdio: ['ignore', 'pipe', 'pipe'] });
+  git(dir, 'sparse-checkout', 'init', '--no-cone');
+  execFileSync('git', ['-C', dir, 'sparse-checkout', 'set', '--no-cone', '--stdin'], { input: sparsePaths(jobs()[name]).join('\n') + '\n', stdio: ['pipe', 'pipe', 'pipe'] });
+  git(dir, 'checkout', '-q', 'HEAD');
+  assert.equal(existsSync(join(dir, 'docs/unrelated.png')), false);
+  assert.equal(existsSync(join(dir, 'scripts/unrelated.mjs')), false);
+  return { ...f, checkout: dir };
+}
+
+test('small jobs fetch only declared candidate inputs and full fallback stays complete', () => {
+  const { changes, cards, anchors, full } = jobs();
+  assert.deepEqual(sparsePaths(changes), ['/.github/workflows/workspace-ci.yml', '/scripts/ci-workspace.mjs', '/scripts/ci-workspace.test.mjs', '/scripts/cards.mjs']);
+  assert.deepEqual(sparsePaths(cards), ['/cards/', '/scripts/cards.mjs', '/ROADMAP.md', '/docs/roadmap/']);
+  assert.deepEqual(sparsePaths(anchors), ['/scripts/ci-workspace.mjs']);
+  assert.equal(checkout(full).with?.['sparse-checkout'], undefined);
+});
+
+test('real sparse helper checkouts retain routing, complete graph and gate execution', (t) => {
+  const routing = sparseFixture(t, 'changes');
+  assert.equal(existsSync(join(routing.checkout, 'cards/2-two.md')), false);
+  expectLane(routing.run({ checkout: routing.checkout, script: join(routing.checkout, 'scripts/ci-workspace.mjs') }), 'cards');
+
+  const cards = sparseFixture(t, 'cards');
+  const check = () => spawnSync(process.execPath, [join(cards.checkout, 'scripts/cards.mjs'), 'check', '--root', cards.checkout], { encoding: 'utf8' });
+  assert.equal(check().status, 0);
+  rmSync(join(cards.checkout, 'cards/1-one.md'));
+  assert.match(check().stderr, /needs 1, but no card/);
+
+  const completion = sparseFixture(t, 'anchors');
+  const result = spawnSync(process.execPath, [join(completion.checkout, 'scripts/ci-workspace.mjs'), 'gate'], { encoding: 'utf8', env: { ...process.env, NEEDS_JSON: JSON.stringify(needs('cards', 'success')) } });
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('sparse card validation preserves both retired-roadmap rejection checks', (t) => {
+  for (const retired of ['ROADMAP.md', 'docs/roadmap/old.md']) {
+    const f = sparseFixture(t, 'cards', { [retired]: 'retired\n' });
+    assert.equal(existsSync(join(f.checkout, retired)), true);
+    const result = spawnSync(process.execPath, [join(f.checkout, 'scripts/cards.mjs'), 'check', '--root', f.checkout], { encoding: 'utf8' });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /roadmap was retired/);
+  }
+});
 
 test('workflow keeps expensive clones out of cards and validates the checked-out candidate', () => {
   const { cards, full } = jobs();
