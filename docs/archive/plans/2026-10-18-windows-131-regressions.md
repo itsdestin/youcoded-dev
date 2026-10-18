@@ -1,11 +1,12 @@
 # Windows 1.3.1 regression repair
 
-status: active
+status: shipped
 
 ## Result
 
-App branch: `session/85-windows-131-regressions`, commit `6df630783`.
-One local app commit contains all fixes. No push or merge. A merge-tree check against fetched `origin/master` completed without conflicts. The app worktree is clean.
+Merged to remote app master through [youcoded PR #632](https://github.com/itsdestin/youcoded/pull/632), merge commit `1e8797ec30b98ad4cd43f87231dc0e7ab21cd8aa`, on 2026-10-18 after Destin's explicit merge/close approval. Implementation commits: `6df630783` and the pre-merge watcher ordering repair `5eaa86165`, on one app branch.
+
+Windows and macOS CI passed, and required Linux and Android PR checks passed. Remote ancestry of the tested tip was confirmed. This merged source changes; it did not publish a new installer release. Card #85's three older buddy items remain open, and remaining cloud-file validation is recorded against #93.
 
 Destin authorized autonomous Windows VM testing/building/iteration without questions. Testing stayed in the disposable VM and isolated worktree; no host production-app access or credentials copied. Claude Code tests used a local fake API, not paid calls.
 
@@ -40,6 +41,7 @@ The capture bootstrap now uses slash-normalized Windows trust keys and recognize
 - At most two actual metadata accesses run process-wide; closing watchers removes queued work but does not release an in-flight slot prematurely.
 - Deferred scanning preserves initial/live event semantics, original-root depth, nested-repository exclusions, refcounts and close behavior.
 - Fresh review caught and tests pinned two additional requirements: files populated while a directory probe waits must emit add events; internal re-adds must balance chokidar readiness accounting.
+- Pre-merge CI exposed cross-platform test flaws and led to a real ordering-race diagnosis: re-adding a directory before its parent's filtered snapshot finishes can cause chokidar to remove it again. The final implementation waits for parent snapshot cleanup, rechecks overlapping scans, reserves readiness before waiting, and cancels pending startup on shutdown. Faithful startup/live/stop tests fail when the barrier is bypassed. Windows path comparisons and bounded test waits prevent cascading test failures; initial-scan assertions forbid new-file adds without suppressing legitimate edits.
 - Real Windows filesystem test passed: immediate file in a new directory emits add, later edit emits edit, nested repository files stay excluded.
 - **Not verified:** authenticated OneDrive hydration or every cause of whole-computer slowdown. This fixes a concrete blocking watcher path; it does not implement the old unfinished cloud-download consent design or claim to prevent all automatic downloads.
 
@@ -52,12 +54,12 @@ The capture bootstrap now uses slash-normalized Windows trust keys and recognize
 
 ## Verification
 
-- `bash scripts/verify.sh youcoded --full`: exit 0; 1,162 test files passed, 3 skipped; 20,402 tests passed, 47 skipped. Types, knip, lint, design lint, ast-grep, screen opening and journeys passed.
-- Full logs: `scratch/verify-20261018-124656-2474783/`.
+- Final `bash scripts/verify.sh youcoded --full`: exit 0; 1,163 test files passed, 3 skipped; 20,434 tests passed, 47 skipped. Types, knip, lint, design lint, ast-grep, screen opening and journeys passed.
+- Final cross-platform CI: [run 39165972346](https://github.com/itsdestin/youcoded/actions/runs/39165972346). At merge, Windows/macOS were green and the PR's Linux/Android checks were green; a duplicate Linux dispatch build was still running. Session-local verification logs lived under `scratch/verify-20261018-135606-3014742/` and are not a permanent archive.
 - Backend and final renderer builds succeeded. Renderer build retains existing optimizer/chunk-size warnings.
 - Independent reviews of buddy, terminal changes and final watcher revision found no remaining actionable defects.
 - `git diff --check` passed. Merge compatibility was checked without performing a merge.
-- Android builds and macOS runtime were not run. Shared behavior is covered by desktop unit/integration tests, not claimed as device verification.
+- Android CI passed before merge. A macOS interactive app test and an Android device test were not run; CI is not claimed as device verification.
 
 ## Retrospective disposition
 
