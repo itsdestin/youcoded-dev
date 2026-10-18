@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: The model picker can be empty on a new or second device, and its rows don't say how fast, costly or smart a model is.
 area: Chat
 side: screens
-work: session/model-picker-tags
+work: session/model-picker-tags, session/google-connections-planning
 vision: yours.model.tags, yours.model.any
 ---
 Progress
@@ -19,6 +19,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/google-connections-planning: Recovered deferred model-picker idea: show model/provider data-retention and training information, potentially used to warn or block Google-connected chats on unsuitable providers. User deferred this on September 27; enforcement design is not approved. Deferring this UI does not waive Google data-policy checks for #155/#157. Source: 3a59c2cc:docs/roadmap/user-interface.md and docs/active/design/2026-09-26-everyday-actions/proposal.md section 8. Preserve as later work; no model-policy claims have been freshly verified here.
 
 From the old roadmap (local-models, status confirmed, seen on all, last checked 2026-09-06)
 The model list says whether a model FITS and nothing about whether it will be fast. Destin picked a 27B on size and got 3 tokens a second; on the Strix Halo Qwen3.8-27B (29.3 GB) writes 5.3 tokens a second while Qwen3.6-35B-A3B (the same size on disk) writes 31. Wanted: an estimated tokens-per-second tag with a red / yellow / green colour, beside the cost and intelligence tags Destin wants in the model selector. Inputs exist (the file's active-parameter count; the engine's measured rate of the last reply). Undecided: what the colours mean (bands are hardware-relative), how an unrun model is estimated, whether hosted models get the tag.
