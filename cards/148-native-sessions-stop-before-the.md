@@ -13,11 +13,16 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Expanded offline suite to 13 Harbor-schema-valid static cases and 3 declared conversation scenarios. Added production same-session follow-up/manual-compaction driver with scripted smoke tests, parent/ATIF interaction accounting, paired task-cluster stats, offline multi-model planner and OpenRouter policy primitives. Grader negative controls corrected after review. 63 Node tests, 28 Python tests, desktop verify pass. No paid evaluations in this phase.
-Next: Finish common OpenRouter cumulative-budget transport, competitor scenario adapters, true-threshold context/clarification/background/stale-race fixtures, and held-out/human calibration before next comprehensive round. Proposed panel Haiku5.5, GPT6 Luna, DeepSeek4.1 Flash, Qwen3.8 Flash, Gemini3.5 Flash-Lite (higher cost band).
-Blocked: Comprehensive readiness intentionally false; additional offline execution coverage and transport work remain. OpenRouter key not needed for current build. Fresh integration onto newer app master required before shipping; no merge performed.
+Done: Gemini text transport retry passed within original USD10 cap using refreshed endpoint-specific pricing and USD0.47 reservation; no old hold reclaimed. Actual native Qwen two-turn client check failed upstream before any tool/verifier result, retained USD0.50. Fixed gateway budget denials to non-retryable402 and now retain upstream HTTP status. 21 focused tests pass. All five text canaries validated; actual OpenRouter usage USD0.000041446.
+Next: Obtain sufficient approved reservation headroom, then diagnose native tool/continuity request failure with improved diagnostics and validate Pi/OpenCode conversations before full suite.
+Blocked: Conservative ledger USD9.734296196, remaining USD0.265703804 under unchanged USD10 cap; this is not actual spending. Unknown failure holds retained. Gateway/container network stopped. Comprehensive readiness false; no full evaluation.
 
 Chats
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started

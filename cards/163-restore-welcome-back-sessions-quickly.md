@@ -11,10 +11,11 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery
 ---
 Progress
-Done: Real run-dev measurements reproduced 7.44s Welcome back dismissal. Added stable recovery focus and deferred never-visited ChatViews with red/green regressions. 16-session recovery after four actual native Bash HTTP server tasks and a guarded dev crash: 1.18s dismissal/2.03s first history signal, all prior UUIDs preserved once. Sixteen copied real root histories (61.61MiB, 31,040 events): 1.65s dismissal.
-Next: Complete corrected visible-history repeat sampling, slow-connector Welcome back measurement, descriptor-isolation investigation, fresh review and final verification.
-Blocked: An intentionally stalled local MCP handshake makes actual per-session resume take15.06s; this exceeds the requested five-second ceiling and requires separating optional tool readiness from history availability. No production app touched or paid evaluations run.
+Done: Runtime-tested rendering fixes independently reviewed and desktop verify passed: 2,491 tests (36 skipped), all391screens/journeys/types/lint/knip/ast-grep. Corrected repeats: 16 copied real native chats61.61MiB leave WelcomeBack1.51–1.53s; four actual background-Bash server crash histories1.23s. Mixed13native+3actualClaudeCLI over164.37MiB: 1.88–2.36s dismissal across3runs; CLI resume hooks by1.46s. Synthetic precrashUUIDs and real/transcript counts/prefix hashes preserved. All test instances stopped and temporary auth removed.
+Next: User decision/design contract for decoupling optional tool readiness from admitted chat/history availability. Source remains local, uncommitted and unshipped; full report in docs/active/investigations/2026-10-18-welcome-back-runtime-measurements.md.
+Blocked: A deliberately stalled MCP connector still holds actual WelcomeBack16.73s. Not configured in the installed native registry, but the unconditional five-second goal is not met for that failure case. Generic spawn FD rewrite rejected as unproven/unsafe; diagnostic retained privately with original scoped tests green.
 
 Chats
+- 2026-10-18 session/welcome-back-recovery: chat started
 - 2026-10-18 session/welcome-back-recovery: chat started
 - 2026-10-18 session/welcome-back-recovery: Investigating and fixing serial crash recovery with concurrent restore and ownership/message safety tests

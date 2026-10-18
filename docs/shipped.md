@@ -869,3 +869,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-08 perf — Zero-hitch program shipped: long-code-block and sheet-grid fixes, passive wheel, terminal flow control, streaming cadence, always-on hitch recorder, cheaper session switches (youcoded#616 `cc3bd0de0`, youcoded-dev#250 `4842ebea`); open items stay in docs/roadmap/perf.md
 - [x] 2026-10-16 #21 Redo the review of the session-switch animation (workspace 0eee2ed6 (session motion shipped 2026-09-03, youcoded#404))
 - [x] 2026-10-17 #153 Work items, the Work board, and pages that see chats and run programs (youcoded-dev#266 7ef1b5af6, youcoded#627 c6a18be4e)
+- [x] 2026-10-18 #162 Linux updates: show installer progress and outcome (https://github.com/itsdestin/youcoded/pull/630)
