@@ -14,9 +14,9 @@ vision: chat.files.comments
 work: session/39-comment-popup
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Shipped comment popup and hover-card frosting, reliable Add comment flow, and removal of the slim rail in favor of narrow hover comments/full expanded panel; approved in two reviews and merged in youcoded#636 (f61cab2ee).
+Next: Original card requests remain: exact comment timestamps and refreshing an already-open phone comments panel after remote changes.
+Blocked: 
 
 Chats
 - 2026-10-18 session/39-comment-popup: chat started
