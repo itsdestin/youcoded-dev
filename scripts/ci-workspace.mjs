@@ -45,9 +45,17 @@ function laneForEvent(env) {
     const prHead = sha(event.pull_request?.head?.sha, 'PR head');
     ensureCommit(base);
     ensureCommit(prHead);
-    // GitHub checks out the synthetic merge commit; it must include this PR's head.
+    // WHY: GitHub can report a newer event base than the synthetic merge's
+    // actual first parent (observed in run39170287269). A shallow three-dot
+    // comparison then has no merge base. Classify the EXACT tested merge tree,
+    // not an advancing base snapshot, using its direct first-parent tree diff.
     git('merge-base', '--is-ancestor', prHead, head);
-    range = `${base}...${head}`;
+    const parents = git('show', '-s', '--format=%P', head).trim().split(/\s+/);
+    if (parents.length !== 2 || parents[1] !== prHead) return 'full';
+    const testedBase = sha(parents[0], 'tested PR base');
+    ensureCommit(testedBase);
+    console.log(`PR candidate ${head}; tested base ${testedBase}; event base ${base}`);
+    range = `${testedBase}..${head}`;
   }
   // WHY: early grep termination plus pipefail can misclassify code as data.
   // Consume the entire NUL stream; no-renames includes BOTH old and new paths.

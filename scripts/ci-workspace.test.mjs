@@ -40,11 +40,11 @@ function expectLane(result, lane) {
   assert.equal(result.output, `lane=${lane}\n`);
 }
 
-test('card-only pushes and PRs select whole-graph validation', (t) => {
+test('card-only pushes select graph validation; non-merge PR checkouts stay full', (t) => {
   const f = fixture(t);
   put(f.root, 'cards/1-one.md', 'changed\n'); f.commit();
   expectLane(f.run(), 'cards');
-  expectLane(f.run({ eventName: 'pull_request' }), 'cards');
+  expectLane(f.run({ eventName: 'pull_request' }), 'full');
 });
 
 test('mixed, infrastructure, unknown and non-card files use full checks', (t) => {
@@ -113,7 +113,7 @@ test('shallow pushes fetch only the missing immutable before revision', (t) => {
   assert.equal(git(checkout, 'rev-parse', '--is-shallow-repository'), 'true');
 });
 
-test('PR routing uses the event base and checks the synthetic merge candidate', (t) => {
+test('PR routing validates event refs and classifies the synthetic merge candidate', (t) => {
   const f = fixture(t);
   git(f.root, 'checkout', '-qb', 'feature');
   put(f.root, 'cards/1-one.md', 'feature\n'); const head = f.commit();
@@ -121,6 +121,21 @@ test('PR routing uses the event base and checks the synthetic merge candidate', 
   put(f.root, 'docs/base-only.md'); const base = f.commit();
   git(f.root, 'merge', '--no-ff', '-qm', 'Fixture merge\n\nSubmitted via YouCoded Assistant', head);
   expectLane(f.run({ eventName: 'pull_request', before: base, after: head }), 'cards');
+});
+
+test('shallow PR routing uses actual merge parents when event base advances', (t) => {
+  const f = fixture(t);
+  git(f.root, 'checkout', '-qb', 'feature');
+  put(f.root, 'cards/1-one.md', 'feature\n'); const head = f.commit();
+  git(f.root, 'checkout', '-q', f.base);
+  put(f.root, 'docs/tested-base.md'); const testedBase = f.commit();
+  git(f.root, 'merge', '--no-ff', '-qm', 'Synthetic merge\n\nSubmitted via YouCoded Assistant', head);
+  git(f.root, 'branch', 'ci-merge', 'HEAD');
+  git(f.root, 'checkout', '-qb', 'advanced-base', testedBase);
+  put(f.root, 'scripts/not-in-tested-candidate.mjs'); const eventBase = f.commit();
+  const dir = join(f.root, 'merge-checkout');
+  execFileSync('git', ['clone', '-q', '--depth=2', '--branch=ci-merge', pathToFileURL(f.root).href, dir], { stdio: ['ignore', 'pipe', 'pipe'] });
+  expectLane(f.run({ checkout: dir, eventName: 'pull_request', event: { pull_request: { base: { sha: eventBase }, head: { sha: head } } } }), 'cards');
 });
 
 test('push revisions must identify the candidate actually checked out', (t) => {
