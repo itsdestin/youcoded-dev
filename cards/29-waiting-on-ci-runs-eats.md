@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2
 ---
 Progress
-Done: Destin explicitly authorized finishing and publishing 1.3.1; Apple hold removed. Known preflight fixes passed; final exact-candidate desktop/Android CI and release audit are running.
-Next: Finish final release checks, merge reviewed app candidate, tag v1.3.1, verify both workflows and actual published installers/source/updater signature.
-Blocked: No Apple blocker; publication still requires passing final technical checks.
+Done: YouCoded v1.3.1 published from approved candidate via PR #628. Both official release workflows passed; downloaded desktop installers match the valid signed updater manifest; Android APK/AAB signatures and corresponding-source checksum/binary hashes verified.
+Next: Current-build 1.3.1 release is complete. Keep broader release-pipeline improvements open; Mac signing targets 1.3.2 (#28) and DOCX hardening is deferred (#161).
+Blocked: No remaining 1.3.1 publication blocker. Separate dependency/workspace improvements remain review-only.
 
 Chats
 - 2026-10-18 session/release-1-3-2: 1.3.1 preflight: cross-platform test repairs, exact reusable dependency source and Android source/notices pipeline; candidate branch only, no release.
