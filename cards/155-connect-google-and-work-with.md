@@ -12,9 +12,9 @@ work: session/google-connections-planning, session/155-google-files
 paused: Destin paused this work: unsure the selected-file OAuth design is the best implementation because it still requires browser interaction too often. Wants to explore using rclone for all Google Drive work instead of our own OAuth app. No further implementation or Google setup until that comparison is reviewed.
 ---
 Progress
-Done: Company Google project youcoded/558270007163 under youcoded.ai verified; five document/Picker APIs enabled; billing disabled. Real desktop native-assistant service/UI/tool wired, private OAuth config outside repo. Typecheck and 90 focused tests passed. Separate Google Files dev window opened at Connected services; user sign-in test pending. Not yet verified against a live Google document.
-Next: Finish three accepted static-review fixes (copy stale-content check, Sheets batch save, missing-file listing), rerun full verification, then live selected-file read/approved save with user. Desktop native slice only; Claude Code relay, phone authorization and broad formatting remain incomplete. See session/155-google-files docs/active/design/2026-10-17-google-files/build-status.md.
-Blocked: No implementation blocker established; UI contract and exact OAuth/data-policy checks still required.
+Done: Company Cloud Identity/project and five APIs configured; billing disabled. OAuth implementation and UI preserved on session/155-google-files, unmerged. Last combined desktop verification passed before the interrupted UI cleanup; no complete live Google read/edit/save round-trip verified.
+Next: PAUSED. Investigate rclone-first Google Drive integration versus the current OAuth approach: actual browser/sign-in frequency, full Drive discovery, Google-native Docs/Sheets/Slides read/edit/export/import fidelity, account support, permission/approval safety, platform support and maintenance. Do not assume rclone supplies native document editing or eliminates OAuth; verify current capabilities. Preserve prior decisions as history, not a mandate to continue the paused implementation.
+Blocked: Product direction needs reconsideration. Do not continue building or delete current work. Company account/project/credentials remain intact; no cloud cleanup authorized.
 
 Chats
 - 2026-10-18 session/155-google-files: chat started
