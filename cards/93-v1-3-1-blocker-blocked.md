@@ -16,9 +16,9 @@ vision: chat.converse
 work: session/93-session-freezes
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: yes — the old roadmap marked it blocked; see below.
+Done: Investigated installed 1.3.1 freeze after native session creation; reproduced a histogram-reset blind spot. Isolated branch now records timer lateness, reserves severe hitch details, moves session skill/context discovery off-thread, and logs slow setup/keychain stages without contents. Compiled recorder catches a 2.3 s test block; exact 27 s incident cause remains unconfirmed. Plan: docs/active/plans/2026-10-17-session-freezes.md.
+Next: Finish independent review and final verification of session/93-session-freezes; no commit, merge or release yet. Existing broader card items remain open.
+Blocked: No user input needed for this implementation; diagnosis of the original severe incident remains limited by old recorder data.
 
 Chats
 - 2026-10-18 session/93-session-freezes: chat started
