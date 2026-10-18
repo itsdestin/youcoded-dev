@@ -64,4 +64,51 @@ missing=$(run definitely-no-such-branch-zz9)
 grep -q "never pushed, or the name is wrong" <<<"$missing" || {
   echo "lost the real never-pushed warning"; echo "$missing"; exit 1; }
 
-echo "close-out wrong-repo guard: ok"
+# 4. A local branch may be backed up under a different remote name.
+# The app release keeps its original session name but pushes a 1.3.1 candidate alias.
+git -C "$TMP/ws/youcoded" checkout -q -b session/release-source
+echo alias >> "$TMP/ws/youcoded/a.txt"
+git -C "$TMP/ws/youcoded" commit -qam alias-work
+git -C "$TMP/ws/youcoded" push -q origin HEAD:refs/heads/release/candidate
+alias=$(run session/release-source)
+grep -q 'pushed to origin' <<<"$alias" || {
+  echo 'did not recognize backup under a different remote branch name'; echo "$alias"; exit 1; }
+grep -q 'never pushed' <<<"$alias" && {
+  echo 'alias backup was falsely reported as lost'; echo "$alias"; exit 1; }
+
+# A deleted server alias must not survive as false evidence in cached refs.
+git -C "$TMP/ws/youcoded" config remote.origin.prune false
+git --git-dir="$TMP/ws/youcoded.git" update-ref -d refs/heads/release/candidate
+stale=$(run session/release-source)
+grep -q 'not backed up' <<<"$stale" || {
+  echo 'a deleted server alias was mistaken for a current backup'; echo "$stale"; exit 1; }
+
+# 5. An old same-name remote ref must not hide a newer, genuinely unpushed tip.
+git -C "$TMP/ws/youcoded" push -q origin HEAD:refs/heads/session/release-source
+echo newer >> "$TMP/ws/youcoded/a.txt"
+git -C "$TMP/ws/youcoded" commit -qam local-only-tip
+newer=$(run session/release-source)
+grep -q 'not backed up' <<<"$newer" || {
+  echo 'older remote tip hid local-only work'; echo "$newer"; exit 1; }
+
+# 6. Merging the older remote tip does not make newer local work safe to delete.
+git -C "$TMP/ws/youcoded" checkout -q master
+git -C "$TMP/ws/youcoded" merge -q --no-ff session/release-source~1 -m 'Merge already-pushed work'
+git -C "$TMP/ws/youcoded" push -q origin master
+git -C "$TMP/ws/youcoded" checkout -q session/release-source
+partial=$(run session/release-source)
+grep -q 'PRE-MERGE' <<<"$partial" || {
+  echo 'an older merged remote tip hid newer local work'; echo "$partial"; exit 1; }
+grep -q 'not backed up' <<<"$partial" || {
+  echo 'newer local work was treated as backed up'; echo "$partial"; exit 1; }
+
+# 7. An unavailable origin cannot justify a current backup or cleanup verdict.
+mv "$TMP/ws/youcoded.git" "$TMP/ws/youcoded.offline.git"
+offline=$(run session/release-source)
+grep -q 'remote ancestry and backup status are unverified' <<<"$offline" || {
+  echo 'an unavailable origin did not produce an explicit unknown verdict'; echo "$offline"; exit 1; }
+if grep -q 'pushed to origin\|local branch still exists' <<<"$offline"; then
+  echo 'an offline report claimed a backup or recommended branch deletion'; echo "$offline"; exit 1
+fi
+
+echo "close-out wrong-repo and remote-alias guards: ok"

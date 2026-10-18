@@ -47,10 +47,17 @@ echo "Close-out: $BRANCH in $REPO"
 echo
 echo "Git"
 
-git -C "$REPO_DIR" fetch origin --quiet 2>/dev/null
+# WHY: cached or deleted remote aliases cannot prove a current server backup.
+# Keep the report-only exit convention, but never recommend cleanup offline.
+if ! git -C "$REPO_DIR" fetch origin --prune --quiet 2>/dev/null; then
+  fail "cannot refresh origin — remote ancestry and backup status are unverified"
+  exit 0
+fi
 
-SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null \
-   || git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null || true)
+# WHY: assess the current local tip, not an older same-name remote ref that
+# could hide newer unpushed work. A renamed remote backup is handled by ancestry.
+SHA=$(git -C "$REPO_DIR" rev-parse --verify -q "$BRANCH" 2>/dev/null \
+   || git -C "$REPO_DIR" rev-parse --verify -q "origin/$BRANCH" 2>/dev/null || true)
 BASE=$(git -C "$REPO_DIR" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
 
 # The DEFAULT BRANCH is never a close-out target, and saying so has to come before
@@ -251,15 +258,15 @@ if [[ "$MERGED" == yes ]]; then
   # is the dry-run tool that reports which ones are actually safe to delete.
   note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
 else
-  if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
-    pass "pushed to origin — a reviewer can see it"
+  if [[ -n "$SHA" ]] && [[ -n $(git -C "$REPO_DIR" for-each-ref --contains "$SHA" --format='%(refname:short)' refs/remotes/origin 2>/dev/null) ]]; then
+    pass "pushed to origin — a reviewer can see it (remote history contains the local tip)"
   elif [[ -n "${ELSEWHERE:-}" ]]; then
     # The line above already said which repo it is in. Repeating "never pushed"
     # here would contradict it, and that contradiction is what made the wrong
     # answer convincing in the first place.
     note "not asking whether it was pushed — it is not this repo's branch"
   else
-    fail "never pushed — nobody else can review this branch yet"
+    fail "local tip is not backed up on origin — a same-name branch may contain only older work"
   fi
 fi
 
