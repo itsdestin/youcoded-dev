@@ -4,7 +4,6 @@ title: Make one settings screen for desktop and phone
 stage: planning
 priority: P1
 tags: user-interface, settings, release-blocker, housekeeping
-release: v1.3.1
 report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 133-the-settings-screen-exists-twice
 roadmap: user-interface: **v1.3.1 release blocker.** The settings screen exists twice
@@ -24,3 +23,5 @@ Chats
 
 From the old roadmap (user-interface, status blocked, seen on all, last checked 2026-09-18)
 **v1.3.1 release blocker.** The settings screen exists twice, once for desktop and once for phone. They share 14 of 17 rows, so every settings change is made twice and the two can disagree. Wanted: one settings body with two small platform inserts (simplification phase 5, D8). Row order may shift slightly, so it needs a before/after review deck (both platforms, every theme). On hold since 2026-09-18 (Destin); resumes with the rest of phase 5
+
+2026-10-18 release scope decision — deferred from 1.3.1 by Destin; see #29 for the current-build release scope and requirements that remain mandatory. This item stays open and is not marked fixed or shipped.

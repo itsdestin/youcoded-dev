@@ -4,7 +4,6 @@ title: Downloads: one shared downloader, with Gemma's licence shown
 stage: planning
 priority: P1
 tags: local-models, local-models-screen, desktop, bug
-release: v1.3.1
 report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 branch: 45-gemma-models-download-with-no
 roadmap: local-models: Gemma models download with no licence notice, and Google's G
@@ -34,3 +33,5 @@ Chats
 
 From the old roadmap (local-models, status blocked, seen on desktop, last checked 2026-09-18)
 The file downloader exists three times (model files, engine, voice assets) and the checksum helper four times, so a fix to one (like the disk-full crash guard) must be repeated in the others. Wanted: one download-and-verify module every caller uses, one disk-full test covering all three, and the engine manager's three direct calls going through the supervisor's tracked path (simplification phase 5, D7 and D12). Nothing changes on screen. On hold since 2026-09-18 (Destin); resumes with the rest of phase 5.
+
+2026-10-18 release scope decision — deferred from 1.3.1 by Destin; see #29 for the current-build release scope and requirements that remain mandatory. This item stays open and is not marked fixed or shipped.

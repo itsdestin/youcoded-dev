@@ -4,7 +4,6 @@ title: Error messages still guess at causes
 stage: planning
 priority: P1
 tags: user-interface, bug
-release: v1.3.1
 report: docs/active/investigations/2026-09-10-error-inventory/README.md
 branch: 134-error-messages-still-guess-at
 roadmap: user-interface: Error messages still guess at causes in many places.
@@ -25,3 +24,5 @@ Error messages still guess at causes in many places. The app-wide re-audit is do
 
 From the 2026-10-16 document sweep
 - The report-a-bug flow has gaps: no catch for failures, logs are sent to the assistant before review, no attachments (E-01..E-08). Source: docs/archive/investigations/2026-09-08-error-states-development-audit.md
+
+2026-10-18 release scope decision — deferred from 1.3.1 by Destin; see #29 for the current-build release scope and requirements that remain mandatory. This item stays open and is not marked fixed or shipped.

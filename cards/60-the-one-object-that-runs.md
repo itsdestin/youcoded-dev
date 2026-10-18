@@ -4,7 +4,6 @@ title: Split up the oversized code (chat engine and app shell)
 stage: planning
 priority: P1
 tags: native-harness, sessions, desktop, release-blocker, user-interface, performance, housekeeping
-release: v1.3.1
 report: docs/active/plans/2026-09-16-simplification-phases.md
 branch: 60-the-one-object-that-runs
 roadmap: native-harness: **v1.3.1 release blocker.** The one object that runs a nativ
@@ -35,3 +34,5 @@ Chats
 
 From the old roadmap (user-interface, status needs-verify, seen on all, last checked 2026-09-01)
 Unfinished whole-UI cleanup (2 things). (a) Whole-UI review Phase F (P-17 and the marketplace rails) is the last phase still to decide and build; (b) the main app shell is still one ~4,650-line component with three planned extraction steps left (welcome screen and session hooks, memoised areas, event-bridge mount).
+
+2026-10-18 release scope decision — deferred from 1.3.1 by Destin; see #29 for the current-build release scope and requirements that remain mandatory. This item stays open and is not marked fixed or shipped.

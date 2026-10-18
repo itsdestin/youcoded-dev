@@ -4,7 +4,6 @@ title: YouCoded's own engine matches Claude Code, with a tool-connections screen
 stage: planning
 priority: P1
 tags: native-harness, sessions, release-blocker, skills-mcp, settings, desktop, feature
-release: v1.3.1
 report: docs/active/specs/2026-09-01-agent-platform-vision-and-state.md
 branch: 59-native-runtime-parity-program-everything
 roadmap: native-harness: **v1.3.1 release blocker.** Native Runtime Parity Program —
@@ -42,3 +41,5 @@ MCP servers can only be set up by hand-editing a config file — no settings scr
 From the 2026-10-16 document sweep
 - Native Bash tool: a working-directory parameter, one standard block of folder rules, and a loud error for relative paths. Source: docs/active/plans/2026-07-18-multi-model-cwd-contract.md
 - Before the MCP settings screen ships, fix `upsert()` / `fromStored` deleting hand-edited entries. Source: docs/active/investigations/2026-09-01-native-mcp-phase-2.md
+
+2026-10-18 release scope decision — deferred from 1.3.1 by Destin; see #29 for the current-build release scope and requirements that remain mandatory. This item stays open and is not marked fixed or shipped.
