@@ -13,7 +13,7 @@ side: behind
 vision: everywhere.firstrun.setup
 ---
 Progress
-Done: nothing recorded.
+Done: Fedora44 KDE is now available as a reusable disk-only test guest at ~/vms/fedora-44-kde, alongside Windows/Ubuntu/macOS. Real boot, dedicated SSH/sudo, Spectacle screenshot, clean session reset, HTTP native RPM delivery/origin metadata and trim passed; idle watcher integration installed and reviewed. Workspace helper/docs merged and pushed in youcoded-dev PR #270 (ae99dd33), with the canonical shared helper and automatic VM safety CI checks. Private machine references are integrated into system-brain main (a36ce4b). Availability does not certify YouCoded first-run/setup/sign-in flows or resolve the historical roadmap items.
 Next: not decided.
 Blocked: nothing recorded.
 

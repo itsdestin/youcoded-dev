@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: Unfinished work can vanish or be stranded on one computer, and the cleanup step has offered to delete folders holding unsaved edits.
 area: Workspace
 vision: together.added.closeout
-work: session/162-linux-update-feedback
+work: session/162-linux-update-feedback, session/93-file-viewer-freezes
 ---
 Progress
 Done: nothing recorded.
@@ -18,6 +18,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-18 session/93-file-viewer-freezes: Read-only close-out recurrence: both unchanged base tips were called landed despite this session's uncommitted implementation, and deletion was suggested. Worktrees retained; no card closure, archive, or cleanup followed that false verdict. Tooling repair remains outside this performance task.
 - 2026-10-18 session/162-linux-update-feedback: Read-only wrap-up recurrence: close-out falsely says landed and recommends deletion for both workspace/app branches whose tips are unchanged base commits while approved #162 implementation is uncommitted. Both worktrees retained; logs /tmp/162-app-closeout.log and /tmp/162-workspace-closeout.log. No tooling fix or cleanup performed.
 
 From the old roadmap (dev-workspace › knowledge, status confirmed, seen on n/a, last checked 2026-09-13)
