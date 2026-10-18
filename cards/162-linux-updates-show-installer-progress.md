@@ -1,7 +1,7 @@
 ---
 id: 162
 title: Linux updates: show installer progress and outcome
-stage: planning
+stage: merged
 tags: desktop, linux, updates, bug
 branch: 162-linux-updates-show-installer-progress
 created: 2026-10-18
