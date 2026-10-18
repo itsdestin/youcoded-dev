@@ -9,9 +9,9 @@ why: On Linux, Launch installer gives no real feedback after I enter my sudo pas
 work: session/162-linux-update-feedback
 ---
 Progress
-Done: Implemented isolated Linux update feedback: bounded real installer output, explicit password/activity/restart states, preserved final diagnostics, retained close/reopen status, single-flight installs and truthful timeout/late outcomes. Final desktop verify passed: 5922 tests, types, knip, lint, design lint, invariants, screens and journeys; fresh reviewer found no blockers. No real privileged installer or live app change.
-Next: Destin reviews the before/after deck; app changes remain uncommitted and unshipped.
-Blocked: No implementation blocker. Real privileged package replacement/relaunch deliberately not exercised on the working install.
+Done: Review submitted: LU-3/LU-4 approved; LU-1/LU-2/LU-5 rejected (keep button styling). Revision 2 restores full-width disabled button with live phase label and shared spinner; output goes in standard Details fold. Updated button/detail regressions passed red-to-green; all required desktop verification passed again, fresh follow-up review no blockers. Original answered deck preserved.
+Next: Review linux-update-feedback.review-2 (only rejected LU-1/LU-2/LU-5). App changes remain uncommitted and unshipped.
+Blocked: No implementation blocker. Before shipping, reconcile newer master; inspected overlap is unrelated hitch-recorder edits in preload.ts. No live installer was tested.
 
 Chats
 - 2026-10-18 session/162-linux-update-feedback: chat started
