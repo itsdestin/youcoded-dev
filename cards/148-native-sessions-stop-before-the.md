@@ -13,9 +13,9 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Ran Anthropic Haiku 5.5 only: three task types verified successfully; one earlier coding run hit four-request cap; one zero-request adapter setup failure fixed. 14 model requests; rate-card estimate /bin/bash.00632507, pessimistic token estimate /bin/bash.21916345 (not provider billing). Fixed direct-provider registration and preserved worker errors. 32 Node tests, 4 adapter tests, desktop verify pass.
+Done: Ran Anthropic Haiku 5.5 only: three task types verified successfully; one earlier coding run hit four-request cap; one zero-request adapter setup failure fixed. 14 model requests; rate-card estimate USD 0.00632507, pessimistic token estimate USD 0.21916345 (not provider billing). Fixed direct-provider registration and preserved worker errors. 32 Node tests, 4 adapter tests, desktop verify pass.
 Next: Add common Haiku-only and cumulative-budget enforcement for competitor clients, then run matched-model comparisons. First measured optimization candidates: fixed schema overhead and Read-before-Edit recovery waste.
-Blocked: No credential blocker. Approved pilot ceiling remains 0 total, despite supplied key's 00 account limit. Comparator spending must use the same bounded envelope; no competitor inference performed yet.
+Blocked: No credential blocker. Approved pilot ceiling remains USD 10 total, despite supplied key account limit of USD 200. Comparator spending must use the same bounded envelope; no competitor inference performed yet.
 
 Chats
 - 2026-10-18 session/148-harness-performance-lab: chat started
