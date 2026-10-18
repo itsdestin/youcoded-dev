@@ -16,4 +16,5 @@ Next: Design the connection/account and select-create-edit-save flow. Resolve ac
 Blocked: No implementation blocker established; UI contract and exact OAuth/data-policy checks still required.
 
 Chats
+- 2026-10-18 session/google-connections-planning: Review clarification: non-sensitive describes the drive.file OAuth scope, not a waiver of all product/data-policy obligations; verify the complete set of endpoints/scopes before build. Source: https://developers.google.com/workspace/drive/api/guides/api-specific-auth . Historical citations are commit:path references at 109a2161 (both proposal and answers verified), not claims those paths exist on current master.
 - 2026-10-18 session/google-connections-planning: Recovered approved direction from 109a2161 on session/integrations-research and this conversation. Follow-ups: #156 Calendar, #157 Gmail, #158 Microsoft/Apple, #159 contacts/tasks. Source records remain historical: no old review-price estimates, Android/remote limitations, or unimplemented proposal should be treated as current truth. Preserve source branch until full records are reconciled; do not merge its retired ROADMAP.md or docs/roadmap files.
