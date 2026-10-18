@@ -19,6 +19,7 @@ Blocked: No local implementation blocker; remote acceptance awaits candidate-pub
 
 Chats
 - 2026-10-18 session/29-linux-build-bench: chat started
+- 2026-10-18 session/29-linux-build-bench: chat started
 - 2026-10-18 session/29-ci-fastpaths: chat started
 - 2026-10-18 session/29-ci-fastpaths: chat started
 - 2026-10-18 session/29-ci-fastpaths: chat started
