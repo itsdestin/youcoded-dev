@@ -15,11 +15,13 @@ vision: yours.look.buddy
 work: session/85-windows-131-regressions
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: App commit 6df630783: buddy painted-body hits, Windows terminal input/initial-size fixes, async bounded watcher probes. Full desktop verify: 20,402 passed; real Windows click/drag, normal send, popup retry and watcher events passed.
+Next: Review the single local app branch session/85-windows-131-regressions. Nothing merged or released; other card items are unchanged.
+Blocked: Authenticated OneDrive hydration is not reproduced; valid signing does not guarantee SmartScreen reputation.
 
 Chats
+- 2026-10-18 session/85-windows-131-regressions: chat started
+- 2026-10-18 session/85-windows-131-regressions: Windows buddy and send failures fixed and VM-verified; watcher blocking probes replaced; local app commit 6df630783.
 - 2026-10-18 session/85-windows-131-regressions: chat started
 
 From the old roadmap (other-features › buddy, status confirmed, seen on desktop, last checked 2026-09-01)

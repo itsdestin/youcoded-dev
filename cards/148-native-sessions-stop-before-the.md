@@ -13,11 +13,13 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Built shared OpenRouter proxy and durable exclusive budget ledger; fixed review findings for stale-lock races, directory fsync, backpressure cancellation and exposure opt-in. Added stateful client run/resume composition plus actual native offline scenarios for stale-write rejection, root clarification oracle, background continuation and automatic context pressure. 131 Node tests, 36 Python tests, desktop verify pass. Tiny route canaries: Haiku/Luna/DeepSeek/Qwen pass; Gemini404 retained reservation. OpenRouter reported total USD0.000034946, no full evaluation.
-Next: Resolve Gemini route canary within reconciled/approved budget; validate actual client tool/continuity routes and equivalent competitor fault evidence, then freeze held-out suite before full multi-model numbers. Evidence in EXECUTION.md and 2026-10-18-openrouter-transport-preflight.md.
-Blocked: Full readiness intentionally false. Conservative cumulative ledger is USD9.234289696 including prior and unknown/error upper reservations, not actual bill. Gateway stopped cleanly. Source local/uncommitted; account capUSD20 does not authorize expanding pilot capUSD10.
+Done: Gemini text transport retry passed within original USD10 cap using refreshed endpoint-specific pricing and USD0.47 reservation; no old hold reclaimed. Actual native Qwen two-turn client check failed upstream before any tool/verifier result, retained USD0.50. Fixed gateway budget denials to non-retryable402 and now retain upstream HTTP status. 21 focused tests pass. All five text canaries validated; actual OpenRouter usage USD0.000041446.
+Next: Obtain sufficient approved reservation headroom, then diagnose native tool/continuity request failure with improved diagnostics and validate Pi/OpenCode conversations before full suite.
+Blocked: Conservative ledger USD9.734296196, remaining USD0.265703804 under unchanged USD10 cap; this is not actual spending. Unknown failure holds retained. Gateway/container network stopped. Comprehensive readiness false; no full evaluation.
 
 Chats
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
