@@ -1,0 +1,38 @@
+{
+  "title": "Linux updates — keep the button styling",
+  "key": "linux-update-feedback-2",
+  "out": "linux-update-feedback.review-2.html",
+  "images": "images/linux-update-feedback.review-2",
+  "stage": "review",
+  "runs": { "before": "runs-2/before", "after": "runs-2/after" },
+  "themes": ["light", "midnight", "halftone-dimension", "meadow-mist"],
+  "steps": [
+    {
+      "id": "LU-1",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → password prompt",
+      "crop": "chat/update#authorizing@640x230+400+450",
+      "headline": "Waiting for approval stays inside the original full-width button.",
+      "changed": "Keeps the button styling you requested; its label identifies the waiting step.",
+      "notice": "Your system handles the password prompt. These screenshots use scripted replies."
+    },
+    {
+      "id": "LU-2",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → activity",
+      "crop": "chat/update#installing@640x230+400+450",
+      "headline": "The running installer keeps the button, with its output under Details.",
+      "changed": "Running the installer is a button state, not a bare loading line.",
+      "notice": "The standard Details fold holds recent installer output; no standalone log box."
+    },
+    {
+      "id": "LU-5",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → success",
+      "crop": "chat/update#restarting@640x230+400+450",
+      "headline": "Restarting YouCoded uses the same full-width button styling.",
+      "changed": "Keeps the original action shape through the confirmed restart.",
+      "notice": "The app closing is an expected restart. Error states LU-3 and LU-4 remain unchanged."
+    }
+  ]
+}
