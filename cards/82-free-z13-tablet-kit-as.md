@@ -17,6 +17,7 @@ Next: Ask Destin whether to keep investigating the browser/context integration o
 Blocked: Needs a scope decision: physical Ctrl+A/delete in Firefox can leave surroundingtext/cursor stale or absent in the inputmethod; nextswipeaddsleading space. Reproduced realcase; purehelperunitfixdoesnotresolve. Plugin cannot reliably infer an unreportededit without breaking hiddenbuffersequentialspacing. Furtherbrowser/KWin/Qtboundaryinvestigation vsdocumentedcompatibilitylimitation requires agreement. No publicrelease/commit/pushapproved.
 
 Chats
+- 2026-10-18 session/82-z13-keyboard-release: chat started
 - 2026-10-17 session/82-z13-keyboard-release: chat started
 - 2026-10-17 session/82-z13-keyboard-release: chat started
 - 2026-10-17 session/82-z13-keyboard-release: chat started
