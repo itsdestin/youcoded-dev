@@ -11,9 +11,9 @@ why: Destin, 2026-10-17: "i want a simple and straightforward integration with g
 work: session/google-connections-planning
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Files-first scope and separate follow-ups saved; historical source commit and conversation linked. Planning only; no Google account or app changes.
+Next: Design the connection/account and select-create-edit-save flow. Resolve account routing, file access versus chat attachment lifetime, reconnect/revocation, action approvals, conflict handling, desktop/Android/remote and both assistant engines. Reuse old capability knowledge, not the old broad OAuth scopes. Then approve implementation plan.
+Blocked: No implementation blocker established; UI contract and exact OAuth/data-policy checks still required.
 
 Chats
 - 2026-10-18 session/google-connections-planning: Recovered approved direction from 109a2161 on session/integrations-research and this conversation. Follow-ups: #156 Calendar, #157 Gmail, #158 Microsoft/Apple, #159 contacts/tasks. Source records remain historical: no old review-price estimates, Android/remote limitations, or unimplemented proposal should be treated as current truth. Preserve source branch until full records are reconciled; do not merge its retired ROADMAP.md or docs/roadmap files.
