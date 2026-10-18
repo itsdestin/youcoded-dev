@@ -16,4 +16,5 @@ Next: User review; changes remain on local session/welcome-back-recovery, uncomm
 Blocked: No implementation blocker. Actual power-cut recovery on installed app and Android build were not tested; live app untouched.
 
 Chats
+- 2026-10-18 session/welcome-back-recovery: chat started
 - 2026-10-18 session/welcome-back-recovery: Investigating and fixing serial crash recovery with concurrent restore and ownership/message safety tests
