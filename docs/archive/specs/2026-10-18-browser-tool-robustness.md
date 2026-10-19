@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 work_item: 87
 ---
 # Browser tool clarity and robustness
