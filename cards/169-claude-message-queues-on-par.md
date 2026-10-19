@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Storage/input preparation and standalone transport implemented; six actual-CLI cases and299 focused tests passed. Existing-UI/runtime wiring underway. Fresh transport review found3 additional races not covered by those cases; accepted and assigned with concrete RED regressions.
-Next: Fix delayed admission ack past fence expiry, admitted-but-never-invoked recovery, and stale untouched-claim correlation. Finish Task3 positive host gates, shared queue IPC/strip/composer, lifecycle restore/Clear/Stop. Then independent app walkthrough, fullverify and test package.
-Blocked: Final queue app acceptance blocked on transport review fixes and integration verification. User .4 test copy remains separate/unchanged; no paid calls or publication.
+Done: Integrated queue passed full desktop verification before final GUI/review. Real GUI verified FIFO across batches, edit preserving attachments, cancel preventing delivery, Stop retaining queued intent. GUI found duplicate Clear identity race; deterministic RED/GREEN fix compiled. Final review found7 additional recovery/lifecycle gaps now assigned for fixes.
+Next: Fix unknown-enqueue duplicate risk, durable edit transfer/reload, SendNow cleanup ordering, restored uncertain CheckDelivery, safe epoch/retirement lifecycle, Stop independent of bridge health, and refused-attachment cache cleanup. Then rerun fullverification and realGUI Clear/resume/restart/failure cases and package. Existing UI reused; no paidcalls.
+Blocked: No testable queue package yet. Do not claim prior green full suite covers final-review failure cases; app source fixes in progress. User .4 test copy remains unaffected.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
