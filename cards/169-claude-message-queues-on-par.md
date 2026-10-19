@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Four behavior choices approved and recorded. Free actual CLI2.1.303 timing probes verified: direct mods submit waits until idle/new turn; native PTY enqueue is absorbed after current tool batch in same turn, persisted once as genuine human queued_command and projected by existing parser. Parent independently reran evidence checker.
-Next: Probe bounded batch-boundary handoff before UI promises: app retains editable messages; PostToolBatch held; PTY delivers one chosen head; verify native acceptance then release. Need prove one-per-batch ordering and safe failure/reentrancy. No fabricated user history or system-context substitution. Then design actual queue UI.
-Blocked: Direct-only API does not satisfy approved native-style timing. Host-owned editable queue over native boundary delivery remains unproven. Original rejected PostToolBatch-submit case is retained as failure, not all-green coverage.
+Done: Prepared implementation plan and fresh design review. Safely imported tested direct-control foundation into169, preserved source11, independently copied matching deps; types and677 focused tests passed. No queue service implemented yet. Actual-worker long Unicode succeeded only after exact composer verification; file-bearing batch delivery did not pass equivalent checks.
+Next: Answer single Q5 scope reopener: allow attachments/@file messages to wait until idle in first test build, preserving FIFO/edit/remove, or require full input parity first. Then revise delivery protocol/state machine per accepted C1-C3/I1-I5 design findings and implement shared native-UI backend. Baseline verification failure repairs are separately assigned.
+Blocked: Await Q5 answer at docs/active/design/2026-10-19-claude-queues/claude-queues.input-scope.json. Cannot silently weaken approved batch timing for files or claim current short-line proof covers general input. No testable queue build yet.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
