@@ -12,9 +12,9 @@ why: Update the website embed to the latest 1.3.1 code with pinned mock Home and
 work: session/166-website-demo-light
 ---
 Progress
-Done: Chat-first approved in the questions deck. Local website rebase uses canonical lavender YouCoded (not grey Light), with generated wallpaper/mascot. Site-only Home/Finance fixtures are fictional and mocked; focused bridge/Finance tests and sandboxed-page light/spending interactions pass. Found and corrected build:site output path that left the served embed stale.
-Next: Finish the phone Pages-list selection fix found by UX review, regenerate final preview and present the visual review deck; then complete verification and approval gates.
-Blocked: Not deployed. Visual approval and merge permission are still required for this separate website-demo update.
+Done: Merged in youcoded PR #640 and deployed successfully. Public browser verification confirmed the website and embed both use YouCoded Light with Home and Finance pinned; sample controls, Finance spending and phone navigation passed. Full local desktop verification and required Linux/Android CI passed.
+Next: Complete; no remaining feature work.
+Blocked: Nothing for the deployed website update.
 
 Chats
 - 2026-10-19 session/166-website-demo-light: chat started
