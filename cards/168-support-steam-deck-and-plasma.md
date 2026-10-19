@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Execution authorized; pinned source built in isolated worktree. Core tests: integration32, packaging31, session6, CTest18/18 passed (two optional model assertions skipped internally). Staged loader/package checks passed. Genuine Fedora Mobile login established and r3 restoration bug reproduced: inherited InputMethod becomes explicit user value on disable. Official licensed SteamOS recovery booted privately; installed Stable/Gaming not yet established.
-Next: Complete strict metadata-validator regression repair and fresh review; then red→green fix Mobile raw/effective configuration restoration. Continue SteamOS recovery bootstrap with USB HID rather than unreliable PS/2/HMP path, install exact Stable and run Gaming feasibility before full UI implementation. Durable source ledger .superpowers/sdd/progress.md has all private evidence and VM paths.
-Blocked: Not accepted yet: supplemental metadata validator fails on real contextlm schema (repair in progress); Mobile raw-setting restoration failure; installed SteamOS/Gaming and ARM/musl tests pending. No host activation or publication.
+Done: Fresh native baseline plus strict metadata-validator fix now passes: CTest18, setup32, packaging36, input-safety6; two optional developer-model assertions remain unrun. Fix under fresh review. Actual Mobile touch delivered The world into independent app; alternative The would and whole-word then character Backspace passed. Password stock-drag/taps and focus-to-password mid-swipe safeguards passed, recording off. USB virtual keyboard fixed recovery management; official installer wrote private NVMe and shut down.
+Next: Finish metadata review, then repair reproduced Mobile raw-vs-effective setting restoration with red→green tests. Diagnose installed SteamOS first boot (currently only UEFI splash seen), establish actual Desktop/Gaming sessions and capability gate. Continue Mobile portrait/lifecycle/app matrix; ARM/musl remain pending.
+Blocked: Overall support not accepted. Mobile restoration bug remains; installed SteamOS boot/session not yet demonstrated, Gaming/ARM/musl unverified. No publishing/host activation.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
