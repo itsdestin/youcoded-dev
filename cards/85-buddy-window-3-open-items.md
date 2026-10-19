@@ -21,6 +21,7 @@ Blocked: Windows guest stayed in updates without interactive desktop; macOS boot
 
 Chats
 - 2026-10-19 session/85-buddy-floater-regression: chat started
+- 2026-10-19 session/85-buddy-floater-regression: chat started
 - 2026-10-18 session/85-windows-131-regressions: chat started
 - 2026-10-18 session/85-windows-131-regressions: Windows buddy and send failures fixed and VM-verified; watcher blocking probes replaced; local app commit 6df630783.
 - 2026-10-18 session/85-windows-131-regressions: chat started
