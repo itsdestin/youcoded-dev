@@ -9,7 +9,7 @@ side: behind
 platform: Mac only
 paused: Deferred to 1.3.2 by Destin; not a 1.3.1 release blocker.
 tags: dev-workspace, release, regression, bug
-work: session/auto-update-roadmap-20261014, session/release-1-3-2
+work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing
 vision: everywhere.added.macsign
 release: 1.3.2
 report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
@@ -23,6 +23,7 @@ Next: Complete membership activation and implement/verify Developer ID signing a
 Blocked: No longer blocks 1.3.1; Apple credentials/signing setup remain future work.
 
 Chats
+- 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
 
 From the old roadmap (dev-workspace › release, status blocked, seen on n/a, last checked 2026-09-04)
