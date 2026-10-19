@@ -18,11 +18,12 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Destin paid for Apple enrollment, then explicitly deferred Developer ID signing/notarization to 1.3.2 so 1.3.1 can ship with existing ad-hoc Mac signing.
-Next: Complete membership activation and implement/verify Developer ID signing and notarization for 1.3.2.
-Blocked: No longer blocks 1.3.1; Apple credentials/signing setup remain future work.
+Done: Apple membership active. Developer ID Application certificate matches the private key; protected macos-signing GitHub environment configured for master/v* only. API key/issuer authentication returned HTTP200. Local beta/release signing overlay, app + final-DMG notarization/stapling and expected-team/Gatekeeper verification prepared. 43 focused tests and final verify passed (2317 tests,37 skipped); schema/syntax checks and fresh code review passed.
+Next: Obtain explicit authorization to commit/push a candidate and run a signed Mac test build with temporary exact-branch environment access (or an approved isolated Mac runner). Prove Apple acceptance, both architectures/Office converter and quarantined first launch before shipping.
+Blocked: No source publication/CI dispatch/merge/release authorized yet. Current source is local/uncommitted in session/28-apple-signing. Real Mac signing/notarization is unverified; GitHub credentials alone do not sign existing releases.
 
 Chats
+- 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
 
