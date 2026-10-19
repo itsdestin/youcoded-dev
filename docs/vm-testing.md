@@ -37,7 +37,12 @@ needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `sav
   enlightenments instead), 8 GB RAM instead of 32, and the Mac's `virtio-sound` swapped for Intel
   HDA (macOS has no driver for it, so the Mac guest is silent). **The same edits must apply at save
   and restore** — if quickemu regenerates `<vm>.sh` with a different device list, re-run
-  `save-ready` from a fresh boot.
+  `save-ready` from a fresh boot. A QEMU upgrade also changes what generic `q35` means:
+  if restoration reports `Machine type received … and local is …`, test an independent
+  disk/state copy with the saved **named** machine version in `<vm>.sh` before rebuilding
+  the snapshot. The Windows ready state was recovered this way with `pc-q35-11.0` on
+  QEMU 11.1.2 (2026-10-19); the original launcher was backed up and pinned, without
+  changing its baseline disk.
 - **The clock is reset after every restore** (the guest wakes believing it is still the save
   moment): Windows via `guest-set-time` *with an explicit time* (no-argument form re-reads the
   stale RTC), Ubuntu via `sudo date`. The Mac has no passwordless sudo, so its clock runs behind
@@ -341,13 +346,16 @@ done
 # confirm "macOS Installer" is highlighted, then: sendkey ret
 ```
 
-**Tahoe boots to the OpenCore picker EVERY time, defaulting to `macOS Base System`** (Recovery),
-not only during the install — so a restart lands on the four-option Recovery menu and looks like a
-failed install. With five entries the picker fingerprints at `mean ≈ 935`, the figure above; a
-three-entry picker (fresh disk) reads `≈ 550`, and a watcher tuned on that missed every restart
-(2026-10-04, two "failed" installs that had in fact finished stage one). `bless --setBoot` is refused
-(SIP). Until a `ready` state exists, catch the picker and pick the second entry. Setup Assistant can
-also hang on "Update Mac Automatically" (spinner, grey Continue): a `system_reset` and resume skips it.
+**After installation, select `Macintosh HD`, not the external Recovery media.** The external image
+can remain the picker's default on later restarts; that is not evidence the installed system is
+missing. On 2026-10-19, removing only the `RecoveryImage` device/drive attachment from a copied
+launcher recovered installed Tahoe 26.7.1. The canonical launcher now has that backed-up repair;
+the image file, OpenCore, firmware and baseline disk were not replaced. The observed picker had
+`Macintosh HD` selected and booted after Enter; **automatic unattended picker timeout is unverified**.
+Keep Recovery attached while the multi-phase installation still needs it. Picker fingerprints also
+change with entry count (five entries measured ≈935, three ≈550), so do not assume one brightness
+threshold identifies every picker. During setup, "Update Mac Automatically" can hang with a spinner
+and grey Continue; a `system_reset` and resume previously skipped it.
 
 **In Disk Utility, erase the ~137 GB disk only** (View → Show All Devices). The ~25 MB one is
 OpenCore, the boot loader: erasing it (2026-10-04, Tahoe) leaves every boot in the UEFI shell.
