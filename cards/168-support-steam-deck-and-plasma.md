@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Live-sensitivity sourcefix now CLEANR3spec+qualityreview, callbackUAF and staleBackspaceplan regressions fixed/tested. Finalnative19/integration63/packaging54/session6 plusASanUBSan21fixture passed. User-requested install/docs cleanup completedlocally/freshreviewPASS, nopublicreleasebodychanges.
-Next: Kai b1acb1c6-68ec-477b-bcfd-46ab41890d1b rebuilding NEWdiagnosticsOFFproductionFlatpak againstpinnedSDK6.10.3, thenactualprotectedSteamOScontinuousprivacyA/B/C/core/reboot/restoration. Read deck-production-safety-retest-report.md, newhashrequired. AfterprivacyactualOSupdatesurvival. ExclusiveVMjob.
-Blocked: Installedprivacyfixnotyetaccepted; old4c877candidatefailed, no relabeling. Deckv1DesktopONLY;Gamingdeferred. No release/sourcecommit/push/hostactivation. Space86GiBlastchecked;20floor.
+Done: CorrectSDK6.10.3 diagnosticsOFFproduction rebuild completed buildtree19/profile15/ELFassets/minpermission/preflightchecks, but installed/appInputPanel stationary sensitivecancel fixtureFAILED twice(trackedId7not-1). Candidate0c8ac...preservedFAILED-LOADER, NOTdeployed. SteamOSoriginalNONE/appabsent/rootprotected/cleanstopped/diskhealthy.
+Next: Worker4faf4217-2535-423e-a4b1-16f6b61db893 reproducesinstalledprefixvsbuildtreediscrepancy inownedbuilder, identifiescausebeforeminimalTDDsource/fixturefix. Read deck-installed-cancellation-report.md; noSteamOSboot/exportuntestedcandidate. AftercleanreviewnewproductionbundleandrealprivacyA/B/C, thenOSupdatesurvival.
+Blocked: Installedprefixstationarycanceltestfailsdespitenativebuildtreegreen; rootcauseunknown. No testwaiver/timerdeadline/permission/rootworkaround. Deckv1DesktopONLY, Gamingdeferred. No release/commits/push/hostactivation.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
