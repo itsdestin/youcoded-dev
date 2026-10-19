@@ -12,6 +12,7 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.steer.specialists, agents.added.helpers
+work: session/specialist-permission-overflow
 ---
 Progress
 Done: nothing recorded.
@@ -21,6 +22,7 @@ Blocked: nothing recorded.
 See also #137: 71's unreadable amber 'Needs you' label on pale themes is one instance of 137's fixed-amber warning text that vanishes on pale themes.
 
 Chats
+- 2026-10-19 session/specialist-permission-overflow: Small approved visual fix: permission panels in the Specialists popup stay inside their card and use a rounded inner border; no permission behavior changes.
 
 From the old roadmap (native-harness › specialists, status confirmed, seen on desktop, last checked 2026-09-05)
 Helpers: permissions, reports and cost — 4 things. (a) In Auto-edit, a hired helper runs any shell command not on the always-ask list with no prompt, though the main assistant would ask; direction (2026-09-16): helpers ask whenever the main assistant would, at the cost of more prompts. Destin chose to leave it for now. (b) A finished helper's report should be able to arrive quietly, read with your next message, unless the assistant asked to be woken; needs a default decided. (c) Helpers pay full price for their opening each time; investigate starting from the main conversation's stored opening (likely to be dropped). (d) The amber "Needs you" label in the helpers popup is nearly unreadable on the three pale themes (1.52:1, 1.41:1, 1.19:1 against 4.5:1).
