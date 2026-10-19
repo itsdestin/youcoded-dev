@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench
+work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner
 ---
 Progress
 Done: CI first pass implemented locally: fail-closed desktop classifier, cheap preflight, parallel full test/installer jobs, stable completion gates, PR-only stale-run cancellation, candidate-root whole-graph card-only workspace lane. Independent task and final reviews approved. Local445 workspace tests,26 app policy/beta tests,9 workflow guards and required desktop verify pass.
@@ -18,6 +18,11 @@ Next: Authorize implementation commits/candidate pushes and GitHub CI validation
 Blocked: No local implementation blocker; remote acceptance awaits candidate-publication authorization.
 
 Chats
+- 2026-10-19 session/29-linux-ci-winner: chat started
+- 2026-10-19 session/29-linux-ci-winner: chat started
+- 2026-10-19 session/29-linux-build-bench: chat started
+- 2026-10-19 session/29-android-build-bench: chat started
+- 2026-10-18 session/29-android-build-bench: chat started
 - 2026-10-18 session/29-android-build-bench: chat started
 - 2026-10-18 session/29-linux-build-bench: chat started
 - 2026-10-18 session/29-linux-build-bench: chat started

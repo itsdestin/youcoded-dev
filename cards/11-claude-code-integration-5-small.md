@@ -14,13 +14,15 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Built independent Linux test app 1.3.1-cc-controls.2 using direct Claude controls; full desktop verification green (20534 passed), real GUI text/Stop/model/clear/compact verified with fake API, final CLI2.1.303 smoke9/9; Android36 unit tests green.
+Next: Destin tests isolated Linux build; source remains uncommitted/unmerged. Android APK/runtime and Windows/macOS not certified.
+Blocked: No build blocker; no authorization to commit/merge/push or make further paid model calls.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 
 Chats
+- 2026-10-19 session/11-claude-direct-controls: chat started
+- 2026-10-19 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
