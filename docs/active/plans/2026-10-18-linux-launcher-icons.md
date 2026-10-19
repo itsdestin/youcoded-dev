@@ -26,6 +26,7 @@ Files:
 - Create generated `youcoded/desktop/assets/icons/<size>x<size>.png` for the nine indexed sizes plus 1024. Retain the old 1024px installation path so existing absolute launcher links survive upgrades.
 - Modify `youcoded/desktop/tests/app-icons.test.ts`: assert Linux config points to the set, each PNG has the named dimensions, and the actual public `LinuxPackager.resolveIcon` returns all ten expected source paths without fallback. Existing icon tests continue protecting other platforms.
 - Modify workspace `docs/build-and-release.md`: document Linux set and Linux-only generation.
+- Test-only follow-through: `youcoded/desktop/tests/sync-spaces-git-transport.test.ts` uses its normal transport for healthy recovery, not the 300ms idle limit injected to exercise a stalled fetch. Windows CI passed all 25 icon cases but exposed this unrelated timing assumption; the same recovery assertion failed locally with a 1ms injected budget and passed after the test correction. Sync runtime implementation remains unchanged.
 
 Steps:
 - [x] Add tests first and run `npx vitest run tests/app-icons.test.ts`; observe the missing Linux setting/set failure.
