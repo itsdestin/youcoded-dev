@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Prepared implementation plan and fresh design review. Safely imported tested direct-control foundation into169, preserved source11, independently copied matching deps; types and677 focused tests passed. No queue service implemented yet. Actual-worker long Unicode succeeded only after exact composer verification; file-bearing batch delivery did not pass equivalent checks.
-Next: Answer single Q5 scope reopener: allow attachments/@file messages to wait until idle in first test build, preserving FIFO/edit/remove, or require full input parity first. Then revise delivery protocol/state machine per accepted C1-C3/I1-I5 design findings and implement shared native-UI backend. Baseline verification failure repairs are separately assigned.
-Blocked: Await Q5 answer at docs/active/design/2026-10-19-claude-queues/claude-queues.input-scope.json. Cannot silently weaken approved batch timing for files or claim current short-line proof covers general input. No testable queue build yet.
+Done: Q5 Other owner proposed ordinary file paths plus read-this-entire-file instructions. No-cost real-CLI tests passed for text and image: same-turn instruction delivery then actual Read content. One supported plugin module also proved native versioned lease admission and revoked-Enter rejection; accepted persists once, revoked never enters history. Foundation integration/dependency isolation and baseline verification repairs completed green.
+Next: Implement pure durable host queue/state/store with tests (in progress), then native admission/delivery adapter and provider-neutral wiring into existing native queue strip. Keep approved batch timing, Stop current only, restore paused and Clear keep paused. No separate UI. Apply accepted design-review protocol refinements.
+Blocked: No new product choice pending. File path instructions rely on tool reading, not guaranteed preloading or model compliance. Queue service/transport/UI wiring not yet complete; no testable queue build yet.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
