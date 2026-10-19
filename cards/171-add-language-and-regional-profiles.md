@@ -10,9 +10,9 @@ why: Destin requested a separate parallel multi-language/multi-region feature tr
 work: session/171-swipe-languages
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Owner authorized language/region support as separate parallel feature track and chose Spanish,French,German plus US/UKEnglish. Registered workspace171-swipe-languages; read-only designer4d16a62f-0041-4d9a-8b05-8919170c2f44 assessing actual asset availability and Unicode/profile contract. No language support falsely claimed.
+Next: Review initial locale/data/model contract coordinated with prediction track; implement isolated source after compact approval. Require actual compatible licensed assets and per-language quality checks, not layout-only claims.
+Blocked: Non-English compatible model availability not yet established; existing English assets/ASCII wrapper are not multilingual. Code worker scheduling must respect one-writer limit.
 
 Chats
 - 2026-10-19 session/171-swipe-languages: chat started
