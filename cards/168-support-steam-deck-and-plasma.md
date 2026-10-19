@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Fresh bounded evidence audit PASS for recovered Fedora C2 core Mobile matrix, no blocking contradiction. Report clarifies deliberate native Shift and narrow post-reboot transition observation. Exact RPM f078b4b3b5653c46195fd37bce0ec2c2af8eb4320565dd785b11a89a7fbd038d, immediate packaged live switch and restored raw absence verified. Audited report delivered privately; no release/host activation.
-Next: Environment worker b1acb1c6-68ec-477b-bcfd-46ab41890d1b continues genuine installed SteamOS Desktop baseline with exclusive lab VM control. Read its private steamos-desktop-baseline-report.md when finished; keep full-lane unrun checks, ARM build/session, Gaming and musl explicit.
-Blocked: Core Mobile milestone is audited, not full Mobile/project/hardware acceptance. SteamOS Desktop/Gaming environment and bundle, ARM current-stack/native build/session, musl and full cross-lane matrix still incomplete; no physical Deck access.
+Done: Installed stock SteamOS Desktop Wayland baseline established, visually inspected and reproduced on cold boot, stopped cleanly and snapshotted. Root enabled/ro=true; no rootfs unlock/system-library replacement. Exact host Qt6.9.1/glibc2.41/KWin6.4.3/Flatpak1.16.6 now observed. Owner explicitly reinforced immutable-system compatibility and approved continuing.
+Next: TaskD1 worker719a2791-e653-499f-9665-bb745653b027 builds pinned per-user Flatpak backend+Swipe with app-scoped data/env and minimal inherited IME socket permissions. No native package forcing, rootfs/system changes, broad host permissions or global Qt tweaks. Exclusive owned Fedora builder. Review steamos-flatpak-build-report.md before installed-target D2 tests including actual update survival.
+Blocked: Desktop environment prerequisite done, bundle build/runtime acceptance still pending. Update-survival not proven by fresh image. Gaming remains separate/unverified; ARM tooling/rebuild/session and musl unfinished. Physical Deck absent; host r3 unchanged, no release/source commits/push/activation authorized.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
