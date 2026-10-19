@@ -408,9 +408,11 @@ implementation `d524a1e44`. No existing public release has been replaced or re-s
 
 Linux tests use stand-ins for Apple tools and prove failure handling/configuration only.
 Real Mac CI passed 20,609 tests (90 skipped), both architectures' packaged Office open/save/
-PDF export, and the arm64 app launch smoke test. A clean-guest quarantined installation
-and interactive first launch remain unverified; CI signature/Gatekeeper checks are not
-that user journey. Signing/notarization are not Mac App Store submission and do not
+PDF export, and the arm64 app launch smoke test. Existing Intel Tahoe VM also passed
+quarantined installation/normal Open confirmation and visibly reached fresh onboarding
+with Gatekeeper enabled; old guest app/profiles were backed up and restored. Download
+used private HTTP plus an explicit quarantine mark, not Safari. Pristine-OS/browser
+journey, Apple Silicon GUI installation and authenticated chat remain unverified. Signing/notarization are not Mac App Store submission and do not
 publish a release. Task history and submission IDs: active plan `2026-10-19-apple-signing.md`.
 
 ### Windows signing
