@@ -353,6 +353,66 @@ Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "verify-mac-signature.sh"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/verify-mac-signature.test.ts"} -->
 
+### macOS Developer ID signing and notarization
+
+**Verified in a real candidate build on 2026-10-19; not yet activated on master.**
+The `macos-signing` GitHub environment is configured remotely. App candidate branch
+`session/28-apple-signing` carries the reviewed implementation. Run `39292665007`
+produced **1.3.2-beta.3** Intel and Apple Silicon installers: both apps and both final
+DMGs were accepted by Apple with no reported issues. Staples, expected-team signatures,
+Gatekeeper and apps mounted from the final DMGs passed. Temporary branch access and
+source exceptions are removed; branch tip `3054069ec` is tree-identical to reviewed
+implementation `d524a1e44`. No existing public release has been replaced or re-signed.
+
+- Publisher: **Destin's Adventures, LLC**, Team ID `C2PSZTNNA4`. The initial Developer ID
+  Application certificate expires **2027-11-18 14:26:15 UTC**; renew before that date.
+- Protected environment deployment rules admit **branch `master` and tags `v*` only**.
+  Secrets are `MAC_CSC_LINK` (base64 PKCS#12 signing identity), `MAC_CSC_KEY_PASSWORD`,
+  and `APPLE_API_KEY_BASE64` (base64 API private key). Nonsecret environment variables
+  are `APPLE_TEAM_ID`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER`. Never print private
+  material or place it in checkout/artifact folders. The first Linux/OpenSSL 3
+  export (PBES2/AES-256, SHA-256 MAC) decrypted on Linux but macOS `security import`
+  rejected it. The retry container uses explicit `-keypbe PBE-SHA1-3DES
+  -certpbe PBE-SHA1-3DES -macalg sha1` for importer compatibility; native import
+  succeeded in the retry. These options wrap the transport file, not app signatures.
+- **electron-builder 26.15.3 keychain compatibility:** `patch-mac-signing-keychain.mjs`
+  applies upstream #10066/#10101's three-line correction: partition-list access uses
+  the generated keychain password, not the certificate password. Source-shape checks
+  fail on drift, and temp+rename avoids changing shared dependency inodes. Both signed
+  workflows run it, followed by `check-mac-signing-keychain.mjs`, before the full tests.
+  The preflight finds the expected team, signs a disposable copy of `/usr/bin/true`,
+  verifies it, and removes complete/partial keychains and temporary files. It never
+  signs the system executable itself. API credentials remain build-step-only.
+  `temp-file` is declared at its already-locked 3.4.0 version as a direct build dependency;
+  electron-builder is not upgraded. Regression tests exercise its actual module with
+  native commands replaced and include the real temporary-directory implementation.
+- The base `desktop/electron-builder.yml` intentionally stays ad-hoc for ordinary CI,
+  development and untrusted branches. The `electron-builder.mac-sign.yml` overlay
+  replaces `identity: '-'` with the Developer ID identity, requires signing, enables
+  hardened runtime and notarization, and signs the DMG. Both packaging workflows select
+  it only on the trusted Mac leg (release: master/v*; beta: master).
+- Only the native preflight and signed-build steps receive certificate credentials;
+  the API private key is signed-build-only. The build step decodes that API key into
+  a mode-0600 runner-temp file, exports **APPLE_API_KEY as a file path**, builds,
+  then runs `node scripts/notarize-mac-installers.mjs release` to submit, staple and
+  validate final DMGs. Exit trapping and an always-run cleanup remove the API file.
+  The app is notarized/stapled by electron-builder before the DMG is made; the final
+  DMG receives its own ticket before artifact upload or release-manifest hashing.
+  The helper mounts each final image read-only and runs the strict app verifier
+  against the contained app, then detaches it even when app verification fails.
+- `SIGN_MACOS=true APPLE_TEAM_ID=C2PSZTNNA4 bash scripts/verify-mac-signature.sh`
+  (from `desktop/`, on macOS) additionally requires Developer ID authority, the expected
+  team, hardened runtime, timestamp, a valid staple and Gatekeeper acceptance. Office
+  converter signatures are inspected independently because they live under Resources.
+  Credential-free builds retain the existing seal/identifier/Office verification.
+
+Linux tests use stand-ins for Apple tools and prove failure handling/configuration only.
+Real Mac CI passed 20,609 tests (90 skipped), both architectures' packaged Office open/save/
+PDF export, and the arm64 app launch smoke test. A clean-guest quarantined installation
+and interactive first launch remain unverified; CI signature/Gatekeeper checks are not
+that user journey. Signing/notarization are not Mac App Store submission and do not
+publish a release. Task history and submission IDs: active plan `2026-10-19-apple-signing.md`.
+
 ### Windows signing
 
 Since 2026-10-01 the Windows installer of a `v*` release and of every **master** beta is
