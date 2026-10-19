@@ -70,6 +70,18 @@ test('exploration items may overlap; planning items may not', () => {
   assert.match(check([a, b]).join(), /consolidate them into one card/);
 });
 
+test('a shipped card keeps related planning work without blocking closure or later validation', () => {
+  const root = tmp();
+  createCard(root, { title: 'Website follow-ups', stage: 'planning' });
+  createCard(root, { title: 'Finished website demo', related: '1' });
+  closeCard(root, 2, 'youcoded#640');
+  const cards = loadCards(root);
+  assert.deepEqual(check(cards), []);
+  assert.deepEqual(cards[1].related, ['1']);
+  cards[0].related = ['2'];
+  assert.deepEqual(check(cards), []);
+});
+
 test('close moves a card to merged and adds one shipped line, header included the first time', () => {
   const root = tmp();
   createCard(root, { title: 'Saved agent setups', stage: 'polish' }, '2026-10-14');

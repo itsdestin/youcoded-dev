@@ -1,9 +1,8 @@
 ---
 id: 166
 title: Refresh website demo: 1.3.1, Home and Finance, YouCoded Light
-stage: explore
+stage: merged
 tags: website, pages, themes, feature
-related: 79
 vision: pages, yours
 branch: 166-refresh-website-demo-1-3
 finish: Website embed uses current 1.3.1 renderer code and opens pinned Home and Finance demos with fictional data. Website default look is based on YouCoded Light. Desktop and phone previews are approved before deployment.
@@ -12,9 +11,14 @@ why: Update the website embed to the latest 1.3.1 code with pinned mock Home and
 work: session/166-website-demo-light
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Merged in youcoded PR #640 and deployed successfully. Public browser verification confirmed the website and embed both use YouCoded Light with Home and Finance pinned; sample controls, Finance spending and phone navigation passed. Full local desktop verification and required Linux/Android CI passed.
+Next: Complete; no remaining feature work.
+Blocked: Nothing for the deployed website update.
 
 Chats
 - 2026-10-19 session/166-website-demo-light: chat started
+- 2026-10-19 session/166-website-demo-light: chat started
+- 2026-10-19 session/166-website-demo-light: chat started
+
+Historical relationship
+- Historical overlap with #79 (website work); retained for context after #166 shipped. This is not an active overlapping plan.
