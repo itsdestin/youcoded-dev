@@ -10,9 +10,9 @@ why: Destin requested a separate parallel feature track: after confirming a swip
 work: session/170-swipe-next-word
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Owner authorized next-word prediction as separate parallel feature track. Registered workspace170-swipe-next-word; read-only designer16915281-3150-47cd-9130-ec4fefc48e1a preparing concrete shared-core/bar-state/TDD contract. No feature code claimed.
+Next: Review compact design and shared profile/generation interface, then isolate accepted current-source baseline and implement/test with single-writer coordination; Deck VM work remains separate.
+Blocked: One write-capable specialist at a time; current concurrency is independent design/research. No cloud/personalization, privacy weakening, source commits or host activation approved.
 
 Chats
 - 2026-10-19 session/170-swipe-next-word: chat started
