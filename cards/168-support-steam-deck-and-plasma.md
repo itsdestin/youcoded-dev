@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Focused real protected SteamOS D2 native checks now observed: alternatives, word/character deletion, Shift/taps, verified password-length1→3, held focus/selection/cursor cancellation, hide/reopen, genuinely overlapping125% scale recovery, GTK qhelp. Exact artifact unchanged; original NONE/hash restored, app removed, clean stopped/disk healthy. XWayland no-context unsupported; no fullacceptance.
-Next: Kai b1acb1c6-68ec-477b-bcfd-46ab41890d1b tests continuous sensitive-drag/focus/samefield-purpose behavior with actual frames/timestamps, then bounded independentFlatpak/browser coverage. Parent saw old trail in held-focus image: diagnostic lead, not confirmed defect or waived pass. Read steamos-d2-finalchecks-report.md. Actual OSupdate survival follows, then separate Gaming.
-Blocked: FullD2/finalreview/update/Gaming unfinished. Browser/independentclient unrun, XWayland no input context. Features170/171 handed to another session; thissession staysDeckpriority. No physicalDeck/sourcecommits/publish/hostactivation;20GiBfloor.
+Done: Continuous Deck privacy test caught confirmed launch blocker on current bundle: password already focused withclienthints67 >2s before gesture, actual screenshot shows trail; release length0→4 then2taps→6. Synthetic only, no realpassword/plaintext logged. Earlier core typing/root/reboot/restoration evidence retained, but privacy notaccepted. Host package recheckedr3 unchanged.
+Next: Kai onlyverifies safe cleanup/finalreport. Readonlyinvestigator15324bb2-25fb-48d3-ad59-904634cad3f5 traces pinned backend rawpurpose→Qt hints and plugin guards; thenTDDminimalfix/review/newhash/controlledcontinuousretest. RechecksamecaseonMobilebefore extrapolation.
+Blocked: RELEASEBLOCKING sensitive-field trail/multichar output in SteamOS Flatpak. Cause notyetconfirmed; no permission/root/guard weakening. OSupdate/client/Gaming acceptance paused. MobileC2 boundedFedorax86 audited, ARM rebuild/session pending. No publish/activation/sourcecommit.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
