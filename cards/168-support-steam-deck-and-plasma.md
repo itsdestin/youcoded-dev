@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Owner explicitly reprioritized Deck. D2 exact bundle proved protected-root per-user install, real inherited-socket external typing, reboot retention and exact manual NONE restoration/removal; full privacy/edit/app/scale matrix still incomplete. Parent inspected legible keyboard screenshots, no confirmed label-renderer bug.
-Next: Kai b1acb1c6-68ec-477b-bcfd-46ab41890d1b resumed focused D2 with stable test-client geometry/verified coordinates for remaining edit/privacy/focus/scale/app checks. Exclusive lab VM control; report steamos-d2-followup-report.md. After core acceptance, actual OSupdate survival and separate Gaming gate. Features170/171 handed to another session/isolated source worktrees.
-Blocked: Full Deck acceptance not yetdone; no physical Deck. Root/sandbox constraints notwaived. No release/merge/sourcecommit/hostactivation permission. Host27GiBreserve,20floor.
+Done: Focused real protected SteamOS D2 native checks now observed: alternatives, word/character deletion, Shift/taps, verified password-length1→3, held focus/selection/cursor cancellation, hide/reopen, genuinely overlapping125% scale recovery, GTK qhelp. Exact artifact unchanged; original NONE/hash restored, app removed, clean stopped/disk healthy. XWayland no-context unsupported; no fullacceptance.
+Next: Kai b1acb1c6-68ec-477b-bcfd-46ab41890d1b tests continuous sensitive-drag/focus/samefield-purpose behavior with actual frames/timestamps, then bounded independentFlatpak/browser coverage. Parent saw old trail in held-focus image: diagnostic lead, not confirmed defect or waived pass. Read steamos-d2-finalchecks-report.md. Actual OSupdate survival follows, then separate Gaming.
+Blocked: FullD2/finalreview/update/Gaming unfinished. Browser/independentclient unrun, XWayland no input context. Features170/171 handed to another session; thissession staysDeckpriority. No physicalDeck/sourcecommits/publish/hostactivation;20GiBfloor.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
