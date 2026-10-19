@@ -12,7 +12,7 @@ created: 2026-10-15
 summary: Pages work today; next comes letting pages run assistant tasks, use files and be shared, plus seven follow-ups and decisions.
 area: Pages
 side: both
-work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning, session/90-pages-post-release
+work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning, session/90-pages-post-release, session/page-custom-icons
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
@@ -23,6 +23,7 @@ Blocked: No merge blocker. Work board runtime verification awaits after-exit ins
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
+- 2026-10-19 session/page-custom-icons: Working on the existing Page-icons follow-up: Destin clarified that agents must design a new purpose-specific icon for every Page in the app’s iconography style, not choose from a fixed stock list. Include Home house icons in the actual app and website embed, plus page-builder guidance. No installed-app update or release is authorized by this note.
 - 2026-10-18 session/90-pages-post-release: chat started
 - 2026-10-18 session/google-connections-planning: Recovered later idea, not implemented scope: unified calendar/to-do Pages across providers, with a local holding space that can show an action waiting for another device (for example Apple Reminders waiting for the Mac). User requested this as a later follow-up; exact queue/sync design is unapproved. Depends on relevant connection capabilities (#156/#158/#159), NOT on syncing credentials. Source: 109a2161:docs/active/design/2026-09-26-everyday-actions/questions.answers.json Q-actions; proposal.md section 6. Preservation only; this session is not building Pages.
 
