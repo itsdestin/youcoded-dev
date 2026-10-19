@@ -12,7 +12,7 @@ created: 2026-10-15
 summary: Pages work today; next comes letting pages run assistant tasks, use files and be shared, plus seven follow-ups and decisions.
 area: Pages
 side: both
-work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning, session/90-pages-post-release, session/page-custom-icons
+work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning, session/90-pages-post-release, session/page-custom-icons, session/90-work-board-loading
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
@@ -23,6 +23,7 @@ Blocked: No merge blocker. Work board runtime verification awaits after-exit ins
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
+- 2026-10-19 session/90-work-board-loading: chat started
 - 2026-10-19 session/page-custom-icons: Shipped purpose-designed Page icons: app/source and live embed in youcoded#645 (f1d11a4c9), Page Builder 0.3.0 in wecoded-marketplace#111 with successful registry rebuild. Public browser verified the pinned Home house; public skill source requires new custom artwork. Approved I-1/I-2; final local verifier passed 4,462 related tests, all 403 screens, types/lints/knip/invariants/journeys; required app Linux/Android and plugin CI passed. Real Home manifest already has the approved artwork with a private backup; installed older app keeps its fallback until updated. No app release or installed-plugin mutation. This icon subtask is complete; leave other #90 follow-ups open.
 - 2026-10-19 session/page-custom-icons: Custom Page icons implemented locally and visually approved (I-1/I-2). Page metadata now supports validated per-page vector artwork with legacy fallback; Home has the approved house in source/demo and icon-only metadata in its real manifest (older installed app displays fallback until updated). Page Builder 0.3.0 source requires a new purpose-designed icon for every new Page. Integrated verification passed 4,461 related tests plus all other gates; plugin reference/example checks passed. Repo changes are uncommitted and not published; no app release or installed-plugin update.
 - 2026-10-19 session/page-custom-icons: Working on the existing Page-icons follow-up: Destin clarified that agents must design a new purpose-specific icon for every Page in the app’s iconography style, not choose from a fixed stock list. Include Home house icons in the actual app and website embed, plus page-builder guidance. No installed-app update or release is authorized by this note.
