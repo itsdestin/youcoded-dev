@@ -15,9 +15,9 @@ vision: chat.steer.specialists, agents.added.helpers
 work: session/specialist-permission-overflow
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Approved Specialists popup visual fix merged in youcoded#649 (9a53615497088a356e88ce1578b65bba6a820040): contained permission explanations and rounded nested permission cards using the outer card's theme radius; permission behavior unchanged. Local desktop verification and required Linux/Android CI passed.
+Next: Original permission-behavior, report-delivery, cost and transcript-retention requests remain; this visual-fix session is complete.
+Blocked: No blocker for the shipped visual fix; original transcript deletion still depends on delete-conversation work.
 
 See also #137: 71's unreadable amber 'Needs you' label on pale themes is one instance of 137's fixed-amber warning text that vanishes on pale themes.
 
