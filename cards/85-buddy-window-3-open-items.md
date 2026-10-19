@@ -15,9 +15,9 @@ vision: yours.look.buddy
 work: session/85-windows-131-regressions, session/85-buddy-floater-regression
 ---
 Progress
-Done: Windows regression fixes merged to remote app master via https://github.com/itsdestin/youcoded/pull/632 (1e8797ec3). Buddy click/drag, normal sends and Send anyway VM-verified; watcher ordering/concurrency regressions pinned. Final local full verification: 20,434 passed; Windows/macOS and required Linux/Android CI passed.
-Next: This session is closed. The three original buddy items below remain open and unchanged; do not mark them completed by PR #632. A new installer release is a separate action.
-Blocked: No blocker for the merged fixes. SmartScreen reputation is external; remaining authenticated OneDrive validation is recorded against #93.
+Done: Investigated Direct Controls .4 floater growth: isolated Linux XWayland at 150% widened 325→355 over 20 cycles while native Wayland stayed 320×480. Local fixed-role setBounds candidate stops cumulative growth, including full mascot/chat/bar runtime; regression observed red then green. Required desktop verification passed 2,209 tests plus types/lints/knip/invariants. Prior Windows pointer fix is preserved.
+Next: Finish full-suite, independent code review and Windows/macOS guest checks for session/85-buddy-floater-regression. Source is local/uncommitted and unshipped. The three original buddy items remain open; this sizing fix does not complete them.
+Blocked: No product decision blocker; all-platform completion is not yet claimed. No commit, push, release or live-app modification authorized.
 
 Chats
 - 2026-10-19 session/85-buddy-floater-regression: chat started
