@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Host queue/state/storage and file-instruction formatter implemented; parent reran58 foundation tests successfully. Lifecycle review fixes address stale aliases and long-lived capacity. Single-module native admission and explicit file-read paths proven with fake API. Standalone edit-transfer coordinator built; real-host lost-cancel regression exposed one settlement fix now assigned.
-Next: Complete authenticated Claude delivery adapter/plugin/worker integration, including retirement retry and idempotent checkout cancellation, then wire existing native queue controls and atomic attachment-preserving composer refill. Run real-app fake-API walkthrough and full checks; package separate test build.
-Blocked: No user decision needed. Transport integration and final UI wiring/tests still underway; no testable queue build yet. No paid calls or production app changes.
+Done: Durable queue/store, input formatter and standalone production transport implemented.299 focused tests plus types/lint/compile passed; six disconnected actual-CLI transport cases passed and parent independently checked evidence/hashes. Retirement retry and lost cancellation reply fixed. Parent edit coordinator now captures sendEpoch once and retains it across retries; state/edit integration tests green.
+Next: Task3 in progress: lazy per-instance runtime binding, authoritative input-safe gate, queue IPC/shared snapshots, and existing native queue strip/composer wiring. Then parent isolated app walkthrough for FIFO/edit/remove/files/SendNow/Stop/Clear/restart, fullverification and Linux test package.
+Blocked: No user decision needed. No actual end-to-end queue app build yet; standalone transport proof is not final app acceptance. No paid calls, production changes or publication.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
