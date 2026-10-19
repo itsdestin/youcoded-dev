@@ -22,6 +22,7 @@ See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the test
 
 Chats
 - 2026-10-19 session/11-claude-direct-controls: chat started
+- 2026-10-19 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
 - 2026-10-18 session/11-claude-direct-controls: chat started
