@@ -1,7 +1,7 @@
 ---
 id: 169
 title: Claude message queues on par with native sessions
-stage: planning
+stage: build
 tags: claude-code-integration, chat-data, sessions, feature
 vision: chat.converse.queue
 branch: 169-claude-message-queues-on-par
