@@ -19,6 +19,7 @@ Next: Finish final review and desktop verification; retain uncommitted work pend
 Blocked: No product decision blocking implementation; no commit, push or paid model evaluation authorized.
 
 Chats
+- 2026-10-19 session/87-browser-tool-robustness: chat started
 - 2026-10-18 session/87-browser-tool-robustness: chat started
 - 2026-10-18 session/google-connections-planning: Reconciled September integrations research: its proposed browser build is historical, because the built-in browser subsequently shipped October 14. Remaining browser work stays here; do not restart the old CLI-first proposal. Desktop/computer control is a distinct exploration, not delivered by this browser feature. Source: 9470bbe1:docs/active/investigations/2026-09-26-integrations-rebuild/research/05-browser-computer-use.md. Preservation only.
 
