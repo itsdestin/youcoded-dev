@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Durable queue/store, input formatter and standalone production transport implemented.299 focused tests plus types/lint/compile passed; six disconnected actual-CLI transport cases passed and parent independently checked evidence/hashes. Retirement retry and lost cancellation reply fixed. Parent edit coordinator now captures sendEpoch once and retains it across retries; state/edit integration tests green.
-Next: Task3 in progress: lazy per-instance runtime binding, authoritative input-safe gate, queue IPC/shared snapshots, and existing native queue strip/composer wiring. Then parent isolated app walkthrough for FIFO/edit/remove/files/SendNow/Stop/Clear/restart, fullverification and Linux test package.
-Blocked: No user decision needed. No actual end-to-end queue app build yet; standalone transport proof is not final app acceptance. No paid calls, production changes or publication.
+Done: Storage/input preparation and standalone transport implemented; six actual-CLI cases and299 focused tests passed. Existing-UI/runtime wiring underway. Fresh transport review found3 additional races not covered by those cases; accepted and assigned with concrete RED regressions.
+Next: Fix delayed admission ack past fence expiry, admitted-but-never-invoked recovery, and stale untouched-claim correlation. Finish Task3 positive host gates, shared queue IPC/strip/composer, lifecycle restore/Clear/Stop. Then independent app walkthrough, fullverify and test package.
+Blocked: Final queue app acceptance blocked on transport review fixes and integration verification. User .4 test copy remains separate/unchanged; no paid calls or publication.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
