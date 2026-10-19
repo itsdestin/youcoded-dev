@@ -14,9 +14,9 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Eight real Haiku A/B prompts completed. @file routing now fixed conservatively before direct dispatch;4 red regressions then16 control tests green, fresh review clean, full desktop verification and Linux .3 build passed. Stop independently rechecked without paid calls in two 2x2 cross-over runs: direct abort allowed subprocess completion/follow-on Write4/4; Escape0/4. Running user .2 copy untouched.
-Next: Resolve running-tool Stop semantics before merge (consider retaining deliberate legacy Escape pending safe structured cancellation). Keep bounded closed-session retirement, initial Normal-versus-Auto display, instructions/provenance/ask-deny/queue/resume/reconnect parity and actual Android/Windows/macOS runtime verification as follow-ups. Native first-run cards, structured read-only live facts and media/interaction exploration remain on #12. Evidence: docs/active/investigations/2026-10-18-claude-controls-build/STOP-RECHECK.md and REAL-AB-REVIEW.md.
-Blocked: Do not merge unchanged: running-tool Stop regression confirmed independently of model variability and prompt transport. Source uncommitted; no merge/push/release authorization. Further real-model tests need approval; latest recheck was entirely local/fake API.
+Done: Real Haiku comparison and controlled Stop recheck completed. @file routing fixed and fully verified. Owner chose to keep Escape Stop: current UI now sends one ESC, host declines old clients mods-Stop before dispatch; scoped desktop/phone routing tests passed and fresh review found no Important issues. Final combined full check/build running.
+Next: Keep Escape Stop; do not pursue coordinated mods cancellation now. Retain bounded closed-session retirement, initial Normal-versus-Auto display, instructions/provenance/ask-deny/queue/resume/reconnect parity and Android/Windows/macOS runtime verification as follow-ups. Native first-run cards and structured live-facts/media exploration remain on #12. Source is uncommitted/unmerged; running .2 test copy is not overwritten.
+Blocked: Await final combined verification/build; no commit/merge/push/release authorization. Existing .2 test copy still has original behavior until explicitly updated/reopened.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 
