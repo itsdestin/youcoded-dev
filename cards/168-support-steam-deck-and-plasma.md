@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Recovered C2 builder API failure without restarting: final build RPMBUILD_EXIT0, exact RPM f078b4b3b5653c46195fd37bce0ec2c2af8eb4320565dd785b11a89a7fbd038d. Parent rehashed source/RPM/SRPM, rpm-V clean and final actual Mobile environment verified. Packaged immediate stock→Swipe→stock now observed~1sec, real core typing/privacy/portrait/reinstall/reboot/restoration recorded. Bounded evidence audit pending, no whole-lane certification.
-Next: Read recovered private fedora-c2-report.md and evidence audit ec64a0f0-211b-4369-945c-38d25305225c. Environment worker b1acb1c6-68ec-477b-bcfd-46ab41890d1b has exclusive lab VM control for genuine installed SteamOS Desktop baseline; no source edits yet. Collect steamos-desktop-baseline-report.md; do not concurrently mutate guests.
-Blocked: Full matrix/lane work incomplete: installed SteamOS Desktop/Gaming environment and bundle, ARM current-stack/toolchain/full build/session, musl, full lifecycle/app/scale coverage and final review. No physical Deck. Host remainsr3; no source commits/push/release/activation permission.
+Done: Fresh bounded evidence audit PASS for recovered Fedora C2 core Mobile matrix, no blocking contradiction. Report clarifies deliberate native Shift and narrow post-reboot transition observation. Exact RPM f078b4b3b5653c46195fd37bce0ec2c2af8eb4320565dd785b11a89a7fbd038d, immediate packaged live switch and restored raw absence verified. Audited report delivered privately; no release/host activation.
+Next: Environment worker b1acb1c6-68ec-477b-bcfd-46ab41890d1b continues genuine installed SteamOS Desktop baseline with exclusive lab VM control. Read its private steamos-desktop-baseline-report.md when finished; keep full-lane unrun checks, ARM build/session, Gaming and musl explicit.
+Blocked: Core Mobile milestone is audited, not full Mobile/project/hardware acceptance. SteamOS Desktop/Gaming environment and bundle, ARM current-stack/native build/session, musl and full cross-lane matrix still incomplete; no physical Deck access.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
