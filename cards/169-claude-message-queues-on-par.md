@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Behavior deck submitted: deliver after current action batch; Stop current work only; restore waiting messages paused after restart; Clear keeps queue paused. Answers saved in docs/active/design/2026-10-19-claude-queues/claude-queues.questions.answers.json.
-Next: Run bounded no-account real-CLI timing probe for native-style between-batch delivery; then design shared-renderer queue UI from native strip/composer/Context references. Do not substitute end-of-turn semantics silently. Keep Escape Stop and uncertain-delivery safety.
-Blocked: Native-style mid-task delivery capability not yet proven; no backend/UI implementation approved. Uncommitted direct-control branch11 remains separate.
+Done: Four behavior choices approved and recorded. Free actual CLI2.1.303 timing probes verified: direct mods submit waits until idle/new turn; native PTY enqueue is absorbed after current tool batch in same turn, persisted once as genuine human queued_command and projected by existing parser. Parent independently reran evidence checker.
+Next: Probe bounded batch-boundary handoff before UI promises: app retains editable messages; PostToolBatch held; PTY delivers one chosen head; verify native acceptance then release. Need prove one-per-batch ordering and safe failure/reentrancy. No fabricated user history or system-context substitution. Then design actual queue UI.
+Blocked: Direct-only API does not satisfy approved native-style timing. Host-owned editable queue over native boundary delivery remains unproven. Original rejected PostToolBatch-submit case is retained as failure, not all-green coverage.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
