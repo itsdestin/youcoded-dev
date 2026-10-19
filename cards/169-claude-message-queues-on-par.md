@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Filed approved queue planning; inspected native queue strip, composer, Context menu and host/driver behavior. Native messages can join after a tool batch; Stop retains submitted queue. Prepared and visually previewed four-question behavior deck. No queue code implemented.
+Next: Answer docs/active/design/2026-10-19-claude-queues/claude-queues.questions.json: delivery timing, Stop, restart persistence and Clear. Then verify Claude capability for chosen timing and design against native surfaces. Coordinate with #11 and #62; uncommitted mods work stays in session11.
+Blocked: Awaiting behavior decisions. Component deps have19 missing/outdated packages, irrelevant to questions but must be resolved before workbench build.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
