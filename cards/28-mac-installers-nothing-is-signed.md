@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: VERIFIED signed1.3.2-beta.3 Mac candidate: Apple accepted both app ZIPs and both final DMGs; all4 official logs Ready for distribution/issues:null. Final mounted-DMG/team/runtime/timestamp/staple/Gatekeeper checks passed. Both packaged Office converters opened/saved/exportedPDF; arm64 app launch smoke passed. MacCI20609passed/90skipped; local full20620/79. Both installers downloaded and GitHub archive SHA256 verified, saved at ~/YouCoded-Test-Builds/apple-signing-1.3.2-beta.3.40xwAZR0. App3054069ec and workspace2fc47e44 committed/pushed, clean, secrets-scanned.
-Next: Owner review and clean-guest quarantined Mac installation/interactive first launch. Source remains on session/28-apple-signing; integrate only with separate permission, then update master-facing docs/MAP and close/archive #28 when actually shipped.
-Blocked: No remaining signing/notarization blocker. No merge or public release authorized/performed. Temporary environment rules and source exceptions removed; only master/v* signing policies remain. Clean-guest first-launch journey not yet verified.
+Done: Signed/notarized Intel candidate passed existing Tahoe26.7.1 VM launch: exact downloaded hash, internet quarantine intact, Gatekeeper enabled, accepted/Notarized Developer ID, normal Open/Cancel says Apple checked/no malware, then fresh provider-selection UI rendered. No Open Anyway or quarantine bypass. Existing guest app1.3.1-beta.107/profiles restored, image ejected, VM and private HTTP server stopped. Screenshots saved beside signed installers/mac-vm-verification. Prior Apple/CI verification unchanged.
+Next: Owner review of candidate source. No more VM setup needed for signing acceptance. Distinguish this HTTP+explicit-quarantine existing-VM test from actual Safari/pristineOS/arm64 GUI or authenticated-chat coverage.
+Blocked: No signing/Intel-first-launch blocker. Not merged or publicly released. Initial fresh-account overlay detour stopped after Destin correction; existing VM used and restored.
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
