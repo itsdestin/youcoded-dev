@@ -7,6 +7,7 @@ branch: 167-ship-discoverable-linux-launcher-icons
 finish: Linux installers carry standard discoverable launcher icon sizes; Windows, macOS, Android and user icon overrides remain unchanged.
 created: 2026-10-19
 why: youcoded app icon on this device seems to be the much older version
+work: session/linux-launcher-icons
 ---
 Progress
 Done: nothing yet.
@@ -14,3 +15,4 @@ Next: plan it.
 Blocked: nothing.
 
 Chats
+- 2026-10-19 session/linux-launcher-icons: chat started
