@@ -292,6 +292,11 @@ macOS) and the Android `mipmap-*` layers (needs Chrome, `rsvg-convert`, `magick`
 Pillow). `--themes <wecoded-themes checkout>` also writes each marketplace theme's icon set into
 `themes/<slug>/assets/app-icon/`; `--site docs/brand` writes only the website's per-theme icons
 (header, footer, browser tab; `youcoded/docs/brand/`). Sizes up to 48px come from a separate drawing with bigger eyes.
+Linux packaging reads the generated `desktop/assets/icons/` set (16, 24, 32, 48, 64, 96, 128,
+256 and 512px, plus the existing 1024px path for compatibility) through `linux.icon: icons`;
+a lone 1024px PNG installs into a directory absent from the standard hicolor index. `node scripts/build-icons.mjs --linux-only` regenerates just
+this set without changing Windows, macOS or Android assets. Personal icon-theme overrides
+still take precedence; installers do not delete them.
 **The Mac build needs Xcode 26+**: electron-builder compiles `icon.icon` with `actool`
 (`mac.icon` in `electron-builder.yml`). `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
