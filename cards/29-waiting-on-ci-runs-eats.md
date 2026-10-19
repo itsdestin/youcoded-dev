@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe
+work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record
 ---
 Progress
 Done: Merged full-app CI checkpoint: app PR646 (ba8374dc) and workspace PR279 (e9fcc896). Final current-tree Linux4/Windows6/macOS4, four Linux formats/default compression and Android gates passed. Fresh-source warm Linux+Android measured4m41; compiled-cold7m03. Cache payload/signature equivalence, Kotlin invalidation, intentional failure and active supersession proven. Hidden animation/approval polling defects fixed with deterministic tests.
@@ -18,6 +18,7 @@ Next: Use docs/active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md for re
 Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
 
 Chats
+- 2026-10-19 session/29-ci-followup-record: chat started
 - 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-full-ci-source-probe: chat started
 - 2026-10-19 session/29-full-ci-five-minute: chat started
