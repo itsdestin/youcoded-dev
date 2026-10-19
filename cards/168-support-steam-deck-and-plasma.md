@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Fresh native baseline plus strict metadata-validator fix now passes: CTest18, setup32, packaging36, input-safety6; two optional developer-model assertions remain unrun. Fix under fresh review. Actual Mobile touch delivered The world into independent app; alternative The would and whole-word then character Backspace passed. Password stock-drag/taps and focus-to-password mid-swipe safeguards passed, recording off. USB virtual keyboard fixed recovery management; official installer wrote private NVMe and shut down.
-Next: Finish metadata review, then repair reproduced Mobile raw-vs-effective setting restoration with red→green tests. Diagnose installed SteamOS first boot (currently only UEFI splash seen), establish actual Desktop/Gaming sessions and capability gate. Continue Mobile portrait/lifecycle/app matrix; ARM/musl remain pending.
-Blocked: Overall support not accepted. Mobile restoration bug remains; installed SteamOS boot/session not yet demonstrated, Gaming/ARM/musl unverified. No publishing/host activation.
+Done: C1 raw/effective/immutable ownership source fix now passes fresh spec+quality re-review, including deletion/expansion refusal, real default Tiling preservation and helper ABI dependency floors. Final integration57/packaging39/session6/CTest18/native stage pass. Reviewed local source snapshot frozen at SHA1ad28b14e5e60ce7f4c517916e8e5853cb463fbe5f5e1ece5eac129128104fc9 (SHA256). ARM64 genuine QEMU OS boot/SSH/architecture inventory established; no app/session pass yet. Space incident recovered53GiB by trimming unused task-owned virtual-disk blocks, no files deleted.
+Next: Worker e4419c41-2cc1-4fea-8ef7-bbb306d75f40 has exclusive Fedora VM control for full Qt6.11/glibc2.43 candidate RPM build and exact-artifact Mobile/lifecycle/restoration acceptance. Read .superpowers/sdd/progress.md and private fedora-candidate-report.md before continuing; avoid concurrent VM mutations. Later resume ARM update using journald output; investigate stock SteamOS Desktop/Gaming separately.
+Blocked: Overall platform support remains unaccepted: Fedora candidate under build/test; SteamOS Gaming virtual graphics unresolved, no physical Deck access (owner confirmed); ARM native tooling/build/session and musl pending. Host keyboard remains r3; no release/host activation/source commits or push.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
