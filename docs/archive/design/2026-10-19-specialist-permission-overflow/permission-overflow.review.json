@@ -1,0 +1,23 @@
+{
+  "title": "Specialist permission card overflow",
+  "key": "specialist-permission-overflow",
+  "out": "permission-overflow.review.html",
+  "images": "images/permission-overflow.review",
+  "runs": {
+    "before": "../../../../scratch/specialist-permission-review/runs/before",
+    "after": "../../../../scratch/specialist-permission-review/runs/after"
+  },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Specialists popup",
+      "path": "Specialists → Needs you → permission card",
+      "crop": "chat/specialists@580x230+440+285",
+      "headline": "The permission explanation now wraps inside its card.",
+      "changed": "The permission panel is capped at the card’s width instead of spilling past its right edge.",
+      "notice": "The full explanation stays readable. The permission choices and their behavior are unchanged.",
+      "risk": "Long explanations take more vertical space because they wrap."
+    }
+  ]
+}
