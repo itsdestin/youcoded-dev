@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Apple membership active. Developer ID Application certificate matches the private key; protected macos-signing GitHub environment configured for master/v* only. API key/issuer authentication returned HTTP200. Local beta/release signing overlay, app + final-DMG notarization/stapling and expected-team/Gatekeeper verification prepared. 43 focused tests and final verify passed (2317 tests,37 skipped); schema/syntax checks and fresh code review passed.
-Next: Obtain explicit authorization to commit/push a candidate and run a signed Mac test build with temporary exact-branch environment access (or an approved isolated Mac runner). Prove Apple acceptance, both architectures/Office converter and quarantined first launch before shipping.
-Blocked: No source publication/CI dispatch/merge/release authorized yet. Current source is local/uncommitted in session/28-apple-signing. Real Mac signing/notarization is unverified; GitHub credentials alone do not sign existing releases.
+Done: Signing candidate committed and pushed with owner approval. Production-path commit20216243e; trial SHA c9353848a; cleanup b28067ead restores master-only signing and is tree-identical to20216243e. All3 candidate commits passed Gitleaks. Required verification passed again after cleanup. Temporary GitHub branch policy63592571 removed; only master/v* remain.
+Next: Observe actual verdict/artifacts from signed trial run39275523189, then investigate any real failure and verify Apple acceptance plus both final DMGs/Office checks. Current run remains in progress according to check-runs API and public Actions page.
+Blocked: No merge/public release authorized. Initial gh watcher exited on jobs API HTTP502, not CI failure; corrected status and switched to independent checks monitoring. No actual signed installer/notarization acceptance observed yet. Signing branch access has not been re-enabled.
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
