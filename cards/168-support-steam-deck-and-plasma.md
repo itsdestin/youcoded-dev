@@ -11,9 +11,9 @@ work: session/168-swipe-platform-support
 paused: User requested context compaction after planning and before any buildout/implementation. Plan saved locally; no code/planning commit or push requested.
 ---
 Progress
-Done: Planning-only design/build/test/iterate outline saved at swipe-keyboard/docs/superpowers/plans/2026-10-18-steam-deck-plasma-mobile.md in isolated standalone branch platform-support-planning, baseline 0f458bb. Includes Steam Deck Desktop and mandatory Gaming feasibility/implementation track, actual Fedora Mobile session, ARM64/glibc and separate musl lane, guest-only input, ownership/privacy gates, complete local acceptance loop and physical-proof limits. Fresh read-only plan review completed; update-survival ambiguity corrected. No builds, image downloads, VM launches, installations or host keyboard changes.
-Next: After owner compacts and approves starting, resume session 168-swipe-platform-support; read saved plan first. Provision isolated target baselines and run Gaming feasibility early, alongside Mobile baseline tests. Read supplemental Gaming protocol report if available; do not assume APIs exist or a windowed Big Picture demo proves Gaming support.
-Blocked: Intentional owner-requested pause before implementation. No physical Deck/phone access established; local VM correctness work can begin without pretending hardware verification.
+Done: Reviewed planning document saved; final Gaming protocol research incorporated. Gamescope exposes an explicitly private IME with no field/selection/password context; source-only overlay/libei leads are listed as feasibility probes, not working support. Plan requires actual-session routing/focus/privacy proof and explicit upstream/owner decision for any experimental private-protocol shipping scope. No builds or live-system changes.
+Next: After compaction, review/read the saved plan and start isolated target provisioning plus early Gaming feasibility only when owner says to begin. Card remains intentionally paused.
+Blocked: Planning-only pause requested by owner. Gaming supportability is a discovery gate, not a promised completed implementation.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
