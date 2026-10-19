@@ -1,8 +1,11 @@
+---
+status: shipped
+---
 # Comment Journey Readiness Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task.
+Implemented and merged in workspace PR279 and app PR646 on2026-10-19. Both observer findings were corrected;58 runner tests,8 saved journeys and combined verification passed. The checklist is historical, not unfinished work. See [the post-merge handoff](../../active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md).
 
-status: active
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Make the existing comment-popup-reading journey synchronize with startup chat scrolling without changing production behavior or losing assertions.
 

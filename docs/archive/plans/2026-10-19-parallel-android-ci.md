@@ -1,7 +1,9 @@
 ---
-status: active
+status: shipped
 ---
 # Parallel Android CI Implementation Plan
+
+Implemented and merged in app PR646 on2026-10-19; all selected platform and Android gates passed. The original checklist below is retained as the implementation record, not outstanding work. Subsequent APK-only compiled caching was separately implemented and validated; see [the post-merge handoff](../../active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans. Follow the checklist and report real red/green evidence.
 
