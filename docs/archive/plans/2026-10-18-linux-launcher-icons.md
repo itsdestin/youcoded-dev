@@ -43,6 +43,8 @@ Steps:
 - Required Linux PR CI: https://github.com/itsdestin/youcoded/actions/runs/39187408156 (passed).
 - Android PR CI: https://github.com/itsdestin/youcoded/actions/runs/39187408170 (passed).
 - Local required verification: 2,345 related/guard tests passed, 37 skipped; types, knip, lint, design lint and invariants passed. Focused icon/runtime tests: 35 passed.
+- Merged result: full verification passed 20,447 tests (68 skipped), types, knip, both lints, invariants, screen-opening checks and click journeys.
+- Work item #167 closed on remote master with the app PR reference. An unrelated obsolete active-overlap marker on completed #166 initially blocked validation; Destin approved clearing that marker while preserving the #79 relationship in its history. All 115 cards then passed validation.
 - Full app and Debian/Arch/AppImage builds succeeded. RPM built from a disposable app copy in a container with host inputs read-only. All four archives contain ten icons matching their generated source bytes.
 - Isolated Qt lookup with the standard hicolor index and no personal override sees the nine indexed sizes. The retained 1024px image has identical decoded pixels to the unchanged shared window PNG.
 - Existing platform artwork is unchanged; parsed packaging configuration differs only in `linux.icon`. Personal overrides are deliberately not migrated or removed.
