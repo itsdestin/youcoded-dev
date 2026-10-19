@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: First Mac trial log proves20595 tests passed/90 skipped, then security import rejected the default OpenSSL3 PKCS12 container. Re-exported same cert/key/password using explicit3DES/SHA1 container wrapping; public-key match/decrypt checks passed and only MAC_CSC_LINK updated. Source candidate+cleanup committed/pushed and secrets-scanned; final source tree remains identical to reviewed20216243e (cleanup b09d08201).
-Next: Fresh Mac-only retry39283409289 queued at candidate66a613858; full Mac tests enabled. Watch native certificate import, Apple acceptance and both final DMG/Office checks. Watcher removes exact-branch policy63599663 at admission or exit.
-Blocked: Actual signing/notarization remains unverified. Old run rerun/cancel endpoints contradicted each other; all unused access policies removed and fresh run dispatched instead. No merge or public release authorized.
+Done: Native Mac preflight PASSED in third trial39292665007/job118197126481: imported Developer ID, private-key access and disposable-code signing verified. Fixed upstream builder26.15.3 wrong-keychain-password defect with guarded atomic3-line correction; real-module and real-TmpDir regressions. Full local verify passed20620tests/79skipped plus allgates; fresh review passed; eight candidate commits secrets-scanned/pushed. Final source3054069ec matches reviewed d524a1e44.
+Next: Third Mac-only trial is running full tests, then both architectures packaging/notarization/final-DMG and Office checks. Read actual completed log and inspect installers before claiming readiness.
+Blocked: No app notarization/installer success observed yet. Temporary policy63607274 confirmed removed at admission; only normal signing refs should remain. No merge/public release authorized.
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
