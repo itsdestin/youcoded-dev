@@ -14,9 +14,9 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Real Haiku comparison and controlled Stop recheck completed. @file routing fixed and fully verified. Owner chose to keep Escape Stop: current UI now sends one ESC, host declines old clients mods-Stop before dispatch; scoped desktop/phone routing tests passed and fresh review found no Important issues. Final combined full check/build running.
-Next: Keep Escape Stop; do not pursue coordinated mods cancellation now. Retain bounded closed-session retirement, initial Normal-versus-Auto display, instructions/provenance/ask-deny/queue/resume/reconnect parity and Android/Windows/macOS runtime verification as follow-ups. Native first-run cards and structured live-facts/media exploration remain on #12. Source is uncommitted/unmerged; running .2 test copy is not overwritten.
-Blocked: Await final combined verification/build; no commit/merge/push/release authorization. Existing .2 test copy still has original behavior until explicitly updated/reopened.
+Done: Real Haiku A/B and repeated no-cost Stop cross-over complete. @file routing fixed; owner-approved Escape Stop restored for UI/phone with old-client host guard.99 scoped tests and fresh review passed. Final combined verify.sh --full passed every gate including screens/journeys; Linux test build1.3.1-cc-controls.4 built and preserved separately.
+Next: Updated test build: /home/destin/YouCoded-Test-Builds/claude-direct-controls-escape-20261019. Open .2 window untouched. Keep Escape Stop. Follow-ups: bounded closed-session retirement, initial Auto-mode display, instructions/provenance/ask-deny/queue/resume/reconnect parity, actual Android/Windows/macOS runtime verification; native first-run menus and structured facts/media on #12. Review incoming master changes before any authorized integration.
+Blocked: No remaining failure in final desktop verification. Source uncommitted/unmerged; no commit/merge/push/release authorization. User must choose when to replace/reopen the currently running older test copy.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 
