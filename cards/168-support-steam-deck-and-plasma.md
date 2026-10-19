@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Fedora-native C1 RPM built/installed/reinstalled exact SHA1368b6a30349b6f16c893caec56152b7f10a4b0fdc9e8e75a9431b4944eb80cf. Native18/integration57/packaging39 (Arch-only skip)/session6 plus actual post-reboot Mobile typing, alternatives, Backspace, password/focus, portrait input and raw-absence restoration exercised. Parent confirmed explicit Shift yields The world. Acceptance caught real immediate live-switch failure.
-Next: C2 source worker2241b3fe-881f-44a8-ac39-284f9e427baf fixes verified missing logical KConfig notification with real private-D-Bus watcher regression. Read source-root live-switch-report.md, fresh-review then rebuild/test distinct Fedora C2 artifact. Guest currently stock/disabled after diagnostic cleanup; no concurrent guest owner.
-Blocked: C1 not accepted: absolute-file kwriteconfig suppresses notifications, confirmed by source and guest PID/mapping changes when proper logical notification is emitted. No reboot/manual-notify workaround counts as fixed. SteamOS/Gaming/ARM/musl remain incomplete; no physical Deck. Host r3 untouched; no release/source commits/push.
+Done: C2 logical KConfig notification source repair completed with real private-bus KConfigWatcher red→green regression, integration63/packaging39/session6/CTest18/native stage pass; fresh spec+quality review PASS/no findings. Reviewed source frozen SHA2567b4c094b96a1ce3612ab1275b36071a7943677d9b8fe780cdf04cb6a19296b29, no source commit.
+Next: Fedora worker e4419c41-2cc1-4fea-8ef7-bbb306d75f40 rebuilding local4.c2 RPM from NEW archive and verifying genuine immediate stock→Swipe→stock using only packaged commands, then full bounded Mobile artifact matrix. Read private fedora-c2-report.md and durable source ledger. Exclusive guest owner: do not mutate outer VM concurrently.
+Blocked: Real C2 artifact acceptance remains pending; C1 workaround/reboot does not count. SteamOS Desktop/Gaming virtual environment gate, ARM full current-stack build/session and musl unresolved; no physical Deck. Host r3 unchanged; no publishing/host activation/source commits authorized.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
