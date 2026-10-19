@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Q5 Other owner proposed ordinary file paths plus read-this-entire-file instructions. No-cost real-CLI tests passed for text and image: same-turn instruction delivery then actual Read content. One supported plugin module also proved native versioned lease admission and revoked-Enter rejection; accepted persists once, revoked never enters history. Foundation integration/dependency isolation and baseline verification repairs completed green.
-Next: Implement pure durable host queue/state/store with tests (in progress), then native admission/delivery adapter and provider-neutral wiring into existing native queue strip. Keep approved batch timing, Stop current only, restore paused and Clear keep paused. No separate UI. Apply accepted design-review protocol refinements.
-Blocked: No new product choice pending. File path instructions rely on tool reading, not guaranteed preloading or model compliance. Queue service/transport/UI wiring not yet complete; no testable queue build yet.
+Done: Host queue/state/storage and file-instruction formatter implemented; parent reran58 foundation tests successfully. Lifecycle review fixes address stale aliases and long-lived capacity. Single-module native admission and explicit file-read paths proven with fake API. Standalone edit-transfer coordinator built; real-host lost-cancel regression exposed one settlement fix now assigned.
+Next: Complete authenticated Claude delivery adapter/plugin/worker integration, including retirement retry and idempotent checkout cancellation, then wire existing native queue controls and atomic attachment-preserving composer refill. Run real-app fake-API walkthrough and full checks; package separate test build.
+Blocked: No user decision needed. Transport integration and final UI wiring/tests still underway; no testable queue build yet. No paid calls or production app changes.
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
