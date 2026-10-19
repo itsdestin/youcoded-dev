@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 work_item: 167
 ---
 # Linux launcher icons implementation plan
@@ -34,7 +34,18 @@ Steps:
 - [x] Re-run icon tests, including existing runtime icon tests; confirm actual packager output sizes. Check a contact sheet of the generated art.
 - [x] Run `bash scripts/verify.sh <absolute component worktree>`. Build isolated Linux package outputs when practical and inspect archive paths without installing or launching them. Verify non-Linux assets/configuration remain unchanged in the diff.
 - [x] Obtain fresh code review; resolve findings and repeat affected checks. Final independent review found no blocking defects, including Windows/macOS test portability.
-- [ ] Commit explicit paths, push, open app PR, wait for required CI, merge and push (authorized by user). Archive this plan, land workspace docs, close #167 with the app PR reference, and run close-out/cleanup.
+- [x] Commit explicit paths, push, open app PR, wait for required CI, merge and push (authorized by user). App PR #639 merged as `9bb7aef25cf367d7cfd217ab955192ea4ca49006`; all Linux/macOS/Windows dispatch checks and required Linux/Android PR checks passed. Archive this plan with the workspace close-out records.
+
+## Verification record
+
+- App PR: https://github.com/itsdestin/youcoded/pull/639; tested final commit `7a1c2b8ef93a22623e2da8394e57caaa6c33fdf2` is an ancestor of remote master.
+- Full Linux/macOS/Windows CI: https://github.com/itsdestin/youcoded/actions/runs/39187404236 (all three passed).
+- Required Linux PR CI: https://github.com/itsdestin/youcoded/actions/runs/39187408156 (passed).
+- Android PR CI: https://github.com/itsdestin/youcoded/actions/runs/39187408170 (passed).
+- Local required verification: 2,345 related/guard tests passed, 37 skipped; types, knip, lint, design lint and invariants passed. Focused icon/runtime tests: 35 passed.
+- Full app and Debian/Arch/AppImage builds succeeded. RPM built from a disposable app copy in a container with host inputs read-only. All four archives contain ten icons matching their generated source bytes.
+- Isolated Qt lookup with the standard hicolor index and no personal override sees the nine indexed sizes. The retained 1024px image has identical decoded pixels to the unchanged shared window PNG.
+- Existing platform artwork is unchanged; parsed packaging configuration differs only in `linux.icon`. Personal overrides are deliberately not migrated or removed.
 
 ## Acceptance
 
