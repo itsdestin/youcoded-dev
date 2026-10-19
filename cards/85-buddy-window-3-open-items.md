@@ -15,9 +15,9 @@ vision: yours.look.buddy
 work: session/85-windows-131-regressions, session/85-buddy-floater-regression
 ---
 Progress
-Done: Investigated Direct Controls .4 floater growth: isolated Linux XWayland at 150% widened 325→355 over 20 cycles while native Wayland stayed 320×480. Local fixed-role setBounds candidate stops cumulative growth, including full mascot/chat/bar runtime; regression observed red then green. Required desktop verification passed 2,209 tests plus types/lints/knip/invariants. Prior Windows pointer fix is preserved.
-Next: Finish full-suite, independent code review and Windows/macOS guest checks for session/85-buddy-floater-regression. Source is local/uncommitted and unshipped. The three original buddy items remain open; this sizing fix does not complete them.
-Blocked: No product decision blocker; all-platform completion is not yet claimed. No commit, push, release or live-app modification authorized.
+Done: Local/unshipped floater fixes: fixed-role native bounds stop XWayland fractional-scale chat growth; intent-based toggles and a cancelled/owned hide timer fix rapid reopen races. All three new manager regressions observed red→green (41 manager tests). Real final-source XWayland full group stable321.33×480 for20cycles;21.1ms reopen remained visible past old deadline. Native-Wayland chat-only stable320×480. Final full verify passed20,612tests47skips plus all gates; independent review found no actionable findings. Separate Office test assertion now awaits RPC signal.
+Next: Needs decision on repairing Windows/macOS test guests before native cross-platform certification; current source remains local/uncommitted. The three original buddy items remain open and unchanged. Existing Direct Controls .4 binary/launcher and live app were not replaced.
+Blocked: Windows guest stayed in updates without interactive desktop; macOS booted Recovery/noSSH. Zero native cycles executed on either. Both disposable guests stopped; no baseline/live-app edits. LiveKWin full-group integration and mixedDPI transitions are not runtime-certified.
 
 Chats
 - 2026-10-19 session/85-buddy-floater-regression: chat started
