@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Signing candidate committed and pushed with owner approval. Production-path commit20216243e; trial SHA c9353848a; cleanup b28067ead restores master-only signing and is tree-identical to20216243e. All3 candidate commits passed Gitleaks. Required verification passed again after cleanup. Temporary GitHub branch policy63592571 removed; only master/v* remain.
-Next: Observe actual verdict/artifacts from signed trial run39275523189, then investigate any real failure and verify Apple acceptance plus both final DMGs/Office checks. Current run remains in progress according to check-runs API and public Actions page.
-Blocked: No merge/public release authorized. Initial gh watcher exited on jobs API HTTP502, not CI failure; corrected status and switched to independent checks monitoring. No actual signed installer/notarization acceptance observed yet. Signing branch access has not been re-enabled.
+Done: First Mac trial log proves20595 tests passed/90 skipped, then security import rejected the default OpenSSL3 PKCS12 container. Re-exported same cert/key/password using explicit3DES/SHA1 container wrapping; public-key match/decrypt checks passed and only MAC_CSC_LINK updated. Source candidate+cleanup committed/pushed and secrets-scanned; final source tree remains identical to reviewed20216243e (cleanup b09d08201).
+Next: Fresh Mac-only retry39283409289 queued at candidate66a613858; full Mac tests enabled. Watch native certificate import, Apple acceptance and both final DMG/Office checks. Watcher removes exact-branch policy63599663 at admission or exit.
+Blocked: Actual signing/notarization remains unverified. Old run rerun/cancel endpoints contradicted each other; all unused access policies removed and fresh run dispatched instead. No merge or public release authorized.
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
