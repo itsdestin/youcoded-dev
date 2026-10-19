@@ -16,3 +16,4 @@ Blocked: Awaiting behavior decisions. Component deps have19 missing/outdated pac
 
 Chats
 - 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
