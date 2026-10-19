@@ -3,7 +3,6 @@ id: 166
 title: Refresh website demo: 1.3.1, Home and Finance, YouCoded Light
 stage: merged
 tags: website, pages, themes, feature
-related: 79
 vision: pages, yours
 branch: 166-refresh-website-demo-1-3
 finish: Website embed uses current 1.3.1 renderer code and opens pinned Home and Finance demos with fictional data. Website default look is based on YouCoded Light. Desktop and phone previews are approved before deployment.
@@ -20,3 +19,6 @@ Chats
 - 2026-10-19 session/166-website-demo-light: chat started
 - 2026-10-19 session/166-website-demo-light: chat started
 - 2026-10-19 session/166-website-demo-light: chat started
+
+Historical relationship
+- Historical overlap with #79 (website work); retained for context after #166 shipped. This is not an active overlapping plan.
