@@ -15,9 +15,9 @@ vision: chat.steer.permissions, chat.converse.native
 work: session/66-passwordless-admin
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Shipped scoped passwordless-admin approvals in app PR #650 (5fa56a2ee6b94b6980cbb478dc7f65ee60e526fc): exact command, saved Full Auto and session-only choices; independent review findings fixed; integrated desktop verification and Linux/Android CI passed. Records: docs/archive/design/2026-10-19-passwordless-admin/.
+Next: Other existing #66 requests remain open; this scoped admin-approval session is complete.
+Blocked: Nothing for the shipped admin-approval subtask.
 
 Chats
 - 2026-10-19 session/66-passwordless-admin: chat started
