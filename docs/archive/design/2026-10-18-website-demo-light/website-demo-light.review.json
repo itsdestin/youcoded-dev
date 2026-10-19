@@ -1,0 +1,72 @@
+{
+  "title": "Website — YouCoded Light, Home and Finance",
+  "key": "website-demo-light-review",
+  "out": "website-demo-light.review.html",
+  "stage": "review",
+  "images": "images/website-demo-light.review",
+  "runs": {"before": "runs/before", "after": "runs/after"},
+  "labels": {"before": "Current website", "after": "Updated preview"},
+  "themes": ["youcoded"],
+  "crops": {
+    "website-desktop": ["website", "desktop", "720x450+0+0"],
+    "website-phone": ["website", "phone", "390x844+0+0"]
+  },
+  "live": {"worktree": "sessions/166-website-demo-light/youcoded"},
+  "steps": [
+    {
+      "id": "R-1", "surface": "Website", "path": "youcoded.ai → first visit",
+      "crop": "website-desktop",
+      "headline": "The website’s default look now matches YouCoded Light.",
+      "changed": "The page uses the new lavender YouCoded palette, wallpaper, Outfit text and glass mascot. The intro still cycles through Useful, Fun and Yours.",
+      "notice": "The page and current app preview settle on the same look. The headline and tagline you just approved are unchanged.",
+      "highlight": {"box": [0, 0, 100, 100]}
+    },
+    {
+      "id": "R-2", "surface": "Website on a phone", "path": "youcoded.ai → phone browser",
+      "crop": "website-phone",
+      "headline": "The phone preview starts in the same new theme.",
+      "changed": "The waiting picture is regenerated from the updated app, in YouCoded Light. The demo entry identifies its data as samples.",
+      "notice": "The page stays readable at phone width; starting the demo does not switch to a different-looking app.",
+      "highlight": {"box": [0, 0, 100, 100]}
+    },
+    {
+      "id": "R-3", "surface": "Home demo", "path": "Website demo → Home",
+      "crop": "pages/focus/page-home#site@1440x640+0+0", "runs": ["after"], "new": true,
+      "headline": "Home opens a fictional household with working sample controls.",
+      "changed": "The existing Home Assistant page is pinned at the top and populated with fictional rooms, devices and state.",
+      "notice": "Visitors can try lights and temperature controls without connecting a home. Reference: the app’s existing connected Home page.",
+      "risk": "These controls simulate a connection; they do not operate real devices."
+    },
+    {
+      "id": "R-4", "surface": "Finance demo", "path": "Website demo → Finance",
+      "crop": "pages/focus/page-money#site", "runs": ["after"], "new": true,
+      "headline": "Finance makes the everything-app idea visible with sample accounts and spending.",
+      "changed": "The existing Money dashboard is pinned as Finance, with fictional accounts, balances, bills and transactions.",
+      "notice": "Visitors can explore the dashboard without connecting a bank. Reference: the app’s existing Money page.",
+      "risk": "The financial figures are samples, not a live account feed."
+    },
+    {
+      "id": "R-5", "surface": "Home on a phone", "path": "Website demo → Pages → Home",
+      "crop": "pages/focus/page-home#site-phone", "runs": ["after"], "new": true,
+      "headline": "Home remains usable at phone width.",
+      "changed": "The sample Home page uses the app’s existing narrow layout rather than shrinking a desktop screenshot.",
+      "notice": "Selecting a page from Pages now gives it the full phone width. The Pages button returns to the list; Back to chat returns to the conversation.",
+      "alsoChanges": ["Phone Pages navigation"]
+    },
+    {
+      "id": "R-6", "surface": "Finance on a phone", "path": "Website demo → Pages → Finance",
+      "crop": "pages/focus/page-money#site-phone", "runs": ["after"], "new": true,
+      "headline": "Finance uses its responsive dashboard on a phone.",
+      "changed": "The same sample accounts and spending views adapt to the app’s phone layout.",
+      "notice": "Visitors can inspect an everyday dashboard instead of reading tiny desktop-only figures."
+    },
+    {
+      "id": "R-7", "surface": "Interactive app demo", "path": "Start on chat → Home or Finance",
+      "headline": "Try both pinned pages, then return to the conversation.",
+      "hint": "Open Home and Finance from the top bar. Try a light or thermostat, browse spending, then use Back to chat. All data and actions are simulated.",
+      "notice": "Chat is still the first view, as selected. The current renderer provides the same page navigation, theme controls and layouts as the app.",
+      "risk": "This preview has a fake backend: it does not call an AI model, a bank or a smart home.",
+      "live": {"app": "site", "params": {"reply": "site"}}
+    }
+  ]
+}

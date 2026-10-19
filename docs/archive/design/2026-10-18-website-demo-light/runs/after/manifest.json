@@ -1,0 +1,138 @@
+[
+  {
+    "name": "pages/focus/page-money#site-phone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-money#site-phone/halftone-dimension.png",
+    "ms": 11873,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 54,
+      "w": 374,
+      "h": 782
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-home#site-phone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-home#site-phone/halftone-dimension.png",
+    "ms": 12819,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 54,
+      "w": 374,
+      "h": 782
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-home#site",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-home#site/halftone-dimension.png",
+    "ms": 14722,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 54,
+      "w": 1424,
+      "h": 838
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#site",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-money#site/halftone-dimension.png",
+    "ms": 15836,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 8,
+      "y": 54,
+      "w": 1424,
+      "h": 838
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#site-phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-money#site-phone/youcoded.png",
+    "ms": 6190,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-home#site-phone",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-home#site-phone/youcoded.png",
+    "ms": 6239,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#site",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-money#site/youcoded.png",
+    "ms": 6255,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 1420,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-home#site",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/166-website-demo-light/docs/active/design/2026-10-18-website-demo-light/runs/after/pages/focus/page-home#site/youcoded.png",
+    "ms": 6273,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 1420,
+      "h": 850
+    },
+    "parts": []
+  }
+]
