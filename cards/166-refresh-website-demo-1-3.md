@@ -1,7 +1,7 @@
 ---
 id: 166
 title: Refresh website demo: 1.3.1, Home and Finance, YouCoded Light
-stage: explore
+stage: merged
 tags: website, pages, themes, feature
 related: 79
 vision: pages, yours
