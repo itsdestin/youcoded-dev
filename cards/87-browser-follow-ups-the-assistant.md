@@ -14,9 +14,9 @@ vision: chat.steer.websearch
 work: session/google-connections-planning, session/87-browser-tool-robustness
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Browser tools: separate navigation/history/zoom, clearer descriptions, shared validation, honest outcomes, cancellation/handoff/wait/continuation hardening; 233 focused tests passed; local uncommitted implementation.
+Next: Finish final review and desktop verification; retain uncommitted work pending Destin's decision. Other browser follow-ups remain outside this change.
+Blocked: No product decision blocking implementation; no commit, push or paid model evaluation authorized.
 
 Chats
 - 2026-10-18 session/87-browser-tool-robustness: chat started
