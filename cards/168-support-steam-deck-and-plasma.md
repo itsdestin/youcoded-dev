@@ -1,7 +1,7 @@
 ---
 id: 168
 title: Support Steam Deck and Plasma Mobile in Swipe Keyboard
-stage: planning
+stage: build
 tags: operations, feature
 related: 82, 165
 branch: 168-support-steam-deck-and-plasma
