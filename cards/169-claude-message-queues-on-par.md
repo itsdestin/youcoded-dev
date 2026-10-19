@@ -10,11 +10,12 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Host queue/state/storage and file-instruction formatter implemented; parent reran58 foundation tests successfully. Lifecycle review fixes address stale aliases and long-lived capacity. Single-module native admission and explicit file-read paths proven with fake API. Standalone edit-transfer coordinator built; real-host lost-cancel regression exposed one settlement fix now assigned.
-Next: Complete authenticated Claude delivery adapter/plugin/worker integration, including retirement retry and idempotent checkout cancellation, then wire existing native queue controls and atomic attachment-preserving composer refill. Run real-app fake-API walkthrough and full checks; package separate test build.
-Blocked: No user decision needed. Transport integration and final UI wiring/tests still underway; no testable queue build yet. No paid calls or production app changes.
+Done: Storage/input preparation and standalone transport implemented; six actual-CLI cases and299 focused tests passed. Existing-UI/runtime wiring underway. Fresh transport review found3 additional races not covered by those cases; accepted and assigned with concrete RED regressions.
+Next: Fix delayed admission ack past fence expiry, admitted-but-never-invoked recovery, and stale untouched-claim correlation. Finish Task3 positive host gates, shared queue IPC/strip/composer, lifecycle restore/Clear/Stop. Then independent app walkthrough, fullverify and test package.
+Blocked: Final queue app acceptance blocked on transport review fixes and integration verification. User .4 test copy remains separate/unchanged; no paid calls or publication.
 
 Chats
+- 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
