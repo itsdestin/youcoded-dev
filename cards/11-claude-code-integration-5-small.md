@@ -14,9 +14,9 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Built independent Linux test app 1.3.1-cc-controls.2 using direct Claude controls; full desktop verification green (20534 passed), real GUI text/Stop/model/clear/compact verified with fake API, final CLI2.1.303 smoke9/9; Android36 unit tests green.
-Next: Destin tests isolated Linux build; source remains uncommitted/unmerged. Android APK/runtime and Windows/macOS not certified.
-Blocked: No build blocker; no authorization to commit/merge/push or make further paid model calls.
+Done: Completed eight real Haiku prompts on same branch/CLI2.1.303 with mods on versus kill switch off. Both arms fixed code, passed4 tests, wrote identical Unicode checklist, and recovered on follow-up. CLI estimate total $0.01226896, not verified billing. Built Linux test copy remains local/uncommitted.
+Next: Before merge: preserve typed @file expansion (real regression); make Stop cancel running tools without background notification restarting work (real regression); bound closed-session/tombstone retention (10000 closed IDs retained in probe). Then expand parity tests for instructions/origin-sensitive hooks, ask/deny, queues, resume and remote reconnect; actual Android/Windows/macOS runtime coverage. User-reported initial Normal versus Auto chip also needs correction from authoritative startup state. Evidence: docs/active/investigations/2026-10-18-claude-controls-build/REAL-AB-REVIEW.md.
+Blocked: Do not merge current mods build: real @file and running-tool cancellation parity fail. Real test allowance used:8 prompts, no automatic retries. No source fixes or publication authorized by this review.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 
