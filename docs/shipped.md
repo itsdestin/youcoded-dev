@@ -871,3 +871,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-17 #153 Work items, the Work board, and pages that see chats and run programs (youcoded-dev#266 7ef1b5af6, youcoded#627 c6a18be4e)
 - [x] 2026-10-18 #162 Linux updates: show installer progress and outcome (https://github.com/itsdestin/youcoded/pull/630)
 - [x] 2026-10-19 #166 Refresh website demo: 1.3.1, Home and Finance, YouCoded Light (https://github.com/itsdestin/youcoded/pull/640)
+- [x] 2026-10-19 #167 Ship discoverable Linux launcher icons (https://github.com/itsdestin/youcoded/pull/639)

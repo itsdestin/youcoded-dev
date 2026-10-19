@@ -1,7 +1,7 @@
 ---
 id: 167
 title: Ship discoverable Linux launcher icons
-stage: build
+stage: merged
 tags: desktop, linux, packaging, bug
 branch: 167-ship-discoverable-linux-launcher-icons
 finish: Linux installers carry standard discoverable launcher icon sizes; Windows, macOS, Android and user icon overrides remain unchanged.
