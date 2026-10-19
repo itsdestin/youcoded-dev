@@ -1,0 +1,36 @@
+[
+  {
+    "name": "pages/focus/page-home#site",
+    "theme": "youcoded",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/page-custom-icons/docs/active/design/2026-10-19-page-custom-icons/runs/after/pages/focus/page-home#site/youcoded.png",
+    "ms": 7200,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 1420,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-home#site",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/page-custom-icons/docs/active/design/2026-10-19-page-custom-icons/runs/after/pages/focus/page-home#site/halftone-dimension.png",
+    "ms": 7486,
+    "errors": [],
+    "scale": 1,
+    "panel": {
+      "x": 8,
+      "y": 54,
+      "w": 1424,
+      "h": 838
+    },
+    "parts": []
+  }
+]
