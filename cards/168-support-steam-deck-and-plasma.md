@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Continuous Deck privacy test caught confirmed launch blocker on current bundle: password already focused withclienthints67 >2s before gesture, actual screenshot shows trail; release length0→4 then2taps→6. Synthetic only, no realpassword/plaintext logged. Earlier core typing/root/reboot/restoration evidence retained, but privacy notaccepted. Host package recheckedr3 unchanged.
-Next: Kai onlyverifies safe cleanup/finalreport. Readonlyinvestigator15324bb2-25fb-48d3-ad59-904634cad3f5 traces pinned backend rawpurpose→Qt hints and plugin guards; thenTDDminimalfix/review/newhash/controlledcontinuousretest. RechecksamecaseonMobilebefore extrapolation.
-Blocked: RELEASEBLOCKING sensitive-field trail/multichar output in SteamOS Flatpak. Cause notyetconfirmed; no permission/root/guard weakening. OSupdate/client/Gaming acceptance paused. MobileC2 boundedFedorax86 audited, ARM rebuild/session pending. No publish/activation/sourcecommit.
+Done: OWNER SCOPE AMENDMENT: Steam Deck v1 Desktop Mode ONLY; Gamescope/Gaming explicitly deferred beyond v1, not a release blocker or current execution task. Canonical plan/ledger/todos updated and current worker notified. Preserve earlier research, no Gaming support claims.
+Next: Finish minimal Desktop sensitive-field flags diagnostic/fix and exact-artifact retest; remaining bounded Desktop checks/review, then supported OS-update survival with same per-user installation and root protection enabled. Release wording Desktop Mode only; Gaming Mode not supported.
+Blocked: Desktop sensitive-field issue still under causal investigation; no new fix/acceptance claim. OS-update survival unverified. Gaming deliberately out of v1 scope. No publishing/source commits/push/host activation authorized.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
