@@ -1,7 +1,9 @@
 ---
-status: active
+status: superseded
 ---
 # Full CI near-five-minute candidate
+
+Checkpoint merged in app PR646 and workspace PR279 on2026-10-19. The warm ordinary PR milestone is proven, but cold/default/all-platform five-minute performance remains open under #29. This original implementation plan is superseded by [the post-merge handoff](../../active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md); its historical authorization below is not the current merge state.
 
 User clarified on2026-10-19: target is WHOLE CI from trigger to last required result, not an optimized Linux diagnostic beside slower controls. Continue optimizing all selected coverage with useful parallelism; no merge, branch-protection edit, release/signing change, paid runner upgrade or live-app experiment.
 
