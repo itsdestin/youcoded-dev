@@ -24,6 +24,7 @@ Blocked: No source publication/CI dispatch/merge/release authorized yet. Current
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
 
 From the old roadmap (dev-workspace › release, status blocked, seen on n/a, last checked 2026-09-04)
