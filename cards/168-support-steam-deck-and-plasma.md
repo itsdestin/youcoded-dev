@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: OWNER SCOPE AMENDMENT: Steam Deck v1 Desktop Mode ONLY; Gamescope/Gaming explicitly deferred beyond v1, not a release blocker or current execution task. Canonical plan/ledger/todos updated and current worker notified. Preserve earlier research, no Gaming support claims.
-Next: Finish minimal Desktop sensitive-field flags diagnostic/fix and exact-artifact retest; remaining bounded Desktop checks/review, then supported OS-update survival with same per-user installation and root protection enabled. Release wording Desktop Mode only; Gaming Mode not supported.
-Blocked: Desktop sensitive-field issue still under causal investigation; no new fix/acceptance claim. OS-update survival unverified. Gaming deliberately out of v1 scope. No publishing/source commits/push/host activation authorized.
+Done: Live-sensitivity sourcefix now CLEANR3spec+qualityreview, callbackUAF and staleBackspaceplan regressions fixed/tested. Finalnative19/integration63/packaging54/session6 plusASanUBSan21fixture passed. User-requested install/docs cleanup completedlocally/freshreviewPASS, nopublicreleasebodychanges.
+Next: Kai b1acb1c6-68ec-477b-bcfd-46ab41890d1b rebuilding NEWdiagnosticsOFFproductionFlatpak againstpinnedSDK6.10.3, thenactualprotectedSteamOScontinuousprivacyA/B/C/core/reboot/restoration. Read deck-production-safety-retest-report.md, newhashrequired. AfterprivacyactualOSupdatesurvival. ExclusiveVMjob.
+Blocked: Installedprivacyfixnotyetaccepted; old4c877candidatefailed, no relabeling. Deckv1DesktopONLY;Gamingdeferred. No release/sourcecommit/push/hostactivation. Space86GiBlastchecked;20floor.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
