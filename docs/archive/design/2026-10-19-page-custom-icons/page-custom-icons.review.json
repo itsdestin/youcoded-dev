@@ -1,0 +1,32 @@
+{
+  "title": "Page icons — a house for Home",
+  "key": "page-custom-icons-review",
+  "out": "page-custom-icons.review.html",
+  "stage": "review",
+  "images": "images/page-custom-icons.review",
+  "runs": {"before": "runs/before", "after": "runs/after"},
+  "themes": ["youcoded", "halftone-dimension"],
+  "live": {"worktree": "sessions/page-custom-icons/youcoded"},
+  "steps": [
+    {
+      "id": "I-1",
+      "surface": "Home page icon",
+      "path": "Pinned Home button and the Home page’s top strip",
+      "headline": "Home has its own house icon, in the app’s outline style.",
+      "crop": "pages/focus/page-home#site@1440x100+0+0",
+      "changed": "A custom house drawing replaces the generic document icon. It uses the same line weight, rounded ends and theme colour as the surrounding app icons.",
+      "notice": "The pin and page title identify Home at a glance. New Pages will carry their own purpose-designed artwork rather than being restricted to stock icons.",
+      "risk": "The installed app needs an update to display custom artwork; older versions keep a fallback icon."
+    },
+    {
+      "id": "I-2",
+      "surface": "Custom icons in the app",
+      "path": "Chat → pinned Home → Pages",
+      "headline": "Check the house at its normal size in the top bar.",
+      "themes": ["youcoded"],
+      "hint": "Open Home from its house icon. Check the page’s title, return to chat, and compare it with the neighbouring icons. This is an isolated preview, not your installed app.",
+      "notice": "The artwork belongs to the Page; the app supplies the consistent outline style and theme colour.",
+      "live": {"app": "site", "params": {"reply": "site"}}
+    }
+  ]
+}
