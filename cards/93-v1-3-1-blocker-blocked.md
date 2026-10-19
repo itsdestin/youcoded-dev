@@ -22,6 +22,7 @@ Blocked: No implementation blocker. Source merged, not a new app release; produc
 
 Chats
 - 2026-10-19 session/93-crash-reliability: chat started
+- 2026-10-19 session/93-crash-reliability: chat started
 - 2026-10-19 session/crash-recommendations-deck: Crash deck Q-6: Destin asked to note search-index stalls on the roadmap and check for another session. Existing session/93-file-viewer-freezes already reports complete off-thread search indexing; do not duplicate it. Its implementation is not installed. October 19 crash investigation independently found synchronous indexing in the installed/source baseline; coordinate with that session before further search work.
 - 2026-10-18 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: chat started
