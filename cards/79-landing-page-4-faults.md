@@ -12,9 +12,9 @@ area: Website
 work: session/79-hero-copy-preview
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Approved landing hero headline and tagline shipped in youcoded PR #638; invisible baseline spacer no longer causes phone-width overflow. Desktop 1600px and phones 390/360px verified.
+Next: Existing unrelated landing-page, visitor-stats and copy follow-ups remain; this hero-copy task is complete.
+Blocked: Nothing for the shipped hero-copy task.
 
 Chats
 - 2026-10-19 session/79-hero-copy-preview: chat started
