@@ -13,9 +13,9 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe
 ---
 Progress
-Done: CI first pass implemented locally: fail-closed desktop classifier, cheap preflight, parallel full test/installer jobs, stable completion gates, PR-only stale-run cancellation, candidate-root whole-graph card-only workspace lane. Independent task and final reviews approved. Local445 workspace tests,26 app policy/beta tests,9 workflow guards and required desktop verify pass.
-Next: Authorize implementation commits/candidate pushes and GitHub CI validation without merging, to prove actual status/scheduling/fresh packaging and measure timing. Broader selectors/sharding/caches/protection migration remain deferred.
-Blocked: No local implementation blocker; remote acceptance awaits candidate-publication authorization.
+Done: Merged full-app CI checkpoint: app PR646 (ba8374dc) and workspace PR279 (e9fcc896). Final current-tree Linux4/Windows6/macOS4, four Linux formats/default compression and Android gates passed. Fresh-source warm Linux+Android measured4m41; compiled-cold7m03. Cache payload/signature equivalence, Kotlin invalidation, intentional failure and active supersession proven. Hidden animation/approval polling defects fixed with deterministic tests.
+Next: Use docs/active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md for remaining cold/default/all-platform timing optimization. Keep unrelated release/build upkeep under this umbrella. Earlier experiment PRs are superseded, not a merge queue.
+Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
 
 Chats
 - 2026-10-19 session/29-full-ci-five-minute: chat started
