@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Reviewed planning document saved; final Gaming protocol research incorporated. Gamescope exposes an explicitly private IME with no field/selection/password context; source-only overlay/libei leads are listed as feasibility probes, not working support. Plan requires actual-session routing/focus/privacy proof and explicit upstream/owner decision for any experimental private-protocol shipping scope. No builds or live-system changes.
-Next: After compaction, review/read the saved plan and start isolated target provisioning plus early Gaming feasibility only when owner says to begin. Card remains intentionally paused.
-Blocked: Planning-only pause requested by owner. Gaming supportability is a discovery gate, not a promised completed implementation.
+Done: Execution authorized; pinned source built in isolated worktree. Core tests: integration32, packaging31, session6, CTest18/18 passed (two optional model assertions skipped internally). Staged loader/package checks passed. Genuine Fedora Mobile login established and r3 restoration bug reproduced: inherited InputMethod becomes explicit user value on disable. Official licensed SteamOS recovery booted privately; installed Stable/Gaming not yet established.
+Next: Complete strict metadata-validator regression repair and fresh review; then red→green fix Mobile raw/effective configuration restoration. Continue SteamOS recovery bootstrap with USB HID rather than unreliable PS/2/HMP path, install exact Stable and run Gaming feasibility before full UI implementation. Durable source ledger .superpowers/sdd/progress.md has all private evidence and VM paths.
+Blocked: Not accepted yet: supplemental metadata validator fails on real contextlm schema (repair in progress); Mobile raw-setting restoration failure; installed SteamOS/Gaming and ARM/musl tests pending. No host activation or publication.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
