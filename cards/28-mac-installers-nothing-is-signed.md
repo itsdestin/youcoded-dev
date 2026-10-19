@@ -1,7 +1,7 @@
 ---
 id: 28
 title: Sign the Mac app so it opens without warnings
-stage: planning
+stage: polish
 priority: P1
 summary: Mac downloads aren't signed by Apple, so they can open as "broken"; Apple refused the company account and signing waits on that.
 area: Leaving & updating
