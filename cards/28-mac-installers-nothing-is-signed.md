@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Signed/notarized Intel candidate passed existing Tahoe26.7.1 VM launch: exact downloaded hash, internet quarantine intact, Gatekeeper enabled, accepted/Notarized Developer ID, normal Open/Cancel says Apple checked/no malware, then fresh provider-selection UI rendered. No Open Anyway or quarantine bypass. Existing guest app1.3.1-beta.107/profiles restored, image ejected, VM and private HTTP server stopped. Screenshots saved beside signed installers/mac-vm-verification. Prior Apple/CI verification unchanged.
-Next: Owner review of candidate source. No more VM setup needed for signing acceptance. Distinguish this HTTP+explicit-quarantine existing-VM test from actual Safari/pristineOS/arm64 GUI or authenticated-chat coverage.
-Blocked: No signing/Intel-first-launch blocker. Not merged or publicly released. Initial fresh-account overlay detour stopped after Destin correction; existing VM used and restored.
+Done: Apple signing/notarization and normal quarantined Intel VM launch verified. App39385bffe adds concise Windows/Mac/Android download instructions: signed Windows publisher, version-aware normal/legacy Mac notes, shippedAndroid APK flow/no runtime download or rebuildbanner, optionalGitHub setup.22 site tests and full20620desktoptests/79skips plusallgates passed; fresh review and desktop/phone captures passed; current public installer URLs allHTTP200. Both session branches committed/pushed; no release.
+Next: Review copy at local preview http://127.0.0.1:8850 (click Windows/macOS/Android). Integrate with current master only under explicit merge instruction; upstream CI/build optimizations overlap packaging workflows and must be preserved. Public app release intentionally deferred.
+Blocked: No signing/copy blocker. Public Mac remains1.3.1selfsigned until release; page retains short legacywarning for that URL and shows signed note for stable1.3.2+. Nothing merged/published as an app release.
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
