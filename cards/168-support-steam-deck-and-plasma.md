@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support
 ---
 Progress
-Done: Installed stock SteamOS Desktop Wayland baseline established, visually inspected and reproduced on cold boot, stopped cleanly and snapshotted. Root enabled/ro=true; no rootfs unlock/system-library replacement. Exact host Qt6.9.1/glibc2.41/KWin6.4.3/Flatpak1.16.6 now observed. Owner explicitly reinforced immutable-system compatibility and approved continuing.
-Next: TaskD1 worker719a2791-e653-499f-9665-bb745653b027 builds pinned per-user Flatpak backend+Swipe with app-scoped data/env and minimal inherited IME socket permissions. No native package forcing, rootfs/system changes, broad host permissions or global Qt tweaks. Exclusive owned Fedora builder. Review steamos-flatpak-build-report.md before installed-target D2 tests including actual update survival.
-Blocked: Desktop environment prerequisite done, bundle build/runtime acceptance still pending. Update-survival not proven by fresh image. Gaming remains separate/unverified; ARM tooling/rebuild/session and musl unfinished. Physical Deck absent; host r3 unchanged, no release/source commits/push/activation authorized.
+Done: Owner explicitly reprioritized Deck. D2 exact bundle proved protected-root per-user install, real inherited-socket external typing, reboot retention and exact manual NONE restoration/removal; full privacy/edit/app/scale matrix still incomplete. Parent inspected legible keyboard screenshots, no confirmed label-renderer bug.
+Next: Kai b1acb1c6-68ec-477b-bcfd-46ab41890d1b resumed focused D2 with stable test-client geometry/verified coordinates for remaining edit/privacy/focus/scale/app checks. Exclusive lab VM control; report steamos-d2-followup-report.md. After core acceptance, actual OSupdate survival and separate Gaming gate. Features170/171 handed to another session/isolated source worktrees.
+Blocked: Full Deck acceptance not yetdone; no physical Deck. Root/sandbox constraints notwaived. No release/merge/sourcecommit/hostactivation permission. Host27GiBreserve,20floor.
 
 Chats
 - 2026-10-19 session/168-swipe-platform-support: chat started
