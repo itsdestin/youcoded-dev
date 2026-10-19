@@ -10,9 +10,9 @@ why: youcoded app icon on this device seems to be the much older version
 work: session/linux-launcher-icons
 ---
 Progress
-Done: Implemented Linux-only standard icon set while retaining legacy 1024px path; all four package formats built and archive contents match source; 2,283 related/guard tests, types, lint, knip and invariants pass. App PR #639.
-Next: Wait for fresh review and required/cross-platform CI, then merge as authorized, archive plan and close item.
-Blocked: No user decision needed; automated review/CI still running.
+Done: All four Linux package archives verified; 35 icon tests and final 2,345 related/guard tests pass. First full CI passed Linux/macOS and Windows icon tests; unrelated 300ms sync recovery test assumption reproduced and fixed in test only, reviewed with no blockers.
+Next: Await final cross-platform CI on 7a1c2b8ef, merge app PR #639 and docs PR #274, archive plan and close item.
+Blocked: Automated final CI only; no user decision needed.
 
 Chats
 - 2026-10-19 session/linux-launcher-icons: chat started
