@@ -16,3 +16,4 @@ Blocked: One write-capable specialist at a time; current concurrency is independ
 
 Chats
 - 2026-10-19 session/170-swipe-next-word: chat started
+- 2026-10-19 session/170-swipe-next-word: chat started
