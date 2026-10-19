@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Native Mac preflight PASSED in third trial39292665007/job118197126481: imported Developer ID, private-key access and disposable-code signing verified. Fixed upstream builder26.15.3 wrong-keychain-password defect with guarded atomic3-line correction; real-module and real-TmpDir regressions. Full local verify passed20620tests/79skipped plus allgates; fresh review passed; eight candidate commits secrets-scanned/pushed. Final source3054069ec matches reviewed d524a1e44.
-Next: Third Mac-only trial is running full tests, then both architectures packaging/notarization/final-DMG and Office checks. Read actual completed log and inspect installers before claiming readiness.
-Blocked: No app notarization/installer success observed yet. Temporary policy63607274 confirmed removed at admission; only normal signing refs should remain. No merge/public release authorized.
+Done: VERIFIED signed1.3.2-beta.3 Mac candidate: Apple accepted both app ZIPs and both final DMGs; all4 official logs Ready for distribution/issues:null. Final mounted-DMG/team/runtime/timestamp/staple/Gatekeeper checks passed. Both packaged Office converters opened/saved/exportedPDF; arm64 app launch smoke passed. MacCI20609passed/90skipped; local full20620/79. Both installers downloaded and GitHub archive SHA256 verified, saved at ~/YouCoded-Test-Builds/apple-signing-1.3.2-beta.3.40xwAZR0. App3054069ec and workspace2fc47e44 committed/pushed, clean, secrets-scanned.
+Next: Owner review and clean-guest quarantined Mac installation/interactive first launch. Source remains on session/28-apple-signing; integrate only with separate permission, then update master-facing docs/MAP and close/archive #28 when actually shipped.
+Blocked: No remaining signing/notarization blocker. No merge or public release authorized/performed. Temporary environment rules and source exceptions removed; only master/v* signing policies remain. Clean-guest first-launch journey not yet verified.
 
 Chats
 - 2026-10-19 session/28-apple-signing: chat started
