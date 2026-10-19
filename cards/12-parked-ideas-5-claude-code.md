@@ -14,7 +14,7 @@ vision: chat.steer.permissions
 ---
 Progress
 Done: nothing recorded.
-Next: not decided.
+Next: Keep the existing five exploration ideas. Prioritize (a) native cards for Claude first-run theme/security/notice screens, reproduced in #11 testing. Additional mods follow-up to investigate, not implement yet: authoritative structured startup/model/permission/usage facts replacing individual terminal guesses, with a consumer inventory and unchanged transcript-history authority; structured attachment/media import and interaction APIs only after semantic/permission parity is proven. Coordinate with #11 parity/recovery blockers and #164 cross-engine conversation exploration; do not delete PTY, hooks or transcript watchers merely because direct text works.
 Blocked: nothing recorded.
 
 Chats
