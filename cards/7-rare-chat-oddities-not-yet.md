@@ -15,9 +15,9 @@ vision: chat.converse
 work: session/7-compaction-boundaries
 ---
 Progress
-Done: Compaction boundary repair approved in chat: stable streaming/history/card ordering, operation-safe failure/cancel, accurate source times, phone summary wrapping; required desktop verification 7730 passed/36 skipped, Android JVM 36 passed, final independent review clear. Source remains local/uncommitted on session/7-compaction-boundaries.
-Next: Preserve approved local changes pending explicit commit/publication authorization; current master has advanced and is not integrated. Other requests on this broad card remain open.
-Blocked: Not shipped: no commit/push/merge authorization. Full Android packaging blocked by existing apk-version redistribution gate; Windows/macOS and device runtime not verified.
+Done: Compaction-boundary repair shipped in app PR #661, merge 2cbea256388667b304b8704b8bf47fe09b5ae48c. Exact tested-tree match; local desktop gates passed; hosted Linux shards/all four packages and Android JVM/debug/releaseTest APKs passed (run39437693807). Approved reviews and scoped plan archived under docs/archive/*/2026-10-19-compaction-boundaries*.
+Next: Other existing chat-view glitch requests on this broad card remain open; compaction-boundary scope is complete.
+Blocked: No blocker for the shipped compaction scope. No release/installed-app/device-runtime or Windows/macOS validation claim.
 
 Chats
 - 2026-10-20 session/7-compaction-boundaries: chat started
