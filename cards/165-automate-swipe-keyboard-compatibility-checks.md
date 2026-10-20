@@ -10,9 +10,9 @@ why: Destin: "fully automate the maintenance burden ... automatically works with
 work: session/165-swipe-release-pipeline
 ---
 Progress
-Done: Owner reactivated narrow release/merge automation after v0.2.0 omitted Arch. Read actual YouCoded CI/release code and live merge protections; approved lean required-target/one-publish gate design. Isolated source branch ci/165-swipe-release-pipeline. Native KWin valid empty-subgroup regression fixed test-first: 3 failing cases before correction, full integration73PASS, fresh read-only actual host helper probe PASS, narrow review PASS. Host safely rolled back to0.1.0-3; no new live activation.
-Next: Implement required Arch/Fedora/Deck package manifest, version/source/hash validator and automatic read-only PR/main checks plus one trusted publication job. Run actual candidate CI; enable verified required completion check including admins. Complete corrected native user update and corrective release only with real evidence.
-Blocked: Pipeline worker12943089-e5a2-4237-97e5-cc3717eb9d2a active; no remote candidate CI yet. Broad scheduled maintenance, signing, AUR/COPR, ARM and Gaming are not added to this scope. Existing v0.2.0 source/public downloads preserved.
+Done: Implemented required-target/source/version/hash CI and protected final publication approval. Real Fedora and Flatpak producers have passed; Arch now compiles and passes native35 but exposed post-build fixture normalization failures. Parent reproduced those exact failures after production patching inside nested archives, fixed the two test fixtures, targeted4+6 tests PASS. Corrective guides now include Arch and ARM64; not published.
+Next: ARM64 is REQUIRED by explicit owner correction. Worker a087919a-b2e4-4715-8006-9bdd1782e329 implements native ARM profiles, required aarch64 package/job/validator and owned ARM Plasma Mobile acceptance. Resume API interruptions from checkpoints. Freeze one coherent four-platform candidate, run actual CI, enforce merge protection, then install corrected host package and publish only complete verified release.
+Blocked: ARM64 package/build/load/input acceptance still unfinished and blocks Mobile completion/release. Host remains safely0.1.0-3. No optional ARM canary or x86 substitute; no signature/ABI/privacy bypass. Gaming remains deferred; musl/other phone distributions cannot be claimed without evidence.
 
 Chats
 - 2026-10-20 session/165-swipe-release-pipeline: chat started
