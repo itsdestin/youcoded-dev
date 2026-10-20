@@ -256,6 +256,13 @@ and turns that friction into workspace changes. Every recommendation ends the se
 **applied**, as a card (`cards/` — the idea-intake skill), or **explicitly dropped with a reason**.
 A numbered list nobody actions is the failure mode, not the output.
 
+Before saying the docs are current, check the card's **summary, report and progress**,
+not just its stage: `progress` and `close` do not rewrite the other fields. Check linked
+active reports for superseded instructions; archive dated research, repoint current
+links, and preserve separate open findings. Use the master-owned card writer for metadata
+(`scripts/cards-master.mjs`, `onMaster`), not branch-local card edits. An anchor pass proves
+links/patterns, not that the prose is still true.
+
 **Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`
 fires once the session is already over (Claude cannot think then) and `Stop` fires after
 every turn. There is deliberately no tracker — a tracker for this would depend on the
