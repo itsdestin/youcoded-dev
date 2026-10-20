@@ -23,6 +23,7 @@ Blocked: No implementation blocker. No release tag, production install or live-a
 
 Chats
 - 2026-10-20 session/28-apple-signing: chat started
+- 2026-10-20 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
