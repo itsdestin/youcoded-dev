@@ -21,6 +21,7 @@ Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. O
 Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified. Current additional work has no implementation blocker; original incident remains unconfirmed and the installed app is unchanged. Android runtime packaging needs apk-version tooling.
 
 Chats
+- 2026-10-20 session/93-crash-reliability: Completed crash-hardening subtask: youcoded#654 merged to remote master as 0a020c3f7fcfd121622aeef5bc3c3def36e97b9d. Production renderer recovery/reconnection, closed-native-session memory release, coordinated shutdown, per-window draft recovery and dead Office ownership cleanup. Full local desktop verification and Linux desktop/package plus Android JVM/debug/releaseTest APK CI passed. Not released or installed. Broader #93 items and the other session's search/file-viewer work remain open; #172 engine upgrade and #173 history exploration are deferred. Scoped plan and approved deck archived under docs/archive/{plans,design}/2026-10-19-crash-reliability*.
 - 2026-10-20 session/93-crash-reliability: chat started
 - 2026-10-19 session/93-crash-reliability: chat started
 - 2026-10-19 session/93-crash-reliability: chat started
