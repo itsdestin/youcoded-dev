@@ -14,9 +14,9 @@ vision: chat.converse.cloud
 work: session/11-claude-direct-controls
 ---
 Progress
-Done: Real Haiku A/B and repeated no-cost Stop cross-over complete. @file routing fixed; owner-approved Escape Stop restored for UI/phone with old-client host guard.99 scoped tests and fresh review passed. Final combined verify.sh --full passed every gate including screens/journeys; Linux test build1.3.1-cc-controls.4 built and preserved separately.
-Next: Updated test build: /home/destin/YouCoded-Test-Builds/claude-direct-controls-escape-20261019. Open .2 window untouched. Keep Escape Stop. Follow-ups: bounded closed-session retirement, initial Auto-mode display, instructions/provenance/ask-deny/queue/resume/reconnect parity, actual Android/Windows/macOS runtime verification; native first-run menus and structured facts/media on #12. Review incoming master changes before any authorized integration.
-Blocked: No remaining failure in final desktop verification. Source uncommitted/unmerged; no commit/merge/push/release authorization. User must choose when to replace/reopen the currently running older test copy.
+Done: Direct-control foundation, conservative legacy @file handling and owner-approved Escape Stop were integrated with Claude queues in app PR #657 (a00cb691604c4013d50f1b15f96011bb1d37a27c), following real Haiku A/B and no-cost Stop checks. #169 adds durable queue/recovery, direct Dismiss, edit/reload safety and burst fixes; it is merged/closed. Final integrated desktop verification, Android JVM/APK CI and Linux packaging checks passed. Original source11 checkout and separate test copies were preserved, not authoritative evidence of unmerged product code.
+Next: Retain the original five-fault scope and broader direct-control follow-ups: initial Auto-mode display, instructions/provenance/ask-deny parity, control-bridge lifecycle and native first-run/structured media work coordinated with #12; actual Android-device/Windows/macOS runtime acceptance. #169 queue functionality is completed, not an outstanding integration task.
+Blocked: No merge blocker for the direct-control/queue foundation: it landed in #657. No release or production-app update was performed. Retained .4/.2 test copies are older snapshots; do not infer current implementation or running-window state from them. Broader #11 work remains open.
 
 See also #15: 11(e) and 15(h) both say the recorded Claude Code screens the tests replay go stale, so a reworded prompt in a newer Claude Code breaks the app without failing a test.
 

@@ -1,0 +1,70 @@
+{
+  "title": "Claude message queues — four behavior choices",
+  "key": "169-claude-queues-questions",
+  "out": "claude-queues.questions.html",
+  "stage": "ask",
+  "themes": ["light", "midnight"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "A queue you control",
+      "intro": "Starting point: YouCoded holds waiting messages and their files, with Edit, Remove, and Interrupt and send now like native chats. This is behavior planning, not a new layout. Offline drafts stay drafts; uncertain delivery is never silently retried. Native queue strip, message box and Context menu are the references."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Waiting messages",
+      "path": "Chat, while the assistant is working",
+      "headline": "When should Claude read a queued message?",
+      "today": "Native chats can read your next message after the current batch of tool actions, before deciding what to do next. They need not finish the whole reply first.",
+      "problem": "Waiting for the whole reply could make Claude queues feel less responsive than native chats, especially during long tasks.",
+      "proposal": "Choose the target behavior. Matching native timing needs a Claude capability check; we will not quietly substitute different behavior if it cannot be done safely.",
+      "options": [
+        {"id": "batch", "label": "After the current actions", "pros": ["Matches native: your correction can guide the rest of the task."], "cons": ["Needs more verification than simply waiting until Claude is idle."], "recommended": true},
+        {"id": "reply", "label": "After the whole reply", "pros": ["Each message starts a separate response; simpler to follow."], "cons": ["A correction may wait until a long task has already finished."]}
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Stop and waiting messages",
+      "path": "Chat Stop button, with messages already queued",
+      "headline": "Should Stop pause the waiting messages too?",
+      "today": "Native Stop interrupts current work but still allows already-submitted user messages to run. Background reports are held separately.",
+      "problem": "Stopping an unwanted answer could immediately start another one if you have messages waiting.",
+      "proposal": "Keep the native meaning, or make Claude Stop pause the queue until you continue it. Interrupt and send now would remain an explicit way to run a selected message.",
+      "options": [
+        {"id": "current-only", "label": "Stop current work only", "pros": ["Matches native; messages you already sent still get handled."], "cons": ["Stop does not make the conversation stay quiet."], "recommended": true},
+        {"id": "pause-queue", "label": "Stop and pause the queue", "pros": ["Nothing waiting starts until you choose to continue."], "cons": ["Differs from native behavior; adds a continue step."]}
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Saved waiting messages",
+      "path": "Reopening the app or recovering after a crash",
+      "headline": "Should waiting messages survive an app restart?",
+      "today": "The native queue lives in the running session. Its current implementation is not a durable outbox for an app restart.",
+      "problem": "A queue containing several carefully written messages could disappear when the app exits.",
+      "proposal": "Save messages the app has not handed to Claude yet, including their attachments, and restore them paused. This is different from guessing whether an uncertain send ran.",
+      "options": [
+        {"id": "restore-paused", "label": "Save and restore paused", "pros": ["Keeps your work without unexpectedly running it when the app reopens."], "cons": ["You must choose to continue the restored queue."], "recommended": true},
+        {"id": "session-only", "label": "Keep queues session-only", "pros": ["No stale queue to review when starting again."], "cons": ["Waiting messages do not survive an app exit or crash."]}
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Clear conversation",
+      "path": "Context menu or /clear, with messages waiting",
+      "headline": "What should Clear do with waiting messages?",
+      "today": "Clear starts fresh context in the same conversation. The proposed app-owned Claude queue does not exist yet, so its Clear behavior is undecided.",
+      "problem": "An old queued instruction could run after Clear without the context it relied on.",
+      "proposal": "Pause dispatch before clearing, then either retain the waiting messages for review or explicitly discard them. Never let an old message slip across Clear accidentally.",
+      "options": [
+        {"id": "keep-paused", "label": "Keep them paused", "pros": ["No lost writing; review what still belongs in the fresh context."], "cons": ["Old messages remain until you remove or continue them."], "recommended": true},
+        {"id": "discard-confirmed", "label": "Discard with confirmation", "pros": ["Clear means a clean start, including the queue."], "cons": ["An extra confirmation; discarded messages must be rewritten."]}
+      ]
+    }
+  ]
+}

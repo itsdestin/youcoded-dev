@@ -196,6 +196,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const w = screen.viewport?.width ?? width, h = screen.viewport?.height ?? height;
     await tab.prepare({ theme, width: w, height: h });
     const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(officePort ? { officePort: String(officePort) } : {}), ...(screen.params ?? {}) });
+    // WHY: use the renderer's explicit workbench theme route as well as the storage mirror;
+    // a capture must not be labelled Dark/Halftone while actually showing Light.
+    q.set('theme', theme);
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);

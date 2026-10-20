@@ -1,0 +1,15 @@
+{
+ "deck": "169-claude-queues-input-scope",
+ "started": "2026-10-19T14:28:24.834Z",
+ "submitted": "2026-10-19T14:30:20Z",
+ "cur": 0,
+ "answers": {
+  "Q-5": {
+   "v": "other",
+   "t": 1792420219315,
+   "note": "can we just swap the @file references with a filepath in the message before sending it to claude? maybe a \"read this entire file: \" instruction? i literally never use @ references myself, but i feel like this would get the same end effect for users who do?",
+   "seconds": 114,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

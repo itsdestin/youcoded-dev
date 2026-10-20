@@ -1,0 +1,37 @@
+{
+ "deck": "claude-queue-fixes-preview",
+ "started": "2026-10-20T00:00:27.874Z",
+ "submitted": "2026-10-20T00:01:55Z",
+ "cur": 3,
+ "answers": {
+  "1": {
+   "v": "yes",
+   "t": 1792454441743,
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  },
+  "2": {
+   "v": "yes",
+   "t": 1792454449396,
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "2a": {
+   "v": "yes",
+   "t": 1792454467429,
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "2b": {
+   "note": "what do you mean by unsafe message box? this seems like we're handling unlikely error cases that are more likely to unnecessarily sieze up the user's whole app/conversation rather than actually be helpful or protective?",
+   "t": 1792454514211,
+   "v": "other",
+   "seconds": 47,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
