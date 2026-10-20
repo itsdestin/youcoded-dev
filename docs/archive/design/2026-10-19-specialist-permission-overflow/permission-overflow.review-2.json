@@ -1,0 +1,23 @@
+{
+  "title": "Rounded permission card inside the specialist card",
+  "key": "specialist-permission-overflow-2",
+  "out": "permission-overflow.review-2.html",
+  "images": "images/permission-overflow.review-2",
+  "runs": {
+    "before": "../../../../scratch/specialist-permission-review/runs/after",
+    "after": "../../../../scratch/specialist-permission-review/rounded"
+  },
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "P-2",
+      "surface": "Specialists popup",
+      "path": "Specialists → Needs you → permission card",
+      "crop": "chat/specialists@580x230+440+285",
+      "headline": "The permission region is now a rounded card inside the outer card.",
+      "changed": "Added a complete border and the same theme-controlled corner radius used by the outer card.",
+      "notice": "The inner permission card follows your theme’s roundness. The overflow fix and permission behavior are unchanged.",
+      "risk": ""
+    }
+  ]
+}

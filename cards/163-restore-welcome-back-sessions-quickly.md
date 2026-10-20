@@ -18,6 +18,7 @@ Blocked: Live transcript replacement awaits app exit; no commit, merge, push or 
 Chats
 - 2026-10-19 session/163-crash-resume-repair: chat started
 - 2026-10-19 session/163-crash-resume-repair: chat started
+- 2026-10-19 session/163-crash-resume-repair: chat started
 - 2026-10-18 session/welcome-back-recovery: chat started
 - 2026-10-18 session/welcome-back-recovery: chat started
 - 2026-10-18 session/welcome-back-recovery: chat started

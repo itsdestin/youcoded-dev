@@ -1,0 +1,274 @@
+{
+  "title": "Make YouCoded more reliable",
+  "key": "crash-reliability-20261019",
+  "out": "crash-reliability.questions.html",
+  "stage": "ask",
+  "_comment": "Draft decision deck based on the October 19 crash investigation. Choices record priorities; they do not install, restart, publish, or change the running app. No fixes have been implemented.",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "First: stop the crash and the blank window",
+      "intro": "We found a browser-engine crash with a matching upstream fix. Separately, YouCoded never restored the failed window. These are the first three priorities. Your answers choose the work; nothing here changes the running app."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "1 · Prevent this crash",
+      "path": "The engine that draws every desktop window",
+      "headline": "Should we upgrade the engine to a version containing the matching crash fix?",
+      "today": "YouCoded uses an older browser engine. Today's crash happened while it was updating text selection and the screen.",
+      "problem": "The engine reached an unsafe internal state and stopped the window. We found a published fix for the matching failure, but not the exact action that triggered yours.",
+      "proposal": "Upgrade to a supported version that includes that fix, then check typing, selection, dragging, themes, terminals and documents before release.",
+      "options": [
+        {
+          "id": "upgrade",
+          "label": "Upgrade and test",
+          "pros": ["Directly targets the failure found in your crash.", "Also brings newer engine fixes and security updates."],
+          "cons": ["An engine upgrade can change other app behavior, so compatibility checks are needed.", "It cannot promise to prevent every kind of crash."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Keep current engine",
+          "pros": ["Avoids upgrade-related behavior changes for now."],
+          "cons": ["Leaves this matching crash fix unavailable.", "Keeps YouCoded on an engine branch that is no longer supported."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "2 · Recover the window",
+      "path": "When a desktop window crashes or fails to open",
+      "headline": "Should a crashed window try to restore itself instead of staying blank?",
+      "today": "YouCoded records a window crash, but does not bring that window back. Background conversations can still be running.",
+      "problem": "You lose access to the app even though much of your work is still alive behind the blank window.",
+      "proposal": "Restore only the failed window and reconnect its conversations. Limit retries, then offer a recovery or close choice that still works when the window cannot draw.",
+      "options": [
+        {
+          "id": "recover",
+          "label": "Restore the window",
+          "pros": ["A window failure need not force a full app restart.", "Keeps conversations running behind the scenes; the next proposal makes sure updates and approvals reconnect safely."],
+          "cons": ["You may see a brief interruption while the window returns.", "Recovery alone cannot save unsent text; the final page covers saving drafts."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Keep manual recovery",
+          "pros": ["Avoids introducing automatic reload behavior."],
+          "cons": ["A failed window can stay blank until you intervene.", "Restarting the whole app can interrupt work that was still running."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "3 · Reconnect safely",
+      "path": "Messages, approvals and conversations moving between windows",
+      "headline": "Should we make sure a replacement window is ready before sending work to it?",
+      "today": "After this crash, YouCoded kept sending updates to the dead window. Some parts also remember a window as ready even after its contents disappear.",
+      "problem": "A simple reload could still miss an approval, lose a conversation handoff, or keep trying to contact the dead window.",
+      "proposal": "Pause delivery to failed windows, reconnect only when their replacements are ready, and confirm conversation transfers arrived. One broken window must not block another window or phone.",
+      "options": [
+        {
+          "id": "safe-reconnect",
+          "label": "Reconnect safely",
+          "pros": ["Makes automatic recovery dependable rather than just clearing the blank screen.", "Protects approvals and conversations moving between windows."],
+          "cons": ["Needs careful checks with multiple windows and connected phones.", "A recovering window briefly waits before receiving live updates."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Leave delivery unchanged",
+          "pros": ["Keeps the initial recovery change smaller."],
+          "cons": ["A restored window could still miss important updates.", "Repeated attempts to contact the dead window remain possible."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Next: stop memory growth and freezes",
+      "intro": "We found specific places that keep too much chat data or do heavy background work. These deserve fixes, but are not proven to have caused today's engine crash."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "4 · Release unused memory",
+      "path": "Behind the scenes after replies and closed conversations",
+      "headline": "Should closed conversations stop keeping unnecessary data in memory?",
+      "today": "Some conversation bookkeeping stays in memory after the conversation closes. Even a small piece of retained conversation data can keep a much larger block in memory.",
+      "problem": "Memory can build up over hours, even when you close conversations and the screen does not look busy.",
+      "proposal": "Release unused data once saving is finished, and limit how much old conversation data is kept for quick access. Keep saved history on disk.",
+      "options": [
+        {
+          "id": "release",
+          "label": "Release unused data",
+          "pros": ["Targets confirmed reasons memory can accumulate.", "Does not delete your saved conversations."],
+          "cons": ["Reopening uncached history may require a fresh disk read.", "Cleanup must wait for saving to finish so recovery remains safe."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Keep existing storage",
+          "pros": ["Avoids changing how conversation data is managed for now."],
+          "cons": ["Known memory-retention defects remain.", "Long sessions can keep using more memory than necessary."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "5 · Load history in pieces",
+      "path": "Long chats, older messages and helper replies",
+      "headline": "Should long chats load and remember only a manageable amount of history at once?",
+      "today": "The app limits some history reads, but helper replies can bypass that limit. Content hidden offscreen can still occupy memory.",
+      "problem": "A few large conversations can cause big memory jumps or pauses, even with relatively little visible on screen.",
+      "proposal": "Load older messages and helper details in bounded pieces. Unload old pieces when needed and fetch them again when you return. Never delete or silently cut off history.",
+      "options": [
+        {
+          "id": "bounded-history",
+          "label": "Load in pieces",
+          "pros": ["Keeps large conversations from overwhelming memory all at once.", "Your full saved history remains accessible."],
+          "cons": ["Returning to unloaded messages may briefly show a loading step.", "Scroll position, search and active approvals need careful preservation."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Keep everything loaded",
+          "pros": ["Already-loaded messages stay immediately available."],
+          "cons": ["Memory use can keep growing with conversation length.", "Large helper histories can still cause sudden loading pauses."]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "6 · Keep search work out of your way",
+      "path": "Background updates to searchable conversation history",
+      "headline": "Should search updates run separately so they do not freeze every window?",
+      "today": "Preparing your conversation library for search can do heavy work in the same part of the app that keeps windows responsive.",
+      "problem": "Background work can stall the app even when you are not searching or clicking anything.",
+      "proposal": "Do heavy search preparation separately, and update changed conversations rather than repeatedly rebuilding everything.",
+      "options": [
+        {
+          "id": "background-search",
+          "label": "Separate search work",
+          "pros": ["Keeps typing and window controls more responsive during indexing.", "Makes updates focus on what changed."],
+          "cons": ["Search results may briefly lag behind the newest messages.", "Uses some extra memory, and interrupted updates must restart safely."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Keep current indexing",
+          "pros": ["Avoids adding a separate background worker."],
+          "cons": ["Heavy index updates can still pause all app windows.", "The work can grow with your whole conversation library."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Then: protect work and catch future failures",
+      "intro": "These close related reliability gaps: incomplete shutdown, lost drafts and older crash types. Include meaningful tests with each fix, not just a final check at the end."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "7 · Quit cleanly",
+      "path": "Closing, restarting or updating the app",
+      "headline": "Should quitting wait for cleanup and reliably stop that app instance's helpers?",
+      "today": "Asking the app to quit twice can make it leave before cleanup finishes. Some old graphics, network and audio programs are still running after the app that started them exited.",
+      "problem": "The app can exit before saving or stopping its own work. We have not proven which exit path left those particular helpers behind.",
+      "proposal": "Give saving and cleanup a limited chance to finish before quitting. Stop only the background programs belonging to that copy of YouCoded, not another open copy or the app started by an update.",
+      "options": [
+        {
+          "id": "clean-shutdown",
+          "label": "Finish cleanup safely",
+          "pros": ["Reduces unfinished saves and leftover background processes.", "Makes repeated quit requests behave consistently."],
+          "cons": ["Quit may take a little longer while saving and cleanup finish.", "Restart and update behavior need special checks to avoid closing the replacement app."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Leave shutdown unchanged",
+          "pros": ["Avoids changing quit and restart behavior now."],
+          "cons": ["Known early-exit paths remain.", "Leftover helpers and unfinished cleanup remain possible."]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "8 · Recover unsent work",
+      "path": "Message drafts and document editing after a window crash",
+      "headline": "Should unsent messages and unsaved text edits be recoverable after a window crashes?",
+      "today": "Message drafts and ordinary text-editor drafts live in window memory. Office documents have recovery files, but a dead editor can still leave a document marked as open.",
+      "problem": "Restoring the window alone cannot restore text that vanished with it. A document can also remain claimed by an editor that no longer exists.",
+      "proposal": "Keep limited local recovery copies while you edit. Restore drafts without sending them, and let replacement Office editors reopen documents without discarding recoverable changes.",
+      "options": [
+        {
+          "id": "recover-drafts",
+          "label": "Keep recovery copies",
+          "pros": ["Protects work you have not sent or saved yet.", "Makes window recovery useful for more than already-saved messages."],
+          "cons": ["Unsent text remains on disk temporarily, so privacy and cleanup rules matter.", "If a file changed elsewhere, you may need to choose which version to keep."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Keep drafts temporary",
+          "pros": ["Does not create additional disk copies of unsent text."],
+          "cons": ["A crashed window can lose message drafts and ordinary unsaved text edits.", "Dead Office editor ownership still needs a separate fix."]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "9 · Address the older crashes",
+      "path": "The 14 saved crash reports",
+      "headline": "Should we check the older crash types separately after upgrading?",
+      "today": "The reports show five different failure types: today's screen-update crash, six graphics-startup failures, four developer-tools crashes, two Linux input crashes and one other abort.",
+      "problem": "Fixing today's crash does not show that the other failures are gone. The graphics reports do not explain why graphics startup failed.",
+      "proposal": "Check each failure type separately on the upgraded engine. Investigate anything that remains; compare graphics modes only when evidence calls for it, rather than turning graphics acceleration off for everyone.",
+      "options": [
+        {
+          "id": "separate-families",
+          "label": "Check each type",
+          "pros": ["Avoids declaring all crashes fixed after solving only one.", "Preserves graphics performance unless a specific problem justifies a change."],
+          "cons": ["Intermittent failures can take longer to confirm or rule out.", "Some follow-up checks may need an isolated test setup."],
+          "recommended": true
+        },
+        {
+          "id": "defer",
+          "label": "Focus on today",
+          "pros": ["Keeps the first round focused on the failure you just experienced."],
+          "cons": ["The other saved failure types remain unverified.", "We may only learn they persist when another crash occurs."]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "10 · Prove the fixes hold",
+      "path": "Reliability checks and local crash records",
+      "headline": "Should each fix include checks for lost work, repeated failures and long-running use?",
+      "today": "The app records crashes and slowdowns, but existing checks missed the blank-window recovery gap and several memory and shutdown problems.",
+      "problem": "A change can look fine in a short test while still losing drafts, missing approvals or slowing down over hours.",
+      "proposal": "Test recovery with work in progress, memory cleanup after many chats, and repeated quit requests. Improve local records so future failures identify the affected window and what recovery did. Upload nothing automatically.",
+      "options": [
+        {
+          "id": "regression-checks",
+          "label": "Test failure scenarios",
+          "pros": ["Checks whether your work survives, not just whether the app opens.", "Makes future crashes easier to distinguish and investigate."],
+          "cons": ["Adds development and verification work before release.", "Keeps a limited amount of diagnostic information locally."],
+          "recommended": true
+        },
+        {
+          "id": "basic-checks",
+          "label": "Use basic checks",
+          "pros": ["Less work before a first test build."],
+          "cons": ["Gives weaker evidence that the underlying problems are fixed.", "Makes recurring failures harder to catch before they reach you."]
+        }
+      ]
+    }
+  ]
+}

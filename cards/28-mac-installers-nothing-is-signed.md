@@ -1,15 +1,14 @@
 ---
 id: 28
 title: Sign the Mac app so it opens without warnings
-stage: planning
+stage: merged
 priority: P1
 summary: Mac downloads aren't signed by Apple, so they can open as "broken"; Apple refused the company account and signing waits on that.
 area: Leaving & updating
 side: behind
 platform: Mac only
-paused: Deferred to 1.3.2 by Destin; not a 1.3.1 release blocker.
 tags: dev-workspace, release, regression, bug
-work: session/auto-update-roadmap-20261014, session/release-1-3-2
+work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing
 vision: everywhere.added.macsign
 release: 1.3.2
 report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
@@ -18,11 +17,17 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Destin paid for Apple enrollment, then explicitly deferred Developer ID signing/notarization to 1.3.2 so 1.3.1 can ship with existing ad-hoc Mac signing.
-Next: Complete membership activation and implement/verify Developer ID signing and notarization for 1.3.2.
-Blocked: No longer blocks 1.3.1; Apple credentials/signing setup remain future work.
+Done: Complete: appPR655 signing/copy merged7c0a46e1c; deterministic post-merge Node22CI reporter repairPR656 merged1f7629142 after126semantic cases/realV8regression and native PR/fullplatformchecks passed. WorkspacePR282 merged, plan archived, MAP/build/VM guidance updated. Both architectures notarized/issuesnull; quarantined Intel VM normalOpen/onboarding verified/restored. Approved downloadcopy deployed and matched live modal script. Temporary signing access removed; evidence/installers preserved outside worktrees.
+Next: Public installer release intentionally deferred; current public version1.3.1 remains unchanged. Future release tagging/publication requires separate owner instruction. No further work for this implementation card.
+Blocked: None for this implementation. No release tag, production install, live-app mutation or paid harness evaluation. Final session-only branch/worktree cleanup is underway after remote ancestry verification.
 
 Chats
+- 2026-10-20 session/28-apple-signing: chat started
+- 2026-10-20 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
 
 From the old roadmap (dev-workspace › release, status blocked, seen on n/a, last checked 2026-09-04)

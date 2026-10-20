@@ -1,0 +1,16 @@
+{
+ "deck": "specialist-permission-overflow",
+ "started": "2026-10-19T14:52:38.163Z",
+ "submitted": "2026-10-19T14:53:20Z",
+ "cur": 0,
+ "answers": {
+  "P-1": {
+   "note": "the permission region itself should have rounded borders using whichever theme tokens the outer card uses, so we have a nested card-within-a-card",
+   "t": 1792421599752,
+   "v": "other",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

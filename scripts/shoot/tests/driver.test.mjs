@@ -1,6 +1,98 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { makeDriver } from '../driver.mjs';
+import { makeDriver, stepText } from '../driver.mjs';
+
+test('wait-scroll-idle accepts only chat and describes the condition', async () => {
+  const driver = makeDriver({ evaluate: async () => true, still: async () => {}, send: async () => {} });
+  await assert.rejects(driver.perform({ do: 'wait-scroll-idle', area: 'sidebar' }), /supports only area/);
+  assert.equal(stepText({ do: 'wait-scroll-idle', area: 'chat' }), 'wait for chat scrolling to settle');
+});
+
+import { runInNewContext } from 'node:vm';
+
+async function observerHarness({ targets, failResizeObserve = false, failMeasureInitially = false } = {}) {
+  let now = 0; let seq = 0; let failMeasure = failMeasureInitially; const timers = new Map(); const observers = []; const elements = targets ?? [element()];
+  function element({ visible = true, connected = true } = {}) {
+    const listeners = new Map();
+    return { visible, isConnected: connected, scrollTop: 0, scrollHeight: 100, clientHeight: 50, rect: { x: 0, y: 0, width: 100, height: 50 }, listeners,
+      getBoundingClientRect() { if (failMeasure) throw new Error('measure failed'); return this.rect; },
+      addEventListener(type, fn) { listeners.set(type, fn); }, removeEventListener(type) { listeners.delete(type); } };
+  }
+  class Observer { constructor(cb) { this.cb = cb; this.disconnected = false; this.observed = []; observers.push(this); } observe(target, options) { if (failResizeObserve && this instanceof ResizeObs) throw new Error('observe failed'); this.observed.push({ target, options }); } deliver() { this.cb([]); } disconnect() { this.disconnected = true; } }
+  class ResizeObs extends Observer {} class MutationObs extends Observer {}
+  const clock = { setTimeout(fn, ms) { const id = ++seq; timers.set(id, { at: now + ms, fn }); return id; }, clearTimeout(id) { timers.delete(id); },
+    async advance(ms) { const end = now + ms; while (true) { let item; let id; for (const [k, t] of timers) if (t.at <= end && (!item || t.at < item.at)) { item = t; id = k; } if (!item) break; now = item.at; timers.delete(id); item.fn(); await Promise.resolve(); await Promise.resolve(); } now = end; await Promise.resolve(); } };
+  // Capture the exact function expression sent through the driver's CDP evaluation path.
+  let expression;
+  const driver = makeDriver({ evaluate: async (code) => { expression = code; return true; }, still: async () => {}, send: async () => {} });
+  await driver.perform({ do: 'wait-scroll-idle', area: 'chat' });
+  return { elements, observers, timers, clock, expression, createElement: element, setMeasureFailure(value) { failMeasure = value; }, run() { return runInNewContext(this.expression, { document: { querySelectorAll: () => elements }, getComputedStyle: (el) => ({ display: el.visible ? 'block' : 'none', visibility: 'visible' }), ResizeObserver: ResizeObs, MutationObserver: MutationObs, setTimeout: clock.setTimeout.bind(clock), clearTimeout: clock.clearTimeout.bind(clock), Error }); } };
+}
+
+test('wait-scroll-idle registers only the visible connected scroller and ignores unchanged mutations', async () => {
+  const h = await observerHarness(); const target = h.elements[0];
+  const hidden = h.createElement({ visible: false }); const disconnected = h.createElement({ connected: false });
+  h.elements.splice(0, 0, hidden, disconnected);
+  const pending = h.run();
+  assert.ok(h.observers.every((observer) => observer.observed[0]?.target === target), 'both observers attach to the chosen visible scroller');
+  const mutation = h.observers[1];
+  assert.equal(JSON.stringify(mutation.observed[0].options), '{"subtree":true,"childList":true,"attributes":true}');
+  let settled = false; pending.then(() => { settled = true; });
+  for (let t = 0; t < 400; t += 100) { await h.clock.advance(100); mutation.deliver(); }
+  await h.clock.advance(100);
+  assert.equal(settled, true, 'unchanged mutations must not postpone stable readiness');
+  await pending;
+  for (const observer of h.observers) observer.deliver();
+  assert.equal(h.timers.size, 0, 'late callbacks cannot rearm timers');
+  assert.equal(h.timers.size, 0); assert.ok(h.observers.every((o) => o.disconnected)); assert.equal(target.listeners.size, 0);
+});
+
+test('wait-scroll-idle resets its quiet window on relevant scroll and cleans up', async () => {
+  const h = await observerHarness(); const target = h.elements[0]; const pending = h.run();
+  await h.clock.advance(400); target.listeners.get('scroll')();
+  await h.clock.advance(499); let settled = false; pending.then(() => { settled = true; }); await Promise.resolve(); assert.equal(settled, false);
+  await h.clock.advance(1); await pending;
+  assert.equal(h.timers.size, 0); assert.ok(h.observers.every((o) => o.disconnected)); assert.equal(target.listeners.size, 0);
+});
+
+test('wait-scroll-idle detects geometry changes, times out ongoing activity, and rejects a hidden target', async () => {
+  const h = await observerHarness(); const target = h.elements[0]; const pending = h.run();
+  await h.clock.advance(499); target.rect.width++;
+  let resolved = false; pending.then(() => { resolved = true; });
+  h.observers.find((o) => o.constructor.name === 'MutationObs').deliver();
+  await h.clock.advance(499); await Promise.resolve(); assert.equal(resolved, false, 'changed geometry reported by mutation resets quiet window');
+  target.rect.x++;
+  h.observers.find((o) => o.constructor.name === 'ResizeObs').deliver();
+  await h.clock.advance(499); await Promise.resolve(); assert.equal(resolved, false, 'changed geometry reported by resize resets quiet window');
+  await h.clock.advance(1); await pending; assert.equal(h.timers.size, 0);
+  for (const observer of h.observers) observer.deliver();
+  assert.equal(h.timers.size, 0, 'late callbacks after finish cannot rearm timers');
+  const timeout = await observerHarness(); const target2 = timeout.elements[0]; const stuck = timeout.run();
+  for (let t = 0; t < 7_600; t += 400) { await timeout.clock.advance(400); target2.listeners.get('scroll')(); }
+  await timeout.clock.advance(400);
+  assert.match(await stuck.catch((e) => e.message), /did not stabilize/);
+  assert.equal(timeout.timers.size, 0); assert.ok(timeout.observers.every((o) => o.disconnected)); assert.equal(target2.listeners.size, 0);
+  const hidden = await observerHarness(); const pendingHidden = hidden.run(); hidden.elements[0].visible = false;
+  await hidden.clock.advance(500);
+  assert.match(await pendingHidden.catch((e) => e.message), /hidden|disconnected/);
+  const detached = await observerHarness(); const pendingDetached = detached.run(); detached.elements[0].isConnected = false;
+  await detached.clock.advance(500); assert.match(await pendingDetached.catch((e) => e.message), /hidden|disconnected/);
+});
+
+test('wait-scroll-idle rejects missing targets and cleans up when measurement or observer setup throws', async () => {
+  const missing = await observerHarness({ targets: [] });
+  assert.equal(await missing.run().catch((e) => e.message), 'visible chat scroller not found');
+  const measured = await observerHarness({ failMeasureInitially: true });
+  assert.match(await measured.run().catch((e) => e.message), /measure failed/);
+  assert.equal(measured.timers.size, 0); assert.ok(measured.observers.every((o) => o.disconnected));
+  const callback = await observerHarness(); const callbackTarget = callback.elements[0]; const callbackWait = callback.run();
+  callback.setMeasureFailure(true); callbackTarget.listeners.get('scroll')();
+  assert.match(await callbackWait.catch((e) => e.message), /measure failed/);
+  assert.equal(callback.timers.size, 0); assert.ok(callback.observers.every((o) => o.disconnected)); assert.equal(callbackTarget.listeners.size, 0);
+  const setup = await observerHarness({ failResizeObserve: true });
+  assert.match(await setup.run().catch((e) => e.message), /observe failed/);
+  assert.equal(setup.timers.size, 0); assert.ok(setup.observers.every((o) => o.disconnected));
+});
 
 test('click re-aims after pointer travel moves its target', async () => {
   let targetX = 100;

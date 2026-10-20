@@ -13,7 +13,7 @@ area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse
-work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions
+work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability
 ---
 Progress
 Done: Session-start hardening merged in itsdestin/youcoded#629 (bc9e43752), with desktop and Android CI passing. Includes off-thread skill/context discovery, bounded worker retirement, reliable timer-only stall detection, severe-detail reservation, and content-free setup/keychain timings. Reviewed locally: 3475 tests passed, 37 skipped; 36 Android shell tests and 17 report tests passed. Implementation record: docs/archive/plans/2026-10-17-session-freezes.md. Current additional work (session/93-file-viewer-freezes): implemented and independently reviewed file-viewer first-frame/draft/stale-read fixes, exact off-thread comparisons (also #110), and complete off-thread search indexing including tags. Required desktop verification passed: 5306 tests passed, 36 skipped, with types/lint/knip/invariants/screens/journeys green. Synthetic Electron ASAR indexing heartbeat gap fell from 435.1 ms to 29.8 ms; both Node and browser worker packaging probes passed. 36 Android JVM tests passed; full APK packaging remains unverified. Implementation is local, uncommitted and not installed.
@@ -21,6 +21,11 @@ Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. O
 Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified. Current additional work has no implementation blocker; original incident remains unconfirmed and the installed app is unchanged. Android runtime packaging needs apk-version tooling.
 
 Chats
+- 2026-10-20 session/93-crash-reliability: Completed crash-hardening subtask: youcoded#654 merged to remote master as 0a020c3f7fcfd121622aeef5bc3c3def36e97b9d. Production renderer recovery/reconnection, closed-native-session memory release, coordinated shutdown, per-window draft recovery and dead Office ownership cleanup. Full local desktop verification and Linux desktop/package plus Android JVM/debug/releaseTest APK CI passed. Not released or installed. Broader #93 items and the other session's search/file-viewer work remain open; #172 engine upgrade and #173 history exploration are deferred. Scoped plan and approved deck archived under docs/archive/{plans,design}/2026-10-19-crash-reliability*.
+- 2026-10-20 session/93-crash-reliability: chat started
+- 2026-10-19 session/93-crash-reliability: chat started
+- 2026-10-19 session/93-crash-reliability: chat started
+- 2026-10-19 session/crash-recommendations-deck: Crash deck Q-6: Destin asked to note search-index stalls on the roadmap and check for another session. Existing session/93-file-viewer-freezes already reports complete off-thread search indexing; do not duplicate it. Its implementation is not installed. October 19 crash investigation independently found synchronous indexing in the installed/source baseline; coordinate with that session before further search work.
 - 2026-10-18 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: chat started
