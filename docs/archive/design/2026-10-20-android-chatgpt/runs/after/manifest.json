@@ -1,0 +1,155 @@
+[
+  {
+    "name": "settings/assistant/cloud#remote-chatgpt",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#remote-chatgpt/midnight.png",
+    "ms": 3312,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 128,
+      "w": 343,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#remote-chatgpt-account",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#remote-chatgpt-account/midnight.png",
+    "ms": 3379,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 128,
+      "w": 343,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#remote-chatgpt",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#remote-chatgpt/light.png",
+    "ms": 3411,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 128,
+      "w": 343,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#remote-chatgpt-account",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#remote-chatgpt-account/light.png",
+    "ms": 3812,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 128,
+      "w": 343,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#remote-chatgpt",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#remote-chatgpt/halftone-dimension.png",
+    "ms": 3837,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 128,
+      "w": 343,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#remote-chatgpt-account",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#remote-chatgpt-account/halftone-dimension.png",
+    "ms": 3910,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 128,
+      "w": 343,
+      "h": 588
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#android-chatgpt",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#android-chatgpt/light.png",
+    "ms": 1439,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 48,
+      "w": 343,
+      "h": 504
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#android-chatgpt",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#android-chatgpt/midnight.png",
+    "ms": 1475,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 48,
+      "w": 343,
+      "h": 504
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud#android-chatgpt",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/1-android-chatgpt-access/docs/active/design/2026-10-20-android-chatgpt/runs/after/settings/assistant/cloud#android-chatgpt/halftone-dimension.png",
+    "ms": 3081,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 23,
+      "y": 48,
+      "w": 343,
+      "h": 504
+    },
+    "parts": []
+  }
+]
