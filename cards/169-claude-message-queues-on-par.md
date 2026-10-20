@@ -15,6 +15,7 @@ Next: Fix unknown-enqueue duplicate risk, durable edit transfer/reload, SendNow 
 Blocked: No testable queue package yet. Do not claim prior green full suite covers final-review failure cases; app source fixes in progress. User .4 test copy remains unaffected.
 
 Chats
+- 2026-10-20 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
