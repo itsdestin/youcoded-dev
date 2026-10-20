@@ -403,20 +403,22 @@ rented Mac beats it — and tests arm64, which this VM can't.
   but fine for click-through flow testing.
 - **Apple ID sign-in won't work** (no valid serials). Irrelevant here — Claude sign-in is browser
   OAuth.
-- **Gatekeeper will block the app — this is expected and already documented for users.**
-  The app is **self-signed** (`identity: '-'` in `youcoded/desktop/electron-builder.yml` — "ad-hoc",
-  no Apple certificate, no notarization; a Developer ID is $99/yr), so macOS still blocks it on
-  first launch as *unverified*. That part is a known, accepted trade-off, **not a bug**: the download
-  page ships a full walkthrough for it —
-  `youcoded/docs/index.html` → `dl-macos` install-tips modal (drag to Applications → *"Apple cannot
-  check it for malicious software"* → System Settings → Privacy & Security → **Open Anyway**).
-  What IS a bug: an app with **no** signature at all (no `Contents/_CodeSignature`), which macOS
-  rejects as *broken* — no "Open Anyway" button. That shipped for six weeks in 2026 and is now
-  caught by CI (`docs/build-and-release.md` → the dmg check).
-  **This is the single highest-value thing a macOS VM can verify.** That walkthrough is
-  hand-tuned to a specific macOS release's gatekeeping behavior (the source comment says as much),
-  and Apple reworks this flow regularly — a clean VM is the only way to confirm the steps we tell
-  users still match what macOS actually shows. Same applies to the Windows SmartScreen copy.
+- **Gatekeeper behavior depends on the downloaded build, not the base config.** Protected
+  release/master-beta jobs use `electron-builder.mac-sign.yml`; credential-free builds stay
+  ad-hoc. Signed/notarized candidate **1.3.2-beta.3** passed this Intel Tahoe guest on
+  2026-10-19 with quarantine intact and assessments enabled: normal **Open / Cancel**,
+  “Apple checked it for malicious software and none was detected,” then fresh onboarding.
+  No Open Anyway, quarantine removal or Gatekeeper disable was used. Public **1.3.1**
+  downloads remain ad-hoc until a new release; their legacy warning is still expected.
+  CI proves both architectures' final-image signatures/tickets; this guest proves only
+  the Intel user-facing launch, not Apple Silicon GUI installation or authenticated chat.
+  Details and preserved evidence: `docs/build-and-release.md` → macOS Developer ID signing.
+
+Reuse the existing guest/test account for installer checks. If fresh app state is needed,
+quit the guest app and back up only its app/profile files, then restore them after testing.
+Do not create another macOS user or rerun OS setup for an app first-launch check. An
+HTTP-loaded file with an explicit quarantine mark tests Gatekeeper, **not** Safari's
+actual download journey; record which path was used.
 
 CI already builds the `.dmg` on `macos-latest` runners
 (`youcoded/.github/workflows/desktop-release.yml`) — real Apple hardware and the natural home for an
