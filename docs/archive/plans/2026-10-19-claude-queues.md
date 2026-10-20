@@ -1,8 +1,8 @@
 # Claude queues Implementation Plan
 
-> **For agentic workers:** use subagent-driven-development or executing-plans task-by-task. Work remains uncommitted; the user authorized a testable build, not commits, merging, publication or paid model calls.
+status: shipped
 
-status: active
+Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c`) after explicit merge authorization. The checklist below is the historical implementation plan, not outstanding work. Final behavior and verification: `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`.
 
 **Goal:** Reuse the existing native queue strip and its Edit/Remove/Interrupt-and-send-now controls for a durable, host-owned Claude queue, producing an isolated testable Linux build.
 
@@ -12,7 +12,7 @@ status: active
 
 ## Approved contract and constraints
 
-- Sources: `docs/active/design/2026-10-19-claude-queues/claude-queues.questions.answers.json` Q1=batch, Q2=current-only, Q3=restore-paused, Q4=keep-paused; user explicitly says reuse native UI and proceed to a testable state.
+- Sources: `docs/archive/design/2026-10-19-claude-queues/claude-queues.questions.answers.json` Q1=batch, Q2=current-only, Q3=restore-paused, Q4=keep-paused; user explicitly says reuse native UI and proceed to a testable state.
 - No separate Claude queue UI. Reuse `QueuedMessagesStrip`, composer, existing context controls and notices. Paused state may need a truthful label/action text in the same component, not a new panel. Existing Send now can deliberately resume a paused queue; preserve selected-head priority.
 - Stop uses one raw Escape and does not clear or pause submitted user messages. Clear pauses dispatch before its identity/context transition and retains waiting messages paused. Close/app exit saves waiting items; application restart restores paused.
 - Preserve text, original attachment paths and prepared display content through enqueue/edit/remove/restore. Do not reproduce #62's path-as-text/attachment-loss problem for Claude; avoid unrelated native redesign.
@@ -68,7 +68,7 @@ status: active
 
 **Native admission transaction:** after durable host claim, arm a native lease `{attemptId, incarnation, conversationId, turnId, wireHash, expiresAt, state:'armed'}` in the plugin's own versioned `$.state`. Keep the fence's live `next.signal` locally. Require matching live fence/idle generation, positive input gate and empty/owned composer before staging. Supported `prompt.fill` plus exact fresh `prompt.read` stages plain instruction text without paste/echo ambiguity; preserve normal path for unowned user input. Worker writes only the guarded final Enter with attempt/deadline revocation checks. The native `prompt.submit` hook checks owned attempt, matching actual input/turn/alias, unexpired/non-aborted fence and CAS version before `next(e)`; revoked/expired/mismatched attempts drop before model delivery. A deliberately armed attempt's exceptions fail closed. Once `next` has run, failure to report the receipt is UNKNOWN, never a fabricated drop/refusal; catch returns the already-produced result. Persist native accepted and transcript UUID evidence in either arrival order; single-flight claims and expected content/identity discriminate duplicates, and unresolved mapping stays uncertain rather than guessed. Release the fence only after acceptance/refusal classification or bounded failure. Plugin crash/unload cannot be treated as permission to replay a body/Enter. Command/Clear/Stop paths revoke the attempt and bypass worker waiting; Clear pauses claims before waiting for its definitive/uncertain result, without locking out receipt handling.
 
-**Evidence:** `docs/active/investigations/2026-10-19-claude-queue-timing/FENCED-REPORT.md`; `worker-fence-instruction/{image-path,mention}/result.json`; `admission-single/{accept,revoke}/result.json`. Supported short-text proof is not permission to assume arbitrary media/long writes work. Reuse actual worker submit machinery with acknowledgements of write/echo/native acceptance; do not splice plain CR outside its safeguards.
+**Evidence:** `docs/archive/investigations/2026-10-19-claude-queue-timing/FENCED-REPORT.md`; `worker-fence-instruction/{image-path,mention}/result.json`; `admission-single/{accept,revoke}/result.json`. Supported short-text proof is not permission to assume arbitrary media/long writes work. Reuse actual worker submit machinery with acknowledgements of write/echo/native acceptance; do not splice plain CR outside its safeguards.
 
 - [ ] RED tests: no queue => immediate release; nested agent batch ignored; one head per fence; stale fence after Stop/Clear/teardown/deadline cannot dispatch; expired-before-claim leaves waiting; lost receipt after handoff becomes uncertain; long/Unicode/attachments use existing safe protocol; composer popup/draft prevents delivery; clear cannot overtake delivery.
 - [ ] GREEN adapter and one supported reentrant hook module; close revokes listeners/fences and releases awaited hooks. Bound retained sessions and outstanding observer state.

@@ -1,6 +1,8 @@
 # Queue fixes — approved implementation
 
-Status: implemented in the session worktree; verification is recorded in `scratch/169-dismiss-final/REPORT.md`.
+status: shipped
+
+Merged in app PR #657. Final verification and behavior: `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`. Preview-only labels, server addresses and verification below are historical; submitted answers are preserved unchanged. The later explicit user override is authoritative.
 
 **Latest explicit user override (after the submitted answers):** simplify and allow dismissal of the warning, remove the danger confirmation, and restore the conversation **and reusable queue**. Preview 1/2 are approved; 2a's popup and 2b's permanent blocked replacement below are superseded. No further design round was requested. The historical preview mechanics/evidence below describe the old proposal, not current behavior.
 

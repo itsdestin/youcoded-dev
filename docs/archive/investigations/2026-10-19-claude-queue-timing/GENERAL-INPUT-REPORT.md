@@ -1,6 +1,6 @@
 # General input under a held Claude batch boundary
 
-status: active
+status: shipped
 
 ## What was checked
 

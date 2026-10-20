@@ -1,6 +1,8 @@
 # Claude message queues — behavior planning
 
-status: draft
+status: shipped
+
+Historical planning record. Implemented in app PR #657; later direct-dismiss decisions supersede the initial recovery proposal. Final result: `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`. Statements below describe their original planning checkpoint.
 
 Work item #169; session/169-claude-message-queues. User wants real Claude queues on par with native sessions. This worktree is a fresh master-based planning workspace; the uncommitted mods integration stays in session/11-claude-direct-controls and has NOT been silently copied or integrated.
 
@@ -25,7 +27,7 @@ The user subsequently authorized a testable implementation and explicitly requir
 
 ## Capability evidence so far
 
-`docs/active/investigations/2026-10-19-claude-queue-timing/REPORT.md` and its independently rerun checker show: direct plugin submit waits for idle/new turn; native PTY enqueue while busy is absorbed after the tool batch within the same turn. Native persistence uses a genuine human `queued_command` attachment that the existing watcher already projects into a user message. The user did not require a literal `type:user` JSONL row, so that storage detail is not itself a product blocker.
+`docs/archive/investigations/2026-10-19-claude-queue-timing/REPORT.md` and its independently rerun checker show: direct plugin submit waits for idle/new turn; native PTY enqueue while busy is absorbed after the tool batch within the same turn. Native persistence uses a genuine human `queued_command` attachment that the existing watcher already projects into a user message. The user did not require a literal `type:user` JSONL row, so that storage detail is not itself a product blocker.
 
 However, handing a message to Claude early would weaken the app's ability to edit/remove it while it waits. A bounded follow-up probe therefore tests holding a PostToolBatch boundary, sending the retained head through PTY, observing native acceptance, then releasing the boundary. This is an unproven feasibility experiment, not an approved implementation or a reason to claim parity yet. Hook context and fabricated history are not substitutes for real user-message delivery.
 

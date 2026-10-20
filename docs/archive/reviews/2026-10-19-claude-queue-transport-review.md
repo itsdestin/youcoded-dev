@@ -1,6 +1,8 @@
 # Standalone Claude queue transport review
 
-status: active
+status: shipped
+
+All T2 findings below were repaired with regressions before app PR #657 merged. This is the original findings ledger; final verification is recorded in `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`.
 
 Fresh read-only reviewer: Vega / b018ee40-8b22-48e6-afa3-15c8e90aa1de. The six actual-CLI cases and 299 focused tests are positive evidence, not exhaustive race coverage. All findings below are accepted and assigned to the implementation worker before final app enablement.
 

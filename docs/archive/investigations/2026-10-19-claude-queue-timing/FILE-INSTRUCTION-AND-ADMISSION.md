@@ -1,6 +1,6 @@
 # Explicit file instructions and native admission — follow-up proofs
 
-status: active
+status: shipped
 
 ## User-proposed alternative (Q5 Other)
 

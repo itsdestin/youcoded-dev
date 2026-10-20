@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 work_item: 169
 ---
 # Follow-up: retain editable head until an actual tool-batch boundary
@@ -70,17 +70,17 @@ One startup-only attempt used the wrong session.start readiness predicate (`sour
 ## Commands and actual output
 
 ```text
-node --check docs/active/investigations/2026-10-19-claude-queue-timing/fenced-probe.mjs
+node --check docs/archive/investigations/2026-10-19-claude-queue-timing/fenced-probe.mjs
 (no output; exit 0)
 
-node docs/active/investigations/2026-10-19-claude-queue-timing/fenced-probe.mjs
+node docs/archive/investigations/2026-10-19-claude-queue-timing/fenced-probe.mjs
 sandbox exit=0
 ```
 
 The corrected run's wrapper printed `exit=0` (`fenced-output.txt`). Both case `error` fields are null. After answer completion the harness terminates only its owned CLI; each exits 143, expected SIGTERM cleanup, not an API/task error.
 
 ```text
-node docs/active/investigations/2026-10-19-claude-queue-timing/fenced-check.mjs
+node docs/archive/investigations/2026-10-19-claude-queue-timing/fenced-check.mjs
 ```
 
 Actual output includes:

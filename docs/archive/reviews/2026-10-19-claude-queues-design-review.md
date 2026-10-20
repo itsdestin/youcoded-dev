@@ -1,6 +1,8 @@
 # Claude queue design review — round 1
 
-status: active
+status: shipped
+
+Historical design-review findings; requirements were implemented and verified before app PR #657 merged. See `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md` for the final verdict.
 
 Fresh read-only reviewer: Vega / b018ee40-8b22-48e6-afa3-15c8e90aa1de. No queue production code has been implemented. All findings below are accepted as requirements for revising the technical plan, not completed fixes.
 

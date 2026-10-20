@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 work_item: 169
 ---
 # Claude mid-task queue delivery — CLI 2.1.303
@@ -76,24 +76,24 @@ Existing parser compatibility is a read-only source finding: `youcoded/desktop/s
 From this workspace:
 
 ```text
-node --check docs/active/investigations/2026-10-19-claude-queue-timing/probe.mjs
+node --check docs/archive/investigations/2026-10-19-claude-queue-timing/probe.mjs
 (no output; proceeded to run)
 
-node docs/active/investigations/2026-10-19-claude-queue-timing/probe.mjs
+node docs/archive/investigations/2026-10-19-claude-queue-timing/probe.mjs
 sandbox exit=1
 ```
 
 Main command's wrapper printed `exit=1`; complete output is `run-output.txt`. Direct and PTY case errors are null; PostToolBatch-submit timed out after the explicit host rejection. Do NOT call the whole run green.
 
 ```text
-node docs/active/investigations/2026-10-19-claude-queue-timing/probe.mjs --context-recheck
+node docs/archive/investigations/2026-10-19-claude-queue-timing/probe.mjs --context-recheck
 sandbox exit=0
 ```
 
 Wrapper printed `exit=0`; complete output is `context-recheck-output.txt`.
 
 ```text
-node docs/active/investigations/2026-10-19-claude-queue-timing/check-evidence.mjs
+node docs/archive/investigations/2026-10-19-claude-queue-timing/check-evidence.mjs
 ```
 
 Exit 0. Actual final result string:
