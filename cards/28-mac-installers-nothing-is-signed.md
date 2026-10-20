@@ -8,7 +8,7 @@ area: Leaving & updating
 side: behind
 platform: Mac only
 tags: dev-workspace, release, regression, bug
-work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing
+work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing, session/28-signing-doc-cleanup
 vision: everywhere.added.macsign
 release: 1.3.2
 report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
@@ -22,6 +22,7 @@ Next: Public installer release intentionally deferred; current public version1.3
 Blocked: None for this implementation. No release tag, production install, live-app mutation or paid harness evaluation. Final session-only branch/worktree cleanup is underway after remote ancestry verification.
 
 Chats
+- 2026-10-20 session/28-signing-doc-cleanup: chat started
 - 2026-10-20 session/28-apple-signing: chat started
 - 2026-10-20 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
