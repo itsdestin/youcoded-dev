@@ -873,3 +873,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-19 #166 Refresh website demo: 1.3.1, Home and Finance, YouCoded Light (https://github.com/itsdestin/youcoded/pull/640)
 - [x] 2026-10-19 #167 Ship discoverable Linux launcher icons (https://github.com/itsdestin/youcoded/pull/639)
 - [x] 2026-10-20 #28 Sign the Mac app so it opens without warnings (https://github.com/itsdestin/youcoded/pull/655 (7c0a46e1c; release deferred))
+- [x] 2026-10-20 #169 Claude message queues on par with native sessions (itsdestin/youcoded#657 (a00cb691604c4013d50f1b15f96011bb1d37a27c))
