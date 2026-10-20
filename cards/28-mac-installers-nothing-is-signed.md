@@ -23,6 +23,7 @@ Next: Review copy at local preview http://127.0.0.1:8850 (click Windows/macOS/An
 Blocked: No signing/copy blocker. Public Mac remains1.3.1selfsigned until release; page retains short legacywarning for that URL and shows signed note for stable1.3.2+. Nothing merged/published as an app release.
 
 Chats
+- 2026-10-20 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-19 session/28-apple-signing: chat started
