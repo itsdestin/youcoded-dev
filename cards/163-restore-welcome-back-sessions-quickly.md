@@ -16,6 +16,7 @@ Next: User closes YouCoded and keeps it closed until completion notification; in
 Blocked: Live transcript replacement awaits app exit; no commit, merge, push or app installation authorized.
 
 Chats
+- 2026-10-20 session/welcome-back-recovery: chat started
 - 2026-10-19 session/163-crash-resume-repair: chat started
 - 2026-10-19 session/163-crash-resume-repair: chat started
 - 2026-10-19 session/163-crash-resume-repair: chat started
