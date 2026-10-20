@@ -345,7 +345,7 @@ a verdict and compares the signing identifier to the bundle's own `CFBundleIdent
 `mac.forceCodeSigning` makes electron-builder itself fail when it cannot sign — so CI
 catches it first; this recipe is the manual counterpart for a dmg already in hand (on a Mac,
 run the same `codesign --verify --deep --strict` on the extracted `.app`).
-Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md`.
+Historical postmortem: `docs/archive/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md` (superseded; current signing guidance below).
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "identity: '-'"} -->
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "forceCodeSigning: true"} -->
 <!-- verify: {"path": "youcoded/desktop/scripts/verify-mac-signature.sh", "contains": "--verify --deep --strict --verbose=2"} -->

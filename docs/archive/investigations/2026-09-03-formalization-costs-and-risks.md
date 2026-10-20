@@ -1,12 +1,14 @@
 ---
-status: active
+status: superseded
 date: 2026-09-03
 roadmap: cards #28 (Apple signing), #31 (company paperwork, Play listing, trademark) and #45; the old roadmap section was retired 2026-10-15
 ---
 
 # Making YouCoded a real public product: costs, logistics, and legal exposure
 
-> **Status 2026-10-16:** the 2026-10-01 status block below is the current one; the "Destin next" list dated 2026-09-03 further down is historical. Open items now live in cards #28 (Apple signing), #31 (Play listing, trademark, company paperwork) and #45. Two small loose items (moving Stripe / Buy Me a Coffee to the company and rolling the Cloudflare token) are filed in card #31.
+> **Archived / superseded — 2026-10-20:** Apple membership, Developer ID signing and notarization are complete and merged; card #28 is closed. The dated account failures and unsigned-installer tables below are not current guidance. Current status and remaining work: `docs/active/handoffs/2026-10-20-product-formalization-status.md`; technical signing instructions: `docs/build-and-release.md`.
+>
+> Preserve this report as historical research, not a live checklist. Its prices, legal/platform guidance and implementation observations were checked on the stated dates, not revalidated by the signing cleanup. Remaining company/store work is in #31; Gemma licensing/download work is in #45. Neither is closed by archiving this report.
 
 Written for Destin, 2026-09-03, before buying `youcoded.ai`. Every fact about the
 repo below was checked against the code on that date; every price and rule about
@@ -14,7 +16,7 @@ the outside world came from a September 2026 web search (sources at the end).
 Nothing here is legal advice — it is the map to bring to a one-hour lawyer
 conversation, so that hour is spent on decisions instead of discovery.
 
-## Status as of 2026-10-01 (read this first)
+## Historical status as of 2026-10-01 (superseded by the current status above)
 
 - **Trade name "YouCoded" approved** (by 2026-10-01). **Bank: Mercury.**
 - **Windows signing DONE** — Destin chose *individual* validation; releases and master betas are
@@ -75,7 +77,7 @@ Apple Developer Program + Google Play Console as the organisation.
 Android CC-pin wording once Destin decides (open questions below, items 2–6).
 
 **Where things live.** Screen-by-screen filing guide, taxes, city rules, liability dos/don'ts:
-`2026-09-03-arizona-llc-formation-guide.md` (this folder). Destin's exact values, EIN, the
+`docs/active/investigations/2026-09-03-arizona-llc-formation-guide.md` (originally alongside this report). Destin's exact values, EIN, the
 signed-document drafts and per-service answers (Azure, D-U-N-S, DMCA): private brain,
 `~/system/legal/` (`README.md` = situation, done, remaining, calendar; `filing-worksheet.md` = values). Company PDFs (Articles, CP 575, ACC record):
 `~/Documents/destins-adventures-llc/`. Every remaining launch item: cards #28, #31 and #45.
@@ -620,7 +622,7 @@ Tick these off here; each unblocks a Claude session listed in the cards (#28, #3
       (3–4 week review, $10 on approval). **Do not add the first app to App Store Connect before that
       approval**: the Apple developer name "YouCoded" can only be set then, once. EIN obtained 2026-09-03.
       Still open from this step: the business bank account. Walkthrough:
-      `2026-09-03-arizona-llc-formation-guide.md` (this folder).
+      `docs/active/investigations/2026-09-03-arizona-llc-formation-guide.md` (originally alongside this report).
 - [ ] **D-U-N-S number** at dnb.com (free, 1–2 weeks; the slowest step — start it with the LLC).
 - [x] **Register a DMCA agent** — done 2026-09-03, registration DMCA-1079861, in the LLC's name.
 - [ ] **Trademark**: search tmsearch.uspto.gov for "YouCoded", then file class 9 ($350) in the LLC's

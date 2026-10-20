@@ -1,13 +1,15 @@
 ---
 date: 2026-09-03
-status: active
+status: superseded
 type: investigation
 topic: macOS 1.3.0-beta.72 is unopenable (unsigned bundle, no Gatekeeper override) — plus verification of an external postmortem's three findings, one of which is a false positive
 ---
 
 # macOS beta.72: what a tester's postmortem got right, and what it got wrong
 
-> **Status 2026-10-16:** incident fixed: ad-hoc signing plus `verify-mac-signature.sh` merged 2026-09-04 (youcoded 2c369762). What remains (a real Apple Developer ID with notarization, and the updater re-quarantining a downloaded update) is card #28. Left in `active` only as the reference for that card.
+> **Archived / superseded — 2026-10-20:** the unsigned-bundle regression was fixed in September; Developer ID signing and notarization are now merged and verified for both Mac architectures (app PR #655, closed card #28). Public **1.3.1** downloads remain unchanged until the next approved release. Current guidance: `docs/build-and-release.md`; evidence: `docs/archive/plans/2026-10-19-apple-signing.md`.
+>
+> **The findings below describe the September artifact, not current code.** In particular, the old claim that the updater performs no integrity verification is superseded: `update-service.ts` calls `verifyDownloadedUpdate`, which checks the signed manifest, version, file size and SHA-256 before launch. The signing task verified quarantined first launch, not the updater's quarantine behavior; do not infer an update-flow test from it. The separate unsigned/uncapped announcement finding remains tracked by **card #86(c)**, not closed signing card #28.
 
 A Mac tester (macOS 26.5.2, Apple Silicon) could not launch `1.3.0-beta.72`, and their
 Claude session produced two reports: a Gatekeeper diagnosis and a fuller postmortem of a
@@ -70,7 +72,7 @@ electron-builder's template; and Dependabot no longer auto-bumps electron-builde
 The check whose absence let this ship for six weeks is pinned by
 `desktop/tests/verify-mac-signature.test.ts`.
 
-**Still open:** ad-hoc is not Developer ID. Users will still meet the "Apple cannot verify
+**Historical remaining gap (now resolved; see status above):** ad-hoc is not Developer ID. Users will still meet the "Apple cannot verify
 this" wall — they will simply have a button to get past it again. Notarization remains the
 real fix. electron-builder 26.15.3 warns that ad-hoc + hardened runtime can need the
 `com.apple.security.cs.disable-library-validation` entitlement; v1.2.4 shipped in exactly

@@ -45,9 +45,12 @@ needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `sav
   changing its baseline disk.
 - **The clock is reset after every restore** (the guest wakes believing it is still the save
   moment): Windows via `guest-set-time` *with an explicit time* (no-argument form re-reads the
-  stale RTC), Ubuntu via `sudo date`. The Mac has no passwordless sudo, so its clock runs behind
-  until macOS re-syncs on its own — harmless for install testing; give Destin's Mac password to a
-  session and it can add a sudoers entry like Ubuntu's.
+  stale RTC), Ubuntu via `sudo date`, and Mac via guest-only passwordless sudo
+  (`sudo -n date -u …` in `vm.sh`'s `sync_clock`). Check guest UTC time before
+  certificate/network tests; do not assume a cold boot or failed SSH probe synced it.
+  The existing Mac test account's sudo access was verified on 2026-10-19; no new sudoers
+  setup or host privilege change is needed.
+  <!-- verify: {"path": "scripts/vm/vm.sh", "contains": "mac[)].*sudo -n date"} -->
 - **Files arrive over HTTP from `~/vms/serve`** (host `127.0.0.1:8010`, guest `10.0.2.2:8010`) and
   get the browser's mark: Windows `Zone.Identifier` (ZoneId=3), Mac `com.apple.quarantine`. Without
   it SmartScreen and Gatekeeper never assess the file, which is the whole point.
