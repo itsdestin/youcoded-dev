@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Recovery readiness, approved shared blur, post-crash storage/claim/steer safety and operation-scoped local/remote adoption fixes complete on isolated source. Final desktop verification: 10277 tests, 36 skips, 400 screens and 7 journeys green; Android shared backend packaged and 108 unit tests green. Focused durability/App reviews clear.
-Next: Reconcile current app master overlaps/conflicts in an explicitly authorized integration pass, then review and verify the combined tree before publishing/closing.
-Blocked: No commit/merge/push permission; source remains uncommitted. Read-only probe against app origin/master 2cbea2563: 95 incoming commits, 27 overlaps, 11 text conflicts. Previous runtime timings predate final safety follow-up; full native-runtime/device build not verified.
+Done: Integrated recovery/readiness/draft/claim fixes and approved blur with app master 2cbea2563; all conflicts resolved. Combined verify: 10606 tests, 36 skips, 422 screens, 8 journeys plus all gates; Android shared backend package and 108 unit tests green; fresh focused integration reviews clear. Actual 16-history stalled-tool recovery visible in 2.96s, prefixes unchanged. Superseded records archived; current record docs/active/plans/welcome-back-tools-readiness.md.
+Next: On explicit shipping authorization, create/review feature commits, run public-repo secret scan and remote/CI gates, publish/merge, then archive the current plan/design, close #163 with the actual remote ref and clean only confirmed merged session worktrees.
+Blocked: No remaining known integration finding in reviewed scope. Source/docs are local and staged, not feature-committed or published. Full native-runtime/device packaging and universal crash/disk-full exactly-once guarantees are not claimed.
 
 Chats
 - 2026-10-20 session/welcome-back-recovery: chat started
