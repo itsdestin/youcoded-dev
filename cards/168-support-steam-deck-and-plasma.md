@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support, session/168-swipe-release-integration
 ---
 Progress
-Done: Merged Swipe Keyboard 0.2.0 into origin/main at 471d454; tag pushed. Protected SteamOS Desktop combined production input/predictions/languages/privacy passed. Actual supported update 3.8.14 to 3.8.28 retained app/settings and passed post-update input/privacy. Fedora 44 x86_64 Plasma Mobile real RPM input and exact restoration passed. Final source and download hashes verified; upload to draft release in progress.
-Next: Publish and verify v0.2.0 downloads, then retain this card for unfinished ARM64/glibc and musl build/session acceptance. Gaming Mode remains deferred beyond Desktop v1.
-Blocked: ARM-phone packages, physical Deck/phone performance and musl remain unverified. Do not describe x86 VM Mobile acceptance as ARM phone support. Host keyboard unchanged.
+Done: Published Swipe Keyboard v0.2.0: https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.2.0 . Source merged/pushed to main at 471d4546be5af8f14772df6f2c7196c88c64d064. Final Flatpak, Fedora RPM, complete source and checksums published; all four public download URLs returned HTTP 200 and GitHub upload digests matched local files. Protected SteamOS input/prediction/language/privacy and actual supported 3.8.14 to 3.8.28 update survival passed. Fedora 44 x86_64 Plasma Mobile minimum real-input/restoration passed. Install/update/removal/language settings instructions published.
+Next: Remaining platform work is ARM64/glibc and musl build/load/session acceptance; physical device and broader application coverage remain unverified. Gaming Mode deferred beyond Desktop v1. Preserve original feature/platform worktrees and VM evidence.
+Blocked: No ARM-phone package or ARM/physical-phone certification. Do not imply x86 Mobile results finish ARM support. Host keyboard and running YouCoded unchanged.
 
 Chats
 - 2026-10-20 session/168-swipe-release-integration: chat started
