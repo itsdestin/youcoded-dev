@@ -2,6 +2,8 @@
 
 status: shipped
 
+> Historical experiment checkpoint, superseded by [FINAL.md](FINAL.md). The production implementation subsequently shipped in app PR #657. Commands and relative raw-evidence paths below refer to private archived probes/captures, **not executable files published in this directory**; FINAL.md gives their retained location. The original experimental results and caveats remain unchanged.
+
 ## User-proposed alternative (Q5 Other)
 
 Instead of assuming @ expansion/preloaded attachments, stage ordinary user text beginning `Read this entire file: "<absolute path>"`, followed by the task. The user proposed this in `claude-queues.input-scope.answers.json`; the idle-only file option was not selected.

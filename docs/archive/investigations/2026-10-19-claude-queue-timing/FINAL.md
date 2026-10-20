@@ -28,6 +28,16 @@ Verified feature head: `605f0d4977d050bd2a9fc70a536b88234da522fd`; ancestry to r
 - Actual earlier GUI: ordering, edit/remove/attachments, Stop, Send now and Clear/resume. Deterministic tests cover fresh task plus two queued messages after dismissal. Additional slow-tool post-dismiss walkthrough was not run after its isolated listener stopped; do not upgrade that limitation into a pass.
 - Final tutorial repair was observed RED before implementation; four focused files / 32 tests passed twice, required desktop verification passed, and the same tip DOM node survived simulated busy/idle transitions in the isolated workbench.
 
+## Evidence lookup after worktree removal
+
+Workspace archive: https://github.com/itsdestin/youcoded-dev/pull/283. Card #169 is merged; both session worktrees and their feature branches were removed after remote ancestry checks. Do not resume the deleted `session/169-claude-message-queues` worktree or treat the original plan's unchecked boxes as pending work.
+
+Local-only evidence is preserved under `~/YouCoded-Test-Builds/claude-queues-169-evidence/`:
+
+- `session-evidence.tar.gz`: original active-design/investigation paths, raw captures, probes and intermediate evidence. The remaining 784 untracked evidence files were checked byte-for-byte against this archive before cleanup.
+- `final-integration-evidence.tar.gz`: final scratch reports, integrated verification output and the archived design/investigation records. Both archives passed gzip integrity validation.
+- Key members include `scratch/169-dismiss-final/REPORT.md`, `scratch/169-buddy-flicker/REPORT.md`, and `scratch/verify-20261019-190923-189575/`. Earlier documents' scratch, runtime and capture paths refer to archive members, not files shipped in this repository. These archives are private evidence, not release downloads.
+
 ## Boundaries and retained evidence
 
 The separate Linux test copies are not production updates. Version `1.3.1-cc-queues.2` predates the final tutorial-only repair and upstream integration. No release tag, installed production update or new paid evaluation was performed. Windows/macOS runtime and Android device interaction were not exercised here; CI APK production is distinct from device acceptance.

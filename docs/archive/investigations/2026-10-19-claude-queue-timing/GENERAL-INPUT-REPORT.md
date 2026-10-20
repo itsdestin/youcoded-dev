@@ -2,6 +2,8 @@
 
 status: shipped
 
+> Historical experiment checkpoint, superseded by [FINAL.md](FINAL.md). Later Q5 decisions and successful follow-up probes supersede the pending/failing scope conclusions below. Reproduction commands refer to private archived probes/captures, **not files present in this repository directory**; FINAL.md gives their retained location. Preserve these early observations as history, not current implementation instructions.
+
 ## What was checked
 
 No-account real CLI2.1.303, local fake API, isolated network/PID namespaces, fresh HOME, actual source11 production pty-worker.js through its normal fork/IPC interface. No app source or user profile was changed by these experiments. `worker-fence-probe.mjs` records the variants; output folders are separate.
