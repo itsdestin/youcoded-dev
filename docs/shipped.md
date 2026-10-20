@@ -875,3 +875,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-20 #28 Sign the Mac app so it opens without warnings (https://github.com/itsdestin/youcoded/pull/655 (7c0a46e1c; release deferred))
 - [x] 2026-10-20 #169 Claude message queues on par with native sessions (itsdestin/youcoded#657 (a00cb691604c4013d50f1b15f96011bb1d37a27c))
 - [x] 2026-10-20 #170 Add offline next-word prediction to Swipe Keyboard (https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.2.0)
+- [x] 2026-10-20 #171 Add language and regional profiles to Swipe Keyboard (https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.2.0)

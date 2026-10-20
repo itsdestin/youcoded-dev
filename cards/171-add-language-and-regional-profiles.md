@@ -1,7 +1,7 @@
 ---
 id: 171
 title: Add language and regional profiles to Swipe Keyboard
-stage: planning
+stage: merged
 tags: feature, swipe-keyboard
 branch: 171-add-language-and-regional-profiles
 finish: Reviewed language/profile foundation and explicit per-locale supported or blocked matrix with Unicode/layout/model/dictionary compatibility and tests; no unsupported-language claims.
