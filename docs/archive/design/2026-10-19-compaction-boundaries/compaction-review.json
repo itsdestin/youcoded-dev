@@ -1,0 +1,39 @@
+{
+  "title": "Keep compaction where it happened",
+  "key": "compaction-boundaries-review",
+  "out": "compaction-review.html",
+  "images": "images/compaction-review",
+  "stage": "review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light", "midnight", "halftone-dimension"],
+  "crops": {
+    "compaction-desktop": ["compaction", "desktop", "1440x260+0+530"],
+    "compaction-phone": ["compaction", "phone", "390x300+0+400"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Chat",
+      "path": "An assistant reply that continues after compaction",
+      "crop": "compaction-desktop",
+      "headline": "New text stays below the compaction divider.",
+      "changed": "The divider stays at the break inside the reply instead of following the reply as it grows.",
+      "notice": "You can open the summary and continue reading below it. Running tools and the reply's accounting stay intact.",
+      "risk": "Messages above the divider remain readable; only messages actually summarized are faded.",
+      "highlight": { "box": [1, 37, 98, 60] }
+    },
+    {
+      "id": "C-2",
+      "surface": "Chat on a phone",
+      "path": "A compaction divider with a long freed-token label",
+      "crop": "compaction-phone",
+      "themes": ["light"],
+      "labels": { "before": "Before phone wrapping fix", "after": "With phone wrapping fix" },
+      "headline": "The summary action stays visible on a phone.",
+      "changed": "A long divider wraps instead of clipping the summary button beyond the chat edge.",
+      "notice": "View summary stays reachable at phone width, with the same expandable summary as desktop.",
+      "risk": "The divider can take two lines on a narrow screen.",
+      "highlight": { "box": [6, 39, 90, 22] }
+    }
+  ]
+}
