@@ -10,9 +10,9 @@ why: Destin: "fully automate the maintenance burden ... automatically works with
 work: session/165-swipe-release-pipeline
 ---
 Progress
-Done: Follow-up scope recorded only; no scheduled publication, signing infrastructure, native update channel or maintenance automation enabled for the first release.
-Next: After the Reddit launch, design the gated routine-rebuild policy and signed Arch/COPR channels. Include --init/process reaping and ephemeral pacman-key initialization/normal keyring refresh for reusable test containers: a long-lived container exhausted its PID budget with unreaped GPG children during repeated distro switches.
-Blocked: Explicitly deferred by Destin so it does not delay the first Reddit release.
+Done: Owner reactivated narrow release/merge automation after v0.2.0 omitted Arch. Read actual YouCoded CI/release code and live merge protections; approved lean required-target/one-publish gate design. Isolated source branch ci/165-swipe-release-pipeline. Native KWin valid empty-subgroup regression fixed test-first: 3 failing cases before correction, full integration73PASS, fresh read-only actual host helper probe PASS, narrow review PASS. Host safely rolled back to0.1.0-3; no new live activation.
+Next: Implement required Arch/Fedora/Deck package manifest, version/source/hash validator and automatic read-only PR/main checks plus one trusted publication job. Run actual candidate CI; enable verified required completion check including admins. Complete corrected native user update and corrective release only with real evidence.
+Blocked: Pipeline worker12943089-e5a2-4237-97e5-cc3717eb9d2a active; no remote candidate CI yet. Broad scheduled maintenance, signing, AUR/COPR, ARM and Gaming are not added to this scope. Existing v0.2.0 source/public downloads preserved.
 
 Chats
 - 2026-10-20 session/165-swipe-release-pipeline: chat started
