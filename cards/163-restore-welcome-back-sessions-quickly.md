@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Crash recovery: paired-history normalization, portable-summary retention, explicit reconstructed restore mode and lifecycle regressions; desktop verification passed. Current-build repairs for three conversations and an affected specialist are backed up, validated against installed 1.3.1, and queued after app exit.
-Next: User closes YouCoded and keeps it closed until completion notification; inspect deferred repair outcome on return. Source changes remain local for review.
-Blocked: Live transcript replacement awaits app exit; no commit, merge, push or app installation authorized.
+Done: Recovery readiness, approved shared blur, post-crash storage/claim/steer safety and operation-scoped local/remote adoption fixes complete on isolated source. Final desktop verification: 10277 tests, 36 skips, 400 screens and 7 journeys green; Android shared backend packaged and 108 unit tests green. Focused durability/App reviews clear.
+Next: Reconcile current app master overlaps/conflicts in an explicitly authorized integration pass, then review and verify the combined tree before publishing/closing.
+Blocked: No commit/merge/push permission; source remains uncommitted. Read-only probe against app origin/master 2cbea2563: 95 incoming commits, 27 overlaps, 11 text conflicts. Previous runtime timings predate final safety follow-up; full native-runtime/device build not verified.
 
 Chats
 - 2026-10-20 session/welcome-back-recovery: chat started
