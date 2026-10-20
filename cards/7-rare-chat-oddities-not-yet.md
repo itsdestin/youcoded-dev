@@ -15,9 +15,9 @@ vision: chat.converse
 work: session/7-compaction-boundaries
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: Compaction boundary repair approved in chat: stable streaming/history/card ordering, operation-safe failure/cancel, accurate source times, phone summary wrapping; required desktop verification 7730 passed/36 skipped, Android JVM 36 passed, final independent review clear. Source remains local/uncommitted on session/7-compaction-boundaries.
+Next: Preserve approved local changes pending explicit commit/publication authorization; current master has advanced and is not integrated. Other requests on this broad card remain open.
+Blocked: Not shipped: no commit/push/merge authorization. Full Android packaging blocked by existing apk-version redistribution gate; Windows/macOS and device runtime not verified.
 
 Chats
 - 2026-10-20 session/7-compaction-boundaries: chat started
