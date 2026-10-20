@@ -17,9 +17,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Merged appPR655 to remote master7c0a46e1c with exact tested-tree equality. Protected Developer ID signing/notarization enabled; both native apps/DMGs accepted by Apple, final-image checks and quarantined Intel VM launch passed. Final exact-head PR39349274133/full-platform39349267916 and localfull/site checks passed. Final download copy removes signingcallouts and keeps originalclearAndroidpermission/Samsunghelp. Temporary access removed; existingVM app/profiles restored and stopped; evidence retained.
-Next: Implementation complete. Public installer release intentionally deferred; existing1.3.1 downloads unchanged. Workspace references/archived plan are being merged separately; release tagging/publication requires a new instruction.
-Blocked: No implementation blocker. No release tag, production install or live-app change performed. Archived historical announcement/updater sweep observations were not claimed as fixes by this signing task.
+Done: Complete: appPR655 signing/copy merged7c0a46e1c; deterministic post-merge Node22CI reporter repairPR656 merged1f7629142 after126semantic cases/realV8regression and native PR/fullplatformchecks passed. WorkspacePR282 merged, plan archived, MAP/build/VM guidance updated. Both architectures notarized/issuesnull; quarantined Intel VM normalOpen/onboarding verified/restored. Approved downloadcopy deployed and matched live modal script. Temporary signing access removed; evidence/installers preserved outside worktrees.
+Next: Public installer release intentionally deferred; current public version1.3.1 remains unchanged. Future release tagging/publication requires separate owner instruction. No further work for this implementation card.
+Blocked: None for this implementation. No release tag, production install, live-app mutation or paid harness evaluation. Final session-only branch/worktree cleanup is underway after remote ancestry verification.
 
 Chats
 - 2026-10-20 session/28-apple-signing: chat started
