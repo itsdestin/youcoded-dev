@@ -15,11 +15,12 @@ vision: yours.look.buddy
 work: session/85-windows-131-regressions, session/85-buddy-floater-regression
 ---
 Progress
-Done: Local/unshipped floater fixes: fixed-role native bounds stop XWayland fractional-scale chat growth; intent-based toggles and a cancelled/owned hide timer fix rapid reopen races. All three new manager regressions observed red→green (41 manager tests). Real final-source XWayland full group stable321.33×480 for20cycles;21.1ms reopen remained visible past old deadline. Native-Wayland chat-only stable320×480. Final full verify passed20,612tests47skips plus all gates; independent review found no actionable findings. Separate Office test assertion now awaits RPC signal.
-Next: Needs decision on repairing Windows/macOS test guests before native cross-platform certification; current source remains local/uncommitted. The three original buddy items remain open and unchanged. Existing Direct Controls .4 binary/launcher and live app were not replaced.
-Blocked: Windows guest stayed in updates without interactive desktop; macOS booted Recovery/noSSH. Zero native cycles executed on either. Both disposable guests stopped; no baseline/live-app edits. LiveKWin full-group integration and mixedDPI transitions are not runtime-certified.
+Done: Sizing/toggle session shipped and closed: app PR648 https://github.com/itsdestin/youcoded/pull/648 (bbcadbe9054fde689c1a2fceeb3cdd9cc481f071); workspace PR278 https://github.com/itsdestin/youcoded-dev/pull/278 (cc3ac6b19406add1ca3f68d342fbc8c2ac11020a). Required app Linux/Android and full three-platform CI passed. Merged app full verification:20,612passed/47skipped. Workspace content CI39278995092 passed; final empty CI-refresh commit has identical checked tree. Scoped native Linux/Windows/macOS placement/toggle tests passed; measured evidence and approved VM readiness repairs are archived/preserved.
+Next: This session is complete. Original three unrelated buddy requests remain open and unchanged; do not close the entire card. Shipped record: docs/archive/investigations/2026-10-19-buddy-native-sizing.md. New release/installer and replacing either running app are separate actions.
+Blocked: No blocker for the shipped sizing/toggle correction. Native fixture coverage is narrower than fullrenderer/pointer/mixedDPI/multimonitor/arm64Mac acceptance; liveKWin fullgroup and unattendedMac picker timeout remain uncertified.
 
 Chats
+- 2026-10-19 session/85-buddy-floater-regression: chat started
 - 2026-10-19 session/85-buddy-floater-regression: chat started
 - 2026-10-19 session/85-buddy-floater-regression: chat started
 - 2026-10-18 session/85-windows-131-regressions: chat started

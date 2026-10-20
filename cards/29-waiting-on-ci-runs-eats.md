@@ -10,14 +10,22 @@ created: 2026-10-15
 summary: Releases: test runs take an hour for small fixes, bug-fix releases can't ship on their own, and six build loose ends remain.
 area: Workspace
 vision: everywhere.added.update
-work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe
+work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record
 ---
 Progress
-Done: CI first pass implemented locally: fail-closed desktop classifier, cheap preflight, parallel full test/installer jobs, stable completion gates, PR-only stale-run cancellation, candidate-root whole-graph card-only workspace lane. Independent task and final reviews approved. Local445 workspace tests,26 app policy/beta tests,9 workflow guards and required desktop verify pass.
-Next: Authorize implementation commits/candidate pushes and GitHub CI validation without merging, to prove actual status/scheduling/fresh packaging and measure timing. Broader selectors/sharding/caches/protection migration remain deferred.
-Blocked: No local implementation blocker; remote acceptance awaits candidate-publication authorization.
+Done: Merged full-app CI checkpoint: app PR646 (ba8374dc) and workspace PR279 (e9fcc896). Final current-tree Linux4/Windows6/macOS4, four Linux formats/default compression and Android gates passed. Fresh-source warm Linux+Android measured4m41; compiled-cold7m03. Cache payload/signature equivalence, Kotlin invalidation, intentional failure and active supersession proven. Hidden animation/approval polling defects fixed with deterministic tests.
+Next: Future CI speed work: start with the merged handoff docs/active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md (https://github.com/itsdestin/youcoded-dev/blob/master/docs/active/handoffs/2026-10-19-ci-checkpoint-and-next-steps.md). Repeat uncontended changing-source warm/cold measurements; target cold/default RPM and pacman packaging plus Windows/macOS shard and setup tails, preserving all coverage and source/payload proofs. Historical six successful matched PRs from Oct15-16 had median24m26s (mostly21-26m); checkpoint ordinary warm4m41s, compiled-cold7m03s, final default PR7m31s and full-platform8m18s are route-specific observations, not controlled comparisons or an SLA. Preserve serial source collection; review unique workspace PR272 work separately rather than merging old experiments wholesale. Keep unrelated release/build upkeep under this umbrella.
+Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
 
 Chats
+- 2026-10-19 session/29-ci-followup-record: chat started
+- 2026-10-19 session/29-full-ci-five-minute: chat started
+- 2026-10-19 session/29-full-ci-source-probe: chat started
+- 2026-10-19 session/29-full-ci-five-minute: chat started
+- 2026-10-19 session/29-full-ci-five-minute: chat started
+- 2026-10-19 session/29-full-ci-five-minute: chat started
+- 2026-10-19 session/29-full-ci-five-minute: chat started
+- 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-full-ci-five-minute: chat started
 - 2026-10-19 session/29-full-ci-source-probe: chat started
 - 2026-10-19 session/29-full-ci-five-minute: chat started

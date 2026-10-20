@@ -1,7 +1,7 @@
 ---
 id: 169
 title: Claude message queues on par with native sessions
-stage: planning
+stage: build
 tags: claude-code-integration, chat-data, sessions, feature
 vision: chat.converse.queue
 branch: 169-claude-message-queues-on-par
@@ -10,11 +10,19 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Prepared implementation plan and fresh design review. Safely imported tested direct-control foundation into169, preserved source11, independently copied matching deps; types and677 focused tests passed. No queue service implemented yet. Actual-worker long Unicode succeeded only after exact composer verification; file-bearing batch delivery did not pass equivalent checks.
-Next: Answer single Q5 scope reopener: allow attachments/@file messages to wait until idle in first test build, preserving FIFO/edit/remove, or require full input parity first. Then revise delivery protocol/state machine per accepted C1-C3/I1-I5 design findings and implement shared native-UI backend. Baseline verification failure repairs are separately assigned.
-Blocked: Await Q5 answer at docs/active/design/2026-10-19-claude-queues/claude-queues.input-scope.json. Cannot silently weaken approved batch timing for files or claim current short-line proof covers general input. No testable queue build yet.
+Done: Integrated queue passed full desktop verification before final GUI/review. Real GUI verified FIFO across batches, edit preserving attachments, cancel preventing delivery, Stop retaining queued intent. GUI found duplicate Clear identity race; deterministic RED/GREEN fix compiled. Final review found7 additional recovery/lifecycle gaps now assigned for fixes.
+Next: Fix unknown-enqueue duplicate risk, durable edit transfer/reload, SendNow cleanup ordering, restored uncertain CheckDelivery, safe epoch/retirement lifecycle, Stop independent of bridge health, and refused-attachment cache cleanup. Then rerun fullverification and realGUI Clear/resume/restart/failure cases and package. Existing UI reused; no paidcalls.
+Blocked: No testable queue package yet. Do not claim prior green full suite covers final-review failure cases; app source fixes in progress. User .4 test copy remains unaffected.
 
 Chats
+- 2026-10-20 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
+- 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
