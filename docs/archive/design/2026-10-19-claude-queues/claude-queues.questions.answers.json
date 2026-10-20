@@ -1,0 +1,36 @@
+{
+ "deck": "169-claude-queues-questions",
+ "started": "2026-10-19T06:47:44.678Z",
+ "submitted": "2026-10-19T06:48:31Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "batch",
+   "t": 1792392510148,
+   "seconds": 11,
+   "theme": "golden-sunbreak"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "current-only",
+   "t": 1792392510148,
+   "seconds": 11,
+   "theme": "golden-sunbreak"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "restore-paused",
+   "t": 1792392510148,
+   "seconds": 11,
+   "theme": "golden-sunbreak"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "keep-paused",
+   "t": 1792392510148,
+   "seconds": 11,
+   "theme": "golden-sunbreak"
+  }
+ }
+}
