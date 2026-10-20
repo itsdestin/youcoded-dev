@@ -17,9 +17,9 @@ work: session/android-setup-20261014, session/android-setup-closeout, session/an
 vision: everywhere.platforms.android, everywhere.added.play
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: ChatGPT account-access subtask merged to master in youcoded#664 (520d503fe): Android local sign-in enabled; remote host card/status/usage retained with host-device guidance; narrow provider actions no longer overlap. UI approved; local desktop/JVM checks and CI Linux/Android APK gates passed. Broader Android rebuild remains open.
+Next: Verify ChatGPT browser sign-in on an updated Android test build; continue the existing broader Android rebuild phases.
+Blocked: No connected phone was available for real OAuth verification; no installation or release was requested.
 
 See also #31: The Android rebuild in 1 aims at a Google Play listing; 31 is the Play account and store paperwork that listing needs.
 
