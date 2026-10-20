@@ -10,9 +10,9 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Claude/native shared queue, direct controls integration, FIFO/edit/attachments/Stop/Clear persistence, rapid-send race fixes, exact delivery recovery, direct Dismiss restoring future queue cycles, idle-send flicker removal, tutorial-tip flicker repair. Final dismissal 552 focused tests; 30/30 actual sends after dismiss+restart; final tip repair required desktop verify green. Linux test .2 delivered (predates tip-only repair).
-Next: Explicit commit/merge authorization, integrated upstream verification and final close-out; no feature expansion.
-Blocked: Not merged: implementation remains uncommitted. Android/non-Linux runtime not verified. Additional slow-tool post-dismiss walkthrough unrun; deterministic batch tests and real burst recovery green. Do not interpret close-out base-tip ancestry as shipped implementation.
+Done: Merged app PR #657 at a00cb691604c4013d50f1b15f96011bb1d37a27c and workspace archive PR #283 at f27fd4af85f150856ee866b6932a18349f419332. Integrated desktop verify: 8614 tests, all gates; screenshot tools 58/58; Android JVM36/36; required CI Android APKs and four Linux packages green. Direct dismissal/restart real burst30/30; tutorial flicker fixed. Branches/worktrees removed after remote ancestry and evidence backup verification.
+Next: None for this completed item. Broader direct-control/native-queue follow-ups remain under existing #11/#12/#62.
+Blocked: No merge blocker. No release or installed-app update. Windows/macOS/device runtime not exercised. Optional slow-tool post-dismiss walkthrough unrun; deterministic batch and actual rapid-recovery checks passed. Test .2 predates final tip fix and upstream integration.
 
 Chats
 - 2026-10-20 session/169-claude-message-queues: chat started
