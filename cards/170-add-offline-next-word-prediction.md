@@ -1,7 +1,7 @@
 ---
 id: 170
 title: Add offline next-word prediction to Swipe Keyboard
-stage: planning
+stage: merged
 tags: feature, swipe-keyboard
 branch: 170-add-offline-next-word-prediction
 finish: Reviewed next-word feature with tested correction-to-prediction transitions, safe insertion and regression coverage; exact platform package acceptance before release.
