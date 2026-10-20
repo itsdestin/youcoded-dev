@@ -1,13 +1,12 @@
 ---
 id: 28
 title: Sign the Mac app so it opens without warnings
-stage: polish
+stage: merged
 priority: P1
 summary: Mac downloads aren't signed by Apple, so they can open as "broken"; Apple refused the company account and signing waits on that.
 area: Leaving & updating
 side: behind
 platform: Mac only
-paused: Deferred to 1.3.2 by Destin; not a 1.3.1 release blocker.
 tags: dev-workspace, release, regression, bug
 work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing
 vision: everywhere.added.macsign
@@ -18,9 +17,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Authorized merge/close in progress. Integrated current app master946dbb4fa as candidatecd96688c5 without conflicts; newer CI/build work preserved. Local full verification20703passed/79skipped and22sitetests/allgates passed; final fresh review has no blockers. AppPR655 open. Workspace master integrated with both append-only ledger entries retained; updated signing MAP and reusable-VM guide committed/pushed. All temporary signing rules gone.
-Next: Wait for exact-head PR run39347454611 and full-platform39347453285, then merge/push appPR655. Activate docs/archive task plan, merge workspacePR, close#28 and remove only this session branches/worktrees. Final evidence already preserved beside signed installers/integration-evidence.
-Blocked: External CI still running; Android compile/JVM and many desktop shards already passed. No release tag or public installer publication authorized; remain on public1.3.1.
+Done: Merged appPR655 to remote master7c0a46e1c with exact tested-tree equality. Protected Developer ID signing/notarization enabled; both native apps/DMGs accepted by Apple, final-image checks and quarantined Intel VM launch passed. Final exact-head PR39349274133/full-platform39349267916 and localfull/site checks passed. Final download copy removes signingcallouts and keeps originalclearAndroidpermission/Samsunghelp. Temporary access removed; existingVM app/profiles restored and stopped; evidence retained.
+Next: Implementation complete. Public installer release intentionally deferred; existing1.3.1 downloads unchanged. Workspace references/archived plan are being merged separately; release tagging/publication requires a new instruction.
+Blocked: No implementation blocker. No release tag, production install or live-app change performed. Archived historical announcement/updater sweep observations were not claimed as fixes by this signing task.
 
 Chats
 - 2026-10-20 session/28-apple-signing: chat started
