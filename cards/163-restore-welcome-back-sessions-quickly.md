@@ -1,7 +1,7 @@
 ---
 id: 163
 title: Restore Welcome back sessions quickly and safely
-stage: build
+stage: merged
 tags: chat-data, desktop, performance, bug
 vision: chat.converse.resume
 branch: 163-restore-welcome-back-sessions-quickly
@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Integrated recovery/readiness/draft/claim fixes and approved blur with app master 2cbea2563; all conflicts resolved. Combined verify: 10606 tests, 36 skips, 422 screens, 8 journeys plus all gates; Android shared backend package and 108 unit tests green; fresh focused integration reviews clear. Actual 16-history stalled-tool recovery visible in 2.96s, prefixes unchanged. Superseded records archived; current record docs/active/plans/welcome-back-tools-readiness.md.
-Next: On explicit shipping authorization, create/review feature commits, run public-repo secret scan and remote/CI gates, publish/merge, then archive the current plan/design, close #163 with the actual remote ref and clean only confirmed merged session worktrees.
-Blocked: No remaining known integration finding in reviewed scope. Source/docs are local and staged, not feature-committed or published. Full native-runtime/device packaging and universal crash/disk-full exactly-once guarantees are not claimed.
+Done: Merged/pushed app PR https://github.com/itsdestin/youcoded/pull/662 as a6c47f79ae4120aea48e0e5c514a420ce81d5de7. Protected CI, four Linux test shards/packages and Android JVM/debug/releaseTest builds passed; merged tree exactly matches verified candidate. Local 10606 tests/422 screens/8 journeys; actual stalled-tool recovery 2.96s, copied prefixes unchanged. Completed records: docs/archive/plans/welcome-back-tools-readiness.md and archived blur approval.
+Next: No remaining implementation for this recovery task. Workspace archive publication/cleanup is being completed; independent stronger report-acceptance protocol boundary remains on #71, and close-out tooling false positives remain on #22.
+Blocked: No blocker for shipped recovery. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
 
 Chats
 - 2026-10-20 session/welcome-back-recovery: chat started
