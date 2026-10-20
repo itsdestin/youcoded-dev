@@ -11,9 +11,9 @@ why: Sessions reopen one-by-one after a crash or power cut and can take a VERY l
 work: session/welcome-back-recovery, session/163-crash-resume-repair
 ---
 Progress
-Done: Merged/pushed app PR https://github.com/itsdestin/youcoded/pull/662 as a6c47f79ae4120aea48e0e5c514a420ce81d5de7. Protected CI, four Linux test shards/packages and Android JVM/debug/releaseTest builds passed; merged tree exactly matches verified candidate. Local 10606 tests/422 screens/8 journeys; actual stalled-tool recovery 2.96s, copied prefixes unchanged. Completed records: docs/archive/plans/welcome-back-tools-readiness.md and archived blur approval.
-Next: No remaining implementation for this recovery task. Workspace archive publication/cleanup is being completed; independent stronger report-acceptance protocol boundary remains on #71, and close-out tooling false positives remain on #22.
-Blocked: No blocker for shipped recovery. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
+Done: Merged/pushed app PR #662 as a6c47f79ae4120aea48e0e5c514a420ce81d5de7 and archive/workspace PR #287 as b5237db37185db1cd60856be186bd49e8df28257. Both CI gates passed. Source merged tree matches verified candidate; archived records match checked candidate, with one unrelated concurrent #93 bookkeeping entry preserved. Evidence is privately retained outside disposable worktrees.
+Next: Complete. Independent stronger report-acceptance protocol boundary remains under #71, and close-out-tool false positives under #22; those cards stay open.
+Blocked: None for this shipped recovery work. No release/tag, installed-app modification, device-runtime or Windows/macOS execution claim.
 
 Chats
 - 2026-10-20 session/welcome-back-recovery: chat started
