@@ -7,7 +7,6 @@ summary: Mac downloads aren't signed by Apple, so they can open as "broken"; App
 area: Leaving & updating
 side: behind
 platform: Mac only
-paused: Deferred to 1.3.2 by Destin; not a 1.3.1 release blocker.
 tags: dev-workspace, release, regression, bug
 work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing
 vision: everywhere.added.macsign
