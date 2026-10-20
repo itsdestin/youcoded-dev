@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support, session/168-swipe-release-integration
 ---
 Progress
-Done: CorrectSDK6.10.3 diagnosticsOFFproduction rebuild completed buildtree19/profile15/ELFassets/minpermission/preflightchecks, but installed/appInputPanel stationary sensitivecancel fixtureFAILED twice(trackedId7not-1). Candidate0c8ac...preservedFAILED-LOADER, NOTdeployed. SteamOSoriginalNONE/appabsent/rootprotected/cleanstopped/diskhealthy.
-Next: Worker4faf4217-2535-423e-a4b1-16f6b61db893 reproducesinstalledprefixvsbuildtreediscrepancy inownedbuilder, identifiescausebeforeminimalTDDsource/fixturefix. Read deck-installed-cancellation-report.md; noSteamOSboot/exportuntestedcandidate. AftercleanreviewnewproductionbundleandrealprivacyA/B/C, thenOSupdatesurvival.
-Blocked: Installedprefixstationarycanceltestfailsdespitenativebuildtreegreen; rootcauseunknown. No testwaiver/timerdeadline/permission/rootworkaround. Deckv1DesktopONLY, Gamingdeferred. No release/commits/push/hostactivation.
+Done: Merged Swipe Keyboard 0.2.0 into origin/main at 471d454; tag pushed. Protected SteamOS Desktop combined production input/predictions/languages/privacy passed. Actual supported update 3.8.14 to 3.8.28 retained app/settings and passed post-update input/privacy. Fedora 44 x86_64 Plasma Mobile real RPM input and exact restoration passed. Final source and download hashes verified; upload to draft release in progress.
+Next: Publish and verify v0.2.0 downloads, then retain this card for unfinished ARM64/glibc and musl build/session acceptance. Gaming Mode remains deferred beyond Desktop v1.
+Blocked: ARM-phone packages, physical Deck/phone performance and musl remain unverified. Do not describe x86 VM Mobile acceptance as ARM phone support. Host keyboard unchanged.
 
 Chats
 - 2026-10-20 session/168-swipe-release-integration: chat started
