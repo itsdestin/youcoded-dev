@@ -27,6 +27,7 @@ See also #112: 112's remaining item (a), Android joining the shared phone protoc
 
 Chats
 - 2026-10-20 session/1-android-chatgpt-access: chat started
+- 2026-10-20 session/1-android-chatgpt-access: chat started
 
 From the old roadmap (android-only, status in-flight, seen on android, last checked 2026-10-04)
 Rebuild the Android app into a premium, complete mobile equivalent of desktop: the same built-in assistant, local models marked "not available on this device", updates and notifications that arrive, sharing into the app, real file access, touch-first input, and a Google Play listing instead of sideloading. Design-first: a rethought phone default (quick dispatch and search) with the full desktop-narrow UI still reachable. Runs as phases A0–A6 since 2026-09-24: the phone runs the computer's own assistant core and every program ships inside the app (Google Play refuses downloads after install). Unblocked now: A0 (phone experiments) and A1 (Play packaging); A2 (the assistant on the phone) follows once the finished remote-access refactor, feat/one-core, lands. Start at the clean-rebuild plan (docs/active/plans/2026-10-14-android-clean-rebuild-plan.md); the one-core START-HERE is history. Destin 2026-10-05 triage (roadmap-triage-2026-10-05#3): postponed — "1.3.2+. rebuild will be tied to google play/iphone listings."
