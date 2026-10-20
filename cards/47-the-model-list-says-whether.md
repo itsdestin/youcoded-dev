@@ -10,7 +10,7 @@ created: 2026-10-15
 summary: The model picker can be empty on a new or second device, and its rows don't say how fast, costly or smart a model is.
 area: Chat
 side: screens
-work: session/model-picker-tags, session/google-connections-planning
+work: session/model-picker-tags, session/google-connections-planning, session/custom-providers-catalog
 vision: yours.model.tags, yours.model.any
 ---
 Progress
@@ -19,6 +19,7 @@ Next: not decided.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-20 session/custom-providers-catalog: Custom providers know their models (models.dev by base URL + endpoint /models + context field), Add provider UX fixes, and a Refresh model list button on the picker's no-results state. Spec: docs/active/specs/2026-10-20-custom-providers-and-catalog-refresh.md
 - 2026-10-18 session/google-connections-planning: Recovered deferred model-picker idea: show model/provider data-retention and training information, potentially used to warn or block Google-connected chats on unsuitable providers. User deferred this on September 27; enforcement design is not approved. Deferring this UI does not waive Google data-policy checks for #155/#157. Source: 3a59c2cc:docs/roadmap/user-interface.md and docs/active/design/2026-09-26-everyday-actions/proposal.md section 8. Preserve as later work; no model-policy claims have been freshly verified here.
 
 From the old roadmap (local-models, status confirmed, seen on all, last checked 2026-09-06)
