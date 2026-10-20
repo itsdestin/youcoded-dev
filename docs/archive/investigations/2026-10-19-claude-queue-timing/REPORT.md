@@ -4,6 +4,8 @@ work_item: 169
 ---
 # Claude mid-task queue delivery — CLI 2.1.303
 
+> Historical experiment checkpoint, superseded by [FINAL.md](FINAL.md). Original observations below are preserved, not current blockers or implementation instructions. Reproduction commands refer to private archived probes/captures that are **not present in this repository directory**; see FINAL.md for their retained location. For maintained transport tests, start at `youcoded/desktop/test-conpty/test-claude-queue-transport.mjs`.
+
 ## Decision evidence
 
 **Plain PTY Enter reaches the next model request after the current two-tool batch, inside the SAME turn, before the original task finishes. `$.prompt.submit({text, asUser:true})` does not: it waits for idle and starts a separate turn.** Moving that API call into `PostToolBatch` is explicitly refused by the host.

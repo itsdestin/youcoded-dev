@@ -4,7 +4,9 @@ work_item: 169
 ---
 # Follow-up: retain editable head until an actual tool-batch boundary
 
-## Verdict
+> Historical experiment checkpoint, superseded by [FINAL.md](FINAL.md). Original observations below are preserved, not current blockers or implementation instructions. Reproduction commands refer to private archived probes/captures that are **not present in this repository directory**; see FINAL.md for their retained location. For maintained transport tests, start at `youcoded/desktop/test-conpty/test-claude-queue-transport.mjs`.
+
+## Historical verdict
 
 **Feasible in this isolated CLI 2.1.303 experiment for short single-line ASCII messages.** A real `classic.PostToolBatch` hook can remain awaiting a bounded local HTTP response while the terminal accepts a native short text + Enter. An independent observer module sees `prompt.submit` finish `next(e)` successfully **before the fence is released**. The next API request then includes the incoming message in the **same original turn**, before original-task completion. Two successive fenced batches also preserve FIFO with exactly one head handed off at each boundary.
 

@@ -2,7 +2,7 @@
 
 status: shipped
 
-Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c`) after explicit merge authorization. The checklist below is the historical implementation plan, not outstanding work. Final behavior and verification: `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`.
+Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c`) after explicit merge authorization. The steps below are the historical implementation plan, not outstanding work or runnable instructions. Original no-commit/no-publication constraints applied during planning and were superseded by explicit merge authorization. Probes and scratch paths refer to the preserved private evidence archive, not the current repository. Final behavior and verification: `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`.
 
 **Goal:** Reuse the existing native queue strip and its Edit/Remove/Interrupt-and-send-now controls for a durable, host-owned Claude queue, producing an isolated testable Linux build.
 
@@ -10,7 +10,16 @@ Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c
 
 **Tech Stack:** Existing Electron/headless TypeScript backend, React shared renderer, CLI hook modules, authenticated loopback bridge, existing PTY worker, Vitest and isolated scripted-API CLI tests.
 
-## Approved contract and constraints
+## Final amendments to the original plan
+
+- Direct Dismiss was added after real rapid-send failures: retire the old attempt and delivery authority without resending, restore conversation/new queue cycles, and retain older paused intent. No danger popup or permanently blocked-composer proposal shipped.
+- A global paused flag does not prohibit new deliberate work after recovery: fresh intent receives persisted eligibility while older paused items stay paused; FIFO is preserved among eligible messages. Restart removes transient eligibility.
+- Idle-ready sends remain internally tracked but are not projected as transient queue rows. Genuine waiting and unknown delivery remain visible.
+- Unknown enqueue retries retain the original identity; separate active intentional sends do not share a send ID. Edit transfer is durable before host acknowledgement.
+- Original-attempt native receipts plus exact original transcript UUIDs support restart reconciliation; missing proof is never inferred from equal historical text.
+- Final integrated verification and platform limitations are in FINAL.md above; the original verification wish list below is not a claim that every proposed manual scenario ran.
+
+## Original approved contract and constraints
 
 - Sources: `docs/archive/design/2026-10-19-claude-queues/claude-queues.questions.answers.json` Q1=batch, Q2=current-only, Q3=restore-paused, Q4=keep-paused; user explicitly says reuse native UI and proceed to a testable state.
 - No separate Claude queue UI. Reuse `QueuedMessagesStrip`, composer, existing context controls and notices. Paused state may need a truthful label/action text in the same component, not a new panel. Existing Send now can deliberately resume a paused queue; preserve selected-head priority.
@@ -30,11 +39,11 @@ Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c
 
 **Files:** own session11 tracked app diff (except any fix already present in master); new `claude-control-{bridge,plugin,receipts}.ts`, shared/control types, renderer helpers and their tests. Preserve newer master changes in session169.
 
-- [ ] Snapshot source SHA/dirty manifest; prove session169 app is clean before integration.
-- [ ] Apply only this conversation's tested foundation. `git apply --check` currently fails only for `desktop/tests/bash-env.test.ts`; inspect and preserve master's equivalent newer test instead of overwriting it. All other tracked hunks must pass a dry check before applying. Copy only allowlisted own new source/test files, not generated output, private state or unrelated untracked files.
-- [ ] Preserve source session11 unchanged. Do not commit or reset either checkout.
-- [ ] Resolve dependencies independently: package-lock hashes in session11 and169 match. Replace session169's incomplete hardlink farm with an independent copied dependency tree or install into an independent directory; never patch shared inodes.
-- [ ] Run types and the direct-control/renderer/session-channel regressions before queue code.
+- Snapshot source SHA/dirty manifest; prove session169 app is clean before integration.
+- Apply only this conversation's tested foundation. `git apply --check` currently fails only for `desktop/tests/bash-env.test.ts`; inspect and preserve master's equivalent newer test instead of overwriting it. All other tracked hunks must pass a dry check before applying. Copy only allowlisted own new source/test files, not generated output, private state or unrelated untracked files.
+- Preserve source session11 unchanged. Do not commit or reset either checkout.
+- Resolve dependencies independently: package-lock hashes in session11 and169 match. Replace session169's incomplete hardlink farm with an independent copied dependency tree or install into an independent directory; never patch shared inodes.
+- Run types and the direct-control/renderer/session-channel regressions before queue code.
 
 ## Reviewed protocol refinements (round 1 accepted)
 
@@ -56,9 +65,9 @@ Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c
 
 **Operations:** enqueue returns accepted queue identity or an explicit refusal before delivery; remove returns the original full item only if still waiting; prioritize/resume selects a waiting head and lifts pause; pause-for-clear fences all new claims; bind/rebind reconnects live app session to durable conversation; record-admission distinguishes native CAS claim from successful next(e) acceptance; record-acceptance persists that receipt independently of a later transcript UUID; record-transcript confirms only an unambiguous attempt association. Missing/ambiguous association stays uncertain and never auto-replays. Edit uses checkout/ack/cancel, not remove-and-refill. Snapshot returns shared strip rows. Serialize state/store transitions; persistence failure leaves items recoverable and never sends an unrecorded claim.
 
-- [ ] RED tests: FIFO; duplicate send-ID same/different payload; queue cap; edit/remove before and after claim; original attachments returned intact; one claim per boundary; paused queue never drains; restart restores paused; crash mid-claim restores uncertain; corrupt/failed storage; generation replacement; clear pause and identity rotation; close preserves unsent entries.
-- [ ] GREEN minimal service and store, with injected delivery callbacks and publish function. Do not couple tests to Electron or model APIs.
-- [ ] Tests show Stop does not erase/pause waiting user items and unrelated background tasks do not become queue entries.
+- RED tests: FIFO; duplicate send-ID same/different payload; queue cap; edit/remove before and after claim; original attachments returned intact; one claim per boundary; paused queue never drains; restart restores paused; crash mid-claim restores uncertain; corrupt/failed storage; generation replacement; clear pause and identity rotation; close preserves unsent entries.
+- GREEN minimal service and store, with injected delivery callbacks and publish function. Do not couple tests to Electron or model APIs.
+- Tests show Stop does not erase/pause waiting user items and unrelated background tasks do not become queue entries.
 
 ## Task 2 — bounded native delivery adapter and hook fences
 
@@ -70,9 +79,9 @@ Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c
 
 **Evidence:** `docs/archive/investigations/2026-10-19-claude-queue-timing/FENCED-REPORT.md`; `worker-fence-instruction/{image-path,mention}/result.json`; `admission-single/{accept,revoke}/result.json`. Supported short-text proof is not permission to assume arbitrary media/long writes work. Reuse actual worker submit machinery with acknowledgements of write/echo/native acceptance; do not splice plain CR outside its safeguards.
 
-- [ ] RED tests: no queue => immediate release; nested agent batch ignored; one head per fence; stale fence after Stop/Clear/teardown/deadline cannot dispatch; expired-before-claim leaves waiting; lost receipt after handoff becomes uncertain; long/Unicode/attachments use existing safe protocol; composer popup/draft prevents delivery; clear cannot overtake delivery.
-- [ ] GREEN adapter and one supported reentrant hook module; close revokes listeners/fences and releases awaited hooks. Bound retained sessions and outstanding observer state.
-- [ ] Run actual CLI + local fake API: short/multiple FIFO, long Unicode, @file, attachment path handling, Stop with waiting items, Clear retaining paused items, hook timeout/disconnect. No account credentials. If any approved behavior is not safe, report the measured limit rather than silently weakening it.
+- RED tests: no queue => immediate release; nested agent batch ignored; one head per fence; stale fence after Stop/Clear/teardown/deadline cannot dispatch; expired-before-claim leaves waiting; lost receipt after handoff becomes uncertain; long/Unicode/attachments use existing safe protocol; composer popup/draft prevents delivery; clear cannot overtake delivery.
+- GREEN adapter and one supported reentrant hook module; close revokes listeners/fences and releases awaited hooks. Bound retained sessions and outstanding observer state.
+- Run actual CLI + local fake API: short/multiple FIFO, long Unicode, @file, attachment path handling, Stop with waiting items, Clear retaining paused items, hook timeout/disconnect. No account credentials. If any approved behavior is not safe, report the measured limit rather than silently weakening it.
 
 ## Task 3 — shared queue channel/UI integration
 
@@ -80,17 +89,17 @@ Implemented and merged in app PR #657 (`a00cb691604c4013d50f1b15f96011bb1d37a27c
 
 **Interfaces:** Add provider-neutral session queue remove, send-now and edit checkout/ack/cancel calls backed by existing native operations or Claude queue service. Claude Edit returns a reserved full item and checkout token; acknowledge only after the correct session/draft revision accepts refill, otherwise cancel checkout. Remove is an explicit discard action, never the Edit transfer protocol. Claude send acceptance distinguishes `queued`, actual dispatched receipt and definite pre-dispatch unavailable; only the latter may use the legacy non-queue fallback. Publish `session:live {kind:'queue', queue:[...]}` with attachment/paused/status information needed by the reused strip; fill/reset uses the same host snapshot.
 
-- [ ] RED tests: native controls unchanged; Claude queue shown only once and not as premature timeline bubble; desktop/remote snapshot parity; remove/edit target exact ID; editing preserves attachments and does not overwrite another draft; send-now uses Escape then selected item, not mods abort; paused restored/cleared queue resumes only from deliberate action; remote offline operations do not buffer silently; transport metadata prevents legacy CR on uncertain direct sends.
-- [ ] GREEN reuse native strip/callbacks. Use existing error/unsent notice surfaces; do not introduce a second queue UI. Keep phone protocol parity and explicit capability fallback for older hosts.
-- [ ] Register any added channel through the shared table, generate preload list, update phone-open fixture; no Kotlin business-logic copy.
+- RED tests: native controls unchanged; Claude queue shown only once and not as premature timeline bubble; desktop/remote snapshot parity; remove/edit target exact ID; editing preserves attachments and does not overwrite another draft; send-now uses Escape then selected item, not mods abort; paused restored/cleared queue resumes only from deliberate action; remote offline operations do not buffer silently; transport metadata prevents legacy CR on uncertain direct sends.
+- GREEN reuse native strip/callbacks. Use existing error/unsent notice surfaces; do not introduce a second queue UI. Keep phone protocol parity and explicit capability fallback for older hosts.
+- Register any added channel through the shared table, generate preload list, update phone-open fixture; no Kotlin business-logic copy.
 
 ## Task 4 — verify, inspect and deliver test build
 
-- [ ] Fresh code review of state/delivery/identity and native behavior preservation; address accepted findings within this feature.
-- [ ] Focused queue/control/worker/native/renderer/IPC tests; `bash scripts/verify.sh <session169 app> --full` before completion; own platform checks with honest limitations.
-- [ ] Isolated real-app fake-API walkthrough using existing strip: multiple waiting messages, edit/remove, attachments, Send now, Stop, Clear then resume queue, app restart restoring paused. Inspect screenshots and saved transcript; account for each original message once.
-- [ ] Build Linux package outside edited source; verify package version/code identity and isolated launcher. Do not overwrite the currently open .4 test copy. Preserve ability to transfer its test sign-in only after explicit safe close/update.
-- [ ] Update #169 progress and evidence, state unverified cases precisely; no merge or publication. Deliver a testable build, not just a plan or unit-test count.
+- Fresh code review of state/delivery/identity and native behavior preservation; address accepted findings within this feature.
+- Focused queue/control/worker/native/renderer/IPC tests; `bash scripts/verify.sh <session169 app> --full` before completion; own platform checks with honest limitations.
+- Isolated real-app fake-API walkthrough using existing strip: multiple waiting messages, edit/remove, attachments, Send now, Stop, Clear then resume queue, app restart restoring paused. Inspect screenshots and saved transcript; account for each original message once.
+- Build Linux package outside edited source; verify package version/code identity and isolated launcher. Do not overwrite the currently open .4 test copy. Preserve ability to transfer its test sign-in only after explicit safe close/update.
+- Update #169 progress and evidence, state unverified cases precisely; no merge or publication. Deliver a testable build, not just a plan or unit-test count.
 
 ## Self-review
 

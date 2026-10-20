@@ -1,40 +1,32 @@
-# Claude message queues — behavior planning
+# Claude message queues — approved decisions
 
 status: shipped
 
-Historical planning record. Implemented in app PR #657; later direct-dismiss decisions supersede the initial recovery proposal. Final result: `docs/archive/investigations/2026-10-19-claude-queue-timing/FINAL.md`. Statements below describe their original planning checkpoint.
+Work item #169 was completed in [app PR #657](https://github.com/itsdestin/youcoded/pull/657). The direct-control foundation from the earlier #11 session was deliberately integrated; its original worktree was preserved. The completed #169 worktree has since been removed. [Final implementation and verification](../../investigations/2026-10-19-claude-queue-timing/FINAL.md) records the delivered behavior, evidence locations and limits.
 
-Work item #169; session/169-claude-message-queues. User wants real Claude queues on par with native sessions. This worktree is a fresh master-based planning workspace; the uncommitted mods integration stays in session/11-claude-direct-controls and has NOT been silently copied or integrated.
+## Approved behavior
 
-## Source-checked references
+Original submissions remain unchanged in `claude-queues.questions.answers.json` and `claude-queues.input-scope.answers.json`.
 
-- `youcoded/desktop/src/renderer/components/QueuedMessagesStrip.tsx`: docked waiting-message strip, Edit/Cancel/Interrupt and send now; entries enter history when actually delivered, not at enqueue.
-- `youcoded/desktop/src/renderer/components/InputBar.tsx`: shared composer; disconnected submissions remain drafts; native sends have host acknowledgement and queue outcomes. Attachment-preserving editing intersects existing #62, not a duplicate standalone fix here.
-- `youcoded/desktop/src/renderer/components/ContextPopup.tsx`: current Compact/Clear entry points.
-- `youcoded/desktop/src/main/harness/native-session-host.ts`: host-owned queue, removal, send-now priority plus interrupt, in-memory lifetime, subsequent user messages still drain after Stop.
-- `youcoded/desktop/src/main/harness/harness-session.ts`: native busy messages can enter after the entire current tool batch, before replanning. Do not incorrectly describe native queuing as always waiting for a complete answer.
+- **Q1 — Batch delivery:** deliver at a supported action-batch boundary, not only after the entire reply. The native PostToolBatch/composer capability was subsequently proven and implemented.
+- **Q2 — Stop current work:** use native Escape; submitted waiting messages remain eligible. Background notices are not queued user intent.
+- **Q3 — Restore paused:** persist waiting messages and attachment metadata; restore paused after restart. Potentially delivered messages are not silently replayed.
+- **Q4 — Clear retains intent:** pause dispatch and keep waiting messages for deliberate continuation in the cleared context.
+- **Q5 — Explicit file reading:** replace queued file mentions with ordinary paths and instructions to read the entire file. Text/image probes exercised real Read results. This is not automatic preloading or a guarantee of arbitrary model obedience.
+- **Reuse:** use the existing native queue strip, composer and controls, not a second Claude queue interface.
+- **Later recovery refinement:** direct Dismiss without a confirmation popup; retire the old attempt and restore new conversation/queue operation without resending dismissed intent or automatically flushing older paused messages. See [final queue-fix decisions](queue-fixes/README.md).
+- **Later visibility refinement:** idle-ready sends do not flash a queue row; genuinely waiting or unconfirmed messages remain visible.
 
-## Approved behavior decisions
+## Capability evidence
 
-Submitted `claude-queues.questions.answers.json` at 2026-10-19T06:48:31Z:
+The archived timing reports establish why the implementation uses an owned native-composer transaction under a bounded PostToolBatch fence: direct plugin submit waited for idle/new turn, whereas the native composer path could deliver into the running turn. Early ASCII/Unicode/file limitations and later successful follow-up probes are chronological evidence, not unresolved current blockers. Actual final-app burst, recovery and verification results are in the final result record.
 
-- Q-1 `batch`: deliver after the current batch of actions, not only after the entire reply. Target behavior remains conditional on a real CLI capability check; do not silently substitute end-of-turn queuing.
-- Q-2 `current-only`: Stop interrupts current work; already queued user messages remain eligible to run. Background notices are not interchangeable with queued user intent. Claude Stop remains native Escape.
-- Q-3 `restore-paused`: persist waiting messages and attachments, restoring them paused after restart; do not replay uncertain deliveries.
-- Q-4 `keep-paused`: Clear pauses dispatch and retains waiting messages for deliberate review/continue in the new context.
+## Implementation references
 
-The user subsequently authorized a testable implementation and explicitly required reusing the native queue UI rather than designing a second surface. Q5 Other (submitted 2026-10-19T14:30:20Z) proposes replacing file mentions with ordinary paths plus a read-the-file instruction, not accepting idle-only attachment timing. Controlled instruction-path probes now pass for text and an image: instruction arrives in the same turn, and genuine Read results carry the content afterward. This is tool-based reading, not guaranteed automatic preloading or proof of arbitrary model compliance. Backend implementation is proceeding against the existing strip and the approved four behaviors. Source: deck key `169-claude-queues-questions`, steps Q-1 through Q-4.
+- `youcoded/desktop/src/main/claude-queue-runtime.ts`: lifecycle, deliberate actions and immediate-send projection.
+- `youcoded/desktop/src/main/claude-queue-transport.ts`: delivery ownership, evidence and dismissal.
+- `youcoded/desktop/src/main/claude-queue-plugin.ts`: native boundaries, admission and receipts.
+- `youcoded/desktop/src/renderer/components/QueuedMessagesStrip.tsx`: reused queue surface.
+- `youcoded/docs/cc-dependencies.md`: supported CLI coupling and upstream watch points.
 
-## Capability evidence so far
-
-`docs/archive/investigations/2026-10-19-claude-queue-timing/REPORT.md` and its independently rerun checker show: direct plugin submit waits for idle/new turn; native PTY enqueue while busy is absorbed after the tool batch within the same turn. Native persistence uses a genuine human `queued_command` attachment that the existing watcher already projects into a user message. The user did not require a literal `type:user` JSONL row, so that storage detail is not itself a product blocker.
-
-However, handing a message to Claude early would weaken the app's ability to edit/remove it while it waits. A bounded follow-up probe therefore tests holding a PostToolBatch boundary, sending the retained head through PTY, observing native acceptance, then releasing the boundary. This is an unproven feasibility experiment, not an approved implementation or a reason to claim parity yet. Hook context and fabricated history are not substitutes for real user-message delivery.
-
-## Scope boundaries
-
-- Retain established user choice: Claude Stop uses Escape, not the unsafe mods abort.
-- Do not silently replay messages whose delivery is uncertain.
-- The user deferred the previous audit's offline-action classification and mixed-transport ordering findings rather than asking for patches now. They remain relevant design constraints for a queue, not completed fixes.
-- Existing #11 integration follow-ups and #62 native queue defects retain their own scope; #169 coordinates with them.
-- New component dependencies were provisioned with 19 missing/outdated packages. This does not block the words-only deck; no dependency install, code edit, app launch or model call was needed for this planning turn.
+Broader direct-control follow-ups remain under #11/#12; unrelated native queue defects retain their own #62 scope. #169 is not a claim that every earlier audit finding or every platform has been completed.
