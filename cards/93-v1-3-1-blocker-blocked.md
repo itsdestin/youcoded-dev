@@ -21,6 +21,7 @@ Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. O
 Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified. Current additional work has no implementation blocker; original incident remains unconfirmed and the installed app is unchanged. Android runtime packaging needs apk-version tooling.
 
 Chats
+- 2026-10-20 session/93-crash-reliability: chat started
 - 2026-10-19 session/93-crash-reliability: chat started
 - 2026-10-19 session/93-crash-reliability: chat started
 - 2026-10-19 session/crash-recommendations-deck: Crash deck Q-6: Destin asked to note search-index stalls on the roadmap and check for another session. Existing session/93-file-viewer-freezes already reports complete off-thread search indexing; do not duplicate it. Its implementation is not installed. October 19 crash investigation independently found synchronous indexing in the installed/source baseline; coordinate with that session before further search work.
