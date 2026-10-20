@@ -55,7 +55,7 @@ verify:
 - **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends. **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design.
 - **A permission ask binds ONLY to a running tool with a MATCHING NAME** — else a CONSENT bug.
 - **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, failed not complete** — also fires on a live re-dock.
-- **`attentionState` is classifier-driven, not timer-driven** — transcript events and `PERMISSION_REQUEST` reset it to `'ok'`. **Both `'ok'` sites are gated on `hasBuffer`: never reset a state you never set.**
+- **Claude Code PTY attention is classifier-driven** — its renderer fallback gates transcript/permission resets to `'ok'` on `hasBuffer`: never reset a state you never set. Native heartbeat events separately write `'ok'`, `'stuck'` warnings and parked `'stalled'` turns.
 
 ## Paged history (perf cycle 2)
 - **History arrives one PAGE at a time** (`transcript-page.ts`; 30 turns / 2 MB). `HISTORY_LOADED` and "See previous messages" are RETIRED.
