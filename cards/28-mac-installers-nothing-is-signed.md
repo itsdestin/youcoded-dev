@@ -17,11 +17,12 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Complete: appPR655 signing/copy merged7c0a46e1c; deterministic post-merge Node22CI reporter repairPR656 merged1f7629142 after126semantic cases/realV8regression and native PR/fullplatformchecks passed. WorkspacePR282 merged, plan archived, MAP/build/VM guidance updated. Both architectures notarized/issuesnull; quarantined Intel VM normalOpen/onboarding verified/restored. Approved downloadcopy deployed and matched live modal script. Temporary signing access removed; evidence/installers preserved outside worktrees.
+Done: Complete: appPR655 signing/copy merged7c0a46e1c; deterministic post-merge Node22CI reporter repairPR656 merged1f7629142 after126semantic cases/realV8regression and native PR/fullplatformchecks passed. WorkspacePR282 merged, plan archived, MAP/build/VM guidance updated. Both architectures notarized/issuesnull; quarantined Intel VM normalOpen/onboarding verified/restored. Approved downloadcopy deployed and matched live modal script. Temporary signing access removed; evidence/installers preserved outside worktrees. Docs-only carryovers closed in app #659/#660 and workspace #285; #31/#45 report links corrected without closing their work.
 Next: Public installer release intentionally deferred; current public version1.3.1 remains unchanged. Future release tagging/publication requires separate owner instruction. No further work for this implementation card.
 Blocked: None for this implementation. No release tag, production install, live-app mutation or paid harness evaluation. The original signing session branches/worktrees were removed after remote ancestry verification.
 
 Chats
+- 2026-10-20 session/28-signing-doc-cleanup: Docs-only cleanup landed in app #659/#660 and workspace #285; #31/#45 report links corrected with planning stages preserved. No runtime/test behavior or release change. Post-merge Windows Markdown CPU check failed at 30156 ms against 30000 ms; no budget increase or code fix attempted under this docs-only scope, and no deferred test-failure card filed.
 - 2026-10-20 session/28-signing-doc-cleanup: chat started
 - 2026-10-20 session/28-apple-signing: chat started
 - 2026-10-20 session/28-apple-signing: chat started
