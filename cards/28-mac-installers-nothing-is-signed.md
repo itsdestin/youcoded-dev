@@ -18,9 +18,9 @@ roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Ma
 created: 2026-10-15
 ---
 Progress
-Done: Apple signing/notarization and normal quarantined Intel VM launch verified. App39385bffe adds concise Windows/Mac/Android download instructions: signed Windows publisher, version-aware normal/legacy Mac notes, shippedAndroid APK flow/no runtime download or rebuildbanner, optionalGitHub setup.22 site tests and full20620desktoptests/79skips plusallgates passed; fresh review and desktop/phone captures passed; current public installer URLs allHTTP200. Both session branches committed/pushed; no release.
-Next: Review copy at local preview http://127.0.0.1:8850 (click Windows/macOS/Android). Integrate with current master only under explicit merge instruction; upstream CI/build optimizations overlap packaging workflows and must be preserved. Public app release intentionally deferred.
-Blocked: No signing/copy blocker. Public Mac remains1.3.1selfsigned until release; page retains short legacywarning for that URL and shows signed note for stable1.3.2+. Nothing merged/published as an app release.
+Done: Authorized merge/close in progress. Integrated current app master946dbb4fa as candidatecd96688c5 without conflicts; newer CI/build work preserved. Local full verification20703passed/79skipped and22sitetests/allgates passed; final fresh review has no blockers. AppPR655 open. Workspace master integrated with both append-only ledger entries retained; updated signing MAP and reusable-VM guide committed/pushed. All temporary signing rules gone.
+Next: Wait for exact-head PR run39347454611 and full-platform39347453285, then merge/push appPR655. Activate docs/archive task plan, merge workspacePR, close#28 and remove only this session branches/worktrees. Final evidence already preserved beside signed installers/integration-evidence.
+Blocked: External CI still running; Android compile/JVM and many desktop shards already passed. No release tag or public installer publication authorized; remain on public1.3.1.
 
 Chats
 - 2026-10-20 session/28-apple-signing: chat started
