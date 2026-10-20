@@ -10,11 +10,12 @@ why: I want to think through how we might build real message queuing on-par with
 work: session/169-claude-message-queues
 ---
 Progress
-Done: Integrated queue passed full desktop verification before final GUI/review. Real GUI verified FIFO across batches, edit preserving attachments, cancel preventing delivery, Stop retaining queued intent. GUI found duplicate Clear identity race; deterministic RED/GREEN fix compiled. Final review found7 additional recovery/lifecycle gaps now assigned for fixes.
-Next: Fix unknown-enqueue duplicate risk, durable edit transfer/reload, SendNow cleanup ordering, restored uncertain CheckDelivery, safe epoch/retirement lifecycle, Stop independent of bridge health, and refused-attachment cache cleanup. Then rerun fullverification and realGUI Clear/resume/restart/failure cases and package. Existing UI reused; no paidcalls.
-Blocked: No testable queue package yet. Do not claim prior green full suite covers final-review failure cases; app source fixes in progress. User .4 test copy remains unaffected.
+Done: Claude/native shared queue, direct controls integration, FIFO/edit/attachments/Stop/Clear persistence, rapid-send race fixes, exact delivery recovery, direct Dismiss restoring future queue cycles, idle-send flicker removal, tutorial-tip flicker repair. Final dismissal 552 focused tests; 30/30 actual sends after dismiss+restart; final tip repair required desktop verify green. Linux test .2 delivered (predates tip-only repair).
+Next: Explicit commit/merge authorization, integrated upstream verification and final close-out; no feature expansion.
+Blocked: Not merged: implementation remains uncommitted. Android/non-Linux runtime not verified. Additional slow-tool post-dismiss walkthrough unrun; deterministic batch tests and real burst recovery green. Do not interpret close-out base-tip ancestry as shipped implementation.
 
 Chats
+- 2026-10-20 session/169-claude-message-queues: chat started
 - 2026-10-20 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
 - 2026-10-19 session/169-claude-message-queues: chat started
