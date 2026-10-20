@@ -355,14 +355,14 @@ Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-
 
 ### macOS Developer ID signing and notarization
 
-**Verified in a real candidate build on 2026-10-19; not yet activated on master.**
-The `macos-signing` GitHub environment is configured remotely. App candidate branch
-`session/28-apple-signing` carries the reviewed implementation. Run `39292665007`
-produced **1.3.2-beta.3** Intel and Apple Silicon installers: both apps and both final
-DMGs were accepted by Apple with no reported issues. Staples, expected-team signatures,
-Gatekeeper and apps mounted from the final DMGs passed. Temporary branch access and
-source exceptions are removed; branch tip `3054069ec` is tree-identical to reviewed
-implementation `d524a1e44`. No existing public release has been replaced or re-signed.
+**Enabled on master by app PR #655 (`7c0a46e1c`); release intentionally deferred.**
+The protected `macos-signing` environment supplies future trusted Mac builds. Candidate
+run `39292665007` produced **1.3.2-beta.3** Intel and Apple Silicon installers: both
+apps and both final DMGs were accepted by Apple with no reported issues. Staples,
+expected-team signatures, Gatekeeper and apps mounted from the final DMGs passed.
+Final integration included current master and passed PR/full-platform CI before merge.
+Temporary branch access and source exceptions are removed. Public **1.3.1** installers
+remain unchanged until a separately approved release.
 
 - Publisher: **Destin's Adventures, LLC**, Team ID `C2PSZTNNA4`. The initial Developer ID
   Application certificate expires **2027-11-18 14:26:15 UTC**; renew before that date.
@@ -413,7 +413,7 @@ quarantined installation/normal Open confirmation and visibly reached fresh onbo
 with Gatekeeper enabled; old guest app/profiles were backed up and restored. Download
 used private HTTP plus an explicit quarantine mark, not Safari. Pristine-OS/browser
 journey, Apple Silicon GUI installation and authenticated chat remain unverified. Signing/notarization are not Mac App Store submission and do not
-publish a release. Task history and submission IDs: active plan `2026-10-19-apple-signing.md`.
+publish a release. Task history and submission IDs: `docs/archive/plans/2026-10-19-apple-signing.md`.
 
 ### Windows signing
 
