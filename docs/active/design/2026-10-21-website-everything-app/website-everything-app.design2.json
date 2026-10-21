@@ -1,0 +1,79 @@
+{
+  "title": "youcoded.ai — round two: the tips redrawn, the device card merged, the samples labelled",
+  "key": "website-everything-app-design2",
+  "out": "website-everything-app.design2.html",
+  "stage": "design",
+  "images": "images/website-everything-app.design2",
+  "runs": { "today": "runs/today" },
+  "labels": { "today": "Mockup" },
+  "themes": ["youcoded"],
+  "crops": {
+    "chips":    ["site", "hero-chips", "1440x900+0+0"],
+    "settings": ["site", "hero-settings", "1440x900+0+0"],
+    "device":   ["site", "fan-2", "1440x900+0+0"],
+    "samples":  ["site", "fan-1", "1440x900+0+0"],
+    "ideas":    ["site", "ideas", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "new": true,
+      "surface": "The hero demo",
+      "path": "The live demo window at the top of the page",
+      "crop": "chips",
+      "highlight": { "box": [8, 38, 24, 18] },
+      "headline": "Tips redrawn: every stem is straight, nothing covers an icon, and neighbours take turns in two rows.",
+      "changed": "Each chip hangs straight under its own button on a short vertical line that stops just below the icon. Chips that would touch drop to a second row (Pages and Home under Settings, Projects and Finance). The right group does the same under Files, Browser and Games, and Commands stands above the message box. The x on each chip and the Hide tips switch are unchanged; Home is shown opened.",
+      "notice": "No lines cross and the toolbar stays fully visible, so the demo reads as the app with labels rather than a diagram.",
+      "risk": "The second-row chips still sit over the first chat bubble until dismissed."
+    },
+    {
+      "id": "B-2",
+      "new": true,
+      "surface": "The hero demo",
+      "path": "The demo with its Settings panel open",
+      "crop": "settings",
+      "highlight": { "box": [30, 38, 32, 48] },
+      "headline": "When Settings is open inside the demo, tips sit beside the rows they explain.",
+      "changed": "Six tips, one per row, to the right of the panel on short horizontal lines: Account, Assistant settings (shown opened: which AI answers, what it may do without asking, and the defaults), Appearance, Buddy floater, Backup & sync and Remote access. Sound, Help, Keyboard shortcuts and Donate get none; they explain themselves.",
+      "notice": "The settings panel becomes a guided list of what the app can do, without the visitor opening each row.",
+      "risk": "Each page inside the demo that gets tips is its own set to keep current when the app's panel changes."
+    },
+    {
+      "id": "B-3",
+      "new": true,
+      "surface": "The device card",
+      "path": "'Your whole device' in the feature list",
+      "crop": "device",
+      "highlight": { "box": [38, 12, 52, 50] },
+      "headline": "One device card instead of two: a drawn control center and the swipe keyboard, side by side, one loop.",
+      "changed": "The left pane is a control center in the app's look: time and date, brightness and volume sliders, six toggles, three small buttons. The right pane is the keyboard under a generic browser tab. In one seven-second loop a finger taps Night Light on, the wallpaper behind warms, then the same finger swipes y-o-u-r-s on the keyboard and the word lands in the field. Everything is drawn and recolours with the site theme; nothing is a screenshot of your real desktop. The card is labelled Built on Linux and shown to every visitor.",
+      "notice": "Linux visitors get the same card moved up to second place, right after Make it yours; nobody else sees a Linux-only card any more.",
+      "risk": "At card size the keyboard's letters and toggle labels are small; the final card will be the same width as the clips beside it."
+    },
+    {
+      "id": "B-4",
+      "new": true,
+      "surface": "The Home and Money cards",
+      "path": "Cards two and three in the feature list",
+      "crop": "samples",
+      "highlight": { "box": [10, 11, 26, 6] },
+      "headline": "The Home and Money cards now say what they are: sample pages one person asked for, not built-in features.",
+      "changed": "Both cards carry a dashed chip reading 'Sample page, not included' and their words start with 'Not a built-in feature'. The Home card says it is a page one person asked for, for his own house, and uses every day, and that yours would be different. The Money card says it was built through the chat for one person's real accounts and that yours could track anything. Both say the demo data is fictional.",
+      "notice": "A visitor cannot read them as features that come with the app; they read as proof of what asking produces.",
+      "risk": "The word 'sample' may make the pages sound less real than they are; the copy preview is where to tune that."
+    },
+    {
+      "id": "B-5",
+      "new": true,
+      "surface": "The ideas wall",
+      "path": "The bottom of the page",
+      "crop": "ideas",
+      "highlight": { "box": [7, 30, 72, 8] },
+      "headline": "One header on the ideas wall: 'Every one of these started as a sentence in the chat.'",
+      "changed": "The second heading is gone; the one you kept is now the large title over the tiles.",
+      "notice": "The wall reads in one line.",
+      "risk": "None I can see."
+    }
+  ]
+}

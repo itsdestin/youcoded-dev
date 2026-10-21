@@ -44,7 +44,7 @@ def replace_section(doc, sec_id, new):
 ABOUT = '''<section id="about"><div class="wrap">
   <p class="eyebrow">What is this?</p><h2>One app. Whatever you want it to be.</h2>
   <div class="panel prose">
-    <p class="big">YouCoded is an AI assistant that does what you want, the way you want, with the screens and features you want. Hand it your files, your research and your writing. Ask it for a control panel for your house, a page for your money, or a game for a slow afternoon. Ask it to change its own look. It is one app with one idea: you decide what it is.</p>
+    <p class="big">YouCoded is an AI assistant that does what you want, the way you want, with the screens and features you want. Hand it your files, your research and your writing. Ask it for a control panel for your house, a page for your money, or a game for a slow afternoon. Ask it to change its own look, give itself new features, or handle your requests in different ways. So, what exactly is YouCoded? That&rsquo;s for you to decide.</p>
     <div class="cols">
       <p>It runs on whichever AI you choose: Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and hundreds more, or an open model running privately on your own computer.</p>
     </div>
@@ -62,18 +62,19 @@ CARDS = [
   dict(label='Make it yours', h='Describe the look you want.',
        p='Wallpapers, colors, mascots, fonts. Say what you are going for and the app changes to match. Not quite? Say so.',
        media=('video', 'row6-yours')),
-  dict(label='Your home, your way', h='A smart-home panel, built by asking for one.',
-       p='Lights, thermostat, speakers and TVs on one screen, arranged how you want. Ask for it in chat, then run it from the panel or from the conversation. This demo house is fictional. Yours would be real.',
-       media=('still', 'poster-home.webp')),
-  dict(label='Your money, your way', h='Every account on one page.',
-       p='Balances, bills, loans and what needs attention this week. Ask for the view you wish your bank had, then keep tweaking it. The demo numbers are invented.',
-       media=('still', 'poster-finance.webp')),
+  # WHY the "Sample" chips (Destin, design round 1): Home and Finance are pages he built for
+  # himself through the chat, connected to his own house and bank. They are not built-in
+  # features and are not in the marketplace yet; the card has to read as "what asking looks
+  # like", never as "included".
+  dict(label='Your home, your way', h='A smart-home panel, made by asking for one.',
+       p='Not a built-in feature: a page one person asked for, for his own house, and uses every day. Lights, thermostat, speakers and TVs on one screen, arranged the way he wanted. Ask for yours and it will be different. The demo house here is fictional.',
+       media=('still', 'poster-home.webp'), chip='Sample page, not included'),
+  dict(label='Your money, your way', h='Every account on one page, made by asking for it.',
+       p='Not a built-in feature either: a page built through the chat for one person’s real accounts, with the view he wished his bank had. Yours could track anything. The numbers here are invented.',
+       media=('still', 'poster-finance.webp'), chip='Sample page, not included'),
   dict(label='Your whole device', h='Don’t just customize the app. Customize your whole device.',
-       p='The same conversation that reshapes the app can reshape what is around it. This swipe keyboard for a Linux tablet was built by describing it, and it is free to install.',
-       media=('kb',), chip='Built on Linux'),
-  dict(label='Your desktop, too', h='A whole desktop restyle, by describing it.',
-       p='Glass panels, a control center, a tablet mode that switches on when the keyboard comes off. Built on KDE Plasma through conversation. Linux visitors see this card; others do not.',
-       media=('still', 'poster-desktop.webp'), chip='Linux only', linux=True),
+       p='The same conversation that reshapes the app can reshape what is around it. A control center for a Linux tablet, and a swipe keyboard for it, were both built by describing them. The keyboard is free to install.',
+       media=('dev',), chip='Built on Linux'),
   dict(label='Any model', h='Use whichever AI you like. Switch mid-conversation.',
        p='Hundreds of models through OpenRouter, Claude or OpenAI on your own subscription, or an offline model on your own computer. Your tools and conversations work the same with all of them.',
        media=('video', 'landing-row1-any-ai')),
@@ -102,23 +103,29 @@ SKETCH = '''<div class="sketch">
           <div><div class="k">Weekly grocery list</div><div class="li">1 &middot; Read this week's plan</div><div class="li">2 &middot; Draft the list</div><div class="li on2">3 &middot; Check with me before ordering</div><div class="li">4 &middot; Send to my phone</div><div class="k" style="margin-top:14px">Inbox</div><div class="li">Needs approval &middot; Weekly grocery list &middot; 2 min ago</div></div>
         </div>'''
 
-kb_src = (HERE / 'keyboard.html').read_text() if (HERE / 'keyboard.html').exists() else ''
-def part(tag):
-    # The LAST block: the style's own comment mentions "<script>", which a first-match grabbed.
-    m = re.findall(r'<%s[^>]*>.*?</%s>' % (tag, tag), kb_src, re.S)
-    return m[-1] if m else ''
-KB_STYLE = re.sub(r'/\*.*?\*/', '', part('style'), flags=re.S)
-# Only the .kbdemo rules travel: the file's :root/body/.wrap rules are for its own preview page
-# (its flex body laid the whole landing page out sideways on 2026-10-21).
-KB_STYLE = re.sub(r'^(:root|body|html|\.wrap)\s*\{[^}]*\}\s*$', '', KB_STYLE, flags=re.M)
-KB_SCRIPT = part('script')
-KB_DIV = re.search(r'<div class="kbdemo".*</div>\s*(?=<script|</body)', kb_src, re.S)
-KB_DIV = KB_DIV.group(0).strip() if KB_DIV else '<div class="kbdemo"></div>'
-# The demo page wraps the element in its own <div class="wrap">, so the greedy match ends on
-# that wrapper's close tag: drop closers until the tags balance, or the extra one closes the
-# landing page's own container and everything after it lays out sideways (seen 2026-10-21).
-while KB_DIV.count('</div>') > KB_DIV.count('<div') and KB_DIV.endswith('</div>'):
-    KB_DIV = KB_DIV[:-len('</div>')].rstrip()
+def drawn(file, cls):
+    """The three pieces of a drawn, self-contained animation file: (style, div, script).
+    The file is also its own preview page, so its :root/body/.wrap rules and the wrapper div's
+    extra close tag are stripped — pasted whole, the flex body laid the landing page out
+    sideways and the stray </div> closed the page's own container (both seen 2026-10-21)."""
+    src = (HERE / file).read_text() if (HERE / file).exists() else ''
+    if not src: return '', '<div class="%s"></div>' % cls, ''
+    def part(tag):
+        # The LAST block: a style comment that mentions "<script>" fooled a first-match.
+        m = re.findall(r'<%s[^>]*>.*?</%s>' % (tag, tag), src, re.S)
+        return m[-1] if m else ''
+    style = re.sub(r'/\*.*?\*/', '', part('style'), flags=re.S)
+    style = re.sub(r'^(:root|body|html|\.wrap)\s*\{[^}]*\}\s*$', '', style, flags=re.M)
+    div = re.search(r'<div class="%s".*</div>\s*(?=<script|</body)' % cls, src, re.S)
+    div = div.group(0).strip() if div else '<div class="%s"></div>' % cls
+    while div.count('</div>') > div.count('<div') and div.endswith('</div>'):
+        div = div[:-len('</div>')].rstrip()
+    return style, div, part('script')
+
+KB_STYLE, KB_DIV, KB_SCRIPT = drawn('keyboard.html', 'kbdemo')
+DEV_STYLE, DEV_DIV, DEV_SCRIPT = drawn('device.html', 'devdemo')
+if DEV_DIV == '<div class="devdemo"></div>':   # the merged drawing is not there yet: show the keyboard
+    DEV_STYLE, DEV_DIV, DEV_SCRIPT = KB_STYLE, KB_DIV.replace('class="kbdemo"', 'class="kbdemo devdemo"', 1), KB_SCRIPT
 
 def media_html(c, i, cls=''):
     kind = c['media'][0]
@@ -132,6 +139,8 @@ def media_html(c, i, cls=''):
         return '<img class="slide-img %s" data-i="%d" src="%s" alt="">' % (cls, i, c['media'][1])
     if kind == 'kb':
         return KB_DIV.replace('class="kbdemo"', 'class="kbdemo %s" data-i="%d"' % (cls, i), 1)
+    if kind == 'dev':
+        return re.sub(r'^<div class="([^"]*)"', lambda m: '<div class="%s %s" data-i="%d"' % (m.group(1), cls, i), DEV_DIV, count=1)
     if kind == 'sketch':
         return SKETCH.replace('class="sketch"', 'class="sketch %s" data-i="%d"' % (cls, i), 1)
 
@@ -207,39 +216,53 @@ def ideas():
         pic = '<img src="%s" alt="" loading="lazy">' % img if img else '<div class="idea-soon">Sample page still to be made</div>'
         tiles.append('<figure class="idea">%s<figcaption>&ldquo;%s&rdquo;</figcaption></figure>' % (pic, q))
     return '''<section id="gallery"><div class="wrap">
-  <p class="eyebrow">Ideas</p><h2>Say it, and it&rsquo;s a page in the app.</h2>
-  <p class="ideas-sub">Every one of these started as a sentence in the chat.</p>
+  <p class="eyebrow">Ideas</p><h2>Every one of these started as a sentence in the chat.</h2>
 </div><div class="galwrap"><div class="gal ideas">%s</div></div></section>''' % ''.join(tiles)
 
 # ---------------------------------------------------------------------------------------------
 # The chip tour over the hero demo (Q-2): labelled chips at the demo's own buttons, one shown
 # expanded as it would be on hover, each with an x, and a "Hide tips" at the corner.
 # ---------------------------------------------------------------------------------------------
-# (icon x%, icon y%, chip x%, chip y%, label, description, expanded?). The icons sit 2.6% apart,
-# closer than a chip is wide, so each chip is drawn clear of the toolbar in a cascade and a thin
-# leader line runs back to its icon.
-CHIPS = [
-  (1.9, 2.6, 16.5, 7.5, 'Settings', 'Every setting in one place: models, permissions, look, sync.', False),
-  (4.5, 2.6, 16.5, 12.5, 'Pages', 'Screens you asked for, pinned here for one-click access.', False),
-  (7.1, 2.6, 16.5, 17.5, 'Projects', 'Files, conversations and instructions, kept together.', False),
-  (9.8, 2.6, 16.5, 22.5, 'Home', 'A smart-home panel, built by asking. Click to open it.', True),
-  (12.4, 2.6, 16.5, 27.5, 'Finance', 'Every account on one page. Click to open it.', False),
-  (80.2, 2.6, 76.0, 7.5, 'Files', 'What the assistant made or changed in this conversation.', False),
-  (85.0, 2.6, 76.0, 12.5, 'Browser', 'The assistant’s own browser. Watch it work.', False),
-  (88.6, 2.6, 76.0, 17.5, 'Games', 'Connect 4, chess, Flappy and 2048 while it works.', False),
-  (5.0, 95.5, 16.5, 88.5, 'Commands', 'Your skills and workflows, one tap away.', False),
+# Tips over the demo. Round 1 drew a cascade with slanted leader lines and dots on the icons;
+# Destin: "very poorly laid out… lines crisscross… dots cover the icons". Round 2: every stem is
+# straight (vertical from a chip up to just under its icon, or horizontal from a chip to the
+# edge of a settings row), nothing is drawn on the icon itself, and chips that would collide
+# drop to a second row. (anchor x%, anchor y%, chip x%, chip y%, label, description, open?)
+CHAT_TIPS = [
+  (1.9, 5.2, 1.9, 9.5, 'Settings', 'Every setting in one place: models, permissions, look, sync.', False),
+  (4.5, 5.2, 4.5, 15.5, 'Pages', 'Screens you asked for, pinned here for one click.', False),
+  (7.1, 5.2, 7.1, 9.5, 'Projects', 'Files, conversations and instructions, kept together.', False),
+  (9.8, 5.2, 9.8, 15.5, 'Home', 'A smart-home panel, made by asking. Click to open it.', True),
+  (12.4, 5.2, 12.4, 9.5, 'Finance', 'Every account on one page. Click to open it.', False),
+  (80.2, 5.2, 80.2, 9.5, 'Files', 'What the assistant made or changed in this conversation.', False),
+  (85.0, 5.2, 85.0, 15.5, 'Browser', 'The assistant’s own browser. Watch it work.', False),
+  (88.6, 5.2, 88.6, 9.5, 'Games', 'Connect 4, chess, Flappy and 2048 while it works.', False),
+  (5.0, 93.0, 5.0, 86.0, 'Commands', 'Your skills and workflows, one tap away.', False),
 ]
-def chip_tour():
+# The settings panel fills the left 26% of the demo; a tip sits to its right at the row's own
+# height with a short horizontal stem to the row's edge. Rows measured off the live demo.
+SETTINGS_TIPS = [
+  (26.2, 13.0, 29.0, 13.0, 'Account', 'Optional. Sign in to like themes and rate plugins.', False),
+  (26.2, 22.0, 29.0, 22.0, 'Assistant settings', 'Which AI answers, what it may do without asking, and the defaults.', True),
+  (26.2, 31.0, 29.0, 31.0, 'Appearance', 'Themes, wallpapers, mascots, fonts. The four at the top of this page live here.', False),
+  (26.2, 40.0, 29.0, 40.0, 'Buddy floater', 'A small mascot that floats over your desktop and takes a screenshot straight into a prompt.', False),
+  (26.2, 58.0, 29.0, 58.0, 'Backup & sync', 'Your conversations and files, kept in your own private GitHub.', False),
+  (26.2, 67.0, 29.0, 67.0, 'Remote access', 'Open this app from your phone’s browser by scanning a code.', False),
+]
+def chip_tour(tips):
     out = ['<div class="tour" aria-hidden="true"><button class="tour-hide">Hide tips</button>',
            '<svg class="tour-lines" viewBox="0 0 100 100" preserveAspectRatio="none">']
-    for ix, iy, cx, cy, label, desc, open_ in CHIPS:
-        out.append('<line x1="%s" y1="%s" x2="%s" y2="%s"/>' % (ix, iy, cx, cy))
+    for ax, ay, cx, cy, label, desc, open_ in tips:
+        out.append('<line x1="%s" y1="%s" x2="%s" y2="%s"/>' % (ax, ay, cx, cy))
     out.append('</svg>')
-    for ix, iy, cx, cy, label, desc, open_ in CHIPS:
-        out.append('<span class="tip-dot" style="left:%s%%;top:%s%%"></span>' % (ix, iy))
-        side = 'left' if cx > 50 else ''
-        out.append('<div class="tip %s %s" style="left:%s%%;top:%s%%"><span class="tip-pill">%s<i class="tip-x">&times;</i></span><span class="tip-desc">%s</span></div>'
-                   % ('open' if open_ else '', side, cx, cy, html.escape(label), html.escape(desc)))
+    for ax, ay, cx, cy, label, desc, open_ in tips:
+        horizontal = abs(ay - cy) < 0.01
+        # A chip near the left edge grows rightwards from its stem, one near the right edge
+        # grows leftwards, so none is cut off by the window and neighbours do not overlap.
+        edge = 'from-left ' if cx < 20 else ('from-right ' if cx > 70 else '')
+        cls = ('open ' if open_ else '') + ('side ' if horizontal else '') + ('up ' if cy < ay else '') + edge
+        out.append('<div class="tip %s" style="left:%s%%;top:%s%%"><span class="tip-pill">%s<i class="tip-x">&times;</i></span><span class="tip-desc">%s</span></div>'
+                   % (cls, cx, cy, html.escape(label), html.escape(desc)))
     out.append('</div>')
     return ''.join(out)
 
@@ -248,8 +271,10 @@ CSS = '''
 /* ---- mockup-only styles (2026-10-21 repositioning) ---- */
 .rmchip.linux{border-style:solid}
 .slide-img{object-fit:cover}
-.demo-deck .step .deckclip img,.demo-deck .step .deckclip .kbdemo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:11px}
-.demo-deck .step .deckclip .kbdemo{aspect-ratio:auto}
+.demo-deck .step .deckclip img,.demo-deck .step .deckclip .kbdemo,.demo-deck .step .deckclip .devdemo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:11px}
+.demo-deck .step .deckclip .kbdemo,.demo-deck .step .deckclip .devdemo{aspect-ratio:auto}
+.fmedia>.devdemo,.demo-theater .stage>.devdemo{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto}
+.demo-theater .stage>.devdemo{opacity:0}.demo-theater .stage>.devdemo.on{opacity:1}
 /* B: bento */
 .fgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:28px}
 .fcard{border-radius:var(--radius);background:var(--glass-prose);border:1px solid var(--hair);
@@ -295,10 +320,14 @@ CSS = '''
 .tour-hide{position:absolute;right:12px;top:-30px;font:600 .72rem var(--font-ui);padding:4px 10px;border-radius:999px;border:1px solid var(--hair);background:var(--glass);color:inherit;opacity:.8}
 .tour-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .tour-lines line{stroke:var(--accent);stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.55}
-.tip-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);
-  box-shadow:0 0 0 4px rgba(124,58,237,.22)}
-.tip{position:absolute;transform:translate(0,-50%);display:flex;align-items:center;gap:8px}
-.tip.left{transform:translate(-100%,-50%);flex-direction:row-reverse}
+/* A chip hangs under its stem (centred on the anchor's x); a settings tip sits beside its row. */
+.tip{position:absolute;transform:translate(-50%,0);display:flex;flex-direction:column;align-items:center;gap:6px}
+.tip.up{transform:translate(-50%,-100%);flex-direction:column-reverse}
+.tip.side{transform:translate(0,-50%);flex-direction:row;align-items:center;gap:8px}
+.tip.from-left{transform:translate(-14px,0);align-items:flex-start}
+.tip.from-left.up{transform:translate(-14px,-100%)}
+.tip.from-right{transform:translate(calc(-100% + 14px),0);align-items:flex-end}
+.embed-poster-settings{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:var(--radius);z-index:4}
 .tip-pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:600;padding:5px 9px 5px 10px;border-radius:999px;
   background:var(--accent);color:#fff;box-shadow:0 8px 20px -8px rgba(0,0,0,.45);white-space:nowrap}
 .tip-x{font-style:normal;opacity:.7;font-size:.8rem}
@@ -326,7 +355,7 @@ RAIL_JS = '''<script>
 })();
 </script>'''
 
-def build(variant):
+def build(variant, tour='chat'):
     doc = src
     doc = replace_section(doc, 'about', ABOUT)
     doc = replace_section(doc, 'demo', {'fan': fan, 'bento': bento, 'theater': theater}[variant]())
@@ -334,13 +363,19 @@ def build(variant):
     s, e = section(doc, 'integrations')
     doc = doc[:s] + '<!-- integrations grid hidden 2026-10-21 (Destin): kept for later -->' + doc[e:]
     doc = replace_section(doc, 'gallery', ideas())
-    # The chip tour sits over the demo window.
-    doc = doc.replace('<iframe class="embed-iframe"', chip_tour() + '<iframe class="embed-iframe"', 1)
+    # The chip tour sits over the demo window; the settings variant shows the demo with its
+    # Settings panel open (a still of it) and that panel's tips.
+    tips = CHAT_TIPS if tour == 'chat' else SETTINGS_TIPS
+    # The page's own script re-sets the poster on every theme apply, so the settings still is
+    # an extra image laid over it rather than a swapped src.
+    overlay = '<img class="embed-poster-settings" src="poster-settings.webp" alt="">' if tour == 'settings' else ''
+    doc = doc.replace('<iframe class="embed-iframe"', overlay + chip_tour(tips) + '<iframe class="embed-iframe"', 1)
     # One name everywhere (Q-14).
     doc = doc.replace('YouCoded Assistant', 'YouCoded')
-    doc = doc.replace('</head>', CSS + KB_STYLE.replace('<style>', '<style id="kb-css">') + '</head>', 1)
-    doc = doc.replace('</body>', KB_SCRIPT + RAIL_JS + '</body>', 1)
-    doc = doc.replace('<title>', '<title>[mockup %s] ' % variant, 1)
+    styles = CSS + KB_STYLE.replace('<style>', '<style id="kb-css">') + DEV_STYLE.replace('<style>', '<style id="dev-css">')
+    doc = doc.replace('</head>', styles + '</head>', 1)
+    doc = doc.replace('</body>', KB_SCRIPT + DEV_SCRIPT + RAIL_JS + '</body>', 1)
+    doc = doc.replace('<title>', '<title>[mockup %s/%s] ' % (variant, tour), 1)
     return doc
 
 def main():
@@ -349,12 +384,14 @@ def main():
         link = OUT / d
         if not link.exists() and (SITE / d).exists():
             link.symlink_to(SITE / d)
-    for f in HERE.glob('poster-*.webp'):
+    for f in list(HERE.glob('poster-*.webp')) + list(HERE.glob('poster-*.png')):
         (OUT / f.name).unlink(missing_ok=True)
         (OUT / f.name).symlink_to(f)
     for v in ['fan', 'bento', 'theater']:
         (OUT / (v + '.html')).write_text(build(v))
         print('wrote', OUT / (v + '.html'))
+    (OUT / 'fan-settings.html').write_text(build('fan', 'settings'))
+    print('wrote', OUT / 'fan-settings.html')
 
 if __name__ == '__main__':
     main()
