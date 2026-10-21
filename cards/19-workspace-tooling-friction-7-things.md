@@ -12,8 +12,8 @@ area: Workspace
 work: chore/conversation-triage-script
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
+Done: (h)/(iv) guard half: glob-guard guard 8 now judges a leading absolute 'cd <non-worktree> &&' as where the install runs (session/short-campaign-links, 2026-10-21; 3rd hit)
+Next: (h) still wanted: fill-missing-deps.mjs --fresh, and workspace-start provisioning wecoded-marketplace/worker node_modules (shared copy was too old for vitest-pool-workers 2026-10-21)
 Blocked: nothing recorded.
 
 Chats
