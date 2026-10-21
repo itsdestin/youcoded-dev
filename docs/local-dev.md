@@ -34,8 +34,8 @@ The script sets three env vars and runs `npm run dev` in `<checkout>/desktop/`:
 (9272 at the default offset). `--no-devtools` turns it off.
 
 ```bash
-curl -s http://127.0.0.1:9272/json/list        # find the page's webSocketDebuggerUrl
-node scripts/cdp-eval.mjs '<ws url>' '(async () => await window.claude.account.signedIn())()'
+node scripts/cdp-eval.mjs --dev '(async () => await window.claude.account.signedIn())()'   # main window on 9272
+node scripts/cdp-eval.mjs '<ws url>' '<expr>'   # any other target, from curl -s http://127.0.0.1:9272/json/list
 ```
 
 **Why it defaults on.** Before 2026-08-28 this needed `YOUCODED_DEVTOOLS_PORT` set by hand,

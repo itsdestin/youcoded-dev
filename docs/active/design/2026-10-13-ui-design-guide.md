@@ -392,6 +392,10 @@ Backup & sync, Assistant → General, Account.
   or a hand-made chip.
 - **Quick actions on a card** (tag, note, favourite, pin) sit at its **top right**; a **date** goes at
   the **bottom right**, at the end of the details line. Example: conversation cards.
+- **A form that adds an item to a list of cards is drawn as one of those cards** — the same level and
+  outline, its title on the top line, the ✕ that closes it at the top right, and its Cancel and main
+  button at the bottom right, shown only once there is something to add. Never a plainer box than the
+  cards around it. Reference: Cloud providers → Add provider (custom-providers-review-2#R2-5).
 
 Known deviations (built 2026-10-13 from the final review; the rest of this recipe is built):
 - **Marketplace rail cards keep a tighter shadow** (`0 3px 10px`, `globals.css` `.mp-rail-scroll`):
@@ -486,6 +490,9 @@ box for its opened list.
 - **The same kind of item always has the same box**, whatever its state: new and already-read
   notifications are both boxed rows (or both plain rows) — a state is shown by a pill, a dot or its
   group, never by giving some items a box and others none (gt-r1#C-1).
+- **Every dropdown or search menu is the shared one** (`Select`, or `TypeableSelect` when you type to
+  narrow it): the same corner, row size and highlighted chosen row. Never a menu with its own shape
+  (custom-providers-review-2#R2-5).
 - **An action at the foot of a pick list** ("Add another option…", "Manage models…") is separated from
   the choices by the tapered line, so it never reads as one of them (gt-r1#D-1).
 - A list that can grow long shows a fixed number of rows (the sessions menu shows about 6½, so the cut

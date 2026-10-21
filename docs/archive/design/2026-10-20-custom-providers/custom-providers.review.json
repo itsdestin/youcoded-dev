@@ -1,0 +1,145 @@
+{
+  "title": "Custom providers and the model list — first look",
+  "key": "custom-providers-review-1",
+  "out": "custom-providers.review.html",
+  "stage": "design",
+  "images": "images/custom-providers.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers → Add provider",
+      "crop": "settings/assistant/cloud/add-provider@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Add provider starts with one search box for the service, instead of a type list and a blank name.",
+      "changed": "The Type dropdown (Anthropic, OpenAI, Google, \"Custom endpoint (OpenAI-compatible)\") becomes a Service box you type into. The Name and key boxes appear once a service is picked.",
+      "notice": "You type a service you have heard of. Nothing asks you to invent a name or know what an endpoint is before you start.",
+      "risk": "Someone who already knows their address takes one extra step: pick \"Other address…\" first."
+    },
+    {
+      "id": "R-2",
+      "surface": "Cloud providers",
+      "path": "Add provider → type \"incep\" in Service",
+      "crop": "settings/assistant/cloud/add-provider#search@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Typing narrows about 190 services to the ones that match, with \"Other address…\" always at the bottom.",
+      "changed": "The list comes from the public catalog the app already downloads for prices; only services that publish their address are offered.",
+      "measured": "206 services listed with an address on models.dev (2026-10-20)",
+      "notice": "Inception, DeepSeek, Groq-style services are one word away. A service missing from the list still works through Other address.",
+      "risk": "The practice app has 15 services; the real list (~190) is checked after the build."
+    },
+    {
+      "id": "R-3",
+      "surface": "Cloud providers",
+      "path": "Add provider → pick Inception",
+      "crop": "settings/assistant/cloud/add-provider#picked@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Picking a service fills the name, says where it connects and how many models it has, and asks for the key.",
+      "changed": "The name is filled from the service and stays editable. A grey line under the box shows the address and model count. The key is required here, not \"optional\".",
+      "notice": "One paste and Add provider. You can see what you are connecting to before you press anything.",
+      "risk": "The model count is the public catalog's; your account may see a few more or fewer."
+    },
+    {
+      "id": "R-4",
+      "surface": "Cloud providers",
+      "path": "Add provider → Other address…",
+      "crop": "settings/assistant/cloud/add-provider#other@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "\"Other address…\" keeps the old way in, for a home server or a service not on the list.",
+      "changed": "An Address box appears, the key is marked optional (home servers often have none), and the hint names Ollama as an example.",
+      "notice": "Nothing you could connect before is lost. A local address still moves to Local models, now with a line saying so."
+    },
+    {
+      "id": "R-5",
+      "surface": "Cloud providers",
+      "path": "Add provider → paste a key → Add provider",
+      "crop": "settings/assistant/cloud/add-provider#added@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Adding checks the connection right away; a working provider says how many models it brings.",
+      "changed": "Add provider now saves and then checks. The row's grey line reads \"Connected · 4 models\". Edit replaces Add key / Replace key and opens the same form.",
+      "notice": "You know it works before you go to a chat. A wrong address no longer means Remove and add again.",
+      "risk": "The button reads \"Checking…\" for a second or two."
+    },
+    {
+      "id": "R-6",
+      "surface": "Cloud providers",
+      "path": "Add provider → paste a wrong key → Add provider",
+      "crop": "settings/assistant/cloud/add-provider#refused@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "A key that doesn't work is still saved, and the problem sits on the row with Edit and Try again.",
+      "changed": "The failed check becomes one red notice inside the row, its fixes beside it; the row reads \"Not connected\" until it passes.",
+      "notice": "A typo shows up here, next to its fix — not later as a confusing error in a chat.",
+      "risk": "A bad key stays listed until you fix or remove it."
+    },
+    {
+      "id": "R-7",
+      "surface": "Model picker",
+      "path": "Chat → model menu → search for a model that isn't listed",
+      "crop": "chat/model-picker#no-match@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "A search that finds nothing offers \"Check for new models\" instead of a dead end.",
+      "changed": "Under \"No models match.\" a full-width button asks every connected service for its latest list, skipping the once-a-day wait.",
+      "notice": "A model released this morning — Mercury 3 yesterday — is one press away instead of a day away.",
+      "risk": "Only shown where the picker has a search (assistant sessions), so Claude Code's own menu is unchanged."
+    },
+    {
+      "id": "R-8",
+      "surface": "Model picker",
+      "path": "Model menu → search \"mercury\" → Check for new models",
+      "crop": "chat/model-picker#refreshed@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "After the check, the same search runs again against the new list.",
+      "changed": "The button shows \"Checking for new models…\" while it runs; the search stays as you typed it, and new models appear in place.",
+      "notice": "You never retype the search. If nothing new turned up, the line says the list is up to date."
+    },
+    {
+      "id": "R-9",
+      "surface": "Model picker",
+      "path": "Model menu → Check for new models, while a service is down",
+      "crop": "chat/model-picker#refresh-failed@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "If a service can't be reached, the notice names it, says your list is unchanged, and offers Try again.",
+      "changed": "A red notice replaces the button, naming the list that failed. Lists that did answer still update.",
+      "notice": "A failed check never empties your model list, and it says which service to blame."
+    }
+  ]
+}

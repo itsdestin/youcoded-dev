@@ -15,8 +15,8 @@ platform: Desktop only
 vision: chat.converse.multi
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
+Done: 2026-10-21: pty-worker-flow 'delivers a large flood byte for byte' failed ONCE on Linux 7.2 at load ~90 (12388904 vs 12388903 chars: one extra character in ~12 MB) and passed alone, in 3 reruns, and under added load. Not reproduced; the test now reports the first differing position and its context on failure (session/fix-anthropic-many-image-brick), so the next occurrence says whether it is a doubled \\r or duplicated output.
+Next: If it recurs, read the first-difference message before changing the worker.
 Blocked: nothing recorded.
 
 Chats
