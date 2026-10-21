@@ -79,7 +79,7 @@ verify:
 - **The emit surface is FROZEN** — new loop states map onto existing `TranscriptEventType`s.
 - **Tool-call/result pairing holds EVERYWHERE** (driver, `rebuildHistory`, `fitToContext`) — a dangling tool_call bricks sessions.
 - **An ask PAUSES the turn, not ends it** — no re-`send()` while open. **Carve-out: a HUMAN dismissal (broker `dismissed`) ENDS it.**
-- **Permission precedence:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it, never the Bash floors beneath (`harness-tools.md`), which force an ask.
+- **Permission precedence:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it, never the three Bash floors (rm, secret paths, admin) beneath (`harness-tools.md`), which force an ask.
 
 ## M2 conversations/sync — guards: `ipc-handlers`/`holder-takeover`
 - **Native sessions are Conversation Store rows** (rule `conversations.md`).

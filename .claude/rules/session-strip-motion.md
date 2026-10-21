@@ -60,13 +60,13 @@ centred row under a drifting hand inside the settle (R8).
 
 ## The All Sessions menu reorders on its OWN drag, not this one
 **Invariant:** a menu row's grip (`[data-menu-drag-grip]`) is a native `draggable` and the
-list reorders from its `dragover`; `handlePointerDown` returns early for it. Never widen
-that bail past the grip, and never put the attribute on a pill.
+list reorders from its `dragover`; `handlePointerDown` returns early for it, and for touch presses on menu rows (a finger swipe belongs to native scrolling, `touch-pan-y`; pills keep `touch-none`). Never widen
+that bail beyond these, and never put the attribute on a pill.
 **Why:** this path picks its slot from `clientX` against the BAR's rects and ignores Y, so
 a vertical list drag could never land — the grip was inert from the day it was drawn until
 2026-09-07. Widening the bail would kill the menu's tear-off on Windows/macOS; the
 attribute in a pill would silently kill every pill drag.
-**Guard:** `SessionStrip.test.tsx` → "All Sessions menu reordering" (12 tests, incl. "the pill bar carries no grip").
+**Guard:** `SessionStrip.test.tsx` → "All Sessions menu reordering" (incl. "the pill bar carries no grip").
 
 ## Verify motion with the sweep, not one drag
 **Invariant:** before calling a release change done, run `scripts/ui-review/drag-fuzz.mjs`

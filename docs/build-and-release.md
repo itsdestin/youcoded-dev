@@ -12,7 +12,7 @@ If skipped (manual `-x bundleWebUi`, build break in `npm run build`, etc.), the 
 The Android release workflow (`android-release.yml`) still invokes the script as an explicit pre-step. With the Gradle task in place that's redundant on cold-cache CI runs (Gradle re-runs the work) but harmless, and acts as a safety net if anyone disables the Gradle task.
 
 ### Desktop version comes from git tag, not package.json
-CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml:40-46`). Local `package.json` version is not the source of truth.
+CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml`, step "Sync version from tag"). Local `package.json` version is not the source of truth.
 
 ### Android version is stamped in CI
 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or the release-scoped beta version for a manual dispatch; see **Betas number themselves** below) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. Only the visible beta number resets; never reset `versionCode`. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
@@ -136,8 +136,8 @@ tests never ran on Windows.
 **A pre-release does not touch anyone's installed app.** The in-app update checker reads
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
-website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` now reads
-the `/releases` list; revert when 1.3.1 ships — tracked as a card, `node scripts/cards.mjs index`).
+website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` reads
+the `/releases` list and deliberately stays there to keep offering betas (Destin, 2026-09-23); reverting is his call, asked at each release).
 
 **Only an official release reaches an install that is not ON the beta channel, and no
 published build had that channel until `1.3.0-beta.86` (2026-09-19).** The channel shipped
@@ -257,10 +257,9 @@ answer computed against the other channel.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->
 
 **The `base` prefix is still load-bearing — read this before changing it.** A beta must sort above
-the release it is ahead of. `1.3.1-beta` does (and sorts above every `1.3.0-beta.N` already
-published); `1.2.4-beta.N` sorts *below* a released `1.2.4`, so it
-would show "update available" and offer to downgrade itself to the release it is meant to be ahead
-of. **Bump the minor and suffix**, never patch-suffix the current version.
+the release it is ahead of, so `scripts/beta-version.mjs` accepts only the next patch after the
+latest official release (`1.3.2-beta` now) and throws on anything else: `1.3.1-beta` sorts *below* the
+released `1.3.1`, so it would show "update available" and offer to downgrade itself. Leave `base` blank.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
 
 **Why the version step exists at all:** only `desktop-release.yml` patches `package.json` (from the
@@ -328,8 +327,8 @@ To check a dmg before handing it to a tester, extract it and confirm the arch **
 signature**:
 
 ```bash
-7z x -y YouCoded-<version>.dmg -o/tmp/dmgcheck >/dev/null
-find /tmp/dmgcheck -type d -name '*-darwin-*'        # expect darwin-x64 in the unsuffixed dmg
+7z x -y YouCoded-Installer-<version>-x64.dmg -o/tmp/dmgcheck >/dev/null
+find /tmp/dmgcheck -type d -name '*-darwin-*'        # expect darwin-x64 in the -x64 dmg (the Apple Silicon one is -arm64)
 file "$(find /tmp/dmgcheck -path '*MacOS/YouCoded')" # expect Mach-O 64-bit x86_64
 ls -d /tmp/dmgcheck/*/YouCoded.app/Contents/_CodeSignature   # MUST exist — see below
 ```
@@ -448,8 +447,7 @@ certificate with downloads, so the blue warning fades over weeks rather than van
 
 **What users see is checked in a clean guest, not here.** CI proves the signature is valid; only
 a real first launch shows the SmartScreen / Gatekeeper wall. After any signing change:
-`scripts/vm/vm.sh win start && scripts/vm/vm.sh win load beta` (and `mac` once Apple signing
-lands) puts the newest beta in the guest's Downloads with the internet mark — see
+`scripts/vm/vm.sh win start && scripts/vm/vm.sh win load beta` (`mac` too; a signed beta needs a master dispatch) puts the newest beta in the guest's Downloads with the internet mark — see
 `docs/vm-testing.md` → Quick loop.
 
 ## Local verification (typecheck + CI-style build)
@@ -482,4 +480,4 @@ adb install -r app/build/outputs/apk/releaseTest/*.apk
 # Same data isolation as the regular debug app — no risk to your real install.
 ```
 
-Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` builds `assembleReleaseTest` on **every PR** and on pushes to `master`, so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.
+Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` is a reusable workflow called from `desktop-ci.yml` (the PR/master/nightly entry point); it builds `assembleReleaseTest` for every non-docs-only PR and master push (a diff entirely under `docs/` skips it), so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.

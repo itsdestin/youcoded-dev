@@ -70,7 +70,7 @@ This file is **cross-repo only**. Subsystem invariants live in `.claude/rules/`,
 inject automatically when you touch matching files — where PITFALLS never did.
 
 - **Native harness** (session lifecycle, tools, skills/injection, MCP) → `.claude/rules/native-runtime.md` + `.claude/rules/harness-tools.md`, depth in `youcoded/docs/native-runtime.md`.
-- **Buddy floater** (mascot, action bar, chat, the dormant Wayland overlay) → `.claude/rules/buddy-floater.md`, moved 2026-08-31.
+- **Buddy floater** (mascot, action bar, chat) → `.claude/rules/buddy-floater.md`, moved 2026-08-31.
 ## Working With Destin
 
 The day-to-day working rules — **"merge" means merge AND push**, **always sync before working**, **annotate non-trivial edits with a WHY comment**, **verify fix consequences on both platforms** — live in `CLAUDE.md` → Working Rules and are not duplicated here. The overriding safety rule (**never touch Destin's live built app**; all runtime testing goes through `bash scripts/run-dev.sh`) is `.claude/rules/live-app-safety.md`.
