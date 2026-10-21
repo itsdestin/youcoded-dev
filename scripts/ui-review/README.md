@@ -353,7 +353,18 @@ turn → red stalled card), `?providerError=<case>` (replays ONE native failure 
 `fixtures/conversations/native.jsonl`: OpenRouter `key-rejected|key-expired|credit-short|request-refused`,
 or the sorted error card's `anthropic-overloaded|anthropic-spend-limit|anthropic-key-rejected|anthropic-too-long|anthropic-unknown`,
 or `step-limit` → the Keep going row), `?anthropicError=1` (session wb-2 reads as Claude Opus on
-an Anthropic key, so the sorted card names the provider — pair it with the `anthropic-*` cases), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),
+an Anthropic key, so the sorted card names the provider — pair it with the `anthropic-*` cases),
+`?planLimit=1|official` (the ChatGPT plan's used-up-window card on wb-3; `official` = the official
+route's wording), `?contextChain=1` (the native session's context panel with its full chain),
+`?nativeStartup=<phase>` (the native session's startup states: waiting, failed…, on wb-2),
+`?pagesKit=1|<section>` (the Pages kit showcase page is listed; a section name opens it first at phone
+width), `?pagesMenu=kind` (with `?pagesKit=1`: the kit page's dropdown already open),
+`?updateInstall=<state>` (scripted installer output for the Update panel's waiting/activity/failure),
+`?stressRows=<n>` (row count for the `stress` scenario's lists), `?tasks=native` (Open tasks practice
+with native sessions), `?browser=<scene>` (the Browser pane's mock scene), `?connection=remote` (the
+app as a phone browser sees it — film at 390 wide), `?bot=passive` (the arcade's practice opponent
+never moves); mockup routes only: `?bare=1` and `?theme=<slug>` (Buddy session screens without the
+frame / in one theme), `?pills=four` (session status pills with four states), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),
 `?marketplace=empty` (registry-less Marketplace/Library; the default is a sampled registry
 fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?install=fail|slow` (every plugin/theme install fails with a reason, or takes two minutes),
