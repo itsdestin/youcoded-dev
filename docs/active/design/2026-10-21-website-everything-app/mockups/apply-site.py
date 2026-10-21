@@ -137,6 +137,9 @@ GALLERY = '''<section id="gallery"><div class="wrap">
 CSS = '''
 <style id="repositioning-css">
 /* ---- 2026-10-21 repositioning: cards, device drawing, ideas wall, story fold, demo tips ---- */
+/* The about and story panels sat flush under their headings while every other section keeps
+   26px between heading and content (Destin, 2026-10-21: "this spacing doesn't match"). */
+#about>.wrap>.panel,#story>.wrap>.storyfold{margin-top:26px}
 .demo-deck .step .deckclip .devdemo{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;border-radius:11px}
 .step p a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 .gal.ideas{align-items:flex-start}
