@@ -1504,7 +1504,7 @@ Submitted via YouCoded Assistant"
 
 - [ ] **Step 3: Pictures still match the approved screens.**
   `node scripts/shoot/shoot.mjs 'settings/assistant/cloud' 'settings/assistant/cloud/add-provider*' 'chat/model-picker#*' --themes light`
-  — every picture taken. Compare by eye with `docs/active/design/2026-10-20-custom-providers/runs-r4/`;
+  — every picture taken. Compare by eye with the approved round-3 deck (its screenshot runs were removed 2026-10-21 to save 47 MB; reshoot `--before` master to compare);
   nothing should have moved (this plan changes no UI).
 
 - [ ] **Step 4: Real run in a dev copy (never the user's app).** From the workspace root:
