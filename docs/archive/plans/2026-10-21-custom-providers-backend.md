@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Custom providers — backend implementation plan
@@ -20,8 +20,8 @@ already threaded to every session create / resume / swap.
 **Tech stack:** Electron main (Node, TypeScript), React renderer, Vitest. Desktop app only — Android runs
 the same desktop backend, so nothing in Kotlin changes.
 
-**Spec:** `docs/active/specs/2026-10-20-custom-providers-and-catalog-refresh.md`. **Approved UI:** decks
-`custom-providers-review-1..3` in `docs/active/design/2026-10-20-custom-providers/`. The UI is already
+**Spec:** `docs/archive/specs/2026-10-20-custom-providers-and-catalog-refresh.md`. **Approved UI:** decks
+`custom-providers-review-1..3` in `docs/archive/design/2026-10-20-custom-providers/`. The UI is already
 built on this branch against a fake backend; this plan only adds the real backend and unhooks the fakes.
 
 ## Global constraints
@@ -1476,7 +1476,7 @@ Submitted via YouCoded Assistant"
 
 **Files:**
 - Modify: `youcoded/docs/provider-dependencies.md` (the models.dev entry, plus one new entry)
-- Modify: `docs/active/specs/2026-10-20-custom-providers-and-catalog-refresh.md` (workspace repo — mark built)
+- Modify: `docs/archive/specs/2026-10-20-custom-providers-and-catalog-refresh.md` (workspace repo — mark built)
 
 - [ ] **Step 1: Docs.** In `youcoded/docs/provider-dependencies.md`, in the **models.dev `api.json` schema**
   entry, add after "Provider keys used: `anthropic`, `openai`, `google`.":
@@ -1522,7 +1522,7 @@ Submitted via YouCoded Assistant"
      Step 6. Steps that need a paid key (actually chatting with Mercury) are out of scope — say so.
 
 - [ ] **Step 5:** in the workspace spec, change `status: draft` to `status: active` and add a line under
-  the title: `Built on session/custom-providers-catalog (plan docs/active/plans/2026-10-21-custom-providers-backend.md).`
+  the title: `Built on session/custom-providers-catalog (plan docs/archive/plans/2026-10-21-custom-providers-backend.md).`
 
 - [ ] **Step 6: Commit** (app repo, then workspace repo):
 
@@ -1535,7 +1535,7 @@ Dev-copy check: <one line per step 4.1–4.4, pass/fail>.
 
 Submitted via YouCoded Assistant"
 # from the workspace root (worktrees/sessions/custom-providers-catalog)
-git add docs/active/specs/2026-10-20-custom-providers-and-catalog-refresh.md docs/active/plans/2026-10-21-custom-providers-backend.md
+git add docs/archive/specs/2026-10-20-custom-providers-and-catalog-refresh.md docs/archive/plans/2026-10-21-custom-providers-backend.md
 git commit -m "docs: custom providers spec marked built; implementation plan
 
 Submitted via YouCoded Assistant"

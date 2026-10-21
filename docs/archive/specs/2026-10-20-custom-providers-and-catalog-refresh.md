@@ -1,10 +1,10 @@
 ---
-status: active
+status: shipped
 ---
 
 # Custom providers that know their models, and a manual catalog refresh
 
-Built on session/custom-providers-catalog (plan docs/active/plans/2026-10-21-custom-providers-backend.md).
+Built on session/custom-providers-catalog (plan docs/archive/plans/2026-10-21-custom-providers-backend.md).
 
 Destin, 2026-10-20: Mercury 3 (Inception, released 2026-10-19) was live on OpenRouter but
 absent from the model picker; an Anthropic key added through "Add provider" showed a model
