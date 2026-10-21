@@ -13,9 +13,9 @@ vision: together.added.closeout
 work: session/162-linux-update-feedback, session/93-file-viewer-freezes, session/welcome-back-recovery, session/22-checkpoint-backups
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Checkpoint-backup subtask: restored standing authorization in workspace guidance and the native coder prompt; every push must scan all outgoing history. Both feature branches are committed, Gitleaks-clean, pushed and remote-tip verified; 433 workspace/hook tests and 44 prompt-assembly tests passed.
+Next: Complete fresh desktop verification and independent review of session/22-checkpoint-backups; broader #22 lifecycle/cleanup defects remain open.
+Blocked: No merge or release authorized. Initial desktop check hit stale worktree dependencies; isolated reinstall completed and verification is rerunning.
 
 Chats
 - 2026-10-21 session/22-checkpoint-backups: chat started
