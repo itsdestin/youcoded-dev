@@ -1,0 +1,222 @@
+{
+  "title": "When a reply fails — what the chat should offer",
+  "key": "error-card-questions",
+  "out": "error-card.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "The red box that replaces a reply when the provider fails",
+      "headline": "Should a failed reply get a Try again button that re-runs it, without you retyping your message?",
+      "today": "When a provider fails after the app's own retries, the reply is replaced by a red box with the provider's words. To carry on you type a new message, often \"continue\". Only a reply that stalled mid-way has a Try again button today.",
+      "problem": "Typing \"continue\" adds a new message to the conversation each time, and it is not obvious that this is the way forward. Your Opus conversation needed it three times in a row.",
+      "proposal": "Try again would re-run the reply that failed, using the message you already sent. Nothing new appears in the conversation, and anything the assistant already did in that turn stays done.",
+      "options": [
+        {
+          "id": "temporary-and-unknown",
+          "label": "When trying again can help",
+          "summary": "Shown for a busy or unreachable provider and for errors the app does not recognise; hidden for a bad key, no credit or a used-up plan.",
+          "pros": [
+            "Never offers a button that can only fail again.",
+            "An error the app does not recognise still has a way forward."
+          ],
+          "cons": [
+            "An account problem has no Try again — you fix it first, then press send."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always",
+          "label": "On every failed reply",
+          "pros": [
+            "One button you can always find in the same place."
+          ],
+          "cons": [
+            "Pressing it after a bad key or no credit only shows the same error again."
+          ]
+        },
+        {
+          "id": "never",
+          "label": "No — keep typing a message",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Every failure still costs a new message to recover from."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "The red box, when the reason is your account",
+      "headline": "When the problem is your account — a rejected key, no credit left, a spending cap — what should the box offer?",
+      "today": "A rejected OpenRouter key or an expired ChatGPT sign-in shows Open settings; too little OpenRouter credit shows Add credit. A rejected Anthropic or OpenAI key, Anthropic's monthly spending cap, and OpenAI's used-up quota show only the provider's words, with no button.",
+      "problem": "For those last cases you have to work out yourself where the fix is — a settings screen in the app, or the provider's own website.",
+      "proposal": "The app now tells these apart, so each could get the button that fixes it.",
+      "options": [
+        {
+          "id": "fix-where-it-lives",
+          "label": "The button that fixes it",
+          "summary": "Bad key → Open settings (to the right provider). No credit, spending cap or used-up quota → a button to that provider's billing page. Plus Switch model, so you can carry on with another one now.",
+          "pros": [
+            "One press to the place that actually fixes it.",
+            "Switch model lets you keep working while the account is sorted out."
+          ],
+          "cons": [
+            "Up to two buttons in the box instead of one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "settings-only",
+          "label": "Open settings only",
+          "pros": [
+            "Always the same single button."
+          ],
+          "cons": [
+            "For billing problems settings cannot fix it — you still go to the provider's website yourself."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat",
+      "path": "The red box, when the conversation is too long for the model",
+      "headline": "When the conversation has grown too long for the model, should the box offer to summarise it and carry on?",
+      "today": "When a conversation outgrows the model, the app already summarises older messages on its own and tries once more. If that still fails, you see the provider's words — \"prompt is too long\" — and nothing to press.",
+      "problem": "The fix exists (the summary button in the context panel), but nothing points you to it, so the conversation looks broken.",
+      "proposal": "The box would say the conversation is too long for this model and offer Summarise and continue: older messages become a short summary, and the reply is tried again. Switch model would sit beside it, for a model with a bigger window.",
+      "options": [
+        {
+          "id": "summarise-and-switch",
+          "label": "Summarise and continue + Switch model",
+          "pros": [
+            "Recovers in one press.",
+            "Switch model keeps every message for a model that fits them."
+          ],
+          "cons": [
+            "Summarising loses detail from older messages (the summary stays visible in the chat)."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "summarise-only",
+          "label": "Summarise and continue only",
+          "pros": [
+            "One clear way forward."
+          ],
+          "cons": [
+            "No way to keep every message, short of opening the model picker yourself."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Chat",
+      "path": "The red box's message",
+      "headline": "Should the box say what happened in plain words, with the provider's own message folded underneath?",
+      "today": "The box shows the provider's message as it came, for example \"Overloaded (provider error 529)\" or \"You have reached your monthly spend cap\". Some are clear, many are not.",
+      "problem": "\"Provider error 529\" means nothing to most people, and the wording changes from provider to provider for the same problem.",
+      "proposal": "One plain sentence per kind of problem, naming the provider — e.g. \"Anthropic is overloaded right now.\", \"Anthropic stopped this reply: your monthly spending cap has been reached.\" — with the provider's exact words under a Details fold. An error the app does not recognise keeps showing the provider's words in full, never a guess.",
+      "options": [
+        {
+          "id": "plain-plus-details",
+          "label": "Plain sentence, details folded",
+          "pros": [
+            "You can tell at a glance whether to wait, fix your account, or shorten the conversation.",
+            "The exact provider message is one click away for a bug report."
+          ],
+          "cons": [
+            "One extra click to see the provider's exact words."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "provider-words",
+          "label": "Keep the provider's words",
+          "pros": [
+            "Nothing hidden."
+          ],
+          "cons": [
+            "Stays as unclear as it is today."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chat",
+      "path": "The \"thinking\" line while the app waits to try again",
+      "headline": "While the app waits to try again after a busy or unreachable provider, should the thinking line say so?",
+      "today": "The app now waits and tries again for up to about a minute when a provider is busy or unreachable. During the wait the thinking line shows the existing \"taking a while… trying again in 8s\" countdown, the same one used when a reply goes quiet.",
+      "problem": "That line does not say why it is waiting, so a busy provider and a slow model look the same.",
+      "proposal": "The line would name the reason — \"Anthropic is busy — trying again in 8s\", \"Can't reach Anthropic — trying again in 8s\" — with Stop available as today.",
+      "options": [
+        {
+          "id": "name-the-reason",
+          "label": "Name the reason",
+          "pros": [
+            "You know whether to wait or switch models."
+          ],
+          "cons": [
+            "A few more words on the line for a short time."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-countdown",
+          "label": "Keep today's countdown",
+          "pros": [
+            "Nothing changes on screen."
+          ],
+          "cons": [
+            "A busy provider still looks like a slow model."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Chat",
+      "path": "The end of a reply that ran out of steps",
+      "headline": "When a reply stops because it used up its allowed number of steps, should it offer Keep going?",
+      "today": "Long tasks can stop with the line \"Response ended: max_steps.\" — a code word — and no button. This happened 38 times in your conversations, mostly with ChatGPT and DeepSeek.",
+      "problem": "The wording is not plain, and the only way on is to type a message.",
+      "proposal": "The line would read \"Stopped after 150 steps.\" with a Keep going button that continues the same task for another round of steps. (Changing the step limit stays in Settings.)",
+      "options": [
+        {
+          "id": "keep-going",
+          "label": "Plain line + Keep going",
+          "pros": [
+            "One press to carry on, no message to type."
+          ],
+          "cons": [
+            "Easy to keep pressing on a task that is going in circles."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "plain-only",
+          "label": "Plain line only",
+          "pros": [
+            "Makes you look at the work before it carries on."
+          ],
+          "cons": [
+            "Still costs a typed message to continue."
+          ]
+        }
+      ]
+    }
+  ]
+}
