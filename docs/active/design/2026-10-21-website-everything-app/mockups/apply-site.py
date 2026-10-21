@@ -39,7 +39,7 @@ ABOUT = MARK + '''
 <section id="about"><div class="wrap">
   <p class="eyebrow">What is this?</p><h2>One app. Whatever you want it to be.</h2>
   <div class="panel prose">
-    <p class="big">YouCoded is an AI assistant that does what you want, the way you want, with the screens and features you want. Hand it your files, your research and your writing. Ask it for a control panel for your house, a page for your money, or a game for a slow afternoon. Ask it to change its own look, give itself new features, or handle your requests in different ways. So, what exactly is YouCoded? That&rsquo;s for you to decide.</p>
+    <p class="big">YouCoded is an AI assistant that does what you want, the way you want, with the screens and features you want. Hand it your files, your research and your writing. Ask it for a control panel for your house, a page for your money, or a game for a slow afternoon. Ask it to change its own look, give itself new features, or handle your requests in different ways. What exactly is YouCoded? That&rsquo;s for you to decide.</p>
     <div class="cols">
       <p>It runs on whichever AI you choose: Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and hundreds more, or an open model running privately on your own computer.</p>
     </div>
@@ -144,9 +144,32 @@ CSS = '''
 .idea img{width:100%;display:block;border-radius:var(--radius);border:1px solid var(--hair)}
 .idea figcaption{margin-top:10px;font-size:.95rem;line-height:1.35;opacity:.86;font-style:italic}
 /* The story folds behind one line on a phone (Destin, Q-14): two screens of text became one tap. */
-.storyfold>summary{list-style:none;cursor:pointer;font-weight:700;color:var(--accent);display:none}
+/* Every fold on the page (the FAQ cards, and the story on a phone) opens and closes with the
+   same motion: the answer's box grows from 0 to its height while it fades in, the + turns into
+   an x, and a press on the question dips the card (Destin, review R-10: "no expand animation or
+   press feel"). The <details> element stays open during the closing motion; is-open drives it. */
+.faq details .a,.storyfold .a{display:grid;grid-template-rows:0fr;opacity:0;
+  transition:grid-template-rows .34s cubic-bezier(.2,.8,.2,1),opacity .22s ease}
+.faq details .a>.a-in,.storyfold .a>.a-in{overflow:hidden;min-height:0}
+.faq details.is-open .a,.storyfold.is-open .a{grid-template-rows:1fr;opacity:1}
+.faq details .a{padding:0}
+.faq details .a-in{padding:0 22px 20px}
+.faq summary{transition:background .18s,transform .14s}
+.faq summary:hover{background:rgba(var(--fg-rgb),.045)}
+.faq summary:active,.storyfold>summary:active{transform:scale(.992);background:rgba(var(--fg-rgb),.07)}
+.faq summary::after{transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+.faq details[open] summary::after{content:'+'}
+.faq details.is-open summary::after{transform:rotate(45deg)}
+.storyfold>summary{list-style:none;display:none}
 .storyfold>summary::-webkit-details-marker{display:none}
-@media (max-width:760px){.storyfold>summary{display:block}.storyfold:not([open])>summary::after{content:" \\2193"}}
+@media (prefers-reduced-motion:reduce){.faq details .a,.storyfold .a,.faq summary,.faq summary::after{transition:none}}
+@media (max-width:760px){
+  .storyfold{padding:0}
+  .storyfold>summary{display:flex;gap:10px;cursor:pointer;padding:15px 17px;font-weight:700;font-size:.95rem;border-radius:var(--radius);transition:background .18s,transform .14s}
+  .storyfold>summary::after{content:'+';margin-left:auto;color:var(--accent);font-size:1.3rem;line-height:1;transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+  .storyfold.is-open>summary::after{transform:rotate(45deg)}
+  .storyfold .a-in{padding:0 17px 18px}
+}
 /* Tips over the live demo: glass chips hanging under the demo's own buttons on straight stems.
    They exist only once the visitor has clicked into the demo (B-1 round 2). */
 .tips{position:absolute;inset:0;pointer-events:none;z-index:6;font-family:var(--font-ui);display:none}
@@ -354,8 +377,10 @@ doc = doc.replace('<section id="integrations">', '<!-- integrations grid hidden 
 # Story fold on phones.
 s, e = mk.section(doc, 'story')
 story = doc[s:e]
-story2 = story.replace('<div class="panel prose story">', '<div class="panel prose story"><details class="storyfold" open><summary>Read the story</summary>', 1)
-story2 = story2.replace('</div>\n</div></section>', '</details></div>\n</div></section>', 1)
+story2 = story.replace('<div class="panel prose story">', '<details class="panel prose story storyfold" open><summary>Read the story</summary><div class="a"><div class="a-in">', 1)
+story2 = story2.replace('</div>\n</div></section>', '</div></div></details>\n</div></section>', 1)
+# FAQ answers get an inner box so the card can animate shut without its padding showing.
+doc = re.sub(r'<div class="a">(?!<div class="a-in">)(.*?)</div></details>', lambda m: '<div class="a"><div class="a-in">' + m.group(1) + '</div></div></details>', doc, flags=re.S)
 assert story2 != story and '</details>' in story2, 'story fold anchors'
 doc = doc[:s] + story2 + doc[e:]
 # One name.
@@ -368,6 +393,30 @@ FOLD_JS = '''
 <script>
 // The story opens folded on a phone, open everywhere else (Q-14).
 (function(){ var d = document.querySelector('.storyfold'); if (d && matchMedia('(max-width: 760px)').matches) d.removeAttribute('open'); })();
+// Animated folds: the FAQ cards and the story card. Opening sets `open` then, a frame later,
+// is-open so the box transitions from 0; closing removes is-open and waits for the motion to
+// end before the element actually closes. With reduced motion there is no wait.
+(function(){
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.faq details, details.storyfold').forEach(function(d){
+    var s = d.querySelector('summary'), a = d.querySelector('.a'); if (!s || !a) return;
+    if (d.open) d.classList.add('is-open');
+    s.addEventListener('click', function(e){
+      e.preventDefault();
+      if (d.classList.contains('is-open')) {
+        d.classList.remove('is-open');
+        if (reduced) { d.open = false; return; }
+        var done = false, finish = function(){ if (done) return; done = true; if (!d.classList.contains('is-open')) d.open = false; };
+        a.addEventListener('transitionend', function h(ev){ if (ev.propertyName === 'grid-template-rows') { a.removeEventListener('transitionend', h); finish(); } });
+        setTimeout(finish, 450);
+      } else {
+        d.open = true;
+        if (reduced) { d.classList.add('is-open'); return; }
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ d.classList.add('is-open'); }); });
+      }
+    });
+  });
+})();
 </script>
 '''
 doc = doc.replace('</body>', mk.DEV_SCRIPT + TIPS_JS + FOLD_JS + '</body>', 1)
