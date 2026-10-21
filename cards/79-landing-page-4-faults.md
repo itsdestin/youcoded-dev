@@ -12,8 +12,8 @@ area: Website
 work: session/79-hero-copy-preview, session/79-website-everything-app
 ---
 Progress
-Done: Page rebuilt on youcoded branch session/79-website-everything-app (7bec9aa75): unified copy, ten cards customization-first, per-theme clips, drawn device card, sample labels, ideas wall, integrations hidden, story fold, demo tips (chat + Settings), Linux reorder. Three decks answered.
-Next: Finish the 40 clip recordings, shoot the built page, serve the review deck; then merge on Destin's word, archive design docs, remove old media files.
+Done: Review deck answered; fixes applied: FAQ/story fold animation and hover, story copy rewritten by Destin (two passes), device card redrawn with dark mode, OpenAI account card, workbench echo fix (typed message above reply) and all 40 clips re-filmed. All pushed on session/79-website-everything-app in both repos.
+Next: verify.sh on the app worktree; Destin's merge call; then archive design docs, close card, remove the nine old clip files.
 Blocked: Nothing for the shipped hero-copy task.
 
 Chats
