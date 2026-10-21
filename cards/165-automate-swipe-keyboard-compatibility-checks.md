@@ -10,9 +10,9 @@ why: Destin: "fully automate the maintenance burden ... automatically works with
 work: session/165-swipe-release-pipeline
 ---
 Progress
-Done: Implemented required-target/source/version/hash CI and protected final publication approval. Real Fedora and Flatpak producers have passed; Arch now compiles and passes native35 but exposed post-build fixture normalization failures. Parent reproduced those exact failures after production patching inside nested archives, fixed the two test fixtures, targeted4+6 tests PASS. Corrective guides now include Arch and ARM64; not published.
-Next: ARM64 is REQUIRED by explicit owner correction. Worker a087919a-b2e4-4715-8006-9bdd1782e329 implements native ARM profiles, required aarch64 package/job/validator and owned ARM Plasma Mobile acceptance. Resume API interruptions from checkpoints. Freeze one coherent four-platform candidate, run actual CI, enforce merge protection, then install corrected host package and publish only complete verified release.
-Blocked: ARM64 package/build/load/input acceptance still unfinished and blocks Mobile completion/release. Host remains safely0.1.0-3. No optional ARM canary or x86 substitute; no signature/ABI/privacy bypass. Gaming remains deferred; musl/other phone distributions cannot be claimed without evidence.
+Done: Native prediction source363fd2a frozen/pushed; required parallel platform CI39526485965 active. Actual stock-native tap/swipe→Space→three centered-best suggestions and each-slot insertion demonstrated; privacy stale-touch demo passed. Native docs corrected. Focused reviewer found no actionable bugs; ARM evidence investigation completed without speculative source changes.
+Next: ARM worker135 resumes one precise authorized-replacement forwarding probe while four-platform CI builds363fd2a; parent coordinates final artifacts/Flatpak stable+beta checks/owner update. No redundant full review rounds or intermediate CI reruns.
+Blocked: ARM correction/word deletion/i18n/privacy runtime acceptance remains REQUIRED. Final363fd2a four-platform packages not yet built/accepted; owner native package not updated; PR3 unmerged and no corrective release published.
 
 Chats
 - 2026-10-21 session/165-swipe-release-pipeline: chat started
