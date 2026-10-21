@@ -1,0 +1,47 @@
+{
+ "deck": "website-everything-app-design2",
+ "started": "2026-10-21T18:02:37.200Z",
+ "submitted": "2026-10-21T18:08:15Z",
+ "cur": 4,
+ "answers": {
+  "B-1": {
+   "note": "these should only be present when a user actually clicks into the demo, not on the bare preview image. i still don't like that some of the chips overalap. and the descriptions shouldn't be a separate hover popup, the ship itself should expand and turn into the description with the others moving around to accomodate and the lines adjusting as needed. i think i like the color/style of that hover popup more tho and we should replace the dark purple of the chips with that styling. make sure this works for other site themes.",
+   "t": 1792605877803,
+   "v": "other",
+   "seconds": 121,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "other",
+   "t": 1792605895119,
+   "note": "see previous responses",
+   "seconds": 17,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-3": {
+   "note": "we should clean up the copy a bit \"Build a new control center or quick settings chip for your Linux device, rearrange your desktop or files, or built real utilites that change how you interact with your computer. Swipe Keyboard for KDE Plasma is just one example of what's possible\". and include an embedded link in the swipe keyboard for kde plasma text to the swipe keyboard readme/install instructions.",
+   "t": 1792606037178,
+   "v": "other",
+   "seconds": 142,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-4": {
+   "note": "these demo screenshot/video things don't seem properly fitted to the space allocated to them?",
+   "t": 1792606083994,
+   "v": "other",
+   "seconds": 47,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-5": {
+   "v": "yes",
+   "t": 1792606094619,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

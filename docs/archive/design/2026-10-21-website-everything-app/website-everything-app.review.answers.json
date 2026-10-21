@@ -1,0 +1,81 @@
+{
+ "deck": "website-everything-app-review",
+ "started": "2026-10-21T19:18:17.477Z",
+ "submitted": "2026-10-21T19:21:12Z",
+ "cur": 9,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "t": 1792610310986,
+   "seconds": 13,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "i want to test this",
+   "t": 1792610320473,
+   "v": "other",
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "t": 1792610324381,
+   "seconds": 4,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "yes",
+   "t": 1792610356270,
+   "note": "drop the \"So,\".",
+   "seconds": 32,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "yes",
+   "t": 1792610362872,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "t": 1792610372264,
+   "seconds": 9,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-7": {
+   "v": "yes",
+   "t": 1792610383206,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-8": {
+   "v": "yes",
+   "t": 1792610403666,
+   "seconds": 20,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-9": {
+   "v": "yes",
+   "t": 1792610422720,
+   "seconds": 19,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R-10": {
+   "v": "other",
+   "t": 1792610471257,
+   "note": "style like an faq card. also the touch/expand interaction with the faw cards is a bit odd (doesn't feel polished premium, no expand animation or press feel). fix for all of these",
+   "seconds": 49,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

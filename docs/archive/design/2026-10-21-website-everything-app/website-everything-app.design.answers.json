@@ -1,0 +1,71 @@
+{
+ "deck": "website-everything-app-design",
+ "started": "2026-10-21T17:46:26.358Z",
+ "submitted": "2026-10-21T17:53:32Z",
+ "cur": 7,
+ "answers": {
+  "C-1": {
+   "v": "pick",
+   "pick": "fan",
+   "t": 1792604831245,
+   "seconds": 45,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-1": {
+   "note": "these are very poorly laid out and i dont like how the lines crisscross or how the dots cover the icons they point at",
+   "t": 1792604864718,
+   "v": "other",
+   "seconds": 33,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "t": 1792604875390,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-3": {
+   "note": "change the last line \"it is one app with one idea: you decide what it is.\" to \"So, what exactly is youcoded? That's for you to decide. change \"ask it to change its own look, give itself new features, or handle your requests in different ways:",
+   "t": 1792604998645,
+   "v": "yes",
+   "seconds": 123,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-4": {
+   "note": "dont need two header levels. drop \"say it..\" and just keep \"every one of these..\" as the large top header",
+   "t": 1792605054498,
+   "v": "other",
+   "seconds": 56,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "B-5": {
+   "note": "i dont see the difference between your whole device and your desktop too. i also feel like \"your home/your money\" makes it seem like these are included app features, which they aren't. these are just demos (actually live and used by me with connections to my home/bank) but haven't yet been shared in the marketplace. these should clearly be unincluded samples",
+   "t": 1792605137927,
+   "v": "other",
+   "seconds": 83,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "Q-1": {
+   "note": "maybe actually fake this too. make it match marketing styling? or merge with keyboard. idk",
+   "t": 1792605197359,
+   "v": "other",
+   "seconds": 59,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "settings-too",
+   "t": 1792605211054,
+   "seconds": 14,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}

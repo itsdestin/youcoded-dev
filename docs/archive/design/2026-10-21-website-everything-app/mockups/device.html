@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customize your device demo</title>
+<style>
+/* Standalone-preview fallbacks only; the drawing's colours are fixed palettes below, not the page's. */
+:root{--radius:18px;--font-ui:'DM Sans',system-ui,sans-serif}
+body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
+.wrap{width:100%;max-width:900px}
+
+/* ---- paste from here ---- */
+.devdemo{position:relative;width:100%;aspect-ratio:16/10;container-type:inline-size;overflow:hidden;box-sizing:border-box;
+  /* WHY: light = the YouCoded theme's exact tokens, dark (.is-dark) = YouCoded Night's. Fixed palettes (not the host page's colours) so the drawing matches the app; every surface reads these. */
+  --bg:#F7F0FB;--pn:#EFE3F6;--in:#DCC5EB;--wl:#FAF5FD;--accent:#8B47B8;--oa:#FFFFFF;--st:#21152C;--tx:#21152C;--mu:#50415C;--fa:#887695;--hr:#C9B0DB;--hl:#B597CCA0;
+  --gl:rgba(239,227,246,.8);--tk:#DCC5EB;--kf:#FAF5FD;--kn:#DCC5EB;--kb:#C9B0DB;--knob:#FFFFFF;--fn:rgba(33,21,44,.2);--sh:rgba(33,21,44,.14);
+  font-family:var(--font-ui);color:var(--tx);background:var(--bg);border:1px solid var(--hr);border-radius:var(--radius)}
+.devdemo.is-dark{--bg:#140B1E;--pn:#1F1329;--in:#2B1B39;--wl:#2B1B39;--accent:#C99BF0;--oa:#1A0F24;--st:#F3EAF9;--tx:#F3EAF9;--mu:#A397AC;--fa:#6B5D76;--hr:#45305A;--hl:#5A3F75A0;
+  --gl:rgba(31,19,41,.8);--tk:#2B1B39;--kf:#2B1B39;--kn:#352345;--kb:#45305A;--knob:#F3EAF9;--fn:rgba(243,234,249,.3);--sh:rgba(0,0,0,.45)}
+.devdemo *{box-sizing:border-box}
+.devdemo,.devdemo *{transition:background-color .5s,color .5s,border-color .5s,box-shadow .5s}
+.devdemo .abs{position:absolute}
+/* WHY: sizes are cqw (share of the demo's width) so it scales without breakpoints; one 7s loop drives every part. */
+.devdemo .p1{left:0;top:0;width:42%;height:100%;overflow:hidden}
+.devdemo .p2{left:42%;top:0;width:58%;height:100%;border-left:1px solid var(--hr)}
+/* LEFT: wallpaper, dark wash, shade card, panel bar */
+.devdemo .wall{inset:0;background:linear-gradient(155deg,#D7B3E7,#F7F0FB 58%,#E6D0F1)}
+/* WHY: gradients can't transition, so dark is a layer fading in over the wallpaper */
+.devdemo .dk{inset:0;opacity:0;transition:opacity .5s;background:linear-gradient(155deg,#542571,#140B1E 58%,#2A1240)}
+.devdemo.is-dark .dk{opacity:1}
+/* WHY: fixed orange = Night Light's warm tint (not a theme colour); faint, over the whole scene, on top of dark */
+.devdemo .warm{inset:0;background:rgb(255,140,40);opacity:0;pointer-events:none;animation:dvWarm 7s infinite}
+.devdemo .shade{left:1.5cqw;top:2.5cqw;width:39cqw;padding:1.9cqw;display:flex;flex-direction:column;gap:1.6cqw;background:var(--gl);
+  border:1px solid var(--hr);border-radius:calc(var(--radius)*1.1);backdrop-filter:blur(1.5cqw);box-shadow:0 .8cqw 3cqw var(--sh)}
+.devdemo .time{font-size:5.4cqw;font-weight:300;line-height:1;letter-spacing:-.02em;color:var(--st)}
+.devdemo .date{font-size:1.7cqw;color:var(--mu);margin-top:.8cqw}
+.devdemo .sl{display:flex;align-items:center;gap:1.5cqw;height:3cqw;color:var(--mu)}
+.devdemo .trk{flex:1;height:1cqw;border-radius:99px;background:var(--tk);position:relative}
+.devdemo .trk i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--accent)}
+.devdemo .trk b{position:absolute;top:50%;width:2.4cqw;height:2.4cqw;margin:-1.2cqw 0 0 -1.2cqw;border-radius:50%;background:var(--knob);box-shadow:0 .2cqw .7cqw rgba(0,0,0,.3)}
+.devdemo .ic{width:2.6cqw;height:2.6cqw;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.devdemo .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:7cqw;gap:1cqw}
+.devdemo .tile{display:flex;align-items:center;gap:1cqw;padding:0 1.1cqw;border-radius:calc(var(--radius)*.7);overflow:hidden;
+  background:var(--wl);border:1px solid var(--hr);color:var(--tx);line-height:1.25;white-space:nowrap}
+.devdemo .tile.on{background:var(--accent);border-color:var(--accent);color:var(--oa)}
+.devdemo .tile small{display:flex;flex-direction:column;font-size:1.4cqw;min-width:0}
+.devdemo .tile small b{font-size:1.5cqw;font-weight:600}
+.devdemo .tile small span{opacity:.75}
+.devdemo .st{display:block;height:1.25em;overflow:hidden}.devdemo .st u{display:block;text-decoration:none}
+.devdemo .nl{animation:dvNL 7s infinite}
+.devdemo .nl u{animation:dvSw 7s infinite}
+.devdemo .btns{display:flex;gap:.9cqw}
+.devdemo .btns div{flex:1;height:4.6cqw;display:flex;align-items:center;justify-content:center;gap:.7cqw;font-size:1.4cqw;color:var(--tx);
+  background:var(--wl);border:1px solid var(--hr);border-radius:99px}
+.devdemo .btns .ic{width:2cqw;height:2cqw}
+.devdemo .pbar{left:0;right:0;bottom:0;height:5cqw;background:var(--gl);border-top:1px solid var(--hr);display:flex;align-items:center;justify-content:space-between;padding:0 2.5cqw;font-size:1.7cqw;color:var(--tx)}
+.devdemo .pbar i{display:inline-block;width:2cqw;height:2cqw;border-radius:.6cqw;background:var(--tk);margin-right:1cqw}
+/* RIGHT: browser strip, ONE text field (the address bar), Gboard-style swipe keyboard */
+.devdemo .tabs{left:0;right:0;top:0;height:9%;background:var(--pn);padding:1.2% 2% 0;display:flex}
+.devdemo .tab{width:38%;height:100%;background:var(--bg);border:1px solid var(--hr);border-bottom:0;border-radius:1cqw 1cqw 0 0;
+  font-size:1.5cqw;line-height:1;padding:0 1.4cqw;display:flex;align-items:center;gap:1cqw;color:var(--tx)}
+.devdemo .tab i{width:1.5cqw;height:1.5cqw;border-radius:50%;background:var(--tk)}
+.devdemo .bar{left:0;right:0;top:9%;height:10%;background:var(--bg);border-bottom:1px solid var(--hr);display:flex;align-items:center;gap:1.4cqw;padding:0 4%}
+.devdemo .bar b{width:1.7cqw;height:1.7cqw;border:.3cqw solid var(--tk);border-radius:50%}
+.devdemo .url{flex:1;height:62%;border-radius:99px;background:var(--in);padding:0 1.8cqw;font-size:1.9cqw;display:flex;align-items:center;color:var(--st);white-space:pre;overflow:hidden}
+/* WHY: "yours" grows in from zero width so the caret stays glued to the last letter before and after the swipe */
+.devdemo .typed{display:inline-block;overflow:hidden;max-width:0;opacity:0;animation:dvType 7s infinite}
+.devdemo .caret{display:inline-block;width:.3cqw;height:2.3cqw;margin-left:.2cqw;background:var(--accent);animation:dvBlink 1s steps(2) infinite}
+/* WHY: panel is exactly 58cqw wide (the pane) x 34.4cqw tall; with .8 side padding and .6 gaps ten keys are 5.1cqw each (10x5.1+9x.6+1.6=58). Every size below is derived from that. */
+.devdemo .kb{left:0;right:0;bottom:0;height:34.4cqw;background:var(--pn);border-top:1px solid var(--hr);padding:.6cqw .8cqw 0}
+.devdemo .sug{height:4.4cqw;margin:0 -.8cqw .8cqw;display:flex;font-size:2.1cqw}
+.devdemo .sug div{flex:1;position:relative;display:grid;place-items:center}
+.devdemo .sug div+div:before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:1px;background:var(--hl)}
+.devdemo .sug span{grid-area:1/1;color:var(--fa)}
+.devdemo .sug .b{color:var(--tx);opacity:0;animation:dvGuess 7s infinite}
+.devdemo .sug .a{opacity:.6;animation:dvGen 7s infinite}
+.devdemo .sug .on{color:var(--accent);font-weight:700}
+.devdemo .kr{display:flex;gap:.6cqw;margin-bottom:1cqw}
+.devdemo .kr.ix{justify-content:center}
+/* WHY: flat key, 1px bottom edge for lift; 5.1 x 6.12 = the 5:6 ratio real keys have */
+.devdemo .k{width:5.1cqw;height:6.12cqw;flex:none;display:flex;align-items:center;justify-content:center;font-size:2.6cqw;line-height:1;color:var(--st);
+  background:var(--kf);border-radius:.8cqw;box-shadow:0 1px 0 var(--kb)}
+.devdemo .k.w{width:7.95cqw}
+.devdemo .k.f{background:var(--kn)}
+.devdemo .k.sp{flex:1;width:auto;font-size:1.3cqw;color:var(--fa)}
+.devdemo .k.q{font-size:1.8cqw}
+.devdemo .k.e{background:var(--accent);color:var(--oa)}
+.devdemo .k .ic{width:3cqw;height:3cqw}
+.devdemo .l{animation:dvLit 7s var(--d) infinite}
+.devdemo .tr{left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:drop-shadow(0 0 .7cqw var(--accent))}
+.devdemo .tr path{fill:none;stroke:var(--accent);stroke-linecap:round;stroke-linejoin:round}
+.devdemo .trail{stroke-width:11;stroke-dasharray:100 100;stroke-dashoffset:100;opacity:0;animation:dvTrail 7s linear infinite}
+.devdemo .dot{stroke-width:22;stroke-dasharray:.01 300;opacity:0;animation:dvDot 7s linear infinite}
+/* finger: taps Night Light, then hands over to the swipe dot */
+.devdemo .fin{left:0;top:0;width:3.6cqw;height:3.6cqw;border-radius:50%;background:var(--fn);border:1px solid var(--st);
+  box-shadow:0 .3cqw 1cqw var(--sh);opacity:0;--t:translate(10.3cqw,33.5cqw);animation:dvFin 7s infinite}
+@keyframes dvWarm{0%,12%{opacity:0}20%,90%{opacity:.05}97%,100%{opacity:0}}
+@keyframes dvNL{0%,9%{background:var(--wl);border-color:var(--hr);color:var(--tx);transform:scale(1)}11.4%{transform:scale(.94)}14%,91%{background:var(--accent);border-color:var(--accent);color:var(--oa);transform:scale(1)}96%,100%{background:var(--wl);border-color:var(--hr);color:var(--tx)}}
+@keyframes dvSw{0%,12%{transform:none}14%,91%{transform:translateY(-50%)}96%,100%{transform:none}}
+@keyframes dvFin{0%,3%{transform:translate(13.8cqw,40cqw) scale(1);opacity:0}6%,10%{transform:var(--t) scale(1);opacity:1}11.4%{transform:var(--t) scale(.8)}14.3%,17%{transform:var(--t) scale(1);opacity:1}25.5%{transform:translate(72.05cqw,35.16cqw) scale(1);opacity:1}27%,100%{transform:translate(72.05cqw,35.16cqw) scale(1);opacity:0}}
+@keyframes dvTrail{0%,25.5%{stroke-dashoffset:100;opacity:0}25.7%{stroke-dashoffset:100;opacity:.75}49%,90%{stroke-dashoffset:0;opacity:.75}95%{stroke-dashoffset:0;opacity:0}95.1%,100%{stroke-dashoffset:100;opacity:0}}
+@keyframes dvDot{0%,25.5%{stroke-dashoffset:0;opacity:0}25.7%{stroke-dashoffset:0;opacity:1}49%{stroke-dashoffset:-100;opacity:1}51%{stroke-dashoffset:-100;opacity:0}51.1%,100%{stroke-dashoffset:0;opacity:0}}
+/* WHY: ~250ms accent wash (30%) as the trail passes a key */
+@keyframes dvLit{0%{background:var(--kf)}1%,4.6%{background:color-mix(in srgb,var(--accent) 30%,var(--kf))}8%,100%{background:var(--kf)}}
+@keyframes dvType{0%,49.9%{opacity:0;max-width:0}52%,91%{opacity:1;max-width:9cqw}95%,100%{opacity:0;max-width:0}}
+@keyframes dvGen{0%,49.9%{opacity:.6}52%,91%{opacity:0}95%,100%{opacity:.6}}
+@keyframes dvGuess{0%,49.9%{opacity:0}52%,91%{opacity:1}95%,100%{opacity:0}}
+@keyframes dvBlink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+ .devdemo *{animation:none!important}
+ .devdemo .warm{opacity:.05}
+ .devdemo .nl{background:var(--accent);border-color:var(--accent);color:var(--oa)}
+ .devdemo .nl u{transform:translateY(-50%)}
+ .devdemo .trail{stroke-dashoffset:0;opacity:.75}
+ .devdemo .dot,.devdemo .fin{opacity:0}
+ .devdemo .typed{opacity:1;max-width:9cqw}
+ .devdemo .sug .b{opacity:1}.devdemo .sug .a{opacity:0}
+ .devdemo .l{background:color-mix(in srgb,var(--accent) 30%,var(--kf))}
+}
+/* ---- to here (also paste the devdemo div and the script block) ---- */
+</style></head>
+<body><div class="wrap">
+<div class="devdemo" aria-hidden="true">
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="d-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.8a10 10 0 0 1 13 0M9 16.5a5 5 0 0 1 6 0M12 20h.01"/></symbol>
+<symbol id="d-bt" viewBox="0 0 24 24"><path d="M7 7l10 10-5 4V3l5 4L7 17"/></symbol>
+<symbol id="d-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+<symbol id="d-dnd" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol>
+<symbol id="d-air" viewBox="0 0 24 24"><path d="M21 15l-8-5V4.5a1.5 1.5 0 0 0-3 0V10l-8 5v2l8-2v4l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-4l8 2z"/></symbol>
+<symbol id="d-rot" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4"/></symbol>
+<symbol id="d-shot" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="d-rec" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></symbol>
+<symbol id="d-clip" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/></symbol>
+<symbol id="d-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+<symbol id="d-vol" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM17 9a4 4 0 0 1 0 6"/></symbol>
+<symbol id="d-sh" viewBox="0 0 24 24"><path d="M12 19V6M6 12l6-6 6 6"/></symbol>
+<symbol id="d-bk" viewBox="0 0 24 24"><path d="M21 5H9l-6 7 6 7h12zM12 9.5l5 5M17 9.5l-5 5"/></symbol>
+<symbol id="d-rt" viewBox="0 0 24 24"><path d="M19 6v6H6M10 8l-4 4 4 4"/></symbol>
+</defs></svg>
+
+<div class="abs p1">
+<div class="abs wall"></div>
+<div class="abs dk"></div>
+<div class="abs shade">
+<div><div class="time">3:51 PM</div><div class="date">Wednesday, October 21</div></div>
+<div class="sl"><svg class="ic"><use href="#d-sun"/></svg><div class="trk"><i style="width:70%"></i><b style="left:70%"></b></div></div>
+<div class="sl"><svg class="ic"><use href="#d-vol"/></svg><div class="trk"><i style="width:45%"></i><b style="left:45%"></b></div></div>
+<div class="grid">
+<div class="tile on"><svg class="ic"><use href="#d-wifi"/></svg><small><b>Wi-Fi</b><span>On</span></small></div>
+<div class="tile on"><svg class="ic"><use href="#d-bt"/></svg><small><b>Bluetooth</b><span>On</span></small></div>
+<div class="tile nl"><svg class="ic"><use href="#d-moon"/></svg><small><b>Night Light</b><span class="st"><u>Off<br>On</u></span></small></div>
+<div class="tile"><svg class="ic"><use href="#d-dnd"/></svg><small><b>Focus</b><span>Off</span></small></div>
+<div class="tile"><svg class="ic"><use href="#d-air"/></svg><small><b>Airplane</b><span>Off</span></small></div>
+<div class="tile on"><svg class="ic"><use href="#d-rot"/></svg><small><b>Rotation</b><span>Locked</span></small></div>
+</div>
+<div class="btns"><div><svg class="ic"><use href="#d-shot"/></svg>Capture</div><div><svg class="ic"><use href="#d-rec"/></svg>Record</div><div><svg class="ic"><use href="#d-clip"/></svg>Paste</div></div>
+</div>
+<div class="abs pbar"><span><i></i><i></i><i></i></span><span>3:51 PM</span></div>
+</div>
+
+<div class="abs p2">
+<div class="abs tabs"><div class="tab"><i></i>New tab</div></div>
+<div class="abs bar"><b></b><div class="url"><span>make your technology</span><span class="typed"> yours</span><i class="caret"></i></div></div>
+<div class="abs kb">
+<div class="sug"><div><span class="a">the</span><span class="b">your</span></div><div><span class="a">I</span><span class="b on">yours</span></div><div><span class="a">and</span><span class="b">yolks</span></div></div>
+<div class="rows"></div>
+<svg class="abs tr" viewBox="0 0 580 344" preserveAspectRatio="none">
+<path class="trail" pathLength="100" d="M318 89Q400 50 489 89Q440 125 375 89Q290 55 204 89Q150 150 119 160"/>
+<path class="dot" pathLength="100" d="M318 89Q400 50 489 89Q440 125 375 89Q290 55 204 89Q150 150 119 160"/>
+</svg>
+</div>
+</div>
+<div class="abs warm"></div>
+<div class="abs fin"></div>
+</div>
+</div>
+<script>
+/* devdemo */
+/* Builds the keys (lit ones timed to the trail); flips dark mode at the Night Light tap. */
+(function(){var d=document.querySelector('.devdemo'),kb=d.querySelector('.rows'),lit={y:1.8,o:2.3,u:2.6,r:3.1,s:3.4},
+ /* ^ shift, < backspace, # ?123, space, > enter; , and . are function keys */
+ R=['qwertyuiop','asdfghjkl','^zxcvbnm<','#, .>'];
+R.forEach(function(row,i){var r=document.createElement('div');r.className='kr'+(i==1?' ix':'');
+ row.split('').forEach(function(c){var k=document.createElement('div'),cl='k';
+  if('^<#>'.indexOf(c)>-1)cl+=' w f';if(c==','||c=='.'||c=='#')cl+=' f';if(c=='>')cl=cl.replace(' f',' e');if(c==' ')cl+=' sp';if(c=='#')cl+=' q';
+  if(lit[c]!=null){cl+=' l';k.style.setProperty('--d',lit[c]+'s')}
+  k.className=cl;
+  var g={'^':'d-sh','<':'d-bk','>':'d-rt'}[c];
+  if(g)k.innerHTML='<svg class="ic"><use href="#'+g+'"/></svg>';else k.textContent=c=='#'?'?123':c==' '?'space':c;
+  r.appendChild(k)});kb.appendChild(r)});
+/* WHY: one class on the root; CSS does the fade. On, at the tap (0.8s); off again as the loop fades out (6.4s). */
+if(matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('is-dark');return}
+var w=d.querySelector('.warm'),a,b;
+function go(){clearTimeout(a);clearTimeout(b);d.classList.remove('is-dark');
+ a=setTimeout(function(){d.classList.add('is-dark')},800);b=setTimeout(function(){d.classList.remove('is-dark')},6400)}
+w.addEventListener('animationstart',go);w.addEventListener('animationiteration',go)})();
+</script>
+</body></html>

@@ -1,0 +1,47 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&reply=site&seed=none",
+  "theme": "youcoded",
+  "zoom": 1.3,
+  "boot": 3000,
+  "pauseBackground": true,
+  "why": "2026-10-21 (Destin, website-everything-app #79): the landing page's Home clip, filmed against the same site scenario as the hero embed. Opens the pinned Home page, waits for its Favorites row, switches the Floor lamp off, moves to the Living Room card and switches its lights off. The page runs in a sandboxed iframe, so its clicks use the recorder's `in: page` option. Zoom 1.3 and one take per site theme (THEME env), per the same decision.",
+  "actions": [
+    {
+      "hold": 300
+    },
+    {
+      "click": "button[aria-label='Open Home']",
+      "settle": 300
+    },
+    {
+      "waitForText": "Favorites",
+      "in": "page",
+      "timeout": 20000,
+      "settle": 300
+    },
+    {
+      "hold": 1500
+    },
+    {
+      "click": "js:document.querySelector('.fav-grid [data-toggle]')",
+      "in": "page",
+      "settle": 2000
+    },
+    {
+      "moveTo": "js:[...document.querySelectorAll('.room')].find(r=>r.querySelector('h2')&&r.querySelector('h2').textContent.trim()==='Living Room').querySelector('[data-toggle], [data-room]')",
+      "in": "page",
+      "ms": 1000
+    },
+    {
+      "hold": 600
+    },
+    {
+      "click": "js:[...document.querySelectorAll('.room')].find(r=>r.querySelector('h2')&&r.querySelector('h2').textContent.trim()==='Living Room').querySelector('[data-toggle], [data-room]')",
+      "in": "page",
+      "settle": 2000
+    },
+    {
+      "hold": 1500
+    }
+  ]
+}

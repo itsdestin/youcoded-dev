@@ -1,9 +1,10 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=any-ai&seed=none&title=model+test&model=anthropic/claude-sonnet-4-6&replySpeed=2",
   "theme": "midnight",
-  "zoom": 1.15,
+  "zoom": 1.3,
   "boot": 3000,
-  "why": "2026-09-11 (Destin, review-2 R-4): landing loops aim for ~15 s, 20 at most, a smidge zoomed, with the same rhythm — 0.3 s open, replies at 2x (?replySpeed=2), each wait is for the reply itself rather than a fixed timer, 1.5 s end hold. Typing is 32 a second everywhere. The model pick finds 'Grok 4 · OpenRouter' (rows carry the provider since 2026-09-10) and waits for the status bar instead of pressing Escape, which with nothing open interrupts the chat.",
+  "pauseBackground": true,
+  "why": "2026-09-11 (Destin, review-2 R-4): landing loops aim for ~15 s, 20 at most, a smidge zoomed, with the same rhythm — 0.3 s open, replies at 2x (?replySpeed=2), each wait is for the reply itself rather than a fixed timer, 1.5 s end hold. Typing is 32 a second everywhere. The model pick finds 'Grok 4 · OpenRouter' (rows carry the provider since 2026-09-10) and waits for the status bar instead of pressing Escape, which with nothing open interrupts the chat. 2026-10-21 (Destin, website-everything-app #79): re-filmed at zoom 1.3 and once per site theme (THEME env overrides this scene's `theme`), so the page plays the visitor's theme.",
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },
