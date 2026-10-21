@@ -1,5 +1,6 @@
 // Internal opt-in source API only. No CLI, GPU-lane wiring or import-time launch.
 import { fork } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { mkdtempSync, mkdirSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -79,7 +80,8 @@ export function startCompositorSupervisor(...args) {
   const receipts=authorizeCompositorExecutables();
   // Fresh reservation outside active files; short enough for Linux sun_path.
   const root=realpathSync(mkdtempSync('/tmp/perf-lab-compositor-'));
-  const plan=compositorPlan(join(root,'reservation'));
+  // WHY: the random socket name is kwin's per-run argv token for the inferred ownership proof.
+  const plan=compositorPlan(join(root,'reservation'),`perf-${randomBytes(8).toString('hex')}`);
   for(const path of [plan.runDir,plan.home,plan.config,plan.data,plan.cache,plan.runtime])mkdirSync(path,{mode:0o700});
   verifyCompositorDirectories(plan);
   const path=join(plan.runDir,'compositor-plan.json');writeCompositorJson(path,{plan,receipts});

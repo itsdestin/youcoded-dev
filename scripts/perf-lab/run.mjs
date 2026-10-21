@@ -39,7 +39,44 @@ import { fileURLToPath } from 'node:url';
 import { buildApp, treeFingerprint } from './build.mjs';
 import { waitFor } from './cdp.mjs';
 import { PRIMARY, get, runsFor } from './compare.mjs';
-import { buildFixture } from './fixture.mjs';
+import { assetDownloadEnvAllowed, assetRefusalMessage, assetStatus, buildFixture as buildFixtureBase } from './fixture.mjs';
+
+// WHY a module-level switch + wrapper: ten phase blocks call buildFixture(SCRATCH, ...). The
+// owner's rule is no model/engine download without explicit authorization, so the opt-in
+// (--allow-asset-download) is threaded here once instead of at every call site. Default OFF;
+// main() sets it from the parsed flags (and resets it per run, so a second in-process run
+// such as ab.mjs's B never inherits A's choice by accident).
+let assetDownloadAllowed = false;
+function buildFixture(root, options = {}) {
+  return buildFixtureBase(root, { allowAssetDownload: assetDownloadAllowed, ...options });
+}
+
+/**
+ * Does this selection build a fixture that seeds the local model/engine? Only artifacts and the
+ * plain-completion native-stream diagnostic are model-free (seedEngine:false); every other
+ * phase calls the default seeding fixture.
+ */
+export function selectionNeedsAssets(cfg) {
+  return [...cfg.only].some((p) => !(p === 'artifacts' || (p === 'native-stream' && cfg.streamCompletionDiagnostics)));
+}
+
+/**
+ * Asset preflight shared by --check and the real run. Never downloads.
+ * Returns { needed, state, detail } where state is present | missing | authorized | not-needed.
+ */
+export function assetPreflight(cfg, { statusFn = assetStatus } = {}) {
+  if (!selectionNeedsAssets(cfg)) return { needed: false, state: 'not-needed', detail: 'selected phases are model-free; no model or engine needed' };
+  return { needed: true, ...statusFn({ checkout: cfg.checkout, allow: cfg.allowAssetDownload }) };
+}
+
+/** Throws (before any build or app launch) when a needed asset is missing and no opt-in was given. */
+export function requireAssetsOrAuthorization(cfg, deps = {}) {
+  const st = assetPreflight(cfg, deps);
+  if (st.state === 'missing') {
+    throw Object.assign(new Error(assetRefusalMessage({ checkout: cfg.checkout, statusFn: deps.statusFn ?? assetStatus })), { exitCode: EXIT.ERROR });
+  }
+  return st;
+}
 import { requireDiskHeadroom } from './disk-budget.mjs';
 import { connectMainLoop, freeInspectorPort } from './main-loop-probe.mjs';
 import { buildStallFixtures } from './stall-fixtures.mjs';
@@ -410,7 +447,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // unverified blind spot silently excuses every number it touches. Now each report
     // carries its own answer, and on this machine that answer is llvmpipe: software.
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
-    noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
+    noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0, loadAvgAfter: null, quietWaitMs: 0, neverQuiet: null },
     startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
@@ -509,6 +546,8 @@ export function validateReport(report, only) {
     return [...(only.size === 1 && only.has('native-stream') ? [] : ['stream-completion: only native-stream allowed']), ...streamCompletionProblems(report)];
   }
   const problems = legacyEvidenceProblems(report, { primary: PRIMARY, only });
+  // WHY: a run that stopped because the machine never went quiet took no valid measurement; never healthy.
+  if (report.noise?.neverQuiet) problems.push(`machine never became quiet: load ${report.noise.neverQuiet.load}, ${report.noise.neverQuiet.busyPct}% cpu after ${report.noise.neverQuiet.waitedS}s — measurement not taken`);
   if (only.has('artifacts') && report.artifacts?.documents) problems.push(...documentProblems(report.artifacts.documents));
   if (only.has('artifacts') && report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) problems.push('documents: required section missing');
   const need = (ok, msg) => { if (!ok) problems.push(msg); };
@@ -987,8 +1026,8 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
-const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics'];
+const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
+const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics', 'allow-asset-download'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
 
@@ -1013,6 +1052,10 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --label <text>            appended to the output filename stem
   --out <dir>               report directory             (default perf-reports/)
   --max-minutes <n>         abort (exit ${EXIT.TIMEOUT}) past this budget  (default 90)
+  --max-quiet-wait-minutes <n>  longest the machine may stay busy before the run stops, BEFORE launching the app (default 20).
+                            This wait is NOT counted against --max-minutes (the measurement budget).
+  --allow-asset-download    explicitly authorize downloading the ~490 MB model + engine archive when missing (default: refuse;
+                            PERF_LAB_ALLOW_ASSET_DOWNLOAD=1 is the same opt-in). Present, verified assets never need it.
   --check, --dry-run        print the resolved plan and exit 0, launching nothing
   --help                    this text
 
@@ -1083,6 +1126,10 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     // resumes. A deadline that fires mid-phase throws away every minute already spent,
     // so the default is deliberately generous — narrow it with --only, not with this.
     maxMinutes: posInt('max-minutes', 90),
+    // WHY separate: waiting for a quiet machine used to be charged to --max-minutes (15 of 20
+    // minutes once), so the measurement was aborted mid-phase. The wait now has its own bound.
+    maxQuietWaitMinutes: posInt('max-quiet-wait-minutes', 20),
+    allowAssetDownload: raw['allow-asset-download'] === true || assetDownloadEnvAllowed(),
     only: new Set(onlyTokens),
     label: raw.label ?? '',
     forceBuild: raw['force-build'] === true,
@@ -1211,31 +1258,44 @@ export const NOISE_GATE_MAX_WAIT_MS = 20 * 60_000;
  * Every busy poll is counted into the report so a reader can see the run happened
  * on a noisy machine.
  *
- * `deadline` is the run's absolute --max-minutes deadline, when there is one.
+ * WHY its own bound (changed 2026-10-21): the wait used to be capped by the run's
+ * --max-minutes deadline AND consumed it, so 15 minutes of waiting left a 20-minute
+ * budget unable to finish a phase and the run died mid-measurement. Now `maxWaitMs`
+ * bounds the wait alone, `onWaited(ms)` lets the caller credit the waited time back to
+ * the measurement deadline, and exceeding the bound stops the run BEFORE the next boot
+ * with noise.neverQuiet recorded (the report is then INCOMPLETE, never healthy).
+ * All clocks/sensors are injectable so tests are deterministic.
  */
-async function noiseGate(noise, deadline = Infinity) {
-  const startedAt = Date.now();
-  const giveUpAt = Math.min(startedAt + NOISE_GATE_MAX_WAIT_MS, deadline);
+export async function noiseGate(noise, {
+  maxWaitMs = NOISE_GATE_MAX_WAIT_MS, onWaited = () => {}, pollMs = NOISE_GATE_POLL_MS,
+  now = Date.now, sleep: nap = sleep, loadAvg = loadAvg1, busyPct = machineBusyPct, say = log,
+} = {}) {
+  const startedAt = now();
+  const credit = () => { const ms = now() - startedAt; noise.quietWaitMs += ms; onWaited(ms); };
   for (;;) {
-    const la = loadAvg1();
-    const busy = round1(await machineBusyPct(3));
+    const la = loadAvg();
+    const busy = round1(await busyPct(3));
     if (la < 4 && busy < 10) {
       // loadAvgBefore/machineBusyPctBefore are the FIRST accepted reading (the state
       // the report started from); the max fields say how bad it got across all gates.
       if (noise.loadAvgBefore === null) { noise.loadAvgBefore = la; noise.machineBusyPctBefore = busy; }
       noise.maxLoadAvgAccepted = Math.max(noise.maxLoadAvgAccepted ?? 0, la);
       noise.maxBusyPctAccepted = Math.max(noise.maxBusyPctAccepted ?? 0, busy);
+      credit();
       return;
     }
-    const waitedS = Math.round((Date.now() - startedAt) / 1000);
-    if (Date.now() + NOISE_GATE_POLL_MS > giveUpAt) {
-      throw new Error(`perf-lab: the machine never went idle (load < 4 and CPU < 10% over 3s) in ${waitedS}s of waiting — last reading load ${la}, ${busy}% cpu; refusing to take official numbers on a busy machine.`);
+    const waitedMs = now() - startedAt;
+    const waitedS = Math.round(waitedMs / 1000);
+    if (waitedMs + pollMs > maxWaitMs) {
+      credit();
+      noise.neverQuiet = { waitedS, load: la, busyPct: busy, boundMin: Math.round(maxWaitMs / 60000) };
+      throw Object.assign(new Error(`machine never became quiet: load ${la}, ${busy}% cpu after ${waitedS}s of waiting (bound ${Math.round(maxWaitMs / 60000)} min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.`), { exitCode: EXIT.INCOMPLETE });
     }
     // Says WAITING, and how long it has been, so a queued run is never mistaken
     // for a hung one.
-    log(`machine busy (load ${la}, ${busy}% cpu) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round((giveUpAt - startedAt) / 60000)} min)`);
+    say(`machine busy (load ${la}, ${busy}% cpu) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round(maxWaitMs / 60000)} min; does not use the --max-minutes budget)`);
     noise.discardedRuns++;
-    await sleep(NOISE_GATE_POLL_MS);
+    await nap(pollMs);
   }
 }
 
@@ -1432,7 +1492,15 @@ async function mainRun(argv, ctx, cleanup) {
   // file name itself says so (identity.control records the details).
   if (control) cfg.label = [cfg.label, `CONTROL-terminal-delay-${control.delayMs}ms`].filter(Boolean).join('-');
 
-  const deadline = Date.now() + cfg.maxMinutes * 60_000;
+  assetDownloadAllowed = cfg.allowAssetDownload === true;
+  // WHY `let`: time spent waiting for a quiet machine is credited back (see noiseGate), so the
+  // measurement budget is --max-minutes of actual work, not of work plus waiting.
+  let deadline = Date.now() + cfg.maxMinutes * 60_000;
+  let rearmWatchdog = () => {};
+  const quiet = {
+    maxWaitMs: cfg.maxQuietWaitMinutes * 60_000,
+    onWaited: (ms) => { deadline += ms; rearmWatchdog(); },
+  };
   const checkDeadline = () => {
     if (Date.now() > deadline) throw Object.assign(new Error(`--max-minutes ${cfg.maxMinutes} exceeded`), { exitCode: EXIT.TIMEOUT });
   };
@@ -1497,7 +1565,9 @@ async function mainRun(argv, ctx, cleanup) {
       `  control           ${control ? `INJECTED DELAY ${control.delayMs} ms in the terminal scenario (${control.affects}) — NOT a normal run` : 'none (normal run)'}`,
       `  boots             ${bootPlan(cfg).total} total`,
       '',
-      `  deadline          ${cfg.maxMinutes} min — ${new Date(deadline).toISOString()} (exit ${EXIT.TIMEOUT} past it)`,
+      `  deadline          ${cfg.maxMinutes} min of measurement — ${new Date(deadline).toISOString()} (exit ${EXIT.TIMEOUT} past it; quiet-machine waiting is NOT counted)`,
+      `  quiet-wait bound  ${cfg.maxQuietWaitMinutes} min waiting for load < 4 and CPU < 10% (separate from the deadline); past it the run stops before launching, exit ${EXIT.INCOMPLETE}, report INCOMPLETE ("machine never became quiet")`,
+      `  model assets      ${(() => { const a = assetPreflight(cfg); return a.state === 'present' ? `present+verified (${a.detail})` : a.state === 'missing' ? `MISSING — would REFUSE before any launch: ${a.detail}. Pass --allow-asset-download or select model-free phases` : a.state === 'authorized' ? `download AUTHORIZED (--allow-asset-download): ${a.detail}` : a.detail; })()}`,
       '',
       cfg.streamCompletionDiagnostics ? '  PRIMARY acceptance  unavailable — plain completion diagnostic; raw per-leg validity only'
         : `  compare.mjs PRIMARY paths this selection MUST produce (${primaryPathsFor(cfg.only).length}/${PRIMARY.length}):`,
@@ -1528,11 +1598,19 @@ async function mainRun(argv, ctx, cleanup) {
   // checkDeadline() only fires at phase boundaries; this catches a boot that HANGS
   // mid-phase. process.exit runs launchApp's own 'exit' handler, which SIGKILLs the
   // family — so "abort after killing the app family" holds on this path too.
-  const watchdog = setTimeout(() => {
-    console.error(`[perf-lab] --max-minutes ${cfg.maxMinutes} exceeded mid-phase; killing the app family and aborting.`);
-    process.exit(EXIT.TIMEOUT);
-  }, cfg.maxMinutes * 60_000);
-  watchdog.unref();
+  // WHY re-armed: quiet-wait time moves `deadline` later, so the timer re-checks it when it fires.
+  let watchdog;
+  const armWatchdog = () => {
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => {
+      if (Date.now() < deadline) { armWatchdog(); return; }
+      console.error(`[perf-lab] --max-minutes ${cfg.maxMinutes} exceeded mid-phase; killing the app family and aborting.`);
+      process.exit(EXIT.TIMEOUT);
+    }, Math.max(1, deadline - Date.now()));
+    watchdog.unref();
+  };
+  rearmWatchdog = armWatchdog;
+  armWatchdog();
   cleanup.push(() => clearTimeout(watchdog));   // WHY: a finished run must not leave a timer that kills the next run in the same process
 
   // WHY (acceptance A5): refuse a concurrent run instead of corrupting both. Taken AFTER the
@@ -1567,6 +1645,9 @@ async function mainRun(argv, ctx, cleanup) {
   };
 
   try {
+    // WHY first: a missing model/engine without the explicit opt-in must fail before the build
+    // and before any app launch, with zero network calls.
+    requireAssetsOrAuthorization(cfg);
     log(cfg.cachedOnly ? 'validating cached-only package (no build fallback)' : 'building', cfg.checkout);
     const build = await prepareRunnerBuild(cfg);
     Object.assign(report, { sha: build.sha, branch: build.branch, dirty: build.dirty });
@@ -1581,13 +1662,16 @@ async function mainRun(argv, ctx, cleanup) {
     // Let startXvfb's own error through untouched — it names the exact install command.
     const x = await startXvfb();
     log(`display ${x.display} ${x.reused ? 'reused' : 'started'}`);
+    // WHY a gate before the first phase: a never-quiet machine now stops the run here, before
+    // any app boot, instead of inside a phase after minutes of measurement.
+    await noiseGate(report.noise, quiet);
 
     // ---- Cold starts ------------------------------------------------------
     if (cfg.only.has('startup')) {
       const runs = [];
       for (let i = 0; i < cfg.runs; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await noiseGate(report.noise, quiet);
         const fixture = buildFixture(SCRATCH, { log });
         const run = await withBoot(build, fixture, async (app) => {
           const startup = await collectStartup(app, fixture);
@@ -1631,7 +1715,7 @@ async function mainRun(argv, ctx, cleanup) {
       const wruns = [];
       for (let i = 0; i < cfg.workloadRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await noiseGate(report.noise, quiet);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runWorkloadScenario(app, fixture, report.legacyExecution.phases.workload.options);
@@ -1646,7 +1730,7 @@ async function mainRun(argv, ctx, cleanup) {
     // ---- One scenario boot for history + screenshots -----------------------
     if (['history', 'shots'].some((p) => cfg.only.has(p))) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await noiseGate(report.noise, quiet);
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
         const shotDir = join(cfg.out, 'shots', stem);
@@ -1754,7 +1838,7 @@ async function mainRun(argv, ctx, cleanup) {
     // last. A clean boot is the only state in which the blame means anything.
     if (cfg.only.has('stall')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await noiseGate(report.noise, quiet);
       const { runReplayStallScenario, MEASURES: STALL_MEASURES } = await loadReplayStall();
       report.measures.stall = STALL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1782,7 +1866,7 @@ async function mainRun(argv, ctx, cleanup) {
     // keeps a failure in this phase from silently corrupting a different one.
     if (cfg.only.has('artifacts')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await noiseGate(report.noise, quiet);
       const { runArtifactScenario, medianRun: artifactMedian, MEASURES: ARTIFACT_MEASURES } = await loadArtifacts();
       report.measures.artifacts = ARTIFACT_MEASURES;
       const fixtureOptions = artifactFixtureOptions();
@@ -1840,7 +1924,7 @@ async function mainRun(argv, ctx, cleanup) {
     // rebuild contract still holds and nothing else ever sees the extra project.
     if (cfg.only.has('projects')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await noiseGate(report.noise, quiet);
       const { runProjectsScenario, seedProjectsFixture, medianRun: projectsMedian, MEASURES: PROJECTS_MEASURES } = await loadProjects();
       report.measures.projects = PROJECTS_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1872,7 +1956,7 @@ async function mainRun(argv, ctx, cleanup) {
       const truns = [];
       for (let i = 0; i < cfg.terminalRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await noiseGate(report.noise, quiet);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runTerminalScenario(app, fixture, report.legacyExecution.phases.terminal.options);
@@ -1896,7 +1980,7 @@ async function mainRun(argv, ctx, cleanup) {
       const sruns = [];
       for (let i = 0; i < cfg.nativeStreamRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await noiseGate(report.noise, quiet);
         const fixture = createNativeStreamFixture(SCRATCH, cfg, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runNativeStreamScenario(app, fixture, report.legacyExecution.phases['native-stream'].options);
@@ -1921,7 +2005,7 @@ async function mainRun(argv, ctx, cleanup) {
       const rruns = [];
       for (let i = 0; i < cfg.nativeResumeRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await noiseGate(report.noise, quiet);
         const fixture = buildFixture(SCRATCH, { log, fakeProvider: true, nativeSessions: true });
         await withBoot(build, fixture, async (app) => {
           const r = await runNativeResumeScenario(app, fixture);
@@ -1941,7 +2025,7 @@ async function mainRun(argv, ctx, cleanup) {
     // look like a regression it did not cause. It runs LAST for the same reason.
     if (cfg.only.has('scrollback')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await noiseGate(report.noise, quiet);
       const { runScrollbackScenario, medianRun: scrollMedian, MEASURES: SCROLL_MEASURES } = await loadScrollback();
       report.measures.scrollback = SCROLL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1983,6 +2067,8 @@ async function mainRun(argv, ctx, cleanup) {
   // Set AFTER the try/finally so an aborted run still records which renderer it had —
   // a partial run's numbers are exactly the ones most likely to be argued about later.
   report.machine.renderer = capturedRenderer;
+  // WHY: load was only sampled before boots; one end-of-run reading shows whether it climbed.
+  try { report.noise.loadAvgAfter = loadAvg1(); } catch { /* sensor unavailable: leave null */ }
   report.incomplete = validateReport(report, cfg.only);
   mkdirSync(cfg.out, { recursive: true });
   const jsonPath = join(cfg.out, `${stem}.json`);

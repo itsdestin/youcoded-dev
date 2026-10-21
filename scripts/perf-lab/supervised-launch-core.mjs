@@ -10,7 +10,10 @@ export const SUPERVISOR_STOP_TIMEOUT_MS = MIN_CLEANUP_RESERVE_MS + 2000;
 import { CONTAINMENT_LIMITS } from './owned-processes.mjs';
 
 export const SUPERVISION_LIMITS = `${CONTAINMENT_LIMITS} Initial app family only: Xvfb/compositor/provider/controller are outside this scope. No cgroup, pidfd, privilege, kernel memory enforcement or guaranteed orphan reaping. Synchronous evidence I/O can block this supervisor; byte bounds are not a kernel deadline guarantee.`;
-const KEYS = ['revision','runDir','binary','home','bin','userData','perfLog','wallMs','maxRssMb','cleanupReserveMs','cdpPort','display','packageReceipt'];
+const KEYS = ['revision','runDir','binary','home','bin','userData','perfLog','wallMs','maxRssMb','cleanupReserveMs','cdpPort','display','packageReceipt','waylandSocket','waylandProof'];
+// WHY: the only Wayland endpoint a supervised app may use is the private per-run socket
+// of the supervised compositor (random token name, 0700 runtime dir). Optional: absent = fixed X11 lane.
+export const WAYLAND_SOCKET_PATTERN = /^\/tmp\/perf-lab-[A-Za-z0-9-]+\/reservation\/runtime\/perf-[0-9a-f]{16}$/;
 export function validateSupervisorPlan(plan) {
   if (!plan || Object.keys(plan).some(k => !KEYS.includes(k)) || plan.revision !== 1) throw Error('Invalid fixed supervisor plan');
   for (const key of ['runDir','binary','home','bin','userData','perfLog']) if (typeof plan[key] !== 'string' || !isAbsolute(plan[key]) || resolve(plan[key]) !== plan[key]) throw Error(`Invalid absolute ${key}`);
@@ -18,6 +21,14 @@ export function validateSupervisorPlan(plan) {
     || !plan.packageReceipt || plan.packageReceipt.revision !== 1 || plan.packageReceipt.packageRoot !== join(plan.packageReceipt.checkout ?? '', 'desktop/release/linux-unpacked')
     || plan.binary !== join(plan.packageReceipt.packageRoot, 'youcoded')) throw Error('Private package receipt/path binding required');
   assertProtocolEnvelope(plan.packageReceipt);
+  if (plan.waylandSocket !== undefined && (typeof plan.waylandSocket !== 'string' || !WAYLAND_SOCKET_PATTERN.test(plan.waylandSocket) || Buffer.byteLength(plan.waylandSocket) > 107)) throw Error('Invalid private Wayland socket binding');
+  // WHY: the compositor controller's SO_PEERCRED-verified socket proof travels in the
+  // plan so the app's worker can re-check it; a proof for any other socket is meaningless.
+  if (plan.waylandProof !== undefined) {
+    const p = plan.waylandProof;
+    if (plan.waylandSocket === undefined || !p || typeof p !== 'object' || p.socketPath !== plan.waylandSocket || !Array.isArray(p.owners) || p.owners.length !== 1
+      || !/^\d+$/.test(String(p.owners[0]?.pid)) || typeof p.owners[0]?.starttime !== 'string' || ['filesystemDevice', 'filesystemInode'].some(k => !/^\d+$/.test(String(p[k])))) throw Error('Invalid Wayland socket proof');
+  }
   for (const [key,min,max] of [['wallMs',10000,600000],['maxRssMb',64,2048],['cleanupReserveMs',MIN_CLEANUP_RESERVE_MS,20000],['cdpPort',1024,65535]]) if (!Number.isSafeInteger(plan[key]) || plan[key] < min || plan[key] > max) throw Error(`Invalid ${key} cap`);
   if (plan.cleanupReserveMs >= plan.wallMs / 2 || typeof plan.display !== 'string' || !/^:[0-9]+$/.test(plan.display)) throw Error('Invalid cleanup reserve or display');
   return { ...plan };

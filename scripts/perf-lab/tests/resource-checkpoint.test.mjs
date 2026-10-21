@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { captureCheckpoint, checkpointDelta, RESOURCE_METRICS, boundedJson, readFamilyPss } from '../resource-checkpoint.mjs';
+import { captureCheckpoint, checkpointDelta, RESOURCE_METRICS, RESOURCE_DESCRIPTOR, boundedJson, readFamilyPss } from '../resource-checkpoint.mjs';
 
 const raw = () => RESOURCE_METRICS.map(name => ({ name, value: 10 }));
 const cdpFor = metrics => ({ send: async () => ({ metrics }) });
@@ -99,4 +99,20 @@ test('report byte and record caps fail explicitly without truncating into a heal
   assert.throws(() => boundedJson({ records: Array(10001).fill(0) }), /record cap/);
   assert.throws(() => boundedJson({ text: 'x'.repeat(5 * 1024 * 1024) }), /byte cap/);
   assert.match(boundedJson({ status: 'incomplete' }), /incomplete/);
+});
+
+test('full checkpoints carry role accounting beside, not inside, the PSS verdict; fake PSS never samples real /proc', async () => {
+  const injected = await capture(raw());
+  assert.equal(injected.roles.status, 'not-collected', 'no role reader injected with a fake readPss: real /proc untouched');
+  const members = [{ id: '123:7', pid: 123, starttime: '7', role: 'main', status: 'measured', pssKb: 12288, rssKb: 20000, privateKb: 9000 }];
+  const row = await capture(raw(), { readRoles: pids => { assert.deepEqual(pids, [123]); return { revision: 1, status: 'measured', members }; } });
+  assert.equal(row.status, 'measured');
+  assert.equal(row.roles.members[0].role, 'main');
+  const broken = await capture(raw(), { readRoles: () => { throw Object.assign(Error('x'), { code: 'EACCES' }); } });
+  assert.equal(broken.status, 'measured', 'a role-read failure cannot rewrite the existing PSS verdict');
+  assert.equal(broken.roles.status, 'incomplete');
+  assert.match(broken.roles.reason, /EACCES/);
+  assert.equal(RESOURCE_DESCRIPTOR.roleAccounting.revision, 1);
+  const renderer = await capture(raw(), { domain: 'renderer', readRoles: () => { throw Error('must not run'); } });
+  assert.equal(renderer.roles, undefined, 'renderer-only checkpoints never read processes');
 });

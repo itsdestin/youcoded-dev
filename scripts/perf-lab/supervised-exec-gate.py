@@ -36,10 +36,15 @@ def validate_helper_proof(plan, uid, home):
     if not re.fullmatch(r'/tmp/perf-lab-[A-Za-z0-9-]+/reservation/home', home):
         raise RuntimeError('Helper proof requires private HOME')
     root = home[:-len('/home')]
+    # WHY: the socket name is a per-run random token (it doubles as kwin's argv
+    # token), so it can no longer be a literal. Only the exact token shape passes.
+    display = plan['env'].get('WAYLAND_DISPLAY')
+    if not isinstance(display, str) or not re.fullmatch(r'perf-[0-9a-f]{16}', display):
+        raise RuntimeError('Helper proof requires per-run Wayland socket token')
     expected_env = dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', HOME=home,
                         XDG_CONFIG_HOME=root + '/config', XDG_DATA_HOME=root + '/data',
                         XDG_CACHE_HOME=root + '/cache', XDG_RUNTIME_DIR=root + '/runtime',
-                        WAYLAND_DISPLAY='perf-0', QT_QPA_PLATFORM='wayland',
+                        WAYLAND_DISPLAY=display, QT_QPA_PLATFORM='wayland',
                         DBUS_SESSION_BUS_ADDRESS='unix:path=' + root + '/runtime/bus',
                         DBUS_SYSTEM_BUS_ADDRESS='unix:path=' + root + '/runtime/no-system-bus')
     if plan['env'] != expected_env or plan['identity'].get('uid') not in (0, uid):

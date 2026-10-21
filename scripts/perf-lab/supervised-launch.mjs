@@ -54,8 +54,8 @@ export class SupervisorProxy extends EventEmitter {
     worker.on('close', (code, signal) => { this.readyReject(Error('Supervisor closed before acknowledgement')); this.failPending('Supervisor channel closed'); });
     worker.on('disconnect', () => { this.failPending('Supervisor disconnected'); });
   }
-  assertBinding({ binary, appDir, fixture, cdpPort, display }) {
-    if (!this.plan || binary !== this.plan.binary || dirname(binary) !== resolve(appDir) || fixture.home !== this.plan.home || fixture.userData !== this.plan.userData || cdpPort !== this.plan.cdpPort || display !== this.plan.display) throw Error('Supervisor launch binding mismatch');
+  assertBinding({ binary, appDir, fixture, cdpPort, display, waylandSocket }) {
+    if (!this.plan || binary !== this.plan.binary || dirname(binary) !== resolve(appDir) || fixture.home !== this.plan.home || fixture.userData !== this.plan.userData || cdpPort !== this.plan.cdpPort || display !== this.plan.display || waylandSocket !== this.plan.waylandSocket) throw Error('Supervisor launch binding mismatch');
   }
   output() { return `stdout tail: ${this.tails.stdout}\nstderr tail: ${this.tails.stderr}`; }
   failPending(reason) { for (const p of this.pending.values()) p.reject(Error(reason)); this.pending.clear(); }
@@ -86,11 +86,13 @@ export class SupervisorProxy extends EventEmitter {
   }
 }
 
-export async function startLaunchSupervisor({ runDir, fixture, binary, checkout, wallMs, maxRssMb, cleanupReserveMs, cdpPort = 9569, display = ':99' }) {
+export async function startLaunchSupervisor({ runDir, fixture, binary, checkout, wallMs, maxRssMb, cleanupReserveMs, cdpPort = 9569, display = ':99', waylandSocket, waylandProof }) {
   if (process.platform !== 'linux') throw Error('Supervised launcher is Linux-only');
   const packageReceipt = await authorizeSupervisorPackage({ checkout, binary });
   const plan = validateSupervisorPlan({ revision: 1, packageReceipt, runDir: resolve(runDir), binary: resolve(binary), home: fixture.home, bin: fixture.bin,
-    userData: fixture.userData, perfLog: fixture.perfLog, wallMs, maxRssMb, cleanupReserveMs, cdpPort, display });
+    userData: fixture.userData, perfLog: fixture.perfLog, wallMs, maxRssMb, cleanupReserveMs, cdpPort, display,
+    // Omitted (not undefined) when absent so the X11 plan shape is unchanged.
+    ...(waylandSocket === undefined ? {} : { waylandSocket }), ...(waylandProof === undefined ? {} : { waylandProof }) });
   const directory = lstatSync(runDir);
   if (!directory.isDirectory() || directory.isSymbolicLink() || directory.uid !== process.getuid() || (directory.mode & 0o077) !== 0 || realpathSync(runDir) !== runDir) throw Error('Private supervisor run directory required');
   const path = join(runDir, 'supervisor-plan.json');

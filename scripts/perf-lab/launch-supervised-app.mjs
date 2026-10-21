@@ -54,8 +54,11 @@ export async function fetchSupervisedTargets(port, { fetcher = fetch, timeoutMs 
 export async function launchSupervisedApp(options, deps = {}) {
   const { binary, appDir, fixture, cdpPort = 9555, display = ':99', supervisedBackend: backend, waylandSocket, protocolLog, extraArgs = [] } = options;
   try {
-    if (waylandSocket || protocolLog || extraArgs.length) throw Error('Initial supervised backend supports fixed X11 app only; GPU/native/additional argv unsupported');
-    backend.assertBinding({ binary, appDir, fixture, cdpPort, display });
+    // WHY: a Wayland socket is accepted ONLY when it is exactly the one the validated
+    // supervised plan already binds (assertBinding compares). Protocol logs and extra
+    // argv stay unsupported: the supervisor, not the caller, owns the app's argv.
+    if (protocolLog || extraArgs.length) throw Error('Supervised backend: protocol log and additional argv unsupported');
+    backend.assertBinding({ binary, appDir, fixture, cdpPort, display, waylandSocket });
     const ancestors = deps.ancestors ?? selfChain(readPpid, process.pid);
     const conflicts = (deps.findFamily ?? findFamily)([appDir, fixture.home]).filter(pid => !ancestors.has(pid));
     // Read-only refusal, never recovery sweeps, lock removal or marker/group signals.

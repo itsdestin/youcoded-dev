@@ -23,7 +23,7 @@ import { compareAll, renderComparisonMarkdown } from './compare.mjs';
 import { requireDiskHeadroom } from './disk-budget.mjs';
 import { LAB_DIR, instrumentIdentity, packageIdentity } from './identity.mjs';
 import { acquireRunLock } from './run-lock.mjs';
-import { EXIT, PHASES, ROOT, SCRATCH, bootPlan, buildFreshness, dirtyNote, main as runLab, parseArgs, stemFor } from './run.mjs';
+import { EXIT, PHASES, ROOT, SCRATCH, assetPreflight, bootPlan, buildFreshness, dirtyNote, main as runLab, parseArgs, stemFor } from './run.mjs';
 
 export const MODES = {
   // WHY these: quick is the edit-measure loop (two cheap phases, 3 samples each so a spread
@@ -45,14 +45,16 @@ export const AB_USAGE = `perf-lab ab — run the same work against two app candi
                              (use with --only terminal); the comparison is labelled CONTROL
   --build                    allow building a stale/missing candidate (default: refuse, never silently rebuild)
   --check                    print both candidates' identities, build validity, work, boots and bounds; launch nothing
-  --max-minutes <n>          per-run hard cap passed to run.mjs (default 90)
+  --max-minutes <n>          per-run measurement cap passed to run.mjs (default 90); quiet-machine waiting is NOT counted
+  --max-quiet-wait-minutes <n>  longest each run waits for a quiet machine before stopping, before launching (default 20)
+  --allow-asset-download     explicitly authorize downloading the ~490 MB model + engine archive if missing (default: refuse)
   --label <text>             appended to the comparison directory name
   --out <dir>                parent directory (default perf-reports/ab/)
   --help`;
 
 export function parseAbArgs(argv, { root = ROOT } = {}) {
-  const valueFlags = ['a', 'b', 'mode', 'only', 'control-b-delay-ms', 'max-minutes', 'label', 'out'];
-  const boolFlags = ['repeat-a', 'build', 'check', 'help'];
+  const valueFlags = ['a', 'b', 'mode', 'only', 'control-b-delay-ms', 'max-minutes', 'max-quiet-wait-minutes', 'label', 'out'];
+  const boolFlags = ['repeat-a', 'build', 'check', 'help', 'allow-asset-download'];
   const raw = {};
   for (let i = 0; i < argv.length; i++) {
     const tok = argv[i];
@@ -78,7 +80,10 @@ export function parseAbArgs(argv, { root = ROOT } = {}) {
   // same work. Only --checkout/--out/--label differ per run (added in runStep below).
   const only = raw.only ?? MODES[mode].only;
   const common = ['--only', only, ...MODES[mode].flags,
-    ...(raw['max-minutes'] ? ['--max-minutes', raw['max-minutes']] : []), ...(raw.build ? [] : ['--cached-only'])];
+    ...(raw['max-minutes'] ? ['--max-minutes', raw['max-minutes']] : []),
+    ...(raw['max-quiet-wait-minutes'] ? ['--max-quiet-wait-minutes', raw['max-quiet-wait-minutes']] : []),
+    // WHY forwarded verbatim: the opt-in must reach BOTH runs, and absent means refuse (never download).
+    ...(raw['allow-asset-download'] ? ['--allow-asset-download'] : []), ...(raw.build ? [] : ['--cached-only'])];
   // Validate with run.mjs's own parser so a bad --only fails here, before any lock or run.
   const cfg = parseArgs([...common, '--checkout', resolve(raw.a)], { root });
   return {
@@ -122,7 +127,7 @@ export async function preflight(plan, deps = {}) {
   return candidates;
 }
 
-export function describePlan(plan, candidates, { disk, instrument } = {}) {
+export function describePlan(plan, candidates, { disk, instrument, assetFn } = {}) {
   const boots = bootPlan(plan.cfg);
   const runs = sequenceFor(plan).length;
   const lines = ['perf-lab ab --check — nothing was launched', '',
@@ -131,6 +136,8 @@ export function describePlan(plan, candidates, { disk, instrument } = {}) {
     `  sequence          ${sequenceFor(plan).map((s) => s.key.toUpperCase()).join(' -> ')} (one at a time, identical options)`,
     `  boots             ${boots.total} per run x ${runs} runs = ${boots.total * runs} boots`,
     `  time bound        hard cap ${plan.cfg.maxMinutes} min per run = ${plan.cfg.maxMinutes * runs} min total (actual duration not yet measured)`,
+    `  quiet-wait bound  ${plan.cfg.maxQuietWaitMinutes} min per run waiting for a quiet machine, separate from the time bound above; past it a run stops before launching and is INCOMPLETE`,
+    `  model assets      ${(() => { const a = (assetFn ?? assetPreflight)(plan.cfg); return a.state === 'present' ? `present+verified, no network (${a.detail})` : a.state === 'missing' ? `MISSING — would REFUSE before any launch: ${a.detail}. Pass --allow-asset-download or choose model-free phases` : a.state === 'authorized' ? `download AUTHORIZED (--allow-asset-download): ${a.detail}` : a.detail; })()}`,
     `  disk              ${disk ? `${Math.round(disk.availableBytes / 1024 ** 3)} GiB free at ${disk.checkedPath}; reports are small (screenshots only with phase shots)` : 'unknown'}`,
     `  build policy      ${plan.build ? 'building allowed (--build)' : 'cached builds only — a stale/missing build is REFUSED, never silently rebuilt'}`,
     `  instrument        ${short(instrument?.combined)} (sha256 of the lab source; must match for A and B, it is one process)`, ''];
@@ -156,9 +163,13 @@ export async function runAb(argv, deps = {}) {
   let disk = null;
   try { disk = (deps.requireDiskHeadroom ?? requireDiskHeadroom)(plan.out); } catch (e) { console.error(`ab: ${e.message}`); return EXIT.ERROR; }
   const instrument = (deps.instrumentIdentity ?? instrumentIdentity)(LAB_DIR);
-  log(describePlan(plan, candidates, { disk, instrument }));
+  log(describePlan(plan, candidates, { disk, instrument, assetFn: deps.assetPreflight }));
   const unusable = candidates.filter((c) => !c.usable);
   if (unusable.length) { console.error(`ab: refusing to run — ${unusable.map((c) => `${c.side}: ${c.fresh.error ?? 'build is stale or missing'}`).join('; ')}`); return EXIT.ERROR; }
+  // WHY before the lock/any run: missing model assets without the opt-in would fail inside run A anyway;
+  // say so once, here, with zero network calls.
+  const assets = (deps.assetPreflight ?? assetPreflight)(plan.cfg);
+  if (assets.state === 'missing') { console.error(`ab: refusing to run — model assets ${assets.detail}. Pass --allow-asset-download or choose model-free phases (--only artifacts).`); return plan.check ? EXIT.OK : EXIT.ERROR; }
   if (plan.check) return EXIT.OK;
 
   const now = (deps.now ?? (() => new Date()))().toISOString();

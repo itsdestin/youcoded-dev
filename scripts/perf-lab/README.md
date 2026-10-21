@@ -108,6 +108,64 @@ Calibration controls
 for documents run through the existing artifacts path; image diagnostics remain an
 opt-in owned-harness API, not a new CLI/launcher or standard image phase.
 
+### Whole-app memory by process role (role accounting revision 1; offline-tested, runtime pending)
+
+Full-domain lifecycle checkpoints now add `roles` beside the existing PSS fields (checkpoint and
+descriptor revisions are unchanged on purpose: comparability gates key on them; the new block
+carries its own `revision: 1`, also in `descriptor.roleAccounting`). Renderer-only checkpoints
+read no processes and have no `roles`. Reports without `roles` are **legacy**: roles unknown,
+never inferred.
+
+- **Identity** is `(pid, starttime)`, written `pid:starttime`; a reused pid is churn, not continuity.
+- **Role** comes from `/proc/<pid>/cmdline` only as an allowlisted label: `main`, `renderer`, `gpu`,
+  `utility` or `utility:<sub-type>`, `zygote`, other `--type=` words, `node-helper`, `llama-server`,
+  `crashpad`, `unknown`. No argv, paths, URLs or environment are stored.
+- **Per member**: PSS, RSS and private kB from `smaps_rollup`. Read order is stat, cmdline, smaps,
+  stat again. A member that vanishes is `exited-during-read` (never zero); unreadable, missing
+  Pss and starttime change are separate incomplete statuses. Snapshot `valid` means every
+  enumerated member was measured. An unmeasured member voids its own role total and the whole
+  total; one that vanished before its role was read voids every role total (cannot be placed).
+- **Comparison** (`compareRoleSnapshots`): members present in both are matched per role; added and
+  removed members are listed with roles; the whole-family delta exists only when membership is
+  identical and both snapshots are valid, otherwise only matched-member totals plus churn are
+  reported. Natural and forced-GC trajectories are never mixed. Summed PSS/RSS is over an
+  incompletely discovered family: not unique memory, no leak verdict.
+
+`summariseCycles(...).roleAccounting` holds the per-cycle block. The comparison layer
+(`compare.mjs`, not yet changed) can adopt these arrays, one entry per cycle, `null` = no valid
+role data (`lifecycleRolePaths(cycles, {policy})` in `process-roles.mjs`; `<key>` = role label with
+non-alphanumerics turned to `-`):
+
+| Path | Meaning |
+|---|---|
+| `lifecycle.role.<key>.pssMiB` / `.count` | role PSS total (only when the role is complete) / member count |
+| `lifecycle.role.all.pssMiB` / `.count` | whole-family total (only when every member measured) / members |
+| `lifecycle.roleSnapshotValid` | every enumerated member measured |
+| `lifecycle.roleChurn.added` / `.removed` | identities that appeared / left vs the previous cycle |
+| `lifecycle.roleMatched.<key>.deltaPssMiB`, `.all.deltaPssMiB` | change over members present in both cycles |
+| `lifecycle.roleFamilyComparable` | whole-family delta allowed (identical membership, all valid) |
+| `lifecycle.forcedGc.*` | the same, from forced-GC samples; kept separate |
+
+Offline re-analysis of an existing report (read-only, prints, writes nothing):
+`node scripts/perf-lab/role-reanalysis.mjs <report.json>`. On
+`scratch/perf-lab/lifecycle-merged-once-grhuby4a/report.json` it shows identity-exact churn and
+matched-member change but cannot name roles (cmdline was never recorded). Acceptance needs one
+future merged-baseline three-cycle runtime run with every snapshot valid and per-role tables.
+
+### Model downloads and the quiet-machine wait (offline-tested)
+
+- **No download without opt-in.** Phases that seed the local model/engine (everything except
+  `artifacts` and the plain `native-stream` diagnostic) refuse to run when the ~490 MB
+  `qwen2.5-0.5b-instruct-q4_k_m.gguf` or the llama.cpp engine archive is missing, before the build
+  and before any app launch. Choices: `--allow-asset-download` (or `PERF_LAB_ALLOW_ASSET_DOWNLOAD=1`)
+  on `run.mjs` / `ab.mjs`, or select model-free phases. Already-present, verified assets are used with
+  no network. `--check` prints `model assets` as present+verified, MISSING (would refuse) or download AUTHORIZED.
+- **Separate quiet-wait bound.** `--max-quiet-wait-minutes <n>` (default 20) bounds the wait for load < 4
+  and CPU < 10%. That waiting is credited back to `--max-minutes`, which now means measurement time only.
+  A first gate runs before the first boot; past the bound the run stops with exit 4, the report records
+  `noise.neverQuiet` ("machine never became quiet: load X") and is INCOMPLETE. The report also carries
+  `noise.quietWaitMs` and `noise.loadAvgAfter` (one reading at the end of the run).
+
 ### Consolidated source-only unit selection
 
 `tests/offline-unit-manifest.json` is the explicitly audited selection for this
@@ -124,6 +182,7 @@ This is **not the complete lab suite**. No runtime or hardware pass is implied b
 # No glob expansion; no Git commits, app/browser launch, model or sensor execution.
 node --input-type=module -e 'import {readFileSync} from "node:fs"; import {spawnSync} from "node:child_process"; const m=JSON.parse(readFileSync("scripts/perf-lab/tests/offline-unit-manifest.json","utf8")); const files=[...m.files.map(f=>"scripts/perf-lab/tests/"+f),...m.uiFiles,...m.readOnlyGitFiles.map(f=>"scripts/perf-lab/tests/"+f)]; const r=spawnSync(process.execPath,["--test","--test-concurrency=2",...files],{stdio:"inherit"}); process.exitCode=r.status??1;'
 python3 -B scripts/perf-lab/tests/supervised-exec-gate.test.py
+python3 -B scripts/perf-lab/tests/supervised-compositor-proofs.test.py
 # Separate offline-local suite: fake server bound to 127.0.0.1, no outside connections.
 node --test scripts/perf-lab/tests/fake-provider.test.mjs
 ```

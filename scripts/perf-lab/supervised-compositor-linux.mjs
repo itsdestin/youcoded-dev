@@ -11,7 +11,8 @@ import {
 } from './supervised-compositor-helpers.mjs';
 import { readBoundedText } from './lifecycle-evidence.mjs';
 import { assertProtocolEnvelope } from './supervised-protocol.mjs';
-import { compositorCommand, compositorBusConfiguration, compositorEnvironment, validateCompositorPlan, SYSTEM_EXECUTABLES, COMPOSITOR_CAPS as CAPS } from './supervised-compositor-policy.mjs';
+import { captureKwinFileProof, verifyKwinBinary, proveInferredKwin, provePeerOwner, defaultInferredState } from './supervised-compositor-inferred.mjs';
+import { compositorCommand, compositorBusConfiguration, COMPOSITOR_KWINRC, compositorEnvironment, validateCompositorPlan, SYSTEM_EXECUTABLES, COMPOSITOR_CAPS as CAPS } from './supervised-compositor-policy.mjs';
 const GATE=fileURLToPath(new URL('./supervised-exec-gate.py',import.meta.url));
 const identity=st=>({dev:st.dev,ino:st.ino,uid:st.uid,mode:st.mode});
 const sameIdentity=(a,b)=>a && b && ['dev','ino','uid','mode'].every(k=>a[k]===b[k]);
@@ -29,39 +30,108 @@ export function verifySystemExecutable(name,uid=process.getuid(),io=executableIO
     return {path,identity:identity(opened)};
   } finally {io.close(fd);}
 }
-export function authorizeCompositorExecutables() {
+export function authorizeCompositorExecutables({inferred=defaultInferredState()}={}) {
   // WHY: PATH resolution and writable directory ancestry are not executable
   // authority. The fixed /usr/bin names are independently rechecked in worker.
   for(const path of ['/','/usr','/usr/bin']) {
     const st=lstatSync(path);
     if(!st.isDirectory() || st.isSymbolicLink() || ![0,process.getuid()].includes(st.uid) || (st.mode&0o022))throw Error('Untrusted system directory');
   }
-  return Object.fromEntries(SYSTEM_EXECUTABLES.map(name=>[name,verifySystemExecutable(name)]));
+  const receipts=Object.fromEntries(SYSTEM_EXECUTABLES.map(name=>[name,verifySystemExecutable(name)]));
+  // WHY: kwin alone may later be proven without reading its exe (file capability).
+  // That inference is only as good as the binary it names, so the receipt also
+  // pins size/mtime/ctime and the exact file capability (any other set refuses).
+  receipts.kwin_wayland.fileProof=captureKwinFileProof(inferred);
+  return receipts;
 }
-export function reauthorizeCompositorExecutables(receipts) {
-  assertProtocolEnvelope(receipts);const actual=authorizeCompositorExecutables();
+export function reauthorizeCompositorExecutables(receipts,{inferred=defaultInferredState()}={}) {
+  assertProtocolEnvelope(receipts);const actual=authorizeCompositorExecutables({inferred});
   if(Object.keys(receipts).length!==SYSTEM_EXECUTABLES.length || SYSTEM_EXECUTABLES.some(name=>actual[name].path!==receipts[name]?.path || !sameIdentity(actual[name].identity,receipts[name]?.identity)))throw Error('System ELF receipt changed');
+  // Pre-launch half of the kwin binary proof: byte-level stat identity and exact capability.
+  verifyKwinBinary(receipts.kwin_wayland,inferred);
   return actual;
 }
 function matchesRole(record,receipt,plan,uid) {
   return record && record.uid===uid && record.home===plan.home && record.exe===receipt.path && sameIdentity(record.executableIdentity,receipt.identity);
 }
-export function proveCompositorRoles(family,plan,receipts,{inspect=inspectExecIdentity,uid=process.getuid()}={}) {
+// WHY: the 2026-10-21 inferred-kwin attempt died with a bare "Unexpected compositor
+// descendant/role executable" and no way to tell WHICH member or condition refused.
+// Every role refusal now carries this bounded, privacy-safe object (pid/starttime/
+// state, the failed condition, a receipted executable NAME or 'unreceipted', booleans
+// for uid/home, and the parent relation). It never carries HOME, paths, argv or
+// environ, and it only describes the refusal: no proof is relaxed by building it.
+const REFUSAL_MESSAGE_CAP = 450;
+export function describeRoleRefusal(condition, member, record, receipts, plan, uid, relations = {}) {
+  const exe = record?.exe;
+  const named = typeof exe === 'string' ? SYSTEM_EXECUTABLES.find(name => receipts?.[name]?.path === exe) : undefined;
+  const ppid = member?.ppid;
+  const parent = ppid === undefined ? 'other'
+    : ppid === relations.wrapperPid ? 'child-of-wrapper'
+    : ppid === relations.kwinPid ? 'child-of-kwin'
+    : ppid === relations.daemonPid ? 'child-of-daemon' : 'other';
+  // WHY: an unreceipted child of kwin was refused at runtime (inferred-kwin-ready-4) and the
+  // report could not say what it was. A basename under /usr/bin or /usr/lib is a distro
+  // program name, not private data; anything elsewhere stays 'unreceipted'. Diagnostic only.
+  const systemName = typeof exe === 'string' && /^\/usr\/(bin|lib|libexec)\/[A-Za-z0-9._\/+-]{1,200}$/.test(exe) && !exe.includes('..')
+    ? exe.split('/').pop().slice(0, 64) : null;
+  return { condition: String(condition).slice(0, 64), pid: member?.pid ?? null, starttime: member?.starttime ?? null, state: member?.state ?? null,
+    exe: named ?? 'unreceipted', systemProgram: named ? null : systemName, uidMatches: record ? record.uid === uid : null, homeMatchesPlan: record ? record.home === plan.home : null, parent };
+}
+function roleRefusal(message, reason) {
+  const error = Error(`${message} ${JSON.stringify(reason)}`.slice(0, REFUSAL_MESSAGE_CAP));
+  error.reason = reason;
+  return error;
+}
+// First receipt field that differs, for the role's own receipt.
+function receiptMismatchField(record, receipt, plan, uid) {
+  if (record.uid !== uid) return 'uid';
+  if (record.home !== plan.home) return 'home';
+  if (record.exe !== receipt.path) return 'exe';
+  if (!sameIdentity(record.executableIdentity, receipt.identity)) return 'executableIdentity';
+  return 'unknown';
+}
+export function proveCompositorRoles(family,plan,receipts,{inspect=inspectExecIdentity,uid=process.getuid(),gid=process.getgid(),inferred=null}={}) {
   const snapshot=family.sample();
   if(snapshot.members.length>CAPS.members)throw Error('Compositor role member cap');
   const roles={wrapper:null,kwin:null,daemon:null};
+  const deferred=[];
+  // Relations are read lazily: a role found earlier in the loop (or the deferred
+  // inferred kwin candidate) is the parent a later member is described against.
+  const relations=()=>({wrapperPid:family.leader?.pid,kwinPid:roles.kwin?.pid??deferred[0]?.pid,daemonPid:roles.daemon?.pid});
   for(const member of snapshot.members) {
-    if(['Z','X'].includes(member.state))throw Error('Compositor role exited; ownership incomplete');
+    if(['Z','X'].includes(member.state))throw roleRefusal('Compositor role exited; ownership incomplete',describeRoleRefusal('member-exited',member,null,receipts,plan,uid,relations()));
     family.protect(member);
-    const a=inspect(member.pid),b=inspect(member.pid);
-    if(!sameProcess(a,member) || !sameProcess(b,a) || a.exe!==b.exe || !sameIdentity(a.executableIdentity,b.executableIdentity))throw Error('Role PID/executable substitution');
+    let a,b;
+    try {a=inspect(member.pid);b=inspect(member.pid);}
+    catch(error) {
+      // WHY: the ONLY tolerated read failure is EACCES on one non-leader member,
+      // and only to hand it to the kwin-specific inferred proof below. That proof
+      // refuses unless environ AND exe are both EACCES and the kernel's capability
+      // sets show the exact file capability. Wrapper/daemon roles, every other
+      // errno and a second EACCES member stay hard failures.
+      if(error?.code!=='EACCES' || member.pid===family.leader.pid || deferred.length) {
+        // Same error object/code as before (callers key on error.code); a reason is only attached.
+        const why=member.pid===family.leader.pid?'unreadable-leader':deferred.length&&error?.code==='EACCES'?'second-unreadable-member':`unreadable:${String(error?.code??'ERR').slice(0,16)}`;
+        if(error&&typeof error==='object'&&!error.reason)error.reason=describeRoleRefusal(why,member,null,receipts,plan,uid,relations());
+        throw error;
+      }
+      deferred.push(member);continue;
+    }
+    if(!sameProcess(a,member) || !sameProcess(b,a) || a.exe!==b.exe || !sameIdentity(a.executableIdentity,b.executableIdentity))throw roleRefusal('Role PID/executable substitution',describeRoleRefusal('substitution',member,b,receipts,plan,uid,relations()));
     const role=member.pid===family.leader.pid?'wrapper':matchesRole(b,receipts.kwin_wayland,plan,uid)?'kwin':matchesRole(b,receipts['dbus-daemon'],plan,uid)?'daemon':null;
     const receipt=role==='wrapper'?receipts['dbus-run-session']:role==='kwin'?receipts.kwin_wayland:receipts['dbus-daemon'];
-    if(!role || roles[role] || !matchesRole(b,receipt,plan,uid))throw Error('Unexpected compositor descendant/role executable');
-    if(role==='wrapper' && (!sameProcess(b,family.leader) || b.ppid!==family.leader.ppid || b.pgrp!==b.pid || b.session!==b.pid))throw Error('Post-exec wrapper identity mismatch');
+    if(!role)throw roleRefusal('Unexpected compositor descendant/role executable',describeRoleRefusal('no-role',member,b,receipts,plan,uid,relations()));
+    if(roles[role])throw roleRefusal('Unexpected compositor descendant/role executable',describeRoleRefusal(`duplicate-role:${role}`,member,b,receipts,plan,uid,relations()));
+    if(!matchesRole(b,receipt,plan,uid))throw roleRefusal('Unexpected compositor descendant/role executable',describeRoleRefusal(`receipt-mismatch:${receiptMismatchField(b,receipt,plan,uid)}`,member,b,receipts,plan,uid,relations()));
+    if(role==='wrapper' && (!sameProcess(b,family.leader) || b.ppid!==family.leader.ppid || b.pgrp!==b.pid || b.session!==b.pid))throw roleRefusal('Post-exec wrapper identity mismatch',describeRoleRefusal('wrapper-identity',member,b,receipts,plan,uid,relations()));
     roles[role]={pid:b.pid,starttime:b.starttime};
   }
   if(!roles.wrapper)throw Error('Missing verified wrapper');
+  if(deferred.length) {
+    if(roles.kwin)throw roleRefusal('Duplicate/unexpected compositor role executable',describeRoleRefusal('duplicate-role:kwin',deferred[0],null,receipts,plan,uid,relations()));
+    const table=new Map(snapshot.members.map(m=>[m.pid,m]));
+    roles.kwin=proveInferredKwin({member:deferred[0],roles,table,plan,receipts,uid,gid,state:inferred??defaultInferredState()});
+  }
   return roles;
 }
 function boundedFds(pid) {
@@ -75,33 +145,56 @@ function boundedFds(pid) {
     throw Error('Compositor FD enumeration cap');
   } finally {dir.closeSync();}
 }
-function proveCompositorListener(family,plan,receipts,role,{canonical=realpathSync,lstat=lstatSync,table=()=>readBoundedText('/proc/net/unix',{maxBytes:CAPS.procUnixBytes}),fds=boundedFds,inspect=inspectExecIdentity,uid=process.getuid()}={}) {
+function proveCompositorListener(family,plan,receipts,role,{canonical=realpathSync,lstat=lstatSync,table=()=>readBoundedText('/proc/net/unix',{maxBytes:CAPS.procUnixBytes}),fds=boundedFds,inspect=inspectExecIdentity,uid=process.getuid(),gid=process.getgid(),inferred=null}={},socketPath=plan.socketPath) {
   let st;
-  try {st=lstat(plan.socketPath);} catch(error){if(error.code==='ENOENT')return {owned:false,pending:true};throw error;}
+  try {st=lstat(socketPath);} catch(error){if(error.code==='ENOENT')return {owned:false,pending:true};throw error;}
   const valid=s=>s.isSocket() && !s.isSymbolicLink() && s.uid===uid;
-  if(!valid(st) || canonical(plan.socketPath)!==plan.socketPath)throw Error('Foreign/noncanonical compositor socket');
+  if(!valid(st) || canonical(socketPath)!==socketPath)throw Error('Foreign/noncanonical compositor socket');
   const text=table();if(typeof text!=='string' || Buffer.byteLength(text)>CAPS.procUnixBytes)throw Error('Unix table byte cap');
   const listeners=[];
   for(const line of text.split('\n').slice(1)) {
     const fields=line.trim().split(/\s+/);
-    if(fields[7]!==plan.socketPath)continue;
-    if(fields.length!==8 || fields[3]!=='00010000' || fields[4]!=='0001' || fields[5]!=='01' || !/^[1-9]\d*$/.test(fields[6]))throw Error('Unexpected Unix socket listener state');
+    if(fields[7]!==socketPath)continue;
+    // WHY: name the refused row's shape (field count, flags, type, state — no path, no inode) so a
+    // runtime refusal says what the kernel actually listed instead of forcing another blind attempt.
+    const shape=`fields=${fields.length} flags=${String(fields[3]).slice(0,8)} type=${String(fields[4]).slice(0,4)} st=${String(fields[5]).slice(0,2)} path=${socketPath===plan.socketPath?'wayland':'bus'}`;
+    if(fields.length!==8 || fields[4]!=='0001' || !/^[1-9]\d*$/.test(fields[6]))throw Error(`Unexpected Unix socket listener state (${shape})`);
+    // WHY: the kernel also lists each ACCEPTED connection under the listener's path (flags 0,
+    // state 03 CONNECTED) — our own SO_PEERCRED probe or any client creates one. Those rows are
+    // not listeners, so skip exactly that shape; every other non-listener shape still refuses.
+    if(fields[3]==='00000000' && fields[5]==='03')continue;
+    if(fields[3]!=='00010000' || fields[5]!=='01')throw Error(`Unexpected Unix socket listener state (${shape})`);
     listeners.push(fields[6]);
   }
   if(listeners.length!==1)throw Error('Missing/ambiguous Unix listener');
-  const roles=proveCompositorRoles(family,plan,receipts,{inspect,uid});
+  const roles=proveCompositorRoles(family,plan,receipts,{inspect,uid,gid,inferred});
   const owner = roles[role];
   const expected = receipts[role === 'kwin' ? 'kwin_wayland' : 'dbus-daemon'];
   if(!owner || !family.known.has(owner.pid))throw Error('Listener lacks tracked fixed-role descendant');
+  if(owner.inferred) {
+    // WHY: kwin's fds are unreadable, so the kernel's own record of which process
+    // listen()ed on this exact private path (SO_PEERCRED) replaces the fd proof.
+    // Kwin-only by construction: inferred owners are produced for no other role.
+    if(role!=='kwin')throw Error('Inferred ownership is kwin-only');
+    const state=inferred??defaultInferredState();
+    const peer=provePeerOwner({socketPath:socketPath,owner,uid,listenerKey:`${st.dev}:${st.ino}:${listeners[0]}`,state});
+    const after=lstat(socketPath);
+    if(!valid(after) || st.dev!==after.dev || st.ino!==after.ino || canonical(socketPath)!==socketPath)throw Error('Socket/owner substituted during proof');
+    const now=state.deps.readProc(owner.pid);
+    if(!now || now.starttime!==owner.starttime)throw Error('Listener role identity changed');
+    family.protect(now);
+    return {owned:true,pending:false,socketPath:socketPath,filesystemDevice:st.dev,filesystemInode:st.ino,kernelInode:listeners[0],owners:[{pid:owner.pid,starttime:owner.starttime}],
+      ownerEvidence:{...owner.evidence,proofs:[...owner.evidence.proofs,'unix-table-single-listener','so-peercred-pid-uid-starttime'],peerPid:peer.pid,peerUid:peer.uid}};
+  }
   const a=inspect(owner.pid);
   if(!sameProcess(a,owner) || !matchesRole(a,expected,plan,uid))throw Error('Listener role identity changed');
   const links=fds(a.pid);if(!Array.isArray(links) || links.length>CAPS.fdEntries)throw Error('Listener FD cap');
   if(!links.includes(`socket:[${listeners[0]}]`))throw Error('Unknown/foreign socket owner');
-  const b=inspect(a.pid),after=lstat(plan.socketPath);
-  if(!sameProcess(a,b) || !matchesRole(b,expected,plan,uid) || !valid(after) || st.dev!==after.dev || st.ino!==after.ino || canonical(plan.socketPath)!==plan.socketPath)throw Error('Socket/owner substituted during proof');
+  const b=inspect(a.pid),after=lstat(socketPath);
+  if(!sameProcess(a,b) || !matchesRole(b,expected,plan,uid) || !valid(after) || st.dev!==after.dev || st.ino!==after.ino || canonical(socketPath)!==socketPath)throw Error('Socket/owner substituted during proof');
   family.protect(b);
   // WHY: stat's filesystem inode is NOT the kernel socket inode from proc/net.
-  return {owned:true,pending:false,socketPath:plan.socketPath,filesystemDevice:st.dev,filesystemInode:st.ino,kernelInode:listeners[0],owners:[{pid:b.pid,starttime:b.starttime}]};
+  return {owned:true,pending:false,socketPath:socketPath,filesystemDevice:st.dev,filesystemInode:st.ino,kernelInode:listeners[0],owners:[{pid:b.pid,starttime:b.starttime}]};
 }
 export function proveCompositorSocket(family, plan, receipts, options) {
   return proveCompositorListener(family, plan, receipts, 'kwin', options);
@@ -109,7 +202,8 @@ export function proveCompositorSocket(family, plan, receipts, options) {
 
 export function proveCompositorBusSocket(family, plan, receipts, options) {
   // Fixed private daemon listener only; no caller-selected paths or role names.
-  return proveCompositorListener(family, { ...plan, socketPath: join(plan.runtime, 'bus') }, receipts, 'daemon', options);
+  // WHY: pass the real plan (role proofs revalidate it) and name the bus path separately.
+  return proveCompositorListener(family, plan, receipts, 'daemon', options ?? {}, join(plan.runtime, 'bus'));
 }
 
 function writePrivateText(path,text) {
@@ -124,6 +218,13 @@ export function verifyCompositorBusConfiguration(plan,expectedIdentity,{lstat=ls
   plan=validateCompositorPlan(plan);
   const path=join(plan.runDir,'bus.conf'),before=lstat(path);
   if(!before.isFile() || before.uid!==uid || (before.mode&0o777)!==0o600 || canonical(path)!==path || !sameIdentity(before,expectedIdentity) || read(path)!==compositorBusConfiguration(plan) || !sameIdentity(lstat(path),before))throw Error('Private bus configuration identity/content changed');
+}
+// WHY: same exact-identity/content check as bus.conf, so a swapped or edited private kwinrc
+// (which could re-enable the input method or load other kwin plugins) refuses the launch.
+export function verifyCompositorKwinConfiguration(plan,expectedIdentity,{lstat=lstatSync,canonical=realpathSync,read=path=>readBoundedText(path,{maxBytes:4096}),uid=process.getuid()}={}) {
+  plan=validateCompositorPlan(plan);
+  const path=join(plan.config,'kwinrc'),before=lstat(path);
+  if(!before.isFile() || before.uid!==uid || (before.mode&0o777)!==0o600 || canonical(path)!==path || !sameIdentity(before,expectedIdentity) || read(path)!==COMPOSITOR_KWINRC || !sameIdentity(lstat(path),before))throw Error('Private kwin configuration identity/content changed');
 }
 export function disposeCompositorChildResources(child) {
   // WHY: process.exitCode + IPC disconnect cannot drain a referenced child or
@@ -175,7 +276,7 @@ export function prepareCompositorOwnership(plan, readers = {}, helper = false) {
 }
 export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, output }) {
   validateCompositorPlan(plan);
-  let busIdentity;
+  let busIdentity, kwinrcIdentity;
   const inspect = family => {
     proveCompositorRoles(family, plan, receipts);
     return proveCompositorSocket(family, plan, receipts);
@@ -200,8 +301,14 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
         const busPath = join(plan.runDir, 'bus.conf');
         writePrivateText(busPath, compositorBusConfiguration(plan));
         busIdentity = identity(lstatSync(busPath));
+        // WHY: written only after the config dir was proven fresh+empty, exclusive-create 0600,
+        // and re-verified below like bus.conf (see COMPOSITOR_KWINRC).
+        const kwinrcPath = join(plan.config, 'kwinrc');
+        writePrivateText(kwinrcPath, COMPOSITOR_KWINRC);
+        kwinrcIdentity = identity(lstatSync(kwinrcPath));
       }
       verifyCompositorBusConfiguration(plan, busIdentity);
+      if (!helper) verifyCompositorKwinConfiguration(plan, kwinrcIdentity);
       const env = helper ? helperEnvironment(plan) : compositorEnvironment(plan);
       const command = helper ? helperCommand(receipts, helper.step, helper.selection) : compositorCommand(receipts, plan);
       const path = join(plan.runDir, helper ? `helper-${helper.step}-exec.json` : 'exec-plan.json');
@@ -217,8 +324,14 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
       let ready=false,exited=false,closed=false,failure=null,released=false,disposed=false;
       let code = null, signal = null, completedExecution = null;
       const collector = createHelperOutputCollector(), started = performance.now();
+      // WHY: the 2 s compositor startup bound used to cap the WHOLE helper life inside corroborate, so a
+      // healthy but slow kscreen-doctor timed out as "exec proof timeout" (inferred-kwin-ready-8). Helpers
+      // are bounded by their own wall; the gate-ready wait has its own (python start-up) bound.
       const remainingStartup = () => helper
-        ? Math.max(1, Math.min(CAPS.startupMs, started + HELPER_CAPS.wallMs - performance.now()))
+        ? Math.max(1, started + HELPER_CAPS.wallMs - performance.now())
+        : CAPS.startupMs;
+      const remainingGateReady = () => helper
+        ? Math.max(1, Math.min(HELPER_CAPS.gateReadyMs, started + HELPER_CAPS.wallMs - performance.now()))
         : CAPS.startupMs;
       child.on('error',e=>{failure=e;});
       child.on('exit', (exitCode, exitSignal) => { exited = true; code = exitCode; signal = exitSignal; });
@@ -247,7 +360,7 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
           return disposeCompositorChildResources(child);
         },
         async capture(){
-          await waitFor(()=>{if(failure)throw failure;if(exited)throw Error('Gate exited');return ready;},'gate ready', remainingStartup());
+          await waitFor(()=>{if(failure)throw failure;if(exited)throw Error('Gate exited');return ready;},'gate ready', remainingGateReady());
           const observed = inspectExecIdentity(child.pid);
           if (observed) spawnedChild.observedIdentity = { pid: observed.pid, starttime: observed.starttime };
           // Observation is retained if the separate ownership proof fails below;
@@ -294,17 +407,13 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
               if (['Z', 'X'].includes(member.state)) continue;
               if (member.pid !== child.pid) throw Error('Unexpected helper descendant');
               family.protect(member);
-              let record;
-              try { record = inspectExecIdentity(member.pid); }
-              catch (error) {
-                if (!['ENOENT', 'ESRCH'].includes(error.code)) throw error;
-                continue; // await exit/close; proc disappearance alone is not proof
-              }
-              if (!record) continue; // await independently observed exit/close below
-              if (execEvidence.observe(record, family.leader,
-                { path: command.binary, identity: command.identity }, plan, process.getuid(), python) !== true) {
-                throw Error('Helper unexpectedly reverted to gate executable');
-              }
+              // WHY: the gate executable is EXPECTED until execve completes (the receipt is written before
+              // it), and a poll mid-exec can be unreadable. Only "role executable seen, then gate again"
+              // is a revert; everything definitively wrong still throws inside tryObserve.
+              const seenBefore = execEvidence.observed !== null;
+              const nowRole = execEvidence.tryObserve(() => inspectExecIdentity(member.pid), family.leader,
+                { path: command.binary, identity: command.identity }, plan, process.getuid(), python);
+              if (seenBefore && !nowRole) throw Error('Helper unexpectedly reverted to gate executable');
             }
             return exited && closed;
           }, 'helper output', HELPER_CAPS.wallMs);

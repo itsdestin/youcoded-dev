@@ -249,3 +249,15 @@ test('driver owns only newly created IDs, switches, and cleans up both on a send
   assert.deepEqual(ids, ['preexisting']);
   assert.deepEqual(calls.filter(x => x.startsWith('switch')), ['switch:owned-0', 'switch:owned-1']);
 });
+
+test('summariseCycles exposes role accounting: legacy cycles are marked roles-unknown, valid role cycles feed comparable paths', () => {
+  const legacy = summariseCycles([complete(1, 100), complete(2, 100)]);
+  assert.equal(legacy.roleAccounting.revision, 1);
+  assert.equal(legacy.roleAccounting.status, 'legacy-no-roles', 'full samples without roles are legacy, never guessed');
+  const roles = { revision: 1, status: 'measured', members: [{ id: '1:1', role: 'main', status: 'measured', pssKb: 2048, rssKb: 4096, privateKb: 1000 }] };
+  const withRoles = [complete(1, 100), complete(2, 100)].map(c => ({ ...c, natural: { ...c.natural, domain: 'full', roles } }));
+  const out = summariseCycles(withRoles);
+  assert.equal(out.roleAccounting.status, 'measured');
+  assert.deepEqual(out.roleAccounting.natural.paths['lifecycle.role.main.pssMiB'], [2, 2]);
+  assert.equal(out.roleAccounting.naturalComparisons[1].wholeFamily.comparable, true);
+});

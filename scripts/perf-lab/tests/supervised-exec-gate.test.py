@@ -48,14 +48,18 @@ class GateTests(unittest.TestCase):
                     argv=['/usr/bin/kscreen-doctor', '-j'], env=dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', HOME=home,
                         XDG_CONFIG_HOME=home[:-5] + '/config', XDG_DATA_HOME=home[:-5] + '/data',
                         XDG_CACHE_HOME=home[:-5] + '/cache', XDG_RUNTIME_DIR=home[:-5] + '/runtime',
-                        WAYLAND_DISPLAY='perf-0', QT_QPA_PLATFORM='wayland',
+                        WAYLAND_DISPLAY='perf-0123456789abcdef', QT_QPA_PLATFORM='wayland',
                         DBUS_SESSION_BUS_ADDRESS='unix:path=' + home[:-5] + '/runtime/bus',
                         DBUS_SYSTEM_BUS_ADDRESS='unix:path=' + home[:-5] + '/runtime/no-system-bus'),
                     helperProof=dict(purpose='initial', uid=1000, home=home))
         gate.validate_helper_proof(plan, uid=1000, home=home)
         for patch in [dict(binary='/usr/bin/true'), dict(argv=['/usr/bin/kscreen-doctor', '--bad']),
                       dict(env=dict(HOME='/real')), dict(helperProof=dict(purpose='initial', uid=9, home=home)),
-                      dict(env={**plan['env'], 'LD_PRELOAD': '/foreign'}), dict(identity=dict(uid=9))]:
+                      dict(env={**plan['env'], 'LD_PRELOAD': '/foreign'}), dict(identity=dict(uid=9)),
+                      # The fixed literal name and any non-token shape must be refused now that the name is per-run.
+                      dict(env={**plan['env'], 'WAYLAND_DISPLAY': 'perf-0'}),
+                      dict(env={**plan['env'], 'WAYLAND_DISPLAY': 'perf-0123456789ABCDEF'}),
+                      dict(env={**plan['env'], 'WAYLAND_DISPLAY': '../perf-0123456789abcdef'})]:
             with self.assertRaises(RuntimeError):
                 gate.validate_helper_proof({**plan, **patch}, uid=1000, home=home)
 

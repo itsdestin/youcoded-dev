@@ -4,18 +4,26 @@ import { CLEANUP_BUDGET } from './supervised-launch-core.mjs';
 
 export const HELPER_CAPS = Object.freeze({
   count: 4,
-  wallMs: 3000,
+  // WHY (runtime attempts inferred-kwin-ready-6/-7/-8): a real kscreen-doctor -j takes ~1.3-1.7 s on an idle
+  // machine and several seconds under load; 3 s plus a 2 s exec-proof window made healthy helpers time out.
+  // 8 s is ~5x typical, still fits 4 x (wall + retirement) inside sequenceMs and the compositor wall.
+  wallMs: 8000,
+  // Bound for the gate process to reach its ready packet (python start-up), separate from helper runtime.
+  gateReadyMs: 4000,
   stdoutBytes: 262144,
   stderrBytes: 65536,
   outputPackets: 1024,
   members: 8,
-  sequenceMs: 30000,
+  sequenceMs: 44000,
   termMs: 500,
   killMs: 750,
   closeMs: 500,
 });
+// WHY (owner decision 2026-10-21): kwin's virtual backend offers only 2560x1600@60 and custom
+// modes stay forbidden, so the lab measures at the laptop's size and 1.5x scale but 60 Hz.
+// 180 Hz presentation is explicitly NOT measured by this lane.
 export const EXPECTED_OUTPUT = Object.freeze({
-  name: 'Virtual-0', width: 2560, height: 1600, refreshHz: 180, scale: 1.5,
+  name: 'Virtual-0', width: 2560, height: 1600, refreshHz: 60, scale: 1.5,
   logicalWidth: 1707, logicalHeight: 1067,
 });
 
@@ -74,7 +82,7 @@ export function parseKScreen(text, { effective = false } = {}) {
   if (!ids.has(output.currentModeId)) throw Error('Unknown effective mode identifier');
   const matches = output.modes.filter(mode => mode.size.width === EXPECTED_OUTPUT.width &&
     mode.size.height === EXPECTED_OUTPUT.height && mode.refreshRate === EXPECTED_OUTPUT.refreshHz);
-  if (matches.length !== 1) throw Error('Exact existing 2560x1600@180 mode missing/ambiguous; custom creation unsupported');
+  if (matches.length !== 1) throw Error(`Exact existing ${EXPECTED_OUTPUT.width}x${EXPECTED_OUTPUT.height}@${EXPECTED_OUTPUT.refreshHz} mode missing/ambiguous; custom creation unsupported`);
   const mode = matches[0];
   if (effective && (output.currentModeId !== mode.id || output.scale !== EXPECTED_OUTPUT.scale)) {
     throw Error('Effective KScreen mode/scale differs from fixed request');
@@ -172,10 +180,26 @@ export function helperCommand(receipts, step, selection) {
   return { binary: receipt.path, identity: receipt.identity, argv: [receipt.path, ...args] };
 }
 
+export const TRANSIENT_INSPECTION_CODES = Object.freeze(['ENOENT', 'ESRCH', 'EIDENTITYCHANGED']);
+
+// WHY: a poll that lands mid-execve (or mid-exit) can read a process whose environ is momentarily empty,
+// so HOME is unreadable. That is "cannot observe yet", NOT a different process. A definite mismatch (pid,
+// starttime, ppid, session, uid, a READABLE wrong HOME, or an unapproved executable) still fails closed;
+// an unreadable HOME is never accepted as a match and never recorded as an observation.
 export function verifyHelperIdentity(record, leader, receipt, plan, uid, gateExe) {
+  const homeUnreadable = record && (record.home === null || record.home === undefined);
   if (!record || !leader || record.pid !== leader.pid || record.starttime !== leader.starttime ||
       record.ppid !== leader.ppid || record.pgrp !== record.pid || record.session !== record.pid ||
-      record.home !== plan.home || record.uid !== uid) throw Error('Helper worker-child identity mismatch');
+      (record.home !== plan.home && !homeUnreadable) || record.uid !== uid) {
+    // Name only the failing FIELDS (no values, no paths) so a refusal is never blind.
+    const failed = !record ? ['record'] : !leader ? ['leader'] : [
+      record.pid !== leader.pid && 'pid', record.starttime !== leader.starttime && 'starttime',
+      record.ppid !== leader.ppid && 'ppid', record.pgrp !== record.pid && 'pgrp', record.session !== record.pid && 'session',
+      record.home !== plan.home && !homeUnreadable && 'home',
+      record.uid !== uid && 'uid'].filter(Boolean);
+    throw Error(`Helper worker-child identity mismatch (${failed.join(',')})`);
+  }
+  if (homeUnreadable) return null; // transient: retry on the next poll
   if (record.exe === gateExe) return false;
   if (record.exe !== receipt.path || !record.executableIdentity ||
       ['dev', 'ino', 'uid', 'mode'].some(key => record.executableIdentity[key] !== receipt.identity[key])) {
@@ -222,23 +246,33 @@ export class HelperExecEvidence {
   end() { this.eof = true; }
 
   observe(record, leader, receipt, plan, uid, gateExe) {
-    if (verifyHelperIdentity(record, leader, receipt, plan, uid, gateExe)) {
+    if (verifyHelperIdentity(record, leader, receipt, plan, uid, gateExe) === true) {
       this.observed = { pid: record.pid, starttime: record.starttime, executableIdentity: record.executableIdentity };
       return true;
     }
     return false;
   }
 
-  corroborate(state, inspect, leader, receipt, plan, uid, gateExe) {
-    if (!state.connected || state.disposed) throw Error('Helper disconnected/retired');
-    if (state.exited) return state.closed ? this.completed(state) : false;
+  // One tolerant poll: a vanished/changing process is "not observable now", every definite mismatch throws.
+  tryObserve(inspect, leader, receipt, plan, uid, gateExe) {
     let record;
     try { record = inspect(); }
     catch (error) {
-      if (!['ENOENT', 'ESRCH'].includes(error.code)) throw error;
+      if (!TRANSIENT_INSPECTION_CODES.includes(error.code)) throw error;
       return false; // wait for independently delivered child exit/close events
     }
     return record ? this.observe(record, leader, receipt, plan, uid, gateExe) : false;
+  }
+
+  // WHY: the gate writes the bound authorization receipt over its private descriptor BEFORE execve, so
+  // "release was honoured" is established by that receipt (or by a completed exit), never by catching a
+  // short-lived helper alive in /proc. A live observation is opportunistic corroboration only. Completion
+  // (waitResult/completed) still demands receipt + EOF + clean exit 0, so a failed exec stays fail-closed.
+  corroborate(state, inspect, leader, receipt, plan, uid, gateExe) {
+    if (!state.connected || state.disposed) throw Error('Helper disconnected/retired');
+    if (state.exited) return state.closed ? this.completed(state) : false;
+    if (this.observed === null) this.tryObserve(inspect, leader, receipt, plan, uid, gateExe);
+    return this.ready && this.receipt !== null;
   }
 
   completed({ released, connected, exited, closed, code, signal }) {
@@ -388,7 +422,7 @@ export class CompositorConfiguration {
         this.result = { status: 'observed-private-output-metadata', modeVerified: true, observed, wayland,
           socket, helpers: this.handles.map(handle => handle.receipt),
           observedAt: this.deps.now(), observationScope: 'completed helper readbacks, not continuous mode monitoring',
-          physicalScanoutVerified: false, appWaylandBinding: 'not-implemented', gpuRuntime: 'blocked' };
+          physicalScanoutVerified: false, appWaylandBinding: 'supervised-launch-plan-field-not-runtime-validated', gpuRuntime: 'blocked' };
         this.deps.note('configuration-observed', this.result);
         return this.result;
       } catch (error) {

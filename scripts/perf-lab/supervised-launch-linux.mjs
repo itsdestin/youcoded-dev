@@ -1,13 +1,14 @@
 // Linux-only internal worker adapters. No exported arbitrary spawn/signal endpoint.
 import { spawn } from 'node:child_process';
-import { constants, openSync, closeSync, writeSync, realpathSync, statSync, readlinkSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { constants, openSync, closeSync, writeSync, realpathSync, statSync, lstatSync, readlinkSync, readdirSync } from 'node:fs';
+import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { OwnedProcesses, readProc } from './owned-processes.mjs';
 import { readBoundedText } from './lifecycle-evidence.mjs';
 import { launchConfiguration } from './launch.mjs';
 import { assertPackageIdentity, reauthorizeSupervisorPackage } from './supervised-package.mjs';
 import { assertProtocolEnvelope } from './supervised-protocol.mjs';
+import { readPeerCredentials } from './supervised-compositor-inferred.mjs';
 import { verifyPostExecIdentity, validateSupervisorPlan } from './supervised-launch-core.mjs';
 
 const GATE = fileURLToPath(new URL('./supervised-exec-gate.py', import.meta.url));
@@ -20,8 +21,46 @@ export function inspectExecIdentity(pid) {
   const exe = readlinkSync(`/proc/${pid}/exe`);
   const executable = statSync(`/proc/${pid}/exe`);
   const b = readProc(pid);
-  if (!b || a.starttime !== b.starttime || a.pid !== b.pid) throw Error('Exec identity changed during inspection');
+  if (!b || a.starttime !== b.starttime || a.pid !== b.pid) { /* WHY: coded so callers can tell a racing/exiting process from a real failure */ const e = Error('Exec identity changed during inspection'); e.code = 'EIDENTITYCHANGED'; throw e; }
   return { ...b, executableIdentity: { dev: executable.dev, ino: executable.ino, uid: executable.uid, mode: executable.mode }, uid: uid ? Number(uid[1]) : null, exe, home: env.find(s => s.startsWith('HOME='))?.slice(5) };
+}
+// WHY: one pure builder for the supervised app's environment/argv. With a Wayland
+// binding the app gets the private compositor socket, --ozone-platform=wayland and
+// NO DISPLAY (launchConfiguration whitelists from PATH/LANG only, so no host
+// DISPLAY/WAYLAND_DISPLAY/XAUTHORITY can leak); without it, the unchanged X11 lane.
+export function supervisedAppConfiguration(plan) {
+  const fixture = { home: plan.home, bin: plan.bin, perfLog: plan.perfLog };
+  const { env, args } = launchConfiguration({ fixture, display: plan.display, waylandSocket: plan.waylandSocket, protocolDebug: false, inherited: { PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' } });
+  env.XDG_CONFIG_HOME = join(plan.home, '.config'); env.XDG_DATA_HOME = join(plan.home, '.local/share'); env.XDG_CACHE_HOME = join(plan.home, '.cache');
+  return { env, args };
+}
+// WHY: an owned, canonical, well-named socket is not proof it is KWIN's socket (a stale
+// or planted socket at the same path would pass). The compositor controller's proof
+// (SO_PEERCRED-verified kwin pid+starttime, path, filesystem inode) must match this exact
+// path, and is re-checked (inode + live peer) right before the app is spawned.
+export function assertPrivateWaylandSocket(path, { lstat = lstatSync, canonical = realpathSync, uid = process.getuid(), proof, peer = readPeerCredentials, inspect = readProc } = {}) {
+  const refuse = reason => { throw Error(`Wayland binding refused: ${reason}`); };
+  const st = lstat(path);
+  if (!st.isSocket() || st.isSymbolicLink() || st.uid !== uid || canonical(path) !== path) throw Error('Wayland binding is not the owned canonical private socket');
+  // The per-run directories (/tmp/perf-lab-*/, reservation, runtime) must be ours, 0700, real directories.
+  for (let dir = dirname(path), n = 0; n < 3; dir = dirname(dir), n++) {
+    const d = lstat(dir);
+    if (!d.isDirectory() || d.isSymbolicLink() || d.uid !== uid || (d.mode & 0o777) !== 0o700 || canonical(dir) !== dir) refuse(`${dir} is not a private 0700 directory owned by the owner`);
+  }
+  if (!proof || proof.socketPath !== path || proof.owners?.length !== 1) refuse('no compositor ownership proof for this exact socket');
+  const owner = proof.owners[0];
+  const sameInode = s => String(s.dev) === String(proof.filesystemDevice) && String(s.ino) === String(proof.filesystemInode);
+  if (!sameInode(st)) refuse('socket is not the one the compositor proof named (inode differs)');
+  const verifyPeer = () => {
+    const creds = peer(path), live = inspect(owner.pid);
+    if (creds?.pid !== owner.pid || creds.uid !== uid) refuse('socket peer is not the verified kwin process');
+    if (!live || live.starttime !== owner.starttime) refuse('verified kwin identity changed');
+  };
+  verifyPeer();
+  // Immediate re-check: same inode and same live peer after the first pass.
+  const again = lstat(path);
+  if (!again.isSocket() || again.isSymbolicLink() || !sameInode(again) || canonical(path) !== path) refuse('socket replaced during verification');
+  verifyPeer();
 }
 function exclusiveJson(path, value) {
   assertProtocolEnvelope(value);
@@ -76,10 +115,11 @@ export function makeLinuxAdapters(plan, { persist, emit, output }) {
       if (!python.startsWith('/usr/bin/python3') || !pythonInfo.isFile() || pythonInfo.uid !== 0 || (pythonInfo.mode & 0o022) !== 0
         || !gateInfo.isFile() || gateInfo.uid !== process.getuid() || (gateInfo.mode & 0o022) !== 0 || realpathSync(GATE) !== GATE) throw Error('Trusted Python/gate dependency unavailable or writable by others');
       const fixture = { home: plan.home, bin: plan.bin, perfLog: plan.perfLog };
-      const { env, args } = launchConfiguration({ fixture, display: plan.display, inherited: { PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' } });
-      env.XDG_CONFIG_HOME = join(plan.home, '.config'); env.XDG_DATA_HOME = join(plan.home, '.local/share'); env.XDG_CACHE_HOME = join(plan.home, '.cache');
+      const { env, args } = supervisedAppConfiguration(plan);
       const gatePlan = join(plan.runDir, 'exec-plan.json');
       exclusiveJson(gatePlan, { binary: plan.binary, identity: plan.packageReceipt.identity, argv: [plan.binary, `--remote-debugging-port=${plan.cdpPort}`, '--no-sandbox', ...args], env });
+      // WHY: last statement before spawn, so no work separates the compositor proof from the app launch.
+      if (plan.waylandSocket) assertPrivateWaylandSocket(plan.waylandSocket, { proof: plan.waylandProof });
       const child = spawn(python, ['-I', '-S', GATE, gatePlan], { cwd: plan.home, env, detached: true, stdio: ['ignore','pipe','pipe','pipe','pipe'] });
       let ready = false, exited = false, closed = false, exit = null, failure = null, released = false;
       child.on('error', error => { failure = error; });

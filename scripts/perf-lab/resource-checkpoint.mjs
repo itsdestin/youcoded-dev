@@ -3,12 +3,16 @@ import { types } from 'node:util';
 import { readBoundedText } from './lifecycle-evidence.mjs';
 import { readCounters } from './layout-cost.mjs';
 import { createProcFailureRing,procFailureSnapshot,emitProcFailure } from './proc-forensics.mjs';
+import { readRoleSnapshot, ROLE_ACCOUNTING_REVISION } from './process-roles.mjs';
 
 export const RESOURCE_METRICS = Object.freeze(['TaskDuration', 'ScriptDuration', 'LayoutCount', 'RecalcStyleCount', 'LayoutDuration', 'RecalcStyleDuration', 'JSHeapUsedSize', 'Nodes', 'JSEventListeners']);
 export const CUMULATIVE_METRICS = Object.freeze(['TaskDuration', 'ScriptDuration', 'LayoutCount', 'RecalcStyleCount', 'LayoutDuration', 'RecalcStyleDuration']);
 const finite = n => typeof n === 'number' && Number.isFinite(n) && n >= 0;
 export const RESOURCE_DESCRIPTOR = Object.freeze({ revision: 3, lane: 'short-lifecycle-diagnostic', standardAcceptanceCoverage: false,
   phases: ['before', 'grown', 'switched', 'released'], maxCyclesIncludingWarmup: 5, maxMinutes: 10, maxBytes: 5 * 1024 * 1024, maxRecords: 10000,
+  // WHY: role accounting is additive. checkpoint/descriptor revisions stay put because comparability
+  // gates (coverage.mjs, checkpointDelta) key on them; reports carry their own roleAccounting revision.
+  roleAccounting: { revision: ROLE_ACCOUNTING_REVISION, note: 'Full-domain checkpoints add roles{} (pid:starttime identity, privacy-filtered role label, per-member PSS/RSS/private kB). Reports without it are legacy: roles unknown, never inferred.' },
   scope: { renderer: 'CDP target renderer-wide', pss: 'enumerated rig-marker process family, Linux smaps_rollup' },
   gaps: ['Marker discovery may omit untagged helpers; discovery completeness is unproven.', 'Switched sessions are not minimized or hidden windows; no hidden-window activity measurement.', 'No cumulative long-list scroll/reopen measurement yet; chunked reveal retains rows, it is not virtualization.', 'No queue conservation/drain, graphics, energy or per-component memory attribution.', 'Observer overhead is timed separately, not calibrated by a control run.', 'Source identity is the package build stamp, not an attestation of packaged bytes or the current checkout. Serializer output caps do not bound input allocation or total process memory.'],
   comparison: 'Renderer continuity and family composition are separate domains. Membership churn retains renderer deltas only with full identities/counters; aggregate PSS retention stays unavailable. Whole-cycle validity remains incomplete.',
@@ -45,7 +49,9 @@ export function readProcessStart(pid,{read=path=>readBoundedText(path,{maxBytes:
 }
 
 export async function captureCheckpoint({ cdp, family, phase, identity, gcPolicy = 'natural', readPss = readFamilyPss,
-  readEpoch = () => cdp.evaluate(DOCUMENT_EPOCH_EXPRESSION), readProcessStart: processStart = readProcessStart, now = () => performance.now(), domain = 'full' }) {
+  readEpoch = () => cdp.evaluate(DOCUMENT_EPOCH_EXPRESSION), readProcessStart: processStart = readProcessStart, now = () => performance.now(), domain = 'full',
+  // WHY: a caller that injects a fake readPss is a unit test; never sample real /proc for it.
+  readRoles = readPss === readFamilyPss ? readRoleSnapshot : null }) {
   if (!['full', 'renderer'].includes(domain)) throw Error('unknown checkpoint domain');
   const startedAt = now(), gaps = [],procFailureRing=createProcFailureRing();
   const readStart=pid=>{
@@ -92,6 +98,13 @@ export async function captureCheckpoint({ cdp, family, phase, identity, gcPolicy
     for (const pid of expectedPids) processStarts[pid] = readStart(pid);
     observed = readPss(expectedPids,undefined,{phase,now,onFailure:procFailureRing.record});
   } catch (error) { gaps.push(`PSS: ${error.message}`); }
+  // WHY: roles are a separate read of the same enumerated pids; their failure marks only
+  // roles.status, never the existing PSS/renderer verdicts.
+  let roles = { revision: ROLE_ACCOUNTING_REVISION, status: 'not-collected', members: [] };
+  if (readRoles && expectedPids.length) {
+    try { roles = readRoles(expectedPids); }
+    catch (error) { roles = { revision: ROLE_ACCOUNTING_REVISION, status: 'incomplete', members: [], reason: `role read failed: ${error.code ?? 'error'}` }; }
+  }
   const perPid = Array.isArray(observed?.perPid) ? observed.perPid.filter(p => expectedPids.includes(p.pid) && finite(p.mb)) : [];
   const missingPids = expectedPids.filter(pid => !perPid.some(p => p.pid === pid));
   const complete = expectedPids.length > 0 && missingPids.length === 0 && perPid.length === expectedPids.length && finite(observed?.totalMb);
@@ -118,7 +131,7 @@ export async function captureCheckpoint({ cdp, family, phase, identity, gcPolicy
   return { revision: 2, domain:'full', renderer:{status:rendererReadGaps.length?'incomplete':'measured',gaps:rendererReadGaps,readBrackets:{before:epochBefore,after:epochAfter}},
     process:{status:complete&&!gaps.some(g=>g.startsWith('process')||g.startsWith('PSS:'))?'measured':'incomplete',gaps:gaps.filter(g=>g.startsWith('process')||g.startsWith('PSS:'))},
     identity: checkpointIdentity, phase, gcPolicy, status: gaps.length ? 'incomplete' : 'measured', scope: RESOURCE_DESCRIPTOR.scope, startedAt, endedAt, observerMs, metrics, layout,
-    pss: { totalMb: complete ? observed.totalMb : null, perPid, expectedPids, missingPids, complete, discoveryComplete: false }, procFailures:procFailureRing.snapshot(), gaps };
+    pss: { totalMb: complete ? observed.totalMb : null, perPid, expectedPids, missingPids, complete, discoveryComplete: false }, roles, procFailures:procFailureRing.snapshot(), gaps };
 }
 
 const ALLOWED_PHASE_PAIRS = new Set(['before:before', 'grown:grown', 'switched:switched', 'released:released', 'before:grown', 'before:switched', 'before:released', 'grown:switched', 'switched:released']);

@@ -14,6 +14,7 @@ import { treeFingerprint } from './build.mjs';
 import { startLaunchSupervisor } from './supervised-launch.mjs';
 import { MIN_CLEANUP_RESERVE_MS, SUPERVISOR_STOP_TIMEOUT_MS } from './supervised-launch-core.mjs';
 
+import { summariseRoleAccounting } from './process-roles.mjs';
 import { SETTLE_DESCRIPTOR, sampleSettlePhase, summariseSettle } from './natural-settle.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -129,7 +130,8 @@ export function summariseCycles(cycles) {
   const trajectories = { natural: gcPolicy === 'natural' ? trajectory(c => c.natural) : null,
     intervenedPreGc: gcPolicy === 'intervened' ? trajectory(c => c.natural) : null,
     forcedGc: gcPolicy === 'intervened' ? trajectory(c => c.afterGc?.status === 'measured' ? c.afterGc.sample : null) : null };
-  return { gcPolicy, trajectories, familyPssTrend, status: reasons.length || !cycles.length ? 'incomplete' : 'measured', reasons: cycles.length ? reasons : ['no cycles'], rawSampleCount: rows.filter(c => c.natural && c.natural.metrics && finite(c.natural.pss?.totalMb)).length, cycles: rows, trend,
+  // WHY: per-role/identity accounting rides beside, never inside, the existing family verdicts.
+  return { gcPolicy, trajectories, familyPssTrend, roleAccounting: summariseRoleAccounting(rows), status: reasons.length || !cycles.length ? 'incomplete' : 'measured', reasons: cycles.length ? reasons : ['no cycles'], rawSampleCount: rows.filter(c => c.natural && c.natural.metrics && finite(c.natural.pss?.totalMb)).length, cycles: rows, trend,
     context: `${gcPolicy === 'intervened' ? 'Forced GC was requested: later pre-GC samples belong to a GC-intervened run, not an untouched natural-GC trajectory. ' : ''}First cycle is warmup; natural counters are not after-GC retention. Saved transcript/file counts can grow legitimately. Neither PSS slope nor persisted-record growth proves a leak. Chat only: terminal, files and previews unengaged.` };
 }
 

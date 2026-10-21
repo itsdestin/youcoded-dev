@@ -3,6 +3,7 @@
   "scope": "Explicit source-audited bounded selection, not the complete perf-lab test suite",
   "policy": "files + uiFiles are offline-unit: no app/browser/build/sensor/network/paid execution. Disposable fixtures, format libraries, jsdom/VM, fake CDP/events/proc and source-only Node CLI subprocesses are allowed. readOnlyGitFiles is a separate source-inspection addition, never Git commits. pythonFiles uses injected gate operations only. offlineLocalFiles is separately authorized fake loopback HTTP only, never outside connections. No broad-glob execution; every addition requires source-boundary review.",
   "files": [
+    "asset-gate-quiet-wait.test.mjs",
     "cached-build.test.mjs",
     "stream-completion-runner.test.mjs",
     "coverage.test.mjs",
@@ -43,9 +44,13 @@
     "scenario-images.test.mjs",
     "scenario-replay-stall.test.mjs",
     "short-lifecycle.test.mjs",
+    "process-roles.test.mjs",
+    "role-reanalysis.test.mjs",
     "stall-attribution.test.mjs",
     "stall-fixtures.test.mjs",
     "supervised-compositor.test.mjs",
+    "supervised-compositor-inferred.test.mjs",
+    "supervised-wayland-binding.test.mjs",
     "supervised-compositor-helpers.test.mjs",
     "supervised-launch-ownership.test.mjs",
     "supervised-launch.test.mjs",
@@ -68,12 +73,14 @@
     "selected-checkout.test.mjs"
   ],
   "pythonFiles": [
-    "scripts/perf-lab/tests/supervised-exec-gate.test.py"
+    "scripts/perf-lab/tests/supervised-exec-gate.test.py",
+    "scripts/perf-lab/tests/supervised-compositor-proofs.test.py"
   ],
   "offlineLocalFiles": [
     "fake-provider.test.mjs"
   ],
   "notes": {
+    "asset-gate-quiet-wait.test.mjs": "Offline: injected fs/network stubs and fake clock/load only; proves asset-download refusal and the separate quiet-wait bound. No app, network or sensor.",
     "scenario-native-stream.test.mjs": "Pure summaries, deterministic delta splitting and VM/parse-only emitted sources; no server/app.",
     "legacy-evidence.test.mjs": "Synthetic legacy execution/report fixtures and validators only.",
     "legacy-gates.test.mjs": "Synthetic missing/tail mutations against pure run/comparison validators.",
@@ -114,6 +121,8 @@
     "scenario-images.test.mjs": "Tiny deterministic PNG/JPEG encodes, VM and injected image/watchdog/provenance adapters; cached dependencies only.",
     "scenario-replay-stall.test.mjs": "Deterministic frames, summaries and parse-only emitted source; no replay against app.",
     "short-lifecycle.test.mjs": "Fake session drivers, file iterators, resource readers, clocks and timers; source policy reads only.",
+    "process-roles.test.mjs": "Injected fake /proc tree reader (strings and thrown ENOENT); pure functions, no real process, file or network access.",
+    "role-reanalysis.test.mjs": "Pure functions over synthetic in-memory report objects; the CLI file read is not exercised and no scratch evidence is read.",
     "stall-attribution.test.mjs": "Pure attribution objects; no loop measurement.",
     "stall-fixtures.test.mjs": "Bounded disposable smoke/stress format generation/parsing with installed libraries; no app/browser. Larger CPU/disk fixture test, not runtime stress.",
     "supervised-compositor-helpers.test.mjs": "Pure bounded metadata/command contracts and fake helper gate/family/protocol sequencing, rollback and output floods only. No real helper/gate execution, socket, network, app, build or sensor.",
@@ -134,7 +143,10 @@
     "run-lock.test.mjs": "Disposable temp lock files with injected pid/start-time tables; never signals or inspects a real process.",
     "report-stem.test.mjs": "Disposable temp report directory; pure stem selection and atomic JSON publication.",
     "compare-all.test.mjs": "Pure synthetic reports through compareAll/renderComparisonMarkdown, including the injected-delay control and A/A cases; no app.",
-    "ab.test.mjs": "A/B orchestration with run.mjs main() replaced by a fake, injected freshness/hash/lock/disk adapters and temp dirs; no build, app or process."
+    "ab.test.mjs": "A/B orchestration with run.mjs main() replaced by a fake, injected freshness/hash/lock/disk adapters and temp dirs; no build, app or process.",
+    "supervised-compositor-inferred.test.mjs": "Fake /proc status/cmdline/stat, fake file-capability bytes and injected SO_PEERCRED/xattr readers only; also pins the bounded role-refusal reason object (no-role, duplicate-role, receipt-mismatch, substitution, unreadable); the Python proof helper is never run. No real process, socket, xattr, compositor, app or sensor access.",
+    "supervised-wayland-binding.test.mjs": "Pure supervised plan validation and env/argv builders, injected lstat and fake backend; no worker, gate, socket, app or compositor.",
+    "supervised-compositor-proofs.test.py": "Injected getxattr/lstat/connect and an in-process socketpair only; the module never opens the kwin binary, a Wayland socket or a compositor when imported."
   },
   "excludedEffectfulExamples": {
     "ipc-close-reproducer.integration.mjs": "Real Node fork/disconnect reproduction; not source-only.",

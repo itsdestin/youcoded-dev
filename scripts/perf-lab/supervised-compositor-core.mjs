@@ -15,6 +15,9 @@ export class CompositorSession {
       return proof;
     }
     if(this.socketProof && (['filesystemDevice','filesystemInode','kernelInode','socketPath'].some(k=>proof[k]!==this.socketProof[k]) || JSON.stringify(proof.owners)!==JSON.stringify(this.socketProof.owners)))throw Error('Previously owned compositor socket/owner substituted');
+    // WHY: an inferred (never directly read) executable must be visible in the
+    // evidence stream once, with which proofs passed, not only in transient replies.
+    if(proof.ownerEvidence && !this.ownerEvidenceNoted){this.ownerEvidenceNoted=true;this.note('owner-evidence',proof.ownerEvidence);}
     this.socketProof=proof;return proof;
   }
   async handle(message) {

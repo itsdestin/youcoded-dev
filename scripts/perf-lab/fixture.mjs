@@ -369,6 +369,40 @@ export function assetsReady({ checkout = DEFAULT_CHECKOUT } = {}) {
   return { ggufSrc, engineSrc, pin };
 }
 
+/** True only when the owner explicitly opted in via the environment (the flag path is `--allow-asset-download`). */
+export function assetDownloadEnvAllowed(env = process.env) {
+  return env.PERF_LAB_ALLOW_ASSET_DOWNLOAD === '1';
+}
+
+// The one place that actually spawns the downloader. buildFixture is synchronous, so
+// provisioning (async fetch) re-enters this file in a child process.
+function defaultProvision({ checkout }) {
+  execFileSync(process.execPath, [fileURLToPath(import.meta.url), '--ensure-assets', '--checkout', checkout], { stdio: 'inherit' });
+}
+
+/**
+ * Describes asset state WITHOUT any network or write.
+ * state: 'present' (verified, no download), 'missing' (would be refused), 'authorized' (missing but opted in).
+ */
+export function assetStatus({ checkout = DEFAULT_CHECKOUT, allow = false, assetsReadyFn = assetsReady, pinFn = readEnginePin } = {}) {
+  const ready = assetsReadyFn({ checkout });
+  if (ready) return { state: 'present', detail: `model ${GGUF_NAME} + engine ${ready.pin?.version ?? ''} verified in ${ASSETS_DIR}; no network` };
+  let engineName = 'the pinned llama.cpp engine archive';
+  try { engineName = pinFn({ checkout }).assetName; } catch { /* checkout without engine-pin.ts: keep the generic name */ }
+  const need = `${GGUF_NAME} (about 490 MB, from huggingface.co) and ${engineName} (llama.cpp engine archive, from github.com)`;
+  return allow
+    ? { state: 'authorized', detail: `missing; download AUTHORIZED: ${need}` }
+    : { state: 'missing', detail: `missing; would REFUSE to run model phases: ${need}` };
+}
+
+export function assetRefusalMessage({ checkout = DEFAULT_CHECKOUT, statusFn = assetStatus } = {}) {
+  const st = statusFn({ checkout, allow: false });
+  return `perf-lab: refusing to download model assets without explicit authorization. ${st.detail}.\n`
+    + '  Choice 1: opt in with --allow-asset-download (or PERF_LAB_ALLOW_ASSET_DOWNLOAD=1) to download them once into scratch/perf-lab/assets.\n'
+    + '  Choice 2: select only model-free phases (for example --only artifacts,native-stream) that need no model or engine.\n'
+    + '  Nothing was downloaded and no app was launched.';
+}
+
 /**
  * Downloads whatever assetsReady() says is missing into scratch/perf-lab/assets/:
  *   - the toy GGUF model, and
@@ -458,7 +492,12 @@ export async function ensureAssets({ log = () => {}, checkout = DEFAULT_CHECKOUT
  *   rows). OPT-IN for the same reason: 100 extra files on disk are a different
  *   configuration, and only the native-resume phase measures at that scale.
  */
-export function buildFixture(root, { checkout = DEFAULT_CHECKOUT, engineSrc, ggufSrc, seedEngine = true, historySizes = SIZES, decoyCount = DECOY_TRANSCRIPTS, content = 'realistic', fakeProvider = false, nativeSessions = false, log = () => {} } = {}) {
+export function buildFixture(root, { checkout = DEFAULT_CHECKOUT, engineSrc, ggufSrc, seedEngine = true, historySizes = SIZES, decoyCount = DECOY_TRANSCRIPTS, content = 'realistic', fakeProvider = false, nativeSessions = false, log = () => {},
+  // Explicit opt-in for any network download (run.mjs/ab.mjs --allow-asset-download). Default OFF.
+  allowAssetDownload = false,
+  // Injection points so tests can prove zero network/spawn without touching the disk or network.
+  assetsReadyFn = assetsReady,
+  provision = defaultProvision } = {}) {
   if (typeof seedEngine !== 'boolean' || !historySizes || typeof historySizes !== 'object'
       || !Object.entries(historySizes).every(([name, count]) => /^[a-z][a-z0-9_-]*$/.test(name) && Number.isSafeInteger(count) && count >= 0)
       || !Number.isSafeInteger(decoyCount) || decoyCount < 0) throw new Error('Invalid fixture workload options.');
@@ -470,11 +509,15 @@ export function buildFixture(root, { checkout = DEFAULT_CHECKOUT, engineSrc, ggu
   // WHY opt-out: a file-viewer test does not need hundreds of MB of model data.
   // Unconditional provisioning exhausted disk before the first measurement.
   assertApprovedCheckoutPath(checkout);
-  let assets = seedEngine ? assetsReady({ checkout }) : null;
+  let assets = seedEngine ? assetsReadyFn({ checkout }) : null;
   if (seedEngine && !assets) {
-    log('[fixture] assets missing \u2014 provisioning (one-time download)\u2026');
-    execFileSync(process.execPath, [fileURLToPath(import.meta.url), '--ensure-assets', '--checkout', checkout], { stdio: 'inherit' });
-    assets = assetsReady({ checkout });
+    // WHY refuse: provisioning downloads ~490 MB of model plus the engine archive. The owner's
+    // rule is no model/engine download without explicit authorization, and an A/B run once
+    // fetched them unannounced. Missing assets now fail HERE, before any app launch.
+    if (!allowAssetDownload) throw new Error(assetRefusalMessage({ checkout, statusFn: (o) => assetStatus({ ...o, assetsReadyFn }) }));
+    log('[fixture] assets missing \u2014 provisioning (download explicitly authorized)\u2026');
+    provision({ checkout });
+    assets = assetsReadyFn({ checkout });
     if (!assets) throw new Error('Asset provisioning failed \u2014 see the output above');
   }
   const engine = seedEngine ? engineSrc ?? assets.engineSrc : null;

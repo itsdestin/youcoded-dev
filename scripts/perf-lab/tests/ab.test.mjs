@@ -26,6 +26,8 @@ function harness({ stale = [] } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'ab-'));
   const calls = [], logs = [], reports = new Map(), env = {};
   const deps = {
+    // WHY: these tests never touch real model assets; present means no refusal and no network.
+    assetPreflight: () => ({ needed: true, state: 'present', detail: 'stub' }),
     root, env, log: (...a) => logs.push(a.join(' ')),
     buildFreshness: async (checkout) => (stale.includes(checkout) ? { error: 'cached stamp does not match current source fingerprint', haveBinary: false, fresh: false }
       : { sha: checkout.includes('b') ? 'b'.repeat(40) : 'a'.repeat(40), branch: 'x', dirty: 'c0ffee000000', haveBinary: true, appDir: `${checkout}/app`, fresh: true, builtAt: 'then' }),

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import { compositorPlan, compositorEnvironment, compositorCommand, compositorBusConfiguration, COMPOSITOR_DESCRIPTOR } from '../supervised-compositor-policy.mjs';
 import { CompositorSession } from '../supervised-compositor-core.mjs';
-import { proveCompositorSocket, proveCompositorRoles, verifySystemExecutable, assertFreshCompositorSocket, disposeCompositorChildResources, verifyCompositorBusConfiguration } from '../supervised-compositor-linux.mjs';
+import { proveCompositorSocket, proveCompositorRoles, verifySystemExecutable, assertFreshCompositorSocket, disposeCompositorChildResources, verifyCompositorBusConfiguration, verifyCompositorKwinConfiguration } from '../supervised-compositor-linux.mjs';
 import { CompositorController, startCompositorSupervisor } from '../supervised-compositor-controller.mjs';
 import { bindSupervisorProtocol } from '../supervised-launch-worker.mjs';
 import { OwnedProcesses } from '../owned-processes.mjs';
@@ -33,7 +33,7 @@ test('private output tails survive failure finalization without overflowing evid
   assertProtocolEnvelope({ final: receipt });
 });
 
-const plan = () => compositorPlan('/tmp/perf-lab-test/reservation');
+const plan = () => compositorPlan('/tmp/perf-lab-test/reservation', 'perf-0123456789abcdef');
 const identity = { dev: 1, ino: 2, uid: 1000, mode: 0o100755 };
 const executables = () => Object.fromEntries(['dbus-run-session','kwin_wayland','dbus-daemon','kscreen-doctor','wayland-info'].map((name,i) => [name, { path: `/usr/bin/${name}`, identity: { ...identity, ino: i + 10 } }]));
 const row = (pid, ppid, extra={}) => ({ pid, ppid, starttime: String(pid*10), session: 20, pgrp: 20, state:'S', rssMb: 10, cmdline:'private', ...extra });
@@ -47,12 +47,12 @@ function fakeSession({ captureError=false, uncertain=false, pipes=true, execErro
 }
 test('purpose policy fixes arguments, isolated environment and explicitly incomplete descriptor',()=>{
   const p=plan(), env=compositorEnvironment(p), command=compositorCommand(executables(),p);
-  assert.deepEqual(command.argv.slice(5),['--virtual','--width','2560','--height','1600','--socket','perf-0','--no-lockscreen','--no-global-shortcuts']);
+  assert.deepEqual(command.argv.slice(5),['--virtual','--width','2560','--height','1600','--socket',p.socketName,'--no-lockscreen','--no-global-shortcuts']);
   assert.equal(env.HOME,p.home);assert.equal(env.XDG_RUNTIME_DIR,p.runtime);
   for(const k of ['DISPLAY','XAUTHORITY','DBUS_SESSION_BUS_ADDRESS','QT_PLUGIN_PATH','LD_PRELOAD','NODE_OPTIONS'])assert.equal(env[k],undefined);
   assert.equal(COMPOSITOR_DESCRIPTOR.modeVerified,false);assert.equal(COMPOSITOR_DESCRIPTOR.gpuRuntime,'blocked');
-  assert.throws(()=>compositorPlan('/tmp/'+'a'.repeat(110)),/path|socket/);
-  assert.throws(()=>compositorPlan('/tmp/../unsafe'),/path/);
+  assert.throws(()=>compositorPlan('/tmp/'+'a'.repeat(110),'perf-0123456789abcdef'),/path|socket/);
+  assert.throws(()=>compositorPlan('/tmp/../unsafe','perf-0123456789abcdef'),/path/);
   for(const options of [{binary:'/usr/bin/sh'},{argv:['bad']},{env:{DISPLAY:':0'}},{pid:20},{signal:'SIGKILL'}])assert.throws(()=>startCompositorSupervisor(options),/accepts no/);
 });
 test('single start captures before release and inspection never claims mode readiness',async()=>{
@@ -105,6 +105,24 @@ test('pre-exec socket reservation rejects existing entries including dangling sy
 test('Unix listener proof retains distinct filesystem and kernel inode identities',()=>{
   const f=socketFixture();const proof=proveCompositorSocket(f.family,f.p,f.receipts,f.deps);
   assert.equal(proof.owned,true);assert.equal(proof.filesystemInode,40);assert.equal(proof.kernelInode,'80');assert.equal(proof.owners[0].pid,21);
+});
+// WHY: runtime attempt inferred-kwin-ready-2 refused a healthy compositor because the kernel lists
+// every ACCEPTED connection under the listener's path too (flags 0, state 03 CONNECTED).
+test('Unix listener proof ignores accepted client connections but still refuses ambiguous or odd rows',()=>{
+  const head='Num RefCount Protocol Flags Type St Inode Path\n';
+  const listen=p=>`0000: 00000002 00000000 00010000 0001 01 80 ${p}\n`;
+  const accepted=(p,inode)=>`0000: 00000003 00000000 00000000 0001 03 ${inode} ${p}\n`;
+  const ok=socketFixture();ok.deps.table=()=>head+accepted(ok.p.socketPath,91)+listen(ok.p.socketPath)+accepted(ok.p.socketPath,92);
+  const proof=proveCompositorSocket(ok.family,ok.p,ok.receipts,ok.deps);
+  assert.equal(proof.owned,true);assert.equal(proof.kernelInode,'80');
+  const bad=[
+    p=>head+listen(p)+`0000: 00000002 00000000 00010000 0001 01 81 ${p}\n`, // second listener
+    p=>head+accepted(p,91), // only connections, no listener
+    p=>head+listen(p)+`0000: 00000003 00000000 00000000 0002 03 93 ${p}\n`, // datagram row
+    p=>head+listen(p)+`0000: 00000003 00000000 00010000 0001 03 94 ${p}\n`, // connected row claiming accept flag
+    p=>head+listen(p)+`0000: 00000003 00000000 00000000 0001 01 95 ${p}\n`, // unconnected non-listener
+  ];
+  for(const t of bad){const f=socketFixture();f.deps.table=()=>t(f.p.socketPath);assert.throws(()=>proveCompositorSocket(f.family,f.p,f.receipts,f.deps));}
 });
 test('foreign UID, symlink, substitution, reused owner, missing FD and table floods fail closed',()=>{
   const cases=[f=>{f.st.uid=9;},f=>{f.st.isSymbolicLink=()=>true;},f=>{let n=0;f.deps.lstat=()=>({...f.st,ino:++n});},f=>{let n=0;f.deps.inspect=()=>({...f.kwin,starttime:String(++n)});},f=>{f.deps.fds=()=>[];},f=>{f.deps.table=()=> 'x'.repeat(262145);},f=>{f.family.protect=()=>{throw Error('protected ancestry');};}];
@@ -225,7 +243,7 @@ test('descendant-only terminal scan records same-session strangers as uncertaint
 });
 test('private bus command selects exact no-activation config instead of default session configuration',()=>{
   const p=plan(),receipt=executables(),command=compositorCommand(receipt,p),xml=compositorBusConfiguration(p),env=compositorEnvironment(p);
-  assert.deepEqual(command.argv,[receipt['dbus-run-session'].path,`--dbus-daemon=${receipt['dbus-daemon'].path}`,`--config-file=${p.runDir}/bus.conf`,'--',receipt.kwin_wayland.path,'--virtual','--width','2560','--height','1600','--socket','perf-0','--no-lockscreen','--no-global-shortcuts']);
+  assert.deepEqual(command.argv,[receipt['dbus-run-session'].path,`--dbus-daemon=${receipt['dbus-daemon'].path}`,`--config-file=${p.runDir}/bus.conf`,'--',receipt.kwin_wayland.path,'--virtual','--width','2560','--height','1600','--socket',p.socketName,'--no-lockscreen','--no-global-shortcuts']);
   assert.equal(env.DBUS_SYSTEM_BUS_ADDRESS,`unix:path=${p.runtime}/no-system-bus`);
   assert.match(xml,new RegExp(`<listen>unix:path=${p.runtime}/bus</listen>`));assert.match(xml,/<auth>EXTERNAL<\/auth>/);
   assert.doesNotMatch(xml,/<(?:include|includedir|servicedir|standard_session_servicedirs|standard_system_servicedirs|servicehelper|fork|allow_anonymous)\b/);
@@ -250,6 +268,19 @@ test('private bus config verification refuses replacement, unsafe permissions an
   io.read=()=>compositorBusConfiguration(p);st.ino=999;assert.throws(()=>verifyCompositorBusConfiguration(p,expected,io),/configuration/);
   st.ino=identity.ino;st.mode=0o100666;assert.throws(()=>verifyCompositorBusConfiguration(p,expected,io),/configuration/);
   st.mode=expected.mode;io.canonical=()=>'/foreign';assert.throws(()=>verifyCompositorBusConfiguration(p,expected,io),/configuration/);
+});
+// WHY: the private kwinrc is what keeps the host's plasma-keyboard input method out of our compositor.
+test('private kwinrc disables the input method and verification refuses edits, swaps and unsafe modes',async()=>{
+  const {COMPOSITOR_KWINRC}=await import('../supervised-compositor-policy.mjs');
+  assert.match(COMPOSITOR_KWINRC,/^\[Wayland\]\nInputMethod=\n/);assert.match(COMPOSITOR_KWINRC,/VirtualKeyboardEnabled=false/);
+  const p=plan(),st={...identity,mode:0o100600,isFile:()=>true},expected={...st};
+  const io={uid:1000,lstat:()=>st,canonical:x=>x,read:()=>COMPOSITOR_KWINRC};
+  assert.doesNotThrow(()=>verifyCompositorKwinConfiguration(p,expected,io));
+  io.read=()=>COMPOSITOR_KWINRC.replace('InputMethod=','InputMethod=/usr/share/applications/org.kde.plasma.keyboard.desktop');
+  assert.throws(()=>verifyCompositorKwinConfiguration(p,expected,io),/kwin configuration/);
+  io.read=()=>COMPOSITOR_KWINRC;st.ino=999;assert.throws(()=>verifyCompositorKwinConfiguration(p,expected,io),/kwin configuration/);
+  st.ino=identity.ino;st.mode=0o100644;assert.throws(()=>verifyCompositorKwinConfiguration(p,expected,io),/kwin configuration/);
+  st.mode=expected.mode;io.uid=1001;assert.throws(()=>verifyCompositorKwinConfiguration(p,expected,io),/kwin configuration/);
 });
 test('worker finalizer releases local child handles after retained failure, before bounded final disconnect',async()=>{
   for(const kind of ['never-close','capture-failure','capture-unowned','cleanup-throw']) {

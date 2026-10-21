@@ -7,7 +7,7 @@ import { userInfo } from 'node:os';
 const previous = process.env.HOME;
 process.env.HOME = '/tmp/perf-lab-owner-home/reservation/home';
 const { compositorPlan, compositorEnvironment } = await import('../supervised-compositor-policy.mjs');
-const plan = compositorPlan('/tmp/perf-lab-owner-home/reservation');
+const plan = compositorPlan('/tmp/perf-lab-owner-home/reservation', 'perf-0123456789abcdef');
 assert.equal(process.env.HOME, compositorEnvironment(plan).HOME);
 const { OwnedProcesses } = await import('../owned-processes.mjs');
 const { prepareCompositorOwnership } = await import('../supervised-compositor-linux.mjs');
