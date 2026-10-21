@@ -1,7 +1,7 @@
 ---
 id: 110
 title: Comparing two big, different files freezes the app
-stage: planning
+stage: merged
 priority: P3
 tags: perf, tool-cards, desktop, performance, bug
 report: docs/archive/investigations/2026-10-04-performance-gap-review.md
@@ -16,9 +16,9 @@ vision: chat.converse
 work: session/93-file-viewer-freezes
 ---
 Progress
-Done: Implemented and independently reviewed on session/93-file-viewer-freezes; not committed or installed. Isolated Electron 10,000-line comparison: typing wait 11,693 ms before versus 47 ms while worker computation continued; complete 20,000-row result retained. All desktop verification passed: 5,306 tests passed, 36 skipped; worker production asset executed successfully.
-Next: Owner review and separately authorized publication/release. Keep the original image-opening incident distinct; its cause remains unconfirmed.
-Blocked: No implementation blocker. Installed app is unchanged; Windows/macOS and phone runtime have not been exercised here.
+Done: Exact off-thread comparisons merged in itsdestin/youcoded#665 as 254ff9983aa3657a937dfd65011beb3c6e6508c9. Final desktop verification: 5546 related tests passed, 36 skipped; 136 focused passed; all nine gates passed. Remote CI passed four Linux shards/four packages and Android JVM/debug/releaseTest APK builds. Historical isolated 10000-line probe retained 20000 rows and reduced typing wait from 11693 ms to 47 ms; not a new final-binary benchmark.
+Next: Source integration complete. Release/installation is separate; original JPEG incident remains unresolved on #93.
+Blocked: No source-integration blocker. No phone/device runtime or production-effectiveness claim.
 
 Chats
 - 2026-10-18 session/93-file-viewer-freezes: Implemented exact background comparisons with bounded small fast path, cancellation, hidden-chat handling and regression tests.

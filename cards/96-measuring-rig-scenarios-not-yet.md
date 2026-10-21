@@ -15,9 +15,9 @@ vision: together.workflow.perf
 work: session/93-file-viewer-freezes
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: App-only viewer/comparison/indexing repairs merged in youcoded#665 (254ff9983aa3657a937dfd65011beb3c6e6508c9); this does not complete measurement-rig coverage or cross-platform runtime criteria. No evaluation code was included in that merge or its app closeout.
+Next: Continue separate performance-lab/evaluation work in preserved session/93-file-viewer-freezes. Retain coverage gaps and Windows/macOS/phone runtime checks; keep this card open.
+Blocked: No new evaluation blocker established by app closeout. Original workspace and nested app worktree contain uncommitted work and must be preserved.
 
 Chats
 - 2026-10-18 session/93-file-viewer-freezes: Investigate hardware/document/HTML/path-list/watcher stall impact and extend the performance lab with representative workloads, independent thread signals, bounded execution and fail-closed results.
