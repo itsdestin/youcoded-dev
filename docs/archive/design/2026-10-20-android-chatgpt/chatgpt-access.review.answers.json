@@ -1,0 +1,30 @@
+{
+ "deck": "android-chatgpt-access",
+ "started": "2026-10-20T23:03:21.815Z",
+ "submitted": "2026-10-20T23:04:22Z",
+ "cur": 2,
+ "answers": {
+  "CG-1": {
+   "note": "",
+   "t": 1792537452832,
+   "v": "yes",
+   "seconds": 51,
+   "theme": "light",
+   "zoom": 1
+  },
+  "CG-2": {
+   "v": "yes",
+   "t": 1792537456741,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "CG-3": {
+   "v": "yes",
+   "t": 1792537460980,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

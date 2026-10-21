@@ -12,7 +12,7 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.steer.specialists, agents.added.helpers
-work: session/specialist-permission-overflow
+work: session/specialist-permission-overflow, session/welcome-back-recovery
 ---
 Progress
 Done: Approved Specialists popup visual fix merged in youcoded#649 (9a53615497088a356e88ce1578b65bba6a820040): contained permission explanations and rounded nested permission cards using the outer card's theme radius; permission behavior unchanged. Local desktop verification and required Linux/Android CI passed.
@@ -22,6 +22,7 @@ Blocked: No blocker for the shipped visual fix; original transcript deletion sti
 See also #137: 71's unreadable amber 'Needs you' label on pale themes is one instance of 137's fixed-amber warning text that vanishes on pale themes.
 
 Chats
+- 2026-10-20 session/welcome-back-recovery: Recovery #163 fixed same-process report rollback/claim/write/readback failure paths. Remaining architecture boundary: no crash-proof cross-file exactly-once report acceptance when the process dies while storage remains unwritable; do not clear attempted markers merely because owners die or transcript evidence is absent. This is an explicit protocol-design limitation, not a newly reproduced ordinary-path regression; retained with existing report-delivery work rather than weakening retry safety.
 - 2026-10-19 session/specialist-permission-overflow: Small approved visual fix: permission panels in the Specialists popup stay inside their card and use a rounded inner border; no permission behavior changes.
 
 From the old roadmap (native-harness › specialists, status confirmed, seen on desktop, last checked 2026-09-05)

@@ -1,0 +1,24 @@
+{
+  "title": "Welcome back — background blur",
+  "key": "welcome-back-blur-review",
+  "out": "welcome-back-blur.review.html",
+  "images": "images/welcome-back-blur.review",
+  "runs": {
+    "before": "../../../../scratch/welcome-back-blur/before",
+    "after": "../../../../scratch/welcome-back-blur/after"
+  },
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "WBB-1",
+      "surface": "Welcome back",
+      "path": "App startup → Welcome back",
+      "crop": "welcome/back",
+      "headline": "The background blurs while Welcome back stays sharp.",
+      "highlight": { "box": [0, 0, 100, 11] },
+      "changed": "Uses the shared popup backdrop and its existing blur radius. The popup's layout, colours and controls are unchanged.",
+      "notice": "Background controls and artwork fall out of focus, leaving the conversation picker clear. References: the normal Resume popup, Preferences and the shared dialog shell.",
+      "risk": "Reduced Effects still turns blur off. Halftone Dimension already used this shared blur and is unchanged. The preview uses four practice conversations; your dev window keeps its sixteen copied histories."
+    }
+  ]
+}

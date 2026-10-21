@@ -10,11 +10,16 @@ why: Destin: "fully automate the maintenance burden ... automatically works with
 work: session/165-swipe-release-pipeline
 ---
 Progress
-Done: Owner reactivated narrow release/merge automation after v0.2.0 omitted Arch. Read actual YouCoded CI/release code and live merge protections; approved lean required-target/one-publish gate design. Isolated source branch ci/165-swipe-release-pipeline. Native KWin valid empty-subgroup regression fixed test-first: 3 failing cases before correction, full integration73PASS, fresh read-only actual host helper probe PASS, narrow review PASS. Host safely rolled back to0.1.0-3; no new live activation.
-Next: Implement required Arch/Fedora/Deck package manifest, version/source/hash validator and automatic read-only PR/main checks plus one trusted publication job. Run actual candidate CI; enable verified required completion check including admins. Complete corrected native user update and corrective release only with real evidence.
-Blocked: Pipeline worker12943089-e5a2-4237-97e5-cc3717eb9d2a active; no remote candidate CI yet. Broad scheduled maintenance, signing, AUR/COPR, ARM and Gaming are not added to this scope. Existing v0.2.0 source/public downloads preserved.
+Done: Native prediction source363fd2a frozen/pushed; required parallel platform CI39526485965 active. Actual stock-native tap/swipe→Space→three centered-best suggestions and each-slot insertion demonstrated; privacy stale-touch demo passed. Native docs corrected. Focused reviewer found no actionable bugs; ARM evidence investigation completed without speculative source changes.
+Next: ARM worker135 resumes one precise authorized-replacement forwarding probe while four-platform CI builds363fd2a; parent coordinates final artifacts/Flatpak stable+beta checks/owner update. No redundant full review rounds or intermediate CI reruns.
+Blocked: ARM correction/word deletion/i18n/privacy runtime acceptance remains REQUIRED. Final363fd2a four-platform packages not yet built/accepted; owner native package not updated; PR3 unmerged and no corrective release published.
 
 Chats
+- 2026-10-21 session/165-swipe-release-pipeline: chat started
+- 2026-10-21 session/165-swipe-release-pipeline: chat started
+- 2026-10-20 session/165-swipe-release-pipeline: chat started
+- 2026-10-20 session/165-swipe-release-pipeline: chat started
+- 2026-10-20 session/165-swipe-release-pipeline: chat started
 - 2026-10-20 session/165-swipe-release-pipeline: chat started
 - 2026-10-20 session/165-swipe-release-pipeline: chat started
 - 2026-10-20 session/165-swipe-release-pipeline: chat started

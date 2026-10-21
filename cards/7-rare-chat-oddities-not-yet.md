@@ -15,11 +15,14 @@ vision: chat.converse
 work: session/7-compaction-boundaries
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: Compaction-boundary repair shipped in app PR #661, merge 2cbea256388667b304b8704b8bf47fe09b5ae48c. Exact tested-tree match; local desktop gates passed; hosted Linux shards/all four packages and Android JVM/debug/releaseTest APKs passed (run39437693807). Approved reviews and scoped plan archived under docs/archive/*/2026-10-19-compaction-boundaries*.
+Next: Other existing chat-view glitch requests on this broad card remain open; compaction-boundary scope is complete.
+Blocked: No blocker for the shipped compaction scope. No release/installed-app/device-runtime or Windows/macOS validation claim.
 
 Chats
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
 - 2026-10-20 session/7-compaction-boundaries: chat started
 - 2026-10-20 session/7-compaction-boundaries: chat started
 - 2026-10-20 session/7-compaction-boundaries: chat started

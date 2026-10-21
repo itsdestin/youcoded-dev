@@ -9,14 +9,15 @@ roadmap: operations: Landing page: 4 faults.
 created: 2026-10-15
 summary: The landing page: tiny demo videos on phones, long text, two visitor-stats checks, and not leading with unique extras.
 area: Website
-work: session/79-hero-copy-preview
+work: session/79-hero-copy-preview, session/79-website-everything-app
 ---
 Progress
-Done: Approved landing hero headline and tagline shipped in youcoded PR #638; invisible baseline spacer no longer causes phone-width overflow. Desktop 1600px and phones 390/360px verified.
-Next: Existing unrelated landing-page, visitor-stats and copy follow-ups remain; this hero-copy task is complete.
+Done: Questions deck answered 2026-10-21: Pages as feature cards not a section; hint-chip tour over the hero demo; customization-first order with layout variants to choose; all clips re-filmed at 1.3 zoom in all four site themes; fake keyboard clip; integrations grid hidden; short route.
+Next: Choice deck of card layouts + chip tour + keyboard card mockups, then copy preview, then filming.
 Blocked: Nothing for the shipped hero-copy task.
 
 Chats
+- 2026-10-21 session/79-website-everything-app: chat started
 - 2026-10-19 session/79-hero-copy-preview: chat started
 
 From the old roadmap (operations, status confirmed, seen on n/a, last checked 2026-09-03)
