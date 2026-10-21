@@ -10,14 +10,17 @@ created: 2026-10-15
 summary: Unfinished work can vanish or be stranded on one computer, and the cleanup step has offered to delete folders holding unsaved edits.
 area: Workspace
 vision: together.added.closeout
-work: session/162-linux-update-feedback, session/93-file-viewer-freezes, session/welcome-back-recovery
+work: session/162-linux-update-feedback, session/93-file-viewer-freezes, session/welcome-back-recovery, session/22-checkpoint-backups
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Checkpoint-backup subtask complete on backed-up feature branches: standing own-work checkpoint authorization restored across workspace guidance and native coder prompt, with every-push outgoing-history secret checks. Gitleaks scans passed before both initial pushes and the follow-up; 433 workspace/hook tests, all desktop verify gates (3287 passed, 36 skipped), 576/576 anchors and 1125/1125 MAP paths passed. Independent review: no actionable findings.
+Next: Await explicit integration decision for session/22-checkpoint-backups in workspace/app; retain broader #22 lifecycle and cleanup work.
+Blocked: Not merged or released; current installed app/default instructions are unchanged. Android/Worker builds and paid model-behavior evaluation were not run.
 
 Chats
+- 2026-10-21 session/22-checkpoint-backups: chat started
+- 2026-10-21 session/22-checkpoint-backups: chat started
+- 2026-10-21 session/22-checkpoint-backups: chat started
 - 2026-10-18 session/welcome-back-recovery: Close-out recurrence verified again: both unchanged base tips were called landed while recovery implementation is uncommitted. No deletion/archive/card closure followed; /tmp/recovery-close-{app,workspace}.log preserve evidence. Existing #22 covers the required dirty-worktree guard; no duplicate item.
 - 2026-10-18 session/93-file-viewer-freezes: Read-only close-out recurrence: both unchanged base tips were called landed despite this session's uncommitted implementation, and deletion was suggested. Worktrees retained; no card closure, archive, or cleanup followed that false verdict. Tooling repair remains outside this performance task.
 - 2026-10-18 session/162-linux-update-feedback: Read-only wrap-up recurrence: close-out falsely says landed and recommends deletion for both workspace/app branches whose tips are unchanged base commits while approved #162 implementation is uncommitted. Both worktrees retained; logs /tmp/162-app-closeout.log and /tmp/162-workspace-closeout.log. No tooling fix or cleanup performed.
