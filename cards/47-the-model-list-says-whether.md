@@ -14,8 +14,8 @@ work: session/model-picker-tags, session/google-connections-planning, session/cu
 vision: yours.model.tags, yours.model.any
 ---
 Progress
-Done: Custom providers built on session/custom-providers-catalog (15 app commits): custom endpoints get models (models.dev by address, else their own /models); real Add-provider service list; Check for new models; every key type remembers its last check; model counts on cards; unknown context 250K cloud / 32K local; overflow recovery for custom endpoints; API key cards sit under OpenRouter with no heading. verify.sh --full green; checked in a dev copy against the real internet; branch review findings fixed.
-Next: Destin decides when to merge the app branch and the workspace docs commit. Not yet done here: speed/cost tags and the empty-on-new-devices part of this card.
+Done: Custom providers shipped in youcoded#668 (92a6d9f): model lists for custom endpoints, Add-provider service list, Check for new models, key-check memory for every key type, model counts, 250K/32K unknown-context default, overflow recovery; key cards under OpenRouter with no heading. Spec/plan archived under docs/archive/.
+Next: Remaining on this card: speed/cost tags in the picker, and the model list being empty on new devices.
 Blocked: nothing recorded.
 
 Chats
