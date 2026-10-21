@@ -1,0 +1,47 @@
+{
+ "deck": "custom-providers-review-2",
+ "started": "2026-10-21T04:57:43.494Z",
+ "submitted": "2026-10-21T05:02:16Z",
+ "cur": 4,
+ "answers": {
+  "R2-1": {
+   "v": "other",
+   "t": 1792558803908,
+   "note": "the \"inception (api.inceptionlabs.ai) should not be a separate line. the switcher itself should have the parenthetical next to each name. that top line shouldjust say \"Provider\". \"models 4\" should become \"4 Supported Models\"",
+   "seconds": 140,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1792558840925,
+   "note": "note this ui as something we will come back to as part of our model data (cost, intelligence, etc) work",
+   "seconds": 37,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "t": 1792558857442,
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-4": {
+   "note": "no, drop the \"new models can take up to a day to appear\" text",
+   "t": 1792558916847,
+   "v": "other",
+   "seconds": 59,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-5": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1792558935606,
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

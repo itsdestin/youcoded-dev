@@ -1,0 +1,150 @@
+{
+  "title": "Custom providers and the model list — questions before anything is drawn",
+  "key": "custom-providers-questions",
+  "out": "custom-providers.questions.html",
+  "stage": "ask",
+  "themes": ["light", "midnight"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Adding a provider",
+      "intro": "How someone connects a service that isn't OpenRouter, ChatGPT or Claude."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Cloud providers",
+      "path": "Assistant settings → Cloud providers → Add provider",
+      "headline": "How should someone connect a service like Inception, Groq or DeepSeek?",
+      "today": "Add provider offers Anthropic, OpenAI, Google, or \"Custom endpoint (OpenAI-compatible)\". The last one asks for a web address you have to find in the service's documentation.",
+      "problem": "Most people don't know what an OpenAI-compatible endpoint is or where to find its address, so the services they've heard of look unsupported.",
+      "proposal": "The app already downloads a public list of about 200 AI services with their addresses. Add provider could search it by name and fill in the address for you.",
+      "options": [
+        {
+          "id": "service-search",
+          "label": "Search by name",
+          "pros": ["Type \"Inception\", pick it, paste your key — done.", "Models, prices and context sizes appear straight away."],
+          "cons": ["One more thing on the form.", "A service missing from the list still needs the address typed."],
+          "measured": "206 services listed with an address",
+          "recommended": true
+        },
+        {
+          "id": "address-only",
+          "label": "Keep the address field",
+          "pros": ["Nothing new to learn for people who already use it."],
+          "cons": ["You still have to look up the address yourself.", "Models only appear if the app recognises the address."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Cloud providers",
+      "path": "Assistant settings → Cloud providers → Add provider",
+      "headline": "If the key or address doesn't work when you press Add, what should happen?",
+      "today": "Add provider saves without checking. You only find out it's wrong when a chat fails, or if you press Test on the provider afterwards.",
+      "problem": "A typo in a key or address shows up later as a confusing chat error, far from where it was made.",
+      "proposal": "Pressing Add checks the connection right away. The question is what happens when the check fails.",
+      "options": [
+        {
+          "id": "save-with-notice",
+          "label": "Save, show the problem",
+          "pros": ["Nothing you typed is lost.", "The problem and a way to fix it sit on the provider."],
+          "cons": ["A broken provider exists until you fix or remove it."],
+          "recommended": true
+        },
+        {
+          "id": "block",
+          "label": "Don't save until it works",
+          "pros": ["Every saved provider works."],
+          "cons": ["A service that is briefly down can't be added at all.", "You have to keep the form open while you fix things."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Cloud providers",
+      "path": "Assistant settings → Cloud providers and Local models",
+      "headline": "Where should a provider on this computer (like Ollama) appear after you add it?",
+      "today": "You add it on Cloud providers, but because its address is on this computer it silently moves to the Local models page.",
+      "problem": "It looks like it disappeared the moment you added it.",
+      "proposal": "Two ways to stop that surprise.",
+      "options": [
+        {
+          "id": "move-with-note",
+          "label": "Move it, say so",
+          "pros": ["Each page stays tidy.", "A line tells you where it went."],
+          "cons": ["Still on a different page than where you added it."],
+          "recommended": true
+        },
+        {
+          "id": "both-pages",
+          "label": "Show on both",
+          "pros": ["It's wherever you look for it."],
+          "cons": ["The same provider listed twice is confusing to edit or remove."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Models and context size",
+      "intro": "What the app does when it can't find out how much a model can read."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Cloud providers",
+      "path": "A provider's Settings, under Cloud providers",
+      "headline": "When the app can't find a model's context size, where should you set it?",
+      "today": "If the app can't learn how much text a model can read at once, it quietly assumes 32,000 tokens — even for models that handle a million.",
+      "problem": "Long chats get shortened far sooner than needed, and nothing tells you why.",
+      "proposal": "The provider says \"Context size unknown\" with a way to set it. It could be set once for the whole provider, or per model.",
+      "options": [
+        {
+          "id": "per-provider",
+          "label": "Once per provider",
+          "pros": ["One field, set once.", "Fits the common case: one server running one or two models."],
+          "cons": ["A server running very different models gets one number for all."],
+          "recommended": true
+        },
+        {
+          "id": "per-model",
+          "label": "Per model too",
+          "pros": ["Exact for every model."],
+          "cons": ["More to fill in.", "Rarely needed — most services report their own sizes."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Refreshing the model list",
+      "intro": "Pulling in new models without waiting a day."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Model picker",
+      "path": "The model menu in the chat, while searching",
+      "headline": "Besides the model picker's empty search, should Refresh model list appear anywhere else?",
+      "today": "The app re-downloads the model lists once a day. A model released this morning stays missing until then, and nothing can make it check sooner.",
+      "problem": "You search for a new model you know exists, get \"No models match\", and have no way forward.",
+      "proposal": "The empty search will offer Refresh model list. It could also live on the Cloud providers page.",
+      "options": [
+        {
+          "id": "picker-only",
+          "label": "Picker only",
+          "pros": ["It appears exactly when you notice something is missing.", "No new button on the settings page."],
+          "cons": ["Hard to find if you aren't searching."],
+          "recommended": true
+        },
+        {
+          "id": "picker-and-settings",
+          "label": "Picker and settings",
+          "pros": ["Findable from settings too."],
+          "cons": ["One more button on a page that's already busy."]
+        }
+      ]
+    }
+  ]
+}
