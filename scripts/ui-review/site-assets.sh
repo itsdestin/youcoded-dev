@@ -72,7 +72,10 @@ for theme in youcoded meadow-mist halftone-dimension golden-sunbreak; do
   done
 done
 
-# 3. gallery
+# 3. gallery — the 48 stills are no longer shown: the page's bottom strip became the ideas wall
+# (docs/gallery/idea-*.webp, captured by hand from the demo's Home and Finance pages and the
+# workbench's paint and trip-board pages, 2026-10-21). This step still refreshes the stills for
+# anything else that reads docs/gallery; regenerating the idea stills is card #175.
 for theme in midnight meadow-mist halftone-dimension creme light dark; do
   WORKTREE="$TDIR" node "$HERE/shot.mjs" "$HERE/plans/site-gallery.json" "$TMP" "$theme"
 done
