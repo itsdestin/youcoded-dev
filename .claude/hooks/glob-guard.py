@@ -439,6 +439,10 @@ PKG_MUTATE = re.compile(
     r"(?:install|i|add|ci|uninstall|remove|rm|update|up|upgrade)(?=\s|;|&|\||$)([^|&;\n]*)"
 )
 WORKTREE_PATH = re.compile(r"(?:^|[\s/\"'=])worktrees/")
+# WHY: card #19(h), hit 3 times (latest 2026-10-21) — a fresh install in a scratch folder is the
+# SAFE recipe, but the session's cwd stays under /worktrees/, so the guard refused it. A command
+# that starts by cd-ing to one absolute non-worktree path (and cds nowhere else) runs there.
+LEADING_CD = re.compile(r"^\s*cd\s+(/[^\s;&|]+)\s*&&")
 
 
 def worktree_install_offender(command: str, cwd: str = ""):
@@ -447,6 +451,9 @@ def worktree_install_offender(command: str, cwd: str = ""):
     for m in PKG_MUTATE.finditer(body):
         if "--dry-run" in m.group(1) or "--package-lock-only" in m.group(1):
             continue   # neither writes node_modules
+        lead = LEADING_CD.match(body)
+        if lead and len(re.findall(r"(?:^|[;&|(]\s*)cd\s", body)) == 1:
+            cwd = lead.group(1)
         return "/worktrees/" in (cwd or "") or bool(WORKTREE_PATH.search(body))
     return False
 
