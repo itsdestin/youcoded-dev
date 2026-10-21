@@ -21,6 +21,7 @@ Next: Keep this broader card open. Recheck the original app-only JPEG freeze wit
 Blocked: No blocker for merged app subtask. Original incident, broader blocking/memory issues and production effectiveness remain unresolved. Local full Android payload was blocked by apk-version tooling; remote APK CI subsequently passed, not device runtime.
 
 Chats
+- 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-app-fixes-merge: chat started
 - 2026-10-21 session/93-app-fixes-merge: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
