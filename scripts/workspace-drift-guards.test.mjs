@@ -16,6 +16,20 @@ const SYNC = join(REPO, 'scripts/workspace-sync.sh');
 const SYNC_NODE = join(REPO, 'scripts/workspace-sync.mjs');
 const HOOK = join(REPO, 'scripts/git-hooks/pre-commit');
 
+// WHY prose assertions: checkpoint permission spans Markdown instructions, not
+// executable ASTs. Guard each entry point so a routing cleanup cannot reverse it.
+for (const file of ['CLAUDE.md', 'docs/workspace-workflows.md', '.claude/skills/wrap-up/SKILL.md']) {
+  test(`${file} preserves automatic checkpoint backups and pre-push secret checks`, () => {
+    const text = readFileSync(join(REPO, file), 'utf8').replace(/\r/g, '');
+    assert.match(text, /checkpoint commits and backup pushes/);
+    assert.match(text, /without asking/);
+    assert.match(text, /before every push/i);
+    assert.match(text, /all outgoing commits/);
+    assert.match(text, /If the scan fails or cannot run, do not push/);
+    assert.doesNotMatch(text, /neither publishing a branch nor merging|do not silently push|merging and pushing require explicit authorization|before its first authorized push/);
+  });
+}
+
 const git = (cwd, ...args) =>
   execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
