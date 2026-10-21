@@ -20,6 +20,7 @@ Next: Continue separate performance-lab/evaluation work in preserved session/93-
 Blocked: No new evaluation blocker established by app closeout. Original workspace and nested app worktree contain uncommitted work and must be preserved.
 
 Chats
+- 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: Investigate hardware/document/HTML/path-list/watcher stall impact and extend the performance lab with representative workloads, independent thread signals, bounded execution and fail-closed results.
 
 From the old roadmap (perf, status needs-verify, seen on all, last checked 2026-09-10)
