@@ -12,8 +12,8 @@ area: Website
 work: session/79-hero-copy-preview, session/79-website-everything-app
 ---
 Progress
-Done: Questions deck answered 2026-10-21: Pages as feature cards not a section; hint-chip tour over the hero demo; customization-first order with layout variants to choose; all clips re-filmed at 1.3 zoom in all four site themes; fake keyboard clip; integrations grid hidden; short route.
-Next: Choice deck of card layouts + chip tour + keyboard card mockups, then copy preview, then filming.
+Done: Page rebuilt on youcoded branch session/79-website-everything-app (7bec9aa75): unified copy, ten cards customization-first, per-theme clips, drawn device card, sample labels, ideas wall, integrations hidden, story fold, demo tips (chat + Settings), Linux reorder. Three decks answered.
+Next: Finish the 40 clip recordings, shoot the built page, serve the review deck; then merge on Destin's word, archive design docs, remove old media files.
 Blocked: Nothing for the shipped hero-copy task.
 
 Chats
