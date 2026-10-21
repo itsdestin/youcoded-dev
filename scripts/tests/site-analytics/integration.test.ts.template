@@ -4,13 +4,18 @@ import { createTestAccount, issueTestSession } from './helpers';
 // @ts-expect-error the actual dependency-free website is JavaScript, shared here without a duplicate test client.
 import { createAnalytics } from '../../../youcoded/docs/site-analytics.mjs';
 
-it('actual website client records a registered campaign through Worker and private aggregate report', async () => {
+// WHY both forms: short links are what the dashboard hands out now; utm links already shared must keep counting.
+for (const [form, linkFor] of [
+  ['short code', (code: string) => `https://youcoded.ai/?${code}&private=not-collected`],
+  ['older utm', () => 'https://youcoded.ai/?utm_source=reddit&utm_campaign=integration&private=not-collected'],
+] as const) it(`actual website client records a registered campaign (${form} link) through Worker and private aggregate report`, async () => {
   const account = await createTestAccount({ githubId: '424242' });
   const headers = { Authorization: `Bearer ${await issueTestSession(account)}`, 'Content-Type': 'application/json' };
   const registered = await SELF.fetch('https://api.youcoded.ai/admin/analytics/website-campaigns', { method: 'POST', headers, body: JSON.stringify({ source: 'reddit', campaign: 'integration' }) });
   expect(registered.status).toBe(200);
+  const { code } = await registered.json() as { code: string };
   let sent = 0;
-  const client = createAnalytics({ crypto, href: 'https://youcoded.ai/?utm_source=reddit&utm_campaign=integration&private=not-collected', referrer: 'https://www.reddit.com/r/test?secret=discard',
+  const client = createAnalytics({ crypto, href: linkFor(code), referrer: 'https://www.reddit.com/r/test?secret=discard',
     fetch: (url: string, options: RequestInit & { credentials: string; referrerPolicy: string }) => {
       sent++;
       expect(options.credentials).toBe('omit');
