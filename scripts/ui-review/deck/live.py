@@ -80,7 +80,7 @@ APP_SCENARIOS = ('default', 'empty', 'no-providers', 'refused', 'stress', 'site'
                  # Welcome back (2026-09-24): a cold start after a crash — empty
                  # strip, four conversations to offer back. The screen exists in
                  # no other scenario.
-                 'welcome-back')
+                 'welcome-back', 'plans-spending-review')
 APP_VIEWS = ('tools', 'compare', 'assistant-final', 'attachments', 'session-pills')
 # A whole screen of the app at the registry's 360px would render its narrow phone layout, which
 # is not what "show me the real screen" means. Panes wrap, so a wide one costs nothing.
@@ -130,6 +130,16 @@ def pane_url(spec, live, pane, theme):
             q['scenario'] = d['app']
         if d.get('stalled'):
             q['stalled'] = '1'
+        # WHY: review fixtures select the exact conversation in the actual App,
+        # rather than nesting an iframe inside a compare candidate (which clipped
+        # the plan's action row below the deck stage).
+        if d.get('seed'):
+            q['seed'] = d['seed']
+        if d.get('focus'):
+            q['reviewFocus'] = d['focus']
     else:
         q.update({'view': 'live', 'surface': d['surface'], 'round': d['round'], 'candidate': d['candidate']})
-    return f'{live_base(spec)}/app/index.html?{urlencode(q)}'
+    # The optional baseline is a real earlier build served by this same deck;
+    # before is meaningful only for app panes, never authored candidates.
+    prefix = '/before-app' if is_app_pane(d) and d.get('before') else '/app'
+    return f'{live_base(spec)}{prefix}/index.html?{urlencode(q)}'

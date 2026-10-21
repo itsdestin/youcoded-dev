@@ -86,7 +86,11 @@ export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 
           await c.send('Page.navigate', { url: `${url}?step=${n}&theme=${theme}` });
           let ready = false;
           for (let i = 0; i < 40 && !ready; i++) {
-            ready = await c.evaluate('!!window.__deckReady').catch(() => false);
+            // WHY: Page.navigate may return while the PREVIOUS step's document is
+            // still alive. Its __deckReady was already true, so the old preview
+            // photographed a blank iframe on 16/17 pages instead of the new step.
+            ready = await c.evaluate(`window.__deckReady === true && new URLSearchParams(location.search).get('step') === ${JSON.stringify(String(n))} && new URLSearchParams(location.search).get('theme') === ${JSON.stringify(theme)}`)
+              .catch(() => false);
             if (!ready) await sleep(250);
           }
           if (!ready) {
@@ -94,6 +98,48 @@ export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 
             // producing a clean-looking contact sheet for a page that never actually finished
             // laying out. Report it instead of hiding it.
             errors.push(`${label}: the page never finished laying out (window.__deckReady was never set)`);
+          }
+          // WHY: deck layout only says the *frame* is positioned. A workbench
+          // conversation boots asynchronously inside it; a 400 ms settle caught
+          // the skeleton/spinner for almost every plan slide. Poll the actual
+          // plan card in EACH practice-app pane and refuse a blank shot.
+          const planPanes = await c.evaluate("DECK.steps[Number(new URLSearchParams(location.search).get('step')) - 1]?.panes?.filter(p => p.url.includes('seed=bubbles-plan-')).length || 0").catch(() => 0);
+          if (planPanes) {
+            let loaded = false;
+            for (let i = 0; i < 120 && !loaded; i++) {
+              loaded = await c.evaluate(`(() => {
+                const panes = [...document.querySelectorAll('#inner iframe')].filter(f => f.dataset.src?.includes('seed=bubbles-plan-'));
+                return panes.length === ${planPanes} && panes.every(f => {
+                  try { return f.contentDocument?.body?.innerText.includes('Plan: ') === true; } catch { return false; }
+                });
+              })()`).catch(() => false);
+              if (!loaded) await sleep(250);
+            }
+            if (!loaded) errors.push(`${label}: ${planPanes} live plan pane(s) never showed a plan card`);
+            const focusedPanes = await c.evaluate("[...document.querySelectorAll('#inner iframe')].filter(f => f.dataset.src?.includes('reviewFocus=')).length").catch(() => 0);
+            if (focusedPanes) {
+              let focused = false;
+              for (let i = 0; i < 120 && !focused; i++) {
+                focused = await c.evaluate(`(() => {
+                  const panes = [...document.querySelectorAll('#inner iframe')].filter(f => f.dataset.src?.includes('reviewFocus='));
+                  return panes.length === ${focusedPanes} && panes.every(f => {
+                    try {
+                      const doc = f.contentDocument, focus = new URL(f.dataset.src, location.href).searchParams.get('reviewFocus');
+                      return focus === 'plan-settings' ? !!doc.querySelector('[data-testid="plan-settings-popup"]')
+                        : focus === 'plan-continue' ? !!doc.querySelector('[data-testid="plan-new-limit"]') && doc.querySelector('[data-testid="plan-block"]')?.dataset.planStatus === 'paused'
+                        : focus === 'specialists-settings' ? (() => {
+                            const row = doc.querySelector('[data-testid="plans-auto-approve"]');
+                            const rect = row?.getBoundingClientRect();
+                            return !!rect && rect.bottom > 45 && rect.top < f.clientHeight;
+                          })()
+                        : false;
+                    } catch { return false; }
+                  });
+                })()`).catch(() => false);
+                if (!focused) await sleep(250);
+              }
+              if (!focused) errors.push(`${label}: ${focusedPanes} live plan pane(s) never opened their requested control`);
+            }
           }
           // Fix: a page holding a RECORDING used to be shot after a longer fixed wait, guessing
           // how long Chrome's native video controls take to stop showing their own loading
@@ -124,6 +170,23 @@ export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 
               errors.push(`${label}: the recording never stopped changing between two checks 250ms apart`);
             }
           }
+          // WHY: the old running/paused fixtures leave the plan ABOVE the chat's
+          // auto-scroll position. The plan card exists but a screenshot of the
+          // composer alone would lie about what this Before pane compares.
+          const beforeVisible = await c.evaluate(`(() => {
+            const frames = [...document.querySelectorAll('#inner iframe')].filter(f =>
+              f.dataset.src?.includes('/before-app/') && /seed=bubbles-plan-(running|paused)(?:&|$)/.test(f.dataset.src));
+            return frames.map(f => {
+              const doc = f.contentDocument;
+              const target = f.dataset.src.includes('plan-paused')
+                ? [...doc.querySelectorAll('button')].find(b => b.textContent.trim() === 'Add budget')
+                : doc.querySelector('[data-testid="plan-ceiling"]');
+              target?.scrollIntoView({ block: 'center' });
+              return !!target;
+            });
+          })()`).catch(() => []);
+          if (beforeVisible.some(found => !found)) errors.push(`${label}: the earlier plan's running/paused control was missing`);
+          if (beforeVisible.length) await c.evaluate('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
           // The page sets __deckReady once it has CHOSEN a layout; images, fonts and the
           // transition into it still need a beat, and a shot taken mid-transition is a
           // picture of a defect that isn't there. Any video on the page has already decoded

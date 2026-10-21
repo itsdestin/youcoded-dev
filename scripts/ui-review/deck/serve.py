@@ -148,6 +148,23 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
     # every time the pane page itself is asked for, so an edit to a candidate shows on the next
     # reload of a pane instead of needing `serve` restarted.
     app_dir = {'path': None}
+    before_dir = {'path': None}
+
+    def _ensure_before(rebuild):
+        # WHY: the deck can compare two actual renderer revisions without a second
+        # manually managed server. Assets stay under /before-app/ so relative Vite
+        # imports resolve against the same build as its index.html.
+        before = (spec.get('live') or {}).get('beforeWorktree')
+        if not before:
+            return None
+        if rebuild or not before_dir['path']:
+            try:
+                before_dir['path'] = build_app({**spec, 'live': {'worktree': before}},
+                                               log=lambda m: log(m.replace('served at /app/', 'served at /before-app/')))
+            except SpecError as e:
+                log(f'[deck] {e}')
+                return None
+        return before_dir['path']
 
     def _ensure_app(rebuild):
         if rebuild or not app_dir['path']:
@@ -160,6 +177,7 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
 
     if serve_app and has_live(spec) and not (spec.get('live') or {}).get('base'):
         _ensure_app(True)
+        _ensure_before(True)
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *a, **k):
@@ -190,11 +208,13 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
         def _serve_app(self, path):
             # Rebuild-check ONLY on the pane page itself (never on its assets, one per pane per
             # load) — a candidate's edit shows on the next reload without a `serve` restart.
-            dist = _ensure_app(path in ('/app', '/app/', '/app/index.html'))
+            before = path == '/before-app' or path.startswith('/before-app/')
+            prefix = '/before-app' if before else '/app'
+            dist = (_ensure_before if before else _ensure_app)(path in (prefix, prefix + '/', prefix + '/index.html'))
             if dist is None:
                 return self._json(503, {'error': 'the practice app for this deck\'s live panes failed to '
                                         'build — see the terminal that ran `serve`, then reload'})
-            rel = (path[len('/app'):] or '/').lstrip('/') or 'index.html'
+            rel = (path[len(prefix):] or '/').lstrip('/') or 'index.html'
             file = os.path.normpath(os.path.join(dist, rel))
             # Path-escape guard (a dotted-up path) and the SPA fallback (a workbench route like
             # ?view=live has nothing on disk but index.html) are the same case: serve the app's
@@ -214,7 +234,9 @@ def make_server(spec, port, on_submit, serve_app=True, log=print):
             if self._wrong_origin():
                 return self._json(403, {'error': 'wrong host or origin'})
             path = self.path.split('?')[0]
-            if serve_app and has_live(spec) and (path == '/app' or path.startswith('/app/')):
+            if serve_app and has_live(spec) and ((path == '/app' or path.startswith('/app/')) or
+                                                   ((spec.get('live') or {}).get('beforeWorktree') and
+                                                    (path == '/before-app' or path.startswith('/before-app/')))):
                 return self._serve_app(path)
             if path == '/answers':
                 if os.path.exists(apath):
@@ -500,8 +522,8 @@ def rewrite_stale_live(html, log=print):
     except ValueError:
         return html
     panes = [p for st in data.get('steps', []) for p in (st.get('panes') or [])]
-    if not panes or all('/app/' in (p.get('url') or '') for p in panes):
-        return html   # no live panes, or every one already addresses this deck's own /app/
+    if not panes or all(any(prefix in (p.get('url') or '') for prefix in ('/app/', '/before-app/')) for p in panes):
+        return html   # both real revisions are served by this deck, not stale external ports
     data['live'] = data.get('live') or {}
     data['live']['base'] = ''
     data['live'].pop('command', None)

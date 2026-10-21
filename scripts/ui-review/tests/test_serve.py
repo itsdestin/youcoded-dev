@@ -4,7 +4,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture, live_spec
 from deck.spec import load_spec
-from deck.serve import answers_path, build_app, make_server, preferred_ports, rewrite_stale_live, rotate_submitted, serve, summary, wait_for_submit, write_atomic
+from deck.serve import answers_path, make_server, preferred_ports, rewrite_stale_live, rotate_submitted, serve, summary, wait_for_submit, write_atomic
 
 def post(url, obj):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(), headers={'content-type': 'application/json'}, method='POST')
@@ -289,6 +289,10 @@ class StaleLiveRewriteTests(unittest.TestCase):
         html = 'PREFIX<script>const DECK=' + json.dumps({'steps': [{'id': 'S-1'}]}) + ';</script>SUFFIX'
         self.assertEqual(rewrite_stale_live(html, log=lambda m: (_ for _ in ()).throw(AssertionError('should not log'))), html)
 
+    def test_serve_preserves_a_baseline_pane_on_its_separate_route(self):
+        html = self._page('', '/before-app/index.html')
+        self.assertEqual(rewrite_stale_live(html, log=lambda m: None), html)
+
     def test_serve_rewrites_an_old_page_on_disk_once_at_start(self):
         tmp = tempfile.mkdtemp()
         spec = load_spec(make_fixture(tmp))
@@ -317,38 +321,44 @@ class AppServingTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
 
-    def _live_spec_for_this_worktree(self):
-        # This worktree IS a real checkout with desktop/ — resolve_worktree finds it by its own
-        # session name, so build_app runs the REAL scripts/shoot/build.mjs (cached: near-instant
-        # when nothing changed, which is the case here).
-        return load_spec(live_spec(self.tmp, live={'worktree': 'ui-review-infra'}))
-
-    def test_a_served_deck_answers_app_index_and_an_asset_with_the_right_type(self):
-        spec = self._live_spec_for_this_worktree()
-        dist = build_app(spec, log=lambda m: None)
-        asset = next(f for f in os.listdir(os.path.join(dist, 'assets')) if f.endswith('.js'))
+    def test_a_served_deck_answers_both_app_revisions_and_their_assets(self):
+        # WHY: HTTP routing, not Vite's ability to build a particular short-lived
+        # worktree, is the contract here. Distinct assets catch cross-revision mixups.
+        spec = load_spec(live_spec(self.tmp, live={
+            'worktree': 'current', 'beforeWorktree': 'previous',
+        }))
+        dist = os.path.join(self.tmp, 'current')
+        before = os.path.join(self.tmp, 'previous')
+        for root, name in ((dist, 'current'), (before, 'previous')):
+            os.makedirs(os.path.join(root, 'assets'))
+            with open(os.path.join(root, 'index.html'), 'w') as f:
+                f.write(f'<html>{name}</html>')
+            with open(os.path.join(root, 'assets', 'revision.js'), 'w') as f:
+                f.write(f'export default "{name}";')
         out = []
         result = {}
         def run(): result['code'] = serve(spec, port=0, timeout_min=1, log=out.append)
-        t = threading.Thread(target=run, daemon=True); t.start()
-        for _ in range(50):
-            if any(l.startswith('[deck] http') for l in out): break
-            time.sleep(0.1)
-        base = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1].rsplit('/', 1)[0]
-        try:
-            r = urllib.request.urlopen(base + '/app/index.html', timeout=10)
-            self.assertEqual(r.status, 200)
-            self.assertIn('text/html', r.headers.get('content-type'))
-            self.assertIn(b'<html', r.read()[:200].lower())
-            r2 = urllib.request.urlopen(base + '/app/assets/' + asset, timeout=10)
-            self.assertEqual(r2.status, 200)
-            self.assertEqual(r2.headers.get('content-type'), 'text/javascript')
-            # The SPA fallback: a workbench route with nothing on disk but index.html.
-            r3 = urllib.request.urlopen(base + '/app/?view=live&surface=s&round=1&candidate=c', timeout=10)
-            self.assertIn(b'<html', r3.read()[:200].lower())
-        finally:
-            post(base + '/submit', {'deck': 'live-fixture', 'answers': {}})
-            t.join(10)
+        with mock.patch('deck.serve.build_app', side_effect=lambda s, log: before if s['live']['worktree'] == 'previous' else dist):
+            t = threading.Thread(target=run, daemon=True); t.start()
+            for _ in range(50):
+                if any(l.startswith('[deck] http') for l in out): break
+                time.sleep(0.1)
+            base = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1].rsplit('/', 1)[0]
+            try:
+                for prefix, name in (('/app', b'current'), ('/before-app', b'previous')):
+                    r = urllib.request.urlopen(base + prefix + '/index.html', timeout=10)
+                    self.assertEqual(r.status, 200)
+                    self.assertIn('text/html', r.headers.get('content-type'))
+                    self.assertIn(name, r.read())
+                    r2 = urllib.request.urlopen(base + prefix + '/assets/revision.js', timeout=10)
+                    self.assertEqual(r2.headers.get('content-type'), 'text/javascript')
+                    self.assertIn(name, r2.read())
+                # The SPA fallback resolves inside its own revision.
+                r3 = urllib.request.urlopen(base + '/before-app/?view=live', timeout=10)
+                self.assertIn(b'previous', r3.read())
+            finally:
+                post(base + '/submit', {'deck': 'live-fixture', 'answers': {}})
+                t.join(10)
 
     def test_no_live_never_builds_or_serves_app(self):
         # `--no-live`: a spec whose panes point at a server of their own (an explicit live.base)

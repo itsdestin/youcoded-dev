@@ -46,7 +46,7 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
 | `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen |
-| `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
+| `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the current build; optional `beforeWorktree` serves an earlier real build at `/before-app/` for before panes |
 | `branch` | contract | the branch the contract will be built on |
 | `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |
 | `sources` | contract | `{deck key: spec file}` for every deck a row may point back at |
@@ -148,8 +148,13 @@ checkout with a desktop/ folder"). A pane shows one of two things:
 | A pane's `live` (or a variant's) | What it shows |
 |---|---|
 | `{"surface", "round", "candidate"}` | ONE authored design out of `compare/registry.tsx`. `round` is required, because candidate names repeat across rounds |
-| `{"app": "<scenario>"}` | a real screen of the app: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`. Add `"stalled": true` for the parked-turn state |
+| `{"app": "<scenario>"}` | a real screen of the app: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`, `plans-spending-review`. Add `"seed": "bubbles-plan-proposed"` to select a chat fixture or `"stalled": true` for a parked turn; `"before": true` selects `live.beforeWorktree` |
 | `{"view": "<name>"}` | one of the standalone surfaces: `tools`, `compare`, `assistant-final`, `attachments`, `session-pills` |
+
+For an app pane seeded with `bubbles-plan-*`, optional `"focus": "plan-settings"`,
+`"plan-continue"`, or `"specialists-settings"` opens the real control after that
+plan mounts. `preview` verifies the named control appeared before photographing the step;
+these are dev-only review actions, not a mockup or an app default.
 
 `variants[]` (each naming its own candidate or screen) makes it a pick-one; without them it is
 yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app

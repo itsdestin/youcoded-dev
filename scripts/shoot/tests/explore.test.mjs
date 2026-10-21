@@ -119,6 +119,16 @@ test('start, click, back, stop on the practice app', { skip: !canRun && 'needs C
 });
 
 // ─── Saved journeys ─────────────────────────────────────────────────────────
+test('saved permission and resume journeys both work in separate private tabs', { skip: !canRun && 'needs Chrome and the app\'s node_modules' }, () => {
+  // WHY: the old seven-tab pool sometimes lost the Resume menu click after a
+  // neighbouring permission journey ran. Pin their complete paths together,
+  // not only each path in isolation or a mock click that bypasses the browser.
+  const r = spawnSync(process.execPath, [resolve(HERE, '..', 'journeys.mjs'), 'permission-approve', 'resume-conversation'],
+    { encoding: 'utf8', timeout: 180_000 });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /journeys: 2\/2 passed/);
+});
+
 test('journeys: a passing path passes; a missing button fails naming the step and what is on screen', { skip: !canRun && 'needs Chrome and the app\'s node_modules' }, () => {
   const dir = mkdtempSync(join(tmpdir(), 'journeys-test-'));
   try {

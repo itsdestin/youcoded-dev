@@ -10,6 +10,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
+import { createServer } from 'node:http';
 // WHY the driver is not in this file any more: `review-cards.py preview` needs the same
 // headless-Chrome driver, and two copies would drift. deck/render.mjs owns it now.
 import { cdp, renderDeck } from '../deck/render.mjs';
@@ -222,6 +223,38 @@ test('a short surface name takes only its own width, and the subtitle beside it 
 });
 
 // ── LIVE panes ────────────────────────────────────────────────────────────────────────────
+test('preview waits for each newly navigated plan pane to show its real card', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-plan-ready-'));
+  const loaded = new Set();
+  const server = createServer((req, res) => {
+    const u = new URL(req.url, 'http://localhost');
+    res.setHeader('content-type', 'text/html');
+    if (u.pathname === '/loaded') { loaded.add(u.searchParams.get('step')); res.end('ok'); return; }
+    if (u.pathname === '/app/index.html') {
+      const step = u.searchParams.get('step');
+      // WHY: a real workbench mounts the App after the deck's own layout is ready.
+      // Announce to the test only AFTER the delayed plan card is in the frame.
+      res.end(`<body>Loading…<script>setTimeout(() => {
+        document.body.textContent = 'Plan: review step ${step}';
+        fetch('/loaded?step=${step}');
+      }, 450)</script></body>`);
+      return;
+    }
+    const step = u.searchParams.get('step');
+    res.end(`<body><div id="inner"><iframe data-src="/app/index.html?seed=bubbles-plan-proposed&step=${step}"
+      src="/app/index.html?seed=bubbles-plan-proposed&step=${step}"></iframe></div>
+      <script>const DECK = {steps: [1, 2].map(() => ({panes: [{url: '/app/index.html?seed=bubbles-plan-proposed'}]}))}; window.__deckReady = true;</script></body>`);
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const url = `http://127.0.0.1:${server.address().port}/deck`;
+    const result = await renderDeck({ url, out: tmp, sizes: ['800x600'], themes: ['midnight'], pages: 2, settle: 0 });
+    assert.deepEqual(result.errors, []);
+    assert.deepEqual([...loaded].sort(), ['1', '2'], 'both cards were on screen before their screenshots');
+    assert.equal(result.files.length, 2);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
 // A stub pane server stands in for the workbench: same two messages the real route sends
 // (a height on load, a theme swap in place), no Vite, no app, no ImageMagick. `--no-live`
 // keeps `serve` from trying to boot a real workbench for the fixture's imaginary worktree.

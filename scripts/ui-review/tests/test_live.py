@@ -80,6 +80,18 @@ class AddressTests(unittest.TestCase):
         for unwanted in ('view=live', 'candidate=', 'round='):
             self.assertNotIn(unwanted, u, unwanted)
 
+    def test_baseline_app_and_named_fixture_stay_on_their_own_build(self):
+        spec = {'live': {'beforeWorktree': 'specialists-plans-before-spending'}}
+        old = pane_url(spec, {}, {'app': 'statusbar-metered', 'before': True,
+                                  'seed': 'bubbles-plan-proposed'}, 'midnight')
+        new = pane_url(spec, {}, {'app': 'plans-spending-review',
+                                  'seed': 'bubbles-plan-proposed', 'focus': 'plan-settings'}, 'midnight')
+        self.assertTrue(old.startswith('/before-app/index.html?'), old)
+        self.assertTrue(new.startswith('/app/index.html?'), new)
+        self.assertIn('seed=bubbles-plan-proposed', old)
+        self.assertIn('scenario=plans-spending-review', new)
+        self.assertIn('reviewFocus=plan-settings', new)
+
     def test_a_named_view_is_a_screen_too(self):
         self.assertIn('view=tools', pane_url(self.spec, {}, {'view': 'tools'}, 'midnight'))
 

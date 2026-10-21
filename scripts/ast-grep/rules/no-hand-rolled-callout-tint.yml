@@ -100,6 +100,9 @@ ignores:
   - "**/SettingsPanel.tsx"
   - "**/SyncPanel.tsx"
   - "**/SpecialistsChip.tsx"
+  # WHY StatusStrip owns K5's actionable status tint; the app's counted
+  # NOT_CALLOUTS table already exempts it from passive Callout checks.
+  - "**/StatusStrip.tsx"
 utils:
   tint-and-border:
     all:

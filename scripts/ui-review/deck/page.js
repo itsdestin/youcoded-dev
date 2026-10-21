@@ -67,7 +67,68 @@
   const probeLive = () => fetch(DECK.live.base ? DECK.live.base + '/' : '/app/index.html',
     { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
   function drawLivePanes() {
-    $$('#inner iframe').forEach(f => { if (f.dataset.src) f.src = f.dataset.src; });
+    $$('#inner iframe').forEach(f => {
+      if (!f.dataset.src) return;
+      const address = new URL(f.dataset.src, location.href);
+      const focus = address.searchParams.get('reviewFocus');
+      const seed = address.searchParams.get('seed') || '';
+      // WHY: a live review step should OPEN on the control it asks someone to
+      // inspect, not show the same chat screenshot and require a scavenger hunt.
+      // Drive the real, same-origin workbench controls only after its plan has
+      // mounted. An observer follows React's actual commits, never a timer guess.
+      if (seed.startsWith('bubbles-plan-')) f.addEventListener('load', () => {
+        let doc;
+        try { doc = f.contentDocument; } catch { return; }
+        if (!doc?.body) return;
+        let phase = 0, scrolled = false;
+        const named = text => [...doc.querySelectorAll('button')].find(b => b.textContent.trim() === text);
+        const advance = () => {
+          if (!f.isConnected) { observer.disconnect(); return; }
+          if (!doc.querySelector('[data-testid="plan-block"]')) return;
+          if (!scrolled) {
+            const target = seed === 'bubbles-plan-paused' && address.pathname.startsWith('/before-app/')
+              ? named('Add budget') : doc.querySelector('[data-testid="plan-ceiling"]');
+            if (target && (address.pathname.startsWith('/before-app/') || focus)) {
+              target.scrollIntoView({ block: 'center' });
+              scrolled = true;
+            }
+          }
+          if (!focus) { observer.disconnect(); return; }
+          if (focus === 'plan-settings') {
+            if (doc.querySelector('[data-testid="plan-settings-popup"]')) { observer.disconnect(); return; }
+            if (phase === 0) {
+              const button = doc.querySelector('button[aria-label="Plan settings"]');
+              if (button) { phase = 1; button.click(); }
+            }
+          } else if (focus === 'plan-continue') {
+            if (doc.querySelector('[data-testid="plan-new-limit"]')) { observer.disconnect(); return; }
+            // A second click can hit the *new box's* Continue and actually
+            // resume the fixture before the reader sees the amount field.
+            if (phase === 0) {
+              const button = [...doc.querySelectorAll('[data-testid="plan-pause-actions"] button')]
+                .find(b => b.textContent.trim() === 'Continue');
+              if (button) { phase = 1; button.click(); }
+            }
+          } else if (focus === 'specialists-settings') {
+            const plansRow = doc.querySelector('[data-testid="plans-auto-approve"]');
+            if (plansRow) {
+              // The setting sits below the intelligence tiers; opening the
+              // page at its top still hid the very row this step is about.
+              plansRow.scrollIntoView({ block: 'center' });
+              observer.disconnect(); return;
+            }
+            const action = [() => doc.querySelector('button[aria-label="Settings"]'),
+              () => [...doc.querySelectorAll('button')].find(b => b.textContent.includes('Assistant settings')),
+              () => named('Specialists')][phase]?.();
+            if (action) { phase++; action.click(); }
+          } else observer.disconnect();
+        };
+        const observer = new MutationObserver(advance);
+        observer.observe(doc.body, { childList: true, subtree: true, characterData: true });
+        advance();
+      }, { once: true });
+      f.src = f.dataset.src;
+    });
   }
   function drawServerDown(st) {
     // Specific and accurate (docs/error-message-standards.md): we know exactly which address

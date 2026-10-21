@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// journeys — replay every saved journey (or the named ones) in the practice app, several at
-// once, and say which step broke. A journey is a short path through the app ending in a
+// journeys — replay every saved journey (or the named ones) in the practice app, one at
+// a time in separate private tabs, and say which step broke. A journey is a short path ending in a
 // check of the result ("Settings › Appearance › Midnight" → the theme chip says Midnight),
 // recorded with `explore` and saved beside the app's tests (desktop/tests/journeys/).
 //
@@ -15,7 +15,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve } from './engine.mjs';
+import { ensureBuild, openBrowser, resolveCheckout, serve } from './engine.mjs';
 import { makeDriver, openApp, stepText } from './driver.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
 
@@ -43,31 +43,39 @@ mkdirSync(out, { recursive: true });
 const t0 = Date.now();
 const server = await serve(await ensureBuild(checkout, (m) => console.error(`[journeys] ${m}`)));
 const base = `http://127.0.0.1:${server.port}/index.html`;
-const pool = await openPool({ ...poolSize(chosen.length), width: 1440, height: 900 });
-
-const results = await runQueue(pool, chosen, async (tab, name) => {
-  const journey = JSON.parse(readFileSync(join(dir, `${name}.json`), 'utf8'));
-  const start = journey.start ?? {};
-  const r = { name, ok: false, steps: journey.steps.length };
-  let i = -1;
-  try {
-    await openApp(tab, base, start);
-    const driver = makeDriver(tab, start);
-    for (i = 0; i < journey.steps.length; i++) await driver.perform(journey.steps[i]);
-    r.ok = true;
-  } catch (e) {
-    const s = journey.steps[i];
-    r.at = i < 0 ? 'opening the app' : `step ${i + 1} of ${journey.steps.length}: ${stepText(s)}`;
-    r.why = e.message;
-    r.layers = await tab.evaluate(inPage(listLayers)).then((l) => [...l.layers.map((x) => `${x.kind} "${x.name}"`), 'the app'].join(' › ')).catch(() => '?');
-    r.picture = join(out, `${name}.png`);
-    writeFileSync(r.picture, await tab.png().catch(() => Buffer.alloc(0)));
+// WHY: seven simultaneous tabs intermittently swallowed the Resume menu click
+// (the next step saw only the underlying app), while that same path passed alone.
+// Replay user journeys serially, each in its OWN private context; shared browser
+// CPU contention and settings left by a preceding path must not change a verdict.
+const browser = await openBrowser({ width: 1440, height: 900 });
+const results = [];
+try {
+  for (const name of chosen) {
+    const tab = await browser.newTab();
+    try {
+      const journey = JSON.parse(readFileSync(join(dir, `${name}.json`), 'utf8'));
+      const start = journey.start ?? {};
+      const r = { name, ok: false, steps: journey.steps.length };
+      let i = -1;
+      try {
+        await openApp(tab, base, start);
+        const driver = makeDriver(tab, start);
+        for (i = 0; i < journey.steps.length; i++) await driver.perform(journey.steps[i]);
+        r.ok = true;
+      } catch (e) {
+        const s = journey.steps[i];
+        r.at = i < 0 ? 'opening the app' : `step ${i + 1} of ${journey.steps.length}: ${stepText(s)}`;
+        r.why = e.message;
+        r.layers = await tab.evaluate(inPage(listLayers)).then((l) => [...l.layers.map((x) => `${x.kind} "${x.name}"`), 'the app'].join(' › ')).catch(() => '?');
+        r.picture = join(out, `${name}.png`);
+        writeFileSync(r.picture, await tab.png().catch(() => Buffer.alloc(0)));
+      }
+      r.errors = tab.takeErrors();
+      console.error(`${r.ok ? 'ok  ' : 'FAIL'} ${name}${r.ok ? '' : ` — ${r.at}`}`);
+      results.push(r);
+    } finally { await tab.close(); }
   }
-  r.errors = tab.takeErrors();
-  console.error(`${r.ok ? 'ok  ' : 'FAIL'} ${name}${r.ok ? '' : ` — ${r.at}`}`);
-  return r;
-});
-pool.close(); server.close();
+} finally { browser.close(); server.close(); }
 
 const bad = results.filter((r) => !r.ok);
 for (const r of bad) {
