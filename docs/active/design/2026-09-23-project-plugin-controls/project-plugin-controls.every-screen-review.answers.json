@@ -1,0 +1,138 @@
+{
+ "deck": "project-plugin-controls-every-screen-review",
+ "started": "2026-09-26T19:52:18.233Z",
+ "submitted": "2026-09-26T20:02:11Z",
+ "cur": 19,
+ "answers": {
+  "R-1": {
+   "v": "other",
+   "note": "i don't know if i like the current grouping, or the copy/text we've put on headers or in the cards.",
+   "seconds": 50,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-1": {
+   "note": "the sub-cards should be full width. i don't like that the left margin is bigger than the right.",
+   "v": "other",
+   "seconds": 27,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-2": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-3": {
+   "v": "other",
+   "note": "i like distingusihing these, but again i want to think a bit more about how we actually group these cards and display pertinent information",
+   "seconds": 85,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-4": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "K-1": {
+   "note": "i think we can clean this copy up a bit.",
+   "v": "other",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-5": {
+   "v": "other",
+   "note": "what does \"ask assistant to set it up\" actually do?",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-13": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-6": {
+   "v": "other",
+   "note": "again, what this actually do?",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "yes",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-8": {
+   "v": "yes",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-9": {
+   "note": "remove this. also remove the automatic/manual descriptions at the top. replace with hover tooltips, and an error message or something explaining the settings change issues if a user tries to use an unavailable skill in a conversation again",
+   "v": "other",
+   "seconds": 75,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-10": {
+   "v": "other",
+   "note": "unsure, explain this.",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-1": {
+   "v": "other",
+   "note": "i think i want to test this in the workbench or something. may want to add a new management tab/surface/thing inside the details page instead of replacing it.",
+   "seconds": 76,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-11": {
+   "v": "other",
+   "note": "unsure",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "N-12": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

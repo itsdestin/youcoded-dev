@@ -1,0 +1,10 @@
+{
+  "_why": "Read-only workbench captures of origin/master: existing drawer, marketplace listing, and Inbox plugin details before this feature; the new setup states do not exist there.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "ready": "/civic report|no plugins/i.test(document.body.textContent)",
+  "shots": [
+    {"name":"drawer-master","actions":[{"click":"[title='Browse skills']","settle":950}],"expect":"[title='Open marketplace']"},
+    {"name":"marketplace-grid-master","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800}],"expect":"[data-marketplace-card='youcoded-inbox']"},
+    {"name":"marketplace-detail-master","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":850}],"expect":"js:!![...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Install')"}
+  ]
+}

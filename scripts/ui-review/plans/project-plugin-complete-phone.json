@@ -1,0 +1,11 @@
+{
+  "_why": "390px review-only captures of missing project, setup and marketplace-grid states in the existing workbench.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width": 390,
+  "height": 744,
+  "shots": [
+    {"name":"project-expanded-phone","actions":[{"click":"[aria-label='Open menu']","settle":500},{"click":"js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))","settle":1000},{"click":"[aria-label='Skills & tools']","settle":600},{"click":"[aria-label='Expand Research Kit items']","settle":300},{"eval":"document.querySelector('[aria-label=\"Installed plugins\"]').scrollIntoView({block:'start'})","settle":350}],"expect":"js:!!document.querySelector('[aria-label=\"Collapse Research Kit items\"]') && document.body.textContent.includes('Research sources')"},
+    {"name":"setup-personal-phone","actions":[{"click":"[aria-label='Open menu']","settle":500},{"click":"js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))","settle":1000},{"click":"[aria-label='Skills & tools']","settle":600},{"click":"js:document.querySelector('[id=\"project-tools-needing-setup-item-self:writing-helper\"] button')","settle":350}],"expect":"js:[...document.querySelectorAll('[role=dialog]')].some(d=>d.textContent.includes('Set up Writing helper') && d.textContent.includes('Choose skill file'))"},
+    {"name":"marketplace-grid-install-phone","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"eval":"document.querySelector('[data-marketplace-card=\"youcoded-inbox\"][data-marketplace-card-compact=\"true\"]').scrollIntoView({block:'center'})","settle":250},{"click":"[data-marketplace-card='youcoded-inbox'][data-marketplace-card-compact='true'] [aria-label='Install']","settle":1700}],"expect":"js:document.body.textContent.includes('Choose where the assistant can use it automatically') && document.body.textContent.includes('Set up Inbox')"}
+  ]
+}

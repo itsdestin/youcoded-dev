@@ -1,0 +1,20 @@
+[ui-review] workbench :5563 serves /home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/youcoded/desktop (pid 3807589)
+[ui-review] 10 capture jobs, 8 at a time, CDP ports 42791-42800
+[ui-review] done → docs/active/design/2026-09-23-project-plugin-controls/runs/current-existing/gallery.html
+# UI review coverage
+
+14 covered · 0 partial · 0 missed (of 14 planned surfaces; themes: midnight)
+[ui-review] 0 surfaces MISSED — read docs/active/design/2026-09-23-project-plugin-controls/runs/current-existing/coverage.md before writing any finding
+[ui-review] DOM-size sweep (scenario=stress)
+| surface | nodes | budget | result |
+|---|---:|---:|---|
+| Resume browser | 2575 | 8000 | PASS |
+| Projects → Conversations | 1632 | 8000 | PASS |
+| Projects → Files, search "e" | 1409 | 8000 | PASS |
+| Projects → Files, a huge folder | 1392 | 8000 | PASS |
+| Marketplace | 3429 | 8000 | PASS |
+| Model picker, search "a" | 1520 | 8000 | PASS |
+| Conversation preview (from Resume) | 2785 | 8000 | PASS |
+| Side drawer (Session Files) | 1086 | 8000 | PASS |
+
+all PASS

@@ -1,0 +1,13 @@
+{
+  "_why": "The same origin/master workbench baseline at 390px, not a feature-branch approximation.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width":390,"height":744,
+  "ready":"/civic report|no plugins/i.test(document.body.textContent)",
+  "shots":[
+    {"name":"drawer-master-phone","actions":[{"click":"[title='Browse skills']","settle":900}],"expect":"[title='Open marketplace']"},
+    {"name":"drawer-master-phone-scroll","actions":[{"click":"[title='Browse skills']","settle":900},{"eval":"document.querySelector('.scroll-fade').scrollTop=130","settle":250}],"expect":"js:document.querySelector('.scroll-fade').scrollTop>0"},
+    {"name":"marketplace-grid-master-phone","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800}],"expect":"[data-marketplace-card='youcoded-inbox']"},
+    {"name":"marketplace-grid-inbox-phone","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"eval":"document.querySelector('[data-marketplace-card=\"youcoded-inbox\"][data-marketplace-card-compact=\"true\"]').scrollIntoView({block:'center'})","settle":300}],"expect":"js:(()=>{const r=document.querySelector('[data-marketplace-card=\"youcoded-inbox\"][data-marketplace-card-compact=\"true\"]').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight})()"},
+    {"name":"marketplace-detail-master-phone","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"eval":"document.querySelector('[data-marketplace-card=\"youcoded-inbox\"]').click()","settle":850}],"expect":"js:!![...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Install')"}
+  ]
+}
