@@ -349,7 +349,11 @@ a journey or `explore start --params` passes them, a scene puts them in its `bas
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
-turn → red stalled card), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),
+turn → red stalled card), `?providerError=<case>` (replays ONE native failure card from
+`fixtures/conversations/native.jsonl`: OpenRouter `key-rejected|key-expired|credit-short|request-refused`,
+or the sorted error card's `anthropic-overloaded|anthropic-spend-limit|anthropic-key-rejected|anthropic-too-long|anthropic-unknown`,
+or `step-limit` → the Keep going row), `?anthropicError=1` (session wb-2 reads as Claude Opus on
+an Anthropic key, so the sorted card names the provider — pair it with the `anthropic-*` cases), `?firstRun=<STEP>` (onboarding wizard; added 2026-08-25),
 `?marketplace=empty` (registry-less Marketplace/Library; the default is a sampled registry
 fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?install=fail|slow` (every plugin/theme install fails with a reason, or takes two minutes),
