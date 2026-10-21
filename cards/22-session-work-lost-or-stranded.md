@@ -13,9 +13,9 @@ vision: together.added.closeout
 work: session/162-linux-update-feedback, session/93-file-viewer-freezes, session/welcome-back-recovery, session/22-checkpoint-backups
 ---
 Progress
-Done: Checkpoint-backup subtask complete on backed-up feature branches: standing own-work checkpoint authorization restored across workspace guidance and native coder prompt, with every-push outgoing-history secret checks. Gitleaks scans passed before both initial pushes and the follow-up; 433 workspace/hook tests, all desktop verify gates (3287 passed, 36 skipped), 576/576 anchors and 1125/1125 MAP paths passed. Independent review: no actionable findings.
-Next: Await explicit integration decision for session/22-checkpoint-backups in workspace/app; retain broader #22 lifecycle and cleanup work.
-Blocked: Not merged or released; current installed app/default instructions are unchanged. Android/Worker builds and paid model-behavior evaluation were not run.
+Done: Checkpoint-backup subtask merged: workspace PR #290 (48232bb1) restores regular own-work checkpoint backups with every-push secrets checks; app PR #666 (4a5951e3e) contains the exact approved concise native boundary. All local desktop/workspace checks and required GitHub Linux tests/packages plus Android JVM/debug/releaseTest builds passed. Remote ancestry verified; app merged tree exactly matches tested candidate.
+Next: Remaining #22 lifecycle, cleanup and stranded-work issues are still open; checkpoint-backup instruction repair is complete.
+Blocked: No blocker for this subtask. No app release or installed-app update was requested or performed.
 
 Chats
 - 2026-10-21 session/22-checkpoint-backups: chat started
