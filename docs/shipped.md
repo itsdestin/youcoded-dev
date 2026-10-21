@@ -878,3 +878,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-20 #171 Add language and regional profiles to Swipe Keyboard (https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.2.0)
 - [x] 2026-10-20 #163 Restore Welcome back sessions quickly and safely (itsdestin/youcoded#662 (a6c47f79ae4120aea48e0e5c514a420ce81d5de7))
 - [x] 2026-10-21 #110 Comparing two big, different files freezes the app (https://github.com/itsdestin/youcoded/pull/665)
+- [x] 2026-10-21 #79 Website: landing page fixes, visitor stats and how it leads (youcoded#671 74c11f117, youcoded-dev#294 f3078e46)
