@@ -19,6 +19,7 @@ Next: Destin decides when to merge the app branch and the workspace docs commit.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-21 session/custom-providers-catalog: Custom providers backend + UI (model lists for custom endpoints, catalog refresh, key-check memory, counts, 250K default)
 - 2026-10-20 session/custom-providers-catalog: Custom providers know their models (models.dev by base URL + endpoint /models + context field), Add provider UX fixes, and a Refresh model list button on the picker's no-results state. Spec: docs/active/specs/2026-10-20-custom-providers-and-catalog-refresh.md
 - 2026-10-18 session/google-connections-planning: Recovered deferred model-picker idea: show model/provider data-retention and training information, potentially used to warn or block Google-connected chats on unsuitable providers. User deferred this on September 27; enforcement design is not approved. Deferring this UI does not waive Google data-policy checks for #155/#157. Source: 3a59c2cc:docs/roadmap/user-interface.md and docs/active/design/2026-09-26-everyday-actions/proposal.md section 8. Preserve as later work; no model-policy claims have been freshly verified here.
 
