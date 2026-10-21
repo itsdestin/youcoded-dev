@@ -1,0 +1,77 @@
+{
+ "deck": "custom-providers-review-1",
+ "started": "2026-10-20T22:21:57.685Z",
+ "submitted": "2026-10-20T22:28:33Z",
+ "cur": 8,
+ "answers": {
+  "R-1": {
+   "note": "is the cancel button always present? that would be odd. what are the various states of this page?",
+   "t": 1792534965495,
+   "v": "other",
+   "seconds": 48,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "this popup menu/backround/rounding seems a bit odd. i don't think its consistent with other menus",
+   "t": 1792534994671,
+   "v": "other",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "note": "name should default to servie + API Key. i still think this whole menu could be made more consistent with the other first-level cards on the page. why is it not styled like the openrouter/provider cards? seems like our UI design guide is insufficent/weak, we shouldn't me missing basics like this.the wepsite (api.inceptionlabs.ai) should just be should in parenthesis next to the service name, not below it. the list of models should be its own section/dropdown with cards that appears after service is selected",
+   "t": 1792535172574,
+   "v": "other",
+   "seconds": 178,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "yes",
+   "t": 1792535200184,
+   "note": "",
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-5": {
+   "note": "this card doesn't match first-level card styling.",
+   "t": 1792535215221,
+   "v": "other",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "t": 1792535221963,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-7": {
+   "note": "i think no models match should be bigger/longer, and the button should be smaller and centered below it. \"manage models\" should change to \"manage models and providers\"",
+   "t": 1792535289444,
+   "v": "other",
+   "seconds": 67,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-8": {
+   "v": "yes",
+   "t": 1792535303402,
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-9": {
+   "v": "yes",
+   "t": 1792535312575,
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

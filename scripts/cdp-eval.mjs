@@ -40,10 +40,24 @@
 // History: written during the Tier 2 android-xterm-webview dogfood pass to
 // inspect xterm scrollback live and capture the byte stream into xterm. See
 // the Tier 2 spec/plan under `docs/archive/`.
-const wsUrl = process.argv[2];
-const expr = process.argv[3];
+// `--dev [port]` instead of a URL: find the dev instance's MAIN window on its DevTools port (default 9272 = 9222 +
+// run-dev's offset 50) and evaluate there. WHY (2026-10-21): /json/list also lists DevTools pages and the buddy
+// window, and taking the first "page" evaluated in DevTools itself (`window.claude` undefined). The main window is
+// the page whose URL has no query string. Only ever a DEV port — never point this at the user's own app.
+let wsUrl = process.argv[2];
+let expr = process.argv[3];
+if (wsUrl === '--dev') {
+  const port = /^\d+$/.test(process.argv[3] ?? '') ? process.argv[3] : '9272';
+  expr = /^\d+$/.test(process.argv[3] ?? '') ? process.argv[4] : process.argv[3];
+  let pages;
+  try { pages = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(); }
+  catch { console.error(`no dev instance answering on port ${port} — start one with scripts/run-dev.sh`); process.exit(1); }
+  const main = pages.find((p) => p.type === 'page' && /^https?:\/\/(localhost|127\.0\.0\.1):\d+\/?$/.test(p.url));
+  if (!main) { console.error(`no main app window on port ${port}: ${pages.map((p) => p.url).join(', ')}`); process.exit(1); }
+  wsUrl = main.webSocketDebuggerUrl;
+}
 if (!wsUrl || !expr) {
-  console.error('usage: node scripts/cdp-eval.mjs <wsurl> <expr>');
+  console.error('usage: node scripts/cdp-eval.mjs <wsurl> <expr>\n       node scripts/cdp-eval.mjs --dev [port] <expr>');
   process.exit(1);
 }
 
@@ -69,4 +83,4 @@ ws.onmessage = (event) => {
     ws.close();
   }
 };
-ws.onerror = (e) => { console.error('ws error:', e.message ?? 'connection failed'); process.exit(2); };
+ws.onerror = (e) => { console.error('ws error:', e.message ?? 'connection failed', `(${wsUrl})`); process.exit(2); };

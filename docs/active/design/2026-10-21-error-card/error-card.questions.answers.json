@@ -1,0 +1,52 @@
+{
+ "deck": "error-card-questions",
+ "started": "2026-10-21T16:45:10.652Z",
+ "submitted": "2026-10-21T16:47:15Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "temporary-and-unknown",
+   "t": 1792601234705,
+   "seconds": 21,
+   "theme": "youcoded"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "fix-where-it-lives",
+   "t": 1792601234705,
+   "note": "i think we already offer this for some issues? like runnning out of credits includes an outlink to the chatgpt subscription page i think, for example. stuff like that is good.",
+   "seconds": 21,
+   "theme": "youcoded"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "summarise-only",
+   "t": 1792601234705,
+   "seconds": 21,
+   "theme": "youcoded"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "plain-plus-details",
+   "t": 1792601234705,
+   "note": "",
+   "seconds": 21,
+   "theme": "youcoded"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "name-the-reason",
+   "t": 1792601234705,
+   "seconds": 21,
+   "theme": "youcoded"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "keep-going",
+   "t": 1792601234705,
+   "seconds": 21,
+   "theme": "youcoded"
+  }
+ }
+}
