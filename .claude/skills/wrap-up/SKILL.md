@@ -102,7 +102,7 @@ poisons the ones that matter. A short session can end here.
 
 ## Step 5 — land them, on the session's branch
 
-When edits are authorized, retrospective changes stay on the same session branches as the work; neither this step nor wrap-up itself authorizes a push or merge:
+When edits are authorized, retrospective changes stay on the same session branches as the work and follow the standing checkpoint-backup authorization below. Wrap-up does not authorize a merge or expand a read-only task:
 
 - Sub-repo edits (a pinning test, an ast-grep rule, a WHY comment) → the session's feature
   branch in that repo.
@@ -128,9 +128,9 @@ Then:
 - **Dropped:** say so in your reply, with the reason. An unrecorded rejection gets re-argued.
 - **When editing is authorized:** append this session's entry to `docs/wrap-ups.md` — its header explains the format. In a read-only session, give the retrospective in chat and ask before recording it. The ledger is Step 1 for the next editing session.
 
-## Step 6 — identify local-only work and report the boundary
+## Step 6 — verify checkpoint backups and report the boundary
 
-**Inspect this session's branches; publish only within the authorization for this task.** A push backs up commits but also publishes them to the remote, and a later branch deletion does not erase copies others fetched. If Destin asked to push, verify the branch and scan public-repo commits for secrets first. Otherwise report the commits that exist only on this machine; do not silently push them. A read-only session must not become an editing or shipping session because it is ending.
+**Standing authorization: make regular checkpoint commits and backup pushes of this session's own approved work to its feature branches, without asking.** This happens at meaningful checkpoints and before pauses/handoffs, not just at wrap-up; do not wait for final verification or merge approval. Honor an explicit request to keep work local. Wrap-up checks that the latest checkpoint reached the remote and reports any local-only work or unverified checks. A read-only session must not become an editing session because it is ending. Other sessions' work remains report-only, not permission to commit or publish it.
 
 Then sweep for anything else local-only — other sessions leave branches behind, and one
 sweep found seven across four repos:
@@ -169,7 +169,7 @@ done
 
 **Leave this session's worktrees clean** — committed and pushed, or deliberately discarded with Destin's OK. Session start sweeps merged, clean worktrees idle 3+ days automatically (`docs/workspace-workflows.md` → Git, worktrees, and shipping); a dirty one is never swept and sits on disk until someone decides, which is how ~100 GB piled up by 2026-10-08. For a fuller inventory across every OLD worktree, `node scripts/prune-worktrees.mjs` reports which are safe to delete — dry run only; never run its `--apply` without Destin naming the exact ones.
 
-**Secrets-scan any branch before its first authorized push to a PUBLIC repo.** For other sessions' branches, report local-only work rather than publishing it under this session's authority. `youcoded` and `youcoded-dev` are public; `youcoded-admin` is not.
+**Before every push, secrets-scan all outgoing commits, including intermediate versions, in public and private repos.** A later deletion does not remove a secret from history. If the scan fails or cannot run, do not push; report the blocker without secret values. Check the destination and verify the remote reaches the checkpoint afterward; an offline or rejected push remains local-only. See `docs/workspace-workflows.md` → Git, worktrees, and shipping. Checkpoint permission does not authorize merges, releases, amend/reset, force-pushes, destructive operations, publishing other sessions' work or writing to the default branch.
 
 Then run the close-out check per branch — read-only, always exits 0, and it detects whether
 the branch landed and checks accordingly:
@@ -186,6 +186,6 @@ report); give the subsystem a `docs/MAP.md` row
 and repoint cross-links — but a doc describing work still in review stays in `docs/active/`,
 or it goes invisible to the reviewing session.
 
-**End with the state of each branch and what was actually proven** — did `scripts/verify.sh` pass, has any of it run for real, what is unverified or only saved locally. Do not propose a merge, open a PR, or merge as a routine wrap-up step. If Destin expressly asks whether to merge, present the evidence and wait for his instruction; merging and pushing require explicit authorization (`CLAUDE.md` → Git, worktrees, and shipping).
+**End with the state of each branch and what was actually proven** — did `scripts/verify.sh` pass, has any of it run for real, what is unverified or only saved locally. Do not propose a merge, open a PR, or merge as a routine wrap-up step. If Destin expressly asks whether to merge, present the evidence and wait for his instruction; merging still requires explicit authorization; checkpoint backups follow the standing authorization (`CLAUDE.md` → Git, worktrees, and shipping).
 
 **You run the commands, not Destin.** Never end a turn handing him something to type.

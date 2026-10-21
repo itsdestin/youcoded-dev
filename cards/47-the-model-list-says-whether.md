@@ -15,7 +15,7 @@ vision: yours.model.tags, yours.model.any
 ---
 Progress
 Done: nothing recorded.
-Next: not decided.
+Next: Model data work (cost/intelligence tags) should revisit the Add provider 'N supported models' cards (context, price in/out per 1M, No tools chips) built on session/custom-providers-catalog — Destin, custom-providers-review-2#R2-2: 'note this ui as something we will come back to as part of our model data (cost, intelligence, etc) work'.
 Blocked: nothing recorded.
 
 Chats

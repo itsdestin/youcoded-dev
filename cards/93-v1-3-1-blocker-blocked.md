@@ -13,14 +13,39 @@ area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse
-work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability
+work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge
 ---
 Progress
-Done: Session-start hardening merged in itsdestin/youcoded#629 (bc9e43752), with desktop and Android CI passing. Includes off-thread skill/context discovery, bounded worker retirement, reliable timer-only stall detection, severe-detail reservation, and content-free setup/keychain timings. Reviewed locally: 3475 tests passed, 37 skipped; 36 Android shell tests and 17 report tests passed. Implementation record: docs/archive/plans/2026-10-17-session-freezes.md. Current additional work (session/93-file-viewer-freezes): implemented and independently reviewed file-viewer first-frame/draft/stale-read fixes, exact off-thread comparisons (also #110), and complete off-thread search indexing including tags. Required desktop verification passed: 5306 tests passed, 36 skipped, with types/lint/knip/invariants/screens/journeys green. Synthetic Electron ASAR indexing heartbeat gap fell from 435.1 ms to 29.8 ms; both Node and browser worker packaging probes passed. 36 Android JVM tests passed; full APK packaging remains unverified. Implementation is local, uncommitted and not installed.
-Next: Workspace report/close-out PR itsdestin/youcoded-dev#267 is awaiting CI. Original 27-second production incident remains unconfirmed; use improved diagnostics after the next app release. Broader card items stay open. Current additional work awaits owner review and separately authorized publication/release. Recheck the original app-only image-opening freeze with current diagnostics; no causal attribution was established.
-Blocked: No implementation blocker. Source merged, not a new app release; production effectiveness remains unverified. Current additional work has no implementation blocker; original incident remains unconfirmed and the installed app is unchanged. Android runtime packaging needs apk-version tooling.
+Done: Session-start hardening previously merged in youcoded#629 (bc9e43752); crash hardening in #654 (0a020c3f7). Viewer first-frame/draft/rename/stale-read fixes, including final watcher/action-delivery review corrections, exact background comparisons (#110), and complete off-thread search indexing including tags now merged in itsdestin/youcoded#665 as 254ff9983aa3657a937dfd65011beb3c6e6508c9. Final local verification: 5546 related tests passed, 36 skipped; 136 focused passed; all nine gates green. Remote CI passed four Linux test shards/four package formats plus Android JVM and debug/releaseTest APK jobs. App-only lifecycle records prepared on session/93-app-fixes-merge.
+Next: Keep this broader card open. Recheck the original app-only JPEG freeze with current diagnostics when evidence is available; no causal attribution established. Continue separate evaluation/coverage work on #96 in preserved session/93-file-viewer-freezes. Release/installation remains separate from source integration.
+Blocked: No blocker for merged app subtask. Original incident, broader blocking/memory issues and production effectiveness remain unresolved. Local full Android payload was blocked by apk-version tooling; remote APK CI subsequently passed, not device runtime.
 
 Chats
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-app-fixes-merge: chat started
+- 2026-10-21 session/93-app-fixes-merge: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-20 session/93-file-viewer-freezes: chat started
+- 2026-10-20 session/93-file-viewer-freezes: chat started
+- 2026-10-20 session/93-file-viewer-freezes: chat started
+- 2026-10-20 session/93-file-viewer-freezes: chat started
+- 2026-10-20 session/93-file-viewer-freezes: chat started
+- 2026-10-20 session/93-file-viewer-freezes: chat started
 - 2026-10-20 session/93-file-viewer-freezes: chat started
 - 2026-10-20 session/93-file-viewer-freezes: chat started
 - 2026-10-20 session/93-file-viewer-freezes: chat started
