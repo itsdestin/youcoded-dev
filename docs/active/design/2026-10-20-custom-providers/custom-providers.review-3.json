@@ -1,0 +1,56 @@
+{
+  "title": "Custom providers — round 3, last notes applied",
+  "key": "custom-providers-review-3",
+  "out": "custom-providers.review-3.html",
+  "stage": "design",
+  "images": "images/custom-providers.review-3",
+  "runs": {
+    "before": "runs-r3/before",
+    "after": "runs-r3/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers → Add provider",
+      "crop": [
+        {
+          "crop": "settings/assistant/cloud/add-provider#search@panel",
+          "label": "Searching"
+        },
+        {
+          "crop": "settings/assistant/cloud/add-provider#models@panel",
+          "label": "Picked, models open"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Each provider in the list shows its address in brackets, the box is labelled \"Provider\", and models read \"4 supported models\".",
+      "changed": "The separate grey line under the title is gone. The menu rows read \"Inception (api.inceptionlabs.ai)\", and the picked one stays in the box that way.",
+      "notice": "You see where each provider connects while choosing, and the count says what it counts."
+    },
+    {
+      "id": "R3-2",
+      "surface": "Model picker",
+      "path": "Chat → model menu → search for a model that isn't listed",
+      "crop": "chat/model-picker#no-match@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "The empty search now says only \"No models match\" with your search, then the small button.",
+      "changed": "\"New models can take up to a day to appear\" is removed.",
+      "notice": "One short line, then the way forward."
+    }
+  ]
+}

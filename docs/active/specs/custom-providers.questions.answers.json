@@ -1,0 +1,43 @@
+{
+ "deck": "custom-providers-questions",
+ "started": "2026-10-20T12:43:27.840Z",
+ "submitted": "2026-10-20T12:47:55Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "service-search",
+   "t": 1792500314588,
+   "seconds": 36,
+   "theme": "meadow-mist"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "save-with-notice",
+   "t": 1792500314588,
+   "seconds": 36,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "move-with-note",
+   "t": 1792500314588,
+   "seconds": 36,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "other",
+   "t": 1792500457607,
+   "note": "can we just make the default for unknown context windows more reasonable (like 250k  or 500k)? skip allowing custom per-provider context setting for now?",
+   "seconds": 143,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "picker-only",
+   "t": 1792500474677,
+   "seconds": 17,
+   "theme": "meadow-mist"
+  }
+ }
+}

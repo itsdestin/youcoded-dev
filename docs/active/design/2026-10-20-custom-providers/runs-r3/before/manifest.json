@@ -1,0 +1,70 @@
+[
+  {
+    "name": "chat/model-picker",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/custom-providers-catalog/docs/active/design/2026-10-20-custom-providers/runs-r3/before/chat/model-picker/light.png",
+    "ms": 1182,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 12,
+      "y": 565,
+      "w": 384,
+      "h": 303
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/model-picker",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/custom-providers-catalog/docs/active/design/2026-10-20-custom-providers/runs-r3/before/chat/model-picker/midnight.png",
+    "ms": 1189,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 12,
+      "y": 565,
+      "w": 384,
+      "h": 303
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/custom-providers-catalog/docs/active/design/2026-10-20-custom-providers/runs-r3/before/settings/assistant/cloud/midnight.png",
+    "ms": 1426,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/custom-providers-catalog/docs/active/design/2026-10-20-custom-providers/runs-r3/before/settings/assistant/cloud/light.png",
+    "ms": 1428,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    },
+    "parts": []
+  }
+]

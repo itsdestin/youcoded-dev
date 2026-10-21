@@ -1,0 +1,140 @@
+{
+  "title": "Custom providers — round 2, your notes applied",
+  "key": "custom-providers-review-2",
+  "out": "custom-providers.review-2.html",
+  "stage": "design",
+  "images": "images/custom-providers.review-2",
+  "runs": {
+    "before": "runs-r2/before",
+    "after": "runs-r2/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers → Add provider",
+      "crop": [
+        {
+          "crop": "settings/assistant/cloud/add-provider@panel",
+          "label": "Empty"
+        },
+        {
+          "crop": "settings/assistant/cloud/add-provider#search@panel",
+          "label": "Searching"
+        },
+        {
+          "crop": "settings/assistant/cloud/add-provider#picked@panel",
+          "label": "Service picked"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Add provider is now a card like OpenRouter's, and Cancel appears only once there is something to add.",
+      "changed": "Empty: a title, one grey line, the search box and ✕. Picked: \"Inception (api.inceptionlabs.ai)\", name \"Inception API Key\", then Cancel and Add provider.",
+      "notice": "It looks like the other cards and only shows what you can do next."
+    },
+    {
+      "id": "R2-2",
+      "surface": "Cloud providers",
+      "path": "Add provider → pick Inception → Models",
+      "crop": "settings/assistant/cloud/add-provider#models@panel",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "A picked service's models are a fold of cards, each with its context size, price and tool use.",
+      "changed": "Under the search box, \"Models 4\" opens one card per model: name, then chips for context (1M, 260K…), price in and out per million, and \"No tools\" where a model can't use them.",
+      "notice": "You see what you are getting — Mercury 3's 1M context and $0.10 / $0.35 price — before you paste a key.",
+      "risk": "These numbers come from the public catalog; your own account may differ slightly."
+    },
+    {
+      "id": "R2-3",
+      "surface": "Cloud providers",
+      "path": "Add provider → paste a key → Add provider",
+      "crop": [
+        {
+          "crop": "settings/assistant/cloud/add-provider#added@panel",
+          "label": "Working key"
+        },
+        {
+          "crop": "settings/assistant/cloud/add-provider#refused@panel",
+          "label": "Rejected key"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Saved providers are the same card too: name with its address in brackets, buttons and switch at the top right.",
+      "changed": "The lighter hand-made row is gone. \"Inception API Key (api.inceptionlabs.ai)\" sits on the top line with Edit, Test, Remove and the on/off switch at the right; a rejected key keeps its red notice inside the card.",
+      "notice": "Every card on Cloud providers now has one shape, whether it is OpenRouter, ChatGPT or a key you added."
+    },
+    {
+      "id": "R2-4",
+      "surface": "Model picker",
+      "path": "Chat → model menu → search for a model that isn't listed",
+      "crop": [
+        {
+          "crop": "chat/model-picker#no-match@panel",
+          "label": "No match"
+        },
+        {
+          "crop": "chat/model-picker#refresh-failed@panel",
+          "label": "Check failed"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "\"No models match\" is now a full sentence at normal size, with a small centred button under it.",
+      "changed": "It names your search and says new models can take a day to appear; \"Check for new models\" is a small button centred below. The footer now reads \"Manage models and providers…\".",
+      "notice": "The sentence explains why the model is missing before offering the fix."
+    },
+    {
+      "id": "R2-5",
+      "words": true,
+      "surface": "Design guide",
+      "path": "docs/active/design/2026-10-13-ui-design-guide.md",
+      "headline": "Should the design guide gain two rules so forms and menus can't drift from the rest of the page again?",
+      "today": "The guide covers cards, buttons and notices, but says nothing about how a form that adds an item to a list should look, or that search menus must use the app's one dropdown.",
+      "problem": "Round 1 drew Add provider as a plain box with its own menu shape, and nothing in the guide said that was wrong — the gap you called out.",
+      "proposal": "Two rules. Yes adds both to the guide's Cards and Lists sections; No leaves the guide as it is.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Add both rules",
+          "summary": "\"A form that adds an item to a list of cards is drawn as one of those cards — title, grey line, ✕ at the top right, its buttons at the bottom right once there is something to add.\" and \"Every dropdown or search menu is the shared one: same corner, row size and highlighted choice.\"",
+          "pros": [
+            "The next form or menu starts from the right shape.",
+            "Reviews can point to a written rule."
+          ],
+          "cons": [
+            "Two more rules to keep current."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "form-only",
+          "label": "Only the form rule",
+          "pros": [
+            "The bigger gap gets covered."
+          ],
+          "cons": [
+            "A one-off menu could still slip through."
+          ]
+        }
+      ]
+    }
+  ]
+}
