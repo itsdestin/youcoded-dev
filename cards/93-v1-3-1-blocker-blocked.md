@@ -22,6 +22,7 @@ Blocked: No implementation blocker. Source merged, not a new app release; produc
 
 Chats
 - 2026-10-21 session/93-app-fixes-merge: chat started
+- 2026-10-21 session/93-app-fixes-merge: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
