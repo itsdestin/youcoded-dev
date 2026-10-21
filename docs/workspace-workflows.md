@@ -18,6 +18,10 @@ Read only the section needed for the task. `CLAUDE.md` is the operating core; th
 
 **Stage filenames, never a directory.** `git add docs/active` is not an explicit path — it swept seven files from two other live sessions into a commit (2026-08-31). Read `git diff --cached --name-only` before every commit (`docs/PITFALLS.md` → Staging).
 
+**Standing authorization: make regular checkpoint commits and backup pushes of this session's own approved work to its feature branches, without asking.** Commit useful increments and push at meaningful checkpoints and before pausing or handing off, not only at the end. Do not wait for final verification or merge approval; label unfinished checkpoints and accurately report failing or unrun checks. Honor an explicit request to keep work local. Read-only investigations do not gain permission to create edits or publish other sessions' work.
+
+**Before every push, secrets-scan all outgoing commits in public and private repos.** Check the destination and the full commit range not yet on that destination branch; for a new branch, include every commit it would newly publish. Scan intermediate versions too: a secret added and later deleted still exists in Git history. If the scan fails or cannot run, do not push; report the blocker without repeating secret values. Fix or review findings before retrying, never bypass the check. Verify the remote branch reaches the checkpoint before calling it backed up; if offline or rejected, retain the work and report it as local-only. A backup push is not merge/release approval and does not authorize amend/reset, force-pushes, destructive operations, publishing other sessions' work or writing to the default branch.
+
 **"Merge" means merge AND push.** Don't stop at a local merge.
 
 **Clean up worktrees and branches after merging to master.** Once a feature branch is fully merged and pushed, remove its worktree and delete the branch **both remotely and locally**:
@@ -109,7 +113,7 @@ Choose by the action being requested, not by whether a skill happens to be insta
 | Change code, docs or guidance | Start/resume an isolated session with `workspace-start`; read MAP's rule and guard for the affected area, then verify the changed branch. A correction to docs is still an edit. |
 | Design a new YouCoded interface | Follow `.claude/rules/feature-flow.md`: questions and Workbench UI before backend, then approval through review decks. The short route for a clear small UI change requires Destin's agreement; it does not apply to read-only reviews or non-UI doc corrections. |
 | Audit workspace guidance | `/audit` is fix-executing maintenance, not the read-only review above. Run it only when edits are authorized, in an isolated session; its command file owns the audit procedure. |
-| Wrap up a session | Use `.claude/skills/wrap-up/SKILL.md` to review and account for this session's work. Wrap-up by itself authorizes neither publishing a branch nor merging; follow the explicit scope and report unfinished work. |
+| Wrap up a session | Use `.claude/skills/wrap-up/SKILL.md` to review and account for this session's work. Verify the standing checkpoint backups of this session's approved work; wrap-up does not authorize a merge or expand a read-only task. Report unfinished work and backup blockers. |
 | Ship a release | Use `youcoded-admin/skills/release/SKILL.md` for the app release, subject to its own go/no-go. A request to review release readiness is not permission to tag or publish. |
 
 If a named skill cannot be invoked in the current runtime, read its repository `SKILL.md` or command instructions and follow the applicable procedure; if neither exists, report the missing procedure rather than improvising approval or shipping steps. **The root `CLAUDE.md` and live-app safety rule win over a conflicting skill or older recipe.** This table routes tasks; it does not grant permission to perform them.
