@@ -2,22 +2,19 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Customize your device demo</title>
 <style>
-/* Standalone-preview fallbacks only; the landing page defines these itself. */
-:root{--accent:#7c3aed;--fg-rgb:34,24,48;--canvas-rgb:246,240,252;--glass:rgba(255,255,255,.55);--hair:rgba(34,24,48,.12);--radius:18px;--font-ui:'DM Sans',system-ui,sans-serif}
+/* Standalone-preview fallbacks only; the drawing's colours are fixed palettes below, not the page's. */
+:root{--radius:18px;--font-ui:'DM Sans',system-ui,sans-serif}
 body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 .wrap{width:100%;max-width:900px}
 
 /* ---- paste from here ---- */
 .devdemo{position:relative;width:100%;aspect-ratio:16/10;container-type:inline-size;overflow:hidden;box-sizing:border-box;
-  /* WHY: surfaces read these variables; .is-dark swaps them all so the whole scene fades dark together, in any theme. */
-  --bg:rgb(var(--canvas-rgb));--st:rgb(var(--fg-rgb));--tx:rgba(var(--fg-rgb),.85);--mu:rgba(var(--fg-rgb),.5);--gl:var(--glass);--hr:var(--hair);
-  --fl:rgba(var(--fg-rgb),.07);--tk:rgba(var(--fg-rgb),.15);--kb:rgba(var(--fg-rgb),.17);
-  /* WHY: keys = page colour, function keys + panel a step darker, like Gboard's light look */
-  --kf:rgb(var(--canvas-rgb));--kn:color-mix(in srgb,rgb(var(--fg-rgb)) 9%,rgb(var(--canvas-rgb)));--pn:color-mix(in srgb,rgb(var(--fg-rgb)) 6%,rgb(var(--canvas-rgb)));--knob:rgb(var(--canvas-rgb));--fn:rgba(var(--fg-rgb),.2);--sh:rgba(var(--fg-rgb),.14);
-  font-family:var(--font-ui);color:var(--tx);background:var(--bg);border:1px solid var(--hair);border-radius:var(--radius)}
-.devdemo.is-dark{--bg:color-mix(in srgb,rgb(var(--fg-rgb)) 28%,#000);--st:rgba(255,255,255,.96);--tx:rgba(255,255,255,.82);--mu:rgba(255,255,255,.5);--gl:rgba(255,255,255,.07);--hr:rgba(255,255,255,.12);
-  --fl:rgba(255,255,255,.08);--tk:rgba(255,255,255,.2);--kf:rgba(255,255,255,.16);--kn:rgba(255,255,255,.08);--pn:color-mix(in srgb,#000 30%,var(--bg));--kb:rgba(0,0,0,.55);
-  --knob:#fff;--fn:rgba(255,255,255,.3);--sh:rgba(0,0,0,.45)}
+  /* WHY: light = the YouCoded theme's exact tokens, dark (.is-dark) = YouCoded Night's. Fixed palettes (not the host page's colours) so the drawing matches the app; every surface reads these. */
+  --bg:#F7F0FB;--pn:#EFE3F6;--in:#DCC5EB;--wl:#FAF5FD;--accent:#8B47B8;--oa:#FFFFFF;--st:#21152C;--tx:#21152C;--mu:#50415C;--fa:#887695;--hr:#C9B0DB;--hl:#B597CCA0;
+  --gl:rgba(239,227,246,.8);--tk:#DCC5EB;--kf:#FAF5FD;--kn:#DCC5EB;--kb:#C9B0DB;--knob:#FFFFFF;--fn:rgba(33,21,44,.2);--sh:rgba(33,21,44,.14);
+  font-family:var(--font-ui);color:var(--tx);background:var(--bg);border:1px solid var(--hr);border-radius:var(--radius)}
+.devdemo.is-dark{--bg:#140B1E;--pn:#1F1329;--in:#2B1B39;--wl:#2B1B39;--accent:#C99BF0;--oa:#1A0F24;--st:#F3EAF9;--tx:#F3EAF9;--mu:#A397AC;--fa:#6B5D76;--hr:#45305A;--hl:#5A3F75A0;
+  --gl:rgba(31,19,41,.8);--tk:#2B1B39;--kf:#2B1B39;--kn:#352345;--kb:#45305A;--knob:#F3EAF9;--fn:rgba(243,234,249,.3);--sh:rgba(0,0,0,.45)}
 .devdemo *{box-sizing:border-box}
 .devdemo,.devdemo *{transition:background-color .5s,color .5s,border-color .5s,box-shadow .5s}
 .devdemo .abs{position:absolute}
@@ -25,9 +22,9 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 .devdemo .p1{left:0;top:0;width:42%;height:100%;overflow:hidden}
 .devdemo .p2{left:42%;top:0;width:58%;height:100%;border-left:1px solid var(--hr)}
 /* LEFT: wallpaper, dark wash, shade card, panel bar */
-.devdemo .wall{inset:0;background:linear-gradient(155deg,color-mix(in srgb,var(--accent) 38%,rgb(var(--canvas-rgb))),rgb(var(--canvas-rgb)) 58%,color-mix(in srgb,var(--accent) 16%,rgb(var(--canvas-rgb))))}
+.devdemo .wall{inset:0;background:linear-gradient(155deg,#D7B3E7,#F7F0FB 58%,#E6D0F1)}
 /* WHY: gradients can't transition, so dark is a layer fading in over the wallpaper */
-.devdemo .dk{inset:0;opacity:0;transition:opacity .5s;background:radial-gradient(circle at 20% 12%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 65%),color-mix(in srgb,rgb(var(--fg-rgb)) 28%,#000)}
+.devdemo .dk{inset:0;opacity:0;transition:opacity .5s;background:linear-gradient(155deg,#542571,#140B1E 58%,#2A1240)}
 .devdemo.is-dark .dk{opacity:1}
 /* WHY: fixed orange = Night Light's warm tint (not a theme colour); faint, over the whole scene, on top of dark */
 .devdemo .warm{inset:0;background:rgb(255,140,40);opacity:0;pointer-events:none;animation:dvWarm 7s infinite}
@@ -42,8 +39,8 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 .devdemo .ic{width:2.6cqw;height:2.6cqw;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .devdemo .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:7cqw;gap:1cqw}
 .devdemo .tile{display:flex;align-items:center;gap:1cqw;padding:0 1.1cqw;border-radius:calc(var(--radius)*.7);overflow:hidden;
-  background:var(--gl);border:1px solid var(--hr);color:var(--tx);line-height:1.25;white-space:nowrap}
-.devdemo .tile.on{background:var(--accent);border-color:var(--accent);color:rgb(var(--canvas-rgb))}
+  background:var(--wl);border:1px solid var(--hr);color:var(--tx);line-height:1.25;white-space:nowrap}
+.devdemo .tile.on{background:var(--accent);border-color:var(--accent);color:var(--oa)}
 .devdemo .tile small{display:flex;flex-direction:column;font-size:1.4cqw;min-width:0}
 .devdemo .tile small b{font-size:1.5cqw;font-weight:600}
 .devdemo .tile small span{opacity:.75}
@@ -52,18 +49,18 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 .devdemo .nl u{animation:dvSw 7s infinite}
 .devdemo .btns{display:flex;gap:.9cqw}
 .devdemo .btns div{flex:1;height:4.6cqw;display:flex;align-items:center;justify-content:center;gap:.7cqw;font-size:1.4cqw;color:var(--tx);
-  background:var(--gl);border:1px solid var(--hr);border-radius:99px}
+  background:var(--wl);border:1px solid var(--hr);border-radius:99px}
 .devdemo .btns .ic{width:2cqw;height:2cqw}
 .devdemo .pbar{left:0;right:0;bottom:0;height:5cqw;background:var(--gl);border-top:1px solid var(--hr);display:flex;align-items:center;justify-content:space-between;padding:0 2.5cqw;font-size:1.7cqw;color:var(--tx)}
 .devdemo .pbar i{display:inline-block;width:2cqw;height:2cqw;border-radius:.6cqw;background:var(--tk);margin-right:1cqw}
 /* RIGHT: browser strip, ONE text field (the address bar), Gboard-style swipe keyboard */
-.devdemo .tabs{left:0;right:0;top:0;height:9%;background:var(--fl);padding:1.2% 2% 0;display:flex}
+.devdemo .tabs{left:0;right:0;top:0;height:9%;background:var(--pn);padding:1.2% 2% 0;display:flex}
 .devdemo .tab{width:38%;height:100%;background:var(--bg);border:1px solid var(--hr);border-bottom:0;border-radius:1cqw 1cqw 0 0;
   font-size:1.5cqw;line-height:1;padding:0 1.4cqw;display:flex;align-items:center;gap:1cqw;color:var(--tx)}
 .devdemo .tab i{width:1.5cqw;height:1.5cqw;border-radius:50%;background:var(--tk)}
 .devdemo .bar{left:0;right:0;top:9%;height:10%;background:var(--bg);border-bottom:1px solid var(--hr);display:flex;align-items:center;gap:1.4cqw;padding:0 4%}
 .devdemo .bar b{width:1.7cqw;height:1.7cqw;border:.3cqw solid var(--tk);border-radius:50%}
-.devdemo .url{flex:1;height:62%;border-radius:99px;background:var(--fl);padding:0 1.8cqw;font-size:1.9cqw;display:flex;align-items:center;color:var(--st);white-space:pre;overflow:hidden}
+.devdemo .url{flex:1;height:62%;border-radius:99px;background:var(--in);padding:0 1.8cqw;font-size:1.9cqw;display:flex;align-items:center;color:var(--st);white-space:pre;overflow:hidden}
 /* WHY: "yours" grows in from zero width so the caret stays glued to the last letter before and after the swipe */
 .devdemo .typed{display:inline-block;overflow:hidden;max-width:0;opacity:0;animation:dvType 7s infinite}
 .devdemo .caret{display:inline-block;width:.3cqw;height:2.3cqw;margin-left:.2cqw;background:var(--accent);animation:dvBlink 1s steps(2) infinite}
@@ -71,8 +68,8 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 .devdemo .kb{left:0;right:0;bottom:0;height:34.4cqw;background:var(--pn);border-top:1px solid var(--hr);padding:.6cqw .8cqw 0}
 .devdemo .sug{height:4.4cqw;margin:0 -.8cqw .8cqw;display:flex;font-size:2.1cqw}
 .devdemo .sug div{flex:1;position:relative;display:grid;place-items:center}
-.devdemo .sug div+div:before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:1px;background:var(--hr)}
-.devdemo .sug span{grid-area:1/1;color:var(--mu)}
+.devdemo .sug div+div:before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:1px;background:var(--hl)}
+.devdemo .sug span{grid-area:1/1;color:var(--fa)}
 .devdemo .sug .b{color:var(--tx);opacity:0;animation:dvGuess 7s infinite}
 .devdemo .sug .a{opacity:.6;animation:dvGen 7s infinite}
 .devdemo .sug .on{color:var(--accent);font-weight:700}
@@ -83,9 +80,9 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
   background:var(--kf);border-radius:.8cqw;box-shadow:0 1px 0 var(--kb)}
 .devdemo .k.w{width:7.95cqw}
 .devdemo .k.f{background:var(--kn)}
-.devdemo .k.sp{flex:1;width:auto;font-size:1.3cqw;color:var(--mu);opacity:.8}
+.devdemo .k.sp{flex:1;width:auto;font-size:1.3cqw;color:var(--fa)}
 .devdemo .k.q{font-size:1.8cqw}
-.devdemo .k.e{background:var(--accent);color:rgb(var(--canvas-rgb))}
+.devdemo .k.e{background:var(--accent);color:var(--oa)}
 .devdemo .k .ic{width:3cqw;height:3cqw}
 .devdemo .l{animation:dvLit 7s var(--d) infinite}
 .devdemo .tr{left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:drop-shadow(0 0 .7cqw var(--accent))}
@@ -95,8 +92,8 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 /* finger: taps Night Light, then hands over to the swipe dot */
 .devdemo .fin{left:0;top:0;width:3.6cqw;height:3.6cqw;border-radius:50%;background:var(--fn);border:1px solid var(--st);
   box-shadow:0 .3cqw 1cqw var(--sh);opacity:0;--t:translate(10.3cqw,33.5cqw);animation:dvFin 7s infinite}
-@keyframes dvWarm{0%,12%{opacity:0}20%,90%{opacity:.12}97%,100%{opacity:0}}
-@keyframes dvNL{0%,9%{background:var(--gl);border-color:var(--hr);color:var(--tx);transform:scale(1)}11.4%{transform:scale(.94)}14%,91%{background:var(--accent);border-color:var(--accent);color:rgb(var(--canvas-rgb));transform:scale(1)}96%,100%{background:var(--gl);border-color:var(--hr);color:var(--tx)}}
+@keyframes dvWarm{0%,12%{opacity:0}20%,90%{opacity:.05}97%,100%{opacity:0}}
+@keyframes dvNL{0%,9%{background:var(--wl);border-color:var(--hr);color:var(--tx);transform:scale(1)}11.4%{transform:scale(.94)}14%,91%{background:var(--accent);border-color:var(--accent);color:var(--oa);transform:scale(1)}96%,100%{background:var(--wl);border-color:var(--hr);color:var(--tx)}}
 @keyframes dvSw{0%,12%{transform:none}14%,91%{transform:translateY(-50%)}96%,100%{transform:none}}
 @keyframes dvFin{0%,3%{transform:translate(13.8cqw,40cqw) scale(1);opacity:0}6%,10%{transform:var(--t) scale(1);opacity:1}11.4%{transform:var(--t) scale(.8)}14.3%,17%{transform:var(--t) scale(1);opacity:1}25.5%{transform:translate(72.05cqw,35.16cqw) scale(1);opacity:1}27%,100%{transform:translate(72.05cqw,35.16cqw) scale(1);opacity:0}}
 @keyframes dvTrail{0%,25.5%{stroke-dashoffset:100;opacity:0}25.7%{stroke-dashoffset:100;opacity:.75}49%,90%{stroke-dashoffset:0;opacity:.75}95%{stroke-dashoffset:0;opacity:0}95.1%,100%{stroke-dashoffset:100;opacity:0}}
@@ -109,8 +106,8 @@ body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
 @keyframes dvBlink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){
  .devdemo *{animation:none!important}
- .devdemo .warm{opacity:.12}
- .devdemo .nl{background:var(--accent);border-color:var(--accent);color:rgb(var(--canvas-rgb))}
+ .devdemo .warm{opacity:.05}
+ .devdemo .nl{background:var(--accent);border-color:var(--accent);color:var(--oa)}
  .devdemo .nl u{transform:translateY(-50%)}
  .devdemo .trail{stroke-dashoffset:0;opacity:.75}
  .devdemo .dot,.devdemo .fin{opacity:0}
