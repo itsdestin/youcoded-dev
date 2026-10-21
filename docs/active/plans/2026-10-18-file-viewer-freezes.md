@@ -1,0 +1,43 @@
+---
+status: active
+---
+# File viewer freezes — investigation and repair plan
+
+**Goal:** Resolve the false missing-file transition and confirmed blocking paths, without claiming that an unmeasured suspect explains the reported JPEG freeze.
+
+**Architecture:** Retain the existing viewer/loading/error presentation. Scope each read state to its selection before children render, preserving cancellation and authorization. Investigate main-process stalls independently from renderer/presentation delays.
+
+**Tech stack:** React, TypeScript, Vitest, Electron diagnostics.
+
+## Evidence so far
+
+- Reported file: `/home/destin/Projects/metropolis-e5-astra/docs/review/era5-housing-wealth/wealth-game.jpg`; 414823 bytes, baseline JPEG, 1620×1640.
+- Existing recorder: main-stall 5549 ms at 2026-10-18T19:02:49.704Z, last IPC `artifacts:check-existence` 5643 ms earlier. This is correlation, not a causal trace.
+- Both windows have long presentation delays in the 19:03:53 batch, with no attributed script work. Destin confirms other applications remained responsive: the failure was confined to YouCoded.
+- IMPORTANT installed-build correction: read-only ASAR inspection shows its `hitch-recorder.js` onSecond uses only histogram max, without the newer timer-lateness fallback; it has no session-setup/discovery-worker modules. Therefore the recorded 5.5s maximum does NOT establish that main was responsive during the longer missing interval. Do not privilege the GPU theory based on that negative. Installed `artifacts/read-service.js`, `artifacts/project-watcher.js`, and `chatsearch-index/index-store.js` were compared byte-for-byte with the compiled baseline test checkout and are identical. The tested file path is representative; background setup and diagnostics differ. No production archive was modified or executed.
+- `useArtifactContent` retains the previous file's state until a passive effect. Its existing switch test checks only after effects settle.
+
+## Repair 1: selection-scoped first render
+
+Files: `youcoded/desktop/src/renderer/components/artifact-views/useArtifactContent.ts`, `youcoded/desktop/tests/ActiveArtifactView.test.tsx`.
+
+- [x] Add a real-hook regression recording each committed render using a layout effect: missing text → image must never commit `missing`; ready text → new selection must never commit old content or metadata. Include same ID across different project roots and changed record path.
+- [x] Run `npx vitest run tests/ActiveArtifactView.test.tsx -t 'never commits'`: four expected failures; image transition committed `['missing', 'ready']`.
+- [x] Track selection identity (project root, artifact ID, artifact path, retry token) with read state. Reset content and metadata to null, phase to loading when identity changes, before children commit; keep the current cancellation behavior and byte-only bypass.
+- [x] Run the complete feature test again, including watcher reconciliation and draft/save protections: 52 passed. Added local Range geometry stubs to remove jsdom/CodeMirror asynchronous measurement errors; second full run passed without those errors.
+
+## Freeze investigation
+
+- [x] Correlate existing diagnostics without contacting the live app. At 19:03:29 UTC KWin logged invalid texture dimensions and an incomplete offscreen framebuffer; at 19:03:31 it named YouCoded Not Responding, cleared by 19:04:02. Both app windows recorded 51–56 second frames with almost no attributed script/layout work. Separate main stalls were 5549 and 1603 ms. Neither graphics failure nor the last IPC is established as causal. No logged GPU reset/OOM/power signature was found in 18:50–19:05:59; this does not exclude transient pressure. Installed package is 1.3.1-1; source commit unknown.
+- [x] Audit additional blocking paths: unlimited jsdiff in UnifiedDiff before preview slicing (card 110); synchronous whole-history search refresh despite async signature; synchronous hardware/ROCm subprocess probes with 4s timeouts; quadratic overlap scans in inline filepath detection. These are not explanations of the JPEG incident. Fresh isolated measurements using this checkout's installed `diff` package confirmed the unbounded computation: 2000 unrelated lines = 573 ms wall / 617 ms CPU; 5000 = 3551 / 3603 ms; 10000 = 16563 / 16759 ms. This was a separate bounded Node process, not a full renderer reproduction. Main-workspace sidecar parse + ID indexing measured 92 ms wall / 116 ms CPU for 22.5 MB and 20679 records; insufficient by itself to explain the observed multi-second stall.
+- [x] Destin approved isolated reproduction, including GPU-disabled launches if needed. Created a detached baseline checkout at bc9e43752 (`scratch/repro-app`) and private HOME (`scratch/repro-home`), launched with run-dev.sh offset 400/profile file-freeze-gpu. No model request: the chat-chip fixture is a synthetic local transcript push into a disposable native session.
+- [x] Reproduced the real image path safely, but NOT the multi-second freeze. Raw binary IPC 2.1–2.4 ms, JPEG decode 10–13 ms; isolated ImageView mounts 12–35 ms. Real Projects/Files opens 108–139 ms (the first instrumentation run included a screenshot inside sampling and its 355ms gap is not valid evidence of opening cost). Real chat-chip tests used complete drawer closes between opens. With copied morning-rounds theme, a disposable buddy window, matching DPR 2.16 and confirmed AMD Radeon 8060S/Mesa 26.2.4 GPU compositing, opens were 339/232/232 ms, max frame gap 77.7 ms, longest task 69 ms, longest IPC round trip 75.2 ms. Screenshot was outside that measured interval and visually inspected. GPU-disabled A/B is not yet justified by a reproducible normal-GPU stall; do not infer that the GPU is exonerated.
+- [x] Found original conversation `8521c586-ea96-4486-8105-fd1ee7096d51`, “Tomorrowland Inspired Futuristic City Models”, rooted at `/home/destin`. Delivery was 18:57:29 UTC and render completion notices ended 18:57:48, several minutes before the recorded stalls; no viewer-click event exists in the transcript. Home sidecar is ~1.8 MB / 1884 records. A separate synthetic home topology (265 directories, 1181 files, matching counted scope) plus copied metadata measured 8.4 ms read/parse, 137.8 ms watcher readiness and 12.8 ms max heartbeat gap; not a reproduction on original storage/load.
+- [x] Tested a pre-incident copy of the original history (1877 JSONL records, 4.11 MB), with a new session UUID and all home paths remapped to disposable HOME. No provider credentials or model requests. Opened its actual SendUserFile image tile through the real app at morning-rounds / DPR 2.16 / GPU enabled / buddy enabled: 376/299/255 ms, max frame gap 88.9 ms, max task 86 ms, max IPC round trip 26.7 ms. The 15–20s freeze still did not reproduce. Other original active sessions, process uptime and transient graphics/system state are not reproduced.
+- [x] Confirmed viewer, comparison and indexing fixes have red/green regressions and measured triggers. No speculative GPU patch or production configuration change was made.
+
+## Acceptance
+
+- [x] Fresh review: first pass identified outgoing dirty-draft snapshot loss and unscoped watcher/edit-entry reads. Corrections added per-selection committed snapshots and read scopes; 95 related tests plus full verify passed. Second independent review identified same-ID/root path-only rename draft loss. Reproduced red, added path to snapshot/mtime/stash lifecycle dependencies while preserving the root/ID draft key, and tested rejected/error/missing/binary/truncated rename reads. 101 related tests passed. Independent re-review approved with no remaining concrete findings. Final full verification of the rename-safe follow-up passed (exit 0): types, related tests plus 80 guards, knip, lint/design lint, ast-grep, screen openings and journeys. Log directory: `scratch/verify-20261018-125121-2525017`. No commits, merges or production changes. Test windows were stopped. The disposable reproduction checkout and private HOME were later removed after comparison verification; measurements and screenshots remain under scratch.
+- [x] Run `bash scripts/verify.sh`: exit 0; types, related tests plus 80 source-scanning guards, knip, lint, design lint, ast-grep, screen openings and journeys all passed. Android and Worker not covered.
+- [x] Reported reproduced viewer defects and separately verified diff/index worker fixes. Original JPEG incident remains unconfirmed; installed recorder predates current long-stall improvements, so lack of a longer main-stall entry does not establish responsiveness. No production effectiveness claim; current implementation is not installed.

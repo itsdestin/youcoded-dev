@@ -3,7 +3,9 @@
 // transcript line shape (wrong shape => loadHistory silently returns zero
 // messages and every history measurement reads 0). Both are copies of app code;
 // these tests are what catch the copy drifting.
-import { test } from 'node:test';
+import { test, mock } from 'node:test';
+import childProcess from 'node:child_process';
+import { syncBuiltinESMExports } from 'node:module';
 import assert from 'node:assert/strict';
 import { ccProjectSlug, transcriptLines, transcriptBody, readEnginePin, SIZES, CONTENT_SEED, messagesPerTurn, stableUuid, DECOY_TRANSCRIPTS, DECOY_PROJECT_DIRS } from '../fixture.mjs';
 import { existsSync } from 'node:fs';
@@ -216,6 +218,26 @@ test('decoys are spread across directories rather than piled into one', () => {
 // `alpha`, the session resumed nothing, and an empty conversation was reported as
 // "medium". The generator writes every fixture transcript for projects.alpha, so
 // the record must say so — the scenario now refuses a record without it.
+test('model-free file scenarios do not provision assets and use their declared history size', { skip: noAppRepo }, async () => {
+  const { mkdtempSync, rmSync, readdirSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { buildFixture } = await import('../fixture.mjs');
+  const root = mkdtempSync(join(tmpdir(), 'perf-lab-no-model-'));
+  const blocked = mock.method(childProcess, 'execFileSync', () => { throw new Error('Model provisioning or copying is forbidden in this test'); });
+  syncBuiltinESMExports();
+  try {
+    let fixture;
+    assert.doesNotThrow(() => { fixture = buildFixture(root, { seedEngine: false, historySizes: { small: 2 }, decoyCount: 0, content: 'plain' }); });
+    assert.equal(blocked.mock.callCount(), 0);
+    assert.equal(fixture.engine, null); assert.equal(fixture.modelId, null);
+    assert.equal(fixture.seedEngine, false);
+    assert.deepEqual(Object.keys(fixture.transcripts), ['small']);
+    assert.equal(fixture.transcripts.small.turns, 2);
+    assert.equal(fixture.transcriptFileCount, 1);
+    assert.deepEqual(readdirSync(join(fixture.home, 'models')), []);
+  } finally { blocked.mock.restore(); syncBuiltinESMExports(); rmSync(root, { recursive: true, force: true, maxRetries: 3 }); }
+});
+
 test('buildFixture transcript records carry the cwd they were written for', { skip: noAppRepo }, async () => {
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
@@ -223,7 +245,7 @@ test('buildFixture transcript records carry the cwd they were written for', { sk
   const { buildFixture } = await import('../fixture.mjs');
   const root = mkdtempSync(join(tmpdir(), 'perf-lab-cwd-'));
   try {
-    const f = buildFixture(root, { content: 'plain' });
+    const f = buildFixture(root, { content: 'plain', seedEngine: false, historySizes: { small: 2, medium: 3, huge: 4 }, decoyCount: 0 });
     for (const size of ['small', 'medium', 'huge']) {
       assert.equal(f.transcripts[size].cwd, f.projects.alpha, `${size}: cwd must be the project the transcript was written for`);
     }

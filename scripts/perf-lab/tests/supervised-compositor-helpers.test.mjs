@@ -1,0 +1,313 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { EventEmitter } from 'node:events';
+import {
+  CompositorConfiguration, helperCommand, helperEnvironment,
+  parseKScreen, parseWaylandOutput, verifyHelperIdentity, createHelperOutputCollector, HELPER_CAPS,
+  HelperExecEvidence,
+} from '../supervised-compositor-helpers.mjs';
+import { compositorPlan } from '../supervised-compositor-policy.mjs';
+import { CompositorSession } from '../supervised-compositor-core.mjs';
+import { bindSupervisorProtocol } from '../supervised-launch-worker.mjs';
+import { assertProtocolEnvelope } from '../supervised-protocol.mjs';
+import { CLEANUP_BUDGET } from '../supervised-launch-core.mjs';
+import { COMPOSITOR_CAPS } from '../supervised-compositor-policy.mjs';
+import { proveCompositorBusSocket } from '../supervised-compositor-linux.mjs';
+
+const plan = compositorPlan('/tmp/perf-lab-helper/reservation');
+const receipts = Object.fromEntries(['kscreen-doctor', 'wayland-info'].map((name, i) => [name, {
+  path: `/usr/bin/${name}`, identity: { dev: 1, ino: 10 + i, uid: 0, mode: 0o100755 },
+}]));
+const json = (patch = {}) => JSON.stringify({ outputs: [{
+  id: 1, name: 'Virtual-0', connected: true, enabled: true, currentModeId: '7',
+  scale: 1.5, rotation: 1, pos: { x: 0, y: 0 },
+  modes: [{ id: '7', size: { width: 2560, height: 1600 }, refreshRate: 180 }],
+  ...patch,
+}] });
+const wayland = `interface: 'wl_output', version: 4, name: 9
+\tname: Virtual-0
+\txdg_output_v1
+\t\tname: 'Virtual-0'
+\t\tlogical_width: 1707, logical_height: 1067
+\tmode:
+\t\twidth: 2560 px, height: 1600 px, refresh: 180.000 Hz,
+\t\tflags: current preferred
+`;
+const proof = () => ({ owned: true, socketPath: plan.socketPath, filesystemDevice: 1,
+  filesystemInode: 40, kernelInode: '80', owners: [{ pid: 20, starttime: '200' }] });
+function rig(options = {}) {
+  const events = [], gates = [];
+  let time = 0, calls = 0, checks = 0;
+  const deps = {
+    now: () => time,
+    note: (type) => events.push(type),
+    proveSocket: () => {
+      checks++;
+      if (options.replaceAt === checks) return { ...proof(), kernelInode: '81' };
+      return proof();
+    },
+    spawnHelper: async (step, selection) => {
+      const index = calls++;
+      events.push(`spawn:${step}`);
+      const family = {
+        leader: { pid: 30 + index, starttime: String(index + 100) },
+        sample: () => ({ members: [], rssMb: 1 }),
+        cleanup: async () => {
+          events.push(`cleanup:${step}`);
+          return { cleanupConfirmed: options.badRetirement !== index, survivors: [] };
+        },
+      };
+      const gate = {
+        family,
+        capture: async () => { if (options.partialCapture === index) throw Error('partial capture'); },
+        release: () => events.push(`release:${step}`),
+        corroborate: async () => { if (options.roleSwap === index) throw Error('role swapped'); },
+        abort: () => events.push(`abort:${step}`),
+        waitResult: async () => {
+          if (options.timeout === index) { time += 3001; throw Error('helper timeout'); }
+          if (options.failedExit === index) throw Error('helper exit nonzero');
+          const stdout = step === 'wayland' ? wayland : step === 'apply' ? '' : json();
+          const role = step === 'wayland' ? 'wayland-info' : 'kscreen-doctor';
+          return { stdout: options.output?.(step, stdout) ?? stdout, stderrBytes: 0, code: 0, signal: null,
+            execution: { kind: 'authorized_fdexec_completed', runtimeExeObserved: false, observed: null,
+              receiptPipeEOF: true, exit: { code: 0, signal: null },
+              authorizer: { revision: 1, kind: 'authorized_fdexec', pid: 30 + index, uid: 1000,
+                home: plan.home, purpose: step, identity: receipts[role].identity, planDigest: 'a'.repeat(64) },
+              capturedGate: { pid: 30 + index, starttime: String(index + 100), ppid: 10,
+                expectedExe: '/usr/bin/python3', uid: 1000, home: plan.home } } };
+        },
+        waitClosed: async () => ({ exited: true, closed: options.openPipes !== index, error: null, code: 0, signal: null }),
+        disposeLocal: () => { events.push(`dispose:${step}`); return { errors: [] }; },
+      };
+      gates.push(gate);
+      return gate;
+    },
+  };
+  return { deps, events, gates, get calls() { return calls; }, setTime: n => { time = n; },
+    make: () => new CompositorConfiguration(plan, receipts, deps, 52000) };
+}
+test('fast helper completion requires bound gate receipt, EOF and normal exit without fabricated live proof', () => {
+  const expected = { pid: 30, uid: 1000, home: plan.home, purpose: 'initial',
+    planDigest: 'a'.repeat(64), identity: receipts['kscreen-doctor'].identity };
+  const receipt = { revision: 1, kind: 'authorized_fdexec', ...expected };
+  const evidence = new HelperExecEvidence(expected);
+  evidence.append(Buffer.from('G'));
+  const packet = Buffer.from(JSON.stringify(receipt) + '\n');
+  evidence.append(packet.subarray(0, 10)); evidence.append(packet.subarray(10)); evidence.end();
+  const completed = { released: true, connected: true, exited: true, closed: true, code: 0, signal: null };
+  // Actual adapter's polling decision, with exit delivered before its first poll.
+  const result = evidence.corroborate(completed, () => assert.fail('fast exited child has no live exe'),
+    null, null, plan, 1000, '/usr/bin/python3');
+  assert.equal(result.kind, 'authorized_fdexec_completed');
+  assert.equal(result.runtimeExeObserved, false);
+  assert.equal(evidence.corroborate({ ...completed, closed: false }, () => assert.fail('no inspect after exit')), false);
+  assert.equal(evidence.corroborate({ ...completed, exited: false }, () => {
+    throw Object.assign(Error('already gone'), { code: 'ENOENT' });
+  }), false);
+  const leader = { pid: 30, starttime: '300', ppid: 10, pgrp: 30, session: 30 };
+  assert.throws(() => evidence.corroborate({ ...completed, exited: false }, () => ({ ...leader,
+    uid: 1000, home: plan.home, exe: '/usr/bin/foreign', executableIdentity: expected.identity }),
+  leader, receipts['kscreen-doctor'], plan, 1000, '/usr/bin/python3'), /role executable/);
+  evidence.observe({ ...leader, uid: 1000, home: plan.home, exe: receipts['kscreen-doctor'].path,
+    executableIdentity: expected.identity }, leader, receipts['kscreen-doctor'], plan, 1000, '/usr/bin/python3');
+  assert.equal(evidence.completed(completed).kind, 'observed_postexec');
+  for (const patch of [{ connected: false }, { released: false }, { code: 68 }, { signal: 'SIGTERM' }, { closed: false }]) {
+    assert.throws(() => evidence.completed({ released: true, connected: true, exited: true, closed: true, code: 0, signal: null, ...patch }));
+  }
+  for (const patch of [{ uid: 9 }, { home: '/real/home' }, { pid: 31 }, { planDigest: 'b'.repeat(64) },
+    { identity: { ...expected.identity, ino: 99 } }]) {
+    const wrong = new HelperExecEvidence(expected); wrong.append(Buffer.from('G'));
+    assert.throws(() => wrong.append(Buffer.from(JSON.stringify({ ...receipt, ...patch }) + '\n')));
+  }
+  const missing = new HelperExecEvidence(expected); missing.append(Buffer.from('G')); missing.end();
+  assert.throws(() => missing.completed({ released: true, connected: true, exited: true, closed: true, code: 0, signal: null }));
+  const flood = new HelperExecEvidence(expected);
+  assert.throws(() => flood.append(Buffer.alloc(4097)));
+});
+test('fixed helper contract admits only four purposes, validated IDs and private environment', () => {
+  const selected = parseKScreen(json());
+  assert.deepEqual(helperCommand(receipts, 'initial', null).argv, ['/usr/bin/kscreen-doctor', '-j']);
+  assert.deepEqual(helperCommand(receipts, 'apply', selected).argv,
+    ['/usr/bin/kscreen-doctor', 'output.1.mode.7', 'output.1.scale.1.5']);
+  assert.deepEqual(helperCommand(receipts, 'wayland', null).argv, ['/usr/bin/wayland-info']);
+  assert.throws(() => helperCommand(receipts, 'exec', selected));
+  for (const id of ['7.scale.2', '../7', '07', '-1', '7;bad']) {
+    assert.throws(() => helperCommand(receipts, 'apply', { ...selected, modeId: id }));
+  }
+  const env = helperEnvironment(plan);
+  assert.equal(env.DBUS_SESSION_BUS_ADDRESS, `unix:path=${plan.runtime}/bus`);
+  assert.equal(env.DBUS_SYSTEM_BUS_ADDRESS, `unix:path=${plan.runtime}/no-system-bus`);
+  assert.equal(env.WAYLAND_DISPLAY, 'perf-0');
+  for (const key of ['DISPLAY', 'XAUTHORITY', 'QT_PLUGIN_PATH', 'NODE_OPTIONS']) assert.equal(env[key], undefined);
+});
+test('strict metadata rejects truncation, ambiguous outputs, inactive state, unexpected IDs and missing exact mode', () => {
+  assert.throws(() => parseKScreen(json().slice(0, -1)));
+  const cases = [
+    { id: '1' }, { name: 'eDP-1' }, { enabled: false }, { connected: false },
+    { currentModeId: 'unknown' }, { scale: 0 }, { rotation: 2 },
+    { modes: [{ id: '7.scale.2', size: { width: 2560, height: 1600 }, refreshRate: 180 }] },
+    { modes: [{ id: '7', size: { width: 2560, height: 1600 }, refreshRate: 120 }] },
+  ];
+  for (const patch of cases) assert.throws(() => parseKScreen(json(patch)));
+  const twice = JSON.parse(json()); twice.outputs.push(twice.outputs[0]);
+  assert.throws(() => parseKScreen(JSON.stringify(twice)));
+  assert.throws(() => parseKScreen(' '.repeat(262145)));
+  assert.throws(() => parseKScreen(json({ scale: 1 }), { effective: true }));
+  assert.throws(() => parseWaylandOutput(wayland.replace('180.000', '120.000')));
+  assert.throws(() => parseWaylandOutput(wayland.replace('1707', '2560')));
+  assert.throws(() => parseWaylandOutput(wayland.replace('current preferred', 'preferred')));
+  assert.throws(() => parseWaylandOutput(wayland + wayland));
+});
+test('four serial owned helpers retire before the next; observed readbacks certify metadata only', async () => {
+  const f = rig({ output: (step, stdout) => step === 'initial' ? json({ scale: 1, currentModeId: '6',
+    modes: [{ id: '6', size: { width: 2560, height: 1600 }, refreshRate: 60 },
+      { id: '7', size: { width: 2560, height: 1600 }, refreshRate: 180 }] }) : stdout }), config = f.make();
+  const result = await config.inspect();
+  assert.equal(result.modeVerified, true);
+  assert.doesNotThrow(() => assertProtocolEnvelope({ event: { revision: 1, type: 'configuration-observed', ...result } }));
+  const observedProofs = structuredClone(result);
+  for (const helper of observedProofs.helpers) {
+    helper.execution.kind = 'observed_postexec';
+    helper.execution.runtimeExeObserved = true;
+    helper.execution.observed = { pid: 30, starttime: '100', executableIdentity: receipts['kscreen-doctor'].identity };
+  }
+  assert.doesNotThrow(() => assertProtocolEnvelope({ id: 1, result: observedProofs }));
+  assert.equal(result.observed.refreshHz, 180);
+  assert.equal(result.observed.scale, 1.5);
+  assert.equal(result.wayland.logicalWidth, 1707);
+  assert.equal(result.helpers.length, 4);
+  assert.equal(result.helpers.every(r => r.cleanupConfirmed), true);
+  assert.equal(f.calls, 4);
+  assert.ok(f.events.indexOf('dispose:initial') < f.events.indexOf('spawn:apply'));
+  await config.inspect(); assert.equal(f.calls, 4);
+});
+test('socket replacement, role swaps, capture failure and unconfirmed retirement prevent later helpers', async () => {
+  for (const options of [{ replaceAt: 3 }, { roleSwap: 0 }, { partialCapture: 0 },
+    { badRetirement: 1 }, { openPipes: 1 }, { timeout: 0 }, { failedExit: 0 }]) {
+    const f = rig(options), config = f.make();
+    await assert.rejects(config.inspect());
+    const calls = f.calls;
+    await assert.rejects(config.inspect()); assert.equal(f.calls, calls);
+    assert.ok(f.events.some(e => e.startsWith('cleanup:')));
+    assert.ok(f.events.some(e => e.startsWith('dispose:')));
+    assert.ok(calls < 4);
+  }
+});
+test('effective metadata mismatch rolls back despite successful command exits', async () => {
+  const f = rig({ output: (step, stdout) => step === 'final' ? json({ scale: 1 }) : stdout });
+  await assert.rejects(f.make().inspect()); assert.equal(f.calls, 3);
+});
+test('helper bus proof binds private socket to the tracked exact D-Bus daemon, not KWin or a foreign FD', () => {
+  const roles = ['dbus-run-session', 'kwin_wayland', 'dbus-daemon'];
+  const approved = Object.fromEntries(roles.map((role, index) => [role, {
+    path: `/usr/bin/${role}`, identity: { dev: 1, ino: index + 20, uid: 0, mode: 0o100755 },
+  }]));
+  const members = roles.map((role, index) => ({ pid: 20 + index, ppid: index ? 20 : 10,
+    starttime: String(200 + index), session: 20, pgrp: 20, state: 'S', rssMb: 1,
+    home: plan.home, uid: 1000, exe: approved[role].path, executableIdentity: approved[role].identity }));
+  const family = { leader: members[0], known: new Map(members.map(row => [row.pid, row])),
+    sample: () => ({ members, rssMb: 3 }), protect: () => {} };
+  const options = { uid: 1000, canonical: path => path,
+    lstat: () => ({ uid: 1000, dev: 3, ino: 44, isSocket: () => true, isSymbolicLink: () => false }),
+    table: () => `header\n0000: 00000002 00000000 00010000 0001 01 88 ${plan.runtime}/bus\n`,
+    fds: pid => pid === 22 ? ['socket:[88]'] : [], inspect: pid => members.find(row => row.pid === pid) };
+  const bus = proveCompositorBusSocket(family, plan, approved, options);
+  assert.equal(bus.kernelInode, '88'); assert.equal(bus.filesystemInode, 44); assert.equal(bus.owners[0].pid, 22);
+  options.fds = () => []; assert.throws(() => proveCompositorBusSocket(family, plan, approved, options), /owner/);
+});
+test('producer caps stdout/stderr before retention and never certifies a truncated prefix', () => {
+  for (const [name, cap] of [['stdout', HELPER_CAPS.stdoutBytes], ['stderr', HELPER_CAPS.stderrBytes]]) {
+    const collector = createHelperOutputCollector();
+    collector.append(name, Buffer.alloc(cap));
+    assert.doesNotThrow(() => collector.check());
+    collector.append(name, Buffer.from('!'));
+    assert.throws(() => collector.check(), /cap/);
+    assert.throws(() => collector.result(), /cap/);
+  }
+  const flood = createHelperOutputCollector();
+  for (let i = 0; i <= HELPER_CAPS.outputPackets; i++) flood.append('stdout', Buffer.from('a'));
+  assert.throws(() => flood.result(), /packet cap/);
+  const invalid = createHelperOutputCollector();
+  invalid.append('stdout', Buffer.from([0xc0, 0xaf]));
+  assert.throws(() => invalid.result());
+});
+test('fixed helper work and active rollback fit sequence and compositor cleanup reserve', () => {
+  const helperRetirement = HELPER_CAPS.termMs + HELPER_CAPS.killMs + HELPER_CAPS.closeMs + CLEANUP_BUDGET.stabilizeMs;
+  assert.ok(HELPER_CAPS.count * (HELPER_CAPS.wallMs + helperRetirement) < HELPER_CAPS.sequenceMs);
+  const rollback = COMPOSITOR_CAPS.startupMs + helperRetirement + CLEANUP_BUDGET.termMs +
+    CLEANUP_BUDGET.killMs + CLEANUP_BUDGET.exitCloseMs + CLEANUP_BUDGET.stabilizeMs + COMPOSITOR_CAPS.pollMs + 250;
+  assert.ok(rollback < COMPOSITOR_CAPS.cleanupReserveMs);
+});
+test('deadline and final output identity mismatch prohibit additional helpers', async () => {
+  const f = rig(), config = f.make(); f.setTime(30001);
+  await assert.rejects(config.inspect()); assert.equal(f.calls, 0);
+  const changed = rig({ output: (step, stdout) => step === 'final' ? json({ id: 2 }) : stdout });
+  await assert.rejects(changed.make().inspect(), /identity/); assert.equal(changed.calls, 3);
+});
+test('helper post-exec identity must match captured worker child, fixed ELF role and HOME', () => {
+  const leader = { pid: 30, ppid: 10, starttime: '300', session: 30, pgrp: 30 };
+  const actual = { ...leader, uid: 1000, home: plan.home, exe: receipts['kscreen-doctor'].path,
+    executableIdentity: receipts['kscreen-doctor'].identity };
+  assert.equal(verifyHelperIdentity(actual, leader, receipts['kscreen-doctor'], plan, 1000, '/usr/bin/python3'), true);
+  for (const patch of [{ exe: '/bin/sh' }, { ppid: 1 }, { starttime: '301' }, { uid: 9 },
+    { executableIdentity: { ...actual.executableIdentity, ino: 99 } }]) {
+    assert.throws(() => verifyHelperIdentity({ ...actual, ...patch }, leader, receipts['kscreen-doctor'], plan, 1000, '/usr/bin/python3'));
+  }
+});
+test('active helper disconnect cancels remaining sequence and rolls back before compositor family', async () => {
+  const f = rig(), config = f.make(), spawn = f.deps.spawnHelper;
+  let enteredOutput, cancelOutput;
+  const outputEntered = new Promise(resolve => { enteredOutput = resolve; });
+  f.deps.spawnHelper = async (...args) => {
+    const gate = await spawn(...args), dispose = gate.disposeLocal;
+    gate.waitResult = () => { enteredOutput(); return new Promise((_, reject) => { cancelOutput = reject; }); };
+    gate.disposeLocal = () => { cancelOutput(Error('local resources disposed')); return dispose(); };
+    return gate;
+  };
+  const family = { leader: { pid: 20 }, cleanup: async () => {
+    f.events.push('compositor-cleanup'); return { cleanupConfirmed: true };
+  } };
+  const gate = { child: { pid: 20 }, family, capture: async () => {}, release: () => {},
+    corroborate: async () => {}, abort: () => {}, waitClosed: async () => ({ exited: true, closed: true }) };
+  const s = new CompositorSession(plan, { now: () => 0, persist: () => {}, emit: () => {},
+    spawnGate: async () => gate, inspect: proof, createConfiguration: () => config });
+  s.ready(); await s.handle({ type: 'start' });
+  const channel = new EventEmitter();
+  const detach = bindSupervisorProtocol(channel, s, { finish: reason => s.stop(reason), send: () => {}, isStopping: () => !!s.stopping });
+  const inspection = s.handle({ type: 'inspect' }); await outputEntered;
+  channel.emit('disconnect'); await s.stopping; const result = await inspection; detach();
+  assert.equal(f.calls, 1); assert.equal(result.status, 'inspection-incomplete');
+  assert.ok(f.events.indexOf('dispose:initial') < f.events.indexOf('compositor-cleanup'));
+});
+test('failed helper retirement poisons acquisition rollback and cannot restart configuration', async () => {
+  const f = rig({ badRetirement: 0 }), config = f.make();
+  const family = { leader: { pid: 20 }, cleanup: async () => ({ cleanupConfirmed: true }) };
+  const gate = { child: { pid: 20 }, family, capture: async () => {}, release: () => {},
+    corroborate: async () => {}, abort: () => {}, waitClosed: async () => ({ exited: true, closed: true }) };
+  const s = new CompositorSession(plan, { now: () => 0, persist: () => {}, emit: () => {},
+    spawnGate: async () => gate, inspect: proof, createConfiguration: () => config });
+  s.ready(); await s.handle({ type: 'start' });
+  const result = await s.handle({ type: 'inspect' });
+  assert.equal(result.status, 'inspection-incomplete'); assert.equal(result.modeVerified, false);
+  assert.equal(s.receipt.cleanupConfirmed, false); assert.equal(s.receipt.helpers.cleanupConfirmed, false);
+  await assert.rejects(s.handle({ type: 'inspect' })); assert.equal(f.calls, 1);
+});
+test('actual session inspect command uses helper sequence and disconnect retires helpers before compositor', async () => {
+  const f = rig(), config = f.make(), order = f.events;
+  const family = { leader: { pid: 20 }, sample: () => ({ rssMb: 10, members: [{ pid: 20, state: 'S' }] }),
+    cleanup: async () => { order.push('compositor-cleanup'); return { cleanupConfirmed: true }; } };
+  const gate = { child: { pid: 20 }, family, capture: async () => {}, release: () => {},
+    corroborate: async () => {}, abort: () => {}, waitClosed: async () => ({ exited: true, closed: true }) };
+  const s = new CompositorSession(plan, { now: () => 0, persist: () => {}, emit: () => {},
+    spawnGate: async () => gate, inspect: proof, createConfiguration: () => config });
+  s.ready(); await s.handle({ type: 'start' });
+  const channel = new EventEmitter(); let reply;
+  const detach = bindSupervisorProtocol(channel, s, { finish: reason => s.stop(reason), send: value => { reply = value; }, isStopping: () => !!s.stopping });
+  const observed = await s.handle({ type: 'inspect' });
+  assert.equal(observed.modeVerified, true);
+  assert.equal(observed.helpers.length, 4);
+  channel.emit('disconnect'); await s.stopping; detach();
+  assert.ok(order.indexOf('dispose:wayland') < order.indexOf('compositor-cleanup'));
+  assert.equal(s.receipt.cleanupConfirmed, true);
+  assert.equal(reply, undefined);
+});

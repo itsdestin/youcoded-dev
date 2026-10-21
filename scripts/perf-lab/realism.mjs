@@ -33,7 +33,7 @@ import { bounded } from './suspects.mjs';
 import { findFamily, cpuSnapshot, cpuPercent } from './procs.mjs';
 import { otherRigRuns } from './switch-pingpong.mjs';
 import {
-  findAmdgpu, readClients, readGpuSysfs, startVirtualCompositor, installTheme, parseCell, sanitizeProcessEnv, assertPortsFree, DEFAULT_THEME_SOURCE,
+  findAmdgpu, readClients, readGpuSysfs, startVirtualCompositor, installTheme, parseCell, sanitizeProcessEnv, assertPortsFree, DEFAULT_THEME_SOURCE, GPU_RUNTIME_BLOCK,
 } from './gpu-cost.mjs';
 import { engineDelta, rendererVerdict } from './gpu-cost-parse.mjs';
 import { eventRecorder } from './realism-page.mjs';
@@ -367,7 +367,9 @@ function waitForQuiet(maxMs) {
   })();
 }
 
+export function realismRuntimeRefusal(opts){return opts?.factors?.display==='gpu'?{...GPU_RUNTIME_BLOCK,tool:'realism.mjs',display:'gpu',reason:'Realism GPU display blocked before preparation: '+GPU_RUNTIME_BLOCK.reason}:null;}
 export async function runBoot(opts, bootNo, outFile) {
+  const refusal=realismRuntimeRefusal(opts);if(refusal)return refusal;
   const f = opts.factors, bound = bounded(opts.maxMinutes);
   const report = { status: 'incomplete', pick: opts.pick, deep: opts.deep, factors: f, preset: opts.preset, boot: bootNo, tag: opts.tag, startedAt: new Date().toISOString(), loadAvgStart: readFileSync('/proc/loadavg', 'utf8').trim(), sessions: [], runs: {}, controls: {}, errors: {}, notes: [] };
   report.unusable = Number(report.loadAvgStart.split(' ')[0]) > 8;
@@ -490,6 +492,9 @@ export function loadTarget(path = HIS_FILE) {
 
 export async function main(argv = process.argv.slice(2)) {
   const opts = parseOptions(argv);
+  // Must precede assets/history/package copies, mkdir, fake provider, env and
+  // port probing. Imported compositor refusal is too late after those effects.
+  const refusal=realismRuntimeRefusal(opts);if(refusal)return refusal;
   if (!assetsReady()) throw Error('perf-lab assets not cached');
   mkdirSync(opts.out, { recursive: true });
   const target = loadTarget();
@@ -511,4 +516,4 @@ export async function main(argv = process.argv.slice(2)) {
   return reports;
 }
 void SLOW_MS; void selfChain; void cpSync; void waitFor;
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(e => { console.error(e); process.exitCode = 2; });
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().then(r=>{if(r?.status==='unsupported'){console.log(JSON.stringify(r));process.exitCode=2;}}).catch(e => { console.error(e); process.exitCode = 2; });

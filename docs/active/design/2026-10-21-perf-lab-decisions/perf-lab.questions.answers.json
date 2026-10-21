@@ -1,0 +1,43 @@
+{
+ "deck": "perf-lab-decisions",
+ "started": "2026-10-21T21:46:14.976Z",
+ "submitted": "2026-10-21T21:48:30Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "backup-now",
+   "t": 1792619309375,
+   "seconds": 27,
+   "theme": "youcoded"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "alt-proof-and-launch",
+   "t": 1792619309375,
+   "seconds": 27,
+   "theme": "youcoded"
+  },
+  "Q-3": {
+   "v": "other",
+   "t": 1792619309375,
+   "note": "kinda confused. please explain further.",
+   "seconds": 27,
+   "theme": "youcoded"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "add-counter",
+   "t": 1792619309375,
+   "seconds": 27,
+   "theme": "youcoded"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1792619309375,
+   "note": "i'm fine to prioritize linux to start, with macos/windows scoped as clear follow-ups. depends on how much time it would take to actually get windows/mac working. if its easy, then we might as well just do now?",
+   "seconds": 27,
+   "theme": "youcoded"
+  }
+ }
+}

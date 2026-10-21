@@ -118,24 +118,62 @@ test('summarise ignores non-numbers but keeps the real samples', () => {
   assert.ok(s.medianMs >= 20 && s.medianMs <= 30);
 });
 
-test('attributeStall: no stall when the IPC ping stayed responsive', () => {
+test('attributeStall: missing long-task entries do not establish a main-process stall', () => {
+  const v = attributeStall({ maxMs: 1200 }, { longtaskSupported: true, longtaskMaxMs: 0, frameGapMaxMs: 1200 });
+  assert.notEqual(v.verdict, 'main');
+});
+
+test('attributeStall: a renderer scheduling gap cannot hide behind fast completed pings', () => {
+  const v = attributeStall({ maxMs: 2, maxTickDelayMs: 900 }, { longtaskSupported: true, longtaskMaxMs: 0, frameGapMaxMs: 900 });
+  assert.equal(v.verdict, 'renderer');
+});
+
+test('attributeStall: frame-only delay is not a healthy or proven main-thread result', () => {
+  const v = attributeStall({ maxMs: 2, maxTickDelayMs: 0 }, { longtaskSupported: true, longtaskMaxMs: 0, frameGapMaxMs: 900 });
+  assert.equal(v.verdict, 'unclear');
+});
+
+test('attributeStall: hidden-window throttling is not a foreground renderer freeze', () => {
+  const ipc = { maxMs: 2, maxTickDelayMs: 900, sawHidden: true };
+  assert.equal(attributeStall(ipc, { longtaskMaxMs: 0 }).verdict, 'unknown');
+  assert.equal(attributeStall(ipc, { longtaskMaxMs: 0 }, { independentMain: { available: true, stopped: true, invalidClock: false, sampleCount: 4, observedMs: 1400, everyMs: 50, maxDelayMs: 900 } }).verdict, 'main');
+});
+
+test('attributeStall: pending or rejected pings are not fast healthy results', () => {
+  assert.notEqual(attributeStall({ maxMs: 2, openStallMs: 900 }, { longtaskMaxMs: 0 }).verdict, 'none');
+  assert.equal(attributeStall({ maxMs: 0, rejectedPings: 1 }, { longtaskMaxMs: 0 }).verdict, 'unknown');
+});
+
+test('attributeStall: fast pings do not erase an observed renderer long task', () => {
   const v = attributeStall({ maxMs: 60 }, { longtaskMaxMs: 900 });
+  assert.equal(v.verdict, 'renderer');
+  assert.match(v.why, /900ms/);
+});
+
+test('attributeStall: none means no observed signal exceeded the threshold', () => {
+  const v = attributeStall({ maxMs: 60, maxTickDelayMs: 2, pings: 4, tickSamples: 4, observedMs: 400, sawHidden: false, openStallMs: null, rejectedPings: 0 }, { longtaskMaxMs: 10, frameGapMaxMs: 17 });
   assert.equal(v.verdict, 'none');
-  assert.match(v.why, /60ms/);
+  assert.match(v.why, /No observed/);
 });
 
 test('attributeStall: renderer when both spiked together', () => {
   const v = attributeStall({ maxMs: 900 }, { longtaskMaxMs: 850 });
   assert.equal(v.verdict, 'renderer');
-  assert.match(v.why, /renderer thread was the one blocked/);
+  assert.match(v.why, /renderer had a 850ms/);
 });
 
-test('attributeStall: MAIN process when the ping stalled and the renderer was idle', () => {
-  // This is the app-wide-freeze signature the plain long-task number misses,
-  // and the entire reason both probes run on every step.
-  const v = attributeStall({ maxMs: 1200 }, { longtaskMaxMs: 60 });
+test('attributeStall: main requires an independently measured main-loop delay', () => {
+  const v = attributeStall({ maxMs: 1200 }, { longtaskMaxMs: 60 }, { independentMain: { available: true, stopped: true, invalidClock: false, sampleCount: 4, observedMs: 1400, everyMs: 50, maxDelayMs: 1100 } });
   assert.equal(v.verdict, 'main');
-  assert.match(v.why, /MAIN process was blocked/);
+  assert.match(v.why, /measured directly/);
+  assert.equal(attributeStall({ maxMs: 1200 }, { longtaskMaxMs: 60 }).verdict, 'unclear');
+  assert.equal(attributeStall({ maxMs: 1200 }, { longtaskMaxMs: 60 }, { independentMain: { available: false, maxDelayMs: 1100 } }).verdict, 'unclear');
+});
+
+test('attributeStall: simultaneous observed loop delays do not get assigned one cause', () => {
+  const v = attributeStall({ maxMs: 1200, maxTickDelayMs: 900 }, { longtaskMaxMs: 0 }, { independentMain: { available: true, stopped: true, invalidClock: false, sampleCount: 4, observedMs: 1400, everyMs: 50, maxDelayMs: 1000 } });
+  assert.equal(v.verdict, 'unclear');
+  assert.match(v.why, /both were affected/);
 });
 
 test('attributeStall: unclear rather than a guess when the two are close', () => {

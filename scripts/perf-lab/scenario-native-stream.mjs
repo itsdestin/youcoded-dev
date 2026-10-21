@@ -42,9 +42,11 @@ import { fileURLToPath } from 'node:url';
 import { waitFor } from './cdp.mjs';
 import { startFakeProvider } from './fake-provider.mjs';
 import { enablePerformanceDomain, installCommitProbe, readCommitProbe, readCounters, stopCommitProbe, summariseLayoutCost } from './layout-cost.mjs';
-import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { installIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { ipcBoundary, finishLegacyIpc } from './legacy-ipc-boundary.mjs';
 import { attributeStall } from './scenario-artifacts.mjs';
 import { ipcRow, stallReading } from './scenario-terminal.mjs';
+import { STREAM_DRAIN_DESCRIPTOR, beginStreamDiagnostic, finishStreamDiagnostic, stopStreamDrain, revealStreamOutput } from './stream-drain.mjs';
 import {
   installPageHelpers, installProbe, median, openJourneySessions, p95, readProbe, readProbeWindow, renderedEntries, stopProbe,
 } from './scenario-workload.mjs';
@@ -306,13 +308,19 @@ export const MEASURES = {
 // ---------------------------------------------------------------------------
 
 /** Send one reply into `sessionId` and measure the stream window. */
-async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pingMs, warnings, expectStopButton = true }) {
-  fake.plan({ deltas, perSec, seed });
+export async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pingMs, warnings, expectStopButton = true, completionDiagnostics = false }) {
+  // WHY opt-in and separate profile: listener overhead/plain exact-match fixture
+  // must never silently perturb the standard Markdown performance baseline.
+  let diagnosticPlan = null, primaryFailure = null;
+  try {
+  diagnosticPlan = completionDiagnostics ? await beginStreamDiagnostic(cdp, fake, { leg: seed, sessionId, deltas, perSec }) : null;
+  if (!diagnosticPlan) fake.plan({ deltas, perSec, seed });
   const completion = fake.expectCompletion();
   const budgetMs = Math.ceil(deltas / perSec * 1000) + LEG_GRACE_MS;
   const lenBefore = await cdp.evaluate('window.__perfLab.chatLen()');
-  await mark(cdp, `${label}:start`);
   await installIpcStallProbe(cdp, { everyMs: pingMs });
+  if (!(await ipcBoundary(cdp)).ready) throw new Error('Native stream IPC probe never became ready');
+  await mark(cdp, `${label}:start`);
   const attach = await installCommitProbe(cdp, { selector: '.chat-scroll' });
   if (!attach?.attached) warnings.push(`${label}: no visible .chat-scroll to observe, so its commit and frame counts are UNMEASURED`);
   const before = await readCounters(cdp);
@@ -367,10 +375,8 @@ async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pi
   }
   const commit = await readCommitProbe(cdp);
   await stopCommitProbe(cdp);
-  let ipcRead;
-  try { ipcRead = await readIpcStallProbe(cdp); } catch (err) { ipcRead = { error: err.message }; }
-  try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
   await mark(cdp, `${label}:end`);
+  const ipcRead = await finishLegacyIpc(cdp);
   let probe = null;
   try { probe = await readProbeWindow(cdp, `${label}:start`, `${label}:end`); } catch (err) { probe = { error: err.message }; }
   const lenAfter = await cdp.evaluate('window.__perfLab.chatLen()');
@@ -378,7 +384,19 @@ async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pi
   const layout = summariseLayoutCost(before, after, commit);
   const mainThread = mainThreadDelta(busyBefore, busyAfter, probe?.windowMs ?? null);
   if (mainThread.taskMs === null) warnings.push(`${label}: the renderer's main-thread busy time is UNMEASURED (${busyBefore.error ?? busyAfter.error ?? 'no TaskDuration counter'}) — taskMs is null, not 0`);
-  return { ...summariseLeg({ rec, planned: deltas, perSec, firstResponseMs, turnMs, turnEndSignal, charsShown, layout, probe, ipcRead, pingMs, mainThread }), profilePath };
+  const diagnostic = diagnosticPlan ? await finishStreamDiagnostic(cdp, diagnosticPlan, rec) : null;
+  return { ...summariseLeg({ rec, planned: deltas, perSec, firstResponseMs, turnMs, turnEndSignal, charsShown, layout, probe, ipcRead, pingMs, mainThread }), profilePath,
+    ...(diagnostic ? { completionDiagnostic: diagnostic } : {}) };
+  } catch (error) {
+    primaryFailure = error;
+    throw error;
+  } finally {
+    try { if (completionDiagnostics) await stopStreamDrain(cdp); }
+    catch (error) {
+      if (primaryFailure) primaryFailure.receiptCleanupError = error.message;
+      else throw error;
+    }
+  }
 }
 
 /**
@@ -388,7 +406,9 @@ async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pi
 export async function runNativeStreamScenario(app, fixture, {
   deltas = STREAM_DELTAS, perSec = STREAM_PER_SEC, pingMs = IPC_PING_MS,
   switchCount = SWITCHES_DURING_STREAM, switchEveryMs = SWITCH_EVERY_MS, firstSwitchAtMs = FIRST_SWITCH_AT_MS,
+  completionDiagnostics = false,
 } = {}) {
+  if (typeof completionDiagnostics !== 'boolean') throw Error('completionDiagnostics must be boolean');
   if (!fixture.fakeProvider) {
     throw new Error('native-stream: the fixture was built without { fakeProvider: true } — there is no endpoint to stream from, and falling back to the local model would measure a stream ten times slower than this phase describes');
   }
@@ -433,18 +453,20 @@ export async function runNativeStreamScenario(app, fixture, {
       throw new Error(`native-stream: could not bring ${names[natIdx]} on screen — ${toNative.reason}. The app returned ${ids.length} session ids (${names.join(', ')}); the strip shows ${JSON.stringify(shown)}`);
     }
     await sleep(500);
-    const visible = await streamLeg(cdp, fake, { label: 'native-stream:visible', sessionId: nat[0].id, deltas, perSec, seed: 'visible', pingMs, warnings });
+    const visible = await streamLeg(cdp, fake, { label: 'native-stream:visible', sessionId: nat[0].id, deltas, perSec, seed: 'visible', pingMs, warnings, completionDiagnostics });
     if (typeof visible.charsShown === 'number' && typeof visible.charsStreamed === 'number' && visible.charsShown < visible.charsStreamed * 0.5) {
       warnings.push(`native-stream: the visible pane grew by only ${visible.charsShown} characters for a ${visible.charsStreamed}-character reply — the stream did not reach the screen, so the visible leg's numbers do not describe a rendered stream`);
     }
     await sleep(1000);
 
     // ── Leg 2: switching while it streams ─────────────────────────────────
-    fake.plan({ deltas, perSec, seed: 'switching' });
+    const switchingPlan = completionDiagnostics ? await beginStreamDiagnostic(cdp, fake, { leg: 'switching', sessionId: nat[0].id, deltas, perSec }) : null;
+    if (!switchingPlan) fake.plan({ deltas, perSec, seed: 'switching' });
     const completion2 = fake.expectCompletion();
     const budget2 = Math.ceil(deltas / perSec * 1000) + LEG_GRACE_MS;
-    await mark(cdp, 'native-stream:switching:start');
     await installIpcStallProbe(cdp, { everyMs: pingMs });
+    if (!(await ipcBoundary(cdp)).ready) throw new Error('Native switching IPC probe never became ready');
+    await mark(cdp, 'native-stream:switching:start');
     const busyBefore2 = await readMainThreadTime(cdp);
     const requestsBefore2 = fake.requests.length;
     const tSend2 = Date.now();
@@ -474,10 +496,8 @@ export async function runNativeStreamScenario(app, fixture, {
     try { rec2 = await withTimeout(completion2, budget2, 'native-stream:switching: the fake endpoint\'s stream'); } catch (err) { warnings.push(`native-stream: ${err.message}`); }
     try { await waitFor(cdp, 'window.__perfStream.stopCount() === 0', { timeoutMs: budget2, everyMs: 50 }); turnMs2 = Date.now() - tSend2; } catch { warnings.push('native-stream:switching: the Stop button never went away after the stream; the turn did not end'); }
     const busyAfter2 = await readMainThreadTime(cdp);
-    let ipcRead2;
-    try { ipcRead2 = await readIpcStallProbe(cdp); } catch (err) { ipcRead2 = { error: err.message }; }
-    try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
     await mark(cdp, 'native-stream:switching:end');
+    const ipcRead2 = await finishLegacyIpc(cdp);
     const probe2 = await readProbeWindow(cdp, 'native-stream:switching:start', 'native-stream:switching:end');
     const mainThread2 = mainThreadDelta(busyBefore2, busyAfter2, probe2?.windowMs ?? null);
     const switching = {
@@ -487,6 +507,7 @@ export async function runNativeStreamScenario(app, fixture, {
       longtaskTotalMs: probe2?.longtaskTotalMs ?? null, longtaskMaxMs: probe2?.longtaskMaxMs ?? null, frameGapMaxMs: probe2?.frameGapMaxMs ?? null, windowMs: probe2?.windowMs ?? null,
       ipc: ipcRow(ipcRead2, pingMs), stall: attributeStall(stallReading(ipcRead2), probe2), switches,
     };
+    if (switchingPlan) switching.completionDiagnostic = await finishStreamDiagnostic(cdp, switchingPlan, rec2);
     if (switching.duringStream < switchCount) {
       warnings.push(`native-stream: only ${switching.duringStream}/${switchCount} switches happened while deltas were still arriving — the stream ended early, so the switching numbers cover fewer switches than planned`);
     }
@@ -500,7 +521,7 @@ export async function runNativeStreamScenario(app, fixture, {
     const toHuge = await switchTo(hugeIdx, false, null, false);
     if (toHuge.mode === 'none') throw new Error(`native-stream: could not bring ${names[hugeIdx]} on screen for the hidden leg — ${toHuge.reason}`);
     await sleep(1000);
-    const hidden = await streamLeg(cdp, fake, { label: 'native-stream:hidden', sessionId: nat[0].id, deltas, perSec, seed: 'hidden', pingMs, warnings, expectStopButton: false });
+    const hidden = await streamLeg(cdp, fake, { label: 'native-stream:hidden', sessionId: nat[0].id, deltas, perSec, seed: 'hidden', pingMs, warnings, expectStopButton: false, completionDiagnostics });
     const visibleNow = await cdp.evaluate('window.__perfLab.visiblePaneIdx()');
     if (visibleNow !== hugeIdx) {
       warnings.push(`native-stream: the visible pane moved to index ${visibleNow} during the hidden leg (expected ${hugeIdx}) — the app switched away from the huge conversation on its own, so the hidden leg was not fully hidden`);
@@ -510,7 +531,18 @@ export async function runNativeStreamScenario(app, fixture, {
     }
 
     const probe = await readProbe(cdp);
+    let completionDiagnostic = null;
+    if (completionDiagnostics) {
+      // WHY after every legacy phase/window snapshot: revealing the hidden session
+      // observes its eventual DOM output, not hidden reducer completion time.
+      const postReveal = await revealStreamOutput(cdp, nat[0].id, hidden.completionDiagnostic.fixture,
+        { idx: natIdx, name: names[natIdx], sessionCount: ids.length });
+      const legs = { visible: visible.completionDiagnostic, switching: switching.completionDiagnostic, hidden: hidden.completionDiagnostic };
+      completionDiagnostic = { descriptor: STREAM_DRAIN_DESCRIPTOR, status: Object.values(legs).every(l => l?.status === 'measured') && postReveal.status === 'measured' ? 'measured' : 'incomplete',
+        standardAcceptance: false, legs, hiddenPostReveal: postReveal };
+    }
     return {
+      ...(completionDiagnostic ? { completionDiagnostic } : {}),
       sessions: { names, sizes: sizeByName, streaming: names[natIdx], huge: names[hugeIdx] },
       deltas: { planned: deltas, perSecTarget: perSec, requests: fake.requests.length },
       visible, switching, hidden,
@@ -518,9 +550,13 @@ export async function runNativeStreamScenario(app, fixture, {
       warnings,
     };
   } finally {
-    try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
-    try { await stopCommitProbe(cdp); } catch { /* page gone */ }
-    try { await stopProbe(cdp); } catch { /* page gone */ }
-    if (fake) await fake.close();
+    try { if (completionDiagnostics) await stopStreamDrain(cdp); }
+    finally {
+      // Receipt cleanup must not prevent the pre-existing probe/provider cleanup.
+      try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
+      try { await stopCommitProbe(cdp); } catch { /* page gone */ }
+      try { await stopProbe(cdp); } catch { /* page gone */ }
+      if (fake) await fake.close();
+    }
   }
 }

@@ -31,7 +31,7 @@
 // Node built-ins only: the workspace root has no package.json and must not gain one.
 
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { cpus, release, totalmem } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,6 +40,169 @@ import { buildApp, treeFingerprint } from './build.mjs';
 import { waitFor } from './cdp.mjs';
 import { PRIMARY, get, runsFor } from './compare.mjs';
 import { buildFixture } from './fixture.mjs';
+import { requireDiskHeadroom } from './disk-budget.mjs';
+import { connectMainLoop, freeInspectorPort } from './main-loop-probe.mjs';
+import { buildStallFixtures } from './stall-fixtures.mjs';
+import { runDocumentStallCases } from './scenario-document-stalls.mjs';
+import { DOCUMENT_CONTROL_TYPES } from './document-input.mjs';
+import { DOCUMENT_CASE_IDS, DOCUMENT_OPTIONAL_COVERAGE, DOCUMENT_INSTRUMENT_FILES, documentProblems, documentBreaches, documentMarkdown, recordDocumentRepeat } from './document-report.mjs';
+import { publishReportJson, uniqueStem } from './atomic-report.mjs';
+import { LAB_DIR, buildIdentity, hashFiles, instrumentIdentity, packageIdentity } from './identity.mjs';
+import { controlFromEnv } from './control.mjs';
+import { acquireRunLock } from './run-lock.mjs';
+import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
+import { replayEvidenceProblems } from './replay-evidence.mjs';
+import { buildLegacyExecution, legacyEvidenceProblems } from './legacy-evidence.mjs';
+import { MEASURES as ARTIFACT_DESCRIPTOR } from './scenario-artifacts.mjs';
+import { STREAM_DRAIN_DESCRIPTOR, assessStreamDrain, buildDrainFixture } from './stream-drain.mjs';
+
+/** The fake endpoint journey still opens huge/medium/small transcripts plus an
+ * empty control and two native sessions. Completion diagnostics need identities,
+ * not large history or any local engine/model. Standard native fixtures unchanged. */
+export function nativeStreamFixtureOptions(cfg) {
+  return cfg.streamCompletionDiagnostics
+    ? { fakeProvider: true, seedEngine: false, historySizes: { small: 4, medium: 8, huge: 12 }, decoyCount: 0 }
+    : { fakeProvider: true };
+}
+export function createNativeStreamFixture(root, cfg, { buildFixture: create = buildFixture, log } = {}) {
+  return create(root, { ...nativeStreamFixtureOptions(cfg), ...(log ? { log } : {}) });
+}
+export async function prepareRunnerBuild(cfg, { buildApp: build = buildApp } = {}) {
+  return build(cfg.checkout, { skipIfFresh: !cfg.forceBuild, cachedOnly: cfg.cachedOnly === true });
+}
+
+/** WHY an explicit executed profile: plain exact-output fixtures/listener overhead
+ * must never masquerade as the standard Markdown PRIMARY performance baseline.
+ * Manifest options intentionally differ, so existing comparison fails closed. */
+export function configureStreamCompletion(report, cfg) {
+  if (!cfg.streamCompletionDiagnostics) return;
+  const phase = report.legacyExecution.phases['native-stream'];
+  phase.options.completionDiagnostics = true;
+  phase.options.perSec = 150;
+  report.standardAcceptance = false;
+  report.diagnosticExecution = { revision: 1, profile: 'plain-completion-diagnostic', expectedRepeats: cfg.nativeStreamRepeats,
+    descriptor: STREAM_DRAIN_DESCRIPTOR, standardAcceptance: false,
+    fixture: nativeStreamFixtureOptions(cfg), buildPolicy: cfg.cachedOnly ? 'cached-only-no-build' : 'allow-build',
+    // WHY hashFiles (identity.mjs): one hashing implementation for this diagnostic and the
+    // every-report instrument identity, so the two cannot drift.
+    instrumentHashes: hashFiles(join(ROOT, 'scripts/perf-lab'), ['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs']),
+    provenancePolicy: 'Runner build/machine/lab-source provenance retained; this diagnostic is not a standard timing baseline' };
+  report.measures.nativeStream = { scenario: 'native-stream-completion-diagnostic', profile: 'plain-completion-diagnostic',
+    question: 'Did producer writes reach the owned renderer bridge and exact output after reveal?', configuration: [STREAM_DRAIN_DESCRIPTOR.fixture],
+    clocks: { receipt: STREAM_DRAIN_DESCRIPTOR.clocks }, blindTo: STREAM_DRAIN_DESCRIPTOR.limits };
+}
+
+/** Recheck raw producer/receipt/reveal evidence, not a stored measured status.
+ * No internal reducer queue claim, PRIMARY budget or injected-control scoring. */
+export function streamCompletionProblems(report) {
+  const problems = [], execution = report.diagnosticExecution, runs = report.nativeStream?.runs;
+  const need = (ok, why) => { if (!ok) problems.push(`stream-completion: ${why}`); };
+  need(execution?.revision === 1 && execution.profile === 'plain-completion-diagnostic' && execution.standardAcceptance === false
+    && report.standardAcceptance === false && execution.descriptor?.revision === STREAM_DRAIN_DESCRIPTOR.revision
+    && execution.descriptor?.lane === STREAM_DRAIN_DESCRIPTOR.lane, 'executed diagnostic profile/revision missing');
+  const options = report.legacyExecution?.phases?.['native-stream']?.options;
+  need(options?.completionDiagnostics === true && options?.deltas === 3000 && options?.switchCount === 8 && options?.perSec === 150, 'executed completionDiagnostics option/dimensions missing');
+  const fixturePolicy = execution?.fixture;
+  need(fixturePolicy?.seedEngine === false && fixturePolicy.fakeProvider === true && fixturePolicy.decoyCount === 0
+    && fixturePolicy.historySizes?.small === 4 && fixturePolicy.historySizes?.medium === 8 && fixturePolicy.historySizes?.huge === 12,
+    'model-free diagnostic fixture policy missing/mismatched');
+  need(['allow-build', 'cached-only-no-build'].includes(execution?.buildPolicy), 'build execution policy missing');
+  need(['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs'].every(name => /^[a-f0-9]{64}$/.test(execution?.instrumentHashes?.[name] ?? '')), 'instrument provenance hashes missing');
+  if (Array.isArray(report.incomplete) && report.incomplete.length) problems.push('stream-completion: report declares incomplete evidence');
+  need(Number.isInteger(execution?.expectedRepeats) && execution.expectedRepeats >= 1 && execution.expectedRepeats <= 3
+    && report.legacyExecution?.phases?.['native-stream']?.expectedRepeats === execution.expectedRepeats
+    && Array.isArray(runs) && runs.length === execution.expectedRepeats, 'expected repeats missing/mismatched');
+  if (report.aborted != null) problems.push(`stream-completion: aborted: ${report.aborted}`);
+  for (const [i, row] of (Array.isArray(runs) ? Array.from(runs) : []).entries()) {
+    const d = row?.completionDiagnostic;
+    need(row?.deltas?.planned === options?.deltas && row?.deltas?.perSecTarget === options?.perSec, `repeat ${i + 1} actual stream dimensions missing/mismatched`);
+    need(!row?.error && !row?.threw && !row?.receiptCleanupError && !row?.cleanupError && !d?.fatal, `repeat ${i + 1} scenario/cleanup failure`);
+    need(d?.descriptor?.revision === STREAM_DRAIN_DESCRIPTOR.revision && d?.descriptor?.lane === STREAM_DRAIN_DESCRIPTOR.lane
+      && d?.standardAcceptance === false && d?.status === 'measured', `repeat ${i + 1} descriptor/status incomplete`);
+    // WHY raw switching rows: eight planned switches and a finished reply can
+    // coexist with an unexecuted/failed/out-of-stream switch. Never filter them
+    // out or certify from the switching summary. These are the scenario's actual
+    // i/idx/name/intoStreaming/duringStream/ok/mode/timing fields.
+    const names = row?.sessions?.names, streaming = row?.sessions?.streaming, huge = row?.sessions?.huge;
+    const validNames = Array.isArray(names) && names.length === 6 && names.every(n => typeof n === 'string' && n.length > 0) && new Set(names).size === 6;
+    const nativeIndex = validNames ? names.indexOf(streaming) : -1, hugeIndex = validNames ? names.indexOf(huge) : -1;
+    need(validNames && nativeIndex >= 0 && hugeIndex >= 0 && nativeIndex !== hugeIndex, `repeat ${i + 1} switching session identities missing/ambiguous`);
+    const switches = row?.switching?.switches;
+    need(Array.isArray(switches) && switches.length === 8, `repeat ${i + 1} expected all 8 executed switches`);
+    if (Array.isArray(switches)) Array.from(switches).forEach((s, j) => {
+      const into = j % 2 === 1, target = into ? nativeIndex : hugeIndex;
+      need(s?.i === j && s?.idx === target && target >= 0 && s?.name === names?.[target]
+        && s?.intoStreaming === into && s?.duringStream === true && s?.ok === true && ['pill', 'menu'].includes(s?.mode)
+        && typeof s?.ms === 'number' && Number.isFinite(s.ms) && s.ms >= 0
+        && typeof s?.paintedMs === 'number' && Number.isFinite(s.paintedMs) && s.paintedMs >= 0
+        && s?.settled === true && typeof s?.entries === 'number' && Number.isFinite(s.entries) && s.entries > 0
+        && s?.reason == null, `repeat ${i + 1} switching row ${j} incomplete/wrong transition/outside stream`);
+    });
+    const requests = new Set();
+    for (const leg of ['visible', 'switching', 'hidden']) {
+      const evidence = d?.legs?.[leg], fixture = evidence?.fixture;
+      let expected = null;
+      try { expected = buildDrainFixture(leg, report.legacyExecution.phases['native-stream'].options.deltas); } catch { /* reported below */ }
+      need(expected && fixture?.text === expected.text && fixture?.marker === expected.marker, `${leg} fixture differs from executed plan`);
+      const assessed = assessStreamDrain({ expected: expected?.text, producer: evidence?.producer, receipt: evidence?.receipt });
+      need(assessed.status === 'measured', `${leg} producer/receipt invalid: ${assessed.reasons.join('; ')}`);
+      need(evidence?.status === 'measured' && evidence?.standardAcceptance === false && !evidence?.reasons?.length
+        && evidence?.bridgeDrain?.status === 'measured' && evidence.bridgeDrain.error === null && !evidence.error && !evidence.cleanupError, `${leg} drain/error/cleanup incomplete`);
+      need(evidence?.bridgeDrain?.receipt?.text === evidence?.receipt?.text && evidence?.bridgeDrain?.receipt?.complete === true, `${leg} final receipt differs`);
+      const sid = evidence?.receipt?.sessionId;
+      need(typeof sid === 'string' && sid.length > 0, `${leg} missing owned session`);
+      for (const view of [evidence?.visibility?.start, evidence?.visibility?.end]) need(view?.sessionId === sid && view.ownedCount === 1 && view.activeCount === 1 && view.documentVisibility === 'visible'
+        && (leg !== 'hidden' || view.hidden === true && typeof view.activeSessionId === 'string' && view.activeSessionId !== sid), `${leg} visibility proof incomplete`);
+      need(!requests.has(evidence?.producer?.index), `${leg} duplicate producer request index`); requests.add(evidence?.producer?.index);
+    }
+    const final = d?.hiddenPostReveal;
+    need(final?.status === 'measured' && final.error === null && final.visible?.exact === true && final.visible?.marker === true
+      && final.visible.documentVisibility === 'visible' && !final.cleanupError && !d?.error && !d?.cleanupError, 'post-reveal exact output/error/cleanup incomplete');
+  }
+  return problems;
+}
+
+export function artifactMeasurementMetadata(disk) {
+  // WHY: free space and checked filesystem paths are observations, not workload
+  // identity. Keeping them in MEASURES would make identical A/B fixtures differ.
+  return {
+    descriptor: { ...ARTIFACT_DESCRIPTOR, fixture: { ...artifactFixtureOptions(), diskPolicy: {
+      reserveBytes: disk.reserveBytes, additionalBytes: disk.additionalBytes, requiredBytes: disk.requiredBytes,
+    } }, documentsRequired: true },
+    observations: { disk },
+  };
+}
+
+/** Fixture options each phase builds with, recorded in report.identity so a changed fixture
+ * recipe is incomparable rather than silently ranked (acceptance A3). The fixture's SOURCE
+ * is separately covered by the instrument hashes. */
+export function fixtureIdentity(cfg) {
+  return { options: {
+    default: {}, artifacts: artifactFixtureOptions(), nativeStream: nativeStreamFixtureOptions(cfg),
+    nativeResume: { fakeProvider: true, nativeSessions: true }, stallDocuments: { profile: 'smoke' },
+  } };
+}
+
+/** Boots a configuration will perform, by kind — shared by --check output and ab.mjs preflight. */
+export function bootPlan(cfg) {
+  const has = (p) => cfg.only.has(p);
+  const plan = {
+    startup: has('startup') ? cfg.runs : 0,
+    sharedScenario: ['history', 'shots'].some(has) ? 1 : 0,
+    workload: has('workload') ? cfg.workloadRepeats : 0,
+    stall: has('stall') ? 1 : 0, artifacts: has('artifacts') ? 1 : 0, projects: has('projects') ? 1 : 0,
+    terminal: has('terminal') ? cfg.terminalRepeats : 0,
+    nativeStream: has('native-stream') ? cfg.nativeStreamRepeats : 0,
+    nativeResume: has('native-resume') ? cfg.nativeResumeRepeats : 0,
+    scrollback: has('scrollback') ? 1 : 0,
+  };
+  return { ...plan, total: Object.values(plan).reduce((a, b) => a + b, 0) };
+}
+
+// WHY: viewer-only runs exhausted disk downloading an engine they never use.
+export function artifactFixtureOptions() {
+  return { seedEngine: false, historySizes: { small: 12 }, decoyCount: 0 };
+}
 import { FAKE_PROVIDER_PORT } from './fake-provider.mjs';
 import { formatRendererLine, readRendererInfo } from './gpu.mjs';
 import { formatLayoutCostLine, worstVerdict } from './layout-cost.mjs';
@@ -50,7 +213,7 @@ import { MEASURES as HISTORY_MEASURES, MESSAGE_COUNT_EXPR, runHistoryScenario } 
 import { SCREEN_NAMES, capture } from './screenshots.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
+export const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
 const CDP_PORT = 9555;
 
 /**
@@ -234,6 +397,9 @@ export function buildArtifactsSection(aruns, medianRun) {
 export function emptyReport({ label = '', timestamp = new Date().toISOString() } = {}) {
   return {
     schemaVersion: 1,
+    // Filled once the package is built and hashed (identity.mjs); null in a run that never got that far.
+    identity: null,
+    stallMeasurementRevision: STALL_MEASUREMENT_REVISION,
     label,
     sha: null, branch: null, dirty: null,
     timestamp,
@@ -338,7 +504,13 @@ export function primaryPathsFor(only) {
  * the verdict weaker, it switches the noise check off entirely.
  */
 export function validateReport(report, only) {
-  const problems = [];
+  // Diagnostic-only invocation has its own raw-evidence contract, not PRIMARY.
+  if (report.diagnosticExecution?.profile === 'plain-completion-diagnostic') {
+    return [...(only.size === 1 && only.has('native-stream') ? [] : ['stream-completion: only native-stream allowed']), ...streamCompletionProblems(report)];
+  }
+  const problems = legacyEvidenceProblems(report, { primary: PRIMARY, only });
+  if (only.has('artifacts') && report.artifacts?.documents) problems.push(...documentProblems(report.artifacts.documents));
+  if (only.has('artifacts') && report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) problems.push('documents: required section missing');
   const need = (ok, msg) => { if (!ok) problems.push(msg); };
 
   if (only.has('startup')) {
@@ -353,17 +525,16 @@ export function validateReport(report, only) {
   }
   if (only.has('workload')) need(report.workload?.runs?.length > 0, 'workload: no runs were recorded');
   if (only.has('stall')) {
+    problems.push(...replayEvidenceProblems(report.replayStall));
     for (const size of STALL_SIZES) {
       need(report.replayStall?.[size]?.runs?.length > 0, `replayStall.${size}: no runs were recorded`);
     }
-    // Attribution is the entire point of this phase. `blame` null means the renderer
-    // long-task observer never attached, so every stall was charged to the main process
-    // by default — a fabricated indictment, and exactly the shape of finding that would
-    // send the next session optimizing the wrong thread.
+    // WHY unknown attribution is allowed: independent main-loop evidence is optional.
+    // A missing verdict is a reporting gap; an explicit unknown is not a failed run.
     for (const size of STALL_SIZES) {
       const s = report.replayStall?.[size];
       if (!s?.runs?.length) continue;
-      need(s.blame != null, `replayStall.${size}: no thread attribution — the renderer long-task observer never attached, so main-vs-renderer blame is unknown, NOT "main process"`);
+      need(s.blame != null, `replayStall.${size}: no thread attribution record — unknown is allowed, missing is not`);
     }
   }
   if (only.has('artifacts')) {
@@ -481,8 +652,9 @@ export function validateReport(report, only) {
     }
   }
   if (only.has('shots')) {
-    const got = new Set(report.screens?.names ?? []);
-    const missing = SCREEN_NAMES.filter((n) => !got.has(n));
+    const got = new Set(Array.isArray(report.screens?.names) ? report.screens.names : []);
+    const expected = report.legacyExecution?.phases?.shots?.names ?? SCREEN_NAMES;
+    const missing = expected.filter((n) => !got.has(n));
     need(missing.length === 0, `shots: never captured ${missing.join(', ')} — a screen that was not shot is UNREVIEWED, not "unchanged"`);
   }
 
@@ -551,8 +723,21 @@ export function renderMarkdown(report, stem) {
     `  ${formatRendererLine(report.machine?.renderer)}`,
     '',
   ];
+  if (report.diagnosticExecution) {
+    lines.push('## Diagnostic-only stream completion — not a standard timing baseline',
+      'Plain fixture and receipt observer overhead differ from Markdown PRIMARY measurements. Reducer queue unavailable; post-reveal output is not hidden reducer drain.', '');
+    for (const [i, r] of (report.nativeStream?.runs ?? []).entries()) {
+      const d = r.completionDiagnostic;
+      lines.push(`- Repeat ${i + 1}: ${d?.status ?? 'missing'}; legs ${Object.entries(d?.legs ?? {}).map(([name, leg]) => `${name}: ${leg.status}; ${(leg.reasons ?? []).join('; ')}`).join(' | ')}; reveal ${d?.hiddenPostReveal?.status ?? 'missing'}${d?.hiddenPostReveal?.error ? `: ${d.hiddenPostReveal.error}` : ''}`);
+    }
+    lines.push('');
+  }
   if (report.aborted) lines.push(`> **ABORTED:** ${report.aborted}`, '> The rows below are whatever had been measured when the run stopped.', '');
 
+  if (report.legacyExecution) {
+    lines.push(`Legacy execution contract revision ${report.legacyExecution.revision}: ${Object.entries(report.legacyExecution.phases ?? {}).map(([phase, spec]) => `${phase}: ${spec.expectedRepeats} expected repeat(s)${spec.groups.length > 1 ? ' per group' : ''}`).join('; ')}.`,
+      'All declared raw repeats and required steps must be present and valid. A median cannot clear missing evidence. Comparison also checks each PRIMARY raw-repeat maximum (including the target), beyond the baseline maximum plus its full raw range and the configured regression margin, with a one-unit rounding floor. Context and document controls are not legacy tail budgets.', '');
+  }
   lines.push('| metric | median |', '|---|---|');
   for (const k of STARTUP_KEYS) {
     lines.push(`| startup.${k}${isNetwork(`startup.median.${k}`) ? ' (network)' : ''} | ${n(m[k], 'ms')} |`);
@@ -614,10 +799,10 @@ export function renderMarkdown(report, stem) {
     const sm = s?.median ?? {};
     lines.push(
       `| stall.${size} (median of ${s?.runs?.length ?? 0}, ${s?.stabilizedRuns ?? 0} stabilized) | ` +
-      `worst freeze ${n(sm.ipcMaxMs, 'ms')} · total ${n(sm.ipcTotalStallMs, 'ms')} · ` +
+      `raw response max ${n(sm.ipcMaxMs, 'ms')} · summed response excess ${n(sm.ipcTotalStallMs, 'ms')} · ` +
       // The blame string, never a silent default: null attribution is printed as
       // "attribution unavailable" so it can never be read as "main process".
-      `main ${n(sm.mainProcessStallMs, 'ms')} / renderer ${n(sm.rendererStallMs, 'ms')} — ${s?.blame ?? '**attribution unavailable**'} |`,
+      `union excess ${n(sm.ipcBlockedWindowMs, 'ms')} / renderer overlap ${n(sm.rendererStallMs, 'ms')} / unknown residual ${n(sm.unknownStallMs, 'ms')} — ${s?.blame?.verdict ?? '**attribution unavailable**'}: ${s?.blame?.why ?? ''} |`,
     );
   }
 
@@ -793,6 +978,7 @@ export function renderMarkdown(report, stem) {
       lines.push('');
     }
   }
+  lines.push(...documentMarkdown(report.artifacts?.documents));
   if (report.incomplete?.length) lines.push('', '## Incomplete — do NOT rank anything from this report', '', ...report.incomplete.map((p) => `- ${p}`));
 
   lines.push('');
@@ -801,8 +987,8 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
-const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
+const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
+const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
 
@@ -814,17 +1000,20 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --history-repeats <n>     resume measurements per size (default 5)
   --workload-repeats <n>    workload passes              (default 3)
   --stall-repeats <n>       replay-stall passes per size (default 3)
-  --artifact-repeats <n>    artifact-panel passes        (default 3)
+  --artifact-repeats <n>    artifact-panel + document passes (default 3, shared owned boot)
+  --document-cases <ids>    bounded smoke subset (default ${DOCUMENT_CASE_IDS.join(',')})
   --projects-repeats <n>    Projects-view passes         (default 3)
   --terminal-repeats <n>    terminal-view switch passes  (default 3, one boot each)
   --native-stream-repeats <n>  native reply at cloud speed (default 3, one boot each)
+  --stream-completion-diagnostics  opt-in plain fixture/receipt/reveal diagnostic; requires --only native-stream; NOT a standard timing baseline
   --native-resume-repeats <n>  Resume list / resume / tear-off (default 3, one boot each)
   --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
   --force-build             rebuild even if the tree fingerprint is unchanged
+  --cached-only             execution refuses missing/stale/non-regular package or stamp before ANY build command; conflicts with --force-build
   --label <text>            appended to the output filename stem
   --out <dir>               report directory             (default perf-reports/)
   --max-minutes <n>         abort (exit ${EXIT.TIMEOUT}) past this budget  (default 90)
-  --dry-run                 print the resolved plan and exit 0, launching nothing
+  --check, --dry-run        print the resolved plan and exit 0, launching nothing
   --help                    this text
 
 Exit codes: 0 clean · ${EXIT.ERROR} error · ${EXIT.TIMEOUT} over --max-minutes · ${EXIT.INCOMPLETE} report missing numbers a requested phase owed · ${EXIT.INTERRUPTED} interrupted`;
@@ -855,12 +1044,20 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     return v;
   };
 
+  if (raw['cached-only'] && raw['force-build']) throw Error('--cached-only conflicts with --force-build');
   const onlyTokens = (raw.only ?? PHASES.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
   const unknown = onlyTokens.filter((p) => !PHASES.includes(p));
   if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}`);
   if (!onlyTokens.length) throw new Error('perf-lab: --only selected no phases.');
+  if (raw['stream-completion-diagnostics'] && (onlyTokens.length !== 1 || onlyTokens[0] !== 'native-stream')) throw Error('Completion diagnostic requires --only native-stream (only native-stream, no other phases)');
+  if (raw['stream-completion-diagnostics'] && posInt('native-stream-repeats', 3) > 3) throw Error('Completion diagnostic supports at most 3 repeats');
+  const documentCaseIds = raw['document-cases'] === undefined ? [...DOCUMENT_CASE_IDS] : raw['document-cases'].split(',').map(s => s.trim());
+  if (!documentCaseIds.length || new Set(documentCaseIds).size !== documentCaseIds.length || documentCaseIds.some(id => !DOCUMENT_CASE_IDS.includes(id))) throw new Error('perf-lab: --document-cases must select a nonempty unique subset of the bounded smoke case IDs in --help.');
 
   return {
+    cachedOnly: raw['cached-only'] === true,
+    streamCompletionDiagnostics: raw['stream-completion-diagnostics'] === true,
+    documentCaseIds,
     checkout: resolve(raw.checkout ?? join(root, 'worktrees', 'perf-lab')),
     out: resolve(raw.out ?? join(root, 'perf-reports')),
     runs: posInt('runs', 5),
@@ -889,7 +1086,7 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     only: new Set(onlyTokens),
     label: raw.label ?? '',
     forceBuild: raw['force-build'] === true,
-    dryRun: raw['dry-run'] === true,
+    dryRun: raw['dry-run'] === true || raw.check === true,
     help: raw.help === true,
   };
 }
@@ -948,21 +1145,33 @@ async function captureRenderer(app) {
 }
 
 /** Boot, run `fn`, and always tear down — with the error-masking rule above. */
-async function withBoot(build, fixture, fn) {
-  const app = await launchApp({ binary: build.binary, appDir: build.appDir, fixture, cdpPort: CDP_PORT });
+export async function withBoot(build, fixture, fn, { mainLoop = false, _deps = {} } = {}) {
+  const deps = { launchApp, freeInspectorPort, connectMainLoop, waitFor, captureRenderer, ..._deps };
+  // WHY: only the owned artifacts boot exposes an independent main inspector.
+  // connectMainLoop proves PID, executable, private HOME and socket ownership
+  // before contacting it; a free-port race fails closed rather than attaching.
+  const port = mainLoop ? await deps.freeInspectorPort() : null;
+  const app = await deps.launchApp({ binary: build.binary, appDir: build.appDir, fixture, cdpPort: CDP_PORT,
+    extraArgs: mainLoop ? [`--inspect=127.0.0.1:${port}`] : [] });
   liveApp = app;
   let bodyFailed = false;
   try {
     // The app is up when the renderer has listed sessions — that is the first moment
     // every startup mark this report reads has actually fired.
-    await waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 90_000 });
-    await captureRenderer(app);
+    await deps.waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 90_000 });
+    await deps.captureRenderer(app);
+    if (mainLoop) app.mainLoop = await deps.connectMainLoop(app, { binary: build.binary, home: fixture.home, port });
     return await fn(app);
   } catch (e) {
     bodyFailed = true;
     throw e;
   } finally {
-    await teardown({ rethrow: !bodyFailed });
+    // Disconnect must never prevent the externally owned process teardown.
+    try { app.mainLoop?.close(); }
+    catch (error) {
+      if (!bodyFailed) throw error;
+      console.error(`[perf-lab] Main inspector cleanup failed: ${error.message}`);
+    } finally { await teardown({ rethrow: !bodyFailed }); }
   }
 }
 
@@ -1169,10 +1378,14 @@ async function loadScrollback() {
 }
 
 /** Read the build stamp WITHOUT building — so --dry-run can report freshness honestly. */
-async function buildFreshness(checkout) {
+export async function buildFreshness(checkout, { cachedOnly = false, build = buildApp } = {}) {
   const desktop = join(checkout, 'desktop');
   const binary = join(desktop, 'release', 'linux-unpacked', 'youcoded');
   const stamp = join(desktop, 'release', '.perf-lab-build.json');
+  if (cachedOnly) {
+    try { return { ...await build(checkout, { cachedOnly: true, skipIfFresh: true }), haveBinary: true, fresh: true, cachedOnly: true }; }
+    catch (error) { return { error: error.message, binary, haveBinary: false, fresh: false, cachedOnly: true }; }
+  }
   try {
     const fp = await treeFingerprint(checkout);
     let prev = null;
@@ -1186,15 +1399,38 @@ async function buildFreshness(checkout) {
 
 // ── The run ──────────────────────────────────────────────────────────────────
 
-async function main(argv) {
-  let cfg;
+/** Is a report stem already used by archived boot logs? (uniqueStem checks out-dir files itself.) */
+const logsTaken = (stemCandidate) => {
+  try { return readdirSync(join(SCRATCH, 'logs')).some((name) => name.startsWith(`${stemCandidate}-`)); } catch { return false; }
+};
+
+/**
+ * One lab run. Exported so ab.mjs can run A then B in-process with identical options
+ * (no second runner). `ctx` is an optional out-parameter: on a finished run it receives
+ * { jsonPath, stem, report, build } so a caller never has to scrape stdout.
+ * WHY the wrapper: main registers a SIGINT handler and a watchdog timer; when called twice
+ * in one process the first run's watchdog would otherwise still be armed and could kill
+ * the second run, so everything it registers is undone when it returns.
+ */
+export async function main(argv, ctx = {}) {
+  const cleanup = [];
+  try { return await mainRun(argv, ctx, cleanup); }
+  finally { for (const undo of cleanup.reverse()) { try { undo(); } catch { /* best effort */ } } }
+}
+
+async function mainRun(argv, ctx, cleanup) {
+  let cfg, control;
   try {
     cfg = parseArgs(argv);
+    control = controlFromEnv();
   } catch (e) {
     console.error(e.message);
     return EXIT.ERROR;
   }
   if (cfg.help) { console.log(USAGE); return EXIT.OK; }
+  // WHY the label: a known-change control must never be mistaken for a normal run, so the
+  // file name itself says so (identity.control records the details).
+  if (control) cfg.label = [cfg.label, `CONTROL-terminal-delay-${control.delayMs}ms`].filter(Boolean).join('-');
 
   const deadline = Date.now() + cfg.maxMinutes * 60_000;
   const checkDeadline = () => {
@@ -1203,9 +1439,9 @@ async function main(argv) {
 
   // ---- --dry-run: resolve everything, launch nothing ------------------------
   if (cfg.dryRun) {
-    const fresh = await buildFreshness(cfg.checkout);
+    const fresh = await buildFreshness(cfg.checkout, { cachedOnly: cfg.cachedOnly });
     const timestamp = new Date().toISOString();
-    const stem = stemFor({ timestamp, sha: fresh.sha, label: cfg.label });
+    const stem = uniqueStem(cfg.out, stemFor({ timestamp, sha: fresh.sha, label: cfg.label }), { extraTaken: logsTaken });
     const scenarioBoot = ['history', 'shots'].some((p) => cfg.only.has(p));
     let xvfb;
     try { xvfb = resolveXvfbBin(); } catch (e) { xvfb = `(resolution failed: ${e.message})`; }
@@ -1214,8 +1450,10 @@ async function main(argv) {
       '',
       `  checkout          ${cfg.checkout}`,
       `  build             ${fresh.error ? `cannot fingerprint: ${fresh.error}` : `sha ${fresh.sha?.slice(0, 7)} (${fresh.branch}${dirtyNote(fresh.dirty)})`}`,
-      `  binary            ${fresh.binary} ${fresh.haveBinary ? '(present)' : '(MISSING — will be built)'}`,
-      `  build freshness   ${cfg.forceBuild ? 'FORCED rebuild (--force-build)' : fresh.fresh ? `fresh, reused (built ${fresh.builtAt})` : 'stale or absent — will rebuild (1-3 min)'}`,
+      `  binary            ${fresh.binary} ${fresh.haveBinary ? '(present)' : cfg.cachedOnly ? '(UNAVAILABLE/INVALID — cached-only refuses, no build)' : '(MISSING — will be built)'}`,
+      `  build freshness   ${cfg.cachedOnly ? fresh.fresh ? `cached-only: reusable now (built ${fresh.builtAt}); revalidated at execution` : 'cached-only REFUSED: no build fallback' : cfg.forceBuild ? 'FORCED rebuild (--force-build)' : fresh.fresh ? `fresh, reused (built ${fresh.builtAt})` : 'stale or absent — will rebuild (1-3 min)'}`,
+      `  build policy      ${cfg.cachedOnly ? 'CACHED ONLY — execution rechecks exact fingerprint and regular package/stamp paths; never builds' : 'allow build on missing/stale package'}`,
+      `  stream fixture    ${cfg.streamCompletionDiagnostics ? JSON.stringify(nativeStreamFixtureOptions(cfg)) + '; local engine assets not required or provisioned' : 'standard native fixture policy unchanged'}`,
       `  Xvfb binary       ${xvfb}`,
       `  workload module   ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-workload.mjs')) ? 'present' : 'ABSENT — the workload phase would fail'}`,
       `  stall module      ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-replay-stall.mjs')) ? 'present' : 'ABSENT — the stall phase would fail'}`,
@@ -1238,9 +1476,13 @@ async function main(argv) {
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
       `  stall passes      ${cfg.only.has('stall') ? `${cfg.stallRepeats} per size (${STALL_SIZES.join(', ')}), own boot` : '—'}`,
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
+      `  document profile  smoke (bounded subset); ${cfg.documentCaseIds.join(', ')}`,
+      `  document controls ${DOCUMENT_CONTROL_TYPES.join(', ')}; renderer-block includes async wait then sync block; 15000ms / 1536MiB conservative family RSS safety cap per case`,
+      `  document coverage selected viewers only; hardware, watchers, path-list UI, CSV full-read and larger ladders unsupported/unmeasured`,
       `  projects passes   ${cfg.only.has('projects') ? `${cfg.projectsRepeats}, own boot` : '—'}`,
       `  terminal passes   ${cfg.only.has('terminal') ? `${cfg.terminalRepeats}, one boot each` : '—'}`,
       `  native-stream     ${cfg.only.has('native-stream') ? `${cfg.nativeStreamRepeats}, one boot each (fake endpoint on :${FAKE_PROVIDER_PORT})` : '—'}`,
+      `  stream profile    ${cfg.streamCompletionDiagnostics ? 'PLAIN COMPLETION DIAGNOSTIC revision 2; NOT standard Markdown timing baseline; 3000 deltas at 150/s; 10s bounded bridge/reveal waits' : 'standard Markdown timing profile'}`,
       `  native-resume     ${cfg.only.has('native-resume') ? `${cfg.nativeResumeRepeats}, one boot each (100 seeded native sessions)` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
@@ -1251,18 +1493,23 @@ async function main(argv) {
       `  logs archived to  ${join(SCRATCH, 'logs')}/${stem}-<boot>.log`,
       `  fixture HOME      ${join(SCRATCH, 'home')} (wiped and rebuilt per boot)`,
       '',
+      `  run lock          ${join(SCRATCH, 'run.lock')} (a second concurrent run is refused)`,
+      `  control           ${control ? `INJECTED DELAY ${control.delayMs} ms in the terminal scenario (${control.affects}) — NOT a normal run` : 'none (normal run)'}`,
+      `  boots             ${bootPlan(cfg).total} total`,
+      '',
       `  deadline          ${cfg.maxMinutes} min — ${new Date(deadline).toISOString()} (exit ${EXIT.TIMEOUT} past it)`,
       '',
-      `  compare.mjs PRIMARY paths this selection MUST produce (${primaryPathsFor(cfg.only).length}/${PRIMARY.length}):`,
-      ...primaryPathsFor(cfg.only).map((p) => `    ${p}`),
-      ...(primaryPathsFor(cfg.only).length < PRIMARY.length
+      cfg.streamCompletionDiagnostics ? '  PRIMARY acceptance  unavailable — plain completion diagnostic; raw per-leg validity only'
+        : `  compare.mjs PRIMARY paths this selection MUST produce (${primaryPathsFor(cfg.only).length}/${PRIMARY.length}):`,
+      ...(cfg.streamCompletionDiagnostics ? [] : primaryPathsFor(cfg.only).map((p) => `    ${p}`)),
+      ...(!cfg.streamCompletionDiagnostics && primaryPathsFor(cfg.only).length < PRIMARY.length
         ? ['', `  not produced by this selection (compare.mjs cannot judge them from this report):`,
            ...PRIMARY.filter((p) => !cfg.only.has(phaseOfPath(p))).map((p) => `    ${p}`)]
         : []),
       '',
     ];
     console.log(lines.join('\n'));
-    return EXIT.OK;
+    return cfg.cachedOnly && !fresh.fresh ? EXIT.ERROR : EXIT.OK;
   }
 
   // ---- SIGINT + watchdog ---------------------------------------------------
@@ -1271,28 +1518,64 @@ async function main(argv) {
   // proved it owns and then exits 130. Exiting here first would pre-empt it and have the
   // two racing over the same pids. So when a boot is live we stand back and let it work,
   // with an unref'd 5 s backstop in case its handlers were somehow already detached.
-  process.on('SIGINT', () => {
+  const onSigint = () => {
     console.error('\n[perf-lab] SIGINT — tearing down.');
     if (!liveApp) process.exit(EXIT.INTERRUPTED);
     setTimeout(() => process.exit(EXIT.INTERRUPTED), 5_000).unref();
-  });
+  };
+  process.on('SIGINT', onSigint);
+  cleanup.push(() => process.off('SIGINT', onSigint));
   // checkDeadline() only fires at phase boundaries; this catches a boot that HANGS
   // mid-phase. process.exit runs launchApp's own 'exit' handler, which SIGKILLs the
   // family — so "abort after killing the app family" holds on this path too.
-  setTimeout(() => {
+  const watchdog = setTimeout(() => {
     console.error(`[perf-lab] --max-minutes ${cfg.maxMinutes} exceeded mid-phase; killing the app family and aborting.`);
     process.exit(EXIT.TIMEOUT);
-  }, cfg.maxMinutes * 60_000).unref();
+  }, cfg.maxMinutes * 60_000);
+  watchdog.unref();
+  cleanup.push(() => clearTimeout(watchdog));   // WHY: a finished run must not leave a timer that kills the next run in the same process
+
+  // WHY (acceptance A5): refuse a concurrent run instead of corrupting both. Taken AFTER the
+  // dry-run branch (a plan is always printable) and before anything is built or launched.
+  // ab.mjs holds the lock across A then B (ctx.lockHeld) so nothing can slip in between them.
+  if (!ctx.lockHeld) {
+    let lock;
+    try { lock = acquireRunLock(join(SCRATCH, 'run.lock'), { label: cfg.label }); }
+    catch (e) { console.error(`[perf-lab] ${e.message}`); return EXIT.ERROR; }
+    cleanup.push(() => lock.release());
+  }
+  // The renderer reading is module state; a second run in this process must not inherit the first's.
+  resetCapturedRenderer();
 
   const report = emptyReport({ label: cfg.label });
+  // WHY before execution: an exception on repeat 3 cannot redefine 2 as complete.
+  report.legacyExecution = buildLegacyExecution(cfg);
+  configureStreamCompletion(report, cfg);
   let exitCode = EXIT.OK;
-  let stem = stemFor({ timestamp: report.timestamp, sha: 'nosha', label: cfg.label });
+  let stem = uniqueStem(cfg.out, stemFor({ timestamp: report.timestamp, sha: 'nosha', label: cfg.label }), { extraTaken: logsTaken });
+  const checkpoint = () => {
+    // WHY: a later watchdog/process failure must not erase earlier raw cases.
+    const documents = report.artifacts?.documents;
+    if (documents) {
+      const problems = documentProblems(documents), breaches = documentBreaches(documents);
+      documents.validity = { valid: problems.length === 0, problems };
+      documents.performance = { verdict: problems.length ? 'incomplete' : breaches.length ? 'breached' : 'within-budgets', breaches };
+    }
+    mkdirSync(cfg.out, { recursive: true });
+    publishReportJson(cfg.out, stem, report);
+    writeFileSync(join(cfg.out, `${stem}.md`), renderMarkdown(report, stem));
+  };
 
   try {
-    log('building', cfg.checkout);
-    const build = await buildApp(cfg.checkout, { skipIfFresh: !cfg.forceBuild });
+    log(cfg.cachedOnly ? 'validating cached-only package (no build fallback)' : 'building', cfg.checkout);
+    const build = await prepareRunnerBuild(cfg);
     Object.assign(report, { sha: build.sha, branch: build.branch, dirty: build.dirty });
-    stem = stemFor({ timestamp: report.timestamp, sha: build.sha, label: cfg.label });
+    // WHY uniqueStem: same commit + label inside one minute used to overwrite the earlier report.
+    stem = uniqueStem(cfg.out, stemFor({ timestamp: report.timestamp, sha: build.sha, label: cfg.label }), { extraTaken: logsTaken });
+    // WHY here: the package is only known after the build/cached validation, and hashing it
+    // before any boot proves WHICH bytes are about to be measured (acceptance A3).
+    report.identity = buildIdentity({ cfg, fixture: fixtureIdentity(cfg), instrument: instrumentIdentity(LAB_DIR),
+      pkg: await packageIdentity(build.appDir), control });
     log(`built ${build.sha.slice(0, 7)} (${build.branch}${dirtyNote(build.dirty)}) → ${build.binary}`);
 
     // Let startXvfb's own error through untouched — it names the exact install command.
@@ -1351,7 +1634,7 @@ async function main(argv) {
         await noiseGate(report.noise, deadline);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
-          const r = await runWorkloadScenario(app, fixture);
+          const r = await runWorkloadScenario(app, fixture, report.legacyExecution.phases.workload.options);
           wruns.push(r);
           log(`workload ${i + 1}/${cfg.workloadRepeats}: switch p95 ${r.switchP95Ms}ms, long tasks ${r.probe?.longtaskTotalMs}ms, ${r.cpuDuringPct}% cpu, ${r.pssAfterMb}MB`);
           report.errors.workloadBoots.push(readErrorLines(fixture, stem, `workload-${i + 1}`));
@@ -1484,7 +1767,7 @@ async function main(argv) {
               : `TIMED OUT after ${run.timedOutAfterMs ?? '?'}ms with ${run.renderedEntries ?? 0} entries on screen`}`),
         });
         for (const [size, s] of Object.entries(report.replayStall)) {
-          log(`stall.${size}: ipc max ${s.median.ipcMaxMs}ms (main ${s.median.mainProcessStallMs}ms / renderer ${s.median.rendererStallMs}ms) — ${s.blame ?? 'attribution UNAVAILABLE'}, ${s.stabilizedRuns}/${s.runs.length} stabilized`);
+          log(`stall.${size}: raw IPC max ${s.median.ipcMaxMs}ms (union excess ${s.median.ipcBlockedWindowMs}ms / renderer overlap ${s.median.rendererStallMs}ms / unknown ${s.median.unknownStallMs}ms) — ${s.blame?.verdict ?? 'attribution UNAVAILABLE'}, ${s.stabilizedRuns}/${s.runs.length} stabilized`);
           for (const w of s.warnings) log(`stall.${size} warning: ${w}`);
         }
         report.errors.stallBoot = readErrorLines(fixture, stem, 'stall');
@@ -1502,19 +1785,51 @@ async function main(argv) {
       await noiseGate(report.noise, deadline);
       const { runArtifactScenario, medianRun: artifactMedian, MEASURES: ARTIFACT_MEASURES } = await loadArtifacts();
       report.measures.artifacts = ARTIFACT_MEASURES;
-      const fixture = buildFixture(SCRATCH, { log });
+      const fixtureOptions = artifactFixtureOptions();
+      const disk = requireDiskHeadroom(SCRATCH);
+      const fixture = buildFixture(SCRATCH, { log, ...fixtureOptions });
+      fixture.checkout = cfg.checkout;
+      const metadata = artifactMeasurementMetadata(disk);
+      report.measures.artifacts = metadata.descriptor;
+      report.observations = { ...report.observations, artifacts: metadata.observations };
+      const manifest = await buildStallFixtures(join(fixture.home, 'stall-documents'), { checkout: cfg.checkout, profile: 'smoke' });
+      const documents = { schema: 1, scope: 'app-viewer', expectedRepeats: cfg.artifactRepeats,
+        requiredCaseIds: cfg.documentCaseIds, optionalCoverage: DOCUMENT_OPTIONAL_COVERAGE,
+        manifest, runs: [], provenance: { profile: manifest.profile, caseIds: cfg.documentCaseIds,
+          checkout: cfg.checkout, build, labSource: await treeFingerprint(ROOT),
+          node: process.version, platform: process.platform, arch: process.arch,
+          memoryPolicy: 'Conservative summed owned-family RSS safety cap; not unique memory or leak evidence',
+          renderingPolicy: 'Existing GPU helper is context only, not hardware acceleration certification',
+          instrumentHashes: Object.fromEntries(DOCUMENT_INSTRUMENT_FILES.map(name => [name,
+            createHash('sha256').update(readFileSync(join(ROOT, 'scripts/perf-lab', name))).digest('hex')])),
+          sourceHashes: [
+            ...['run.mjs', 'document-report.mjs', 'scenario-document-stalls.mjs', 'main-loop-probe.mjs', 'probe-loop.mjs', 'probe-ipc.mjs', 'stall-fixtures.mjs'].map(f => join(ROOT, 'scripts/perf-lab', f)),
+            ...['XlsxView.tsx', 'CsvView.tsx', 'DocxView.tsx', 'HtmlView.tsx'].map(f => join(cfg.checkout, 'desktop/src/renderer/components/artifact-views', f)),
+          ].map(file => ({ file, sha256: createHash('sha256').update(readFileSync(file)).digest('hex') })) } };
+      report.artifacts = { ...buildArtifactsSection([], artifactMedian), documents };
+      checkpoint();
       await withBoot(build, fixture, async (app) => {
         const runs = [];
         for (let i = 0; i < cfg.artifactRepeats; i++) {
           checkDeadline();
-          const r = await runArtifactScenario(app, fixture);
+          const r = await runArtifactScenario(app, fixture, report.legacyExecution.phases.artifacts.options);
           runs.push(r);
           log(`artifacts ${i + 1}/${cfg.artifactRepeats}: open md large ${r.open?.mdLarge?.openMs}ms, keystroke p95 ${r.typing?.codeLarge?.keystroke?.p95Ms}ms, html swap ${r.htmlNav?.swap?.medianMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms`);
           for (const w of r.warnings ?? []) log(`artifacts warning: ${w}`);
+          report.artifacts = { ...buildArtifactsSection(runs, artifactMedian), documents };
+          checkpoint();
+          const result = await recordDocumentRepeat(documents, onCase => runDocumentStallCases(app, fixture, manifest, {
+            checkout: cfg.checkout, build, caseIds: cfg.documentCaseIds, timeoutMs: 15000, maxRssMb: 1536, onCase,
+          }), row => {
+            checkpoint();
+            if (row) log(`document repeat ${i + 1}: ${row.id}: ${row.status}`);
+          });
+          // A fatal case has already killed the owned family. Do not launch or
+          // measure another repeat on its dead renderer, even if cleanup succeeded.
+          if (result.fatal || result.descriptor?.cleanupError) throw new Error('Document adapter stopped the owned boot; remaining repeats incomplete');
         }
-        report.artifacts = buildArtifactsSection(runs, artifactMedian);
         report.errors.artifactsBoot = readErrorLines(fixture, stem, 'artifacts');
-      });
+      }, { mainLoop: true });
     }
 
     // ---- Projects view: its OWN boot ---------------------------------------
@@ -1535,7 +1850,7 @@ async function main(argv) {
         const runs = [];
         for (let i = 0; i < cfg.projectsRepeats; i++) {
           checkDeadline();
-          const r = await runProjectsScenario(app, fixture, seeded);
+          const r = await runProjectsScenario(app, fixture, seeded, report.legacyExecution.phases.projects.options);
           runs.push(r);
           log(`projects ${i + 1}/${cfg.projectsRepeats}: open ${r.open?.openMs}ms (counts ${r.open?.countsMs}ms, ${r.open?.fileCards}+${r.open?.folderCards} cards), first key ${r.search?.firstKeyMs}ms, key p95 ${r.search?.keystroke?.p95Ms}ms, filter ${r.filter?.codeMs}ms for ${r.filter?.fileCards} cards, scroll long tasks ${r.scrollFlat?.longtaskTotalMs}ms, thrash to-Files p95/max ${r.thrash?.toFiles?.p95Ms}/${r.thrash?.toFiles?.maxMs}ms (ipc max ${r.thrash?.ipcMaxMs}ms), switch ${r.switch?.smallMs}/${r.switch?.bigMs}ms, reopen ${r.reopen?.openMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms max ${r.ipcSumOfSteps?.maxMs}ms`);
           for (const w of r.warnings ?? []) log(`projects warning: ${w}`);
@@ -1560,7 +1875,7 @@ async function main(argv) {
         await noiseGate(report.noise, deadline);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
-          const r = await runTerminalScenario(app, fixture);
+          const r = await runTerminalScenario(app, fixture, report.legacyExecution.phases.terminal.options);
           truns.push(r);
           log(`terminal ${i + 1}/${cfg.terminalRepeats}: switch painted median ${r.switchPaintedMedianMs}ms (p95 ${r.switchPaintedP95Ms}ms, ${r.verifiedSwitches}/${r.switchCount} verified, renderer ${r.renderer}), atlas clears/switch ${r.atlasClearsPerSwitch} (${r.clearsOutsideSlots} outside the slots), long task max ${r.longtaskMaxMs}ms, ipc stall ${r.ipc?.totalStallMs}ms from ${r.ipc?.pings} pings (${r.ipc?.readErrors} slots lost their reading)`);
           for (const w of r.warnings ?? []) log(`terminal warning: ${w}`);
@@ -1577,15 +1892,20 @@ async function main(argv) {
     // phase's fixture has, so nothing else can share this boot.
     if (cfg.only.has('native-stream')) {
       const { runNativeStreamScenario, medianRun: streamMedian, MEASURES: STREAM_MEASURES } = await loadNativeStream();
-      report.measures.nativeStream = STREAM_MEASURES;
+      if (!cfg.streamCompletionDiagnostics) report.measures.nativeStream = STREAM_MEASURES;
       const sruns = [];
       for (let i = 0; i < cfg.nativeStreamRepeats; i++) {
         checkDeadline();
         await noiseGate(report.noise, deadline);
-        const fixture = buildFixture(SCRATCH, { log, fakeProvider: true });
+        const fixture = createNativeStreamFixture(SCRATCH, cfg, { log });
         await withBoot(build, fixture, async (app) => {
-          const r = await runNativeStreamScenario(app, fixture);
+          const r = await runNativeStreamScenario(app, fixture, report.legacyExecution.phases['native-stream'].options);
           sruns.push(r);
+          if (cfg.streamCompletionDiagnostics) {
+            // Preserve raw legs even if subsequent owned-boot teardown fails.
+            report.nativeStream = buildRepeatedSection(sruns, streamMedian);
+            log(`stream-completion ${i + 1}/${cfg.nativeStreamRepeats}: ${r.completionDiagnostic?.status ?? 'missing'}; not a standard timing baseline`);
+          }
           log(`native-stream ${i + 1}/${cfg.nativeStreamRepeats}: visible ${r.visible?.deltasSent} deltas at ${r.visible?.perSecAchieved}/s -> long tasks ${r.visible?.longtaskTotalMs}ms total / max ${r.visible?.longtaskMaxMs}ms, ${r.visible?.commits} commits, ${r.visible?.framesPerSec} fps, ipc stall ${r.visible?.ipc?.totalStallMs}ms; switching median ${r.switching?.switchPaintedMedianMs}ms (${r.switching?.verifiedSwitches}/${r.switching?.duringStream} verified during the stream); hidden long tasks ${r.hidden?.longtaskTotalMs}ms`);
           for (const w of r.warnings ?? []) log(`native-stream warning: ${w}`);
           report.errors.nativeStreamBoots.push(readErrorLines(fixture, stem, `native-stream-${i + 1}`));
@@ -1666,9 +1986,9 @@ async function main(argv) {
   report.incomplete = validateReport(report, cfg.only);
   mkdirSync(cfg.out, { recursive: true });
   const jsonPath = join(cfg.out, `${stem}.json`);
-  writeFileSync(jsonPath, JSON.stringify(report, null, 2));
-  writeFileSync(join(cfg.out, `${stem}.md`), renderMarkdown(report, stem));
+  checkpoint();
   console.log(jsonPath);
+  Object.assign(ctx, { jsonPath, stem, report });
 
   if (report.incomplete.length) {
     console.error(`\n[perf-lab] REPORT IS INCOMPLETE — ${report.incomplete.length} problem(s). Do not rank anything from it:`);

@@ -37,12 +37,12 @@
 //     is materially worse per keystroke.
 //
 // READING THE OUTPUT: every step carries `probe` (renderer long tasks / frame
-// gaps for exactly that step's window) and `ipc` (main-process ping round trips
-// for exactly that step). Together they ATTRIBUTE a stall — see attributeStall()
-// below, and the long comment in probe-ipc.mjs. A step whose ipc stalled while
-// its renderer sat idle is a MAIN-PROCESS block, i.e. the whole-app freeze;
-// a step where both spiked together is the renderer. Neither number alone can
-// tell those apart, which is the entire reason both are reported per step.
+// gaps for exactly that step's window) and `ipc` (renderer-to-main round trips
+// over setup + operation + bounded drain, labeled in ipc.boundary.scope).
+// Attribution is conservative — see stall-attribution.mjs.
+// A renderer scheduling gap or long task is direct evidence of renderer delay;
+// low/absent long-task time does NOT establish that main blocked. A main verdict
+// requires a separate main-loop observation. Both probes remain in every step.
 //
 // WHICH NUMBER ANSWERS WHICH SUSPECT (the payoff — read this before the code):
 //   1 hastText / markdown parse .. open.mdLarge.openMs vs open.mdSmall.openMs,
@@ -72,7 +72,10 @@ import { waitFor } from './cdp.mjs';
 // teardown semantics (rAF cancel + observer disconnect) that took a real bug to
 // get right, and a second copy of it would drift.
 import { installProbe, readProbe, readProbeWindow, stopProbe, median, p95 } from './scenario-workload.mjs';
-import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { installIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { attributeStall } from './stall-attribution.mjs';
+import { ipcBoundary, finishLegacyIpc } from './legacy-ipc-boundary.mjs';
+export { attributeStall } from './stall-attribution.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const round1 = (n) => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
@@ -255,44 +258,6 @@ export function summarise(samples) {
     p95Ms: round1(p95(s)),
     maxMs: round1(Math.max(...s)),
   };
-}
-
-/**
- * The whole point of running both probes: decide WHICH thread blocked.
- *
- *   ipc stalled + renderer long task at the same magnitude -> the RENDERER blocked
- *   ipc stalled + renderer essentially idle                -> the MAIN PROCESS blocked
- *   neither                                                -> no stall in this step
- *
- * Thresholds match probe-ipc.mjs's stated perception scale (>250ms "the UI feels
- * stuck"). `verdict` is deliberately 'unclear' rather than a guess when the two
- * signals disagree by less than a factor of two — a confident wrong attribution
- * would send the next session to optimise the wrong process.
- */
-export function attributeStall(ipc, probe, { stallMs = 250 } = {}) {
-  const ipcMax = ipc && typeof ipc.maxMs === 'number' ? ipc.maxMs : null;
-  const ltMax = probe && typeof probe.longtaskMaxMs === 'number' ? probe.longtaskMaxMs : null;
-  // An observer that never ATTACHED must never be read as "the renderer was
-  // quiet". Without this the 'main' branch below fires on ltMax === 0 and names
-  // the main process as the culprit on the strength of a measurement that never
-  // happened — a fabricated indictment, and the same shape of error this project
-  // already made once at the whole-app level and had to retract.
-  if (probe && probe.longtaskSupported === false) {
-    return { verdict: 'unknown', why: 'the renderer long-task observer never attached, so which thread blocked is UNKNOWN — not "the main process"' };
-  }
-  if (ipcMax === null || ltMax === null) {
-    return { verdict: 'unknown', why: 'one of the two probes reported no data for this step' };
-  }
-  if (ipcMax <= stallMs) {
-    return { verdict: 'none', why: `worst IPC round trip was ${ipcMax}ms, under the ${stallMs}ms stall threshold` };
-  }
-  if (ltMax >= ipcMax / 2) {
-    return { verdict: 'renderer', why: `IPC stalled ${ipcMax}ms while the renderer ran a ${ltMax}ms long task — the renderer thread was the one blocked` };
-  }
-  if (ltMax < ipcMax / 4) {
-    return { verdict: 'main', why: `IPC stalled ${ipcMax}ms while the renderer's worst long task was only ${ltMax}ms — the MAIN process was blocked (app-wide freeze)` };
-  }
-  return { verdict: 'unclear', why: `IPC stalled ${ipcMax}ms and the renderer's worst long task was ${ltMax}ms — too close to attribute either way` };
 }
 
 /**
@@ -688,19 +653,21 @@ export async function installArtifactHelpers(cdp) {
  * so the native-resume phase measures its steps the same way this file does.
  */
 export async function step(cdp, label, fn, { pingMs = 50 } = {}) {
-  await mark(cdp, `${label}:start`);
   await installIpcStallProbe(cdp, { everyMs: pingMs });
   let result, thrown = null;
   try {
+    // WHY outside the operation clock: initial ping dispatch is immediate but
+    // completion/timer readiness are asynchronous. Missing readiness is not speed.
+    const ready = await ipcBoundary(cdp);
+    if (!ready.ready) throw new Error('Legacy IPC probe never became timer/reply ready');
+    await mark(cdp, `${label}:start`);
     result = await fn();
   } catch (err) {
     thrown = err;
     result = { ok: false, reason: err.message };
   }
   await mark(cdp, `${label}:end`);
-  let ipc = null;
-  try { ipc = await readIpcStallProbe(cdp); } catch (err) { ipc = { error: err.message }; }
-  try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
+  const ipc = await finishLegacyIpc(cdp);
   let probe = null;
   try { probe = await readProbeWindow(cdp, `${label}:start`, `${label}:end`); } catch (err) { probe = { error: err.message }; }
   const out = { ...result, probe, ipc, stall: attributeStall(ipc, probe) };

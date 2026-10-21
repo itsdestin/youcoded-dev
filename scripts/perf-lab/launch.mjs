@@ -31,6 +31,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { closeSync, constants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
 import { homedir } from 'node:os';
+import { LINUX_OWNER_HOME, OWNER_MARKERS } from './owner-home.mjs';
 import { isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { connect, listTargets, waitForMainTarget } from './cdp.mjs';
@@ -65,6 +66,15 @@ const PROTECTED_MARKERS = [
  * real home, and not overlapping a protected marker in either direction.
  */
 export function assertSafeNeedles(needles) {
+  return checkSafeNeedles(needles, REAL_HOME, PROTECTED_MARKERS);
+}
+// No caller-selected home authority: owned Linux workers use the UID account,
+// while the existing shared launcher retains its original environment guard.
+export function assertSafeOwnerNeedles(needles) {
+  if (!LINUX_OWNER_HOME) throw Error('Linux owner home required');
+  return checkSafeNeedles(needles, LINUX_OWNER_HOME, OWNER_MARKERS);
+}
+function checkSafeNeedles(needles, realHome, markers) {
   if (!Array.isArray(needles) || needles.length === 0) {
     throw new Error('perf-lab launch: refusing to search for processes with an empty needle list.');
   }
@@ -75,8 +85,8 @@ export function assertSafeNeedles(needles) {
     if (resolve(n) !== n) throw new Error(`perf-lab launch: ${where} is not canonical (resolves to ${resolve(n)}); pass the resolved path, since the match is a literal substring test.`);
     if (n.split('/').filter(Boolean).length < 3) throw new Error(`perf-lab launch: ${where} has fewer than 3 path segments — far too broad to signal processes by.`);
     if (n.length < 12) throw new Error(`perf-lab launch: ${where} is shorter than 12 characters — far too broad to signal processes by.`);
-    if (n === REAL_HOME || REAL_HOME.startsWith(`${n}/`)) throw new Error(`perf-lab launch: ${where} is the real home (${REAL_HOME}) or an ancestor of it. That would match the live app.`);
-    for (const m of PROTECTED_MARKERS) {
+    if (n === realHome || realHome.startsWith(`${n}/`)) throw new Error(`perf-lab launch: ${where} is the real home (${realHome}) or an ancestor of it. That would match the live app.`);
+    for (const m of markers) {
       if (n === m || m.startsWith(`${n}/`) || n.startsWith(`${m}/`)) {
         throw new Error(`perf-lab launch: ${where} overlaps protected path ${m} (the live app's / Claude Code's state). Refusing.`);
       }
@@ -556,7 +566,13 @@ export function captureProtocolStderr(stream, sink, { drainTimeoutMs = 1200 } = 
  */
 // `extraArgs`: appended to the app's argv — e.g. `--inspect-brk=127.0.0.1:<port>` so a
 // caller can CPU-profile the main process from its first line (real-scale-startup.mjs).
-export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99', waylandSocket, protocolLog, protocolDebug = true, extraArgs = [], refuseExisting = false }) {
+export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99', waylandSocket, protocolLog, protocolDebug = true, extraArgs = [], refuseExisting = false, supervisedBackend }) {
+  // WHY: supervised mode must bypass ALL legacy sweeps, emergency marker/group
+  // handlers and raw spawn paths. It has no fallback to unsupervised ownership.
+  if (supervisedBackend) {
+    const { launchSupervisedApp } = await import('./launch-supervised-app.mjs');
+    return launchSupervisedApp({ binary, appDir, fixture, cdpPort, display, waylandSocket, protocolLog, protocolDebug, extraArgs, supervisedBackend });
+  }
   if (!binary) throw new Error('perf-lab launch: launchApp needs { binary } — the packaged app executable.');
   if (!fixture?.home || !fixture?.userData) throw new Error('perf-lab launch: launchApp needs a fixture with { home, userData } from buildFixture().');
   // A fixture HOME that IS (or contains) the real home would put the rig's writes

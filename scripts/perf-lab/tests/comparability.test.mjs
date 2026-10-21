@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { assessComparability } from '../comparability.mjs';
+import { validLegacyReport } from './legacy-fixture.mjs';
 
 const example = () => ({
   machine: { cpu: 'Example CPU', ramGb: 32, kernel: '6.1.0', node: 'v26.0.0', renderer: {
@@ -17,7 +18,7 @@ const example = () => ({
     configuration: ['one session at a time', 'three sizes: small, medium, huge'],
     clocks: { resumeStableMs: 'resume -> rendered entry count stops changing' }, blindTo: ['multi-session cost'] } },
   aborted: null, incomplete: [],
-  history: { medium: { median: { resumeStableMs: 100 } } },
+  ...validLegacyReport(['history']),
 });
 const copy = (v) => structuredClone(v);
 const compare = (change) => { const b = example(); const c = copy(b); change(c); return assessComparability(b, c); };
@@ -120,8 +121,10 @@ test('overlapping measured descriptors differ or disappear rather than silently 
 
 test('app CPU rate is not pre-boot external noise', () => {
   const b = example(); const c = copy(b);
-  b.workload = { median: { cpuDuringPct: 30 } };
-  c.workload = { median: { cpuDuringPct: 1 } };
+  const measured = validLegacyReport(['history', 'workload']);
+  Object.assign(b, structuredClone(measured)); Object.assign(c, structuredClone(measured));
+  b.workload.median.cpuDuringPct = 30;
+  c.workload.median.cpuDuringPct = 1;
   b.measures.workload = copy(b.measures.history);
   c.measures.workload = copy(c.measures.history);
   const result = assessComparability(b, c);
@@ -145,4 +148,36 @@ test('CLI prints INCONCLUSIVE and exits nonzero for mismatched renderers', () =>
     assert.match(result.stdout, /VERDICT: INCONCLUSIVE/);
     assert.doesNotMatch(result.stdout, /VERDICT: KEEP/);
   } finally { rmSync(dir, { recursive: true, force: true, maxRetries: 3 }); }
+});
+
+// ── Acceptance A3: identity must match; older reports are incomparable, never assumed equal ──
+test('a report without an identity block is incomparable with an explicit remeasure reason', () => {
+  const result = compare((c) => { delete c.identity; });
+  assert.equal(result.comparable, false);
+  assert.match(result.reasons.join(' '), /candidate: no identity block.*remeasure/);
+  const both = assessComparability((() => { const r = example(); delete r.identity; return r; })(), example());
+  assert.match(both.reasons.join(' '), /baseline: no identity block/);
+});
+
+test('instrument, fixture and execution differences make a pair incomparable; package and control differences do not', () => {
+  const instrument = compare((c) => { c.identity.instrument.hashes['run.mjs'] = 'f'.repeat(64); });
+  assert.equal(instrument.comparable, false);
+  assert.match(instrument.reasons.join(' '), /instrument source differs \(run\.mjs\)/);
+  assert.equal(compare((c) => { c.identity.fixture.options.artifacts.seedEngine = true; }).comparable, false);
+  for (const key of ['historyRepeats', 'runs', 'terminalRepeats']) {
+    const result = compare((c) => { c.identity.execution[key] += 1; });
+    assert.equal(result.comparable, false, key);
+    assert.match(result.reasons.join(' '), new RegExp(key));
+  }
+  assert.equal(compare((c) => { c.identity.execution.only = ['history', 'startup']; }).comparable, false);
+  const differentPackage = compare((c) => { c.identity.package = { executableSha256: 'a'.repeat(64), asarSha256: 'b'.repeat(64) }; });
+  assert.equal(differentPackage.comparable, true, differentPackage.reasons.join('; '));
+  const controlled = compare((c) => { c.identity.control = { kind: 'injected-delay', delayMs: 400 }; });
+  assert.equal(controlled.comparable, true, controlled.reasons.join('; '));
+});
+
+test('malformed package hashes make that side incomparable', () => {
+  const result = compare((c) => { c.identity.package.executableSha256 = 'short'; });
+  assert.equal(result.comparable, false);
+  assert.match(result.reasons.join(' '), /candidate: candidate package hashes/);
 });

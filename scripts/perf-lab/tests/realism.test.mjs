@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { analyseRun, parseOptions } from '../realism.mjs';
+import { analyseRun, parseOptions, main, runBoot, realismRuntimeRefusal } from '../realism.mjs';
 import { table, rowOf } from '../realism-table.mjs';
 
 const ids = ['a', 'b', 'c'];
@@ -28,6 +28,13 @@ test('parseOptions: presets, overrides, soak and busy-off handling', () => {
   assert.deepEqual(c.seqs, ['fresh']);               // busy desktop off -> no busy run
   assert.throws(() => parseOptions(['--nope', '1']));
   assert.throws(() => parseOptions(['--seqs', 'bogus']));
+});
+
+test('actual realism GPU importer refuses before preparation, sensors, env or outputs; software selection unchanged',async()=>{
+ const dependencies=new Proxy({},{get(){throw Error('No preparation dependency may be read');}});
+ const r=await main(['--display','gpu','--checkout','/not-existing'],dependencies);assert.equal(r.status,'unsupported');assert.match(r.reason,/supervisor/);
+ const direct=await runBoot(parseOptions(['--display','gpu','--checkout','/not-existing']),1,'/must-not-write');assert.equal(direct.status,'unsupported');
+ assert.equal(realismRuntimeRefusal(parseOptions(['--display','xvfb'])),null);
 });
 
 test('table: one row per cell, worst across boots', () => {

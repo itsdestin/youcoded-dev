@@ -1,0 +1,157 @@
+{
+  "title": "Performance lab: five decisions only you can make",
+  "key": "perf-lab-decisions",
+  "out": "perf-lab.questions.html",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Performance lab",
+      "path": "The lab's code on this computer",
+      "headline": "Should the unfinished lab code be backed up to GitHub now?",
+      "today": "About 147 lab files exist only on this computer. They have never been saved to git or sent to GitHub. Your earlier instruction said publishing the lab is a separate decision.",
+      "problem": "If this drive fails, or a file is deleted by mistake, weeks of lab work are gone with no copy anywhere.",
+      "proposal": "Save the work to its own branch on GitHub as a backup. This is not merging it into the app, and nothing in the app changes.",
+      "options": [
+        {
+          "id": "backup-now",
+          "label": "Back it up now",
+          "pros": ["Weeks of work stop depending on one drive.", "Matches your rule that no work stays only on one device."],
+          "cons": ["The repo is public, so unfinished code becomes visible to anyone who looks (after a password/key scan)."],
+          "recommended": true
+        },
+        {
+          "id": "wait",
+          "label": "Wait until it's finished",
+          "pros": ["Nobody sees unfinished code."],
+          "cons": ["Everything stays one drive failure away from being lost, possibly for days."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Performance lab",
+      "path": "Graphics measurements on the real screen setup",
+      "headline": "Can the lab prove the private test screen is ours in a different way, then try launching it?",
+      "today": "The lab starts a private copy of KDE's screen program so it can measure the app on your real graphics chip without touching your desktop. Before using it, the lab proves that copy is ours by reading its settings list. That reading fails.",
+      "problem": "KDE's screen program has a special 'run at high priority' permission built in, so Linux hides its settings list from normal programs. That is why the last attempt stopped. Without this, there are no real graphics measurements.",
+      "proposal": "Prove ownership with things Linux still shows: who started it and when, a one-time code we pass to it, and asking the private connection itself who is on the other end. It is equally strong, and it is labelled honestly in the results. Then allow a small number of supervised launches, each one stopped and checked afterward.",
+      "options": [
+        {
+          "id": "alt-proof-and-launch",
+          "label": "Yes, both",
+          "pros": ["Unblocks graphics measurements without changing any system setting.", "Each launch is time-limited and its cleanup is checked."],
+          "cons": ["Launches use your real graphics chip, which has a recent display-crash fix still on trial. A bad launch could briefly freeze or blank the screen."],
+          "recommended": true
+        },
+        {
+          "id": "alt-proof-only",
+          "label": "Build it, ask before launching",
+          "pros": ["Nothing runs on the graphics chip until you say so."],
+          "cons": ["Graphics stays unmeasured until you approve, which delays finishing the lab."]
+        },
+        {
+          "id": "drop-gpu",
+          "label": "Leave graphics out",
+          "pros": ["No risk to your screen."],
+          "cons": ["The lab can't tell you anything about the real graphics chip, which you said must stay in scope."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Performance lab",
+      "path": "Energy measurements",
+      "headline": "How should the lab measure how much power the app uses?",
+      "today": "The computer reports power for the graphics/chip area to any program. The main processor's power counter is locked so only the system administrator can read it. The battery reports power only while unplugged.",
+      "problem": "Without the processor counter, energy results are partial. No reading can say exactly how many watts the app itself uses; the lab can only measure 'extra power while the app works, compared with idle'.",
+      "proposal": "Pick which sources the lab may use.",
+      "options": [
+        {
+          "id": "no-system-change",
+          "label": "Chip power + unplugged runs",
+          "pros": ["Changes nothing on your system.", "The battery reading covers the whole computer."],
+          "cons": ["You'd unplug the laptop during energy runs (roughly 10–20 minutes each).", "Processor power on its own stays unmeasured."],
+          "recommended": true
+        },
+        {
+          "id": "unlock-counter",
+          "label": "Unlock the processor counter",
+          "pros": ["Most complete energy numbers, no unplugging needed."],
+          "cons": ["A permanent system setting change. That lock exists because the counter can leak information to other programs (a known 2020 security issue)."]
+        },
+        {
+          "id": "chip-only",
+          "label": "Chip power only",
+          "pros": ["No system change, no unplugging."],
+          "cons": ["Weakest energy evidence; it may not separate app work from everything else."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Performance lab",
+      "path": "Measuring message backlogs while a reply streams in",
+      "headline": "May the app get a small, test-only counter so the lab can see message backlogs?",
+      "today": "While a reply streams in, the app queues up incoming pieces and shows them in batches. The lab can confirm every piece arrived, but can't see how long the queue gets or whether any piece was dropped.",
+      "problem": "If the app falls behind while streaming, which can feel like a freeze, the lab can't prove it or rule it out.",
+      "proposal": "Add a counter inside the app that is switched off for real users and only switched on in lab runs. This is a small change to the app's code, reviewed like any other app change, and nothing changes for users.",
+      "options": [
+        {
+          "id": "add-counter",
+          "label": "Yes, add it",
+          "pros": ["Backlogs and dropped pieces become measurable.", "Invisible to normal use."],
+          "cons": ["Touches app code, so it needs its own review and a merge later."],
+          "recommended": true
+        },
+        {
+          "id": "no-app-change",
+          "label": "No app changes",
+          "pros": ["The app stays untouched."],
+          "cons": ["Backlog measurements stay missing, a gap in the lab."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Performance lab",
+      "path": "Windows, Mac and Android",
+      "headline": "Which platforms besides this Linux computer must the lab cover before it counts as done?",
+      "today": "Everything so far runs only on this Linux computer. There are Windows and Mac virtual computers here, GitHub's test servers run Windows and Mac, and no Android phone is connected.",
+      "problem": "Virtual computers and GitHub's shared servers are slow and noisy, so their timings may not reflect a real laptop or phone. Real coverage needs real devices, plus new measuring code for each system.",
+      "proposal": "Pick what counts. Each platform adds roughly a few days of work for its measuring code.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "windows-vm",
+          "label": "Windows (virtual)",
+          "pros": ["Available today; catches Windows-only slowdowns in broad strokes."],
+          "cons": ["Timings are only rough hints, not real-laptop numbers."],
+          "recommended": true
+        },
+        {
+          "id": "mac-vm",
+          "label": "Mac (virtual)",
+          "pros": ["Available today."],
+          "cons": ["The Mac virtual computer is the least reliable here; numbers are rough hints at best."]
+        },
+        {
+          "id": "android-phone",
+          "label": "Android (your phone)",
+          "pros": ["Real-device numbers for the phone app."],
+          "cons": ["You'd connect a phone with USB debugging turned on; it needs Android-specific measuring code."]
+        },
+        {
+          "id": "linux-only",
+          "label": "Linux only for now",
+          "pros": ["Finishes the lab soonest."],
+          "cons": ["Says nothing about how the app performs for Windows, Mac or phone users."]
+        }
+      ]
+    }
+  ]
+}

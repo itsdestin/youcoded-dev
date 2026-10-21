@@ -1,16 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { parseOptions, summariseCycles, runCycles, createOwnedSession, recordCount, lifecycleStartupReady } from '../short-lifecycle.mjs';
+import { parseOptions, summariseCycles, runCycles, createOwnedSession, recordCount, lifecycleStartupReady, makeBound } from '../short-lifecycle.mjs';
 
-const metrics = { TaskDuration: 1, ScriptDuration: 0.5, LayoutCount: 3, JSHeapUsedSize: 100, Nodes: 10, JSEventListeners: 5 };
+const metrics = { TaskDuration: 1, ScriptDuration: 0.5, LayoutCount: 3, RecalcStyleCount: 3, LayoutDuration: 0.1, RecalcStyleDuration: 0.1, JSHeapUsedSize: 100, Nodes: 10, JSEventListeners: 5 };
 const sample = (pss = 12) => ({ metrics: { ...metrics }, pss: { totalMb: pss, perPid: [{ pid: 123, type: 'main', mb: pss }] } });
 const complete = (i, pss) => ({ index: i, created: [`owned-${i}-a`, `owned-${i}-b`], closed: [`owned-${i}-b`, `owned-${i}-a`], before: { ids: [], mounted: 0 }, openState: { ids: [`owned-${i}-a`, `owned-${i}-b`], mounted: 2 }, after: { ids: [], mounted: 0 }, output: Array.from({ length: 2 }, () => ({ deltasSent: 20, plannedDeltas: 20, chars: 100, shown: true, exact: true, persistedExact: true, turnComplete: true, aborted: false })), natural: sample(pss), afterGc: { status: 'unmeasured', reason: 'not requested', sample: null }, persistedRecords: { before: 2, after: 4 } });
 
 test('lifecycle fixture is unique and shared package is refused before fixture creation and launcher sweep',()=>{
   const source=readFileSync(new URL('../short-lifecycle.mjs',import.meta.url),'utf8');
   assert.match(source,/mkdtempSync\(join\(ROOT, 'scratch\/perf-lab\/short-lifecycle-fixture-'\)\)/);
-  assert.ok(source.indexOf('refusePackageProcesses(build.appDir);')<source.indexOf('const fixture = buildFixture('));
+  const fixtureStart = source.indexOf('const fixture = prepareLifecycleFixture(');
+  assert.ok(fixtureStart > 0);
+  assert.ok(source.indexOf('refusePackageProcesses(build.appDir);') < fixtureStart);
   assert.match(source,/cdpPort: 9569, refuseExisting: true/);
 });
 test('a timed-out creation destroys its late owned session, never an existing ID', async () => {
@@ -53,6 +55,7 @@ test('saved-file counting tolerates a vanished lock directory but does not hide 
   };
   assert.equal(recordCount('/fixture', read), 2);
   assert.throws(() => recordCount('/fixture', () => { throw denied; }), /denied/);
+  assert.throws(() => recordCount('/fixture', () => Array.from({ length: 10001 }, () => file('many.jsonl'))), /record cap/);
 });
 
 test('an incomplete cycle never contributes to the post-warmup trend', () => {
@@ -69,7 +72,7 @@ test('CLI validates bounded cycles and minutes, paths, defaults and stamped pack
   assert.equal(o.maxMinutes, 10);
   assert.equal(o.appDir, '/tmp/package');
   assert.equal(parseOptions(['--post-gc', '--cycles', '2']).postGc, true);
-  for (const args of [['--cycles', '0'], ['--cycles', 'oops'], ['--max-minutes', '11'], ['--max-minutes', 'NaN'], ['--checkout', 'relative'], ['--app-dir', 'relative'], ['--out', 'relative']]) assert.throws(() => parseOptions(args));
+  for (const args of [['--cycles', '0'], ['--cycles', '6'], ['--cycles', 'oops'], ['--max-minutes', '11'], ['--max-minutes', 'NaN'], ['--checkout', 'relative'], ['--app-dir', 'relative'], ['--out', 'relative']]) assert.throws(() => parseOptions(args));
 });
 
 test('missing work, output, leaked sessions and mounted views make a cycle incomplete', () => {
@@ -149,6 +152,81 @@ test('cleanup failure stays incomplete and prevents the next cycle', async () =>
   assert.equal(creates, 2);
   assert.match(rows[0].reason, /destroy failed/);
   assert.equal(summariseCycles(rows).status, 'incomplete');
+});
+
+test('outer lifecycle deadline reserves cleanup time and cancels observation timers with a fake clock', async () => {
+  let now = 0, callback, delay, cleared = 0;
+  const bound = makeBound(1, { now: () => now, setTimer: (fn, ms) => { callback = fn; delay = ms; return 7; }, clearTimer: id => { assert.equal(id, 7); cleared++; } });
+  const pending = bound(new Promise(() => {}), 'stuck', 100000);
+  assert.equal(delay, 48000);
+  callback();
+  await assert.rejects(pending, /timeout at stuck/);
+  assert.equal(cleared, 1);
+  now = 48000;
+  await assert.rejects(bound(Promise.resolve(), 'next'), /deadline/);
+  assert.throws(() => makeBound(11), /1..10/);
+});
+
+test('matched checkpoints separate natural and forced GC trajectories on the existing cycle driver', async () => {
+  const { captureCheckpoint, RESOURCE_METRICS } = await import('../resource-checkpoint.mjs');
+  let ids = ['anchor'];
+  const samples = [];
+  const driver = {
+    state: async () => ({ ids: [...ids], mounted: ids.length }),
+    create: async name => { ids.push(name); return name; },
+    switchTo: async () => {}, send: async () => complete(1, 12).output[0],
+    close: async id => { ids = ids.filter(x => x !== id); }, records: async () => 0, collectGc: async () => {},
+    sample: async (phase, gcPolicy) => {
+      samples.push([phase, gcPolicy]);
+      return captureCheckpoint({ phase, gcPolicy, identity: { source: 'sha', run: 'run-1', target: 'target-1' }, readEpoch: async () => ({ documentEpoch: '100', url: 'app://' }), readProcessStart: () => 'start-123', cdp: { send: async () => ({ metrics: RESOURCE_METRICS.map(name => ({ name, value: 10 })) }) }, family: () => [123],
+        readPss: () => ({ totalMb: gcPolicy === 'forced-gc' ? 8 : 12, perPid: [{ pid: 123, mb: gcPolicy === 'forced-gc' ? 8 : 12 }] }), now: () => 0 });
+    },
+  };
+  assert.equal(parseOptions(['--resource-checkpoints']).resourceCheckpoints, true);
+  const rows = await runCycles(null, null, { cycles: 3, driver, resourceCheckpoints: true, postGc: true });
+  const result = summariseCycles(rows);
+  assert.equal(result.status, 'measured');
+  assert.deepEqual(samples.slice(0, 5).map(s => s[0]), ['before', 'grown', 'switched', 'released', 'released']);
+  assert.equal(samples[3][1], 'gc-intervened-pre-collection');
+  assert.equal(samples[4][1], 'forced-gc');
+  assert.equal(result.trajectories.natural, null);
+  assert.equal(result.trajectories.intervenedPreGc.pssMb.samples, 2);
+  assert.equal(result.trajectories.forcedGc.pssMb.samples, 2);
+  assert.equal(rows[0].natural.pss.totalMb, 12);
+  assert.equal(rows[0].afterGc.sample.pss.totalMb, 8);
+  assert.deepEqual(ids, ['anchor']);
+  await assert.rejects(runCycles(null, null, { cycles: 6, driver }), /1..5/);
+});
+
+test('matched checkpoints stay ordered and separate GC policy; failed mount restoration stops cycles', async () => {
+  let ids = ['anchor'], restored = false;
+  const phases = [];
+  const driver = {
+    state: async () => ({ ids: [...ids], mounted: ids.length + (restored ? 1 : 0) }),
+    create: async name => { ids.push(name); return name; },
+    switchTo: async () => {},
+    send: async () => complete(1, 12).output[0],
+    close: async id => { ids = ids.filter(x => x !== id); restored = true; },
+    sample: async (phase, gcPolicy) => { phases.push([phase, gcPolicy]); return sample(); },
+    records: async () => 0,
+  };
+  const rows = await runCycles(null, null, { cycles: 2, driver, resourceCheckpoints: true,
+    bound: (p, label) => label === 'post-close wait' ? Promise.reject(Error('restore deadline')) : p });
+  assert.equal(rows.length, 1);
+  assert.match(rows[0].reason, /restore deadline/);
+  assert.deepEqual(phases.map(p => p[0]), ['before', 'grown', 'switched']);
+  assert.equal(summariseCycles(rows).status, 'incomplete');
+  assert.deepEqual(ids, ['anchor']);
+});
+
+test('decreasing cumulative counters are not negative work; decreasing gauges remain release evidence', () => {
+  const rows = [complete(1, 20), complete(2, 12)];
+  rows[1].natural.metrics.TaskDuration = 0;
+  rows[1].natural.metrics.Nodes = 2;
+  const report = summariseCycles(rows);
+  assert.equal(report.status, 'incomplete');
+  assert.equal(report.cycles[1].deltaFromPrevious.TaskDuration, null);
+  assert.equal(report.cycles[1].deltaFromPrevious.Nodes, -8);
 });
 
 test('driver owns only newly created IDs, switches, and cleans up both on a send failure', async () => {

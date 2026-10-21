@@ -371,7 +371,7 @@ function fakeApp({
             ...probe,
           };
         }
-        if (expr.includes('setInterval(ping')) { calls.push('install-ipc'); return true; }
+        if (expr.includes('timer = setInterval(')) { calls.push('install-ipc'); return true; }
         if (expr.includes('requestAnimationFrame(tick)')) { calls.push('install-probe'); return { longtaskSupported }; }
         if (expr.includes('if (!window.__ipcStall) return false')) { calls.push('stop-ipc'); return true; }
         if (expr.includes('if (!window.__perfProbe) return false')) { calls.push('stop-probe'); return true; }
@@ -458,7 +458,7 @@ test('the clones carry identical content, and the fixture is left exactly as fou
   // Snapshot the directory mid-run, while the sessions are open.
   let during = null;
   app.cdp.evaluate = async (expr) => {
-    if (expr.includes('setInterval(ping') && during === null) during = transcriptFiles();
+    if (expr.includes('timer = setInterval(') && during === null) during = transcriptFiles();
     seen.push(expr);
     return inner(expr);
   };
@@ -566,10 +566,12 @@ test('a dead long-task observer nulls the renderer AND the attribution, and says
   const run = out.byCount['1'].runs[0];
   assert.equal(run.rendererLongtaskCount, null);
   assert.equal(run.rendererLongtaskTotalMs, null);
+  assert.equal(run.rendererLongtaskMaxMs, null);
+  assert.equal(out.byCount['1'].median.rendererLongtaskMaxMs, null);
   // Critically: NOT "100% main process". Missing renderer data is missing data.
   assert.equal(run.mainProcessStallMs, null);
   assert.equal(run.rendererStallMs, null);
-  assert.equal(run.blame, null);
+  assert.equal(run.blame.verdict, 'unknown');
   // The end-to-end cost is still real and still reported.
   assert.ok(run.ipcTotalStallMs > 0);
   const w = out.warnings.join(' ');
@@ -577,12 +579,13 @@ test('a dead long-task observer nulls the renderer AND the attribution, and says
   assert.match(w, /nothing here says the main process was or was not at fault/);
 });
 
-test('with the renderer idle, the stall is attributed to the main process', async () => {
+test('without renderer overlap, response excess remains unknown rather than main', async () => {
   const out = await runIdleScenario(fakeApp(), fixture, { ...FAST, sessionCounts: [1] });
   const run = out.byCount['1'].runs[0];
-  assert.equal(run.blame, 'main-process');
+  assert.equal(run.blame.verdict, 'unclear');
   assert.equal(run.rendererStallMs, 0);
-  assert.ok(run.mainProcessStallMs > 0);
+  assert.equal(run.mainProcessStallMs, null);
+  assert.ok(run.unknownStallMs > 0);
 });
 
 test('cpuPct and pssMb are null with a warning when the process family is unreachable', async () => {

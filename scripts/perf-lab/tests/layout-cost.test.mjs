@@ -95,15 +95,28 @@ test('the thresholds are exported, so a report can say what gate it was judged a
   assert.ok(COMMITS_OUTRUN_FRAMES > 1);
 });
 
+test('live Chrome discovery requires an affirmative opt-in, even if Chrome is installed', () => {
+  let checks = 0;
+  const check = () => { checks++; return true; };
+  for (const value of [undefined, '', '0', 'true', 'yes']) assert.equal(liveChromeAvailable({ PERF_LAB_LIVE_TESTS: value }, check), false);
+  assert.equal(checks, 0);
+  assert.equal(liveChromeAvailable({ PERF_LAB_LIVE_TESTS: '1' }, check), true);
+  assert.equal(checks, 1);
+});
+
 // ── The live proof ──────────────────────────────────────────────────────────
 // WHY THIS IS HERE AND NOT ONLY THE UNIT TESTS ABOVE: an instrument that only ever
 // meets fixtures its own author wrote proves nothing about whether it can see the
 // defect. This drives a real Chromium through both shapes and asserts the two
 // verdicts differ. It is the whole reason to trust the fixtures above.
 const CHROME = process.env.CHROME_BIN || 'google-chrome-stable';
-const haveChrome = spawnSync('sh', ['-c', `command -v ${CHROME}`], { encoding: 'utf8' }).status === 0;
+// WHY: installed Chrome is capability, not permission to launch a browser in a unit run.
+function liveChromeAvailable(env, check) {
+  return env.PERF_LAB_LIVE_TESTS === '1' && check();
+}
+const haveChrome = liveChromeAvailable(process.env, () => spawnSync('which', [CHROME], { encoding: 'utf8' }).status === 0);
 
-test('LIVE: a forced layout per delta is detected, and a coalesced stream is not', { skip: haveChrome ? false : `${CHROME} not on PATH` }, async () => {
+test('LIVE: a forced layout per delta is detected, and a coalesced stream is not', { skip: haveChrome ? false : 'requires PERF_LAB_LIVE_TESTS=1 and Chrome on PATH' }, async () => {
   const port = 9783;
   // A slow runner gets a longer wait and one fresh retry (live-chrome.mjs).
   let chrome = null;

@@ -1,5 +1,9 @@
 import { isDeepStrictEqual } from 'node:util';
 import { isSoftwareRenderer } from './gpu.mjs';
+import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
+import { replayEvidenceProblems } from './replay-evidence.mjs';
+import { legacyEvidenceProblems } from './legacy-evidence.mjs';
+import { identityMismatches, identityProblems } from './identity.mjs';
 
 // A report can contain good-looking numbers without evidence that the two runs
 // measured the same thing. Keep this check pure so partial and historical JSON can
@@ -18,7 +22,7 @@ const measuredSections = {
   nativeResume: 'nativeResume', scrollback: 'scrollback',
 };
 
-export function assessComparability(baseline, candidate) {
+export function assessComparability(baseline, candidate, { primary = [] } = {}) {
   const reasons = [];
   const warnings = [
     'Pre-boot noise samples do not prove absence of interference during measurement; midrun interference was not measured.',
@@ -27,6 +31,18 @@ export function assessComparability(baseline, candidate) {
     if (!record(report)) { reasons.push(`${label}: invalid report`); continue; }
     if (!Object.hasOwn(report, 'aborted') || report.aborted !== null) reasons.push(`${label}: aborted or missing completion status`);
     if (!Array.isArray(report.incomplete) || report.incomplete.length) reasons.push(`${label}: incomplete or missing completion status`);
+    // WHY the missing-newMetric exception must not bridge attribution revisions:
+    // old inferred-main numbers cannot stand in for observed raw response tails.
+    if (['replayStall', 'idleSessions', 'artifacts', 'projects', 'terminal', 'nativeStream', 'nativeResume']
+      .some(section => report[section] != null) && report.stallMeasurementRevision !== STALL_MEASUREMENT_REVISION) {
+      reasons.push(`${label}: unsupported or missing stall measurement revision; remeasure with revision ${STALL_MEASUREMENT_REVISION}`);
+    }
+    reasons.push(...legacyEvidenceProblems(report, { primary }).map(problem => `${label}: ${problem}`));
+    reasons.push(...replayEvidenceProblems(report.replayStall).map(problem => `${label}: ${problem}`));
+    // WHY (acceptance A3): instrument source, fixture options, package bytes and executed
+    // repeat counts decide what a number MEANS. A report without them (every report written
+    // before identity existed) is incomparable with an explicit reason, never assumed equal.
+    reasons.push(...identityProblems(report).map(problem => `${label}: ${problem}`));
     const machine = report.machine;
     for (const key of machineFields) {
       if (!text(machine?.[key])) reasons.push(`${label}: missing or invalid machine.${key}`);
@@ -74,6 +90,17 @@ export function assessComparability(baseline, candidate) {
         }
       }
     }
+  }
+  // WHY selection identity is separate from repeat count: two intentional subsets
+  // can compare, but silently omitting a declared phase on one side cannot.
+  if (record(baseline?.legacyExecution?.phases) && record(candidate?.legacyExecution?.phases)
+      && !isDeepStrictEqual(Object.keys(baseline.legacyExecution.phases).sort(), Object.keys(candidate.legacyExecution.phases).sort())) {
+    reasons.push('legacy executed phase selections differ');
+  }
+  // Only compare identities that are individually well formed; the per-side reasons above
+  // already explain a malformed or missing one.
+  if (identityProblems(baseline).length === 0 && identityProblems(candidate).length === 0) {
+    reasons.push(...identityMismatches(baseline.identity, candidate.identity));
   }
   if (record(baseline?.machine) && record(candidate?.machine)) {
     for (const key of [...machineFields, 'ramGb']) {
