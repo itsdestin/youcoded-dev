@@ -1,0 +1,22 @@
+{
+ "deck": "battery-power-restyle-round-3",
+ "started": "2026-10-21T01:40:32.661Z",
+ "submitted": "2026-10-21T01:41:45Z",
+ "cur": 1,
+ "answers": {
+  "C-3": {
+   "v": "yes",
+   "t": 1792546889468,
+   "seconds": 55,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-4": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1,
+   "t": 1792546904719
+  }
+ }
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Power flow — distinct input and output cards",
+  "key": "battery-power-restyle-round-2",
+  "out": "power-restyle.review-2.html",
+  "images": "images/power-restyle.review-2",
+  "runs": {"after": "runs/candidates"},
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "stage": "review",
+  "crops": {"premium-cards": ["power", "cards-draining", "1440x660+0+90"]},
+  "steps": [
+    {
+      "id": "C-2",
+      "surface": "System Dashboard",
+      "path": "Power → Right now; also shown on Overview",
+      "headline": "Give every major input and output its own card",
+      "crop": "premium-cards",
+      "new": true,
+      "highlight": {"box": [12, 18, 76, 78]},
+      "changed": "Separate adapter, battery, CPU, GPU and other-hardware cards. Consistent surfaces, icon tiles, quieter borders, larger numbers and thin routed connections replace the rainbow ribbons.",
+      "notice": "The red battery card explains the adapter shortfall. A central Adapter + battery total connects the two sources to the separate consumers below.",
+      "risk": "Uses more vertical space. While charging, the battery moves to the receiving row. These are fixed example readings; approving the design does not install it."
+    }
+  ]
+}

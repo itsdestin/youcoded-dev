@@ -1,0 +1,40 @@
+{
+  "title": "Power flow — one battery, two roles",
+  "key": "battery-power-restyle-round-3",
+  "out": "power-restyle.review-3.html",
+  "images": "images/power-restyle.review-3",
+  "runs": {"after": "runs/candidates"},
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "stage": "review",
+  "crops": {
+    "charging-cards": ["power", "cards-charging-3", "1440x700+0+90"],
+    "supplying-cards": ["power", "cards-draining-3", "1440x700+0+90"]
+  },
+  "steps": [
+    {
+      "id": "C-3",
+      "surface": "System Dashboard",
+      "path": "Power → Right now · charging",
+      "headline": "Power draw feeds the machine and the receiving battery",
+      "crop": "charging-cards",
+      "new": true,
+      "highlight": {"box": [12, 18, 76, 76]},
+      "changed": "The center label is Power draw. Smooth connections feed the separate CPU, GPU, other-hardware and battery cards below.",
+      "notice": "When receiving power, the battery sits on the bottom row. Here, 64 W covers 50 W for the machine and 14 W charging the battery.",
+      "risk": "The light dashboard palette matches your selected example. Readings are fixed examples, not live measurements; nothing is installed."
+    },
+    {
+      "id": "C-4",
+      "surface": "System Dashboard",
+      "path": "Power → Right now · plugged in and draining",
+      "headline": "Adapter and battery smoothly join as simultaneous sources",
+      "crop": "supplying-cards",
+      "new": true,
+      "highlight": {"box": [12, 18, 76, 76]},
+      "changed": "When supplying power, the battery moves beside the adapter. Their independent curved connections merge into Power draw before feeding the machine below.",
+      "notice": "The adapter supplies about 30 W and the battery contributes 20 W, together powering a 50 W load. The red battery reading remains −20 W to show its charge is being used.",
+      "risk": "Card placement follows the current power direction. Connections are static, not animated. Fixed examples; nothing installed."
+    }
+  ]
+}
