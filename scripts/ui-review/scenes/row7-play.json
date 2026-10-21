@@ -1,9 +1,9 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&signedIn=1&seed=none&title=meeting+notes&bot=passive&replySpeed=2",
   "theme": "halftone-dimension",
-  "zoom": 1.15,
+  "zoom": 1.3,
   "boot": 3000,
-  "why": "Connect 4 opens from the Games button (a hover hint, so data-hint) and the board addresses columns by data-col; &bot=passive answers each drop after its fixed 1.2 s think and lets four drops win. 2026-09-11 (Destin, review-2 R-4): ~20 s at most, zoomed 1.15, the shared rhythm. The first action pauses the theme's moving background through the app's own window-hidden pause (the film's promo-conversations does the same): with it running, every pointer move here waited on a frame and each click took ~1.4 s, which is most of why this loop ran 26 s. The pattern stays on screen; it just does not drift.",
+  "why": "Connect 4 opens from the Games button (a hover hint, so data-hint) and the board addresses columns by data-col; &bot=passive answers each drop after its fixed 1.2 s think and lets four drops win. 2026-09-11 (Destin, review-2 R-4): ~20 s at most, zoomed 1.15, the shared rhythm. The first action pauses the theme's moving background through the app's own window-hidden pause (the film's promo-conversations does the same): with it running, every pointer move here waited on a frame and each click took ~1.4 s, which is most of why this loop ran 26 s. The pattern stays on screen; it just does not drift. 2026-10-21 (Destin, website-everything-app #79): re-filmed at zoom 1.3 and once per site theme (THEME env overrides this scene's `theme`), so the page plays the visitor's theme.",
   "actions": [
     { "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()", "settle": 0 },
     { "hold": 300 },

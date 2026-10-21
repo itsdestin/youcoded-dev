@@ -4,6 +4,7 @@
   "width": 390,
   "height": 844,
   "boot": 3000,
+  "pauseBackground": true,
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },

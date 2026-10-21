@@ -1,0 +1,60 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=0&reply=site&seed=none",
+  "theme": "youcoded",
+  "zoom": 1.3,
+  "boot": 3000,
+  "pauseBackground": true,
+  "why": "2026-10-21 (Destin, website-everything-app #79): the landing page's Money clip, filmed against the site scenario (the fictional Finance page). Opens the pinned Finance page, waits for its Net worth chart, clicks the Bills & subscriptions tab and then Spending (the Debt chart is empty in the demo data), then the 1Y range chip. The page runs in a sandboxed iframe, so every step uses the recorder's `in: page` option. Zoom 1.3 and one take per site theme (THEME env).",
+  "actions": [
+    {
+      "hold": 300
+    },
+    {
+      "click": "button[aria-label='Open Finance']",
+      "settle": 300
+    },
+    {
+      "waitForText": "Net worth",
+      "tag": "button",
+      "in": "page",
+      "timeout": 20000,
+      "settle": 300
+    },
+    {
+      "hold": 1800
+    },
+    {
+      "clickText": "Bills & subscriptions",
+      "tag": "button",
+      "in": "page",
+      "settle": 2200
+    },
+    {
+      "waitForText": "Spending",
+      "tag": "button",
+      "in": "page",
+      "settle": 300
+    },
+    {
+      "clickText": "Spending",
+      "tag": "button",
+      "in": "page",
+      "settle": 2200
+    },
+    {
+      "waitForText": "1Y",
+      "tag": "button",
+      "in": "page",
+      "settle": 300
+    },
+    {
+      "clickText": "1Y",
+      "tag": "button",
+      "in": "page",
+      "settle": 1500
+    },
+    {
+      "hold": 1500
+    }
+  ]
+}

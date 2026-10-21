@@ -1,0 +1,114 @@
+{
+  "title": "youcoded.ai — the rebuilt page, as built: keep each part or send it back",
+  "key": "website-everything-app-review",
+  "out": "website-everything-app.review.html",
+  "stage": "review",
+  "images": "images/website-everything-app.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built" },
+  "themes": ["youcoded"],
+  "crops": {
+    "hero-tips":      ["site", "hero-tips", "1440x900+0+0"],
+    "hero-tips-open": ["site", "hero-tips-open", "1440x900+0+0"],
+    "settings-tips":  ["site", "settings-tips", "1440x900+0+0"],
+    "cards-top":      ["site", "cards-top", "1440x900+0+0"],
+    "cards-device":   ["site", "cards-device", "1440x900+0+0"],
+    "cards-samples":  ["site", "cards-samples", "1440x900+0+0"],
+    "cards-theme":    ["site", "cards-theme", "1440x900+0+0"],
+    "ideas":          ["site", "ideas", "1440x900+0+0"],
+    "about":          ["site", "about", "1440x900+0+0"],
+    "phone-story":    ["site", "phone-story", "390x844+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R-1", "new": true,
+      "surface": "The hero demo", "path": "After clicking Try the demo",
+      "crop": "hero-tips", "highlight": { "box": [8, 17, 24, 12] },
+      "headline": "Tips appear only once you click into the demo: glass chips under the toolbar buttons, three rows, straight stems.",
+      "changed": "Nothing shows over the still. After Try the demo, eight chips hang under the demo's own buttons (Settings, Pages, Projects, Home, Finance; Files, Browser, Games), packed so none touch. Hide tips sits under the window controls and is remembered. Each chip shows its x on hover.",
+      "notice": "Hover any chip and it grows into its sentence in place; the others move out of its way. Open Home or Finance inside the demo and the tips go away; close the page and they return.",
+      "risk": "The command-drawer button in the message box has no chip: the demo names that button differently and it was not found; it can be added once the demo exposes it."
+    },
+    {
+      "id": "R-2", "new": true,
+      "surface": "The hero demo", "path": "A chip on hover",
+      "crop": "hero-tips-open", "highlight": { "box": [12, 25, 24, 14] },
+      "headline": "The chip itself expands into the description; nothing pops up beside it.",
+      "changed": "On hover or tap the chip widens, wraps, and shows its sentence under the label. Tap pins it open; tap again closes it. The neighbouring chips re-pack around the bigger one and the stems redraw.",
+      "notice": "One visual language: the same glass pill, bigger, in every site theme.",
+      "risk": "A pinned-open chip covers more of the chat until closed."
+    },
+    {
+      "id": "R-3", "new": true,
+      "surface": "The hero demo", "path": "With the Settings panel open inside the demo",
+      "crop": "settings-tips", "highlight": { "box": [29, 20, 20, 46] },
+      "headline": "Inside Settings, six tips sit beside the rows they explain.",
+      "changed": "Account, Assistant settings, Appearance, Buddy floater, Backup & sync and Remote access each get a chip to the right of the panel on a short horizontal stem. The other rows explain themselves.",
+      "notice": "The tips follow the real panel: if a row moves, the chip moves with it.",
+      "risk": "Each tip's wording has to be kept true to what that settings row does."
+    },
+    {
+      "id": "R-4", "new": true,
+      "surface": "The opening copy", "path": "Under the hero",
+      "crop": "about", "highlight": { "box": [8, 14, 84, 42] },
+      "headline": "The opening reads as one story, with your two lines in it.",
+      "changed": "'One app. Whatever you want it to be.' then the paragraph ending 'So, what exactly is YouCoded? That's for you to decide.' The model sentence sits under it. 'YouCoded Assistant' is gone everywhere.",
+      "notice": "Every word on the page can still be edited in place with the site copy editor; say so and I serve it.",
+      "risk": "None beyond wording taste."
+    },
+    {
+      "id": "R-5", "new": true,
+      "surface": "The feature cards", "path": "The first cards",
+      "crop": "cards-top", "highlight": { "box": [8, 22, 84, 60] },
+      "headline": "Ten stacked cards, customization first, every clip re-filmed closer in the page's own theme.",
+      "changed": "Make it yours, Your home, Your money, Your whole device, Any model, Real work, You're in control, Stay organized, Works everywhere, Play while it works, then the roadmap. Clips are filmed at 1.3 zoom. Switch the site theme at the top and every clip swaps to a take filmed in that theme; a running clip restarts in the new theme.",
+      "notice": "On a Linux computer the device card moves up to second place.",
+      "risk": "Forty clip files instead of nine, about four times the video on disk; each visitor still downloads only the theme they are looking at."
+    },
+    {
+      "id": "R-6", "new": true,
+      "surface": "The feature cards", "path": "Your home, your money",
+      "crop": "cards-samples", "highlight": { "box": [62, 40, 30, 8] },
+      "headline": "Home and Money carry 'Sample page, not included' and say so in their first words.",
+      "changed": "Both cards open with 'Not a built-in feature' and describe the page as one person asked for it, for his own house or accounts, with the demo data fictional. The clips show the demo's Home and Finance pages being used.",
+      "notice": "They read as proof of what asking produces, not as features in the box.",
+      "risk": "If 'sample' undersells them, the words are one edit away."
+    },
+    {
+      "id": "R-7", "new": true,
+      "surface": "The feature cards", "path": "Your whole device",
+      "crop": "cards-device", "highlight": { "box": [38, 12, 52, 50] },
+      "headline": "The device card with your copy and the drawn control center + keyboard loop, linking to Swipe Keyboard for KDE Plasma.",
+      "changed": "Copy as you wrote it. 'Swipe Keyboard for KDE Plasma' links to the project's README and install instructions on GitHub in a new tab. The drawing recolours with the site theme.",
+      "notice": "Nothing on the card is a screenshot of your real desktop.",
+      "risk": "The GitHub README is what visitors land on; it opens with licensing text before the install lines."
+    },
+    {
+      "id": "R-8", "new": true,
+      "surface": "The feature cards", "path": "Make it yours, in another site theme",
+      "crop": "cards-theme", "highlight": { "box": [8, 22, 84, 60] },
+      "headline": "The one exception: the Make it yours clip starts in the site's theme and ends on a different one.",
+      "changed": "Shown here after switching the page to another theme: the card's clip is the take filmed in that theme, and it changes the app's look partway through, as the card describes.",
+      "notice": "Every other clip stays in the page's theme from start to end.",
+      "risk": "None I can see."
+    },
+    {
+      "id": "R-9", "new": true,
+      "surface": "The ideas wall", "path": "Bottom of the page",
+      "crop": "ideas", "highlight": { "box": [7, 30, 86, 50] },
+      "headline": "The gallery is now the ideas wall with four real pages and the sentence that made each.",
+      "changed": "One header, four tiles: Home, Finance, the paint studio, the trip board. The integrations grid above it is hidden, not deleted.",
+      "notice": "More tiles appear as more sample pages exist.",
+      "risk": "Four tiles is a short row on a wide screen."
+    },
+    {
+      "id": "R-10", "new": true,
+      "surface": "The story", "path": "On a phone",
+      "crop": "phone-story", "highlight": { "box": [5, 20, 90, 12] },
+      "headline": "On a phone the story folds behind one line, 'Read the story'.",
+      "changed": "Phones see the heading and one tap-to-open line; the two screens of text open on tap. Desktops see the whole story as before.",
+      "notice": "The phone page is two screens shorter.",
+      "risk": "Fewer phone visitors read the story."
+    }
+  ]
+}
