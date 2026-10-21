@@ -21,6 +21,7 @@ Blocked: No new evaluation blocker established by app closeout. Original workspa
 
 Chats
 - 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-18 session/93-file-viewer-freezes: Investigate hardware/document/HTML/path-list/watcher stall impact and extend the performance lab with representative workloads, independent thread signals, bounded execution and fail-closed results.
 
 From the old roadmap (perf, status needs-verify, seen on all, last checked 2026-09-10)
