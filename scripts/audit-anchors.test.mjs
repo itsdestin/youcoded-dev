@@ -870,3 +870,14 @@ test('harvestScriptPaths: script paths from live instructions, not lines that ca
   ].join('\n');
   assert.deepEqual(harvestScriptPaths(text).sort(), ['scripts/shoot/shoot.mjs', 'scripts/ui-review/run-review.sh', 'scripts/verify.sh']);
 });
+
+test('undocumentedWorkbenchSwitches: reads every workbench source file, not only mock-shim.ts', t => {
+  // 2026-10-21: ?providerError= and ?anthropicError= are read in seed-chat.ts and
+  // fixtures/sessions.ts, so the check never saw them and a shot plan could omit them.
+  const root = switchFixture(t, { shim: '', readme: 'Switches: `?scenario=default`.' });
+  const dir = path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'dev', 'workbench');
+  fs.mkdirSync(path.join(dir, 'fixtures'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'seed-chat.ts'), "new URLSearchParams(location.search).get('providerError');");
+  fs.writeFileSync(path.join(dir, 'fixtures', 'sessions.ts'), "new URLSearchParams(location.search).get('anthropicError');");
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['anthropicError', 'providerError']);
+});

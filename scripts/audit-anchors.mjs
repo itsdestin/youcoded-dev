@@ -701,17 +701,32 @@ export function shadowedActiveDocs(root) {
 // A WARNING, not a failure: a switch added mid-build is legitimately undocumented for an
 // hour, and a permanently red audit is one everybody learns to ignore (ledger, 2026-09-09).
 export function undocumentedWorkbenchSwitches(root) {
-  const shim = path.join(subRepoRoot(root), 'youcoded', 'desktop', 'src', 'renderer',
-    'dev', 'workbench', 'mock-shim.ts');
+  const workbench = path.join(subRepoRoot(root), 'youcoded', 'desktop', 'src', 'renderer',
+    'dev', 'workbench');
+  const shim = path.join(workbench, 'mock-shim.ts');
   const readme = path.join(root, 'scripts', 'ui-review', 'README.md');
   // Either side absent (a checkout without the app, or without the rig) is not drift.
   if (!fs.existsSync(shim) || !fs.existsSync(readme)) return [];
-  const src = fs.readFileSync(shim, 'utf8');
+  // WHY every workbench source file, not only mock-shim.ts (2026-10-21): switches are also
+  // read in seed-chat.ts and the fixtures (?providerError=, ?anthropicError=), and a check
+  // that read one file said nothing about them. Tests excluded — they read no URL.
+  const sources = [];
+  const walk = (dir) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.(ts|tsx)$/.test(e.name) && !/\.test\.tsx?$/.test(e.name)) sources.push(p);
+    }
+  };
+  walk(workbench);
+  const src = sources.map((p) => fs.readFileSync(p, 'utf8')).join('\n');
   const docs = fs.readFileSync(readme, 'utf8');
   const found = new Set();
   // Both spellings in the file: `new URLSearchParams(location.search).get('x')` and a
   // hoisted `searchParams.get('x')`.
-  for (const m of src.matchAll(/(?:location\.search\)|searchParams)\s*\)?\.get\(\s*'([A-Za-z0-9_]+)'/g)) {
+  // `(?<!\.)searchParams`: a bare hoisted `searchParams`, never `url.searchParams` — a fake
+  // server's own request parameters (fixtures/fake-home-assistant.ts) are not page switches.
+  for (const m of src.matchAll(/(?:location\.search\)|(?<!\.)searchParams)\s*\)?\.get\(\s*'([A-Za-z0-9_]+)'/g)) {
     found.add(m[1]);
   }
   return [...found].filter(s => !docs.includes('?' + s)).sort();
