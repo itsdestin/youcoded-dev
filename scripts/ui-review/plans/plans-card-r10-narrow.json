@@ -1,0 +1,54 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "ask-budget-narrow",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-budget",
+   "actions": [
+    {
+     "click": "[aria-label='10 more sessions']",
+     "settle": 700
+    },
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "textarea",
+     "settle": 600
+    },
+    {
+     "eval": "document.querySelector('[data-testid=plan-block]').scrollIntoView({block:'center'})",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('[data-testid=plan-pause-actions] button')].map(b=>b.textContent.trim()).join('|') === 'Ask the assistant|Stop|Add budget' && [...document.querySelectorAll('[data-testid=plan-step-title]')].every(e=>e.getBoundingClientRect().width>=60) && (()=>{const r=document.querySelector('[data-testid=plan-paused-reason]'); return !r || r.getBoundingClientRect().width>=120})() && !document.body.textContent.includes('Sessions in this window')"
+  },
+  {
+   "name": "proposed-narrow",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[aria-label='10 more sessions']",
+     "settle": 700
+    },
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "textarea",
+     "settle": 600
+    },
+    {
+     "eval": "document.querySelector('[data-testid=plan-block]').scrollIntoView({block:'center'})",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed' && [...document.querySelectorAll('[data-testid=plan-step-title]')].every(e=>e.getBoundingClientRect().width>=60) && !document.body.textContent.includes('Sessions in this window')"
+  }
+ ]
+}

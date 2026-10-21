@@ -1,0 +1,58 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "proposed-buttons-narrow",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[aria-label='10 more sessions']",
+     "settle": 700
+    },
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "textarea",
+     "settle": 600
+    },
+    {
+     "eval": "document.querySelector('[data-testid=plan-block]').scrollIntoView({block:'center'})",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed' && [...document.querySelectorAll('[data-testid=plan-block] button')].some(b => b.textContent.trim() === 'Approve') && !document.body.textContent.includes('SESSIONS IN THIS WINDOW') && !document.body.textContent.includes('Sessions in this window') && [...document.querySelectorAll('[data-testid=plan-ceiling] button')].map(b=>b.textContent.trim()).join('|') === 'Comment|Approve' && (()=>{const row=document.querySelector('[data-testid=plan-ceiling]').getBoundingClientRect(), a=[...document.querySelectorAll('[data-testid=plan-ceiling] button')].pop().getBoundingClientRect(); return a.right <= row.right + 1 && a.right > row.right - 4})()"
+  },
+  {
+   "name": "chip-popup-plan-expanded-narrow",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running-with-specialist",
+   "actions": [
+    {
+     "click": "[aria-label='10 more sessions']",
+     "settle": 700
+    },
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "textarea",
+     "settle": 600
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    },
+    {
+     "click": "[data-testid=plan-group-toggle] button",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-group-toggle] button')?.getAttribute('aria-expanded') === 'true' && !!document.querySelector('[data-testid=helper-card-child-2]') && !!document.querySelector('[data-testid=helper-card-plan-1-s1-1]') && !document.body.textContent.includes('SESSIONS IN THIS WINDOW') && !document.body.textContent.includes('Sessions in this window') && document.querySelector('[data-testid=plan-group-plan-1]').getBoundingClientRect().width === document.querySelector('[data-testid=helper-card-child-2]').getBoundingClientRect().width"
+  }
+ ]
+}

@@ -1,0 +1,123 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "paused-budget",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused-minimum",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && !!document.querySelector('[data-testid=plan-paused-reason]')"
+  },
+  {
+   "name": "paused-cap",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused-cap",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && !!document.querySelector('[data-testid=plan-paused-warning]')"
+  },
+  {
+   "name": "handoff-pending",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-pending",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && !!document.querySelector('[data-testid=plan-handoff-pending]') && !!document.querySelector('[data-testid=specialist-report-card]') && document.querySelector('[data-testid=plan-block]').querySelectorAll('button:not([aria-expanded])').length === 0"
+  },
+  {
+   "name": "recommend-add-budget",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-recommend-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'answered' && !!document.querySelector('[data-testid=plan-recommendation]') && document.querySelector('[data-testid=plan-recommendation]').textContent.includes('Adding 15,000 tokens')"
+  },
+  {
+   "name": "recommend-add-budget-open",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-recommend-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "clickText": "Add budget",
+     "tag": "button",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'answered' && !!document.querySelector('[data-testid=plan-recommendation]') && document.querySelector('[data-testid=plan-recommendation]').textContent.includes('Adding 15,000 tokens') && document.querySelector('[aria-label=\"Tokens to allow\"]')?.value === '15,000'"
+  },
+  {
+   "name": "recommend-continue",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-recommend-continue",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'answered' && !!document.querySelector('[data-testid=plan-recommendation]') && document.querySelector('[data-testid=plan-recommendation]').textContent.includes('trying again should work')"
+  },
+  {
+   "name": "recommend-stop",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-recommend-stop",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'answered' && !!document.querySelector('[data-testid=plan-recommendation]') && document.querySelector('[data-testid=plan-recommendation]').textContent.includes('More rounds will not fix it') && [...document.querySelectorAll('[data-testid=plan-block] button')].filter((b) => /Stop/.test(b.textContent)).length === 1"
+  },
+  {
+   "name": "answered-budget",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-answered-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'answered' && !document.querySelector('[data-testid=plan-recommendation]') && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('button')].some((b) => b.textContent.trim() === 'Add budget')"
+  },
+  {
+   "name": "answered-stop-only",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-answered-stoponly",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'answered' && !document.querySelector('[data-testid=plan-recommendation]') && ![...document.querySelector('[data-testid=plan-block]').querySelectorAll('button')].some((b) => /Add budget|Continue/.test(b.textContent))"
+  },
+  {
+   "name": "retried-row",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-retried",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'running' && !!document.querySelector('[data-testid=plan-child-retried]')"
+  }
+ ]
+}

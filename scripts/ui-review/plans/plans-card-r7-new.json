@@ -1,0 +1,42 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "running-chip-popup-collapsed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-group-toggle] button')?.getAttribute('aria-expanded') === 'false'"
+  },
+  {
+   "name": "running-chip-popup-expanded",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    },
+    {
+     "click": "[data-testid=plan-group-toggle] button",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-group-toggle] button')?.getAttribute('aria-expanded') === 'true' && document.querySelectorAll('[data-testid^=helper-card-]').length >= 2"
+  }
+ ]
+}

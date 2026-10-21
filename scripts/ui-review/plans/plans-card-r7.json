@@ -1,0 +1,73 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "approximate",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-approximate",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed'"
+  },
+  {
+   "name": "approximate-running",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-approximate-running",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'running'"
+  },
+  {
+   "name": "proposed-buttons",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed'"
+  },
+  {
+   "name": "running-plan",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'running'"
+  },
+  {
+   "name": "asking-chip-popup",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-asking",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    }
+   ],
+   "expect": "[data-testid=helper-card-ask]"
+  },
+  {
+   "name": "session-dot-asking",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-asking",
+   "actions": [],
+   "expect": "[data-session-id='wb-2']"
+  }
+ ]
+}

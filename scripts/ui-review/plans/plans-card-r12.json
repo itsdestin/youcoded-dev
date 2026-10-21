@@ -1,0 +1,60 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "repair-succeeds",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-repair-succeeds",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    },
+    {
+     "eval": "(()=>{const b=[...document.querySelectorAll('button')].find(x=>/Used tools \\d+ times/.test(x.textContent||'')); if (b) b.click(); return true;})()",
+     "settle": 900
+    }
+   ],
+   "expect": "js:(()=>{const b=[...document.querySelectorAll('[data-testid=plan-block]')]; return b.length>=1 && b.some(x=>x.dataset.planStatus==='proposed') && document.body.innerText.includes('Review the auth module before the release');})()"
+  },
+  {
+   "name": "repair-also-fails",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-repair-also-fails",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    },
+    {
+     "eval": "(()=>{const b=[...document.querySelectorAll('button')].find(x=>/Used tools \\d+ times/.test(x.textContent||'')); if (b) b.click(); return true;})()",
+     "settle": 900
+    }
+   ],
+   "expect": "js:(()=>{const b=[...document.querySelectorAll('[data-testid=plan-block]')]; return b.length>=1 && b.every(x=>x.dataset.planStatus==='failed') && document.body.innerText.includes(\"The assistant's plan wasn't in a form the app can use.\");})()"
+  },
+  {
+   "name": "proposed-then-messages",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed-then-messages",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:(()=>{const b=[...document.querySelectorAll('[data-testid=plan-block]')]; return b.length===1 && b[0].dataset.planStatus==='proposed' && document.body.innerText.includes('does this touch the database at all?');})()"
+  },
+  {
+   "name": "running-then-messages",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running-then-messages",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:(()=>{const b=[...document.querySelectorAll('[data-testid=plan-block]')]; return b.length===1 && b[0].dataset.planStatus==='running' && document.body.innerText.includes('does this touch the database at all?');})()"
+  }
+ ]
+}

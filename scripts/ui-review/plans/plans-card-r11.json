@@ -1,0 +1,127 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "ask-message-typed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-line-text",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && document.body.innerText.includes('Is adding 12,500 tokens enough to finish, or should I stop here?') && !document.body.textContent.includes('[Plan paused]') && !document.body.textContent.includes('<user-question>')"
+  },
+  {
+   "name": "ask-message-blank",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-pending",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && document.body.innerText.includes('What should I do about this paused plan?') && !document.body.textContent.includes('[Plan paused]')"
+  },
+  {
+   "name": "failed-unknown-reason",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-failed-unknown",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'failed' && document.querySelector('[data-testid=plan-block]').textContent.includes(\"The plan couldn't be created.\") && [...document.querySelectorAll('[data-testid=plan-block] [role=alert] button')].map(b=>b.textContent.trim()).join('|') === 'Report bug|Diagnose with the assistant'"
+  },
+  {
+   "name": "failed-known-reason",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-failed-detail",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'failed' && document.querySelector('[data-testid=plan-block]').textContent.includes('The saved plan file is not valid JSON') && [...document.querySelectorAll('[data-testid=plan-block] [role=alert] button')].map(b=>b.textContent.trim()).join('|') === 'Report bug|Diagnose with the assistant'"
+  },
+  {
+   "name": "settings-plans-read-failed-shows-off",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&fail=plans.getAutoApprove",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav[aria-label=\"Assistant settings pages\"] button')].find(b=>b.textContent.includes('Specialists'))",
+     "settle": 900
+    }
+   ],
+   "expect": "js:(()=>{const row=document.querySelector('[data-testid=plans-auto-approve]'); const sw=row&&row.querySelector('[role=switch]'); return !!sw && sw.getAttribute('aria-checked')==='false' && !sw.disabled && !row.querySelector('[role=alert]') && !row.textContent.includes(\"Couldn't read\");})()"
+  },
+  {
+   "name": "conversation-preview-plan",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&previewPlan=1",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label=Conversations]",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.getBoundingClientRect().top>360 && /fix chat scroll stick|menu internals/.test(b.textContent))",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] [data-testid=plan-block]')?.dataset.planStatus === 'paused' && !document.querySelector('[role=dialog] [data-testid=plan-pause-actions]') && !document.querySelector('[role=dialog] [data-testid=plan-add-budget]') && !document.querySelector('[role=dialog] [data-testid=plan-ask-box]') && ![...document.querySelectorAll('[role=dialog] [data-testid=plan-block] button')].some(b=>['Stop','Continue','Add budget','Ask the assistant','Approve','Comment'].includes(b.textContent.trim()))"
+  },
+  {
+   "name": "paused-progress-not-saved",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused-progress-not-saved",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:(()=>{const b=document.querySelector('[data-testid=plan-block]'); if(!b||b.dataset.planStatus!=='paused') return false; const r=b.querySelector('[data-testid=plan-paused-reason]'); const a=b.querySelector('[data-testid=plan-pause-actions]'); if(!r||!a) return false; const names=[...a.querySelectorAll('button')].map(x=>x.textContent.trim()).join('|'); const rr=r.getBoundingClientRect(), ar=a.getBoundingClientRect(); return r.textContent === \"Paused \u2014 the plan stopped because its progress couldn't be saved.\" && document.body.innerText.includes('paused \u2014 something went wrong') && !document.body.innerText.includes('reached its limit') && names==='Report bug|Ask the assistant|Stop|Continue' && !b.querySelector('[data-testid=plan-paused-report]') && !b.textContent.includes('Something went wrong') && !b.textContent.includes('Add budget') && !b.textContent.includes('EIO') && ar.top < rr.bottom && ar.left > rr.left;})()"
+  },
+  {
+   "name": "paused-usage-over-limit",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused-overshoot",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-ceiling]')?.textContent.includes('40,350 tokens') && document.querySelector('[data-testid=plan-ceiling]')?.textContent.includes('40,000 tokens)')"
+  },
+  {
+   "name": "paused-warm-minimum-add-budget",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-paused-warm-minimum",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-testid=plan-block] button')].find(b=>b.textContent.trim()==='Add budget')",
+     "settle": 700
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-add-budget]') && document.querySelector('[data-testid=plan-add-minimum]')?.textContent.includes('Add at least 4,200 tokens to continue.')"
+  }
+ ]
+}

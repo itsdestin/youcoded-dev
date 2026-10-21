@@ -1,0 +1,95 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "proposed-buttons",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'proposed' && [...document.querySelectorAll('[data-testid=plan-block] button')].some(b => b.textContent.trim() === 'Approve') && !!document.querySelector('[data-testid=plan-ceiling]') && [...document.querySelectorAll('[data-testid=plan-ceiling] button')].map(b=>b.textContent.trim()).join('|') === 'Comment|Approve' && (()=>{const r=document.querySelector('[data-testid=plan-ceiling] span').getBoundingClientRect(), a=[...document.querySelectorAll('[data-testid=plan-ceiling] button')].pop().getBoundingClientRect(); return Math.abs((r.top+r.bottom)/2-(a.top+a.bottom)/2) < 8 && a.left > r.left})()"
+  },
+  {
+   "name": "proposed-comment-open",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "clickText": "Comment",
+     "tag": "button",
+     "settle": 600
+    }
+   ],
+   "expect": "js:!!document.querySelector('[data-testid=plan-comment] textarea')"
+  },
+  {
+   "name": "chip-popup-plan-collapsed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running-with-specialist",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    }
+   ],
+   "expect": "js:!!document.querySelector('[data-testid=plan-group-toggle] button') && document.querySelector('[data-testid=plan-group-toggle] button').getAttribute('aria-expanded') === 'false' && !!document.querySelector('[data-testid=helper-card-child-2]') && ![...document.querySelectorAll('h3')].some(h => h.textContent.trim().toLowerCase() === 'plans') && document.querySelector('[data-testid=plan-group-plan-1]').getBoundingClientRect().width === document.querySelector('[data-testid=helper-card-child-2]').getBoundingClientRect().width && document.querySelector('[data-testid=plan-group-toggle]').textContent.includes('Plan: Review the auth module')"
+  },
+  {
+   "name": "chip-popup-plan-expanded",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running-with-specialist",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    },
+    {
+     "click": "[data-testid=plan-group-toggle] button",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-group-toggle] button')?.getAttribute('aria-expanded') === 'true' && !!document.querySelector('[data-testid=helper-card-child-2]') && !!document.querySelector('[data-testid=helper-card-plan-1-s1-1]') && document.querySelector('[data-testid=plan-group-plan-1]').getBoundingClientRect().width === document.querySelector('[data-testid=helper-card-child-2]').getBoundingClientRect().width && document.querySelector('[data-testid=plan-group-plan-1]').contains(document.querySelector('[data-testid=helper-card-plan-1-s1-1]'))"
+  },
+  {
+   "name": "chip-popup-plan-asking",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-asking",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "click": "[data-testid=specialists-chip]",
+     "settle": 800
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-group-toggle] button')?.getAttribute('aria-expanded') === 'true'"
+  },
+  {
+   "name": "handoff-pending-chat",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-handoff-pending-reply",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.handoff === 'pending' && !!document.querySelector('[data-testid=plan-handoff-pending]') && document.body.textContent.includes('Let me check how much is left') && !document.querySelector('[data-testid=specialist-report-card]') && !document.body.textContent.includes('Note for the assistant')"
+  }
+ ]
+}

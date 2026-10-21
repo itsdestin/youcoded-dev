@@ -1,0 +1,56 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "proposed-plan-rows",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:(()=>{const b=document.querySelector('[data-testid=plan-block]'); return !!b && b.dataset.planStatus==='proposed' && b.querySelectorAll('[data-testid=plan-step-title]').length===3 && document.body.innerText.includes('Review the auth module before the release');})()"
+  },
+  {
+   "name": "proposed-step-opened",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-testid=plan-block] button')].find(b=>b.querySelector('[data-testid=plan-step-title]'))",
+     "settle": 800
+    }
+   ],
+   "expect": "js:(()=>{const b=document.querySelector('[data-testid=plan-block]'); return !!b && b.dataset.planStatus==='proposed' && b.innerText.includes('stops at its');})()"
+  },
+  {
+   "name": "proposed-plan-no-sentence",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-proposed-local",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:(()=>{const b=document.querySelector('[data-testid=plan-block]'); return !!b && b.dataset.planStatus==='proposed' && b.innerText.includes('Review the six files that changed in the auth module');})()"
+  },
+  {
+   "name": "running-plan-rows",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-running",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:(()=>{const b=document.querySelector('[data-testid=plan-block]'); return !!b && b.dataset.planStatus==='running' && b.innerText.includes('up to') && b.innerText.includes('done');})()"
+  }
+ ]
+}

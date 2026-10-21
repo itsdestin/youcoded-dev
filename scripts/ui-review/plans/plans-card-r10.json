@@ -1,0 +1,164 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 4000,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "ask-budget",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && !document.querySelector('[data-testid=plan-block]').dataset.handoff && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('[data-testid=plan-pause-actions] button')].map(b=>b.textContent.trim()).join('|') === 'Ask the assistant|Stop|Add budget' && document.querySelector('[data-testid=plan-block]').className.indexOf('opacity-60') < 0"
+  },
+  {
+   "name": "ask-stop-only",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-stoponly",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('[data-testid=plan-pause-actions] button')].map(b=>b.textContent.trim()).join('|') === 'Ask the assistant|Stop' && !!document.querySelector('[data-testid=plan-paused-warning]')"
+  },
+  {
+   "name": "ask-user-stopped",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-user-stopped",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('[data-testid=plan-pause-actions] button')].map(b=>b.textContent.trim()).join('|') === 'Ask the assistant|Stop|Continue'"
+  },
+  {
+   "name": "ask-box-empty",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "clickText": "Ask the assistant",
+     "tag": "button",
+     "settle": 600
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && !!document.querySelector('[data-testid=plan-ask-box] textarea') && document.querySelector('[data-testid=plan-ask-box] textarea').placeholder === 'What would you like to ask? (optional)' && [...document.querySelectorAll('[data-testid=plan-ask-box] button')].map(b=>b.textContent.trim()).join('|') === 'Cancel|Send' && !document.querySelector('[data-testid=plan-pause-actions]') && !document.querySelector('[data-testid=plan-block]').dataset.handoff"
+  },
+  {
+   "name": "ask-box-text",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "clickText": "Ask the assistant",
+     "tag": "button",
+     "settle": 600
+    },
+    {
+     "type": "Is adding 12,500 tokens enough to finish?",
+     "settle": 400
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-ask-box] textarea')?.value === 'Is adding 12,500 tokens enough to finish?' && [...document.querySelectorAll('[data-testid=plan-ask-box] button')].map(b=>b.textContent.trim()).join('|') === 'Cancel|Send' && !document.querySelector('[data-testid=plan-block]').dataset.handoff"
+  },
+  {
+   "name": "ask-pressed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-budget",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    },
+    {
+     "clickText": "Ask the assistant",
+     "tag": "button",
+     "settle": 600
+    },
+    {
+     "clickText": "Send",
+     "tag": "button",
+     "settle": 800
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && document.querySelector('[data-testid=plan-handoff-pending]')?.textContent.trim() === 'The assistant is looking into this.' && document.querySelector('[data-testid=plan-block]').querySelectorAll('button:not([aria-expanded])').length === 0"
+  },
+  {
+   "name": "ask-pending",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-pending",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && document.querySelector('[data-testid=plan-block]').className.indexOf('opacity-60') >= 0 && document.querySelector('[data-testid=plan-handoff-pending]')?.textContent.trim() === 'The assistant is looking into this.' && document.querySelector('[data-testid=plan-block]').querySelectorAll('button:not([aria-expanded])').length === 0 && [...document.querySelectorAll('[data-testid=plan-ask-line]')].filter(e=>e.textContent.trim()==='You asked the assistant about this plan.').length === 1 && !document.body.textContent.includes('[Plan paused]')"
+  },
+  {
+   "name": "ask-pending-after-reply",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-pending-after-reply",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && document.querySelector('[data-testid=plan-handoff-pending]')?.textContent.trim() === 'The assistant will look at this after its current reply.' && document.querySelector('[data-testid=plan-block]').querySelectorAll('button:not([aria-expanded])').length === 0 && [...document.querySelectorAll('[data-testid=plan-ask-line]')].filter(e=>e.textContent.trim()==='You asked the assistant about this plan.').length === 0"
+  },
+  {
+   "name": "ask-failed-timeout",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-failed-timeout",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-ask-error]')?.textContent.includes(\"The assistant didn't get to your question within 10 minutes.\") && [...document.querySelectorAll('[data-testid=plan-ask-error] button')].some(b=>b.textContent.trim()==='Retry') && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('[data-testid=plan-pause-actions] button')].map(b=>b.textContent.trim()).join('|') === 'Stop|Add budget'"
+  },
+  {
+   "name": "ask-failed-reply",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-failed-reply",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-ask-error]')?.textContent.includes('The assistant couldn\\'t answer your question: The provider returned an error (529: overloaded).') && [...document.querySelectorAll('[data-testid=plan-ask-error] button')].some(b=>b.textContent.trim()==='Retry') && [...document.querySelectorAll('[data-testid=plan-ask-line]')].filter(e=>e.textContent.trim()==='You asked the assistant about this plan.').length === 1"
+  },
+  {
+   "name": "interrupted-unchanged",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-interrupted",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'interrupted' && ![...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Ask the assistant') && [...document.querySelector('[data-testid=plan-block]').querySelectorAll('button:not([aria-expanded])')].map(b=>b.textContent.trim()).join('|') === 'Stop|Continue'"
+  },
+  {
+   "name": "ask-line-text",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&seed=bubbles-plan-ask-line-text",
+   "actions": [
+    {
+     "click": "[data-session-idx='1']",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[data-testid=plan-block]')?.dataset.planStatus === 'paused' && document.querySelector('[data-testid=plan-block]').dataset.handoff === 'pending' && [...document.querySelectorAll('[data-testid=plan-ask-line]')].map(e=>e.textContent.trim()).join('|') === 'You asked the assistant about this plan: Is adding 12,500 tokens enough to finish, or should I stop here?' && !document.body.textContent.includes('[Plan paused]') && !document.body.textContent.includes('user-question')"
+  }
+ ]
+}

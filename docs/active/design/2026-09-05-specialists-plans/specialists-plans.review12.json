@@ -1,0 +1,207 @@
+{
+  "_comment": "ITERATION deck, not a sign-off. Decision 30's fix order: items, then a plain sentence per step, then quieten the numbers, then the duplicated line. The shape/pipeline picture is still held back — Q12-1 asks whether it is next. No stage: this deck closes nothing.",
+  "title": "Plans — round 12: making the card say what the plan will actually do",
+  "key": "specialists-plans-review12",
+  "out": "specialists-plans.review12.html",
+  "images": "images/specialists-plans.review12",
+  "runs": {
+    "before": "runs/r12b-before",
+    "after": "runs/r12b-after"
+  },
+  "labels": {
+    "before": "What you saw",
+    "after": "Now"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "r12-rows": [
+      "plans-card-r12b",
+      "proposed-plan-rows",
+      "1200x200+24+186"
+    ],
+    "r12-open": [
+      "plans-card-r12b",
+      "proposed-step-opened",
+      "1200x345+24+182"
+    ],
+    "r12-fallback": [
+      "plans-card-r12b",
+      "proposed-plan-no-sentence",
+      "1050x196+24+184"
+    ],
+    "r12-running": [
+      "plans-card-r12b",
+      "running-plan-rows",
+      "1060x262+36+86"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R12-1",
+      "surface": "Chat · plan card",
+      "path": "A plan waiting for your approval, whose first step splits across several helpers",
+      "crop": "r12-rows",
+      "headline": "A step that splits across helpers now names what each one gets, instead of only saying how many there are.",
+      "changed": "The first row used to read \"3 reviewers · at the same time\" and never said on what. It now reads \"3 reviewers, one each: Sign-in screen, Password reset, Session to…\" — three of the six named, then a sign that there are more.",
+      "notice": "Before you approve anything, you can see what the helpers are actually being sent out on.",
+      "risk": "The list is shortened twice: the card keeps the first few names, and the card's own edge then clips the last one it kept.",
+      "measured": "6 items on this step, 3 named on the row",
+      "highlight": {
+        "box": [
+          3,
+          25,
+          92,
+          11
+        ]
+      }
+    },
+    {
+      "id": "R12-2",
+      "surface": "Chat · plan card",
+      "path": "The same plan with its first step opened",
+      "crop": "r12-open",
+      "headline": "Opening that step lists all six in full — and that is where the step's spending figure now lives.",
+      "changed": "Every item on its own line, then one line giving each helper's limit and the most the whole step can spend. Before, opening it showed only the limit line.",
+      "notice": "The detail is one click away instead of being cut off on the row.",
+      "risk": "To see what a step may spend before you approve it, you now have to open the step.",
+      "highlight": {
+        "box": [
+          3,
+          23,
+          93,
+          39
+        ]
+      }
+    },
+    {
+      "id": "R12-3",
+      "surface": "Chat · plan card",
+      "path": "The same plan, looking at the three step lines themselves",
+      "crop": "r12-rows",
+      "headline": "Each step now reads as a sentence written for you, not as the first line of an instruction written for a machine.",
+      "changed": "Row 1 was \"Review the six files that changed in the auth module\". It now reads \"Three helpers read the changed sign-in files and write down anything that looks wrong\". The machine's own wording still sits behind the row, when you open the step.",
+      "notice": "The three lines can be read straight down as what the plan will do to your work.",
+      "risk": "A long sentence is still clipped at the card's edge, so the end of it can be lost on the row.",
+      "highlight": {
+        "box": [
+          7,
+          26,
+          48,
+          39
+        ]
+      }
+    },
+    {
+      "id": "R12-4",
+      "surface": "Chat · plan card",
+      "path": "A plan whose assistant wrote no sentences — what most plans will look like at first",
+      "crop": "r12-fallback",
+      "headline": "When the assistant writes no sentence, the row falls back to today's wording, and nothing looks broken.",
+      "changed": "No sentence and no item list, so the rows keep the assistant's own headings exactly as they read today. The spending figures have still left the rows, because this plan is waiting for approval.",
+      "notice": "Older plans, and any plan whose assistant skips the sentence, look like this rather than empty.",
+      "risk": "How readable a plan is now depends on the assistant bothering to write the sentence; the app cannot make it.",
+      "highlight": {
+        "box": [
+          3,
+          27,
+          93,
+          40
+        ]
+      }
+    },
+    {
+      "id": "R12-5",
+      "surface": "Chat · plan card",
+      "path": "A plan that is already running",
+      "crop": "r12-running",
+      "headline": "A running plan's rows are untouched — the same progress and spending figures you signed off.",
+      "changed": "Only a plan still waiting for approval drops its per-step figures. The moment it is approved and running, every number is back in the same place.",
+      "notice": "Nothing about watching a plan run has changed.",
+      "risk": "Two plan cards in one conversation can now show the same step differently, depending on whether it has been approved.",
+      "highlight": {
+        "box": [
+          67,
+          17,
+          27,
+          68
+        ]
+      }
+    },
+    {
+      "id": "R12-6",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "The frozen copy of the plan card you signed off",
+      "headline": "Taking the figures off a proposed plan's rows changes a card you already approved, so the frozen copy was re-recorded.",
+      "changed": "There is a test holding the plan card's exact wording still, so nobody can quietly reword what you signed off. Removing the per-step figures from a proposed plan's rows broke it, so it was re-recorded — one difference only: those figures disappear from the rows of a plan waiting for approval. Running, paused and finished cards are unchanged, letter for letter.",
+      "notice": "The card you signed off in an earlier round now looks different in that one way, on purpose.",
+      "yes": "Yes, that's right",
+      "no": "No, put them back"
+    },
+    {
+      "id": "R12-7",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "The block you get when you open a step",
+      "headline": "The line my last change duplicated is gone — but I could not put a picture of it in front of you.",
+      "changed": "Last round, opening a step printed the whole instruction, including the first line the row above was already showing, so you read the same line twice. That first line is now dropped when the row already shows it whole, and kept whenever the row had to cut it short.",
+      "notice": "Nothing here to see: none of the demonstration plans the review pictures come from carries a full instruction, so neither the old card nor the new one draws that block. Only a plan a real assistant wrote has one. It is held still by a test instead.",
+      "yes": "Fine, leave it",
+      "no": "No, show me it"
+    },
+    {
+      "id": "Q12-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "The list of steps on a plan waiting for your approval",
+      "headline": "Should the next round show a plan's shape — which steps run at the same time, and which wait for what?",
+      "today": "A plan is a numbered list, one step per line, read top to bottom. Nothing on the card says whether two steps happen together or one after the other.",
+      "problem": "The six-step plan you sent me is really two passes running at the same time, each gathered into one file, then checked, then written up. Read as a flat list of six, it looks like six things happening one after another, and how long it will take reads wrong too.",
+      "proposal": "This is the one piece of that round I deliberately held back, because you said it could end up prettier without being clearer. The choice is how far to go: a small picture of the shape above the list, or plain wording that says the same thing, or leave the list as it is.",
+      "options": [
+        {
+          "id": "draw-the-shape",
+          "label": "Draw the shape",
+          "pros": [
+            "One glance tells you what runs together and what waits",
+            "The real cost and the real wait become visible, instead of six steps looking like six waits"
+          ],
+          "cons": [
+            "It could easily end up prettier and no clearer — my own reservation, unchanged",
+            "A picture is another thing to learn on a card that is already dense",
+            "The longest round of the four, and the easiest to get wrong"
+          ]
+        },
+        {
+          "id": "say-it-in-words",
+          "label": "Say it in words",
+          "recommended": true,
+          "pros": [
+            "Small headings such as \"these three run at the same time\" sit above the steps they group",
+            "Reads the same on a phone, in a narrow window and when read aloud",
+            "Quick to try, and it tells us whether a picture is even needed"
+          ],
+          "cons": [
+            "Less immediate than a picture for a plan with many branches",
+            "Adds more lines to a card that is already long"
+          ]
+        },
+        {
+          "id": "leave-the-list",
+          "label": "Leave the list alone",
+          "pros": [
+            "The card stops changing, and you can live with the three changes that just landed",
+            "Nothing new to learn"
+          ],
+          "cons": [
+            "The thing you actually complained about — hard to tell what is going on — stays unfixed",
+            "Waiting times keep reading as if every step queued behind the last"
+          ]
+        }
+      ]
+    }
+  ]
+}
