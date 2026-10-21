@@ -15,7 +15,7 @@ vision: chat.converse.native, chat.converse.queue
 work: session/fix-anthropic-many-image-brick
 ---
 Progress
-Done: (e) fixed on branch session/fix-anthropic-many-image-brick (youcoded 112686021): a failed reply's card now offers Try again (re-runs without a new message) and the right fix per error kind. Same branch also fixed conversations that could never send again after a provider error (oversized/too many pictures, unanswered tool calls), per-provider output caps (Anthropic up to 128k, OpenRouter 32k), cut-off replies recovering in-turn, and sorted provider errors with smarter retries.
+Done: (e) shipped: youcoded #670 (270fab99e) + youcoded-dev #293 (351d8c4e), 2026-10-21 — a failed reply's card offers Try again (no new message) and the fix per error kind; same work also shipped stuck-conversation fixes, per-provider output caps and cut-off-reply recovery.
 Next: Faults (a)–(d), (f)–(h) remain.
 Blocked: nothing recorded.
 
