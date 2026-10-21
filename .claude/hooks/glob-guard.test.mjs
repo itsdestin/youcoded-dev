@@ -476,7 +476,7 @@ const SHARED = '/home/destin/youcoded-dev/youcoded/desktop';
 for (const cmd of [
   'npm install pngjs', 'npm i pngjs', 'npm add pngjs', 'npm ci', 'npm uninstall pngjs',
   'npm rm pngjs', 'npm update', 'pnpm add pngjs', 'pnpm install', 'yarn add pngjs',
-  'yarn install', 'cd /tmp && npm install pngjs',
+  'yarn install', 'cd .. && npm ci', 'cd /tmp && cd - && npm ci', 'cd /tmp; npm ci',
 ]) {
   test(`guard 8 blocks by cwd: ${cmd}`, () => {
     const { blocked, message } = runIn(cmd, WT);
@@ -500,6 +500,10 @@ for (const cmd of [
     assert.equal(runIn(cmd, WT).blocked, false, cmd);
   });
 }
+test('guard 8 allows a fresh install that first cds to a scratch folder (card #19(h))', () => {
+  assert.equal(runIn('cd /tmp/scratch/deps && npm ci', WT).blocked, false);
+  assert.ok(runIn('cd /home/destin/youcoded-dev/worktrees/sessions/x/youcoded/desktop && npm ci', SHARED).blocked);
+});
 test('guard 8 allows npm install in the shared checkout', () => {
   assert.equal(runIn('npm install pngjs', SHARED).blocked, false);
 });
