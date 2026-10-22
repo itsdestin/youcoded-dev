@@ -1,0 +1,124 @@
+{
+  "title": "Phone connection: new messages to keep or change",
+  "key": "phone-reliability-review",
+  "out": "phone-reliability.review.html",
+  "images": "images/phone-reliability.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Chat, on a phone",
+      "path": "The strip at the top of a conversation while the phone is reconnecting",
+      "crop": "chat#phone-reconnecting@390x125+0+42",
+      "headline": "The reconnecting strip now says press Send again, and the Android app gets Use this phone only.",
+      "changed": "New words, and on Android a Use this phone only button.",
+      "notice": "Nothing sends by itself after a drop, so the words now match.",
+      "risk": "The button squeezes the title onto two lines."
+    },
+    {
+      "id": "P-2",
+      "new": true,
+      "surface": "Chat, on a phone",
+      "path": "The strip at the top of a conversation when the computer is slow but still connected",
+      "crop": "chat#phone-slow@390x150+0+42",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "New"
+      },
+      "headline": "A new strip says Waiting for your computer when it is slow to answer, and that what you send will still arrive.",
+      "changed": "This strip did not exist. It shows when the connection is up but your computer has not answered for a few seconds.",
+      "notice": "A slow computer no longer looks like a frozen app. The strip goes away by itself once the computer answers.",
+      "risk": "On a flaky connection it may flicker on and off. It has no button, so it only explains."
+    },
+    {
+      "id": "P-3",
+      "new": true,
+      "surface": "Android app, opening",
+      "path": "The screen the Android app shows on launch before the conversation appears",
+      "crop": "dev/gate#connecting@390x110+0+370",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "New"
+      },
+      "headline": "The Android app now opens on Connecting to Home PC instead of briefly showing the phone's own conversations.",
+      "changed": "At launch the app goes back to the computer it was last using, and shows its name while it connects.",
+      "notice": "You land in your computer's conversations, not the phone's, so nothing is sent to the wrong place.",
+      "risk": "Nothing to tap while it connects."
+    },
+    {
+      "id": "P-4",
+      "new": true,
+      "surface": "Android app, opening",
+      "path": "The same launch screen when the computer cannot be reached",
+      "crop": "dev/gate#unreachable@390x200+0+350",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "New"
+      },
+      "headline": "If the computer is away, the launch screen says Can't reach Home PC, keeps trying, and offers Try now or Use this phone only.",
+      "changed": "The app used to give up and open on the phone by itself. Now it keeps trying and lets you choose.",
+      "notice": "It retries every few seconds, slowing to every 30. Use this phone only forgets the computer.",
+      "risk": "It can look stuck if you did not expect it."
+    },
+    {
+      "id": "P-5",
+      "new": true,
+      "surface": "Phone browser page",
+      "path": "The sign-in page of the web version on a phone or tablet",
+      "crop": "dev/gate#tab@390x200+0+350",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "New"
+      },
+      "headline": "A browser tab that was taken over by another tab now says so, with a Refresh button, above the password box.",
+      "changed": "A second tab of the same browser now closes the first tab's connection, and the first tab says why.",
+      "notice": "Refresh brings it back with no password typing.",
+      "risk": "Two tabs can no longer both work."
+    },
+    {
+      "id": "P-6",
+      "new": true,
+      "surface": "Chat, on a phone",
+      "path": "A small message at the bottom of the screen",
+      "crop": [
+        {
+          "crop": "dev/toast#lost@390x200+0+640",
+          "label": "Message lost"
+        },
+        {
+          "crop": "dev/toast#password@390x200+0+640",
+          "label": "Password changed"
+        }
+      ],
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "New"
+      },
+      "headline": "Two new pop-up messages: a message that did not reach your computer is back in the box, and a saved password was refused.",
+      "changed": "First: after a lost send, your words return to the message box. Second: Home PC did not accept the saved password, with where to fix it.",
+      "notice": "You see them for a few seconds after reopening. The second names the computer and points to Settings, Connect to Desktop.",
+      "risk": "They disappear on their own, so a missed one leaves your words in the box with no other trace."
+    }
+  ]
+}
