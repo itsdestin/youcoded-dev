@@ -1,5 +1,5 @@
 ---
-status: draft
+status: draft (revised after independent review 2026-10-22)
 date: 2026-10-22
 evidence: docs/active/investigations/2026-10-22-phone-app-reliability-deep-dive.md (causes 1–8, sections B–C)
 approved-by: Destin 2026-10-22 ("fix all of 1/3/4 and do your other recommendations"; always-there reload = explore, not committed)
@@ -184,3 +184,78 @@ explore it, with alternatives such as the header menu or pull-down, on the same 
 - Destin's real-phone pass on an `assembleReleaseTest` APK.
 - After shipping, the 1.7 logs count real drops per day against today's baseline of
   ~10/day estimated.
+
+## Revisions after independent review (2026-10-22) — these override the sections above
+
+- **1.1**
+  - **Launch:** hold the gate on "Connecting to <computer>…" for up to 10 s before rendering
+    App. This avoids a flash of the phone's own conversations, and stops a send going to the
+    wrong runtime.
+  - **Laptop unreachable at launch:** fall to local with a persistent strip, "Can't reach
+    <name> · Reconnect", plus a quiet background retry. When the laptop answers, offer
+    "<name> is back · Switch" and never switch on its own mid-use.
+  - **"Use this phone only":** gated on capabilities, not `location.protocol`.
+  - **Device rows:** re-auth by password reuses the device row (`previousDeviceId`) and mints
+    a fresh secret. That is acceptable.
+- **1.2** — wake timeout stays 10 s throughout; no 4 s value.
+- **1.3**
+  - `slow` is a **flag on `ConversationPhase` / `remote:conversation-status`, never a
+    `connectionState`**. `setConnectionState` rejects pending requests and stops the
+    heartbeat. Touch points:
+    - the shim phase type (~169)
+    - App `ConversationStatus` (136)
+    - `remoteCatchingUp` (404) and the check at 2621
+    - the ChatView strip switch (~1025)
+    - `mock-shim.ts`
+  - `slow` → connected again returns to the previous phase without an "Up to date." flash.
+  - Reply window 20 s. A probe skipped while `session:open` is outstanding is capped at
+    10 s. `offline` events and socket close short-circuit at once.
+  - `session:queue-action` gets a 60 s timeout while the socket is alive. A late reply
+    counts and clears the saved request.
+  - Make-before-break is deferred unless the 1.7 logs still show many freeze drops.
+- **1.4**
+  - Check queue sends against the **host queue snapshot**, which is durable and deduped by
+    `sendId`, not the in-memory record.
+  - Whenever the outcome is not "received", put the text and attachments back in the box.
+    If the box isn't empty, use the toast with Restore.
+  - On reconnect and at launch, scan the `youcoded:pending-queue-send:*` keys. Queue sends
+    have no bubble, so `useSendReconcile` can't see them.
+- **1.5**
+  - A successful retry reports back so the "may be out of date" strip clears.
+  - Retry timers pause while the page is hidden, and there's a per-connection retry cap.
+  - Refresh while disconnected shows strip text only and does not queue: the reconnect
+    already refills.
+- **1.6**
+  - **"Replaced" close:** a new code that the shim treats as terminal ("Opened on another
+    tab · Reconnect"). Only non-owner remote sockets are affected, never local.
+  - **Hold-expiry refill push:** sent only to clients that announce support at auth. Older
+    pages keep the 4010 hang-up.
+  - **Order:** ship after 1.5.
+- **1.7** — route the existing `logDevice` (remote-server ~293) through `log('INFO','Remote',…)`
+  and add bytes and path. It already covers connect, close, ping-kill, backpressure and 4010.
+- **Shipping order** — separate commits, in this order:
+  1. 1.7
+  2. 1.8
+  3. 1.1
+  4. 1.4
+  5. 1.5
+  6. 1.2
+  7. 1.3
+  8. 1.6
+- **Tests to add** — beyond the list above:
+  - two sign-ins with one device id
+  - `slow` keeps pending requests and the heartbeat
+  - queue send through a >30 s freeze
+  - saved queue send surviving restart
+  - gate with a saved computer, no local flash
+  - an old shim still gets 4010
+- **Existing pins to update** — `remote-shim-connection.test.ts`, `remote-recovery.test.ts`,
+  `phone-reconnect-state.test.ts`, `first-page-retry.test.ts`.
+- **New on-screen wording, shown to Destin before merge**:
+  - "Waiting for your computer…"
+  - "Use this phone only"
+  - "Connecting to <computer>…"
+  - "Can't reach <name> · Reconnect"
+  - "<name> is back · Switch"
+  - "Opened on another tab"
+  - the restore toast
