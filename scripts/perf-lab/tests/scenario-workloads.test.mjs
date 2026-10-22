@@ -8,13 +8,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { BOUND } from '../bounded-exec.mjs';
 import { buildDiffStrings, backgroundIndexHook, buildLaneManifest, createWorkloadDeps, diffStateSource, diffTranscriptLines, generateRung, generationStatus, groupLimits,
-  largeDiffAction, memoryBoundRecord, readIndexEvidence, readMarks, runChild, writeSpecCase } from '../scenario-workloads.mjs';
+  largeDiffAction, memoryBoundRecord, readIndexEvidence, readMarks, runChild, selectSessionSource, writeSpecCase, CHILD_SPEC_ENV } from '../scenario-workloads.mjs';
 import { copyVerified, runChildOp } from '../ladder-child.mjs';
 import { CSV_FULLREAD_STATE_SOURCE, CSV_FULLREAD_CLICK_SOURCE, findSessionTranscript, pathListStateSource, pathListTranscriptLine, validateDocumentManifest } from '../scenario-document-stalls.mjs';
 import { ORIGINAL_JPEG, ladderGroups } from '../workload-lane.mjs';
 import { jpegSize } from '../image-encode.mjs';
 
 const sha = (b) => createHash('sha256').update(b).digest('hex');
+// The child spec travels in the environment (see CHILD_SPEC_ENV), never on the command line.
+const specOf = (job) => JSON.parse(job.env[CHILD_SPEC_ENV]);
 const okRun = (value) => async () => ({ status: 'ok', bound: BOUND.systemd, memoryMaxMb: 1, stdout: JSON.stringify(value) + '\n', stderr: '' });
 
 test('generationStatus: a bound kill keeps its own status; any other child failure is an instrument failure', () => {
@@ -38,8 +40,8 @@ test('runChild: ok parses the last JSON line; a bound kill and a child-reported 
 
 test('generateRung: each source goes through bounded children with the right bound size, images are read back in a second child', async () => {
   const jobs = [];
-  const run = async ({ argv, memoryMaxMb }) => {
-    const spec = JSON.parse(argv.at(-1)); jobs.push([spec.op, memoryMaxMb]);
+  const run = async ({ env, memoryMaxMb }) => {
+    const spec = JSON.parse(env[CHILD_SPEC_ENV]); jobs.push([spec.op, memoryMaxMb]);
     if (spec.op === 'doc') return { status: 'ok', stdout: JSON.stringify({ ok: true, cases: [{ id: spec.id }] }), stderr: '' };
     if (spec.op === 'image') return { status: 'ok', stdout: JSON.stringify({ ok: true, cases: [{ id: spec.spec.id, file: '/r/x.png', sha256: 'a'.repeat(64) }] }), stderr: '' };
     if (spec.op === 'verify-image') return { status: 'ok', stdout: JSON.stringify({ ok: true }), stderr: '' };
@@ -55,7 +57,7 @@ test('generateRung: each source goes through bounded children with the right bou
   assert.deepEqual(jobs.map((j) => j[0]), ['doc', 'image', 'verify-image', 'copy-original', 'verify-image']);
   assert.ok(jobs.every(([, mb]) => mb >= 64));
   // a verify child killed by the bound turns an otherwise generated image into a recorded memory-bound row
-  const killVerify = async (j) => (JSON.parse(j.argv.at(-1)).op === 'verify-image' ? { status: 'failed:memory-bound', stdout: '', stderr: '' } : run(j));
+  const killVerify = async (j) => (specOf(j).op === 'verify-image' ? { status: 'failed:memory-bound', stdout: '', stderr: '' } : run(j));
   assert.equal((await generateRung(g.image, '/r', { checkout: '/c', bound: BOUND.systemd, run: killVerify })).status, 'failed:memory-bound');
   // no bound available -> refused, recorded
   const real = await generateRung(g.doc, '/r', { checkout: '/c', bound: BOUND.none });
@@ -142,7 +144,10 @@ test('large diff action: appends the lines, opens the collapsed card inside the 
     } };
     const waitUntil = async (fn) => { for (let i = 0; i < 5; i++) { const v = await fn(); if (v) return v; } throw new Error('never ready'); };
     const proof = await largeDiffAction({ f: c, cdp, transcript: () => ({ path: '/t.jsonl', sessionId: 's' }), waitUntil, unmountedBefore: true, manifest: { root: '/m' } }, { append: (p, t) => appended.push([p, t]) });
-    assert.equal(appended[0][0], '/t.jsonl'); assert.equal(appended[0][1].trim().split('\n').length, 2);
+    assert.equal(appended[0][0], '/t.jsonl');
+    // first a plain user message (starts a NEW turn so the card is not hidden in a collapsed multi-edit group), then the tool_use + tool_result pair
+    assert.equal(JSON.parse(appended[0][1]).message.role, 'user'); assert.equal(appended[1][1].trim().split('\n').length, 2);
+    assert.equal(JSON.parse(appended[1][1].split('\n')[0]).message.content[0].name, 'Edit');
     assert.equal(toggled, 1); assert.equal(proof.viewer, 'edit-diff'); assert.equal(proof.diffLines, 500); assert.equal(proof.rowsDrawn, 15);
     // already-open card is not toggled again
     toggled = 0; phase = 99; const opened = { evaluate: async (src) => (src.includes('b.click()') ? (toggled++, { ok: true }) : { open: true, rows: 15, hasChange: true }) };
@@ -152,11 +157,15 @@ test('large diff action: appends the lines, opens the collapsed card inside the 
 
 test('page-side sources parse and behave against a minimal fake DOM (path list, CSV full read bar, diff card)', () => {
   const run = (src, ctx) => { const v = vm.runInNewContext(src, ctx); return v && typeof v === 'object' ? JSON.parse(JSON.stringify(v)) : v; };
-  const bubble = (text, tokens) => ({ textContent: text, closest: () => null, querySelectorAll: () => Array(tokens).fill({}) });
+  const tok = (p) => ({ getAttribute: (a) => (a === 'data-file-path' ? p : null) });
+  // pills draw only the file NAME as text; the full path lives in data-file-path (FilepathToken.tsx)
+  const bubble = (text, paths) => ({ textContent: text, closest: () => null, querySelector: () => (paths.length ? tok(paths[0]) : null), querySelectorAll: () => paths.map(tok) });
   const doc = (bubbles) => ({ document: { querySelectorAll: () => bubbles } });
-  assert.equal(run(pathListStateSource('MARK', '/p/last.txt'), doc([bubble('other', 0)])), null);
-  const s = run(pathListStateSource('MARK', '/p/last.txt'), doc([bubble('x MARK /p/last.txt', 3)]));
-  assert.deepEqual([s.tokens, s.hasLastPath], [3, true]);
+  assert.equal(run(pathListStateSource('MARK', '/p/last.txt'), doc([bubble('other', [])])), null);
+  const s = run(pathListStateSource('MARK', '/p/last.txt'), doc([bubble('a.txt b.txt last.txt', ['/p/MARK/a.txt', '/p/MARK/b.txt', '/p/last.txt'])]));
+  assert.deepEqual([s.tokens, s.hasLastPath], [3, true], 'marker and last path are found through the pill attribute although the text shows names only');
+  assert.equal(run(pathListStateSource('MARK', '/p/last.txt'), doc([bubble('a.txt', ['/p/MARK/a.txt'])])).hasLastPath, false, 'half-drawn list is not ready');
+  assert.deepEqual(Object.values(run(pathListStateSource('MARK', '/p/last.txt'), doc([bubble('raw MARK /p/last.txt', [])]))).slice(0, 2), [0, true], 'raw-text candidate still works');
   const btn = (t) => ({ textContent: t, disabled: false, click() { this.clicked = true; } });
   const pane = (buttons, text) => { const root = { querySelectorAll: () => buttons }; return { closest: () => root, parentElement: root, textContent: text, querySelector: (q) => (q === 'table' ? {} : null) }; };
   const win = (p) => ({ window: { __perfArt: { contentPane: () => p } } });
@@ -202,7 +211,7 @@ test('background index hook: marks and index evidence are read defensively; run(
 });
 
 test('limits per group, memory bound record, and deps wiring pass the app-facing options through', async () => {
-  assert.deepEqual(groupLimits({ id: 'csv' }), { timeoutMs: 15000, maxRssMb: 1536 });
+  assert.deepEqual(groupLimits({ id: 'csv' }), { timeoutMs: 15000, maxRssMb: 3072 });
   assert.equal(groupLimits({ id: 'background-indexing' }).timeoutMs, 60000);
   assert.match(memoryBoundRecord({ bound: BOUND.prlimit, systemdUser: false, prlimit: true }).note, /looser/);
   assert.match(memoryBoundRecord({ bound: BOUND.none }).note, /NO bound/);
@@ -212,7 +221,66 @@ test('limits per group, memory bound record, and deps wiring pass the app-facing
   const imageGroup = ladderGroups().find((g) => g.mode === 'images'), diffGroup = ladderGroups().find((g) => g.id === 'large-diff');
   await deps.runCases({ app: {}, fixture: {}, group: imageGroup, manifest: {}, caseIds: ['a'] });
   await deps.runCases({ app: {}, fixture: {}, group: diffGroup, manifest: {}, caseIds: ['b'] });
+  assert.equal(seen[0].memoryBasis, 'pss'); assert.equal(seen[0].maxRssMb, 1536, 'images keep the image harness\' own limit'); assert.equal(seen[0].calibrationAttempts, 3); assert.equal(seen[0].allowBlockedInput, true);
   assert.equal(seen[0].images, true); assert.deepEqual(seen[0].imageRenderingEvidence, { source: 'SystemInfo' }); assert.equal(seen[0].timeoutMs, 15000);
-  assert.equal(seen[1].images, false); assert.equal(seen[1].timeoutMs, 30000); assert.deepEqual(Object.keys(seen[1].custom).sort(), ['bg-index', 'large-diff']);
+  assert.equal(seen[1].maxRssMb, 3072); assert.equal(seen[1].images, false); assert.equal(seen[1].timeoutMs, 30000); assert.deepEqual(Object.keys(seen[1].custom).sort(), ['bg-index', 'large-diff']);
   assert.equal(await deps.boot({}, async (a) => a.g.id, diffGroup), 'large-diff');
+});
+
+// ── lane F test-drive fixes ──────────────────────────────────────────────────────────────────────────────────────────────────
+
+test('runChild: the spec is in the environment, not on the command line (a teardown sweep matches command lines)', async () => {
+  let seen;
+  await runChild({ op: 'image', root: '/shared/home/stall-ladder/x' }, { bound: BOUND.systemd, memoryMaxMb: 64, run: async (j) => { seen = j; return { status: 'ok', stdout: '{"ok":true}', stderr: '' }; } });
+  assert.equal(seen.argv.some((a) => a.includes('/shared/home')), false); assert.equal(JSON.parse(seen.env[CHILD_SPEC_ENV]).root, '/shared/home/stall-ladder/x');
+});
+
+test('runChild: a child SIGTERMed from outside is retried (bounded) and the attempts are recorded; a persistent kill stays a recorded failure', async () => {
+  let n = 0;
+  const flaky = async () => (++n < 3 ? { status: 'failed:exit', signal: 'SIGTERM', code: null, stdout: '', stderr: '', elapsedMs: 40 } : { status: 'ok', stdout: '{"ok":true,"v":1}', stderr: '', elapsedMs: 90 });
+  const ok = await runChild({ op: 'x' }, { bound: BOUND.systemd, memoryMaxMb: 64, run: flaky });
+  assert.equal(ok.status, 'ok'); assert.equal(ok.attempts.length, 3); assert.match(ok.attempts[0], /SIGTERM.*after 40 ms/);
+  n = -99;
+  const dead = await runChild({ op: 'x' }, { bound: BOUND.systemd, memoryMaxMb: 64, run: flaky });
+  assert.equal(dead.status, 'failed:generation-exit'); assert.match(dead.detail, /attempts: .*SIGTERM.*SIGTERM.*SIGTERM/);
+  // a memory-bound kill or a timeout is NOT foreign: no retry
+  let calls = 0;
+  await runChild({ op: 'x' }, { bound: BOUND.systemd, memoryMaxMb: 64, run: async () => (calls++, { status: 'failed:memory-bound', signal: 'SIGKILL', stdout: '', stderr: '' }) });
+  await runChild({ op: 'x' }, { bound: BOUND.systemd, memoryMaxMb: 64, run: async () => (calls++, { status: 'failed:timeout', signal: 'SIGTERM', stdout: '', stderr: '' }) });
+  assert.equal(calls, 2);
+});
+
+test('ladder-child reads its spec from the environment (and still from argv for manual use)', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const root = await mkdtemp(join(tmpdir(), 'wl-env-'));
+  try {
+    const spec = { op: 'image', root, spec: { id: 'image-jpeg-64x48', format: 'jpeg', width: 64, height: 48, seed: 1 } };
+    const out = JSON.parse(execFileSync(process.execPath, [new URL('../ladder-child.mjs', import.meta.url).pathname], { env: { ...process.env, [CHILD_SPEC_ENV]: JSON.stringify(spec) } }).toString());
+    assert.equal(out.ok, true); assert.equal(out.cases[0].shape.width, 64);
+  } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test('background index prepare puts the private session back in front before the window opens (the trigger session had taken the screen)', async () => {
+  const marks = [{ name: 'bg:chatsearch-refresh:start', t: 1 }, { name: 'bg:chatsearch-refresh:done', t: 2 }];
+  const home = await mkdtemp(join(tmpdir(), 'wl-prep-'));
+  try {
+    const perfLog = join(home, 'perf-marks.jsonl'); await writeFile(perfLog, marks.map((m) => JSON.stringify(m)).join('\n'));
+    const evals = [];
+    const cdp = { evaluate: async (src) => { evals.push(src); return src.includes('session.create') ? { id: 'trigger-1' } : true; } };
+    const prepared = await backgroundIndexHook.prepare({ cdp, manifest: { root: '/m' }, fixture: { perfLog }, sessionId: 'private-1', waitUntil: async (fn) => (await fn()) || Promise.reject(new Error('not ready')) });
+    assert.equal(prepared.triggerId, 'trigger-1');
+    const last = evals.at(-1); assert.match(last, /private-1/); assert.match(last, /data-session-strip/);
+    assert.ok(evals.findIndex((e) => e.includes('session.create')) < evals.length - 1, 'selection happens AFTER the trigger exists');
+  } finally { await rm(home, { recursive: true, force: true }); }
+});
+
+test('selectSessionSource: clicks the pill and is true only when exactly that session\'s chat is visible', () => {
+  const run = (ctx) => vm.runInNewContext(selectSessionSource('s1'), ctx);
+  let clicked = 0;
+  const pill = { dataset: { sessionId: 's1' }, click: () => clicked++ };
+  const chat = (id, hidden) => ({ dataset: { chatSessionId: id }, closest: () => (hidden ? {} : null) });
+  const doc = (chats) => ({ document: { querySelectorAll: (q) => (q.includes('data-session-strip') ? [pill] : chats) } });
+  assert.equal(run(doc([chat('s1', false), chat('s2', true)])), true); assert.equal(clicked, 1);
+  assert.equal(run(doc([chat('s2', false)])), false);
+  assert.equal(run(doc([chat('s1', false), chat('s2', false)])), false);
 });

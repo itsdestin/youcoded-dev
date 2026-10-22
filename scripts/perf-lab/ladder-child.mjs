@@ -64,6 +64,7 @@ export async function runChildOp(spec) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  try { console.log(JSON.stringify(await runChildOp(JSON.parse(process.argv[2])))); }
+  // WHY env first: see CHILD_SPEC_ENV in scenario-workloads.mjs (the command line must not name the shared fixture HOME). argv stays supported for tests/manual use.
+  try { console.log(JSON.stringify(await runChildOp(JSON.parse(process.env.PERF_LAB_CHILD_SPEC ?? process.argv[2])))); }
   catch (error) { console.log(JSON.stringify({ ok: false, error: String(error?.message ?? error) })); process.exitCode = 1; }
 }

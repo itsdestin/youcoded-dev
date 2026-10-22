@@ -2,7 +2,7 @@
 // the compare paths. Runtime thresholds are policy inputs here, not wall-clock assertions.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { WORKLOAD_LANE, WORKLOAD_THRESHOLDS, ORIGINAL_JPEG, INSTRUMENT_REASONS, classifyRow, ladderGroups, plannedRungIds, probeCandidateSupport,
+import { transientInstrumentDefect, WORKLOAD_LANE, WORKLOAD_THRESHOLDS, ORIGINAL_JPEG, INSTRUMENT_REASONS, classifyRow, ladderGroups, plannedRungIds, probeCandidateSupport,
   runWorkloadsLane, summariseRow, workloadPaths, workloadsMarkdown, workloadsProblems, WORKLOAD_MEASURES } from '../workload-lane.mjs';
 import { compareAll, get, runsFor } from '../compare.mjs';
 import { WORKLOAD_PATHS } from '../compare.mjs';
@@ -187,4 +187,74 @@ test('descriptor has the shape comparability requires; markdown names bound, thr
   const md = workloadsMarkdown(section).join('\n');
   assert.match(md, /systemd-run-user-scope/); assert.match(md, /operationMs 1000/); assert.match(md, /Unsupported by candidate, csvFullRead/); assert.match(md, /csv-fullread-5120kib \| csv-fullread \| failed \(failed:instrument\)|unsupported-by-candidate/);
   assert.equal(WORKLOAD_THRESHOLDS.operationMs, 1000);
+});
+
+// ── lane F test-drive fixes ──────────────────────────────────────────────────────────────────────────────────────────────────
+
+test('a failed control generation fails the whole image group with the TRUE reason, not a viewer error from the harness', async () => {
+  const groups = ladderGroups().filter((g) => g.id === 'images-jpeg-2048x1536');
+  const w = world({ groups, script: { gen: { 'image-jpeg-1024x768': { status: 'failed:generation-exit', detail: 'failed:exit (SIGTERM): ' } } } });
+  const section = await w.run();
+  const big = section.runs[0].rungs['image-jpeg-2048x1536'];
+  assert.equal(big.reason, 'failed:generation-exit'); assert.match(big.detail, /small control image-jpeg-1024x768 could not be generated/);
+  assert.deepEqual(w.calls.boots, [], 'no app is booted for a group that cannot be measured');
+});
+
+test('a later real measurement of a control replaces an earlier failed generation of the same file, and keeps the failure beside it', async () => {
+  const groups = ladderGroups().filter((g) => g.id === 'images-jpeg-2048x1536' || g.id === 'images-jpeg-4096x3072');
+  let first = true;
+  const w = world({ groups, script: { gen: new Proxy({}, { get: (_, id) => (id === 'image-jpeg-1024x768' && first ? (first = false, { status: 'failed:generation-exit', detail: 'SIGTERM' }) : undefined) }) } });
+  const run = (await w.run()).runs[0];
+  assert.equal(run.rungs['image-jpeg-1024x768'].status, 'measured');
+  assert.equal(run.rungs['image-jpeg-1024x768'].earlierFailure.reason, 'failed:generation-exit');
+});
+
+test('a cap hit reports the real peak and the cap it was judged against, and stays a finding (not an instrument problem)', () => {
+  const row = { id: 'x', status: 'memory-limit', error: 'Lab safety cap: owned app family PSS 1600 MiB exceeded the 1536 MiB cap', memory: { peakRssMb: 2400.04, peakPssMb: 1600.06, capMb: 1536 } };
+  const out = classifyRow(row);
+  assert.equal(out.reason, 'failed:memory-limit'); assert.match(out.detail, /peak seen 1600\.1 MiB PSS, cap 1536 MiB/);
+  assert.equal(out.metrics.peakRssMb, 2400); assert.equal(out.metrics.peakPssMb, 1600.1);
+  assert.ok(!INSTRUMENT_REASONS.includes(out.reason));
+  assert.match(classifyRow({ id: 'x', status: 'memory-limit', error: 'Owned app family RSS exceeds 1536 MiB', memory: { peakRssMb: 1600 } }).detail, /summed RSS/);
+});
+
+test('a blocked-typing row is SLOW with an "at least" reason (a real freeze), never an instrument failure', () => {
+  const row = good('x', { input: { latencyMs: null, budgetStatus: 'incomplete', blockedBacklog: { lowerBoundMs: 3523.1, skippedSlots: 53, maxOutstanding: 16 } } });
+  const out = classifyRow(row);
+  assert.equal(out.status, 'slow'); assert.match(out.reasons.join(' '), /typing blocked for at least 3523\.1 ms \(53 key slots skipped while 16 keys were already waiting\)/);
+  assert.equal(out.metrics.inputLatencyMs, 3523.1);
+});
+
+// A row the harness rejected only because the controller itself was late (one skipped key slot / clock alignment wider than its limit).
+const lateController = (id, reasons = ['Missing, skipped, overflowed or exhausted input train'], over = {}) => ({ ...good(id), status: 'failed', error: 'Missing/invalid viewer proof, finite metrics',
+  renderer: { available: true, stopped: true, truncated: false, maxDelayMs: 10 }, main: { available: true, stopped: true, truncated: false, maxDelayMs: 1 }, memory: { complete: true, peakRssMb: 1 }, proof: { correctResult: true },
+  input: { complete: false, reasons, skippedSlots: 1, maxInflight: 6, maxOutstanding: 16, failed: 0, receiptOverflow: 0, exhausted: false, ...over } });
+
+test('transientInstrumentDefect: only a late controller qualifies; a saturated key queue (real freeze), failed sends or a missing probe do not', () => {
+  assert.equal(transientInstrumentDefect(lateController('x')), true);
+  assert.equal(transientInstrumentDefect(lateController('x', ['Clock alignment unavailable/uncertain'], { skippedSlots: 0 })), true);
+  for (const bad of [lateController('x', undefined, { maxInflight: 16 }), lateController('x', undefined, { failed: 1 }), lateController('x', undefined, { receiptOverflow: 2 }), lateController('x', undefined, { exhausted: true }),
+    lateController('x', ['Input does not cover action and readiness tail']), { ...lateController('x'), memory: { complete: false } }, { ...lateController('x'), main: { available: true, stopped: false, truncated: false } }, { ...lateController('x'), proof: { correctResult: false } }, good('x')]) assert.equal(transientInstrumentDefect(bad), false);
+  const steps = { id: 'i', status: 'failed', imageSteps: [good('i/open-decode'), lateController('i/zoom-in', ['Clock alignment unavailable/uncertain'], { skippedSlots: 0 })] };
+  assert.equal(transientInstrumentDefect(steps), true);
+});
+
+test('a rung lost to a late controller is measured again in a fresh boot and keeps the good result; if it never clears the last failure is recorded', async () => {
+  const csv = ladderGroups().find((g) => g.id === 'csv'), victim = csv.rungs[1].id;
+  const seen = [];
+  const w = world({ groups: [csv], script: { run: { csv: (ids, boots) => { seen.push(ids.length); return { cases: ids.map((id) => (id === victim && boots === 1 ? lateController(id) : good(id))), fatal: false, descriptor: {} }; } } } });
+  const section = await w.run();
+  assert.equal(section.runs[0].rungs[victim].status, 'measured'); assert.equal(section.runs[0].rungs[victim].attempts, 2);
+  assert.deepEqual(seen, [csv.rungs.length, 1], 'only the affected rung is run again');
+  assert.deepEqual(workloadsProblems({ workloads: section }), []);
+  const always = world({ groups: [csv], script: { run: { csv: (ids) => ({ cases: ids.map((id) => (id === victim ? lateController(id) : good(id))), fatal: false, descriptor: {} }) } } });
+  const never = await always.run();
+  assert.equal(never.runs[0].rungs[victim].reason, 'failed:evidence-incomplete'); assert.equal(never.runs[0].rungs[victim].attempts, WORKLOAD_LANE.maxAttemptsPerGroup);
+});
+
+test('an evidence-incomplete row shows the unvalidated numbers its probes did record and why the input proof failed', () => {
+  const row = { ...lateController('x', ['Clock alignment unavailable/uncertain', 'Missing, skipped, overflowed or exhausted input train']), operationMs: 11000, renderer: { available: true, stopped: true, truncated: false, maxDelayMs: 10922 } };
+  const out = classifyRow(row);
+  assert.equal(out.reason, 'failed:evidence-incomplete');
+  assert.match(out.detail, /input proof: Clock alignment unavailable\/uncertain; Missing, skipped/); assert.match(out.detail, /unvalidated, seen: renderer long task 10922 ms, main stall 1 ms, operation 11000 ms/);
 });

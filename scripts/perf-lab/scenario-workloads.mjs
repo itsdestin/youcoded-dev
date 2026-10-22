@@ -9,10 +9,11 @@ import { createHash, randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BOUND, detectBound, runBounded } from './bounded-exec.mjs';
-import { runDocumentStallCases } from './scenario-document-stalls.mjs';
+import { runDocumentStallCases, MEMORY_BASIS, pathListTranscriptLine } from './scenario-document-stalls.mjs';
 import { IMAGE_LIMITS } from './stall-fixtures.mjs';
 import { GENERATION_BOUND_MB, ORIGINAL_JPEG } from './workload-lane.mjs';
 
+export const LANE_CALIBRATION_ATTEMPTS = 3;
 const CHILD = fileURLToPath(new URL('./ladder-child.mjs', import.meta.url));
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -30,14 +31,31 @@ function lastJson(stdout) {
   try { return JSON.parse(line); } catch { return null; }
 }
 
+// WHY the spec travels in the environment, not on the command line: the app teardown (launch.mjs sweep) SIGTERMs every process whose command
+// line contains the fixture HOME, and all lane F fixtures share one HOME path (scratch/perf-lab/home). A generation child carries that path
+// in its JSON spec, so a late sweep from the previous group's app killed it ("failed:exit (SIGTERM)"). It only ever hit the first child after
+// a group that had needed a second boot. With the spec in the environment the child's command line names nothing a sweep looks for.
+export const CHILD_SPEC_ENV = 'PERF_LAB_CHILD_SPEC';
+// A child killed by a signal that is not our own timeout and not the memory bound came from outside. Retry it (bounded) and say so.
+export const FOREIGN_SIGNAL_RETRIES = 2;
+const foreignSignal = (r) => r.status === 'failed:exit' && (r.signal === 'SIGTERM' || r.signal === 'SIGINT' || r.signal === 'SIGHUP' || r.code === 143);
+
 /** One bounded child. Returns { status:'ok', value } or { status:<failed:...>, detail }. */
-export async function runChild(spec, { bound, memoryMaxMb, timeoutMs = 120_000, run = runBounded } = {}) {
-  const result = await run({ argv: [process.execPath, CHILD, JSON.stringify(spec)], memoryMaxMb, timeoutMs, bound });
+export async function runChild(spec, { bound, memoryMaxMb, timeoutMs = 120_000, run = runBounded, retries = FOREIGN_SIGNAL_RETRIES } = {}) {
+  const attempts = [];
+  let result;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    result = await run({ argv: [process.execPath, CHILD], env: { ...process.env, [CHILD_SPEC_ENV]: JSON.stringify(spec) }, memoryMaxMb, timeoutMs, bound });
+    attempts.push(`${result.status}${result.signal ? ` (${result.signal})` : result.code != null ? ` (exit ${result.code})` : ''} after ${result.elapsedMs ?? '?'} ms`);
+    if (!foreignSignal(result)) break;
+    await sleep(500 * (attempt + 1));
+  }
   const status = generationStatus(result);
-  if (status !== 'ok') return { status, detail: `${result.status}${result.signal ? ` (${result.signal})` : result.code != null ? ` (exit ${result.code})` : ''}: ${String(result.stderr || result.stdout).trim().split('\n').pop()?.slice(0, 200) ?? ''}`, bound: result.bound, memoryMaxMb };
+  const retried = attempts.length > 1 ? ` [attempts: ${attempts.join('; ')}]` : '';
+  if (status !== 'ok') return { status, detail: `${result.status}${result.signal ? ` (${result.signal})` : result.code != null ? ` (exit ${result.code})` : ''}: ${String(result.stderr || result.stdout).trim().split('\n').pop()?.slice(0, 200) ?? ''}${retried}`, bound: result.bound, memoryMaxMb };
   const value = lastJson(result.stdout);
   if (!value?.ok) return { status: 'failed:generation-exit', detail: value?.error ?? 'child printed no result' };
-  return { status: 'ok', value, bound: result.bound, memoryMaxMb };
+  return { status: 'ok', value, bound: result.bound, memoryMaxMb, ...(attempts.length > 1 ? { attempts } : {}) };
 }
 
 /** Generate one rung's file(s) in `root` under the external memory bound; verify images by reading them back (also bounded). */
@@ -119,6 +137,11 @@ export async function largeDiffAction({ f, cdp, transcript, waitUntil, unmounted
   const { lines } = JSON.parse(readFileSync(f.file, 'utf8')).params;
   const { oldStr, newStr } = buildDiffStrings(lines, f.marker);
   const t = transcript(), toolUseId = `toolu_${sha256(f.id).slice(0, 20)}`;
+  // WHY a plain user message first: two Edit calls with no user prompt between them are ONE assistant turn, and the app draws 2+ tool calls
+  // of a turn as a collapsed "N edits" group whose cards are not in the page until it is opened. The second rung in a boot (5000 lines
+  // after 500) therefore never found its card and timed out, while rungs that ran first in a boot (500, 20000) measured. A user message
+  // between them starts a new turn, so every rung is the single Edit card the 500-line rung already measured.
+  append(t.path, pathListTranscriptLine({ sessionId: t.sessionId, cwd: manifest.root, text: `stall lab: show the ${lines}-line change` }) + '\n');
   append(t.path, diffTranscriptLines({ sessionId: t.sessionId, cwd: manifest.root, toolUseId, oldStr, newStr }).join('\n') + '\n');
   // The card appears collapsed; opening it is part of what the user does to look at the change, so it is inside the measured window.
   const card = await waitUntil(async () => (await cdp.evaluate(diffStateSource(toolUseId, f.marker))) ?? false);
@@ -151,14 +174,25 @@ export function readIndexEvidence(home, { list = readdirSync, read = (p) => read
   return { conversations, turnsBytes };
 }
 
+/** Click the session's pill in the strip, then report whether ITS chat (and no other) is the visible one. Same checks as the harness' own session select. */
+export const selectSessionSource = (sessionId) => `(() => {const id=${JSON.stringify(sessionId)};
+  const pill=[...document.querySelectorAll('[data-session-strip] [data-session-id]')].find(p=>p.dataset.sessionId===id);pill?.click();
+  const visible=[...document.querySelectorAll('[data-chat-session-id]')].filter(x=>!x.closest('[aria-hidden="true"]'));
+  return visible.length===1&&visible[0].dataset.chatSessionId===id;})()`;
+
 export const backgroundIndexHook = {
   // A second private session, created BEFORE the measured window: destroying it is the app's own "session ended -> index refresh" trigger.
-  async prepare({ cdp, manifest, waitUntil, fixture }) {
+  async prepare({ cdp, manifest, waitUntil, fixture, sessionId }) {
     await waitUntil(async () => readMarks(fixture.perfLog).some((m) => m.name === 'bg:chatsearch-refresh:done'), { timeoutMs: 60_000 });
     const made = await cdp.evaluate(`window.claude.session.create(${JSON.stringify({ name: 'stall-index-trigger', cwd: manifest.root, skipPermissions: true, provider: 'claude' })})`);
     if (!made?.id) throw new Error('Trigger session create returned no id');
     await sleep(3000);   // let its own start-up churn (and any refresh it causes) finish before the window opens
     await waitUntil(async () => { const ms = readMarks(fixture.perfLog); const done = ms.filter((m) => m.name === 'bg:chatsearch-refresh:done').length, start = ms.filter((m) => m.name === 'bg:chatsearch-refresh:start').length; return done >= start; }, { timeoutMs: 60_000 });
+    // WHY re-select the private session: creating the trigger session makes IT the visible chat. The window's first keystroke then landed
+    // while the trigger session was on screen (receipt.correctTarget=false) and destroying it switched the view back mid-window, so the
+    // input proof was rejected as "Missing/invalid viewer proof" although the refresh itself had been measured. The private session is
+    // put back in front, and proven in front, BEFORE the window opens, so every key lands on the session the proof names.
+    if (sessionId) await waitUntil(async () => cdp.evaluate(selectSessionSource(sessionId)), { timeoutMs: 15_000 });
     return { triggerId: made.id };
   },
   async run({ f, cdp, fixture, waitUntil, prepared, unmountedBefore }) {
@@ -175,12 +209,18 @@ export const backgroundIndexHook = {
 
 // ── the real deps for runWorkloadsLane ─────────────────────────────────────────────────────────────────────────────────────────
 
+// WHY a 3072 MiB PSS cap for documents/diff/path-list/index (images keep the image harness' hard 1536 limit): the cap is a runaway guard for
+// the machine, not a pass mark. Measured PSS for an idle-ish app is ~0.7 GiB and the 20000-path list alone reached 1.4 GiB, so 1536 would
+// kill exactly the heavy rungs this lane exists to measure and replace their numbers with "cap hit". A rung that reaches 3 GiB of real
+// (shared-page-aware) memory is still stopped, and its row shows the real peak next to the cap.
+export const DOCUMENT_PSS_CAP_MB = 3072;
+
 /** Per-group watchdog: documents keep the lab's 15 s; the indexing refresh and the 20000-line diff are allowed longer BY NAME, and a timeout is still a recorded finding. */
 export function groupLimits(group) {
-  if (group.id === 'background-indexing') return { timeoutMs: 60_000, maxRssMb: 1536 };
-  if (group.id === 'large-diff') return { timeoutMs: 30_000, maxRssMb: 1536 };
-  if (group.id === 'path-list') return { timeoutMs: 30_000, maxRssMb: 1536 };
-  return { timeoutMs: 15_000, maxRssMb: 1536 };
+  if (group.id === 'background-indexing') return { timeoutMs: 60_000, maxRssMb: DOCUMENT_PSS_CAP_MB };
+  if (group.id === 'large-diff') return { timeoutMs: 30_000, maxRssMb: DOCUMENT_PSS_CAP_MB };
+  if (group.id === 'path-list') return { timeoutMs: 30_000, maxRssMb: DOCUMENT_PSS_CAP_MB };
+  return { timeoutMs: 15_000, maxRssMb: DOCUMENT_PSS_CAP_MB };
 }
 
 export function createWorkloadDeps({ checkout, build, makeFixtureBase, withBoot, getRenderer, boundInfo = detectBound(), recordInterference, run = runBounded, runCasesImpl = runDocumentStallCases }) {
@@ -201,6 +241,10 @@ export function createWorkloadDeps({ checkout, build, makeFixtureBase, withBoot,
       const images = group.mode === 'images';
       return runCasesImpl(app, fixture, manifest, {
         checkout, build, caseIds, timeoutMs: images ? 15_000 : timeoutMs, maxRssMb: images ? 1536 : maxRssMb, images,
+        // WHY PSS + 3 calibration attempts: see MEMORY_BASIS and the calibration attempts comments in scenario-document-stalls.mjs.
+        memoryBasis: MEMORY_BASIS.pss, calibrationAttempts: LANE_CALIBRATION_ATTEMPTS,
+        // WHY: a rung that freezes the renderer past ~0.8 s saturates the keystroke queue; that is a finding to report (see blockedInputEvidence), not a broken instrument.
+        allowBlockedInput: true,
         ...(images ? { imageRenderingEvidence: getRenderer() } : {}),
         custom: { 'large-diff': largeDiffAction, 'bg-index': backgroundIndexHook },
       });

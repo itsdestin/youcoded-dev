@@ -2,7 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { assessViewerEvidence, validateDocumentManifest, withDocumentWatchdog, viewerProofSource, installDocumentReceipt, installDocumentHelpers, readActiveHtmlFrame, drainDocumentIpc } from '../scenario-document-stalls.mjs';
 import { documentEvidence as good, shiftDocumentInput, setDocumentOperation } from './document-evidence-fixture.mjs';
-import { validateDocumentCalibration, measureDocumentCase, collectDocumentProvenance } from '../scenario-document-stalls.mjs';
+import { blockedInputEvidence } from '../document-input.mjs';
+import { sampleOwnedMemory } from '../scenario-document-stalls.mjs';
+import { buildCaseRow, validateDocumentCalibration, explainDocumentCalibration, measureDocumentCase, collectDocumentProvenance, MEMORY_BASIS } from '../scenario-document-stalls.mjs';
 import vm from 'node:vm';
 import { DOCUMENT_CONTROL_TYPES } from '../document-input.mjs';
 
@@ -142,4 +144,73 @@ test('no-op action is not a successful viewer operation and embedded readiness/r
   for(const s of sources)new Function(s);
   assert.ok(sources.at(-1).includes('span.font-medium.truncate'));
   assert.ok(sources[0].includes('F24'));assert.ok(sources[0].includes('isTrusted'));
+});
+
+// ── lane F test-drive fixes ──────────────────────────────────────────────────────────────────────────────────────────────────
+
+test('explainDocumentCalibration names every failed criterion with the value seen; validate is exactly "nothing failed"',()=>{
+  assert.deepEqual(explainDocumentCalibration(calibration()),[]);
+  const rs=calibration();const by=t=>rs.find(r=>r.proof.control===t);by('slow-async').renderer.maxDelayMs=140;by('noop').main.maxDelayMs=120;
+  const why=explainDocumentCalibration(rs);
+  assert.equal(validateDocumentCalibration(rs),false);
+  assert.ok(why.some(w=>/^slow-async: renderer long task < 100 ms \(saw 140\)$/.test(w)),why.join('|'));
+  assert.ok(why.some(w=>/^noop: main stall < 100 ms \(saw 120\)$/.test(w)),why.join('|'));
+  assert.match(explainDocumentCalibration(calibration().slice(0,3))[0],/controls incomplete/);
+  const broken=calibration();broken[0].status='timeout';broken[0].error='External case deadline';
+  assert.match(explainDocumentCalibration(broken)[0],/control-noop did not produce valid evidence \(status timeout/);
+});
+
+test('PSS basis: the cap is judged on PSS, both numbers are recorded, and a hit says it is the lab cap with the real peak',async()=>{
+  const app={pid:123,kill:async()=>{}};
+  const deps={setTimeout:()=>1,clearTimeout:()=>{},setInterval:(fn)=>{queueMicrotask(()=>{});return 2;},clearInterval:()=>{}};
+  // 1.4 GiB of double-counted RSS but only 600 MiB real: under the cap, not a memory-limit
+  const fine=await withDocumentWatchdog(app,async()=>true,{timeoutMs:100,maxRssMb:1536,memoryBasis:MEMORY_BASIS.pss,_deps:{...deps,sample:()=>({complete:true,peakRssMb:1400,peakPssMb:600,pids:[123]})}});
+  assert.equal(fine.status,undefined);assert.equal(fine.memory.peakRssMb,1400);assert.equal(fine.memory.peakPssMb,600);assert.equal(fine.memory.basis,'pss');assert.equal(fine.memory.capMb,1536);
+  // the same sample on the default (RSS) basis is over a 1000 cap, exactly as before
+  const rss=await withDocumentWatchdog(app,()=>new Promise(()=>{}),{timeoutMs:100,maxRssMb:1000,_deps:{...deps,sample:()=>({complete:true,peakRssMb:1400,pids:[123]})}});
+  assert.equal(rss.status,'memory-limit');assert.match(rss.error,/Owned app family RSS exceeds 1000 MiB/);
+  const hit=await withDocumentWatchdog(app,()=>new Promise(()=>{}),{timeoutMs:100,maxRssMb:1536,memoryBasis:MEMORY_BASIS.pss,_deps:{...deps,sample:()=>({complete:true,peakRssMb:2900,peakPssMb:1700,pids:[123]})}});
+  assert.equal(hit.status,'memory-limit');assert.match(hit.error,/Lab safety cap: owned app family PSS 1700 MiB exceeded the 1536 MiB cap/);assert.equal(hit.memory.peakPssMb,1700);
+});
+
+test('buildCaseRow: the rung id always wins over a failed step\'s own id, so a fatal image step still gives its rung a row',()=>{
+  const base={id:'image-png-4096x3072',kind:'image-png',proof:{attempted:false}};
+  const f={id:'image-png-4096x3072'};
+  const killed=buildCaseRow(base,f,{status:'memory-limit',error:'Lab safety cap',value:{id:'image-png-4096x3072/open-decode'},memory:{peakPssMb:1600,capMb:1536},fatal:true});
+  assert.equal(killed.id,'image-png-4096x3072');assert.equal(killed.failedStep,'image-png-4096x3072/open-decode');assert.equal(killed.status,'memory-limit');assert.equal(killed.memory.peakPssMb,1600);
+  const plain=buildCaseRow(base,f,{status:'timeout',error:'x',value:{},memory:{}});
+  assert.equal(plain.id,'image-png-4096x3072');assert.equal('failedStep' in plain,false);
+  const imgs=buildCaseRow(base,f,{value:{imageDiagnostic:true,imageSteps:[{status:'measured'},{status:'failed'}]},memory:{}});
+  assert.equal(imgs.status,'failed');
+});
+
+test('blocked typing: a frozen renderer saturating the key queue is accepted ONLY on opt-in, with a measured floor, and only if nothing else is wrong',()=>{
+  const blocked=()=>{const r=good();Object.assign(r.input,{complete:false,reasons:['Missing, skipped, overflowed or exhausted input train'],skippedSlots:7,maxInflight:16,maxOutstanding:16,failed:0,exhausted:false,received:false,trusted:false,correctTarget:false,latencyMs:null,latencyLowerMs:null,latencyUpperMs:null,budgetStatus:'incomplete'});r.input.samples[0].latencyLowerMs=1128;return r;};
+  const r=blocked();
+  assert.equal(assessViewerEvidence(r).status,'failed','strict reading is unchanged');
+  assert.equal(assessViewerEvidence(r,{allowBlockedInput:true}).status,'measured');
+  assert.equal(blockedInputEvidence(r.input).lowerBoundMs,1128);
+  const row=buildCaseRow({id:r.id},{id:r.id},{value:r,memory:r.memory},{allowBlockedInput:true});
+  assert.equal(row.status,'measured');assert.equal(row.input.blockedBacklog.lowerBoundMs,1128);assert.equal(row.standardAcceptance,false);
+  assert.equal(buildCaseRow({id:r.id},{id:r.id},{value:r,memory:r.memory}).status,'failed');
+  // every other defect keeps the row invalid
+  for(const [name,mutate] of Object.entries({
+    'a failed send':x=>x.input.failed=1,'receipt overflow':x=>x.input.receiptOverflow=1,'exhausted train':x=>x.input.exhausted=true,
+    'queue never saturated':x=>x.input.maxInflight=3,'no skipped slots':x=>x.input.skippedSlots=0,'untrusted receipt':x=>x.input.samples[1].receipt.trusted=false,
+    'a second reason':x=>x.input.reasons.push('Clock alignment unavailable/uncertain'),'floor under budget':x=>x.input.samples[0].latencyLowerMs=100,
+    'renderer probe not stopped':x=>x.renderer.stopped=false,'memory incomplete':x=>x.memory.complete=false,'wrong case':x=>x.input.caseId='other',
+  })){const x=blocked();mutate(x);assert.equal(assessViewerEvidence(x,{allowBlockedInput:true}).status,'failed',name);}
+});
+
+test('memory sample: a helper that exited between listing and reading is re-listed, a vanished MAIN or a persistently changing family is still incomplete',()=>{
+  const gone=4194000;   // far above any pid this machine hands out; /proc/<gone> does not exist
+  let calls=0;
+  const app={pid:process.pid,family:()=>(calls++===0?[process.pid,gone]:[process.pid])};
+  const s=sampleOwnedMemory(app,{basis:MEMORY_BASIS.pss});
+  assert.equal(s.complete,true);assert.equal(calls,2,'family listed again');assert.ok(s.peakPssMb>0&&s.peakPssMb<=s.peakRssMb+1,'PSS of the live process, not above its RSS');
+  const always={pid:process.pid,family:()=>[process.pid,gone]};
+  const stuck=sampleOwnedMemory(always,{basis:MEMORY_BASIS.rss});
+  assert.equal(stuck.complete,false);assert.match(stuck.error,/ENOENT/);
+  const mainGone=sampleOwnedMemory({pid:gone,family:()=>[gone]},{basis:MEMORY_BASIS.rss});
+  assert.equal(mainGone.complete,false);
 });

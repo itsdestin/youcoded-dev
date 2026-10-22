@@ -62,3 +62,14 @@ test('runBounded: no available bound is a recorded failure, not an unbounded run
   const spawnFails = await runBounded({ argv: ['node'], memoryMaxMb: 256, bound: BOUND.prlimit, spawn: () => { throw new Error('ENOENT'); } });
   assert.equal(spawnFails.status, 'failed:exit'); assert.match(spawnFails.stderr, /spawn failed/);
 });
+
+test('runBounded: an env is passed to the child so a job spec never has to ride on the command line', async () => {
+  let opts, child;
+  const spawn = (cmd, args, o) => { opts = o; child = fakeChild(); return child; };
+  const p = runBounded({ argv: ['node', 'job.mjs'], memoryMaxMb: 256, bound: BOUND.systemd, env: { A: '1' }, spawn });
+  child.emit('close', 0, null); await p;
+  assert.deepEqual(opts.env, { A: '1' });
+  const q = runBounded({ argv: ['node', 'job.mjs'], memoryMaxMb: 256, bound: BOUND.systemd, spawn });
+  child.emit('close', 0, null); await q;
+  assert.equal('env' in opts, false, 'no env given -> the default inherited environment');
+});

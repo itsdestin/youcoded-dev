@@ -57,7 +57,7 @@ export function classifyBoundedExit({ bound, code, signal, stderr = '', timedOut
  * Run `argv` bounded. Resolves (never rejects) with { status, bound, memoryMaxMb, code, signal, stdout, stderr, elapsedMs }.
  * `spawn` is injectable for tests. A timed-out child is stopped by its exact pid (SIGTERM, then SIGKILL after a grace).
  */
-export function runBounded({ argv, memoryMaxMb, timeoutMs = 120_000, bound, spawn = nodeSpawn, now = Date.now }) {
+export function runBounded({ argv, memoryMaxMb, timeoutMs = 120_000, bound, env, spawn = nodeSpawn, now = Date.now }) {
   return new Promise((resolve) => {
     const started = now();
     let wrapped;
@@ -65,7 +65,7 @@ export function runBounded({ argv, memoryMaxMb, timeoutMs = 120_000, bound, spaw
     catch (error) { resolve({ status: 'failed:no-memory-bound', bound, memoryMaxMb, code: null, signal: null, stdout: '', stderr: error.message, elapsedMs: 0 }); return; }
     let stdout = '', stderr = '', timedOut = false, settled = false;
     let child;
-    try { child = spawn(wrapped[0], wrapped.slice(1), { stdio: ['ignore', 'pipe', 'pipe'] }); }
+    try { child = spawn(wrapped[0], wrapped.slice(1), { stdio: ['ignore', 'pipe', 'pipe'], ...(env ? { env } : {}) }); }
     catch (error) { resolve({ status: 'failed:exit', bound, memoryMaxMb, code: null, signal: null, stdout: '', stderr: `spawn failed: ${error.message}`, elapsedMs: 0 }); return; }
     const finish = (code, signal) => {
       if (settled) return; settled = true;

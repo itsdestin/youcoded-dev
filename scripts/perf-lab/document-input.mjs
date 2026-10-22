@@ -100,6 +100,27 @@ export function documentInputEvidenceValid(input,{caseId,operationMs}={}) {
     && input.samples.every((s,i)=>s.latencyLowerMs===measured.samples[i].latencyLowerMs&&s.latencyUpperMs===measured.samples[i].latencyUpperMs);
 }
 
+/**
+ * Typing blocked behind a frozen renderer: the one way a REAL stall makes the input train "incomplete".
+ * The train never waits for an ack (see startDocumentInputTrain), but it stops sending at maxOutstanding unacknowledged keys and counts the
+ * slots it skipped. A renderer frozen longer than ~maxOutstanding*everyMs (0.8 s) therefore always shows up as "skipped slots", which
+ * summariseDocumentInput treats as a broken instrument. It is not: every key that WAS sent has a trusted receipt and a clock-bounded delay,
+ * and the largest signed lower bound among them is a measured floor for how long typing was blocked.
+ * Returns that floor (and the saturation facts) ONLY when the sole reason the train is incomplete is that saturation and the floor is over
+ * the budget; any other defect (failed sends, overflow, bad clocks, untrusted receipts, exhausted train) returns null and the row stays
+ * invalid. Lane F opts in; the smoke-document report keeps its strict reading.
+ */
+export function blockedInputEvidence(input,{budgetMs=250}={}) {
+  if(!input||!Array.isArray(input.samples)||!input.samples.length||input.complete!==false)return null;
+  if(input.reasons?.length!==1||input.reasons[0]!=='Missing, skipped, overflowed or exhausted input train')return null;
+  if(input.failed!==0||input.receiptOverflow!==0||input.exhausted!==false||!(input.skippedSlots>0)||!(input.maxInflight>=input.maxOutstanding)||input.clocks?.valid!==true)return null;
+  if(input.samples.length!==input.samples.filter(s=>s.receipt?.trusted===true&&s.receipt?.correctTarget===true&&finite(s.latencyLowerMs)).length)return null;
+  const lowerBoundMs=Math.max(...input.samples.map(s=>s.latencyLowerMs));
+  if(!(lowerBoundMs>budgetMs))return null;
+  return {lowerBoundMs,keysDelivered:input.samples.length,skippedSlots:input.skippedSlots,maxInflight:input.maxInflight,maxOutstanding:input.maxOutstanding,
+    meaning:'typing was blocked for AT LEAST lowerBoundMs (largest clock-bounded delay among the delivered keys); further key slots were skipped because maxOutstanding keys were already waiting; an exact delay cannot be measured past that'};
+}
+
 // Each remover runs even if a preceding remover fails. The enclosing external
 // watchdog bounds the entire cleanup; timeout kills the owned family and forbids
 // subsequent cases, rather than leaving a late action able to pollute another.

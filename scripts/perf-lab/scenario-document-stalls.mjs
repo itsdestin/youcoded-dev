@@ -15,7 +15,7 @@ import { installProbe, readProbe, stopProbe } from './scenario-workload.mjs';
 import { treeFingerprint } from './build.mjs';
 import { validateImagePlan, IMAGE_LIMITS } from './stall-fixtures.mjs';
 import { createImageDriver, runImageOperations, IMAGE_SOURCE_FILES, imageCoverage, requireSoftwareImageLane, imageDeadlinePolicy, guardImageSequence } from './scenario-images.mjs';
-import { DOCUMENT_ADAPTER_REVISION, DOCUMENT_ACTION_PRECISION_MS, DOCUMENT_CLOCK_HORIZON_MS, DOCUMENT_CONTROL_TYPES, alignDocumentClocks, exchangeDocumentClock, startDocumentInputTrain, summariseDocumentInput, documentInputEvidenceValid, cleanupDocumentResources } from './document-input.mjs';
+import { DOCUMENT_ADAPTER_REVISION, DOCUMENT_ACTION_PRECISION_MS, DOCUMENT_CLOCK_HORIZON_MS, DOCUMENT_CONTROL_TYPES, alignDocumentClocks, exchangeDocumentClock, startDocumentInputTrain, summariseDocumentInput, documentInputEvidenceValid, blockedInputEvidence, cleanupDocumentResources } from './document-input.mjs';
 
 const sha = b => createHash('sha256').update(b).digest('hex');
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
@@ -39,7 +39,12 @@ export function validateDocumentManifest(manifest,{images=false,extraKinds=[]}={
   }
   return manifest.cases;
 }
-export function assessViewerEvidence(r) {
+const inputOk=(r,input)=>documentInputEvidenceValid(input,{caseId:r.id,operationMs:r.operationMs}) && input.received===true && input.trusted===true && input.correctTarget===true && input.clocks?.valid===true && finite(input.clocks.errorMs)
+    && finite(input.latencyMs) && finite(input.latencyUpperMs) && typeof input.latencyLowerMs==='number' && Number.isFinite(input.latencyLowerMs)
+    && ['passed','breach'].includes(input.budgetStatus) && input.samples?.length>0 && input.samples.every(s=>['plannedMs','actualMs','ackMs','latencyUpperMs'].every(k=>finite(s[k])) && Number.isFinite(s.latencyLowerMs) && finite(s.receipt?.atMs) && s.receipt.trusted===true && s.receipt.correctTarget===true);
+// WHY (lane F): see blockedInputEvidence. Same case id / action-window binding as a normal input proof, and every other probe is still required.
+const blockedInputOk=(r,input)=>input?.caseId===r.id && finite(r.operationMs) && finite(input.actionStartMs) && finite(input.actionEndMs) && Math.abs(input.actionEndMs-input.actionStartMs-r.operationMs)<=DOCUMENT_ACTION_PRECISION_MS && blockedInputEvidence(input)!==null;
+export function assessViewerEvidence(r,{allowBlockedInput=false}={}) {
   const positive=n=>finite(n)&&n>0;
   const loop=p=>p?.available===true && p.stopped===true && p.truncated===false && positive(p.sampleCount)
     && ['maxDelayMs','maxGapMs','totalStallMs','totalExcessMs','observedMs'].every(k=>finite(p[k]));
@@ -49,16 +54,35 @@ export function assessViewerEvidence(r) {
     && finite(r.operationMs) && loop(r.renderer) && loop(r.main)
     && positive(r.frame?.frames) && ['frameGapMaxMs','observedMs','framesPerSec'].every(k=>finite(r.frame[k])) && Array.isArray(r.frame.errors) && r.frame.errors.length===0
     && positive(r.ipc?.pings) && positive(r.ipc.tickSamples) && ['medianMs','p95Ms','maxMs','totalStallMs','maxTickDelayMs'].every(k=>finite(r.ipc[k])) && r.ipc.rejectedPings===0 && r.ipc.openStallMs===null && r.ipc.sawHidden===false
-    && documentInputEvidenceValid(input,{caseId:r.id,operationMs:r.operationMs}) && input.received===true && input.trusted===true && input.correctTarget===true && input.clocks?.valid===true && finite(input.clocks.errorMs)
-    && finite(input.latencyMs) && finite(input.latencyUpperMs) && typeof input.latencyLowerMs==='number' && Number.isFinite(input.latencyLowerMs)
-    && ['passed','breach'].includes(input.budgetStatus) && input.samples?.length>0 && input.samples.every(s=>['plannedMs','actualMs','ackMs','latencyUpperMs'].every(k=>finite(s[k])) && Number.isFinite(s.latencyLowerMs) && finite(s.receipt?.atMs) && s.receipt.trusted===true && s.receipt.correctTarget===true)
+    && (inputOk(r,input) || (allowBlockedInput && blockedInputOk(r,input)))
     && !r.cleanupErrors?.length && r.memory?.complete===true && positive(r.memory.samples) && finite(r.memory.peakRssMb);
   return ok?{status:'measured'}:{status:'failed',error:'Missing/invalid viewer proof, finite metrics, clock-bounded input coverage, stopped probes or complete memory proof'};
 }
-function sampleOwnedMemory(app) {
+// WHY two numbers (lane F): Electron's processes share most of their pages (the same binary, libraries and V8 snapshot are mapped into
+// the main, GPU, renderer and utility processes), and VmRSS counts a shared page once per process. Summing VmRSS therefore reports
+// about 1.2-1.5 GiB for an app that is really using about 0.5 GiB, which made a lab cap of 1536 MiB trip on an idle app. PSS
+// (/proc/<pid>/smaps_rollup) splits each shared page between the processes sharing it, so the family sum is the real footprint, and
+// it is what resource-checkpoint/procs.mjs already use for the idle and scrollback rows. Both are always recorded; `basis` says which
+// one the cap is judged on. 'rss' stays the default so the smoke-document callers behave as before.
+export const MEMORY_BASIS = Object.freeze({ rss: 'rss', pss: 'pss' });
+// WHY a re-read when a member vanishes: Electron starts and ends short-lived helper processes (utility, crashpad, GPU restarts). One that
+// exits between "list the family" and "read its /proc files" used to make the whole sample incomplete, and an incomplete sample fails the
+// row as "complete memory proof" missing - 6 of ~50 rungs in one run, none of them an app problem. Reading PSS (slower than VmRSS) widened
+// that window. A pid whose /proc entry is GONE (ENOENT/ESRCH) is an exited process, not a live member we failed to count, so the family is
+// listed again and read again (bounded). Any other read error, a vanished MAIN process, or a family that keeps changing is still incomplete.
+export const MEMORY_SAMPLE_REREADS = 4;
+export function sampleOwnedMemory(app,{basis=MEMORY_BASIS.rss}={}) {
+  let last;
+  for(let attempt=0;attempt<MEMORY_SAMPLE_REREADS;attempt++){
+    last=sampleOwnedMemoryOnce(app,{basis});
+    if(last.complete||!last.memberGone||!last.mainPresent)break;
+  }
+  return last;
+}
+function sampleOwnedMemoryOnce(app,{basis}) {
   const pids=[...new Set(app.family())];
   if(!pids.includes(app.pid))return {complete:false,error:'Expected main PID disappeared',pids};
-  let rss=0;
+  let rss=0,pss=0;
   try{
     for(const pid of pids){
       const status=readFileSync(`/proc/${pid}/status`,'utf8');
@@ -68,18 +92,25 @@ function sampleOwnedMemory(app) {
       const m=/^VmRSS:\s+(\d+) kB/m.exec(status);
       if(!m)throw Error(`RSS missing for owned PID ${pid}`);
       rss+=Number(m[1])/1024;
+      if(basis===MEMORY_BASIS.pss){
+        const p=/^Pss:\s+(\d+) kB/m.exec(readFileSync(`/proc/${pid}/smaps_rollup`,'utf8'));
+        if(!p)throw Error(`PSS missing for owned PID ${pid}`);
+        pss+=Number(p[1])/1024;
+      }
     }
-    return {complete:true,peakRssMb:rss,pids};
+    return {complete:true,peakRssMb:rss,...(basis===MEMORY_BASIS.pss?{peakPssMb:pss}:{}),pids};
   }catch(e){
     let mainPresent=false;
     try{mainPresent=/^VmRSS:\s+\d+ kB/m.test(readFileSync(`/proc/${app.pid}/status`,'utf8'));}catch{/* main gone */}
-    return {complete:false,error:e.message,pids,mainPresent};
+    return {complete:false,error:e.message,pids,mainPresent,memberGone:e?.code==='ENOENT'||e?.code==='ESRCH'};
   }
 }
 /** External controller watchdog: missing memory is failure, never a zero reading. */
-export async function withDocumentWatchdog(app, operation,{timeoutMs,maxRssMb,onFatalFailure=()=>{},priorFatalFailure=()=>null,_deps={}}={}) {
-  const d={setTimeout,clearTimeout,setInterval,clearInterval,sample:()=>sampleOwnedMemory(app),..._deps};
-  const memory={complete:true,samples:0,peakRssMb:null},abort=new AbortController();let timer,interval,stopped=false,finish;
+export async function withDocumentWatchdog(app, operation,{timeoutMs,maxRssMb,memoryBasis=MEMORY_BASIS.rss,onFatalFailure=()=>{},priorFatalFailure=()=>null,_deps={}}={}) {
+  const d={setTimeout,clearTimeout,setInterval,clearInterval,sample:()=>sampleOwnedMemory(app,{basis:memoryBasis}),..._deps};
+  const pss=memoryBasis===MEMORY_BASIS.pss;
+  // `capMb`/`basis` ride in the memory record so a cap hit reads as "the LAB's guard stopped it at N", with the real peak beside it.
+  const memory={complete:true,samples:0,peakRssMb:null,...(pss?{peakPssMb:null}:{}),basis:memoryBasis,capMb:maxRssMb},abort=new AbortController();let timer,interval,stopped=false,finish;
   const failure=new Promise(r=>{finish=r;});
   const fail=(status,error,value)=>{
     if(stopped)return;stopped=true;
@@ -101,7 +132,11 @@ export async function withDocumentWatchdog(app, operation,{timeoutMs,maxRssMb,on
       return;
     }
     memory.samples++;memory.peakRssMb=Math.max(memory.peakRssMb??0,s.peakRssMb);
-    if(s.peakRssMb>maxRssMb)fail('memory-limit',`Owned app family RSS exceeds ${maxRssMb} MiB`);
+    const judged=pss?s.peakPssMb:s.peakRssMb;
+    if(pss)memory.peakPssMb=Math.max(memory.peakPssMb??0,s.peakPssMb);
+    if(judged>maxRssMb)fail('memory-limit',pss
+      ?`Lab safety cap: owned app family PSS ${Math.round(judged)} MiB exceeded the ${maxRssMb} MiB cap (summed RSS ${Math.round(s.peakRssMb)} MiB double-counts shared pages)`
+      :`Owned app family RSS exceeds ${maxRssMb} MiB`);
   };
   timer=d.setTimeout(()=>fail('timeout',`External case deadline ${timeoutMs} ms`),timeoutMs);
   interval=d.setInterval(sample,50);sample();
@@ -188,9 +223,18 @@ export const CSV_FULLREAD_CLICK_SOURCE = `(() => {const p=window.__perfArt.conte
 // WHY the user bubble scan: a user message in the transcript is rendered by UserMessage (bg-accent .user-bubble) with every detected path as a
 // FilepathToken <button data-file-path>. The marker is part of every generated path, so it identifies OUR message among earlier ones.
 export function pathListStateSource(marker, lastPath) {
+  // WHY the pill attribute and not the bubble text: FilepathToken draws only the file NAME inside the pill ("file-00999.txt") and keeps the
+  // full path in data-file-path (and a tooltip). The old check looked for the full last path and the marker in textContent, which can
+  // never be there once the pills are drawn, so every path-list rung "failed readiness" while the app had rendered every pill.
+  // textContent stays as a fallback for a candidate that prints the raw text.
+  // The scan is deliberately cheap (first pill + last pill, not a map over all of them): it polls every 25 ms inside the measured
+  // window, and a 20000-pill list must not be slowed by the instrument watching it.
   return `(() => {const bubbles=[...document.querySelectorAll('.user-bubble')].filter(b=>!b.closest('[aria-hidden="true"]'));
-  const m=bubbles.find(b=>b.textContent.includes(${JSON.stringify(marker)}));if(!m)return null;
-  return {tokens:m.querySelectorAll('[data-file-path]').length,hasLastPath:m.textContent.includes(${JSON.stringify(lastPath)}),textLength:m.textContent.length};})()`;
+  const attr=t=>(t&&t.getAttribute('data-file-path'))||'';
+  const m=bubbles.find(b=>attr(b.querySelector('[data-file-path]')).includes(${JSON.stringify(marker)})||b.textContent.includes(${JSON.stringify(marker)}));if(!m)return null;
+  const toks=m.querySelectorAll('[data-file-path]'),n=toks.length;
+  const hasLastPath=(n>0&&attr(toks[n-1])===${JSON.stringify(lastPath)})||m.textContent.includes(${JSON.stringify(lastPath)});
+  return {tokens:n,hasLastPath,textLength:hasLastPath?m.textContent.length:null};})()`;
 }
 /** One user line in the Claude Code transcript shape the app's TranscriptWatcher reads (same fields as fixture.mjs transcriptLines). */
 export function pathListTranscriptLine({ sessionId, cwd, text, now = new Date() }) {
@@ -290,18 +334,48 @@ export async function measureDocumentCase(app,sessionId,id,action,{signal,_deps=
   return result;
 }
 
-export function validateDocumentCalibration(rows) {
-  if(!Array.isArray(rows)||rows.length!==DOCUMENT_CONTROL_TYPES.length || !DOCUMENT_CONTROL_TYPES.every(t=>rows.filter(r=>r?.id===`control-${t}`).length===1) || !rows.every(r=>r.id===`control-${r.proof?.control}`&&r.status==='measured'&&assessViewerEvidence(r).status==='measured'))return false;
+/**
+ * Every calibration criterion that FAILED, with the value seen. Empty = the instrument proved it can see a stall and stays quiet when
+ * nothing stalls. WHY a list (lane F): the lane used to throw "Calibration controls invalid" with no clue which of ~20 conditions
+ * failed, so a busy-machine refusal could not be told apart from a broken instrument. The thresholds themselves are unchanged.
+ */
+export function explainDocumentCalibration(rows) {
+  if(!Array.isArray(rows)||rows.length!==DOCUMENT_CONTROL_TYPES.length || !DOCUMENT_CONTROL_TYPES.every(t=>rows.filter(r=>r?.id===`control-${t}`).length===1))
+    return [`controls incomplete: have [${(Array.isArray(rows)?rows:[]).map(r=>r?.id).join(', ')}], need ${DOCUMENT_CONTROL_TYPES.length} (${DOCUMENT_CONTROL_TYPES.join(', ')})`];
+  const bad=rows.filter(r=>!(r.id===`control-${r.proof?.control}`&&r.status==='measured'&&assessViewerEvidence(r).status==='measured'));
+  if(bad.length)return bad.map(r=>`${r.id} did not produce valid evidence (status ${r.status}${r.error?`: ${String(r.error).split('\n')[0].slice(0,120)}`:''})`);
   const by=Object.fromEntries(rows.map(r=>[r.proof.control,r]));
   const renderer=by['renderer-block'],main=by['main-block'],slow=by['slow-async'],noop=by.noop,congestion=by['renderer-congestion'];
-  // Main-block input can be delayed by browser/main routing even with a healthy
-  // renderer. Do not require fast input as the main-block negative control.
-  return renderer.renderer.maxDelayMs>=250 && renderer.main.maxDelayMs<100 && renderer.operationMs>=550 && renderer.input.latencyLowerMs>=200
-    && main.main.maxDelayMs>=250 && main.renderer.maxDelayMs<100
-    && slow.operationMs>=350 && [slow,noop].every(r=>r.renderer.maxDelayMs<100&&r.main.maxDelayMs<100&&r.input.latencyMs<100)
-    && congestion.main.maxDelayMs<100 && congestion.renderer.maxDelayMs<100 && congestion.renderer.totalExcessMs>=100
-    && congestion.input.lateInputCount>=3 && congestion.input.totalLatencyLowerMs>=50
-    && congestion.proof.shortTaskCount>=10 && congestion.proof.shortTaskBusyMs>=400 && congestion.proof.shortTaskMaxMs<50;
+  const failed=[];
+  // Each entry: [what must hold, does it, the number seen]. Main-block input can be delayed by browser/main routing even with a healthy
+  // renderer, so fast input is not required as the main-block negative control.
+  for(const [name,ok,seen] of [
+    ['renderer-block: renderer long task >= 250 ms',renderer.renderer.maxDelayMs>=250,renderer.renderer.maxDelayMs],
+    ['renderer-block: main stall < 100 ms',renderer.main.maxDelayMs<100,renderer.main.maxDelayMs],
+    ['renderer-block: operation >= 550 ms',renderer.operationMs>=550,renderer.operationMs],
+    ['renderer-block: typing delay lower bound >= 200 ms',renderer.input.latencyLowerMs>=200,renderer.input.latencyLowerMs],
+    ['main-block: main stall >= 250 ms',main.main.maxDelayMs>=250,main.main.maxDelayMs],
+    ['main-block: renderer long task < 100 ms',main.renderer.maxDelayMs<100,main.renderer.maxDelayMs],
+    ['slow-async: operation >= 350 ms',slow.operationMs>=350,slow.operationMs],
+    ['slow-async: renderer long task < 100 ms',slow.renderer.maxDelayMs<100,slow.renderer.maxDelayMs],
+    ['slow-async: main stall < 100 ms',slow.main.maxDelayMs<100,slow.main.maxDelayMs],
+    ['slow-async: typing delay < 100 ms',slow.input.latencyMs<100,slow.input.latencyMs],
+    ['noop: renderer long task < 100 ms',noop.renderer.maxDelayMs<100,noop.renderer.maxDelayMs],
+    ['noop: main stall < 100 ms',noop.main.maxDelayMs<100,noop.main.maxDelayMs],
+    ['noop: typing delay < 100 ms',noop.input.latencyMs<100,noop.input.latencyMs],
+    ['renderer-congestion: main stall < 100 ms',congestion.main.maxDelayMs<100,congestion.main.maxDelayMs],
+    ['renderer-congestion: renderer long task < 100 ms',congestion.renderer.maxDelayMs<100,congestion.renderer.maxDelayMs],
+    ['renderer-congestion: renderer excess >= 100 ms',congestion.renderer.totalExcessMs>=100,congestion.renderer.totalExcessMs],
+    ['renderer-congestion: late keystrokes >= 3',congestion.input.lateInputCount>=3,congestion.input.lateInputCount],
+    ['renderer-congestion: summed typing delay lower bound >= 50 ms',congestion.input.totalLatencyLowerMs>=50,congestion.input.totalLatencyLowerMs],
+    ['renderer-congestion: short tasks >= 10',congestion.proof.shortTaskCount>=10,congestion.proof.shortTaskCount],
+    ['renderer-congestion: short-task busy >= 400 ms',congestion.proof.shortTaskBusyMs>=400,congestion.proof.shortTaskBusyMs],
+    ['renderer-congestion: longest short task < 50 ms',congestion.proof.shortTaskMaxMs<50,congestion.proof.shortTaskMaxMs],
+  ])if(!ok)failed.push(`${name} (saw ${typeof seen==='number'?Math.round(seen*10)/10:seen})`);
+  return failed;
+}
+export function validateDocumentCalibration(rows) {
+  return explainDocumentCalibration(rows).length===0;
 }
 
 export async function collectDocumentProvenance(app,checkout,build,{images=false,_deps={}}={}) {
@@ -320,7 +394,21 @@ export async function collectDocumentProvenance(app,checkout,build,{images=false
     verificationScope:'Executed path + owned main identity + stamp/runner/current source fingerprint; stamp does not attest package byte contents'};
 }
 
-export async function runDocumentStallCases(app,fixture,manifest,{sessionId,checkout,build,timeoutMs=15000,maxRssMb=1536,onCase=async()=>{},caseIds,images=false,imageRenderingEvidence,imageSequenceMs=120000,imageGlobalBudgetMs=120000,onImageStep=async()=>{},custom={}}={}) {
+/**
+ * The row for one finished case. WHY id last: a failed image step carries its STEP id ("<rung>/open-decode") in its evidence, which used to
+ * overwrite the rung id and leave the rung with no row at all (a planned rung without a row is a lane bug). The rung id always wins; the
+ * step id is kept as `failedStep`.
+ */
+export function buildCaseRow(base,f,result,{allowBlockedInput=false}={}) {
+  const evidence={...result.value,memory:result.memory};
+  const verdict=result.status||evidence.imageDiagnostic?null:assessViewerEvidence(evidence,{allowBlockedInput});
+  // A row accepted only because typing was provably blocked says so on the row, so nothing downstream reads it as a normal input proof.
+  const blocked=verdict?.status==='measured'&&allowBlockedInput&&!inputOk(evidence,evidence.input)?blockedInputEvidence(evidence.input):null;
+  return {...base,...evidence,id:f.id,...(evidence.id&&evidence.id!==f.id?{failedStep:evidence.id}:{}),...(blocked?{input:{...evidence.input,blockedBacklog:blocked},standardAcceptance:false}:{}),
+    ...(result.status?{status:result.status,error:result.error}:evidence.imageDiagnostic?{status:evidence.imageSteps.every(s=>s.status==='measured')?'measured':'failed',standardAcceptance:false}:verdict)};
+}
+
+export async function runDocumentStallCases(app,fixture,manifest,{sessionId,checkout,build,timeoutMs=15000,maxRssMb=1536,memoryBasis=MEMORY_BASIS.rss,calibrationAttempts=1,allowBlockedInput=false,onCase=async()=>{},caseIds,images=false,imageRenderingEvidence,imageSequenceMs=120000,imageGlobalBudgetMs=120000,onImageStep=async()=>{},custom={}}={}) {
   if(!Number.isFinite(timeoutMs)||timeoutMs<100||timeoutMs>60000||!Number.isFinite(maxRssMb)||maxRssMb<128||maxRssMb>4096)throw Error('Invalid document case limits');
   const imageLane=images?requireSoftwareImageLane(imageRenderingEvidence):null;
   if(images&&(timeoutMs>15000||maxRssMb>1536))throw Error('Image diagnostics retain15s/1536MiB caps');
@@ -330,7 +418,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
   const cdp=app.cdp;let ownSession=false,fatal=false,browser;
   const cases=[],controls=[];
   const descriptor={revision:DOCUMENT_ADAPTER_REVISION,scope:'app-viewer',fixtureFilesystem:'caller-provided; tmpfs checks are not disk-I/O claims',
-    cachePolicy:'first-viewer-use vs repeat-viewer-use, not OS-disk-cold',limits:{timeoutMs,maxRssMb},calibrations:controls,
+    cachePolicy:'first-viewer-use vs repeat-viewer-use, not OS-disk-cold',limits:{timeoutMs,maxRssMb,memoryBasis},calibrations:controls,
     inputPolicy:'Independent 50 ms F24 train, <=256 keys, <=12 s, <=16 commands; no typing or file mutation; latency bounds include browser/main routing; receipt tokens are FIFO ordinals, not transported identity',
     actionPrecisionMs:DOCUMENT_ACTION_PRECISION_MS,clockCalibrationHorizonMs:DOCUMENT_CLOCK_HORIZON_MS,
     ipcPolicy:'totalStallMs is summed completed roundtrip excess, NOT union elapsed blocking or main-loop attribution',
@@ -353,31 +441,42 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
       await registerArtifacts(cdp,manifest.root,sessionId,files);
       descriptor.sessionId=sessionId;
       return true;
-    },{timeoutMs,maxRssMb});
+    },{timeoutMs,maxRssMb,memoryBasis});
     if(setup.status)throw Object.assign(Error(setup.error),{fatal:setup.fatal});
-    for(const type of DOCUMENT_CONTROL_TYPES){
-      const id=`control-${type}`;
-      const result=await withDocumentWatchdog(app,signal=>measureDocumentCase(app,sessionId,id,async()=>{
-        let shortWork={};
-        if(type==='renderer-block')await cdp.evaluate(`(async () => {await new Promise(r=>setTimeout(r,200));const t=performance.now();while(performance.now()-t<400){}return true;})()`);
-        else if(type==='renderer-congestion')shortWork=await cdp.evaluate(`(async () => {let shortTaskBusyMs=0,shortTaskMaxMs=0;const shortTaskCount=24;for(let i=0;i<shortTaskCount;i++){await new Promise(r=>setTimeout(r,0));const t=performance.now();while(performance.now()-t<30){}const ms=performance.now()-t;shortTaskBusyMs+=ms;shortTaskMaxMs=Math.max(shortTaskMaxMs,ms);}return {shortTaskCount,shortTaskBusyMs,shortTaskMaxMs};})()`);
-        else if(type==='main-block')await app.mainLoop.blockForCalibration(400);
-        else if(type==='slow-async')await cdp.evaluate(`new Promise(r=>setTimeout(()=>r(true),400))`);
-        else await cdp.evaluate('true');
-        return {attempted:true,correctTarget:true,correctResult:true,unmountedBefore:true,control:type,...shortWork};
-      },{signal}),{timeoutMs,maxRssMb});
-      const evidence={...result.value,memory:result.memory};
-      const row={id,kind:'calibration',...evidence,...(result.status?{status:result.status,error:result.error}:assessViewerEvidence(evidence))};
-      controls.push(row);await onCase(row);
-      if(result.fatal){fatal=true;break;}
+    // WHY attempts (lane F): the negative controls (noop / slow-async must see < 100 ms of delay) can be broken by a foreign program taking
+    // the CPU for a moment, which refused every rung of a group although the instrument was fine. Each attempt re-runs ALL five controls
+    // and must satisfy every unchanged criterion by itself - a pass is never assembled from rows of different attempts. Callers that
+    // want the old single-shot behaviour keep calibrationAttempts=1. Every failed attempt's reasons are kept in the descriptor.
+    descriptor.calibrationAttemptLog=[];
+    for(let attempt=1;attempt<=calibrationAttempts && !fatal;attempt++){
+      controls.length=0;
+      for(const type of DOCUMENT_CONTROL_TYPES){
+        const id=`control-${type}`;
+        const result=await withDocumentWatchdog(app,signal=>measureDocumentCase(app,sessionId,id,async()=>{
+          let shortWork={};
+          if(type==='renderer-block')await cdp.evaluate(`(async () => {await new Promise(r=>setTimeout(r,200));const t=performance.now();while(performance.now()-t<400){}return true;})()`);
+          else if(type==='renderer-congestion')shortWork=await cdp.evaluate(`(async () => {let shortTaskBusyMs=0,shortTaskMaxMs=0;const shortTaskCount=24;for(let i=0;i<shortTaskCount;i++){await new Promise(r=>setTimeout(r,0));const t=performance.now();while(performance.now()-t<30){}const ms=performance.now()-t;shortTaskBusyMs+=ms;shortTaskMaxMs=Math.max(shortTaskMaxMs,ms);}return {shortTaskCount,shortTaskBusyMs,shortTaskMaxMs};})()`);
+          else if(type==='main-block')await app.mainLoop.blockForCalibration(400);
+          else if(type==='slow-async')await cdp.evaluate(`new Promise(r=>setTimeout(()=>r(true),400))`);
+          else await cdp.evaluate('true');
+          return {attempted:true,correctTarget:true,correctResult:true,unmountedBefore:true,control:type,...shortWork};
+        },{signal}),{timeoutMs,maxRssMb,memoryBasis});
+        const evidence={...result.value,memory:result.memory};
+        const row={id,kind:'calibration',...evidence,...(result.status?{status:result.status,error:result.error}:assessViewerEvidence(evidence))};
+        controls.push(row);await onCase(row);
+        if(result.fatal){fatal=true;break;}
+      }
+      const why=explainDocumentCalibration(controls);
+      descriptor.calibrationAttemptLog.push({attempt,valid:why.length===0,failed:why});
+      if(!why.length)break;
     }
     descriptor.calibrationValid=validateDocumentCalibration(controls);
-    if(!descriptor.calibrationValid)throw Object.assign(Error('Calibration controls invalid; workload measurements refused'),{fatal});
+    if(!descriptor.calibrationValid)throw Object.assign(Error(`Calibration controls invalid; workload measurements refused (${calibrationAttempts>1?`${descriptor.calibrationAttemptLog.length} of ${calibrationAttempts} attempts: `:''}${(descriptor.calibrationAttemptLog.at(-1)?.failed??[]).join('; ').slice(0,600)||'no control could run'})`),{fatal});
     // Playwright attaches only to the passed owned lab CDP endpoint, never the
     // production app; frame evaluation verifies actual opaque-origin iframe DOM.
     if(selected.some(f=>f.kind.startsWith('html-'))){
       const {chromium}=createRequire(join(checkout,'desktop/package.json'))('playwright-core');
-      const connection=await withDocumentWatchdog(app,()=>chromium.connectOverCDP(`http://127.0.0.1:${app.cdpPort}`,{timeout:Math.min(timeoutMs,10000)}),{timeoutMs,maxRssMb});
+      const connection=await withDocumentWatchdog(app,()=>chromium.connectOverCDP(`http://127.0.0.1:${app.cdpPort}`,{timeout:Math.min(timeoutMs,10000)}),{timeoutMs,maxRssMb,memoryBasis});
       if(connection.status)throw Object.assign(Error(connection.error),{fatal:connection.fatal});
       browser=connection.value;
     }
@@ -389,7 +488,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
       const remainingImageBudget=images?imageGlobalBudgetMs-(performance.now()-imageBudgetStarted):null;
       if(imageCase&&remainingImageBudget<100){await emit({...base,status:'unreviewed',error:'Caller image global budget exhausted before sequence'});continue;}
       if(imageCase)base.deadlinePolicy={...imagePolicy,actualSequenceMs:Math.min(imagePolicy.sequenceMs,remainingImageBudget),remainingGlobalMs:remainingImageBudget};
-      const caseWatchdog=imageCase?(owned,operation)=>guardImageSequence(owned,operation,{policy:{...imagePolicy,sequenceMs:Math.min(imagePolicy.sequenceMs,remainingImageBudget)},watchdog:(target,action,limits)=>withDocumentWatchdog(target,action,{...limits,priorFatalFailure:()=>primaryImageFailure})}):(owned,operation)=>withDocumentWatchdog(owned,operation,{timeoutMs,maxRssMb});
+      const caseWatchdog=imageCase?(owned,operation)=>guardImageSequence(owned,operation,{policy:{...imagePolicy,sequenceMs:Math.min(imagePolicy.sequenceMs,remainingImageBudget)},watchdog:(target,action,limits)=>withDocumentWatchdog(target,action,{...limits,memoryBasis,priorFatalFailure:()=>primaryImageFailure})}):(owned,operation)=>withDocumentWatchdog(owned,operation,{timeoutMs,maxRssMb,memoryBasis});
       const result=await caseWatchdog(app,async signal=>{
         const path=await realpath(f.file);if(path!==resolve(f.file)||(await stat(path)).size!==f.bytes||sha(await readFile(path))!==f.sha256)throw Error('Fixture identity mismatch before viewer open');
         for(const asset of f.assets??[]){
@@ -413,7 +512,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
           const transcript=findSessionTranscript(fixture.home,manifest.root);
           return await measureDocumentCase(app,sessionId,f.id,async()=>{
             appendFileSync(transcript.path,pathListTranscriptLine({sessionId:transcript.sessionId,cwd:manifest.root,text})+'\n');
-            const ready=await waitUntil(async()=>{const s=await cdp.evaluate(pathListStateSource(f.marker,lastPath));return s?.hasLastPath&&s.tokens>0?s:false;});
+            const ready=await waitUntil(async()=>{const s=await cdp.evaluate(pathListStateSource(f.marker,lastPath));return s?.hasLastPath&&s.tokens>=lines.length?s:false;},{timeoutMs:25000});   // WHY every pill, 25 s: a half-drawn list must not count as rendered, and 20000 pills legitimately take longer than the 10 s default (still inside the group's 30 s watchdog)
             return {attempted:true,correctTarget:true,correctResult:true,unmountedBefore,viewer:'user-message-path-list',marker:f.marker,pathsExpected:lines.length,pathTokens:ready.tokens,textLength:ready.textLength};
           },{signal});
         }
@@ -425,10 +524,11 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
           if(!smallControl)throw Error('Image diagnostic requires selected small reopen control');
           const controlDriver=createImageDriver(cdp,smallControl,sessionId,{open:async()=>{const controlPath=await realpath(smallControl.file);if(controlPath!==resolve(smallControl.file)||(await stat(controlPath)).size!==smallControl.bytes||sha(await readFile(controlPath))!==smallControl.sha256)throw Error('Small image control identity mismatch');const click=await cdp.evaluate(`window.__perfArt.clickListRow(${JSON.stringify(basename(smallControl.file))})`);if(!click?.ok)throw Error(click?.reason??'Small image control missing');},close:()=>closePrevious(cdp),wait:fn=>waitUntil(fn),signal});
           const steps=await runImageOperations(driver,f,sessionId,{signal,reopenControl:{fixture:smallControl,driver:controlDriver},onStep:onImageStep,measure:async(id,action)=>{
-            const memoryBefore=sampleOwnedMemory(app);
-            const step=await withDocumentWatchdog(app,innerSignal=>measureDocumentCase(app,sessionId,id,action,{signal:AbortSignal.any([signal,innerSignal])}),{timeoutMs,maxRssMb,onFatalFailure:failure=>{primaryImageFailure={...failure,value:{...failure.value,id,primaryImageFailure:{id,status:failure.status,error:failure.error}}};}});
-            const evidence={...step.value,memory:step.memory};const row={id,...evidence,...(step.status?{status:step.status,error:step.error}:assessViewerEvidence(evidence))};
-            const memoryAfter=step.fatal?{complete:false,error:'Owned app stopped'}:sampleOwnedMemory(app);
+            const memoryBefore=sampleOwnedMemory(app,{basis:memoryBasis});
+            const step=await withDocumentWatchdog(app,innerSignal=>measureDocumentCase(app,sessionId,id,action,{signal:AbortSignal.any([signal,innerSignal])}),{timeoutMs,maxRssMb,memoryBasis,onFatalFailure:failure=>{primaryImageFailure={...failure,value:{...failure.value,id,primaryImageFailure:{id,status:failure.status,error:failure.error}}};}});
+            const evidence={...step.value,memory:step.memory};const row={id,...evidence,...(step.status?{status:step.status,error:step.error}:assessViewerEvidence(evidence,{allowBlockedInput}))};
+            if(!step.status&&row.status==='measured'&&allowBlockedInput&&!inputOk(evidence,evidence.input))row.input={...evidence.input,blockedBacklog:blockedInputEvidence(evidence.input)};
+            const memoryAfter=step.fatal?{complete:false,error:'Owned app stopped'}:sampleOwnedMemory(app,{basis:memoryBasis});
             row.memoryBoundary={before:memoryBefore,after:memoryAfter,scope:'Conservative family RSS at operation boundaries; no GPU/cache release or leak proof'};
             if(!step.status&&(!memoryBefore.complete||!memoryAfter.complete)){row.status='failed';row.error='Incomplete image RSS boundary evidence';}
             if(step.fatal){fatal=true;row.fatal=true;}return row;
@@ -462,8 +562,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
         return evidence;
       });
       seen.add(f.kind);
-      const evidence={...result.value,memory:result.memory};
-      const row={...base,...evidence,...(result.status?{status:result.status,error:result.error}:evidence.imageDiagnostic?{status:evidence.imageSteps.every(s=>s.status==='measured')?'measured':'failed',standardAcceptance:false}:assessViewerEvidence(evidence))};
+      const row=buildCaseRow(base,f,result,{allowBlockedInput});
       if(result.fatal)fatal=true;
       if(f.kind==='html-script')row.htmlIsolation={scriptPhases:row.proof.scriptMessages??null,parentRendererDelayMs:row.renderer?.maxDelayMs??null,parentMainDelayMs:row.main?.maxDelayMs??null,parentInputLatencyMs:row.input?.latencyMs??null,conclusion:'Empirical parent signals only; sandbox is not assumed to imply CPU isolation'};
       await emit(row);
@@ -484,7 +583,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
         try{await app.mainLoop?.read({stop:true,waitForSample:true});}catch{/* already stopped */}
         await cdp.evaluate(`(() => {window.removeEventListener('keydown',window.__documentStallInputHandler,true);window.removeEventListener('keyup',window.__documentStallInputHandler,true);window.removeEventListener('message',window.__documentStallMessageHandler);return true;})()`);
         if(ownSession)await cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(sessionId)})`);
-      },{timeoutMs,maxRssMb});
+      },{timeoutMs,maxRssMb,memoryBasis});
       if(cleanup.fatal)fatal=true;if(cleanup.error)descriptor.cleanupError=cleanup.error;
     }
   }

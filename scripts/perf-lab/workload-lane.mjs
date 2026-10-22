@@ -125,8 +125,13 @@ export function summariseRow(row) {
     rendererMaxDelayMs: round1(maxOf(parts.map((r) => r?.renderer?.maxDelayMs))),
     rendererTotalStallMs: round1(maxOf(parts.map((r) => r?.renderer?.totalStallMs))),
     mainMaxDelayMs: round1(maxOf(parts.map((r) => r?.main?.maxDelayMs))),
-    inputLatencyMs: round1(maxOf(parts.map((r) => r?.input?.latencyMs))),
+    // a blocked-backlog row has no exact typing delay; its measured floor stands in (the row text says "at least")
+    inputLatencyMs: round1(maxOf(parts.map((r) => r?.input?.latencyMs ?? r?.input?.blockedBacklog?.lowerBoundMs))),
     peakRssMb: round1(maxOf(parts.map((r) => r?.memory?.peakRssMb))),
+    // WHY both (see MEMORY_BASIS in scenario-document-stalls.mjs): summed RSS double-counts pages the Electron processes share, PSS does
+    // not; the lab's cap is judged on PSS, so the row shows the real peak and the cap it was judged against (a cap hit has both numbers).
+    peakPssMb: round1(maxOf(parts.map((r) => r?.memory?.peakPssMb))),
+    memoryCapMb: round1(maxOf(parts.map((r) => r?.memory?.capMb))),
   };
 }
 
@@ -139,12 +144,21 @@ export function classifyRow(row, thresholds = WORKLOAD_THRESHOLDS) {
   const st = bad ? bad.status : row.status;
   if (st === 'unreviewed') return { status: 'not-run', detail: firstLine(row.error) };
   if (st === 'timeout') return { status: 'failed', reason: 'failed:timeout', detail: firstLine((bad ?? row).error), metrics: summariseRow(row) };
-  if (st === 'memory-limit') return { status: 'failed', reason: 'failed:memory-limit', detail: firstLine((bad ?? row).error), metrics: summariseRow(row) };
+  if (st === 'memory-limit') {
+    // WHY the peak in the detail: a cap hit is the LAB's guard stopping the app. The reader needs the real peak next to the cap to tell
+    // "the app genuinely uses this much" from "the cap is simply too low for what this rung needs".
+    const m = summariseRow(row), peak = m.peakPssMb ?? m.peakRssMb;
+    return { status: 'failed', reason: 'failed:memory-limit', detail: `${firstLine((bad ?? row).error)}${peak !== null ? ` [peak seen ${peak} MiB ${m.peakPssMb !== null ? 'PSS' : 'summed RSS'}${m.memoryCapMb !== null ? `, cap ${m.memoryCapMb} MiB` : ''}]` : ''}`.slice(0, 300), metrics: m };
+  }
   if (st !== 'measured') {
     const err = firstLine((bad ?? row).error);
     // The document adapter reports "evidence missing/invalid" in these words; that is the instrument, not the app.
     const instrument = /Missing\/invalid viewer proof|Incomplete image RSS|Calibration controls invalid|provenance|Independent owned main-loop|did not exercise/i.test(err);
-    return { status: 'failed', reason: instrument ? 'failed:evidence-incomplete' : 'failed:viewer', detail: err, metrics: summariseRow(row) };
+    // WHY the observed numbers in the detail: an incomplete row is not a measurement, but the independent probes that DID complete are still
+    // evidence (a renderer that was blocked 10.9 s is visible even when the input proof could not be finished); show them, labelled unvalidated.
+    const m = summariseRow(row), seen = [m.rendererMaxDelayMs !== null && `renderer long task ${m.rendererMaxDelayMs} ms`, m.mainMaxDelayMs !== null && `main stall ${m.mainMaxDelayMs} ms`, m.operationMs !== null && `operation ${m.operationMs} ms`].filter(Boolean);
+    const why = row.input && row.input.complete === false && Array.isArray(row.input.reasons) && row.input.reasons.length ? ` [input proof: ${row.input.reasons.slice(0, 3).join('; ')}${row.input.reasons.length > 3 ? '; ...' : ''}]` : '';
+    return { status: 'failed', reason: instrument ? 'failed:evidence-incomplete' : 'failed:viewer', detail: instrument && seen.length ? `${err}${why} (unvalidated, seen: ${seen.join(', ')})` : err, metrics: m };
   }
   const m = summariseRow(row), breaches = [];
   if (m.operationMs === null) return { status: 'failed', reason: 'failed:evidence-incomplete', detail: 'no operation time was recorded', metrics: m };
@@ -152,7 +166,32 @@ export function classifyRow(row, thresholds = WORKLOAD_THRESHOLDS) {
   if (num(m.rendererMaxDelayMs) !== null && m.rendererMaxDelayMs > thresholds.rendererMaxDelayMs) breaches.push(`renderer long task ${m.rendererMaxDelayMs} ms > ${thresholds.rendererMaxDelayMs} ms`);
   if (num(m.mainMaxDelayMs) !== null && m.mainMaxDelayMs > thresholds.mainMaxDelayMs) breaches.push(`main-process stall ${m.mainMaxDelayMs} ms > ${thresholds.mainMaxDelayMs} ms`);
   if (num(m.inputLatencyMs) !== null && row.input?.budgetStatus === 'breach' && m.inputLatencyMs > thresholds.inputLatencyMs) breaches.push(`typing delay ${m.inputLatencyMs} ms > ${thresholds.inputLatencyMs} ms`);
+  const blocked = [row, ...(steps ?? [])].map((r) => r?.input?.blockedBacklog).find(Boolean);
+  if (blocked && num(m.inputLatencyMs) !== null && m.inputLatencyMs > thresholds.inputLatencyMs) breaches.push(`typing blocked for at least ${m.inputLatencyMs} ms (${blocked.skippedSlots} key slots skipped while ${blocked.maxOutstanding} keys were already waiting)`);
   return breaches.length ? { status: 'slow', reasons: breaches, metrics: m } : { status: 'measured', metrics: m };
+}
+
+
+// ── transient instrument defects ──────────────────────────────────────────────────────────────────────────────────────────────
+// WHY: on a busy machine the CONTROLLER (this node process) can itself be late - one 50 ms key slot skipped, or the clock-exchange round
+// trip so slow that the renderer/controller clock alignment is wider than its 25 ms limit. The row is then missing a proof through no fault
+// of the app, and it is random: the same rung measures fine on the next try. Such a row is measured again in a fresh boot (so it is still a
+// first-use measurement), up to the group's attempt limit; the last attempt's result is kept whatever it is. Everything else - a saturated
+// key queue (a real freeze, see blockedInputEvidence), failed sends, overflow, untrusted receipts, exhausted trains, missing probes or
+// memory - is NOT retried: it is either a finding or a real instrument fault.
+const TRANSIENT_INPUT_REASONS = new Set(['Missing, skipped, overflowed or exhausted input train', 'Clock alignment unavailable/uncertain']);
+export function transientInstrumentDefect(row) {
+  const parts = Array.isArray(row?.imageSteps) ? row.imageSteps.filter((s) => s.status !== 'measured') : [row];
+  if (!parts.length) return false;
+  return parts.every((p) => {
+    const i = p?.input;
+    if (!p || p.status !== 'failed' || !i || i.complete !== false || !Array.isArray(i.reasons) || !i.reasons.length || !i.reasons.every((r) => TRANSIENT_INPUT_REASONS.has(r))) return false;
+    if (i.failed !== 0 || i.receiptOverflow !== 0 || i.exhausted !== false) return false;
+    if (i.reasons.includes('Missing, skipped, overflowed or exhausted input train') && !(i.skippedSlots > 0 && i.maxInflight < i.maxOutstanding)) return false;   // saturation = real freeze, not noise
+    // the only thing wrong is the input proof: every other probe and the memory proof must be fine
+    const loop = (l) => l?.available === true && l.stopped === true && l.truncated === false;
+    return loop(p.renderer) && loop(p.main) && p.memory?.complete === true && !p.cleanupErrors?.length && p.proof?.correctResult === true;
+  });
 }
 
 const median = (xs) => { const s = xs.filter((x) => num(x) !== null).sort((a, b) => a - b); return s.length ? s[Math.floor(s.length / 2)] : null; };
@@ -173,7 +212,7 @@ export function finalizeSection(section) {
   for (const id of section.plan.rungIds) {
     const done = section.runs.map((r) => r.rungs[id]).filter((r) => r && (r.status === 'measured' || r.status === 'slow'));
     if (!done.length) continue;
-    rungs[id] = { samples: done.length, ...Object.fromEntries(['operationMs', 'rendererMaxDelayMs', 'rendererTotalStallMs', 'mainMaxDelayMs', 'inputLatencyMs', 'peakRssMb'].map((m) => [m, median(done.map((r) => r[m]))])) };
+    rungs[id] = { samples: done.length, ...Object.fromEntries(['operationMs', 'rendererMaxDelayMs', 'rendererTotalStallMs', 'mainMaxDelayMs', 'inputLatencyMs', 'peakRssMb', 'peakPssMb'].map((m) => [m, median(done.map((r) => r[m]))])) };
   }
   section.median = { rungs };
   return section;
@@ -216,8 +255,12 @@ function setRung(run, group, rung, outcome, entry, extra = {}) {
     ...(outcome.status === 'not-run' ? { reason: 'failed:not-run' } : outcome.reason ? { reason: outcome.reason } : {}),
     ...(outcome.reasons ? { reasons: outcome.reasons } : {}), ...(outcome.detail ? { detail: outcome.detail } : {}), ...(outcome.metrics ?? {}), ...extra };
   if (prior) {
-    // The image harness needs a small control beside every large rung, so a control id can arrive several times. First one is the ladder row.
-    (run.controlRepeats[rung.id] ??= []).push({ group: group.id, status: row.status, operationMs: row.operationMs ?? null });
+    // The image harness needs a small control beside every large rung, so a control id can arrive several times. First one is the ladder row,
+    // EXCEPT that a failed first attempt (e.g. its fixture could not be generated in that group) must not hide a later real measurement of
+    // the same file: the measurement becomes the row and the earlier failure is kept beside it.
+    const replace = prior.status === 'failed' && (row.status === 'measured' || row.status === 'slow');
+    (run.controlRepeats[rung.id] ??= []).push({ group: group.id, status: replace ? prior.status : row.status, operationMs: (replace ? prior.operationMs : row.operationMs) ?? null, ...(replace ? { reason: prior.reason, detail: prior.detail } : {}) });
+    if (replace) run.rungs[rung.id] = { ...row, earlierFailure: { group: prior.group, reason: prior.reason, detail: prior.detail } };
     return;
   }
   run.rungs[rung.id] = row;
@@ -234,7 +277,17 @@ async function runGroup({ group, run, entry, support, deps, log, label }) {
   const cases = [], byId = new Map();
   for (const rung of group.rungs) {
     const gen = await deps.generate(group, rung, root);
-    if (gen.status !== 'ok') { setRung(run, group, rung, { status: 'failed', reason: gen.status, detail: gen.detail }, entry); log(`workloads ${rung.id}: ${gen.status}`); continue; }
+    if (gen.status !== 'ok') {
+      setRung(run, group, rung, { status: 'failed', reason: gen.status, detail: gen.detail }, entry); log(`workloads ${rung.id}: ${gen.status}`);
+      // WHY: every image rung is measured beside its small same-format control (the harness refuses an image diagnostic without it). When the
+      // control cannot be generated the other rungs of the group cannot be measured either; saying so is the true reason, instead of the
+      // harness' later "requires selected small reopen control" being filed as an app/viewer failure.
+      if (group.mode === 'images' && rung === group.rungs[0]) {
+        for (const other of group.rungs.slice(1)) setRung(run, group, other, { status: 'failed', reason: gen.status.startsWith('failed:') ? gen.status : 'failed:generation-exit', detail: `the group's small control ${rung.id} could not be generated (${gen.detail ?? gen.status}); this rung needs it beside it` }, entry);
+        return;
+      }
+      continue;
+    }
     for (const c of gen.cases) { cases.push(c); byId.set(c.id, rung); }
   }
   if (!cases.length) return;
@@ -256,17 +309,21 @@ async function runGroup({ group, run, entry, support, deps, log, label }) {
       if (!result) { for (const id of remaining) { const rung = byId.get(id); if (rung) setRung(run, group, rung, { status: 'failed', reason: 'failed:instrument', detail: firstLine(error?.message ?? error) }, entry); } return; }
     }
     entry.interference.push({ label: verdict?.label, verdict: verdict?.verdict, reasons: verdict?.reasons ?? [] });
-    const stillOwed = [];
+    const stillOwed = [], retried = [];
     for (const row of result?.cases ?? []) {
       entry.rows.push(row);
       const rung = byId.get(row.id); if (!rung) continue;
       const outcome = classifyRow(row);
       if (outcome.status === 'not-run') { stillOwed.push(row.id); continue; }
+      if (outcome.reason === 'failed:evidence-incomplete' && transientInstrumentDefect(row) && attempt < WORKLOAD_LANE.maxAttemptsPerGroup) {
+        // measured again in a fresh boot; the reason is kept in the log and, if it never clears, in the final row's `attempts`
+        stillOwed.push(row.id); retried.push(row.id); log(`workloads ${row.id}: transient instrument defect (${(row.imageSteps?.find((s) => s.status !== 'measured') ?? row).input.reasons.join('; ')}) - measuring again in a fresh boot`); continue;
+      }
       setRung(run, group, rung, outcome, entry, { bytes: row.fixture?.bytes ?? null, sha256: row.fixture?.sha256 ?? null, interference: verdict?.verdict ?? 'unknown', attempts: attempt });
     }
     // Only a fatal case (the harness killed the app) justifies another boot for what it never reached. A non-fatal 'unreviewed' row
     // (invalid calibration, provenance error) would fail identically again, so it is final.
-    if (result?.fatal && stillOwed.length && attempt < WORKLOAD_LANE.maxAttemptsPerGroup) {
+    if ((result?.fatal || retried.length) && stillOwed.length && attempt < WORKLOAD_LANE.maxAttemptsPerGroup) {
       const targets = new Set(stillOwed);
       // images need their small control selected in every call
       remaining = group.mode === 'images' ? cases.map((c) => c.id) : [...targets];
@@ -318,11 +375,11 @@ export function workloadsMarkdown(section) {
   if (!section) return [];
   const lines = ['', '## Workload breadth (lane F) — per-rung measured / slow / failed', '',
     `Memory bound for generation: ${section.memoryBound?.bound ?? 'NOT RECORDED'} (${section.memoryBound?.note ?? ''}). Thresholds: ${Object.entries(section.thresholds ?? {}).map(([k, v]) => `${k} ${v}`).join(', ')}.`, '',
-    '| Rung | Family | Status | Time to render ms | Renderer long task ms | Main stall ms | Notes |', '|---|---|---|---|---|---|---|'];
+    '| Rung | Family | Status | Time to render ms | Renderer long task ms | Main stall ms | Peak memory MiB (PSS) | Notes |', '|---|---|---|---|---|---|---|---|'];
   const last = section.runs?.at(-1);
   for (const id of section.plan?.rungIds ?? []) {
     const r = last?.rungs?.[id], m = section.median?.rungs?.[id];
-    lines.push(`| ${id} | ${r?.family ?? ''} | ${r?.status ?? 'no row'}${r?.reason ? ` (${r.reason})` : ''} | ${m?.operationMs ?? '—'} | ${m?.rendererMaxDelayMs ?? '—'} | ${m?.mainMaxDelayMs ?? '—'} | ${[...(r?.reasons ?? []), r?.detail].filter(Boolean).join('; ').slice(0, 160)} |`);
+    lines.push(`| ${id} | ${r?.family ?? ''} | ${r?.status ?? 'no row'}${r?.reason ? ` (${r.reason})` : ''} | ${m?.operationMs ?? '—'} | ${m?.rendererMaxDelayMs ?? '—'} | ${m?.mainMaxDelayMs ?? '—'} | ${m?.peakPssMb ?? r?.peakPssMb ?? '—'} | ${[...(r?.reasons ?? []), r?.detail].filter(Boolean).join('; ').slice(0, 160)} |`);
   }
   for (const [name, s] of Object.entries(section.support ?? {})) if (!s.supported) lines.push(`- Unsupported by candidate, ${name}: ${s.evidence.join('; ')}`);
   if (section.original) lines.push(`- Original JPEG copy: ${section.original.copy?.file ?? '?'} sha256 ${section.original.copy?.sha256 ?? '?'} (source verified identical, copy read-only)`);
