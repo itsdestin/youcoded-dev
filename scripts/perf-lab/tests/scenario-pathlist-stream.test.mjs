@@ -233,3 +233,16 @@ test('the final-paint wait actually runs against a fake DOM and reports renderer
   const short = await vm.runInNewContext(awaitFinalPaintSource(plan, 0), { ...ctx, document: { querySelectorAll: () => [{ ...pane, querySelectorAll: () => chips.slice(1) }] } });
   assert.equal(short.ok, false, 'a half-drawn list never reports ok');
 });
+
+test('proseControl: bullet-list shape and length of prose, paths defaced, zero chips expected, opt-in only', () => {
+  const prose = replyText('prose', 6), ctl = replyText('proseControl', 6);
+  assert.equal(prose.length, ctl.length);
+  assert.equal(ctl.split('\n').filter((l) => l.startsWith('- ')).length, 6);
+  assert.ok(!ctl.includes('/home'));
+  const p = planRung('proseControl', 2000);
+  assert.equal(p.id, 'pathlist-proseControl-2000'); assert.equal(p.expectedChips, 0); assert.equal(p.lastDecoy, decoyAt(1999));
+  assert.equal(paneComplete(p, { panes: 1, chips: 0, hasOutro: true, hasLastDecoy: true }), true);
+  assert.equal(planRungs().some((x) => x.variant === 'proseControl'), false, 'default ladder unchanged');
+  assert.deepEqual(planRungs({ variants: ['proseControl'], controlSizes: [2000, 5000] }).map((x) => x.id), ['pathlist-proseControl-2000', 'pathlist-proseControl-5000']);
+  assert.deepEqual(parseCli(['--a', '/x', '--only', 'proseControl']).only, ['proseControl']);
+});

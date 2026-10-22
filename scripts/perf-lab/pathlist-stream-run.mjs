@@ -27,7 +27,7 @@ import { installDocumentReceipt, sampleOwnedMemory, withDocumentWatchdog, MEMORY
 import { SCRATCH, nativeStreamFixtureOptions, setInterferenceSink, setWindowLabel, withBoot } from './run.mjs';
 import { publishReportJson } from './atomic-report.mjs';
 import {
-  PATHLIST_SCENARIO, PATHLIST_SIZES, CONTROL_SIZES, VARIANTS, PATHLIST_THRESHOLDS, PSS_CAP_MB, RUNG_GRACE_MS, SETTLE_TIMEOUT_MS,
+  PATHLIST_SCENARIO, PATHLIST_SIZES, CONTROL_SIZES, VARIANTS, ALL_VARIANTS, PATHLIST_THRESHOLDS, PSS_CAP_MB, RUNG_GRACE_MS, SETTLE_TIMEOUT_MS,
   aggregateRounds, alignClocks, awaitFinalPaintSource, buildWindows, classifyRung, longtaskWindows, loopWindows, paneStateSource,
   planRungs, probeLogSource, publicPlan, renderComparison, startTypingTrain, summariseTyping,
 } from './scenario-pathlist-stream.mjs';
@@ -145,7 +145,7 @@ export function parseCli(argv) {
   }
   if (!o.a) throw new Error('--a <checkout> is required');
   if (!Number.isInteger(o.rounds) || o.rounds < 1) throw new Error('--rounds must be a whole number >= 1');
-  if (!o.only.every((x) => VARIANTS.includes(x))) throw new Error(`--only takes ${VARIANTS.join(', ')}`);
+  if (!o.only.every((x) => ALL_VARIANTS.includes(x))) throw new Error(`--only takes ${ALL_VARIANTS.join(', ')}`);
   if (![...o.sizes, ...o.controlSizes].every((n) => Number.isInteger(n) && n > 0)) throw new Error('sizes must be whole numbers');
   return o;
 }

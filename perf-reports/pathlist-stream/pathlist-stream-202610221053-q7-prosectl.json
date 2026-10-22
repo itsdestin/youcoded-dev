@@ -1,0 +1,3745 @@
+{
+  "scenario": {
+    "revision": 1,
+    "lane": "pathlist-stream",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-22T10:53:24.862Z",
+  "label": "q7-prosectl",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/youcoded",
+      "sha": "bc9e43752d0c9d2bb49eeff1e50ee70800668f27",
+      "branch": "session/93-file-viewer-freezes",
+      "dirty": "331dbfcbbf58"
+    },
+    "new": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded",
+      "sha": "254ff9983aa3657a937dfd65011beb3c6e6508c9",
+      "branch": "session/96-merged-evaluation",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "pathlist-prose-2000",
+      "variant": "prose",
+      "n": 2000,
+      "deltas": 22007,
+      "perSec": 490,
+      "streamMs": 44912,
+      "atCloudSpeed": false,
+      "expectedChips": 2000,
+      "lastPath": "/home/user/project/src/dir24/file1999.ts",
+      "lastDecoy": null,
+      "outro": "That is every file I found.",
+      "chars": 84162
+    },
+    {
+      "id": "pathlist-prose-5000",
+      "variant": "prose",
+      "n": 5000,
+      "deltas": 55007,
+      "perSec": 1223,
+      "streamMs": 44977,
+      "atCloudSpeed": false,
+      "expectedChips": 5000,
+      "lastPath": "/home/user/project/src/dir24/file4999.ts",
+      "lastDecoy": null,
+      "outro": "That is every file I found.",
+      "chars": 211962
+    },
+    {
+      "id": "pathlist-proseControl-2000",
+      "variant": "proseControl",
+      "n": 2000,
+      "deltas": 22007,
+      "perSec": 490,
+      "streamMs": 44912,
+      "atCloudSpeed": false,
+      "expectedChips": 0,
+      "lastPath": null,
+      "lastDecoy": "_home_user_project_src_dir24_file1999.ts",
+      "outro": "That is every file I found.",
+      "chars": 84162
+    },
+    {
+      "id": "pathlist-proseControl-5000",
+      "variant": "proseControl",
+      "n": 5000,
+      "deltas": 55007,
+      "perSec": 1223,
+      "streamMs": 44977,
+      "atCloudSpeed": false,
+      "expectedChips": 0,
+      "lastPath": null,
+      "lastDecoy": "_home_user_project_src_dir24_file4999.ts",
+      "outro": "That is every file I found.",
+      "chars": 211962
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 229,
+        "streamLongtaskTotalMs": 31104,
+        "streamLongtaskCount": 294,
+        "settleLongtaskMaxMs": 309,
+        "settleLongtaskTotalMs": 492,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 416.8,
+        "settleTimerStallMaxMs": 299.9,
+        "streamFrameGapMaxMs": 230,
+        "settleFrameGapMaxMs": 315,
+        "mainMaxDelayMs": 410.4,
+        "mainTotalStallMs": 410.4,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 195,
+        "typingSettleMaxMs": 457.3,
+        "typingSaturated": false,
+        "endToPaintMs": 704.5,
+        "peakPssMb": 1047,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.1 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 1 core; git ×7 (pids 3389331, 3389831, 3390179, 3390304, +3 more) used 0.9 cores; claude ×6 (pids 1540338, 1658190, 1727377, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 309,
+        "worstTypingMs": 457.3,
+        "worstStalledMs": 31596,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 309,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 457.3,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 588,
+        "streamLongtaskTotalMs": 39154,
+        "streamLongtaskCount": 204,
+        "settleLongtaskMaxMs": 949,
+        "settleLongtaskTotalMs": 1480,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 1006.5,
+        "settleTimerStallMaxMs": 1476.1,
+        "streamFrameGapMaxMs": 589,
+        "settleFrameGapMaxMs": 950,
+        "mainMaxDelayMs": 1890.1,
+        "mainTotalStallMs": 1890.1,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 498.2,
+        "typingSettleMaxMs": 1766.6,
+        "typingSaturated": false,
+        "endToPaintMs": 2002.2,
+        "peakPssMb": 1251.7,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 3.4 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git ×6 (pids 3392614, 3392790, 3393251, 3393474, +2 more) used 0.7 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 949,
+        "worstTypingMs": 1766.6,
+        "worstStalledMs": 40634,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 949,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1766.6,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2002.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 247,
+        "streamLongtaskTotalMs": 28177,
+        "streamLongtaskCount": 302,
+        "settleLongtaskMaxMs": 268,
+        "settleLongtaskTotalMs": 397,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 329.5,
+        "settleTimerStallMaxMs": 268.6,
+        "streamFrameGapMaxMs": 247,
+        "settleFrameGapMaxMs": 269,
+        "mainMaxDelayMs": 395.1,
+        "mainTotalStallMs": 395.1,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 147.1,
+        "typingSettleMaxMs": 220.5,
+        "typingSaturated": false,
+        "endToPaintMs": 460.4,
+        "peakPssMb": 902.1,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.7 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 0.9 cores; git ×5 (pids 3394542, 3395349, 3395503, 3396001, +1 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 268,
+        "worstTypingMs": 220.5,
+        "worstStalledMs": 28574,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 268,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 512,
+        "streamLongtaskTotalMs": 37684,
+        "streamLongtaskCount": 214,
+        "settleLongtaskMaxMs": 1517,
+        "settleLongtaskTotalMs": 1517,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 872.7,
+        "settleTimerStallMaxMs": 1515.1,
+        "streamFrameGapMaxMs": 489,
+        "settleFrameGapMaxMs": 1518,
+        "mainMaxDelayMs": 1882.4,
+        "mainTotalStallMs": 1882.4,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 484.2,
+        "typingSettleMaxMs": 1763.2,
+        "typingSaturated": false,
+        "endToPaintMs": 1957,
+        "peakPssMb": 1035.3,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.9 cores on average over 49 s (limit 1): git ×8 (pids 3397643, 3397893, 3398432, 3398638, +4 more) used 0.8 cores; qemu-system-x86 (pid 3257006) used 0.8 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1517,
+        "worstTypingMs": 1763.2,
+        "worstStalledMs": 39201,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1517,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1763.2,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1957,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 254,
+        "streamLongtaskTotalMs": 30882,
+        "streamLongtaskCount": 288,
+        "settleLongtaskMaxMs": 322,
+        "settleLongtaskTotalMs": 322,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 408,
+        "settleTimerStallMaxMs": 317.5,
+        "streamFrameGapMaxMs": 255,
+        "settleFrameGapMaxMs": 323,
+        "mainMaxDelayMs": 392,
+        "mainTotalStallMs": 392,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 225,
+        "typingSettleMaxMs": 274.7,
+        "typingSaturated": false,
+        "endToPaintMs": 555.6,
+        "peakPssMb": 1130.3,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.4 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 1.3 cores; git ×8 (pids 3399805, 3400729, 3400984, 3401180, +4 more) used 0.9 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 322,
+        "worstTypingMs": 274.7,
+        "worstStalledMs": 31204,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 322,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 274.7,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 542,
+        "streamLongtaskTotalMs": 38103,
+        "streamLongtaskCount": 194,
+        "settleLongtaskMaxMs": 1159,
+        "settleLongtaskTotalMs": 1980,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 701,
+        "settleTimerStallMaxMs": 1167.8,
+        "streamFrameGapMaxMs": 543,
+        "settleFrameGapMaxMs": 1161,
+        "mainMaxDelayMs": 1994.2,
+        "mainTotalStallMs": 1994.2,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 431.4,
+        "typingSettleMaxMs": 1868.5,
+        "typingSaturated": false,
+        "endToPaintMs": 2063.9,
+        "peakPssMb": 1224.4,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.4 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 1.1 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1159,
+        "worstTypingMs": 1868.5,
+        "worstStalledMs": 40083,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1159,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1868.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2063.9,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 494,
+        "streamLongtaskTotalMs": 28253,
+        "streamLongtaskCount": 294,
+        "settleLongtaskMaxMs": 300,
+        "settleLongtaskTotalMs": 446,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 483.8,
+        "settleTimerStallMaxMs": 431.1,
+        "streamFrameGapMaxMs": 495,
+        "settleFrameGapMaxMs": 301,
+        "mainMaxDelayMs": 403,
+        "mainTotalStallMs": 403,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 316.1,
+        "typingSettleMaxMs": 225.5,
+        "typingSaturated": false,
+        "endToPaintMs": 533.4,
+        "peakPssMb": 903.9,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 1.2 cores; git ×4 (pids 3406476, 3406797, 3407301, 3407463) used 0.6 cores; claude ×6 (pids 1343193, 1727377, 1658190, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 494,
+        "worstTypingMs": 316.1,
+        "worstStalledMs": 28699,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 494,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 316.1,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 953,
+        "streamLongtaskTotalMs": 37542,
+        "streamLongtaskCount": 206,
+        "settleLongtaskMaxMs": 1385,
+        "settleLongtaskTotalMs": 1385,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 944.5,
+        "settleTimerStallMaxMs": 1378.3,
+        "streamFrameGapMaxMs": 655,
+        "settleFrameGapMaxMs": 1386,
+        "mainMaxDelayMs": 1867.7,
+        "mainTotalStallMs": 1867.7,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 857.9,
+        "typingSettleMaxMs": 1753.3,
+        "typingSaturated": false,
+        "endToPaintMs": 1937.7,
+        "peakPssMb": 1020.1,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.5 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 2.3 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1385,
+        "worstTypingMs": 1753.3,
+        "worstStalledMs": 38927,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1385,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1753.3,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1937.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 245,
+        "streamLongtaskTotalMs": 31479,
+        "streamLongtaskCount": 299,
+        "settleLongtaskMaxMs": 333,
+        "settleLongtaskTotalMs": 333,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 408,
+        "settleTimerStallMaxMs": 332.1,
+        "streamFrameGapMaxMs": 246,
+        "settleFrameGapMaxMs": 334,
+        "mainMaxDelayMs": 396.1,
+        "mainTotalStallMs": 396.1,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 180.5,
+        "typingSettleMaxMs": 205.9,
+        "typingSaturated": false,
+        "endToPaintMs": 486,
+        "peakPssMb": 1022.3,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 3.7 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 3.1 cores; git ×3 (pids 3412385, 3412710, 3413194) used 0.3 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 333,
+        "worstTypingMs": 205.9,
+        "worstStalledMs": 31812,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 333,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 569,
+        "streamLongtaskTotalMs": 38571,
+        "streamLongtaskCount": 198,
+        "settleLongtaskMaxMs": 1638,
+        "settleLongtaskTotalMs": 1638,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1061.6,
+        "settleTimerStallMaxMs": 1634.6,
+        "streamFrameGapMaxMs": 570,
+        "settleFrameGapMaxMs": 1640,
+        "mainMaxDelayMs": 1866.1,
+        "mainTotalStallMs": 1866.1,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 444.8,
+        "typingSettleMaxMs": 1843.2,
+        "typingSaturated": false,
+        "endToPaintMs": 1988.1,
+        "peakPssMb": 1217.9,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.9 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git (pid 3413612) used 0.2 cores; claude ×6 (pids 1343193, 1540338, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1638,
+        "worstTypingMs": 1843.2,
+        "worstStalledMs": 40209,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1638,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1843.2,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1988.1,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 578,
+        "streamLongtaskTotalMs": 27889,
+        "streamLongtaskCount": 287,
+        "settleLongtaskMaxMs": 370,
+        "settleLongtaskTotalMs": 370,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 561.6,
+        "settleTimerStallMaxMs": 369.2,
+        "streamFrameGapMaxMs": 579,
+        "settleFrameGapMaxMs": 371,
+        "mainMaxDelayMs": 405.1,
+        "mainTotalStallMs": 405.1,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 558,
+        "typingSettleMaxMs": 227.1,
+        "typingSaturated": false,
+        "endToPaintMs": 466.7,
+        "peakPssMb": 924,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.3 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 2.1 cores; claude ×6 (pids 1343193, 1540338, 1727377, 1343127, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 578,
+        "worstTypingMs": 558,
+        "worstStalledMs": 28259,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 578,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 558,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 2155,
+        "streamLongtaskTotalMs": 37452,
+        "streamLongtaskCount": 207,
+        "settleLongtaskMaxMs": 1844,
+        "settleLongtaskTotalMs": 1844,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 2150.4,
+        "settleTimerStallMaxMs": 1842.6,
+        "streamFrameGapMaxMs": 2157,
+        "settleFrameGapMaxMs": 1846,
+        "mainMaxDelayMs": 1871.6,
+        "mainTotalStallMs": 1871.6,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 1968.4,
+        "typingSettleMaxMs": 1754.2,
+        "typingSaturated": false,
+        "endToPaintMs": 1961.2,
+        "peakPssMb": 1000.9,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 3.7 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git ×8 (pids 3418978, 3419481, 3419700, 3419822, +4 more) used 0.9 cores; claude ×6 (pids 1343127, 1658190, 1745093, 1343193, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 2155,
+        "worstTypingMs": 1968.4,
+        "worstStalledMs": 39296,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 2155,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1968.4,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1961.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 232,
+        "streamLongtaskTotalMs": 31409,
+        "streamLongtaskCount": 302,
+        "settleLongtaskMaxMs": 384,
+        "settleLongtaskTotalMs": 384,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 415.2,
+        "settleTimerStallMaxMs": 368,
+        "streamFrameGapMaxMs": 235,
+        "settleFrameGapMaxMs": 385,
+        "mainMaxDelayMs": 394.8,
+        "mainTotalStallMs": 394.8,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 198.7,
+        "typingSettleMaxMs": 210.1,
+        "typingSaturated": false,
+        "endToPaintMs": 466.4,
+        "peakPssMb": 1052.4,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.9 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git (pid 3421655) used 0.2 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 384,
+        "worstTypingMs": 210.1,
+        "worstStalledMs": 31793,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 384,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 648,
+        "streamLongtaskTotalMs": 38527,
+        "streamLongtaskCount": 197,
+        "settleLongtaskMaxMs": 1054,
+        "settleLongtaskTotalMs": 1593,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 1048.2,
+        "settleTimerStallMaxMs": 1043.5,
+        "streamFrameGapMaxMs": 649,
+        "settleFrameGapMaxMs": 1055,
+        "mainMaxDelayMs": 1975.2,
+        "mainTotalStallMs": 1975.2,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 489.9,
+        "typingSettleMaxMs": 1875.1,
+        "typingSaturated": false,
+        "endToPaintMs": 2111.7,
+        "peakPssMb": 1254.2,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.7 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 1 core; git ×4 (pids 3424642, 3424942, 3425455, 3425619) used 0.5 cores; claude ×6 (pids 1343193, 1727377, 1745093, 1343127, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1054,
+        "worstTypingMs": 1875.1,
+        "worstStalledMs": 40120,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1054,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1875.1,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2111.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 193,
+        "streamLongtaskTotalMs": 28235,
+        "streamLongtaskCount": 296,
+        "settleLongtaskMaxMs": 331,
+        "settleLongtaskTotalMs": 331,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 409,
+        "settleTimerStallMaxMs": 315.6,
+        "streamFrameGapMaxMs": 194,
+        "settleFrameGapMaxMs": 333,
+        "mainMaxDelayMs": 390.6,
+        "mainTotalStallMs": 390.6,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 139.9,
+        "typingSettleMaxMs": 225.3,
+        "typingSaturated": false,
+        "endToPaintMs": 471.8,
+        "peakPssMb": 916.4,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.4 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 1.1 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 331,
+        "worstTypingMs": 225.3,
+        "worstStalledMs": 28566,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 331,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 1045,
+        "streamLongtaskTotalMs": 37040,
+        "streamLongtaskCount": 203,
+        "settleLongtaskMaxMs": 1859,
+        "settleLongtaskTotalMs": 1859,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1035.3,
+        "settleTimerStallMaxMs": 1855.5,
+        "streamFrameGapMaxMs": 1046,
+        "settleFrameGapMaxMs": 1860,
+        "mainMaxDelayMs": 1900.1,
+        "mainTotalStallMs": 1900.1,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 958.4,
+        "typingSettleMaxMs": 1780.6,
+        "typingSaturated": false,
+        "endToPaintMs": 1994.7,
+        "peakPssMb": 1020.2,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.8 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 1 core; git ×6 (pids 3429999, 3430173, 3430614, 3430988, +2 more) used 0.7 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1859,
+        "worstTypingMs": 1780.6,
+        "worstStalledMs": 38899,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1859,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1780.6,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1994.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 304,
+        "streamLongtaskTotalMs": 31393,
+        "streamLongtaskCount": 292,
+        "settleLongtaskMaxMs": 346,
+        "settleLongtaskTotalMs": 551,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 429.5,
+        "settleTimerStallMaxMs": 336.9,
+        "streamFrameGapMaxMs": 305,
+        "settleFrameGapMaxMs": 347,
+        "mainMaxDelayMs": 436.3,
+        "mainTotalStallMs": 436.3,
+        "typingIdleMaxMs": 3.6,
+        "typingStreamMaxMs": 183.6,
+        "typingSettleMaxMs": 481.1,
+        "typingSaturated": false,
+        "endToPaintMs": 718.7,
+        "peakPssMb": 1020,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.1 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 1.1 cores; git ×3 (pids 3432011, 3432614, 3432782) used 0.4 cores; youcoded ×6 (pids 1342321, 1342393, 1342549, 1342460, +2 more) used 0.3 cores"
+          ]
+        },
+        "worstLongtaskMs": 346,
+        "worstTypingMs": 481.1,
+        "worstStalledMs": 31944,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 346,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 481.1,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 851,
+        "streamLongtaskTotalMs": 38698,
+        "streamLongtaskCount": 193,
+        "settleLongtaskMaxMs": 1043,
+        "settleLongtaskTotalMs": 1608,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 1246.7,
+        "settleTimerStallMaxMs": 1033.6,
+        "streamFrameGapMaxMs": 852,
+        "settleFrameGapMaxMs": 1044,
+        "mainMaxDelayMs": 1925.8,
+        "mainTotalStallMs": 1925.8,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 679.4,
+        "typingSettleMaxMs": 1897.9,
+        "typingSaturated": false,
+        "endToPaintMs": 2050,
+        "peakPssMb": 1228.2,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.1 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 1.3 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.4 cores; git ×2 (pids 3436675, 3436990) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1043,
+        "worstTypingMs": 1897.9,
+        "worstStalledMs": 40306,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1043,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1897.9,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2050,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 200,
+        "streamLongtaskTotalMs": 28546,
+        "streamLongtaskCount": 296,
+        "settleLongtaskMaxMs": 324,
+        "settleLongtaskTotalMs": 324,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 408.5,
+        "settleTimerStallMaxMs": 308.8,
+        "streamFrameGapMaxMs": 201,
+        "settleFrameGapMaxMs": 325,
+        "mainMaxDelayMs": 399.5,
+        "mainTotalStallMs": 399.5,
+        "typingIdleMaxMs": 3.6,
+        "typingStreamMaxMs": 147.2,
+        "typingSettleMaxMs": 431.8,
+        "typingSaturated": false,
+        "endToPaintMs": 473.3,
+        "peakPssMb": 869.1,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 4 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 2.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores; git ×3 (pids 3436990, 3437831, 3437984) used 0.4 cores"
+          ]
+        },
+        "worstLongtaskMs": 324,
+        "worstTypingMs": 431.8,
+        "worstStalledMs": 28870,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 324,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 431.8,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 2130,
+        "streamLongtaskTotalMs": 37949,
+        "streamLongtaskCount": 207,
+        "settleLongtaskMaxMs": 1565,
+        "settleLongtaskTotalMs": 1565,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 2121.7,
+        "settleTimerStallMaxMs": 1553.4,
+        "streamFrameGapMaxMs": 2132,
+        "settleFrameGapMaxMs": 1566,
+        "mainMaxDelayMs": 1975.8,
+        "mainTotalStallMs": 1975.8,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 2025.9,
+        "typingSettleMaxMs": 1827.9,
+        "typingSaturated": false,
+        "endToPaintMs": 2033.7,
+        "peakPssMb": 1045.7,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 3.6 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 2.9 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1635378, +3 more) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 2130,
+        "worstTypingMs": 2025.9,
+        "worstStalledMs": 39514,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 2130,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 2025.9,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2033.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 244,
+        "streamLongtaskTotalMs": 31690,
+        "streamLongtaskCount": 302,
+        "settleLongtaskMaxMs": 395,
+        "settleLongtaskTotalMs": 395,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 465,
+        "settleTimerStallMaxMs": 382.5,
+        "streamFrameGapMaxMs": 245,
+        "settleFrameGapMaxMs": 396,
+        "mainMaxDelayMs": 398.2,
+        "mainTotalStallMs": 398.2,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 176.9,
+        "typingSettleMaxMs": 202.2,
+        "typingSaturated": false,
+        "endToPaintMs": 484.1,
+        "peakPssMb": 1019.5,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.8 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 1.6 cores; git ×4 (pids 3442888, 3443204, 3443666, 3443837) used 0.6 cores; youcoded ×6 (pids 1342393, 1342460, 1342321, 1342549, +2 more) used 0.4 cores"
+          ]
+        },
+        "worstLongtaskMs": 395,
+        "worstTypingMs": 202.2,
+        "worstStalledMs": 32085,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 395,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 845,
+        "streamLongtaskTotalMs": 38972,
+        "streamLongtaskCount": 198,
+        "settleLongtaskMaxMs": 1208,
+        "settleLongtaskTotalMs": 1717,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 989.7,
+        "settleTimerStallMaxMs": 1199.6,
+        "streamFrameGapMaxMs": 846,
+        "settleFrameGapMaxMs": 1210,
+        "mainMaxDelayMs": 2038.3,
+        "mainTotalStallMs": 2038.3,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 641.3,
+        "typingSettleMaxMs": 1961.5,
+        "typingSaturated": false,
+        "endToPaintMs": 2226.1,
+        "peakPssMb": 1220,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 3.3 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 2.6 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1208,
+        "worstTypingMs": 1961.5,
+        "worstStalledMs": 40689,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1208,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1961.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2226.1,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 541,
+        "streamLongtaskTotalMs": 28525,
+        "streamLongtaskCount": 287,
+        "settleLongtaskMaxMs": 406,
+        "settleLongtaskTotalMs": 406,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 671.8,
+        "settleTimerStallMaxMs": 399.1,
+        "streamFrameGapMaxMs": 541,
+        "settleFrameGapMaxMs": 408,
+        "mainMaxDelayMs": 409.5,
+        "mainTotalStallMs": 409.5,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 471.4,
+        "typingSettleMaxMs": 263.8,
+        "typingSaturated": false,
+        "endToPaintMs": 471.1,
+        "peakPssMb": 891.1,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 4.2 cores on average over 48 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git ×7 (pids 3447881, 3448104, 3448813, 3449029, +3 more) used 0.9 cores; youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 0.5 cores"
+          ]
+        },
+        "worstLongtaskMs": 541,
+        "worstTypingMs": 471.4,
+        "worstStalledMs": 28931,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 541,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 471.4,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 1808,
+        "streamLongtaskTotalMs": 38759,
+        "streamLongtaskCount": 219,
+        "settleLongtaskMaxMs": 850,
+        "settleLongtaskTotalMs": 850,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1790.8,
+        "settleTimerStallMaxMs": 847.4,
+        "streamFrameGapMaxMs": 465,
+        "settleFrameGapMaxMs": 1809,
+        "mainMaxDelayMs": 2042.5,
+        "mainTotalStallMs": 2042.5,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 1795.9,
+        "typingSettleMaxMs": 1909.7,
+        "typingSaturated": false,
+        "endToPaintMs": 2150.8,
+        "peakPssMb": 972.6,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.8 cores on average over 49 s (limit 1): qemu-system-x86 (pid 3257006) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores; git ×2 (pids 3450803, 3451003) used 0.2 cores"
+          ]
+        },
+        "worstLongtaskMs": 1808,
+        "worstTypingMs": 1909.7,
+        "worstStalledMs": 39609,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1808,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1909.7,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2150.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.1 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 1 core; git ×8 (pids 3388885, 3389331, 3389831, 3390179, +4 more) used 0.9 cores; claude ×6 (pids 1343127, 1540338, 1658190, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 50,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.06,
+      "foreignPeak2sCores": 4.41,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 0.96
+        },
+        {
+          "name": "git",
+          "pids": [
+            3388885,
+            3389331,
+            3389831,
+            3390179,
+            3390304,
+            3390768,
+            3390989,
+            3391219
+          ],
+          "cores": 0.86
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1540338,
+            1658190,
+            1727377,
+            1745093,
+            1343193
+          ],
+          "cores": 0.1
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 15.2,
+        "max": 33.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 1,
+        "busyMax": 7,
+        "pptWattsMin": 18.1,
+        "pptWattsMax": 27.3,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 3.4 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git ×6 (pids 3392614, 3392790, 3393251, 3393474, +2 more) used 0.6 cores; claude ×6 (pids 1343127, 1343193, 1745093, 1540338, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 3.37,
+      "foreignPeak2sCores": 5.26,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.49
+        },
+        {
+          "name": "git",
+          "pids": [
+            3392614,
+            3392790,
+            3393251,
+            3393474,
+            3393610,
+            3394367
+          ],
+          "cores": 0.64
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1745093,
+            1540338,
+            1658190,
+            1727377
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 22,
+        "max": 38.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 3,
+        "busyMax": 9,
+        "pptWattsMin": 18.4,
+        "pptWattsMax": 30.4,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.7 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 0.9 cores; git ×5 (pids 3394542, 3395349, 3395503, 3396001, +1 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.69,
+      "foreignPeak2sCores": 5.11,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 0.9
+        },
+        {
+          "name": "git",
+          "pids": [
+            3394542,
+            3395349,
+            3395503,
+            3396001,
+            3396454
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1658190,
+            1727377,
+            1745093
+          ],
+          "cores": 0.12
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 13.4,
+        "max": 31.8
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 1,
+        "busyMax": 11,
+        "pptWattsMin": 16.8,
+        "pptWattsMax": 29.1,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.8 cores on average over 51 s (limit 1): git ×8 (pids 3397643, 3397893, 3398432, 3398638, +4 more) used 0.8 cores; qemu-system-x86 (pid 3257006) used 0.8 cores; claude ×6 (pids 1343127, 1745093, 1343193, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.83,
+      "foreignPeak2sCores": 4.18,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3397643,
+            3397893,
+            3398432,
+            3398638,
+            3398807,
+            3399253,
+            3399644,
+            3399805
+          ],
+          "cores": 0.79
+        },
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 0.78
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1745093,
+            1343193,
+            1727377,
+            1540338,
+            1658190
+          ],
+          "cores": 0.1
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 14.6,
+        "max": 34.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 3,
+        "busyMax": 8,
+        "pptWattsMin": 15.7,
+        "pptWattsMax": 29.1,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.4 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 1.3 cores; git ×8 (pids 3399805, 3400729, 3400984, 3401180, +4 more) used 0.9 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.43,
+      "foreignPeak2sCores": 4.54,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.29
+        },
+        {
+          "name": "git",
+          "pids": [
+            3399805,
+            3400729,
+            3400984,
+            3401180,
+            3401694,
+            3401818,
+            3402327,
+            3402487
+          ],
+          "cores": 0.89
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1727377,
+            1745093,
+            1658190
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 16.9,
+        "max": 35.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 4,
+        "busyMax": 9,
+        "pptWattsMin": 19.7,
+        "pptWattsMax": 27.6,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.4 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 1.1 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1540338, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.4,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.36,
+      "foreignPeak2sCores": 3.45,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.1
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1540338,
+            1727377,
+            1745093
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 13.6,
+        "max": 29
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 4,
+        "busyMax": 8,
+        "pptWattsMin": 17.9,
+        "pptWattsMax": 25.8,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 1.2 cores; git ×4 (pids 3406476, 3406797, 3407301, 3407463) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1658190, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.99,
+      "foreignPeak2sCores": 4.2,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.23
+        },
+        {
+          "name": "git",
+          "pids": [
+            3406476,
+            3406797,
+            3407301,
+            3407463
+          ],
+          "cores": 0.53
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1658190,
+            1540338,
+            1745093
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 15.1,
+        "max": 29.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 4,
+        "busyMax": 8,
+        "pptWattsMin": 18.6,
+        "pptWattsMax": 28.4,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.5 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 2.2 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.4,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 2.47,
+      "foreignPeak2sCores": 4.14,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.25
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1727377,
+            1745093,
+            1658190
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 18.8,
+        "max": 32
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 4,
+        "busyMax": 11,
+        "pptWattsMin": 18.1,
+        "pptWattsMax": 28.7,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 3.6 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 3.1 cores; git ×3 (pids 3412385, 3412710, 3413194) used 0.3 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 3.62,
+      "foreignPeak2sCores": 5.14,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 3.07
+        },
+        {
+          "name": "git",
+          "pids": [
+            3412385,
+            3412710,
+            3413194
+          ],
+          "cores": 0.3
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1727377,
+            1745093,
+            1658190
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 22.9,
+        "max": 36.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 5,
+        "busyMax": 10,
+        "pptWattsMin": 18.6,
+        "pptWattsMax": 31.2,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 3 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git (pid 3413612) used 0.2 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.2,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 2.97,
+      "foreignPeak2sCores": 5.25,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.55
+        },
+        {
+          "name": "git",
+          "pids": [
+            3413612
+          ],
+          "cores": 0.2
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 20.2,
+        "max": 34.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 3,
+        "busyMax": 10,
+        "pptWattsMin": 17.7,
+        "pptWattsMax": 32,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.3 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 2.1 cores; claude ×6 (pids 1343127, 1343193, 1745093, 1540338, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.34,
+      "foreignPeak2sCores": 4.11,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.1
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1745093,
+            1540338,
+            1727377,
+            1658190
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 17.6,
+        "max": 33.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 3,
+        "busyMax": 9,
+        "pptWattsMin": 18.1,
+        "pptWattsMax": 27.9,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 3.7 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 2.6 cores; git ×9 (pids 3418391, 3418978, 3419481, 3419700, +5 more) used 0.9 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 3.71,
+      "foreignPeak2sCores": 5.2,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.57
+        },
+        {
+          "name": "git",
+          "pids": [
+            3418391,
+            3418978,
+            3419481,
+            3419700,
+            3419822,
+            3420269,
+            3420584,
+            3420735,
+            3421213
+          ],
+          "cores": 0.88
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1727377,
+            1658190,
+            1745093
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 22.9,
+        "max": 37.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 5,
+        "busyMax": 11,
+        "pptWattsMin": 19.9,
+        "pptWattsMax": 31.1,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.9 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git ×2 (pids 3421213, 3421655) used 0.2 cores; claude ×6 (pids 1343193, 1727377, 1343127, 1540338, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.93,
+      "foreignPeak2sCores": 4.83,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.46
+        },
+        {
+          "name": "git",
+          "pids": [
+            3421213,
+            3421655
+          ],
+          "cores": 0.24
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1727377,
+            1343127,
+            1540338,
+            1745093,
+            1658190
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 19.5,
+        "max": 31.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 5,
+        "busyMax": 11,
+        "pptWattsMin": 19,
+        "pptWattsMax": 29.2,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.7 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 0.9 cores; git ×4 (pids 3424642, 3424942, 3425455, 3425619) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1745093, 1658190, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.5,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.68,
+      "foreignPeak2sCores": 4.14,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 0.95
+        },
+        {
+          "name": "git",
+          "pids": [
+            3424642,
+            3424942,
+            3425455,
+            3425619
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1745093,
+            1658190,
+            1727377,
+            1540338
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 14.3,
+        "max": 34.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 2,
+        "busyMax": 9,
+        "pptWattsMin": 16.2,
+        "pptWattsMax": 27.9,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.4 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 1.1 cores; claude ×6 (pids 1343127, 1540338, 1745093, 1343193, +2 more) used 0.1 cores"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.38,
+      "foreignPeak2sCores": 3.17,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.13
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1540338,
+            1745093,
+            1343193,
+            1658190,
+            1727377
+          ],
+          "cores": 0.1
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 13.5,
+        "max": 30.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 4,
+        "busyMax": 8,
+        "pptWattsMin": 18.3,
+        "pptWattsMax": 26.2,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.8 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 1 core; git ×6 (pids 3429999, 3430173, 3430614, 3430988, +2 more) used 0.6 cores; claude ×6 (pids 1343127, 1343193, 1745093, 1540338, +2 more) used 0.1 cores"
+      ],
+      "durationS": 51.2,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.84,
+      "foreignPeak2sCores": 4,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 0.98
+        },
+        {
+          "name": "git",
+          "pids": [
+            3429999,
+            3430173,
+            3430614,
+            3430988,
+            3431150,
+            3431663
+          ],
+          "cores": 0.63
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1745093,
+            1540338,
+            1727377,
+            1658190
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 14.8,
+        "max": 34.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 2,
+        "busyMax": 8,
+        "pptWattsMin": 16.5,
+        "pptWattsMax": 29,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.1 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 1.1 cores; git ×3 (pids 3432011, 3432614, 3432782) used 0.5 cores; youcoded ×6 (pids 1342321, 1342460, 1342393, 1342549, +2 more) used 0.3 cores"
+      ],
+      "durationS": 50.1,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.08,
+      "foreignPeak2sCores": 3.98,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.08
+        },
+        {
+          "name": "git",
+          "pids": [
+            3432011,
+            3432614,
+            3432782
+          ],
+          "cores": 0.46
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342460,
+            1342393,
+            1342549,
+            1635392,
+            1635378
+          ],
+          "cores": 0.31
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1658190,
+            1727377,
+            1745093
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 15.5,
+        "max": 30.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 1,
+        "busyMedian": 7,
+        "busyMax": 13,
+        "pptWattsMin": 19.7,
+        "pptWattsMax": 29.2,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.1 cores on average over 51 s (limit 1): qemu-system-x86 (pid 3257006) used 1.3 cores; youcoded ×7 (pids 1342393, 1342460, 1342321, 1342549, +3 more) used 0.4 cores; git ×2 (pids 3436675, 3436990) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.5,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 2.09,
+      "foreignPeak2sCores": 5,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.32
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342393,
+            1342460,
+            1342321,
+            1342549,
+            1635392,
+            2722,
+            1635378
+          ],
+          "cores": 0.44
+        },
+        {
+          "name": "git",
+          "pids": [
+            3436675,
+            3436990
+          ],
+          "cores": 0.1
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1658190,
+            1727377,
+            1745093,
+            1343127,
+            1343193,
+            1540338
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 16.5,
+        "max": 36
+      },
+      "pressure": {
+        "cpuMax": 7.6,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 6,
+        "busyMax": 13,
+        "pptWattsMin": 20.9,
+        "pptWattsMax": 32.3,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 4 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 2.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores; git ×3 (pids 3436990, 3437831, 3437984) used 0.4 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 49.9,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 4.03,
+      "foreignPeak2sCores": 5.6,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.93
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722,
+            1635378
+          ],
+          "cores": 0.45
+        },
+        {
+          "name": "git",
+          "pids": [
+            3436990,
+            3437831,
+            3437984
+          ],
+          "cores": 0.39
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1745093,
+            1540338,
+            1658190,
+            1727377
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 23.7,
+        "max": 35.1
+      },
+      "pressure": {
+        "cpuMax": 2.8,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 9,
+        "busyMax": 14,
+        "pptWattsMin": 25.8,
+        "pptWattsMax": 34.6,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 3.7 cores on average over 52 s (limit 1): qemu-system-x86 (pid 3257006) used 3 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1745093, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 51.6,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 3.66,
+      "foreignPeak2sCores": 4.68,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.98
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2722,
+            2726
+          ],
+          "cores": 0.43
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1745093,
+            1540338,
+            1658190
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 23.4,
+        "max": 34.6
+      },
+      "pressure": {
+        "cpuMax": 0.01,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 9,
+        "busyMax": 14,
+        "pptWattsMin": 26.3,
+        "pptWattsMax": 33.2,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.9 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 1.7 cores; git ×4 (pids 3442888, 3443204, 3443666, 3443837) used 0.5 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 49.6,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.91,
+      "foreignPeak2sCores": 5.78,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 1.7
+        },
+        {
+          "name": "git",
+          "pids": [
+            3442888,
+            3443204,
+            3443666,
+            3443837
+          ],
+          "cores": 0.54
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1383992,
+            1635378
+          ],
+          "cores": 0.43
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1727377,
+            1745093,
+            1658190
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 18.8,
+        "max": 37.8
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 8,
+        "busyMax": 13,
+        "pptWattsMin": 22.9,
+        "pptWattsMax": 34.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 3.3 cores on average over 52 s (limit 1): qemu-system-x86 (pid 3257006) used 2.6 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1540338, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 51.5,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 3.35,
+      "foreignPeak2sCores": 4.47,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.62
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722
+          ],
+          "cores": 0.45
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1540338,
+            1658190,
+            1745093
+          ],
+          "cores": 0.11
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 21.8,
+        "max": 35.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 10,
+        "busyMax": 14,
+        "pptWattsMin": 23.5,
+        "pptWattsMax": 32.5,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 4.2 cores on average over 50 s (limit 1): qemu-system-x86 (pid 3257006) used 2.5 cores; git ×7 (pids 3447881, 3448104, 3448813, 3449029, +3 more) used 0.9 cores; youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 0.5 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 4.17,
+      "foreignPeak2sCores": 6.67,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 2.53
+        },
+        {
+          "name": "git",
+          "pids": [
+            3447881,
+            3448104,
+            3448813,
+            3449029,
+            3449257,
+            3449896,
+            3450046
+          ],
+          "cores": 0.85
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            6378,
+            1635378,
+            1635392,
+            1343137,
+            1342396
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1658190,
+            1727377,
+            1745093
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 24,
+        "max": 42
+      },
+      "pressure": {
+        "cpuMax": 0.18,
+        "ioMax": 0.18,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 10,
+        "busyMax": 16,
+        "pptWattsMin": 23.6,
+        "pptWattsMax": 39.5,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.9 cores on average over 52 s (limit 1): qemu-system-x86 (pid 3257006) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores; git ×2 (pids 3450803, 3451003) used 0.2 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 51.8,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 1.85,
+      "foreignPeak2sCores": 5.33,
+      "offenders": [
+        {
+          "name": "qemu-system-x86",
+          "pids": [
+            3257006
+          ],
+          "cores": 0.93
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722,
+            1635378
+          ],
+          "cores": 0.42
+        },
+        {
+          "name": "git",
+          "pids": [
+            3450803,
+            3451003
+          ],
+          "cores": 0.25
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1745093,
+            1727377,
+            1658190
+          ],
+          "cores": 0.1
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 14.7,
+        "max": 33.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 6,
+        "busyMax": 13,
+        "pptWattsMin": 22.3,
+        "pptWattsMax": 34.4,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    }
+  ],
+  "aggregate": {
+    "pathlist-prose-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 232,
+            "min": 229,
+            "max": 304,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 31393,
+            "min": 31104,
+            "max": 31409,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 346,
+            "min": 309,
+            "max": 384,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 492,
+            "min": 384,
+            "max": 551,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 195,
+            "min": 183.6,
+            "max": 198.7,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 457.3,
+            "min": 210.1,
+            "max": 481.1,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 704.5,
+            "min": 466.4,
+            "max": 718.7,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1047,
+            "min": 1020,
+            "max": 1052.4,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 2000,
+            "min": 2000,
+            "max": 2000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 245,
+            "min": 244,
+            "max": 254,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 31479,
+            "min": 30882,
+            "max": 31690,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 333,
+            "min": 322,
+            "max": 395,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 333,
+            "min": 322,
+            "max": 395,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 180.5,
+            "min": 176.9,
+            "max": 225,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 205.9,
+            "min": 202.2,
+            "max": 274.7,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 486,
+            "min": 484.1,
+            "max": 555.6,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1022.3,
+            "min": 1019.5,
+            "max": 1130.3,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 2000,
+            "min": 2000,
+            "max": 2000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-prose-5000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 648,
+            "min": 588,
+            "max": 851,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 38698,
+            "min": 38527,
+            "max": 39154,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1043,
+            "min": 949,
+            "max": 1054,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1593,
+            "min": 1480,
+            "max": 1608,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 498.2,
+            "min": 489.9,
+            "max": 679.4,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1875.1,
+            "min": 1766.6,
+            "max": 1897.9,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 2050,
+            "min": 2002.2,
+            "max": 2111.7,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1251.7,
+            "min": 1228.2,
+            "max": 1254.2,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 5000,
+            "min": 5000,
+            "max": 5000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 569,
+            "min": 542,
+            "max": 845,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 38571,
+            "min": 38103,
+            "max": 38972,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1208,
+            "min": 1159,
+            "max": 1638,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1717,
+            "min": 1638,
+            "max": 1980,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 444.8,
+            "min": 431.4,
+            "max": 641.3,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1868.5,
+            "min": 1843.2,
+            "max": 1961.5,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 2063.9,
+            "min": 1988.1,
+            "max": 2226.1,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1220,
+            "min": 1217.9,
+            "max": 1224.4,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 5000,
+            "min": 5000,
+            "max": 5000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-proseControl-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 200,
+            "min": 193,
+            "max": 247,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 28235,
+            "min": 28177,
+            "max": 28546,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 324,
+            "min": 268,
+            "max": 331,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 331,
+            "min": 324,
+            "max": 397,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 147.1,
+            "min": 139.9,
+            "max": 147.2,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 225.3,
+            "min": 220.5,
+            "max": 431.8,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 471.8,
+            "min": 460.4,
+            "max": 473.3,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 902.1,
+            "min": 869.1,
+            "max": 916.4,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 541,
+            "min": 494,
+            "max": 578,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 28253,
+            "min": 27889,
+            "max": 28525,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 370,
+            "min": 300,
+            "max": 406,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 406,
+            "min": 370,
+            "max": 446,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 471.4,
+            "min": 316.1,
+            "max": 558,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 227.1,
+            "min": 225.5,
+            "max": 263.8,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 471.1,
+            "min": 466.7,
+            "max": 533.4,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 903.9,
+            "min": 891.1,
+            "max": 924,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-proseControl-5000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 1045,
+            "min": 512,
+            "max": 2130,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 37684,
+            "min": 37040,
+            "max": 37949,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1565,
+            "min": 1517,
+            "max": 1859,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1565,
+            "min": 1517,
+            "max": 1859,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 958.4,
+            "min": 484.2,
+            "max": 2025.9,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1780.6,
+            "min": 1763.2,
+            "max": 1827.9,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 1994.7,
+            "min": 1957,
+            "max": 2033.7,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1035.3,
+            "min": 1020.2,
+            "max": 1045.7,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 1808,
+            "min": 953,
+            "max": 2155,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 37542,
+            "min": 37452,
+            "max": 38759,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1385,
+            "min": 850,
+            "max": 1844,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1385,
+            "min": 850,
+            "max": 1844,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 1795.9,
+            "min": 857.9,
+            "max": 1968.4,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1754.2,
+            "min": 1753.3,
+            "max": 1909.7,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 1961.2,
+            "min": 1937.7,
+            "max": 2150.8,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1000.9,
+            "min": 972.6,
+            "max": 1020.1,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    }
+  }
+}

@@ -25,6 +25,12 @@ export const PATHLIST_SIZES = Object.freeze([100, 500, 2000, 5000]);
 /** The no-path control is only needed where the cost is big enough to need explaining. */
 export const CONTROL_SIZES = Object.freeze([2000, 5000]);
 export const VARIANTS = Object.freeze(['code', 'prose', 'control']);
+// WHY a separate list: `proseControl` (the bullet-list shape with the paths defaced, so no chips) separates list-rendering cost from chip
+// cost in the prose rungs. It is a follow-up diagnostic, so the default ladder (VARIANTS) is unchanged and it is opt-in via --only.
+export const ALL_VARIANTS = Object.freeze([...VARIANTS, 'proseControl']);
+/** Variants whose paths are defaced: the page must show zero chips. */
+export const NO_CHIP_VARIANTS = Object.freeze(['control', 'proseControl']);
+const isNoChip = (v) => NO_CHIP_VARIANTS.includes(v);
 
 /** A cloud model's typical rate (deltas = tokens-ish per second). */
 export const BASE_PER_SEC = 150;
@@ -63,10 +69,10 @@ const OUTRO = 'That is every file I found.';
 
 /** Markdown for one rung. `code` = one fenced block of paths; `prose` = a bullet list; `control` = the code shape with decoys. */
 export function replyText(variant, n) {
-  if (!VARIANTS.includes(variant)) throw new Error(`unknown variant ${variant}`);
+  if (!ALL_VARIANTS.includes(variant)) throw new Error(`unknown variant ${variant}`);
   if (!Number.isInteger(n) || n < 1) throw new Error('n must be a whole number >= 1');
-  const lines = Array.from({ length: n }, (_, i) => (variant === 'control' ? decoyAt(i) : pathAt(i)));
-  if (variant === 'prose') return `${INTRO}\n\n${lines.map((l) => `- ${l}`).join('\n')}\n\n${OUTRO}`;
+  const lines = Array.from({ length: n }, (_, i) => (isNoChip(variant) ? decoyAt(i) : pathAt(i)));
+  if (variant === 'prose' || variant === 'proseControl') return `${INTRO}\n\n${lines.map((l) => `- ${l}`).join('\n')}\n\n${OUTRO}`;
   return `${INTRO}\n\n\`\`\`\n${lines.join('\n')}\n\`\`\`\n\n${OUTRO}`;
 }
 
@@ -99,9 +105,9 @@ export function planRung(variant, n) {
     streamMs: Math.round(deltas / perSec * 1000),
     atCloudSpeed: perSec === BASE_PER_SEC,
     // What the page must show for the rung to count: every path as a chip (none for the control), the last one by name, the outro.
-    expectedChips: variant === 'control' ? 0 : n,
-    lastPath: variant === 'control' ? null : pathAt(n - 1),
-    lastDecoy: variant === 'control' ? decoyAt(n - 1) : null,
+    expectedChips: isNoChip(variant) ? 0 : n,
+    lastPath: isNoChip(variant) ? null : pathAt(n - 1),
+    lastDecoy: isNoChip(variant) ? decoyAt(n - 1) : null,
     outro: OUTRO,
   };
 }
@@ -109,7 +115,7 @@ export function planRung(variant, n) {
 /** The full ladder in run order: code, prose, then the control, small to large inside each. */
 export function planRungs({ sizes = PATHLIST_SIZES, controlSizes = CONTROL_SIZES, variants = VARIANTS } = {}) {
   const out = [];
-  for (const v of variants) for (const n of (v === 'control' ? controlSizes : sizes)) out.push(planRung(v, n));
+  for (const v of variants) for (const n of (isNoChip(v) ? controlSizes : sizes)) out.push(planRung(v, n));
   return out;
 }
 
@@ -140,7 +146,7 @@ export function paneStateSource(plan) {
 /** Does a pane reading show the finished reply? Pure so tests can feed it readings. */
 export function paneComplete(plan, s) {
   if (!s || s.panes !== 1 || !s.hasOutro) return false;
-  if (plan.variant === 'control') return s.chips === 0 && s.hasLastDecoy === true;
+  if (plan.expectedChips === 0) return s.chips === 0 && s.hasLastDecoy === true;
   return s.chips === plan.expectedChips && s.lastChip === plan.lastPath;
 }
 
@@ -152,7 +158,7 @@ export function awaitFinalPaintSource(plan, timeoutMs = SETTLE_TIMEOUT_MS) {
   return `(async () => {
     // WHY wrapped: paneStateSource is an already-invoked expression; the wait loop needs to call it again each poll.
     const state = () => ${paneStateSource(plan).trim()};
-    const complete = (s) => !!s && s.panes === 1 && s.hasOutro && (${plan.variant === 'control'}
+    const complete = (s) => !!s && s.panes === 1 && s.hasOutro && (${plan.expectedChips === 0}
       ? (s.chips === 0 && s.hasLastDecoy === true)
       : (s.chips === ${plan.expectedChips} && s.lastChip === ${JSON.stringify(plan.lastPath)}));
     const t0 = performance.now();
