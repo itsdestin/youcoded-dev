@@ -173,9 +173,8 @@ test('four serial owned helpers retire before the next; observed readbacks certi
   assert.doesNotThrow(() => assertProtocolEnvelope({ event: { revision: 1, type: 'configuration-observed', ...result } }));
   const observedProofs = structuredClone(result);
   for (const helper of observedProofs.helpers) {
-    helper.execution.kind = 'observed_postexec';
-    helper.execution.runtimeExeObserved = true;
-    helper.execution.observed = { pid: 30, starttime: '100', executableIdentity: receipts['kscreen-doctor'].identity };
+    helper.executionKind = 'observed_postexec';
+    helper.runtimeExeObserved = true;
   }
   assert.doesNotThrow(() => assertProtocolEnvelope({ id: 1, result: observedProofs }));
   assert.equal(result.observed.refreshHz, 60);
@@ -361,4 +360,84 @@ test('actual session inspect command uses helper sequence and disconnect retires
   assert.ok(order.indexOf('dispose:wayland') < order.indexOf('compositor-cleanup'));
   assert.equal(s.receipt.cleanupConfirmed, true);
   assert.equal(reply, undefined);
+});
+// WHY (helper-hardening-1): realistic FULL helper receipts are ~100 protocol records each; four of them
+// overflowed the 512-record IPC budget and the retirement receipt was never delivered.
+const fullReceipt = step => ({ step, cleanupConfirmed: true, error: null, familyError: null, memoryComplete: true,
+  survivors: [], localErrors: [],
+  pipes: { exited: true, closed: true, code: 0, signal: null, error: null,
+    spawnedChild: { pid: 1, identityVerified: true, observedIdentity: { pid: 1, starttime: '2' }, starttime: '2' },
+    gateEvidence: { kind: 'incomplete_helper_execution', receiptPipeEOF: true, runtimeExeObserved: false, observed: null,
+      authorizer: { revision: 1, kind: 'authorized_fdexec', pid: 1, uid: 1000, home: plan.home, purpose: step,
+        identity: { dev: 1, ino: 2, uid: 0, mode: 33261 }, planDigest: 'a'.repeat(64) } } },
+  execution: { kind: 'authorized_fdexec_completed', runtimeExeObserved: false, observed: null, receiptPipeEOF: true,
+    exit: { code: 0, signal: null }, capturedGate: { pid: 1, starttime: '2', ppid: 3, expectedExe: '/usr/bin/python3', uid: 1000, home: plan.home },
+    authorizer: { revision: 1, kind: 'authorized_fdexec', pid: 1, uid: 1000, home: plan.home, purpose: step,
+      identity: { dev: 1, ino: 2, uid: 0, mode: 33261 }, planDigest: 'a'.repeat(64) } } });
+test('race: four realistic helper receipts are summarised to fit the IPC budget without losing verdicts', async () => {
+  const { summarizeHelperRetirement } = await import('../supervised-compositor-helpers.mjs');
+  const { fitRetirementReceipt } = await import('../supervised-compositor-core.mjs');
+  const full = { cleanupConfirmed: true, receipts: ['initial', 'apply', 'final', 'wayland'].map(fullReceipt) };
+  const fat = { reason: 'inspection-failed', cleanupConfirmed: true, abortError: null, family: { cleanupConfirmed: true, survivors: [] },
+    pipes: { exited: true, closed: true }, helpers: full, descriptor: {} };
+  assert.throws(() => assertProtocolEnvelope({ final: fat }), /record/, 'precondition: unsummarised receipts overflow');
+  const slim = { ...fat, helpers: summarizeHelperRetirement(full) };
+  assert.doesNotThrow(() => assertProtocolEnvelope({ final: slim }));
+  assert.equal(slim.helpers.receipts[1].executionKind, 'authorized_fdexec_completed');
+  assert.equal(slim.helpers.receipts.every(r => r.cleanupConfirmed && r.exited && r.closed && r.code === 0), true);
+  // Even a receipt that is oversized for another reason keeps its verdicts instead of throwing.
+  const huge = { ...fat, family: { cleanupConfirmed: true, survivors: [], procFailures: { records: Array.from({ length: 600 }, (_, i) => ({ i })) } } };
+  const fitted = fitRetirementReceipt(huge);
+  assert.doesNotThrow(() => assertProtocolEnvelope({ final: fitted }));
+  assert.equal(fitted.cleanupConfirmed, true); assert.match(fitted.truncated, /ipc-record-budget/);
+  assert.equal(fitRetirementReceipt({ ...huge, cleanupConfirmed: false }).cleanupConfirmed, false, 'a failed cleanup is never upgraded');
+});
+test('wayland geometry refusal names the observed values', () => {
+  assert.throws(() => parseWaylandOutput(wayland.replace('1707', '1706')), /logical=1706x1067 intScale= modes=2560x1600@60\.000\*/);
+});
+// WHY: shape copied from the real kwin 6.7.5 report in scratch/perflab/containment-1 (no xdg_output block).
+test('kwin 6.7 wl_output without logical size passes only with integer scale ceil(1.5)=2', () => {
+  const real = `interface: 'wl_output', version: 4, name: 66
+\tname: Virtual-0
+\tdescription: Virtual-0
+\tx: 0, y: 0, scale: 2,
+\tphysical_width: -1 mm, physical_height: -1 mm,
+\tmode:
+\t\twidth: 2560 px, height: 1600 px, refresh: 60.000 Hz,
+\t\tflags: current
+`;
+  const r = parseWaylandOutput(real);
+  assert.equal(r.logicalSize, 'not-reported-by-compositor'); assert.equal(r.wlOutputIntegerScale, 2); assert.equal(r.refreshHz, 60);
+  assert.throws(() => parseWaylandOutput(real.replace('scale: 2,', 'scale: 1,')), /intScale=1/);
+  assert.throws(() => parseWaylandOutput(real.replace('\tx: 0, y: 0, scale: 2,\n', '')), /incomplete report/);
+  assert.throws(() => parseWaylandOutput(real.replace('\tx: 0, y: 0, scale: 2,\n', '\tx: 0, y: 0, scale: 2,\n\tx: 0, y: 0, scale: 2,\n')));
+});
+test('wayland readback failure keeps a bounded wl_output excerpt as evidence', async () => {
+  const { waylandOutputExcerpt } = await import('../supervised-compositor-helpers.mjs');
+  // No logical size AND no integer scale line: still an incomplete report that must refuse.
+  const noLogical = wayland.replace(/\t\tlogical_width.*\n/, '');
+  const ex = waylandOutputExcerpt(noLogical + "interface: 'zwp_linux_dmabuf_v1', version: 4, name: 3\n" + 'x'.repeat(50000));
+  assert.match(ex, /wl_output/); assert.match(ex, /refresh: 60\.000 Hz/); assert.ok(ex.length < 4200);
+  assert.doesNotThrow(() => assertProtocolEnvelope({ event: { type: 'wayland-report-excerpt', revision: 1, excerpt: ex } }));
+  const f = rig({ output: (step, stdout) => step === 'wayland' ? noLogical : stdout }), notes = [];
+  const original = f.deps.note; f.deps.note = (type, fields) => { notes.push(type); return original(type, fields); };
+  await assert.rejects(f.make().inspect(), /Wayland geometry/);
+  assert.ok(notes.includes('wayland-report-excerpt') || f.events.includes('wayland-report-excerpt'));
+});
+// WHY (helper-hardening-3): a helper whose exec proof never succeeded still has a spawn-time identity;
+// it must be retired through that family, not abandoned because family.leader was never set.
+test('helper failing before its exec proof is retired through its spawn-time identity', async () => {
+  const f = rig(), config = f.make(), spawn = f.deps.spawnHelper;
+  let cleanups = 0;
+  f.deps.spawnHelper = async (...args) => {
+    const gate = await spawn(...args);
+    gate.family = { spawned: { pid: 30, starttime: '100' }, sample: () => ({ members: [], rssMb: 0 }),
+      cleanup: async () => { cleanups++; return { cleanupConfirmed: true, survivors: [] }; } };
+    gate.capture = async () => { throw Error('gate never ready'); };
+    return gate;
+  };
+  await assert.rejects(config.run('initial'), /gate never ready/);
+  assert.equal(cleanups, 1);
+  assert.equal(config.handles[0].receipt.cleanupConfirmed, true);
+  assert.equal(config.sampleResources().members, 0); // spawn-only family has no sampleable leader and must not throw
 });

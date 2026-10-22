@@ -324,3 +324,235 @@ test('descendant-only OwnedProcesses refuses same-session strangers but retains 
   rows.set(21,row(21,1));assert.ok(owned.sample().members.some(r=>r.pid===21));
   rows.set(21,row(21,1,{starttime:'replacement'}));assert.throws(()=>owned.sample(),/reuse/);
 });
+test('stop() delivers a bounded retirement receipt even when four realistic helper receipts and a huge family report exist',async()=>{
+  const f=fakeSession(),notes=[];
+  f.deps.persist=r=>notes.push(r);
+  const big=step=>({step,cleanupConfirmed:true,error:null,survivors:[],localErrors:[],pipes:{exited:true,closed:true,code:0,signal:null,spawnedChild:{pid:1,observedIdentity:{pid:1,starttime:'2'}},gateEvidence:{kind:'k',authorizer:{a:{b:{c:1,d:2,e:3,f:4,g:5}}}}},execution:{kind:'authorized_fdexec_completed',authorizer:{a:{b:{c:1,d:2,e:3,f:4,g:5,h:6,i:7}}},capturedGate:{p:1,q:2,r:3,s:4,t:5,u:6}}});
+  f.s.configuration={stop:async()=>({cleanupConfirmed:true,receipts:['initial','apply','final','wayland'].map(big)})};
+  f.s.family={cleanup:async()=>({cleanupConfirmed:true,survivors:[],procFailures:{records:Array.from({length:700},(_,i)=>({i}))}})};
+  f.s.gate=f.gate;
+  const receipt=await f.s.stop('inspection-failed');
+  assert.equal(receipt.cleanupConfirmed,true);
+  assert.doesNotThrow(()=>assertProtocolEnvelope({final:receipt}));
+  assert.ok(notes.some(r=>r.type==='retirement'));
+  assert.equal(receipt.helpers.receipts.length,4);
+});
+test('race: wrapper polled mid-execve (HOME unreadable) is retried; definite mismatches still fail with field names',async()=>{
+  const { wrapperPostExecDecision } = await import('../supervised-compositor-linux.mjs');
+  const p=plan(), receipt={path:'/usr/bin/dbus-run-session',identity:{...identity,ino:10}};
+  const leader={pid:20,starttime:'200'};
+  const rec=(patch={})=>({pid:20,starttime:'200',uid:1000,home:p.home,exe:receipt.path,executableIdentity:receipt.identity,ppid:5,session:20,pgrp:20,...patch});
+  const d=r=>wrapperPostExecDecision(r,leader,receipt,p,1000,5,'/usr/bin/python3');
+  assert.equal(d(rec()),'ok'); assert.equal(d(rec({exe:'/usr/bin/python3'})),'gate'); assert.equal(d(null),'transient');
+  assert.equal(d(rec({home:undefined})),'transient'); assert.equal(d(rec({home:null})),'transient');
+  assert.throws(()=>d(rec({home:'/real'})),/\(home\)/);
+  assert.throws(()=>d(rec({exe:'/usr/bin/foreign'})),/\(exe\)/);
+  assert.throws(()=>d(rec({home:undefined,uid:9})),/\(uid\)/);
+  assert.throws(()=>d(rec({home:undefined,ppid:1})),/\(ppid\)/);
+  assert.throws(()=>d(rec({starttime:'201'})),/\(process\)/);
+  assert.throws(()=>d(rec({executableIdentity:{...identity,ino:99}})),/executableIdentity/);
+});
+
+// ---- helper-hardening-3: containment must not depend on the post-exec identity proof ------------------
+// Fake /proc table + injected uptime: nothing is forked, signalled or read from the real /proc.
+function containmentFixture() {
+  const rows = new Map([[10, row(10, 1, { session: 10, pgrp: 10 })], [20, row(20, 10)]]), signals = [];
+  const state = { ticks: 250, onSignal: null };
+  const owned = new OwnedProcesses({ leaderPid: 20, parentPid: 10, jobDir: plan().runDir, descendantsOnly: true,
+    read: pid => rows.get(pid) ?? null, list: () => [...rows.keys()], uptimeTicks: () => state.ticks,
+    signal: (pid, sig) => { signals.push([pid, sig]); state.onSignal?.(pid, sig); }, now: () => state.ticks, sleep: async () => {} });
+  return { rows, signals, state, owned };
+}
+const cleanupFast = owned => owned.cleanup({ termWaitMs: 10, killWaitMs: 10, everyMs: 5 });
+test('incident replay: kwin reparented away from a dead wrapper is retired by session lineage, with evidence', async () => {
+  const f = containmentFixture();
+  assert.deepEqual(f.owned.noteSpawn(20), { pid: 20, starttime: '200' });
+  // kwin (start tick 210) is born into the leader's session while the leader is alive (seen at tick 300) ...
+  f.rows.set(21, row(21, 20, { cmdline: 'kwin_wayland --socket perf-0123456789abcdef' }));
+  f.state.ticks = 300; f.owned.pulse();
+  // ... then the wrapper dies and kwin is reparented to a subreaper: no recorded parent chain remains.
+  f.rows.delete(20); f.rows.get(21).ppid = 1681; f.rows.set(1681, row(1681, 1, { session: 1681, pgrp: 1681 }));
+  f.rows.set(50, row(50, 1, { session: 50, pgrp: 50 }));          // real desktop process: other session
+  f.state.onSignal = pid => f.rows.delete(pid);
+  const receipt = await cleanupFast(f.owned);
+  assert.deepEqual(f.signals, [[21, 'SIGTERM']]);
+  assert.equal(receipt.cleanupConfirmed, true);
+  assert.equal(receipt.containment.signalled[0].basis, 'started-while-spawned-leader-alive');
+  assert.deepEqual(receipt.survivors, []);
+  assert.equal(f.rows.has(50), true);
+  assertProtocolEnvelope({ final: receipt });
+});
+test('containment: a same-session occupant born after the leader was last seen alive is never signalled and stays a survivor', async () => {
+  const f = containmentFixture();
+  f.owned.noteSpawn(20); f.state.ticks = 300; f.owned.pulse();
+  f.rows.delete(20);
+  f.rows.set(31, row(31, 1, { starttime: '5000' })); // would be a pid-reuse look-alike of session 20
+  const receipt = await cleanupFast(f.owned);
+  assert.deepEqual(f.signals, []);
+  assert.equal(receipt.cleanupConfirmed, false);
+  assert.equal(receipt.survivors.some(s => s.pid === 31), false); // not an owned identity...
+  assert.equal(receipt.containment.unverified[0].pid, 31);          // ...but reported, and cleanup is not confirmed
+});
+test('containment: pid reuse is never signalled (leader number reused, recorded member starttime changed, fence race)', async () => {
+  let f = containmentFixture();
+  f.owned.noteSpawn(20); f.state.ticks = 300; f.owned.pulse();
+  f.rows.set(20, row(20, 1, { starttime: '7777' })); // number 20 now a different process that is its own session
+  assert.equal((await cleanupFast(f.owned)).cleanupConfirmed, false); assert.deepEqual(f.signals, []);
+  // A recorded member whose pid is reused: the ORIGINAL is confirmed gone, the newcomer is never signalled.
+  f = containmentFixture(); f.owned.noteSpawn(20); f.rows.set(21, row(21, 20));
+  f.state.ticks = 300; f.owned.pulse(); f.owned.containmentSweep(null);
+  assert.equal(f.owned.contained.has(21), true);
+  f.rows.delete(20); f.rows.set(21, row(21, 1, { starttime: '99999', session: 21, pgrp: 21 }));
+  const receipt = await cleanupFast(f.owned);
+  assert.deepEqual(f.signals, []); assert.equal(f.owned.known.has(21), false); assert.equal(receipt.cleanupConfirmed, true);
+  // Identity changes between the scan and the signal (fence): refused, no signal.
+  f = containmentFixture(); f.owned.noteSpawn(20); f.rows.set(21, row(21, 20));
+  let reads = 0; const realGet = f.rows.get.bind(f.rows);
+  f.rows.get = pid => (pid === 21 && ++reads > 1 ? { ...realGet(21), starttime: 'swapped' } : realGet(pid));
+  const sweep = f.owned.containmentSweep('SIGTERM');
+  assert.deepEqual(f.signals.filter(([pid]) => pid === 21), []);
+  assert.equal(sweep.refused.some(r => r.reason === 'identity-changed-before-signal'), true);
+});
+test('containment: processes outside the spawned session, the supervisor and its ancestors are never signalled', async () => {
+  const f = containmentFixture();
+  f.owned.noteSpawn(20);
+  f.rows.set(21, row(21, 20));
+  f.rows.set(60, row(60, 1, { session: 60, pgrp: 60 }));     // foreign
+  f.rows.set(61, row(61, 20, { session: 61, pgrp: 61 }));    // child that setsid'd away: not provably ours by session
+  f.state.onSignal = pid => f.rows.delete(pid);
+  await cleanupFast(f.owned);
+  assert.deepEqual(f.signals.map(([pid]) => pid).sort(), [20, 21]);
+  assert.equal(f.rows.has(60) && f.rows.has(61) && f.rows.has(10), true);
+  assert.throws(() => f.owned.protectContained(row(10, 1)), /Protected/);
+});
+test('containment: a member that was born after an authorised, still-present member is covered by that anchor', async () => {
+  const f = containmentFixture();
+  f.owned.noteSpawn(20); f.rows.set(21, row(21, 20)); f.state.ticks = 300; f.owned.pulse();
+  f.owned.containmentSweep(null);                      // 21 adopted while the leader holds the pid
+  f.rows.delete(20); f.rows.set(25, row(25, 21, { starttime: '9000' })); // born after the leader was last seen
+  f.state.onSignal = pid => f.rows.delete(pid);
+  const receipt = await cleanupFast(f.owned);
+  assert.deepEqual(f.signals.map(([pid]) => pid).sort(), [21, 25]);
+  assert.equal(receipt.cleanupConfirmed, true);
+  // Without the anchor the same newcomer is only reported.
+  const g = containmentFixture(); g.owned.noteSpawn(20); g.state.ticks = 300; g.owned.pulse(); g.rows.delete(20); g.rows.set(25, row(25, 1, { starttime: '9000' }));
+  await cleanupFast(g.owned); assert.deepEqual(g.signals, []);
+});
+test('noteSpawn only accepts the supervisor-forked leader: right parent, own session and group', () => {
+  for (const bad of [row(20, 99), row(20, 10, { session: 5 }), row(20, 10, { pgrp: 5 })]) {
+    const f = containmentFixture(); f.rows.set(20, bad);
+    assert.throws(() => f.owned.noteSpawn(20), /mismatch/); assert.equal(f.owned.spawned, null);
+  }
+  const f = containmentFixture(); assert.throws(() => f.owned.noteSpawn(21), /supervisor-forked leader/);
+  f.owned.noteSpawn(20); assert.throws(() => f.owned.noteSpawn(20), /already/);
+});
+test('without a recorded spawn identity the legacy rule stays: no sweep, no extra signal authority', async () => {
+  const f = containmentFixture(); f.rows.set(21, row(21, 1, { starttime: '210' }));
+  const sweep = f.owned.containmentSweep('SIGKILL');
+  assert.deepEqual(sweep.signalled, []); assert.deepEqual(f.signals, []);
+});
+
+function earlyFailureSession({ capture = async () => {}, corroborate = async () => {}, helperStop = null, bigReceipt = false } = {}) {
+  let clock = 0, cleanups = 0;
+  const spawned = { pid: 20, starttime: '200' };
+  // Spawn-time authority only: family.leader is never set because the exec proof never succeeded.
+  const family = { spawned, sample: () => ({ rssMb: 1, members: [] }),
+    cleanup: async () => { cleanups++; return { cleanupConfirmed: true,
+      survivors: bigReceipt ? Array.from({ length: 80 }, (_, i) => ({ pid: i + 100, starttime: String(i), cmdline: 'x'.repeat(300) })) : [],
+      containment: { spawned, signalled: [{ pid: 21, starttime: '210', basis: 'started-while-spawned-leader-alive', signal: 'SIGTERM' }], unverified: [], refused: [] } }; } };
+  const gate = { family, child: { pid: 20 }, capture, release() {}, corroborate, abort() {}, waitClosed: async () => ({ exited: true, closed: true }) };
+  const rows = [], deps = { now: () => clock, persist: r => rows.push(r), emit() {}, spawnGate: async () => gate, inspect: () => ({ owned: true }) };
+  const s = new CompositorSession(plan(), deps);
+  if (helperStop) s.configuration = { stop: helperStop };
+  return { s, rows, get cleanups() { return cleanups; } };
+}
+test('every early-failure path retires exactly the spawned family and writes retirement evidence', async () => {
+  const paths = {
+    'wrapper proof fails': { corroborate: async () => { throw Error('Post-exec wrapper executable/identity mismatch (exe)'); } },
+    'role proof fails': { corroborate: async () => { throw Error('Unexpected compositor descendant/role executable'); } },
+    'capture fails before any identity proof': { capture: async () => { throw Error('Gate exited'); } },
+    'oversized receipt (IPC cap)': { bigReceipt: true, corroborate: async () => { throw Error('boom'); } },
+  };
+  for (const [name, options] of Object.entries(paths)) {
+    const f = earlyFailureSession(options); f.s.ready();
+    await assert.rejects(f.s.handle({ type: 'start' }), undefined, name);
+    assert.equal(f.cleanups, 1, name);
+    const rows = f.rows.filter(r => r.type === 'retirement');
+    assert.equal(rows.length, 1, name); assert.equal(rows[0].cleanupConfirmed, true, name);
+    assert.equal(rows[0].family.containment.signalled[0].pid, 21, name);
+    assertProtocolEnvelope({ final: f.s.receipt });
+    if (options.bigReceipt) { assert.match(String(f.s.receipt.truncated), /ipc-record-budget/); assert.equal(f.s.receipt.family.survivors, 80); }
+  }
+  // Helper failure: the helper receipts say unconfirmed, the compositor family is STILL retired and reported.
+  const f = earlyFailureSession({ corroborate: async () => { throw Error('x'); }, helperStop: async () => ({ cleanupConfirmed: false, error: 'helper exploded', receipts: [] }) });
+  f.s.ready(); await assert.rejects(f.s.handle({ type: 'start' }));
+  assert.equal(f.cleanups, 1); assert.equal(f.s.receipt.cleanupConfirmed, false); assert.equal(f.s.receipt.helpers.cleanupConfirmed, false);
+});
+test('a failing retirement announcement never throws away the receipt', async () => {
+  const f = earlyFailureSession({ corroborate: async () => { throw Error('x'); } });
+  f.s.deps.persist = () => { throw Error('Compositor evidence cap'); };
+  f.s.state = 'ready'; // ready() would itself persist; the retirement row is what is under test
+  await assert.rejects(f.s.handle({ type: 'start' }), /x/);
+  assert.equal(f.cleanups, 1); assert.equal(f.s.receipt.cleanupConfirmed, false); assert.match(f.s.receipt.evidenceError, /evidence cap/);
+  assert.equal(f.s.receipt.family.containment.signalled[0].pid, 21);
+});
+test('execve race: tolerant inspector retries transient read failures within a bound and never accepts a wrong value', async () => {
+  const { makeTolerantInspect } = await import('../supervised-compositor-linux.mjs');
+  const codes = ['EIDENTITYCHANGED', 'ESRCH', 'ENOENT'];
+  let n = 0; const flaky = makeTolerantInspect(() => { if (n++ < 3) throw Object.assign(Error('race'), { code: codes[n - 1] }); return { exe: 'x' }; });
+  assert.deepEqual([flaky(1), flaky(1), flaky(1), flaky(1)], [null, null, null, { exe: 'x' }]);
+  const always = makeTolerantInspect(() => { throw Object.assign(Error('stuck'), { code: 'EIDENTITYCHANGED' }); }, { maxConsecutive: 3 });
+  assert.equal(always(1), null); assert.equal(always(1), null); assert.equal(always(1), null); assert.throws(() => always(1), /stuck/);
+  const other = makeTolerantInspect(() => { throw Object.assign(Error('denied'), { code: 'EPERM' }); });
+  assert.throws(() => other(1), /denied/);
+  // A readable wrong value is returned (and then judged by the decision function), never swallowed.
+  assert.deepEqual(makeTolerantInspect(() => ({ exe: '/usr/bin/foreign' }))(1), { exe: '/usr/bin/foreign' });
+});
+test('execve race: role proof retries daemon/kwin mid-exec states but a stable wrong role still fails at once', () => {
+  const pauses = [], opts = f => ({ ...f.deps, pause: ms => pauses.push(ms) });
+  // empty environ for kwin on the first attempts, then settled
+  let f = socketFixture(), attempt = 0; const settled = f.deps.inspect;
+  f.deps.inspect = pid => (pid === 21 && attempt < 4 && ++attempt ? { ...f.kwin, home: undefined } : settled(pid));
+  f.family.sample = () => ({ rssMb: 1, members: [row(20, 10), f.kwin] });
+  assert.equal(proveCompositorRoles(f.family, f.p, f.receipts, opts(f)).kwin.pid, 21); assert.equal(pauses.length, 2);
+  // reads straddling the exec: exe differs between the two reads
+  pauses.length = 0; f = socketFixture(); let reads = 0; const base = f.deps.inspect;
+  f.deps.inspect = pid => (pid === 21 && ++reads <= 2 ? { ...f.kwin, exe: reads === 1 ? f.receipts['dbus-run-session'].path : f.kwin.exe } : base(pid));
+  assert.equal(proveCompositorRoles(f.family, f.p, f.receipts, opts(f)).kwin.pid, 21); assert.equal(pauses.length, 1);
+  // EIDENTITYCHANGED thrown by the reader
+  pauses.length = 0; f = socketFixture(); let thrown = 0; const base2 = f.deps.inspect;
+  f.deps.inspect = pid => { if (pid === 21 && thrown++ < 1) throw Object.assign(Error('Exec identity changed during inspection'), { code: 'EIDENTITYCHANGED' }); return base2(pid); };
+  assert.equal(proveCompositorRoles(f.family, f.p, f.receipts, opts(f)).kwin.pid, 21); assert.equal(pauses.length, 1);
+  // forked copy of the wrapper that has not exec'd yet
+  pauses.length = 0; f = socketFixture(); const copy = { ...row(21, 20), uid: 1000, home: f.p.home, exe: f.receipts['dbus-run-session'].path, executableIdentity: f.receipts['dbus-run-session'].identity };
+  let forks = 0; const base3 = f.deps.inspect; f.deps.inspect = pid => (pid === 21 && forks++ < 2 ? copy : base3(pid));
+  assert.equal(proveCompositorRoles(f.family, f.p, f.receipts, opts(f)).kwin.pid, 21); assert.equal(pauses.length, 1);
+  // stable wrong executable: no retry, original refusal
+  pauses.length = 0; f = socketFixture(); f.kwin.exe = '/usr/bin/foreign';
+  assert.throws(() => proveCompositorRoles(f.family, f.p, f.receipts, opts(f)), /Unexpected/); assert.equal(pauses.length, 0);
+  // permanently mid-exec: bounded retries, then the error surfaces
+  pauses.length = 0; f = socketFixture(); f.deps.inspect = pid => (pid === 21 ? { ...f.kwin, home: undefined } : settled(pid));
+  assert.throws(() => proveCompositorRoles(f.family, f.p, f.receipts, { ...opts(f), attempts: 4 }), /Role executable changing/); assert.equal(pauses.length, 3);
+});
+test('controller always yields retirement evidence, even with no worker receipt, an unconfirmed stop or an oversized receipt', async () => {
+  const make = () => { const w = new EventEmitter(); w.connected = true; w.send = (m, cb) => cb?.(); w.disconnect = () => { w.connected = false; w.emit('disconnect'); }; return w; };
+  // 1. worker dies without any receipt
+  let w = make(); let c = new CompositorController(w); c.reservation = '/tmp/perf-lab-x/reservation';
+  w.emit('message', { event: { type: 'ready' } }); w.connected = false; w.emit('disconnect'); w.emit('exit', 2, null);
+  let written; let receipt = await c.writeRetirement('/x/retirement.json', (p, v) => { written = { p, v }; });
+  assert.equal(written.p, '/x/retirement.json'); assert.equal(written.v.cleanupConfirmed, false); assert.match(written.v.missingWorkerReceipt, /no retirement receipt/);
+  assert.equal(receipt.actualRetirement.code, 2);
+  // 2. worker receipt present but unconfirmed (stop() rejects): the file is still written with the survivors
+  w = make(); c = new CompositorController(w);
+  w.emit('message', { event: { type: 'ready' } });
+  w.emit('message', { final: { reason: 'startup: x', cleanupConfirmed: false, family: { cleanupConfirmed: false, survivors: [{ pid: 721002, starttime: '1' }] }, pipes: { exited: true, closed: true }, helpers: null, descriptor: {} } });
+  w.connected = false; w.emit('disconnect'); w.emit('exit', 2, null);
+  written = null; await c.writeRetirement('/x/r2.json', (p, v) => { written = v; });
+  assert.equal(written.cleanupConfirmed, false); assert.equal(written.workerReceipt.family.survivors[0].pid, 721002); assert.match(written.stopError, /unconfirmed/);
+  // 3. the full write fails (too large): a verdict-only file is still written
+  w = make(); c = new CompositorController(w); w.emit('message', { event: { type: 'ready' } });
+  w.emit('message', { final: { reason: 'r', cleanupConfirmed: true, family: { cleanupConfirmed: true, survivors: [] }, pipes: { exited: true, closed: true }, helpers: null, descriptor: {} } });
+  w.connected = false; w.emit('disconnect'); w.emit('exit', 0, null);
+  const calls = []; await c.writeRetirement('/x/r3.json', (p, v) => { calls.push(v); if (calls.length === 1) throw Error('Protocol record budget exceeded'); });
+  assert.equal(calls.length, 2); assert.equal(calls[1].workerReceipt.cleanupConfirmed, true); assert.match(calls[1].writeNote, /budget/);
+});

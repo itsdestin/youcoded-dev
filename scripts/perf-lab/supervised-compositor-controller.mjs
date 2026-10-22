@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compositorPlan, COMPOSITOR_CAPS as CAPS, COMPOSITOR_DESCRIPTOR } from './supervised-compositor-policy.mjs';
 import { authorizeCompositorExecutables, writeCompositorJson, verifyCompositorDirectories } from './supervised-compositor-linux.mjs';
+import { fitRetirementReceipt } from './supervised-compositor-core.mjs';
 import { assertProtocolEnvelope, PROTOCOL_CAPS } from './supervised-protocol.mjs';
 import { observeChildRetirement } from './supervised-retirement.mjs';
 import { SUPERVISOR_STOP_TIMEOUT_MS } from './supervised-launch-core.mjs';
@@ -29,7 +30,7 @@ export class CompositorController {
         if(message.id && this.pending.has(message.id)) {
           const p=this.pending.get(message.id);this.pending.delete(message.id);message.error?p.reject(Error(message.error)):p.resolve(message.result);
         }
-      }catch{fail('Unsafe compositor response');this.disconnect();}
+      }catch{this.unsafeResponse=true;fail('Unsafe compositor response');this.disconnect();}
     });
     worker.on('error',e=>{fail(e.message);this.disconnect();});
     worker.on('disconnect',()=>fail('Compositor controller disconnected'));
@@ -69,9 +70,36 @@ export class CompositorController {
       if(this.worker.connected && !this.receipt)await this.#request('stop',SUPERVISOR_STOP_TIMEOUT_MS).catch(()=>this.disconnect());
       const actual=await bounded(this.retirement.done,SUPERVISOR_STOP_TIMEOUT_MS,'actual retirement');
       clearTimeout(this.watchdog);
-      if(!this.receipt?.cleanupConfirmed || actual.code!==0 || actual.signal || actual.error)throw Error('Compositor cleanup/actual retirement unconfirmed');
+      if(!this.receipt?.cleanupConfirmed || actual.code!==0 || actual.signal || actual.error)throw Object.assign(Error('Compositor cleanup/actual retirement unconfirmed'),{receipt:this.receipt});
       return this.receipt;
     })();return this.stopping;
+  }
+  // WHY (helper-hardening-3): callers used to write retirement.json only when stop() resolved, so an
+  // early startup/inspect failure (or an unconfirmed cleanup, which makes stop() reject) left NO retirement
+  // evidence. This never throws and never signals: it drives the one stop path, waits a bounded time for
+  // the worker's actual exit, and returns the worker's final receipt (compacted if large) together with
+  // what the controller itself observed. A missing worker receipt is reported as cleanupConfirmed:false.
+  async finalReceipt() {
+    let stopError=null;
+    try {await this.stop();} catch(error) {stopError=String(error?.message??error).slice(0,256);}
+    let actual=null;
+    try {actual=this.retirement.snapshot();} catch {/* snapshot is plain data; keep null */}
+    const worker=this.receipt?fitRetirementReceipt(this.receipt):null;
+    return {revision:1,source:'controller-final-receipt',
+      cleanupConfirmed:worker?.cleanupConfirmed===true && actual?.exited===true && actual?.code===0 && !actual?.signal && !actual?.error && !stopError,
+      stopError,unsafeResponse:this.unsafeResponse===true,workerReceipt:worker,
+      ...(worker?{}:{missingWorkerReceipt:'worker sent no retirement receipt; see compositor-evidence.jsonl in the reservation'}),
+      actualRetirement:actual,reservation:this.reservation??null};
+  }
+  async writeRetirement(path,write=writeCompositorJson) {
+    const receipt=await this.finalReceipt();
+    try {write(path,receipt);}
+    catch(error) {
+      // Compaction failed to fit: keep only verdicts, never skip the file.
+      const {workerReceipt,...rest}=receipt;
+      write(path,{...rest,workerReceipt:workerReceipt?{cleanupConfirmed:workerReceipt.cleanupConfirmed===true,reason:String(workerReceipt.reason).slice(0,128)}:null,writeNote:String(error.message).slice(0,128)});
+    }
+    return receipt;
   }
 }
 export function startCompositorSupervisor(...args) {

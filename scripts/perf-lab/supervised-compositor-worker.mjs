@@ -2,7 +2,7 @@
 import { openSync, closeSync, writeSync, constants, lstatSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve, join } from 'node:path';
-import { CompositorSession } from './supervised-compositor-core.mjs';
+import { CompositorSession, fitRetirementReceipt } from './supervised-compositor-core.mjs';
 import { validateCompositorPlan, COMPOSITOR_CAPS as CAPS } from './supervised-compositor-policy.mjs';
 import { makeCompositorLinuxAdapters, reauthorizeCompositorExecutables, verifyCompositorDirectories } from './supervised-compositor-linux.mjs';
 import { readBoundedText } from './lifecycle-evidence.mjs';
@@ -48,6 +48,9 @@ export async function finishCompositorWorker({session,reason,channel,send,persis
       for (const [stream, text] of Object.entries({ stdout, stderr })) persist({ type: 'compositor-output-tail', stream, text });
     } catch (error) { receipt.cleanupConfirmed = false; receipt.output.evidenceError = String(error.message).slice(0, 512); }
   }
+  // WHY: output/localResources are appended after stop(); re-fit so the final envelope and the
+  // retirement-local-resources row can never exceed the bounded budget and veto the receipt.
+  receipt = fitRetirementReceipt(receipt);
   session.receipt=receipt; // retain failure evidence BEFORE destroying any handle
   detach();
   try {
@@ -56,6 +59,7 @@ export async function finishCompositorWorker({session,reason,channel,send,persis
   }catch(error){receipt.cleanupConfirmed=false;receipt.localResources={status:'local-disposal-failed',errors:[String(error.message).slice(0,512)]};}
   // WHY: disposal is local resource release, not proof the writer/process exited.
   // Preserve family/pipe errors and flush a final evidence row before IPC drops.
+  receipt=fitRetirementReceipt(receipt);session.receipt=receipt;
   try {persist({type:'retirement-local-resources',...receipt});}
   catch(error){receipt.cleanupConfirmed=false;receipt.evidenceError=String(error.message).slice(0,512);}
   try {closeEvidence();}catch(error){receipt.cleanupConfirmed=false;receipt.evidenceCloseError=String(error.message).slice(0,512);}

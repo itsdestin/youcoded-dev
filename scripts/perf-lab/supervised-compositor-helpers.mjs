@@ -41,6 +41,38 @@ function boundedText(text) {
   return text;
 }
 
+// WHY (runtime attempt helper-hardening-1): four FULL helper retirement receipts (pipes, spawnedChild,
+// gateEvidence, authorizer, execution, survivors ...) are ~100 protocol records each, so once all four
+// helpers ran, the inspect result and the worker's retirement receipt exceeded the 512-record IPC budget,
+// the receipt was never delivered and no retirement evidence was written. The full per-helper receipt is
+// already persisted in its own `helper-retirement` evidence row; anything that rides the IPC envelope
+// carries this fixed-shape summary instead (every safety-relevant verdict kept, nothing silently dropped).
+export function summarizeHelperReceipt(r) {
+  if (!r || typeof r !== 'object') return { step: null, cleanupConfirmed: false, summary: 'missing' };
+  if (typeof r.evidence === 'string' && 'executionKind' in r) return r; // already a summary (idempotent)
+  const exec = r.execution ?? null, pipes = r.pipes ?? {};
+  return {
+    step: r.step ?? null, cleanupConfirmed: r.cleanupConfirmed === true,
+    executionKind: exec?.kind ?? pipes.gateEvidence?.kind ?? null,
+    runtimeExeObserved: exec ? exec.runtimeExeObserved === true : false,
+    receiptPipeEOF: exec ? exec.receiptPipeEOF === true : pipes.gateEvidence?.receiptPipeEOF === true,
+    authorized: !!(exec?.authorizer ?? pipes.gateEvidence?.authorizer),
+    exited: pipes.exited === true, closed: pipes.closed === true,
+    code: pipes.code ?? exec?.exit?.code ?? null, signal: pipes.signal ?? exec?.exit?.signal ?? null,
+    error: r.error ? String(r.error).slice(0, 256) : null,
+    survivors: Array.isArray(r.survivors) ? r.survivors.length : 0,
+    localErrors: Array.isArray(r.localErrors) ? r.localErrors.length : 0,
+    memoryComplete: r.memoryComplete !== false,
+    evidence: 'full receipt in the helper-retirement evidence row',
+  };
+}
+export function summarizeHelperRetirement(h) {
+  if (!h || typeof h !== 'object') return h ?? null;
+  return { cleanupConfirmed: h.cleanupConfirmed === true,
+    error: h.error ? String(h.error).slice(0, 256) : null,
+    receipts: (h.receipts ?? []).slice(0, HELPER_CAPS.count).map(summarizeHelperReceipt) };
+}
+
 export function parseKScreen(text, { effective = false } = {}) {
   // WHY: installed /usr/share/zsh/site-functions/_kscreen-doctor documents
   // outputs[].id/name/connected/enabled/currentModeId and modes[].id/size/refreshRate.
@@ -107,13 +139,34 @@ export function parseWaylandOutput(text) {
   const logical = [...block.matchAll(/^\s*logical_width: (\d+), logical_height: (\d+)\s*$/gm)];
   const modes = [...block.matchAll(/width: (\d+) px, height: (\d+) px, refresh: (\d+\.\d{3}) Hz,\s*\r?\n\s*flags:([^\r\n]*)/g)];
   const current = modes.filter(match => /\bcurrent\b/.test(match[4]));
-  if (logical.length !== 1 || current.length !== 1 || Number(logical[0][1]) !== EXPECTED_OUTPUT.logicalWidth ||
-      Number(logical[0][2]) !== EXPECTED_OUTPUT.logicalHeight || Number(current[0][1]) !== EXPECTED_OUTPUT.width ||
+  // WHY: kwin 6.7.5's wl_output block carries no xdg_output logical size (containment-1 evidence);
+  // it prints the integer wl_output scale, i.e. ceil(1.5) = 2. When the logical size is printed it
+  // must match exactly; when it is absent, exactly one integer scale equal to ceil(EXPECTED scale)
+  // is required and the result says the logical size was not reported. KScreen's readback is what
+  // pins the fractional 1.5 itself.
+  const intScale = [...block.matchAll(/^\s*x: -?\d+, y: -?\d+, scale: (\d+),\s*$/gm)];
+  const logicalOk = logical.length === 1 ? Number(logical[0][1]) === EXPECTED_OUTPUT.logicalWidth &&
+      Number(logical[0][2]) === EXPECTED_OUTPUT.logicalHeight
+    : logical.length === 0 && intScale.length === 1 && Number(intScale[0][1]) === Math.ceil(EXPECTED_OUTPUT.scale);
+  if (!logicalOk || current.length !== 1 || Number(current[0][1]) !== EXPECTED_OUTPUT.width ||
       Number(current[0][2]) !== EXPECTED_OUTPUT.height || Number(current[0][3]) !== EXPECTED_OUTPUT.refreshHz) {
-    throw Error('Effective Wayland geometry/refresh mismatch or incomplete report');
+    // WHY: helper-hardening-1 failed here with no hint which sub-check differed. Report only the
+    // numbers wl_output itself printed (bounded), so the next attempt is not blind.
+    const seen = `logical=${logical.map(m => `${m[1]}x${m[2]}`).join('|').slice(0, 60)} intScale=${intScale.map(m => m[1]).join('|').slice(0, 20)} ` +
+      `modes=${modes.map(m => `${m[1]}x${m[2]}@${m[3]}${/\bcurrent\b/.test(m[4]) ? '*' : ''}`).join('|').slice(0, 160)}`;
+    throw Error(`Effective Wayland geometry/refresh mismatch or incomplete report (${seen})`);
   }
   return { name: EXPECTED_OUTPUT.name, width: Number(current[0][1]), height: Number(current[0][2]),
-    refreshHz: Number(current[0][3]), logicalWidth: Number(logical[0][1]), logicalHeight: Number(logical[0][2]) };
+    refreshHz: Number(current[0][3]),
+    ...(logical.length ? { logicalWidth: Number(logical[0][1]), logicalHeight: Number(logical[0][2]) }
+      : { logicalSize: 'not-reported-by-compositor', wlOutputIntegerScale: Number(intScale[0][1]) }) };
+}
+
+export function waylandOutputExcerpt(text) {
+  const blocks = String(text).split(/^interface: /m).slice(1);
+  const block = blocks.find(b => /^'?wl_output'?,\s+version:/.test(b)) ?? '';
+  const heads = blocks.map(b => b.split('\n', 1)[0].slice(0, 60)).slice(0, 40);
+  return `interfaces=${heads.join(' ; ')}`.slice(0, 1800) + '\n---wl_output---\n' + block.slice(0, 2000);
 }
 
 export function createHelperOutputCollector() {
@@ -320,7 +373,7 @@ export class CompositorConfiguration {
   sampleResources() {
     let rssMb = 0, members = 0;
     for (const handle of this.handles) {
-      if (!handle.family || handle.receipt) continue;
+      if (!handle.family?.leader || handle.receipt) continue;
       const sample = handle.family.sample();
       if (!Number.isFinite(sample.rssMb) || sample.rssMb < 0 || sample.members.length > HELPER_CAPS.members) {
         throw Error('Incomplete helper memory/family observation');
@@ -376,7 +429,7 @@ export class CompositorConfiguration {
       this.checkBudget();
       handle.captureDone = (async () => {
         try { await gate.capture(); }
-        finally { if (gate.family?.leader) handle.family = gate.family; }
+        finally { if (gate.family?.leader || gate.family?.spawned) handle.family = gate.family; }
       })();
       await handle.captureDone;
       this.deps.note('helper-ownership', { step, leader: handle.family?.leader ?? null });
@@ -417,10 +470,19 @@ export class CompositorConfiguration {
         if (observed.outputId !== selected.outputId || observed.modeId !== selected.modeId) {
           throw Error('Output/mode identity changed during configuration');
         }
-        const wayland = parseWaylandOutput(await this.run('wayland'));
+        const waylandText = await this.run('wayland');
+        let wayland;
+        try { wayland = parseWaylandOutput(waylandText); }
+        catch (error) {
+          // WHY: helper-hardening-2 showed no logical size in the report; the evidence tail kept only the
+          // end of a ~40 KB dmabuf-format table. Keep the wl_output block itself (bounded, no env/paths).
+          this.deps.note('wayland-report-excerpt', { reason: String(error.message).slice(0, 256),
+            excerpt: waylandOutputExcerpt(waylandText) });
+          throw error;
+        }
         const socket = this.proveSocket();
         this.result = { status: 'observed-private-output-metadata', modeVerified: true, observed, wayland,
-          socket, helpers: this.handles.map(handle => handle.receipt),
+          socket, helpers: this.handles.map(handle => summarizeHelperReceipt(handle.receipt)),
           observedAt: this.deps.now(), observationScope: 'completed helper readbacks, not continuous mode monitoring',
           physicalScanoutVerified: false, appWaylandBinding: 'supervised-launch-plan-field-not-runtime-validated', gpuRuntime: 'blocked' };
         this.deps.note('configuration-observed', this.result);

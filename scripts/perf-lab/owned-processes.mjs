@@ -24,6 +24,16 @@ export function* boundedProcPids({ open = path => opendirSync(path, { bufferSize
   } finally { directory.closeSync(); }
 }
 
+// WHY (helper-hardening-3): the containment bound below compares a /proc start time (clock ticks since
+// boot, USER_HZ=100 on Linux) with "now". Unreadable/garbled uptime yields null, which disables that one
+// basis (fail closed): it can never grant authority.
+export function bootTicks(read = path => readBoundedText(path, { maxBytes: 256 })) {
+  try { const v = Number(String(read('/proc/uptime')).split(/\s+/)[0]); return Number.isFinite(v) && v >= 0 ? Math.floor(v * 100) : null; }
+  catch { return null; }
+}
+const TRANSIENT_PROC_CODES = new Set(['EIDENTITYCHANGED', 'ESRCH', 'ENOENT']);
+export const isTransientProcError = error => TRANSIENT_PROC_CODES.has(error?.code);
+
 export function parseProcStat(text) {
   // WHY: comm may contain spaces and parentheses; field 22 is an opaque integer.
   const end = text.lastIndexOf(')'), pid = Number(text.slice(0, text.indexOf(' ')));
@@ -53,7 +63,7 @@ export function readProc(pid,{read=path=>readBoundedText(path,{maxBytes:65536}),
     stage='read-stat-after';
     try{after=parseProcStat(read(`/proc/${pid}/stat`,'utf8'));}
     catch(error){afterError=error.code??'PARSE';if(['ENOENT','ESRCH'].includes(error.code)){observe('identity-disappeared',error);return null;}throw error;}
-    stage='verify-identity';if(!same(after,record))throw Error(`PID ${pid} identity changed during proc read`);
+    stage='verify-identity';if(!same(after,record))throw Object.assign(Error(`PID ${pid} identity changed during proc read`),{code:'EIDENTITYCHANGED'});
     if(!rss){stage='missing-rss';observe('missing-rss');}
     return {...after,cmdline,rssMb:rss?Number(rss[1])/1024:null,memoryObservation:{status:rss?'measured':'incomplete',reason:rss?null:'VmRSS missing',statusState:/^State:\s+([A-Z])/m.exec(rawStatus)?.[1]??null,identityState:after.state,starttime:after.starttime}};
   }catch(error){
@@ -69,7 +79,7 @@ const same = (a, b) => a && b && a.pid === b.pid && a.starttime === b.starttime;
 
 export class OwnedProcesses {
   constructor({ leaderPid, parentPid = process.pid, jobDir, maxMembers = 10000, descendantsOnly = false, read, procRead,
-    list = boundedProcPids,
+    list = boundedProcPids, uptimeTicks = bootTicks,
     signal = (pid, sig) => process.kill(pid, sig), now = Date.now,
     sleep = ms => new Promise(done => setTimeout(done, ms)) }) {
     // WHY: HOME in the private worker is not the owner's account authority.
@@ -82,7 +92,10 @@ export class OwnedProcesses {
     // WHY: compositor wrappers require positively observed descent, not numeric
     // session membership. Default app ownership policy remains unchanged.
     if (typeof descendantsOnly !== 'boolean') throw Error('Invalid descendant discovery policy');
-    Object.assign(this, { leaderPid, parentPid, jobDir, maxMembers, descendantsOnly, read:readOwned, list, signal, now, sleep });
+    Object.assign(this, { leaderPid, parentPid, jobDir, maxMembers, descendantsOnly, read:readOwned, list, signal, now, sleep, uptimeTicks });
+    // Spawn-time authority (see noteSpawn): null unless the SPAWNER recorded its own just-forked child.
+    this.spawned = null; this.leaderAliveBound = null; this.contained = new Map(); this.containmentLog = [];
+    this.unverifiedSeen = new Set(); this.sweepGaps = [];
     this.known = new Map(); this.uncertain = new Map(); this.errors = []; this.memoryErrors = []; this.memoryGaps = []; this.continuity = true; this.self = new Set();
     let pid = parentPid;
     for (let depth = 0; pid > 1; depth++) {
@@ -90,6 +103,118 @@ export class OwnedProcesses {
       this.self.add(pid); const r = this.read(pid);
       if (!r) throw new Error('Missing self ancestry'); pid = r.ppid;
     }
+  }
+
+  // ---- Spawn-time containment authority (helper-hardening-3) -------------------------------------------
+  // WHY: the supervisor forks the wrapper ITSELF, so the numeric pid it holds is not a guess: while that
+  // child is unreaped the kernel cannot hand the pid to anyone else, and Node's detached spawn runs setsid()
+  // before exec, so the child is its own session AND group leader (sid == pgid == pid) whose parent is us.
+  // noteSpawn records (pid, starttime) at fork time, BEFORE any exec proof exists, so a startup/inspect
+  // failure can still retire exactly this family. Nothing here is reachable from a caller-supplied pid.
+  noteSpawn(pid) {
+    if (this.spawned) throw Error('Spawn identity already recorded');
+    if (!Number.isInteger(pid) || pid <= 1 || pid !== this.leaderPid) throw Error('Spawn identity must name the supervisor-forked leader');
+    const ticks = this.uptimeTicks();
+    const r = this.read(pid);
+    if (!r || r.pid !== pid || r.ppid !== this.parentPid || r.pgrp !== pid || r.session !== pid) throw Error('Spawned child parent/session/group mismatch');
+    this.protectContained(r);
+    this.spawned = { pid, starttime: r.starttime };
+    this.leaderAliveBound = ticks;
+    return { ...this.spawned };
+  }
+  // Records "the leader was provably alive at boot-tick T". The uptime is read BEFORE the leader read, so T
+  // is never later than the instant the leader was seen alive; a process whose start tick is strictly below
+  // T therefore began while this pid was still held by our leader.
+  pulse() {
+    if (!this.spawned) return;
+    try {
+      const ticks = this.uptimeTicks(), r = this.read(this.spawned.pid);
+      if (ticks !== null && r && r.starttime === this.spawned.starttime) this.leaderAliveBound = Math.max(this.leaderAliveBound ?? 0, ticks);
+    } catch { /* an unreadable leader simply fails to extend the bound */ }
+  }
+  // Light protection for session-based targets: the full ancestry walk in protect() needs every parent to
+  // be readable, which is exactly what fails for a reparented orphan. A session member is ours by session
+  // lineage, so only "never self / an ancestor of the supervisor / pid<=1 / the live app" is required.
+  protectContained(record) {
+    if (record.pid <= 1 || this.self.has(record.pid)) throw Error(`Protected self/ancestor ${record.pid}`);
+    if (MARKERS.some(m => record.cmdline.includes(m))) throw Error(`Protected cmdline for ${record.pid}`);
+  }
+  pruneContained() {
+    for (const [pid, info] of this.contained) {
+      const r = this.read(pid);
+      // Gone, or the number now belongs to something else: the ORIGINAL identity is confirmed absent.
+      if (!r || r.starttime !== info.starttime) { this.contained.delete(pid); this.known.delete(pid); }
+    }
+  }
+  // Which evidence (if any) makes this session-S process a member of the family we spawned.
+  // S == spawned.pid, and a process is in S only by inheriting it from a process already in S, so the
+  // question is only whether S may have been EMPTY (and the number reused by a foreign setsid) meanwhile.
+  containmentBasis(r, ctx) {
+    const S = this.spawned.pid;
+    if (r.session !== S) return null;
+    if (r.pid === S) return r.starttime === this.spawned.starttime ? 'spawned-leader-identity' : null;
+    // 1. Our leader still holds the pid (alive or unreaped zombie): S cannot have been reused.
+    if (ctx.leaderHeld) return 'session-of-held-spawned-leader';
+    const start = Number(r.starttime);
+    if (!Number.isFinite(start)) return null;
+    // 2. It began strictly before the last instant the leader was seen alive: it was born into OUR session.
+    if (ctx.bound !== null && start < ctx.bound) return 'started-while-spawned-leader-alive';
+    // 3. A previously authorised member that is still the same identity has held S continuously since it
+    //    was born (born while the leader was alive), so everything now in S descends from our session.
+    if (ctx.anchor && start >= ctx.anchor) return 'session-held-by-authorised-member';
+    return null;
+  }
+  // One bounded scan of the session we created. signal=null observes and adopts only. Per-process signals
+  // only (never kill(-pgid)): each target is re-read immediately before the signal and must still be the
+  // identical (pid, starttime, session). Returns what is live and what could not be proven ours.
+  containmentSweep(sig = null) {
+    if (!this.spawned) return { authorised: [], unverified: [], refused: [], complete: true, signalled: [] };
+    const S = this.spawned.pid, gaps = [], table = [];
+    try { this.pruneContained(); } catch (error) { gaps.push({ pid: null, code: String(error.code ?? error.message).slice(0, 64) }); }
+    try {
+      let scanned = 0;
+      for (const pid of this.list()) {
+        if (++scanned > 10000) throw Error('Proc enumeration cap exceeded');
+        try { const r = this.read(pid); if (r && r.session === S) table.push(r); }
+        catch (error) { if (gaps.length < 8) gaps.push({ pid, code: String(error.code ?? 'ERR').slice(0, 16) }); }
+      }
+    } catch (error) { gaps.push({ pid: null, code: String(error.message).slice(0, 64) }); }
+    const leader = table.find(r => r.pid === S);
+    const ctx = { leaderHeld: !!leader && leader.starttime === this.spawned.starttime, bound: this.leaderAliveBound, anchor: null };
+    if (ctx.leaderHeld) this.pulse();
+    ctx.bound = this.leaderAliveBound;
+    // Anchor: any recorded non-leader member still present with an unchanged identity inside S, that was
+    // born while the leader was alive (so S was continuously ours up to it).
+    for (const old of this.known.values()) {
+      if (old.pid === S) continue;
+      const r = table.find(t => t.pid === old.pid);
+      if (r && r.starttime === old.starttime && ctx.bound !== null && Number(old.starttime) < ctx.bound) {
+        ctx.anchor = Math.min(ctx.anchor ?? Infinity, Number(old.starttime));
+      }
+    }
+    const out = { authorised: [], unverified: [], refused: [], signalled: [], complete: gaps.length === 0, gaps };
+    for (const r of table) {
+      const basis = this.containmentBasis(r, ctx);
+      const brief = { pid: r.pid, starttime: r.starttime, state: r.state, ppid: r.ppid };
+      if (!basis) { out.unverified.push({ ...brief, reason: 'no-authority-for-session-occupant' }); this.unverifiedSeen.add(`${r.pid}:${r.starttime}`); continue; }
+      try { this.protectContained(r); } catch (error) { out.refused.push({ ...brief, basis, reason: String(error.message).slice(0, 96) }); continue; }
+      if (this.known.size >= this.maxMembers && !this.known.has(r.pid)) { out.refused.push({ ...brief, basis, reason: 'member-cap' }); continue; }
+      if (!this.contained.has(r.pid) && !this.known.has(r.pid)) this.contained.set(r.pid, { starttime: r.starttime, basis });
+      if (this.contained.has(r.pid)) this.known.set(r.pid, { ...r });
+      out.authorised.push({ ...brief, basis });
+      if (sig && !['Z', 'X'].includes(r.state)) {
+        try {
+          // Fence: identical identity, immediately before the signal.
+          const fresh = this.read(r.pid);
+          if (!fresh) continue;
+          if (fresh.starttime !== r.starttime || fresh.session !== S || fresh.pid !== r.pid) { out.refused.push({ ...brief, basis, reason: 'identity-changed-before-signal' }); continue; }
+          if (!['Z', 'X'].includes(fresh.state)) { this.signal(r.pid, sig); out.signalled.push({ ...brief, basis, signal: sig }); }
+        } catch (error) { if (error.code !== 'ESRCH') out.refused.push({ ...brief, basis, reason: String(error.message).slice(0, 96) }); }
+      }
+    }
+    for (const entry of out.signalled) if (this.containmentLog.length < 64) this.containmentLog.push(entry);
+    this.sweepGaps = gaps;
+    return out;
   }
   rememberError(error) {
     if(error.procForensic)this.procFailureRing.record(error.procForensic);
@@ -138,6 +263,7 @@ export class OwnedProcesses {
   sample() {
     if(!this.intentionalTeardown)this.procPhase='sample';
     if (!this.leader) throw new Error('Leader identity not captured');
+    if (this.spawned) { this.pulse(); this.pruneContained(); }
     const table = new Map();
     try {
       // WHY: enumeration and reads are not one snapshot. An anchor observed just
@@ -202,6 +328,10 @@ export class OwnedProcesses {
       // occupants of the original session after its last known anchor is lost.
       // This is negative completeness evidence ONLY: never adopt or signal them.
       if (!this.continuity) {
+        // WHY: an uncertain occupant that is now confirmed absent (or whose number was reused, i.e. the
+        // ORIGINAL identity is gone) is no longer an unverified occupant; without this the entry made
+        // every later scan throw even after the occupant was retired.
+        for (const [pid, old] of this.uncertain) { const cur = table.get(pid); if (!cur || cur.starttime !== old.starttime) this.uncertain.delete(pid); }
         for (const r of table.values()) {
           if (r.session === this.leader.session && !this.known.has(r.pid)) {
             if (this.uncertain.size >= this.maxMembers) throw Error('Uncertain family member cap exceeded');
@@ -213,7 +343,7 @@ export class OwnedProcesses {
       const members = [...this.known.values()].map(old => table.get(old.pid)).filter(Boolean);
       let rssMb = 0;
       for (const r of members) {
-        this.protect(r);
+        if (!this.contained.has(r.pid)) this.protect(r);
         if (r.state !== 'Z' && r.state !== 'X') {
           if (!Number.isFinite(r.rssMb) || r.rssMb < 0) throw Object.assign(new Error(`Missing RSS for ${r.pid}`),{
             code:'PROC_MEMORY_GAP',observation:{pid:r.pid,starttime:r.starttime,state:r.state,at:this.now(),detail:r.memoryObservation??null}});
@@ -228,6 +358,7 @@ export class OwnedProcesses {
     // No negative PGID signals: each target gets an independent identity and fence
     // re-read. There remains a kernel TOCTOU window; this is not pidfd atomicity.
     for (const old of this.known.values()) {
+      if (this.contained.has(old.pid)) continue; // signalled by containmentSweep under its own fence
       try {
         const r = this.read(old.pid); if (!r) continue;
         if (!same(r, old)) throw new Error(`PID ${old.pid} reuse before signal`);
@@ -252,10 +383,24 @@ export class OwnedProcesses {
   async cleanup({ termWaitMs = 500, killWaitMs = 1000, everyMs = 25 } = {}) {
     if (![termWaitMs, killWaitMs, everyMs].every(v => Number.isFinite(v) && v > 0 && v <= 10000)) throw new Error('Invalid cleanup bounds');
     this.intentionalTeardown=true;this.procPhase='cleanup-scan';
-    const scan = () => { this.procPhase='cleanup-scan';try { return this.sample().members.length === 0; } catch { return false; } };
+    let lastSweep = null;
+    // WHY (helper-hardening-3): the session sweep runs FIRST in every scan so that members proven ours by
+    // spawn-time authority are adopted before sample() judges the family (sample() would otherwise throw
+    // "continuity lost" about the very orphan the sweep is about to prove and retire).
+    const scan = () => {
+      this.procPhase='cleanup-scan'; let empty = true;
+      if (this.spawned) {
+        try { lastSweep = this.containmentSweep(null); if (lastSweep.authorised.length || lastSweep.unverified.length || !lastSweep.complete) empty = false; }
+        catch (error) { this.rememberError(error); empty = false; }
+      }
+      if (this.leader) { try { if (this.sample().members.length !== 0) empty = false; } catch { empty = false; } }
+      return empty;
+    };
     for (const [sig, budget] of [['SIGTERM', termWaitMs], ['SIGKILL', killWaitMs]]) {
       if (scan()) break;
-      this.signalAll(sig); const deadline = this.now() + budget;
+      this.signalAll(sig);
+      if (this.spawned) { this.procPhase='cleanup-signal'; try { lastSweep = this.containmentSweep(sig); } catch (error) { this.rememberError(error); } }
+      const deadline = this.now() + budget;
       for (let n = 0; n <= Math.ceil(budget / everyMs); n++) {
         if (scan() || this.now() >= deadline) break;
         await this.sleep(Math.min(everyMs, deadline - this.now()));
@@ -266,9 +411,24 @@ export class OwnedProcesses {
     let empty = scan();
     if (empty) { await this.sleep(everyMs); empty = scan(); }
     const survivors = this.survivors();
-    return { cleanupConfirmed: empty && survivors.length === 0 && this.errors.length === 0,
+    // An unverified-occupant complaint is retired ONLY when the final bounded rescans prove the session
+    // empty and every occupant ever listed was either adopted-and-gone or never alive at the end; every
+    // other error class (identity reuse, protection, unreadable) is kept untouched.
+    const CONTINUITY = 'Private session continuity lost; unverified occupants remain';
+    let resolvedErrors = [];
+    if (empty && this.spawned && survivors.length === 0 && lastSweep?.complete && !lastSweep.unverified.length && this.errors.includes(CONTINUITY)) {
+      this.errors = this.errors.filter(e => e !== CONTINUITY); resolvedErrors = [CONTINUITY];
+    }
+    const sweepNow = lastSweep ?? { authorised: [], unverified: [], refused: [] };
+    const containment = this.spawned ? { spawned: { ...this.spawned }, leaderAliveBound: this.leaderAliveBound,
+      signalled: this.containmentLog.slice(0, 16), signalledCount: this.containmentLog.length,
+      adopted: [...this.contained].slice(0, 16).map(([pid, v]) => ({ pid, ...v })),
+      unverified: sweepNow.unverified.slice(0, 16), refused: sweepNow.refused.slice(0, 16),
+      scanComplete: sweepNow.complete !== false, gaps: this.sweepGaps.slice(0, 8), resolvedErrors } : null;
+    return { cleanupConfirmed: empty && survivors.length === 0 && this.errors.length === 0 && (!containment || containment.scanComplete),
       cleanupError: this.errors.join('; ') || (survivors.length ? ['Owned identities survived bounded cleanup',...this.memoryErrors].join('; ') : null),
       survivors, memoryComplete:this.memoryErrors.length===0, memoryErrors:[...this.memoryErrors], memoryGaps:[...this.memoryGaps],
+      ...(containment ? { containment } : {}),
       procFailures:this.procFailureRing.snapshot(), containmentLimits: CONTAINMENT_LIMITS };
   }
 }

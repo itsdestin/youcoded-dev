@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { constants, openSync, closeSync, writeSync, readSync, realpathSync, lstatSync, fstatSync, opendirSync, readlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { OwnedProcesses, boundedProcPids } from './owned-processes.mjs';
+import { OwnedProcesses, boundedProcPids, isTransientProcError } from './owned-processes.mjs';
 import { inspectExecIdentity, sleep } from './supervised-launch-linux.mjs';
 import {
   CompositorConfiguration, helperCommand, helperEnvironment, verifyHelperIdentity, createHelperOutputCollector, HelperExecEvidence, HELPER_CAPS,
@@ -51,6 +51,31 @@ export function reauthorizeCompositorExecutables(receipts,{inferred=defaultInfer
   verifyKwinBinary(receipts.kwin_wayland,inferred);
   return actual;
 }
+// WHY (helper-hardening-3): a poll that lands mid-execve reads the NEW executable with an still-empty
+// environ, so HOME is unreadable for an instant. That threw "Post-exec wrapper executable/identity
+// mismatch", aborted startup after kwin was already forking, and left an unverifiable orphan. An
+// unreadable HOME is "not observable yet" (retry within the startup bound), never a match; every
+// definite difference still fails closed and now names the failing FIELDS only.
+export function wrapperPostExecDecision(r,leader,receipt,plan,uid,parentPid,gateExe) {
+  if(!r)return 'transient';
+  if(r.exe===gateExe)return 'gate';
+  const homeUnreadable=r.home===null||r.home===undefined;
+  const failed=[!sameProcess(r,leader)&&'process',r.uid!==uid&&'uid',(!homeUnreadable&&r.home!==plan.home)&&'home',
+    r.exe!==receipt.path&&'exe',!sameIdentity(r.executableIdentity,receipt.identity)&&'executableIdentity',
+    r.ppid!==parentPid&&'ppid',r.session!==r.pid&&'session',r.pgrp!==r.pid&&'pgrp'].filter(Boolean);
+  if(failed.length)throw Error(`Post-exec wrapper executable/identity mismatch (${failed.join(',')})`);
+  return homeUnreadable?'transient':'ok';
+}
+// Wraps an exec-identity reader for a startup poll: transient read failures (exec in flight, process
+// vanishing mid-read) count as "not observable yet" up to maxConsecutive polls; the (maxConsecutive+1)-th
+// consecutive failure is thrown as-is, and any other error class is thrown at once.
+export function makeTolerantInspect(inspect,{maxConsecutive=100}={}) {
+  let streak=0;
+  return pid=>{
+    try {const r=inspect(pid);streak=0;return r;}
+    catch(error) {if(!isTransientProcError(error) || ++streak>maxConsecutive)throw error;return null;}
+  };
+}
 function matchesRole(record,receipt,plan,uid) {
   return record && record.uid===uid && record.home===plan.home && record.exe===receipt.path && sameIdentity(record.executableIdentity,receipt.identity);
 }
@@ -90,7 +115,22 @@ function receiptMismatchField(record, receipt, plan, uid) {
   if (!sameIdentity(record.executableIdentity, receipt.identity)) return 'executableIdentity';
   return 'unknown';
 }
-export function proveCompositorRoles(family,plan,receipts,{inspect=inspectExecIdentity,uid=process.getuid(),gid=process.getgid(),inferred=null}={}) {
+// WHY (helper-hardening-3): the same execve race that broke the wrapper proof exists for the daemon and
+// kwin: a poll can land on a forked-but-not-yet-exec'd copy of the wrapper, on a process whose environ is
+// momentarily empty, or between two reads that straddle the exec. Those are "not observable yet", marked
+// error.transient and retried a few times with a short pause; the final attempt's error is thrown
+// unchanged, and a stable readable wrong value is never transient, so no proof is relaxed.
+const TRANSIENT_ROLE_ATTEMPTS=6,TRANSIENT_ROLE_PAUSE_MS=20;
+const defaultPause=ms=>{try{Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,ms);}catch{/* no pause available: retries still bounded */}};
+const transient=error=>Object.assign(error,{transient:true});
+export function proveCompositorRoles(family,plan,receipts,options={}) {
+  const {pause=defaultPause,attempts=TRANSIENT_ROLE_ATTEMPTS}=options;
+  for(let n=1;;n++) {
+    try {return proveCompositorRolesOnce(family,plan,receipts,options);}
+    catch(error) {if(error?.transient!==true || n>=attempts)throw error;pause(TRANSIENT_ROLE_PAUSE_MS);}
+  }
+}
+function proveCompositorRolesOnce(family,plan,receipts,{inspect=inspectExecIdentity,uid=process.getuid(),gid=process.getgid(),inferred=null}={}) {
   const snapshot=family.sample();
   if(snapshot.members.length>CAPS.members)throw Error('Compositor role member cap');
   const roles={wrapper:null,kwin:null,daemon:null};
@@ -113,10 +153,16 @@ export function proveCompositorRoles(family,plan,receipts,{inspect=inspectExecId
         // Same error object/code as before (callers key on error.code); a reason is only attached.
         const why=member.pid===family.leader.pid?'unreadable-leader':deferred.length&&error?.code==='EACCES'?'second-unreadable-member':`unreadable:${String(error?.code??'ERR').slice(0,16)}`;
         if(error&&typeof error==='object'&&!error.reason)error.reason=describeRoleRefusal(why,member,null,receipts,plan,uid,relations());
+        // exec/vanish race: same error and reason, but flagged so the caller's bounded retry may re-poll.
+        if(isTransientProcError(error))error.transient=true;
         throw error;
       }
       deferred.push(member);continue;
     }
+    // Same process but exe/identity/HOME moved between the two reads (or environ empty): exec in flight.
+    if(sameProcess(a,member) && sameProcess(b,a) && (a.exe!==b.exe || !sameIdentity(a.executableIdentity,b.executableIdentity) || a.home!==b.home || b.home==null))throw transient(roleRefusal('Role executable changing (exec in flight)',describeRoleRefusal('exec-in-flight',member,b,receipts,plan,uid,relations())));
+    // A forked, not-yet-exec'd copy of the wrapper (same receipted exe, child of the leader) is not a role yet.
+    if(sameProcess(a,member) && member.pid!==family.leader.pid && b.ppid===family.leader.pid && b.exe===receipts['dbus-run-session']?.path && sameIdentity(b.executableIdentity,receipts['dbus-run-session'].identity) && b.uid===uid && b.home===plan.home)throw transient(roleRefusal('Wrapper fork not yet exec\'d',describeRoleRefusal('pre-exec-fork',member,b,receipts,plan,uid,relations())));
     if(!sameProcess(a,member) || !sameProcess(b,a) || a.exe!==b.exe || !sameIdentity(a.executableIdentity,b.executableIdentity))throw roleRefusal('Role PID/executable substitution',describeRoleRefusal('substitution',member,b,receipts,plan,uid,relations()));
     const role=member.pid===family.leader.pid?'wrapper':matchesRole(b,receipts.kwin_wayland,plan,uid)?'kwin':matchesRole(b,receipts['dbus-daemon'],plan,uid)?'daemon':null;
     const receipt=role==='wrapper'?receipts['dbus-run-session']:role==='kwin'?receipts.kwin_wayland:receipts['dbus-daemon'];
@@ -321,9 +367,15 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
       // A spawned PID alone is evidence, never ownership or signal authority.
       family.leaderPid = child.pid;
       const spawnedChild = { pid: child.pid ?? null, identityVerified: false };
+      // WHY (helper-hardening-3): record the fork-time identity NOW, before the gate-ready wait and before
+      // any exec proof, so every later failure can still retire exactly this family. If it cannot be
+      // recorded, that is reported and the family keeps only the (weaker) capture-time authority.
+      try { spawnedChild.recorded = family.noteSpawn(child.pid); }
+      catch (error) { spawnedChild.recordError = String(error.message).slice(0, 160); }
       let ready=false,exited=false,closed=false,failure=null,released=false,disposed=false;
       let code = null, signal = null, completedExecution = null;
       const collector = createHelperOutputCollector(), started = performance.now();
+      const tolerantWrapperInspect = makeTolerantInspect(inspectExecIdentity);
       // WHY: the 2 s compositor startup bound used to cap the WHOLE helper life inside corroborate, so a
       // healthy but slow kscreen-doctor timed out as "exec proof timeout" (inferred-kwin-ready-8). Helpers
       // are bounded by their own wall; the gate-ready wait has its own (python start-up) bound.
@@ -360,7 +412,7 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
           return disposeCompositorChildResources(child);
         },
         async capture(){
-          await waitFor(()=>{if(failure)throw failure;if(exited)throw Error('Gate exited');return ready;},'gate ready', remainingGateReady());
+          await waitFor(()=>{if(failure)throw failure;if(exited)throw Error('Gate exited');family.pulse();return ready;},'gate ready', remainingGateReady());
           const observed = inspectExecIdentity(child.pid);
           if (observed) spawnedChild.observedIdentity = { pid: observed.pid, starttime: observed.starttime };
           // Observation is retained if the separate ownership proof fails below;
@@ -386,10 +438,13 @@ export function makeCompositorLinuxAdapters(plan, receipts, { persist, emit, out
               { path: command.binary, identity: command.identity }, plan, process.getuid(), python);
           }
           if(exited)throw Error('Wrapper exited');
-          const r=inspectExecIdentity(child.pid);
-          if(r?.exe===python)return false;
-          if(!sameProcess(r,family.leader) || !matchesRole(r,receipts['dbus-run-session'],plan,process.getuid()) || r.ppid!==process.pid || r.session!==r.pid || r.pgrp!==r.pid)throw Error('Post-exec wrapper executable/identity mismatch');
-          proveCompositorRoles(family,plan,receipts);return true;
+          family.pulse();
+          // WHY: the poll can land mid-execve (empty environ / starttime read straddling the exec); tolerate that.
+          const r=tolerantWrapperInspect(child.pid);
+          if(wrapperPostExecDecision(r,family.leader,receipts['dbus-run-session'],plan,process.getuid(),process.pid,python)!=='ok')return false;
+          try {proveCompositorRoles(family,plan,receipts);}
+          catch(error) {if(error?.transient===true)return false;throw error;}
+          return true;
         }, helper ? 'helper exec proof' : 'wrapper exec proof', remainingStartup());},
         async waitResult() {
           if (!helper) throw Error('Wrapper is not an output helper');

@@ -2,6 +2,35 @@
 import { validateCompositorPlan, COMPOSITOR_CAPS as CAPS, COMPOSITOR_DESCRIPTOR as DESCRIPTION } from './supervised-compositor-policy.mjs';
 import { CLEANUP_BUDGET } from './supervised-launch-core.mjs';
 import { assertProtocolEnvelope } from './supervised-protocol.mjs';
+import { summarizeHelperRetirement } from './supervised-compositor-helpers.mjs';
+
+// WHY: a retirement receipt that does not fit the bounded IPC/evidence envelope used to throw inside
+// stop(), so NO retirement evidence existed (helper-hardening-1). If the full receipt does not fit, keep
+// every verdict and count, mark it truncated, and never let the size of diagnostics veto the receipt.
+const idOf = ({ pid, starttime, basis, signal, reason }) => ({ pid, starttime, ...(basis ? { basis } : {}), ...(signal ? { signal } : {}), ...(reason ? { reason: String(reason).slice(0, 64) } : {}) });
+export function compactContainment(c) {
+  return { spawned: c.spawned ?? null, leaderAliveBound: c.leaderAliveBound ?? null, scanComplete: c.scanComplete !== false,
+    signalledCount: c.signalledCount ?? 0, signalled: (c.signalled ?? []).slice(0, 8).map(idOf),
+    unverified: (c.unverified ?? []).slice(0, 8).map(idOf), refused: (c.refused ?? []).slice(0, 8).map(idOf),
+    resolvedErrors: (c.resolvedErrors ?? []).map(e => String(e).slice(0, 96)) };
+}
+export function fitRetirementReceipt(receipt) {
+  try { assertProtocolEnvelope({ final: receipt }); return receipt; } catch { /* compact below */ }
+  const f = receipt.family ?? {}, p = receipt.pipes ?? {};
+  return { reason: String(receipt.reason).slice(0, 256), cleanupConfirmed: receipt.cleanupConfirmed === true,
+    abortError: receipt.abortError ?? null,
+    family: { cleanupConfirmed: f.cleanupConfirmed === true, cleanupError: f.cleanupError ? String(f.cleanupError).slice(0, 256) : null,
+      error: f.error ? String(f.error).slice(0, 256) : null, survivors: Array.isArray(f.survivors) ? f.survivors.length : 0,
+      survivorIds: Array.isArray(f.survivors) ? f.survivors.slice(0, 8).map(({ pid, starttime }) => ({ pid, starttime })) : [],
+      memoryComplete: f.memoryComplete !== false,
+      ...(f.containment ? { containment: compactContainment(f.containment) } : {}) },
+    pipes: { exited: p.exited === true, closed: p.closed === true, error: p.error ? String(p.error).slice(0, 256) : null,
+      code: p.code ?? null, signal: p.signal ?? null },
+    helpers: summarizeHelperRetirement(receipt.helpers), descriptor: receipt.descriptor,
+    ...(receipt.output ? { output: receipt.output } : {}), ...(receipt.localResources ? { localResources: receipt.localResources } : {}),
+    ...(receipt.evidenceError ? { evidenceError: receipt.evidenceError } : {}),
+    truncated: 'ipc-record-budget; detail counts only' };
+}
 export class CompositorSession {
   constructor(plan,deps) {
     this.plan=validateCompositorPlan(plan);this.deps=deps;this.started=deps.now();this.state='new';this.gate=null;this.family=null;this.stopping=null;this.receipt=null;
@@ -101,14 +130,24 @@ export class CompositorSession {
       try {this.gate?.abort();}catch(error){abortError=String(error.message).slice(0,512);}
       let family={cleanupConfirmed:idle && !this.gate,survivors:[]},pipes={exited:!this.gate,closed:!this.gate};
       try {
-        if(this.family)family=await this.family.cleanup({termWaitMs:CLEANUP_BUDGET.termMs,killWaitMs:CLEANUP_BUDGET.killMs,everyMs:CLEANUP_BUDGET.stabilizeMs});
+        // WHY (helper-hardening-3): containment must not depend on the post-exec identity proof. If capture
+        // never set this.family, the gate's own family still holds the SPAWN-time identity the supervisor
+        // recorded for the child it forked; that (and only that) is enough authority to retire it. A gate
+        // family without such a record keeps the old rule: no captured identity, no cleanup authority.
+        const cleanupFamily=this.family??(this.gate?.family?.spawned?this.gate.family:null);
+        if(cleanupFamily)family=await cleanupFamily.cleanup({termWaitMs:CLEANUP_BUDGET.termMs,killWaitMs:CLEANUP_BUDGET.killMs,everyMs:CLEANUP_BUDGET.stabilizeMs});
       }catch(error){family={cleanupConfirmed:false,error:String(error.message).slice(0,512),survivors:[]};}
       // A cleanup exception must not skip bounded exit/pipe observation. Missing
       // observations remain false even after later local-handle destruction.
       try {if(this.gate)pipes=await this.gate.waitClosed(CLEANUP_BUDGET.exitCloseMs);}
       catch(error){pipes={exited:false,closed:false,error:String(error.message).slice(0,512)};}
-      this.receipt={reason,cleanupConfirmed:helperRetirement.cleanupConfirmed === true && !abortError && family.cleanupConfirmed===true && pipes.exited===true && pipes.closed===true && !pipes.error,abortError,family,pipes,helpers:helperRetirement,descriptor:DESCRIPTION};
-      this.state=this.receipt.cleanupConfirmed?'retired':'failed-retirement';this.note('retirement',this.receipt);return this.receipt;
+      this.receipt={reason,cleanupConfirmed:helperRetirement.cleanupConfirmed === true && !abortError && family.cleanupConfirmed===true && pipes.exited===true && pipes.closed===true && !pipes.error,abortError,family,pipes,helpers:summarizeHelperRetirement(helperRetirement),descriptor:DESCRIPTION};
+      this.receipt=fitRetirementReceipt(this.receipt);this.state=this.receipt.cleanupConfirmed?'retired':'failed-retirement';
+      // WHY: an evidence/IPC failure while announcing the retirement must not throw away the receipt (the
+      // finalizer persists and sends it again); record it and keep the verdict.
+      try {this.note('retirement',this.receipt);}
+      catch(error) {this.receipt={...this.receipt,evidenceError:String(error.message).slice(0,256),cleanupConfirmed:false};}
+      return this.receipt;
     })();return this.stopping;
   }
 }
