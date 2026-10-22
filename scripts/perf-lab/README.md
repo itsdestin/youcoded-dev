@@ -290,8 +290,8 @@ pending. One small PNG image diagnostic was reported by coordination and its sav
 report is available below, but coverage imports it conservatively as **unreviewed**:
 producer-declared revisions/step statuses are not independent revalidation of current
 revision-3 input, image policy, seven-step proof or visual acceptance. Images remain
-API-only, not standard-runner image integration. GPU cost runtime and realism `display=gpu` are
-explicitly blocked pending supervisor integration; software realism and native presentation remain separate
+API-only, not standard-runner image integration. GPU cost runtime and realism `display=gpu` run ONLY on the
+supervised private compositor (see "Supervised GPU binding" below) and are refused unless the renderer is hardware; software realism and native presentation remain separate
 existing lanes, not executed by this inventory work. Background-cost
 is an API, not a workload lane. The broad diagnostic goal is therefore **not done**.
 
@@ -360,8 +360,8 @@ node scripts/perf-lab/short-lifecycle.mjs --checkout <isolated-app-worktree> \
   --max-rss-mb 2048 --cleanup-reserve-ms 20000 --out <fresh-report.json>
 ```
 
-GPU-cost runtime and realism GPU display remain **blocked** on supervisor integration;
-app-attributable energy remains **unsupported**. Full-surface graphics implementation,
+GPU-cost runtime and realism GPU display are enabled only through the supervised private compositor
+(see "Supervised GPU binding"); app-attributable energy remains **unsupported**. Full-surface graphics implementation,
 queue conservation/drain and OS-hidden-window coverage are still missing. These reports
 do not establish a generally complete or accepted diagnostic lab.
 
@@ -1401,8 +1401,9 @@ instrument can see the thing it was built for.
 
 ### Real-GPU cost without a visible window — `gpu-cost.mjs` (added 2026-10-05)
 
-**Runtime BLOCKED pending supervisor integration.** This optional diagnostic previously launched a private
-`kwin_wayland --virtual` and a packaged app. A returned D-Bus child handle, marker match or process-group
+**Runtime: supervised path only (2026-10-21; see "Supervised GPU binding" at the end of this section).** This
+optional diagnostic previously launched a private `kwin_wayland --virtual` and a packaged app unsupervised; that
+direct path stays removed. A returned D-Bus child handle, marker match or process-group
 signal does not establish containment of detached compositor descendants. The CLI and exported compositor
 entry now refuse runtime before environment mutation, port/sensor probes or app launch. Enabling it needs the
 separate supervisor-owned app exec gate/CDP ownership and compositor containment work; no physical-display
@@ -1422,15 +1423,52 @@ windows <=30s. Welcome fixtures disable engine seeding, use 12 history turns/zer
 provider. Chat/stream require explicit local fake-provider binding and also disable engine seeding.
 `--keep-compositor` is rejected. Parsing creates no directories.
 
-Tracing has separate <=10s demand, <=10000 events/2MiB retained projection, and bounded connection
+Tracing has separate <=10s demand, <=10000 RETAINED events (only the three event names the parser reads; other events are scalar-validated and dropped under a separate 400000 raw-event cap so animated scenes fit) / 2MiB retained projection, and bounded connection
 acquisition/start/end/completion waits. A late acquired connection is closed through its retained handle;
 never-resolving acquisition is failed/unverified, not claimed cleaned. Data loss, missing completion and
 overflow fail closed; cleanup-end errors remain alongside the primary failure. Empty/irrelevant-only completed
 traces are incomplete, not measured frame windows: at least two usable draw events and an interval/FPS are
-required. Theme traces request 8 seconds separately from `sampleWindowSeconds` (default 2 seconds); both
+required. Theme traces request `--trace-seconds` (default 8, 1-10) separately from `sampleWindowSeconds` (default 2 seconds); both
 window durations are recorded and must not be conflated. CDP listeners/connection are removed even on failure. Only the trace parser's required scalar/state/local-id fields are retained, not a full trace.
 Browser protocol deserialization and uninterruptible OS I/O are not bounded by these retention limits.
-Tests are offline with fake child/CDP/files; neither a runtime nor the actual preflight was run for this repair.
+Tests are offline with fake child/CDP/files.
+
+#### Supervised GPU binding (`gpu-bind.mjs`, `gpu-bind-run.mjs`; added 2026-10-21)
+
+`acquireGpuBinding()` starts the supervised private compositor, requires a verified fixed 2560x1600 **60 Hz** virtual
+output (owner decision; the laptop's 180 Hz is not measured) and a uniquely owned socket with the SO_PEERCRED proof,
+then `binding.launchApp({ fixture })` starts the app candidate through a fresh launch supervisor whose plan carries that
+socket and proof (`--ozone-platform=wayland`, `WAYLAND_DISPLAY` = the private path, no `DISPLAY`, no session bus; the
+launch worker re-checks inode, live peer and start time right before releasing the app). `gpu-cost.mjs` (non-`--check`)
+and `realism.mjs --display gpu` use only this path. `gpu-bind-run.mjs` is the one-launch CLI: compositor, app, renderer
+read, app stop, compositor stop, then a read-only cleanup proof (retirement receipts, recorded pids absent from /proc,
+nothing still naming the run's paths, `getcap /usr/bin/kwin_wayland` unchanged).
+
+**A binding is not GPU evidence by itself.** `gpuEvidence()` classifies the Chromium SystemInfo reading: only a
+Radeon/AMD renderer with GPU compositing and rasterization enabled counts (`countsAsGpuEvidence`); llvmpipe,
+SwiftShader, unknown or non-SystemInfo readings are refused (gpu-cost reports the renderer and no numbers). Still
+refused: the dev build, a busy-desktop browser on the private compositor, and a workload whose budget cannot fit the
+maximum compositor lifetime (20 min) or one app's 600 s launch-supervisor cap.
+
+**Compositor lifetime is an explicit bounded parameter** (`wallMs` in the fixed compositor plan; 60 s default, 1200 s
+maximum). `gpuLifetimeFor()` (gpu-bind.mjs) derives it from the requested workload: 25 s start-up + workload + 30 s margin +
+the core's 8 s cleanup reserve; each app gets its own `appWallMs` (workload + 62 s, i.e. margin, app cleanup reserve and 20 s to first window; 120-600 s). `gpu-cost.mjs`
+computes the workload in `gpuWorkloadBudget()` and records `report.lifetime`; `realism.mjs --display gpu` uses
+`--max-minutes`. An over-long request is refused before anything starts, never clamped.
+
+**Animated workload, no model:** `gpu-cost.mjs --suite control --only animated` runs `spin-cadence` (a compositor-only CSS
+animation) and `bubbles-canvas-n10` (animated canvas under glass boxes) from `gpu-control/control.html`. A trace window
+without at least two compositor frames is `incomplete` with `compositorFps: null`, never a measured 0 fps, and an
+incomplete variant makes the whole report `incomplete`. Frame metrics per variant: frame interval median/p95/max, draw-and-swap
+p95, long intervals, dropped pipeline frames.
+
+**Cleanup re-read rule (owner decision 2026-10-21):** during cleanup/retirement scans ONLY (`OwnedProcesses.cleanup`),
+a malformed/truncated `/proc/<pid>/stat|status` read is re-read within 4 x 5 ms (`readProcForCleanup`). A re-read that is
+ENOENT/ESRCH, or shows a different start time (pid reused), records the original identity as `exited-during-read`
+(in the cleanup receipt's `exitedDuringRead`) and counts it gone; the newcomer is reported absent from that read, so it is
+never adopted or signalled. A malformed read that persists for the same (pid, starttime) stays fatal. Forensics and
+ownership proofs call `readProc` directly and still fail closed (pinned by proc-forensics.test.mjs). Limits: virtual 60 Hz presentation, not physical scanout/vblank/VRR; compositor
+cleanup is polling-based and fails closed (see the 2026-10-21 `Malformed proc status` race in the report).
 Historical method/readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`.
 
 ## Tests

@@ -23,6 +23,7 @@ export function fitRetirementReceipt(receipt) {
       error: f.error ? String(f.error).slice(0, 256) : null, survivors: Array.isArray(f.survivors) ? f.survivors.length : 0,
       survivorIds: Array.isArray(f.survivors) ? f.survivors.slice(0, 8).map(({ pid, starttime }) => ({ pid, starttime })) : [],
       memoryComplete: f.memoryComplete !== false,
+      exitedDuringRead: Array.isArray(f.exitedDuringRead) ? f.exitedDuringRead.length : 0,
       ...(f.containment ? { containment: compactContainment(f.containment) } : {}) },
     pipes: { exited: p.exited === true, closed: p.closed === true, error: p.error ? String(p.error).slice(0, 256) : null,
       code: p.code ?? null, signal: p.signal ?? null },
@@ -71,7 +72,7 @@ export class CompositorSession {
               throw Error('Compositor socket replaced before helper connection');
             }
             return current;
-          }, this.started + CAPS.wallMs - CAPS.cleanupReserveMs);
+          }, this.started + this.plan.wallMs - CAPS.cleanupReserveMs);
         }
         const configured = await this.configuration.inspect();
         return { ...DESCRIPTION, ...configured };
@@ -93,7 +94,7 @@ export class CompositorSession {
         try {await gate.capture();} finally {if(gate.family?.leader)this.family=gate.family;}
       });
       await this.captureDone;
-      if(this.stopping || this.deps.now()>=this.started+CAPS.wallMs-CAPS.cleanupReserveMs)throw Error('Retired/deadline before release');
+      if(this.stopping || this.deps.now()>=this.started+this.plan.wallMs-CAPS.cleanupReserveMs)throw Error('Retired/deadline before release');
       this.gate.release();await this.gate.corroborate();
       if(this.stopping)throw Error('Retired during wrapper exec');
       this.state='running';this.inspectDeadline=this.deps.now()+CAPS.startupMs;this.note('started',{descriptor:DESCRIPTION});return {...DESCRIPTION,status:'started-not-ready'};
@@ -101,7 +102,7 @@ export class CompositorSession {
   }
   async tick() {
     if(this.stopping)return;
-    if(this.deps.now()>=this.started+CAPS.wallMs-CAPS.cleanupReserveMs)return this.stop('deadline-reserve');
+    if(this.deps.now()>=this.started+this.plan.wallMs-CAPS.cleanupReserveMs)return this.stop('deadline-reserve');
     if(!this.family)return;
     try {
       const sample=this.family.sample();

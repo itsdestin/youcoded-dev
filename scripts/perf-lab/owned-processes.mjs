@@ -71,11 +71,50 @@ export function readProc(pid,{read=path=>readBoundedText(path,{maxBytes:65536}),
     // never become absence, zero memory or cleanup authority because it vanished.
     if(!after&&record){try{after=parseProcStat(read(`/proc/${pid}/stat`,'utf8'));}catch(e){afterError=e.code??'PARSE';}}
     if(!failureRecorded)observe(stage==='parse-status'?'parse-status':'proc-read-failed',error);
+    // WHY: the cleanup-only re-read rule (readProcForCleanup) must compare against the identity this
+    // failed read saw. Context only; it never changes the verdict of a plain readProc.
+    if(record)try{error.procIdentity={pid,starttime:record.starttime};}catch{/*original failure remains authoritative*/}
     if(['ENOENT','ESRCH'].includes(error.code)&&['ENOENT','ESRCH'].includes(afterError))return null;
     throw error;
   }
 }
 const same = (a, b) => a && b && a.pid === b.pid && a.starttime === b.starttime;
+
+// ---- Cleanup-only malformed-read rule (owner decision 2026-10-21) --------------------------------------
+// WHY: /proc/<pid>/status of a process that is exiting can be read half-torn ("Malformed proc status").
+// During a cleanup/retirement scan that made a perfectly healthy retirement fail closed (gpu-bind-4: the
+// app's browser pid, caught mid-exit, vetoed compositor cleanup although nothing was alive afterwards).
+// Rule, for CLEANUP scans only: re-read within a short bound. Re-read gives ENOENT/ESRCH (null) or a
+// DIFFERENT starttime (pid reused) => the ORIGINAL identity is recorded as `exited-during-read` and counts
+// as gone; the newcomer is reported as absent here, so it is never adopted or signalled by this read.
+// A malformed read that persists while the same (pid,starttime) is present stays fatal. Forensics and
+// ownership proofs keep calling readProc directly and keep failing closed.
+export const CLEANUP_REREAD = Object.freeze({ attempts: 4, pauseMs: 5 });
+export const isMalformedProcRead = error => !error?.code && (/^Malformed (VmRSS )?proc status for /.test(error?.message ?? '') || error?.message === 'Unreadable /proc stat identity');
+const defaultPause = ms => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+export function readProcForCleanup(pid, readOnce, { expected = null, onExited = () => {}, attempts = CLEANUP_REREAD.attempts, pauseMs = CLEANUP_REREAD.pauseMs, pause = defaultPause } = {}) {
+  try { return readOnce(); }
+  catch (first) {
+    if (!isMalformedProcRead(first)) throw first;
+    const original = first.procIdentity?.starttime ? first.procIdentity : expected?.starttime ? { pid, starttime: expected.starttime } : null;
+    const exited = how => { onExited({ pid, starttime: original?.starttime ?? null, reason: 'exited-during-read', how }); return null; };
+    for (let n = 0; n < attempts; n++) {
+      pause(pauseMs);
+      let again;
+      try { again = readOnce(); }
+      catch (error) {
+        if (!isMalformedProcRead(error)) throw error;
+        // Still torn. A torn read of a DIFFERENT identity still proves the original is gone.
+        if (original && error.procIdentity?.starttime && error.procIdentity.starttime !== original.starttime) return exited('pid-reused-torn');
+        continue;
+      }
+      if (again === null) return exited('enoent');
+      if (original && again.starttime !== original.starttime) return exited('pid-reused');
+      return again; // same identity reads cleanly now: the tear was transient, nothing to excuse
+    }
+    throw first; // same identity still malformed after the bound: stays fatal
+  }
+}
 
 export class OwnedProcesses {
   constructor({ leaderPid, parentPid = process.pid, jobDir, maxMembers = 10000, descendantsOnly = false, read, procRead,
@@ -85,10 +124,15 @@ export class OwnedProcesses {
     // WHY: HOME in the private worker is not the owner's account authority.
     assertSafeOwnerNeedles([jobDir]);
     if (!Number.isInteger(maxMembers) || maxMembers < 1 || maxMembers > 10000) throw Error('Invalid owned family member cap');
+    this.exitedDuringRead=[];this.exitedDuringReadDropped=0;this.rereadPause=undefined;
     this.procFailureRing=createProcFailureRing();this.procPhase='acquire';this.intentionalTeardown=false;
-    const readOwned=read??(pid=>readProc(pid,{...(procRead?{read:procRead}:{}),phase:this.procPhase,intentionalTeardown:this.intentionalTeardown,now:()=>performance.now(),onFailure:row=>{
+    const readOnceFor=pid=>readProc(pid,{...(procRead?{read:procRead}:{}),phase:this.procPhase,intentionalTeardown:this.intentionalTeardown,now:()=>performance.now(),onFailure:row=>{
       if(pid===this.leaderPid||this.known?.has(pid)||this.uncertain?.has(pid))this.procFailureRing.record(row);
-    }}));
+    }});
+    // WHY: only cleanup scans (intentionalTeardown) get the bounded re-read rule above; every other read keeps failing closed.
+    const readOwned=read??(pid=>this.intentionalTeardown
+      ?readProcForCleanup(pid,()=>readOnceFor(pid),{expected:this.known?.get(pid)??this.uncertain?.get(pid)??null,pause:this.rereadPause,onExited:row=>{if(this.exitedDuringRead.length<16)this.exitedDuringRead.push(row);else this.exitedDuringReadDropped++;}})
+      :readOnceFor(pid));
     // WHY: compositor wrappers require positively observed descent, not numeric
     // session membership. Default app ownership policy remains unchanged.
     if (typeof descendantsOnly !== 'boolean') throw Error('Invalid descendant discovery policy');
@@ -427,7 +471,7 @@ export class OwnedProcesses {
       scanComplete: sweepNow.complete !== false, gaps: this.sweepGaps.slice(0, 8), resolvedErrors } : null;
     return { cleanupConfirmed: empty && survivors.length === 0 && this.errors.length === 0 && (!containment || containment.scanComplete),
       cleanupError: this.errors.join('; ') || (survivors.length ? ['Owned identities survived bounded cleanup',...this.memoryErrors].join('; ') : null),
-      survivors, memoryComplete:this.memoryErrors.length===0, memoryErrors:[...this.memoryErrors], memoryGaps:[...this.memoryGaps],
+      survivors, exitedDuringRead:[...this.exitedDuringRead], exitedDuringReadDropped:this.exitedDuringReadDropped, memoryComplete:this.memoryErrors.length===0, memoryErrors:[...this.memoryErrors], memoryGaps:[...this.memoryGaps],
       ...(containment ? { containment } : {}),
       procFailures:this.procFailureRing.snapshot(), containmentLimits: CONTAINMENT_LIMITS };
   }

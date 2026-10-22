@@ -484,7 +484,7 @@ export class CompositorConfiguration {
         this.result = { status: 'observed-private-output-metadata', modeVerified: true, observed, wayland,
           socket, helpers: this.handles.map(handle => summarizeHelperReceipt(handle.receipt)),
           observedAt: this.deps.now(), observationScope: 'completed helper readbacks, not continuous mode monitoring',
-          physicalScanoutVerified: false, appWaylandBinding: 'supervised-launch-plan-field-not-runtime-validated', gpuRuntime: 'blocked' };
+          physicalScanoutVerified: false, appWaylandBinding: 'supervised-launch-plan-runtime-validated-once-2026-10-21', gpuRuntime: 'supervised-only-hardware-verdict-required' };
         this.deps.note('configuration-observed', this.result);
         return this.result;
       } catch (error) {

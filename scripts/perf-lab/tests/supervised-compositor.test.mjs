@@ -50,7 +50,7 @@ test('purpose policy fixes arguments, isolated environment and explicitly incomp
   assert.deepEqual(command.argv.slice(5),['--virtual','--width','2560','--height','1600','--socket',p.socketName,'--no-lockscreen','--no-global-shortcuts']);
   assert.equal(env.HOME,p.home);assert.equal(env.XDG_RUNTIME_DIR,p.runtime);
   for(const k of ['DISPLAY','XAUTHORITY','DBUS_SESSION_BUS_ADDRESS','QT_PLUGIN_PATH','LD_PRELOAD','NODE_OPTIONS'])assert.equal(env[k],undefined);
-  assert.equal(COMPOSITOR_DESCRIPTOR.modeVerified,false);assert.equal(COMPOSITOR_DESCRIPTOR.gpuRuntime,'blocked');
+  assert.equal(COMPOSITOR_DESCRIPTOR.modeVerified,false);assert.equal(COMPOSITOR_DESCRIPTOR.gpuRuntime,'supervised-only-hardware-verdict-required');
   assert.throws(()=>compositorPlan('/tmp/'+'a'.repeat(110),'perf-0123456789abcdef'),/path|socket/);
   assert.throws(()=>compositorPlan('/tmp/../unsafe','perf-0123456789abcdef'),/path/);
   for(const options of [{binary:'/usr/bin/sh'},{argv:['bad']},{env:{DISPLAY:':0'}},{pid:20},{signal:'SIGKILL'}])assert.throws(()=>startCompositorSupervisor(options),/accepts no/);

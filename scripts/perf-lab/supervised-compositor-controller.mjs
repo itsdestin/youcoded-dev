@@ -14,7 +14,7 @@ function bounded(promise,ms,label) {
   let timer;return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(`Compositor ${label} timeout`)),ms);})]).finally(()=>clearTimeout(timer));
 }
 export class CompositorController {
-  constructor(worker) {
+  constructor(worker,wallMs=CAPS.wallMs) {
     this.worker=worker;this.pending=new Map();this.nextId=1;this.receipt=null;this.stopping=null;this.descriptor=COMPOSITOR_DESCRIPTOR;
     this.retirement=observeChildRetirement(worker);
     let acknowledged,rejectAck;
@@ -35,7 +35,7 @@ export class CompositorController {
     worker.on('error',e=>{fail(e.message);this.disconnect();});
     worker.on('disconnect',()=>fail('Compositor controller disconnected'));
     worker.on('exit',()=>{clearTimeout(this.watchdog);fail('Compositor worker exited');});
-    this.watchdog=setTimeout(()=>this.disconnect(),CAPS.wallMs+2000);
+    this.watchdog=setTimeout(()=>this.disconnect(),wallMs+2000);
     // Handle is already returned while this bounded promise waits. Rejection
     // disconnects into independent worker cleanup, never a child.kill fallback.
     this.ready=bounded(ack,3000,'acknowledgement').then(()=>{
@@ -102,17 +102,21 @@ export class CompositorController {
     return receipt;
   }
 }
+// WHY: the ONLY accepted option is the lifetime (bounded by compositorPlan); no binary/argv/environment/pid/signal.
 export function startCompositorSupervisor(...args) {
-  if(args.length)throw Error('Fixed compositor start accepts no binary/argv/environment');
+  const [options]=args;
+  if(args.length>1 || (args.length===1 && (!options || typeof options!=='object' || Object.keys(options).some(k=>k!=='wallMs'))))throw Error('Fixed compositor start accepts no binary/argv/environment');
+  const wallMs=options?.wallMs??CAPS.wallMs;
+  compositorPlan('/tmp/perf-lab-validate/reservation','perf-0000000000000000',wallMs); // reject a bad lifetime BEFORE anything is created
   if(process.platform!=='linux')throw Error('Compositor supervisor is Linux-only');
   const receipts=authorizeCompositorExecutables();
   // Fresh reservation outside active files; short enough for Linux sun_path.
   const root=realpathSync(mkdtempSync('/tmp/perf-lab-compositor-'));
   // WHY: the random socket name is kwin's per-run argv token for the inferred ownership proof.
-  const plan=compositorPlan(join(root,'reservation'),`perf-${randomBytes(8).toString('hex')}`);
+  const plan=compositorPlan(join(root,'reservation'),`perf-${randomBytes(8).toString('hex')}`,wallMs);
   for(const path of [plan.runDir,plan.home,plan.config,plan.data,plan.cache,plan.runtime])mkdirSync(path,{mode:0o700});
   verifyCompositorDirectories(plan);
   const path=join(plan.runDir,'compositor-plan.json');writeCompositorJson(path,{plan,receipts});
   const worker=fork(fileURLToPath(new URL('./supervised-compositor-worker.mjs',import.meta.url)),[path],{cwd:plan.runDir,env:{PATH:'/usr/bin:/bin',HOME:plan.home,LANG:'C.UTF-8'},execArgv:[],detached:true,stdio:['ignore','ignore','ignore','ipc']});
-  const handle=new CompositorController(worker);handle.reservation=plan.runDir;return handle;
+  const handle=new CompositorController(worker,wallMs);handle.reservation=plan.runDir;return handle;
 }
