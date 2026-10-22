@@ -9,7 +9,8 @@
   "sources": {
     "auto-updates-questions": "auto-updates.questions.json",
     "auto-updates-review": "auto-updates.review.json",
-    "auto-updates-review-2": "auto-updates.review-2.json"
+    "auto-updates-review-2": "auto-updates.review-2.json",
+    "auto-updates-questions-2": "auto-updates.questions-2.json"
   },
   "steps": [
     {
@@ -118,6 +119,20 @@
           "checkedBy": "human",
           "threshold": "pass/fail",
           "source": "auto-updates-questions#Q-brake-notice"
+        },
+        {
+          "id": "R15",
+          "statement": "On a Mac that refuses the swap, the update still downloads by itself and quitting does not install it.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions-2#Q-mac-2"
+        },
+        {
+          "id": "R16",
+          "statement": "On that Mac, Restart to update shows the Mac's password box and then installs; cancelling or a failure opens the disk image.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions-2#Q-mac-2"
         }
       ]
     }
