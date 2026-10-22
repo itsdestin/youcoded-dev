@@ -11,7 +11,7 @@ work: session/170-swipe-next-word, session/170-multilingual-prediction
 ---
 Progress
 Done: Owner confirmed installed native English predictions are now working after normal package update/login refresh. Current-word completion already uses EN/ES/FR/DE profile dictionaries. Corrective source160588b remains frozen/CIgreen on165; installed package/source preserved. New isolated feature/170-multilingual-prediction branch created from160588b for owner-requested other-language suggestions.
-Next: Fresh implementation agent642318e4 is building Spanish(es_ES/es_MX), French and German contextual next-word prediction and completion improvements. Parallel researcherbf95b7b9 is verifying compatible licensed corpus/model inputs. Reuse compact per-language contextual models if no existing compatible neural models; preserve Unicode spelling, exact-echo privacy, three-slot centered-best layout and no English fallback. No CI/push until built; do not update the working installed build prematurely.
+Next: Destin (2026-10-22) approved: own fully open ~5M-parameter next-word models trained on existing open data only (FineWeb-2 plus a filtered casual slice, Common Voice CC0, OpenAssistant Apache; Tatoeba as test set). Spanish pilot first on rented 8x RTX 4090 with a 10-15 dollar prepaid budget; setup is built and tested free on the Z13 first. Gemma/Qwen-class downloads dropped.
 Blocked: Non-English contextual model/vocabulary assets do not currently exist in pinned packs; wordfreq frequencies alone are not contextual predictions. Data/model provenance and real language-specific behavior must be implemented, not only capability flags. Existing ARM/finalFlatpak release acceptance remains tracked separately on165.
 
 Chats
