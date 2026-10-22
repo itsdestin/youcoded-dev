@@ -106,3 +106,16 @@ test('parseArgs: quiet bound defaults to 20 and is independent of --max-minutes'
   assert.equal(cfg.maxMinutes, 20);
   assert.equal(parseArgs(['--max-quiet-wait-minutes', '3']).maxQuietWaitMinutes, 3);
 });
+
+test('busy machine: --busy-machine measures without waiting, records the busy reading, and is never clean or comparable', async () => {
+  const c = fakeClock(); const noise = emptyNoise(); let credited = 0;
+  await noiseGate(noise, { ...c, say: () => {}, pollMs: 30_000, maxWaitMs: 2 * 60_000, onWaited: (ms) => { credited += ms; },
+    loadAvg: () => 6.5, busyPct: async () => 40, whoIsBusy: async () => [{ name: 'qemu-system-x86', pids: [1, 2], cores: 2.4 }], busyMachine: true });
+  assert.equal(noise.discardedRuns, 0);
+  assert.equal(noise.neverQuiet, null);
+  assert.equal(noise.busyMachineReadings.length, 1);
+  assert.match(noise.busyMachineReadings[0].busyWith, /qemu-system-x86 ×2 using 2\.4 cores/);
+  assert.equal(parseArgs(['--busy-machine']).busyMachine, true);
+  const problems = validateReport({ noise, exploratory: { mode: 'busy-machine' } }, new Set());
+  assert.ok(problems.some((p) => /exploratory: measured on a busy machine \(1 busy reading/.test(p)));
+});

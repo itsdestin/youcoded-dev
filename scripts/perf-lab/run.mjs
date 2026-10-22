@@ -570,6 +570,8 @@ export function validateReport(report, only) {
   // WHY: a run that stopped because the machine never went quiet took no valid measurement; never healthy.
   if (report.noise?.neverQuiet) problems.push(`machine never became quiet: load ${report.noise.neverQuiet.load}, ${report.noise.neverQuiet.busyPct}% cpu after ${report.noise.neverQuiet.waitedS}s${report.noise.neverQuiet.blockedBy ? ` (blocked by: ${report.noise.neverQuiet.blockedBy})` : ''} — measurement not taken`);
   problems.push(...interferenceProblems(report));
+  // WHY: a --busy-machine run is exploratory by design; it can show big effects but is never a clean result.
+  if (report.exploratory) problems.push(`exploratory: measured on a busy machine (${report.noise?.busyMachineReadings?.length ?? 0} busy reading(s) recorded) — not comparable`);
   // WHY an early return: the energy lane has no PRIMARY paths or legacy phases; its own contract decides measured vs not.
   if (report.energyExecution) return [...problems, ...energyLaneProblems(report)];
   // WHY the same early return: lane F has no PRIMARY phases or legacy manifest; workload-lane.mjs's workloadsProblems owns its contract.
@@ -1079,7 +1081,7 @@ export function renderMarkdown(report, stem) {
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
 const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'energy-repeats', 'workloads-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
-const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics', 'allow-asset-download'];
+const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics', 'allow-asset-download', 'busy-machine'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
 
@@ -1112,6 +1114,8 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --max-minutes <n>         abort (exit ${EXIT.TIMEOUT}) past this budget  (default 90)
   --max-quiet-wait-minutes <n>  longest the machine may stay busy before the run stops, BEFORE launching the app (default 20).
                             This wait is NOT counted against --max-minutes (the measurement budget).
+  --busy-machine            measure NOW without waiting for quiet: busy readings and their causes are recorded, every window keeps
+                            its interference verdict, and the report is marked exploratory — never comparable, never clean.
   --allow-asset-download    explicitly authorize downloading the ~490 MB model + engine archive when missing (default: refuse;
                             PERF_LAB_ALLOW_ASSET_DOWNLOAD=1 is the same opt-in). Present, verified assets never need it.
   --check, --dry-run        print the resolved plan and exit 0, launching nothing
@@ -1194,6 +1198,7 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     // minutes once), so the measurement was aborted mid-phase. The wait now has its own bound.
     maxQuietWaitMinutes: posInt('max-quiet-wait-minutes', 20),
     allowAssetDownload: raw['allow-asset-download'] === true || assetDownloadEnvAllowed(),
+    busyMachine: raw['busy-machine'] === true,
     only: new Set(onlyTokens),
     energyLane: onlyTokens.length === 1 && onlyTokens[0] === 'energy',
     workloadsRepeats: posInt('workloads-repeats', WORKLOAD_LANE.repeats),
@@ -1367,6 +1372,7 @@ export async function noiseGate(noise, {
   // WHY the default depends on busyPct: a test that injects a fake busyPct has no real /proc to scan
   // (and must not wait real seconds); only the real sensor path also looks up WHO is busy.
   whoIsBusy = busyPct === machineBusyPct ? (s) => topForeignProcesses({ seconds: s }) : async () => [],
+  busyMachine = false,
 } = {}) {
   const startedAt = now();
   const credit = () => { const ms = now() - startedAt; noise.quietWaitMs += ms; onWaited(ms); };
@@ -1375,7 +1381,15 @@ export async function noiseGate(noise, {
     // Both readings span the same 3 s; the offender scan is free here and only used when the machine is busy.
     const [busyRaw, offenders] = await Promise.all([busyPct(3), whoIsBusy(3).catch(() => [])]);
     const busy = round1(busyRaw);
-    if (la < 4 && busy < 10) {
+    // WHY --busy-machine (owner, 2026-10-22: "real concrete measurements now" while other work runs): proceed
+    // without waiting, but write down every busy reading and who caused it. The report is marked exploratory
+    // (validateReport + assessComparability refuse it), so big effects such as multi-second freezes can be
+    // seen now while small A/B differences still need a quiet machine.
+    if (busyMachine && !(la < 4 && busy < 10)) {
+      (noise.busyMachineReadings ??= []).push({ at: new Date(now()).toISOString(), load: la, busyPct: busy, busyWith: describeOffenders(offenders) || null });
+      say(`machine busy (load ${la}, ${busy}% cpu${offenders.length ? `; ${describeOffenders(offenders)}` : ''}) — measuring anyway (--busy-machine: exploratory, not comparable)`);
+    }
+    if (busyMachine || (la < 4 && busy < 10)) {
       // loadAvgBefore/machineBusyPctBefore are the FIRST accepted reading (the state
       // the report started from); the max fields say how bad it got across all gates.
       if (noise.loadAvgBefore === null) { noise.loadAvgBefore = la; noise.machineBusyPctBefore = busy; }
@@ -1616,6 +1630,7 @@ async function mainRun(argv, ctx, cleanup) {
   const quiet = {
     maxWaitMs: cfg.maxQuietWaitMinutes * 60_000,
     onWaited: (ms) => { deadline += ms; rearmWatchdog(); },
+    busyMachine: cfg.busyMachine === true,
   };
   // WHY gate(label): the quiet check before a boot also names the measured window that boot opens, so
   // the interference verdicts in the report say which phase they belong to.
@@ -1747,6 +1762,8 @@ async function mainRun(argv, ctx, cleanup) {
   resetCapturedRenderer();
 
   const report = emptyReport({ label: cfg.label });
+  // WHY recorded on the report itself: the label must travel with the numbers so no reader or comparison mistakes them for quiet-machine results.
+  if (cfg.busyMachine) report.exploratory = { mode: 'busy-machine', note: 'measured without waiting for a quiet machine; every busy reading and its cause is in noise.busyMachineReadings, every window keeps its interference verdict; not comparable' };
   setInterferenceSink(report.interference.windows);
   // WHY before execution: an exception on repeat 3 cannot redefine 2 as complete.
   // WHY an empty manifest for energy: buildLegacyExecution knows only the legacy phases; energyExecution carries the lane's contract.

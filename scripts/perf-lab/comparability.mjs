@@ -32,6 +32,9 @@ export function assessComparability(baseline, candidate, { primary = [] } = {}) 
     if (!record(report)) { reasons.push(`${label}: invalid report`); continue; }
     if (!Object.hasOwn(report, 'aborted') || report.aborted !== null) reasons.push(`${label}: aborted or missing completion status`);
     if (!Array.isArray(report.incomplete) || report.incomplete.length) reasons.push(`${label}: incomplete or missing completion status`);
+    // WHY explicit (not only via `incomplete`): a --busy-machine report must never be compared, even if a later edit
+    // stopped listing it as incomplete.
+    if (report.exploratory) reasons.push(`${label}: exploratory --busy-machine report (measured without waiting for a quiet machine)`);
     // WHY the missing-newMetric exception must not bridge attribution revisions:
     // old inferred-main numbers cannot stand in for observed raw response tails.
     if (['replayStall', 'idleSessions', 'artifacts', 'projects', 'terminal', 'nativeStream', 'nativeResume']
