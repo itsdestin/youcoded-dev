@@ -576,8 +576,10 @@ Reference: the first-run screens (`components/FirstRunView.tsx`, `components/fir
 "First-run setup look" … "Setup at every window size", "Sign-in choices".)
 - **Setup is its own brand surface**, not a themed screen: the lavender gradient, the stacked name
   "youcoded" + "agents for everyone" with no icon, fixed above the middle on every step, and Outfit for
-  all setup text. The browser sign-in pages (ChatGPT, OpenRouter) match it. Nothing else in the app
-  copies this look.
+  all setup text. The browser sign-in pages (ChatGPT, OpenRouter) match it, and so do the screens
+  shown before the app opens on a phone or another browser (connecting, can't reach your computer,
+  password, open in another tab — `remote-gate.tsx`; phone-reliability review round 2). Nothing else
+  in the app copies this look.
 - **Ways in of equal standing are equal outlined choices, none filled** — on setup, three rows (A plan
   you already pay for / Pay as you go / Free, on this computer) that each open their facts and logo
   buttons, with "‹ All options" back.
