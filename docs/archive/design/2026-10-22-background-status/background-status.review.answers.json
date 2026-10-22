@@ -1,0 +1,61 @@
+{
+ "deck": "background-status-review",
+ "started": "2026-10-22T15:37:14.686Z",
+ "submitted": "2026-10-22T15:40:25Z",
+ "cur": 6,
+ "answers": {
+  "M-1": {
+   "v": "yes",
+   "t": 1792683454811,
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "t": 1792683473539,
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "t": 1792683497032,
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-1": {
+   "note": "i dont like how the background chip is styled. notice how loading icon is before text in the subagents card? i think this is also maybe just two many different numbers and its not clear what each of the 3 means or how they differ",
+   "t": 1792683543670,
+   "v": "other",
+   "seconds": 47,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "note": "make the chips top-right aligned",
+   "t": 1792683579039,
+   "v": "yes",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-3": {
+   "note": "want to see alternative stop button stylings/positions",
+   "t": 1792683600422,
+   "v": "other",
+   "seconds": 21,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-4": {
+   "v": "other",
+   "t": 1792683624359,
+   "note": "no, make it match subagents stylinhg",
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
