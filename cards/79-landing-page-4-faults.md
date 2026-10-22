@@ -1,7 +1,7 @@
 ---
 id: 79
 title: Website: landing page fixes, visitor stats and how it leads
-stage: planning
+stage: merged
 priority: P3
 tags: operations, polish
 branch: 79-landing-page-4-faults

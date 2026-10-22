@@ -10,9 +10,9 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support, session/168-swipe-release-integration
 ---
 Progress
-Done: v0.2.0 Deck Desktop and x86 Mobile evidence remains recorded, but owner explicitly rejects treating x86 Mobile as completion. ARM64 is a REQUIRED part of the current work and corrective release, not a later follow-up. Existing owned ARM guest/image is preserved for package installation and real-input acceptance.
-Next: Complete native aarch64 build/package and ARM64 Plasma Mobile load/input/restoration acceptance with required release gate, coordinated under165. Keep physical hardware claims separate from ARM guest proof.
-Blocked: Do not declare Plasma Mobile done or publish the corrective release without ARM64 acceptance. Gaming Mode remains intentionally deferred.
+Done: Published Swipe Keyboard v0.3.0-1 (https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.3.0-1, main d571a63): native ARM64 Fedora 44 Plasma Mobile package plus Deck/Arch/Fedora x86. Tag-run bytes accepted in an emulated ARM Plasma Mobile session and SteamOS 3.8/3.9 Desktop guests: completion tap, next-word, correction, whole-word Backspace, password field, deselect closes keyboard.
+Next: musl/postmarketOS builds; physical phone and Deck checks; Gaming Mode still deferred.
+Blocked: 
 
 Chats
 - 2026-10-20 session/168-swipe-release-integration: chat started

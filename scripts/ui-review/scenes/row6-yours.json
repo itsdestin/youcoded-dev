@@ -1,9 +1,10 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=theme-builder&seed=none&title=new+theme&replySpeed=2",
   "theme": "midnight",
-  "zoom": 1.15,
+  "zoom": 1.3,
   "boot": 3000,
-  "why": "2026-09-11 (Destin, review-3 S-8): 'skip the process of navigating the marketplace to switch themes and just fake swap it automatically after the assistant reply'. The reply plays (text, then its two tool steps), and the moment it finishes the theme swaps through the workbench's appearance hook — the same call the film's promo-theme scene uses — so the card goes straight from asking for a look to wearing it. The shared rhythm: 0.3 s open, typing 32 a second, replies at 2x, zoom 1.15, a long enough hold to take in the new theme.",
+  "pauseBackground": true,
+  "why": "2026-09-11 (Destin, review-3 S-8): 'skip the process of navigating the marketplace to switch themes and just fake swap it automatically after the assistant reply'. The reply plays (text, then its two tool steps), and the moment it finishes the theme swaps through the workbench's appearance hook — the same call the film's promo-theme scene uses — so (the theme it ends on is END_THEME, a different one from the theme it starts in) the card goes straight from asking for a look to wearing it. The shared rhythm: 0.3 s open, typing 32 a second, replies at 2x, zoom 1.15, a long enough hold to take in the new theme. 2026-10-21 (Destin, website-everything-app #79): re-filmed at zoom 1.3 and once per site theme (THEME env overrides this scene's `theme`), so the page plays the visitor's theme.",
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },
@@ -11,7 +12,7 @@
     { "key": "Enter", "settle": 300 },
     { "waitForText": "Building it", "tag": "p", "timeout": 15000, "settle": 0 },
     { "waitForText": "Created 2 files", "timeout": 15000, "settle": 500 },
-    { "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})", "settle": 900, "mark": "swap" },
+    { "eval": "window.__workbenchAppearanceSync({theme:'{{END_THEME}}'})", "settle": 900, "mark": "swap" },
     { "hold": 2200 }
   ]
 }

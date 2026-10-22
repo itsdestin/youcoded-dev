@@ -1,0 +1,688 @@
+{
+  "title": "youcoded.ai — from 'personal agent' to 'customizable assistant and open-source everything app'",
+  "key": "website-everything-app-questions",
+  "out": "website-everything-app.questions.html",
+  "stage": "ask",
+  "themes": ["light", "midnight"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The website",
+      "path": "youcoded.ai, right under the hero demo",
+      "headline": "Should the page get a dedicated 'make it show anything' section for Pages, right after the hero?",
+      "today": "The page has one feature list of eight cards. Seven are about the chat: models, spreadsheets, permissions, projects, tags, phone sync, games. The Home and Finance pages exist only as two small icons inside the hero demo, and nothing on the page points at them or explains them.",
+      "problem": "A visitor reads 'open source everything app' in the headline and then sees a page about managing conversations. The thing that actually makes the app different, that it can turn into a smart-home panel or a money dashboard or whatever you describe, is never shown.",
+      "proposal": "A new section between the hero and the feature list. It opens with a line like 'Not just a chat window. Describe a page and the app becomes it.' and shows real filmed clips of the Home page and the Finance page from the demo. Under them, a row of idea chips to spark imagination, each one a page that already exists in the app's own samples: a weather board, a task board from Todoist, a front page built from your feeds, a paint studio, a trip board, a reader that strips clutter from any link.",
+      "options": [
+        {
+          "id": "own-section",
+          "label": "Its own section, two clips plus an idea row",
+          "pros": [
+            "The everything-app claim is proven within one scroll of the headline.",
+            "Home and Finance are the two most impressive things the app has, and they get full width.",
+            "The idea row does the 'imagine what you could build' job without more filming."
+          ],
+          "cons": [
+            "One more section on an already long page.",
+            "Two new clips to film and keep current."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "deck-cards",
+          "label": "Two more cards inside the existing feature list",
+          "pros": [
+            "No new section; the page's shape stays as it is.",
+            "Cheapest to build."
+          ],
+          "cons": [
+            "Pages become card nine and ten of a list, so the new headline is still unproven for the first few screens.",
+            "No room for the idea row."
+          ]
+        },
+        {
+          "id": "hero-only",
+          "label": "Leave it in the hero demo, add a hint there",
+          "pros": [
+            "Nothing new to film; the demo already has both pages."
+          ],
+          "cons": [
+            "Most visitors never click inside the demo, so most never see it.",
+            "The page copy still never says what Pages are."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The hero demo",
+      "path": "The live demo window at the top of the page",
+      "headline": "How should the hero demo invite people to open the Home and Finance pages inside it?",
+      "today": "The demo opens on a short chat about planning a week. The chat fills the top third of the window and the rest is empty wallpaper. The house and dollar icons in its toolbar open the Home and Finance pages, but nothing says so.",
+      "problem": "The most interesting part of the demo is hidden behind two small icons with no label. The empty two-thirds of the window reads as 'this app does not do much'.",
+      "proposal": "Give the demo a visible invitation to its best parts. The three ways differ in how much the demo does on its own.",
+      "options": [
+        {
+          "id": "hint-chips",
+          "label": "Three labelled chips under the demo: Chat, Home, Finance",
+          "pros": [
+            "One click opens each page; the labels say what you will see.",
+            "Works the same on a phone.",
+            "The demo itself stays still until you touch it, which is how it already behaves."
+          ],
+          "cons": [
+            "Still needs a click; a visitor who never clicks still sees only the chat."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "auto-tour",
+          "label": "The demo tours itself: chat, then Home, then Finance, until you click",
+          "pros": [
+            "Nobody has to click to see all three."
+          ],
+          "cons": [
+            "Motion inside the hero while you read the headline is distracting.",
+            "A page changing on its own can read as broken, and the demo was already called janky once when it moved by itself."
+          ]
+        },
+        {
+          "id": "open-on-home",
+          "label": "Open on the Home page instead of the chat",
+          "pros": [
+            "The first thing anyone sees is the most impressive screen."
+          ],
+          "cons": [
+            "The headline says 'assistant' and the first screen would have no assistant in it.",
+            "Harder to find the chat afterwards."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The 'More than a chatbot' paragraph",
+      "path": "The first text block after the hero",
+      "headline": "Should the opening paragraph be rewritten as two halves, assistant and everything app?",
+      "today": "The paragraph under 'More than a chatbot' lists what the assistant can do: spreadsheets, research, emails, slideshows, coding. A second paragraph is about which AI models it runs. On a phone this block is about three screens of text.",
+      "problem": "Every example is an assistant example. The second half of the new positioning, that the app itself can become anything you want, is absent from the one paragraph most visitors read.",
+      "proposal": "Two short paragraphs with a bold lead each. One: 'An assistant that does real work', three examples. Two: 'An app that becomes whatever you need', three examples such as a smart-home panel, a money dashboard, a page for your hobby. The model sentence moves into the models card where it already belongs. Exact wording comes to you later on the copy preview. Yes means I draft it that way; No keeps the current paragraph."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "The feature list",
+      "path": "The 'What you get' cards",
+      "headline": "What should the feature list lead with?",
+      "today": "The cards run: any model, spreadsheets, permissions, projects, tags, phone sync, make it yours, games, then a roadmap sketch. 'Make it yours' is the seventh card.",
+      "problem": "The order tells the old story. Customization, the thing the headline promises, is near the bottom, after two cards about organizing conversations.",
+      "proposal": "Reorder so the first cards prove the headline and the assistant basics follow.",
+      "options": [
+        {
+          "id": "yours-first",
+          "label": "Customization first: make it yours, Pages, your device, then the assistant basics",
+          "pros": [
+            "The first three cards match the headline's promise.",
+            "The assistant cards still appear, just later."
+          ],
+          "cons": [
+            "A visitor who came for 'an AI assistant' waits three cards to see one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "alternate",
+          "label": "Alternate: one assistant card, one customization card, and so on",
+          "pros": [
+            "Both stories are told from the first screen."
+          ],
+          "cons": [
+            "Reads as a grab bag rather than a story.",
+            "Neither claim builds momentum."
+          ]
+        },
+        {
+          "id": "keep-order",
+          "label": "Keep today's order and add the new cards at the end",
+          "pros": [
+            "Nothing moves; the smallest change."
+          ],
+          "cons": [
+            "The new cards land after the games card, where few scroll."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "The feature cards themselves",
+      "intro": "The first page set the order. These decide which cards stay, merge, go or get added."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "pick": "several",
+      "surface": "The feature list",
+      "path": "The 'What you get' cards",
+      "headline": "Which changes to the card list do you want? Tick every one you want.",
+      "today": "Eight cards plus a roadmap sketch. Two cards, 'Project view' and 'Tags, notes, and shortcuts', are both about organizing conversations. Two card headers are vague: 'Seamless integration' and 'Logical management'.",
+      "problem": "Two organizing cards double down on the 'manages your conversations' story. The vague headers tell the visitor nothing before they read the paragraph. No card shows that the agent's work can be undone, which is the first worry most people have.",
+      "proposal": "Tick the changes you want. Each one is independent; wording is reviewed later.",
+      "options": [
+        {
+          "id": "merge-organize",
+          "label": "Merge 'Project view' and 'Tags' into one 'Stay organized' card",
+          "pros": [
+            "One card instead of two for the least unique part of the app.",
+            "Frees a slot for a card that proves the new headline."
+          ],
+          "cons": [
+            "One filmed clip has to show both projects and tags in about fifteen seconds."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "add-pages-card",
+          "label": "Add a card: 'Describe a page and it appears', filmed from a chat that builds one",
+          "pros": [
+            "Shows the how, not just the result: you ask, the page shows up in the app.",
+            "Pairs with the Pages section from page one."
+          ],
+          "cons": [
+            "Needs a scripted demo reply that builds a small page; the demo tooling can do it but it is new filming work."
+          ]
+        },
+        {
+          "id": "add-device-card",
+          "label": "Add a card: 'Customize your whole device', using the swipe keyboard",
+          "pros": [
+            "Shows the app reaching outside itself, which no competitor's page shows.",
+            "The keyboard is public on GitHub, so the card can link to it."
+          ],
+          "cons": [
+            "Needs a short recording from your tablet; it cannot be filmed from the demo rig."
+          ]
+        },
+        {
+          "id": "add-undo-card",
+          "label": "Add a card: 'Everything it writes has a history you can roll back'",
+          "pros": [
+            "Answers 'what if it wrecks my file', the first fear new users have.",
+            "Already shipped; no rival's page mentions this."
+          ],
+          "cons": [
+            "One more card on a long page."
+          ]
+        },
+        {
+          "id": "rename-headers",
+          "label": "Replace the vague card headers with plain ones",
+          "pros": [
+            "'Any model, your choice' says more than 'Seamless integration'.",
+            "Costs nothing."
+          ],
+          "cons": [
+            "None I can see."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "The roadmap card",
+      "path": "The last card in the feature list, 'Hand it off'",
+      "headline": "What happens to the 'Hand it off' roadmap card, which still says 'Coming after 1.3'?",
+      "today": "The last card is a drawn sketch of scheduled jobs and an inbox, labelled 'Coming after 1.3'. Version 1.3.1 shipped on 2026-10-19 and that feature is still in early exploration.",
+      "problem": "A visitor on 1.3.1 reads a promise with a date that has passed. The sketch is also the only card that is not a real recording, so it looks different from everything around it.",
+      "proposal": "Pick what the card becomes.",
+      "options": [
+        {
+          "id": "relabel",
+          "label": "Keep it, relabel to 'On the roadmap' with no version",
+          "pros": [
+            "The idea is still a real plan and it is a strong one.",
+            "A one-word fix."
+          ],
+          "cons": [
+            "The sketch still looks unlike the filmed cards."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "replace",
+          "label": "Replace it with a filmed card about something that already works",
+          "pros": [
+            "Every card on the page is then a real recording."
+          ],
+          "cons": [
+            "The page stops hinting at where the app is going."
+          ]
+        },
+        {
+          "id": "cut",
+          "label": "Cut it",
+          "pros": [
+            "Shortest page."
+          ],
+          "cons": [
+            "Loses the only forward-looking card."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "The gallery",
+      "path": "The 'See what people have built' strip near the bottom",
+      "headline": "What should the bottom gallery become?",
+      "today": "A strip titled 'See what people have built' shows eight screenshots of the app's own screens in different themes: a chat, the marketplace, projects, the model picker, permissions, tags, themes, Connect 4.",
+      "problem": "The title promises other people's work, but every picture is of the app itself, made by you. A careful visitor notices. It also repeats screens the cards above already showed.",
+      "proposal": "Turn the strip into the imagination wall for Pages, or retitle it honestly.",
+      "options": [
+        {
+          "id": "ideas-wall",
+          "label": "An 'ideas' wall: stills of sample pages, each with a one-line prompt that would make it",
+          "pros": [
+            "Does the 'spark imagination' job with real screens: weather, task board, headlines, paint studio, trip board, Home, Finance.",
+            "Each still carries the words you would type, so it teaches how to ask."
+          ],
+          "cons": [
+            "Some sample pages may need a theme pass before they are pretty enough to show."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "retitle",
+          "label": "Keep the pictures, retitle to 'A look around'",
+          "pros": [
+            "Honest and free."
+          ],
+          "cons": [
+            "Still repeats what the cards showed."
+          ]
+        },
+        {
+          "id": "cut-gallery",
+          "label": "Cut the gallery",
+          "pros": [
+            "Shorter page, nothing misleading."
+          ],
+          "cons": [
+            "Loses the only place themes are shown side by side."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Visitors on Linux",
+      "intro": "The page already knows the visitor's system; today it only uses that to highlight the Linux download button."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "pick": "several",
+      "surface": "Linux-only cards",
+      "path": "Extra cards that appear only when the visitor's browser reports Linux",
+      "headline": "Which Linux-only cards should appear? Tick every one you want.",
+      "today": "Linux visitors get the Linux download button lit up and nothing else. Your swipe keyboard for the Plasma on-screen keyboard is public on GitHub. The tablet-mode project and the desktop restyle are private.",
+      "problem": "Linux users are the most likely to care that the app can reshape their whole machine, and the page tells them nothing a Windows user does not hear.",
+      "proposal": "Cards that only Linux visitors see, each with the line 'Don't just customize the app. Customize your whole device.' as the theme. Tick the ones to build.",
+      "options": [
+        {
+          "id": "swipe-card",
+          "label": "Swipe keyboard: a clip of swiping a sentence on the tablet keyboard, with a link to the project",
+          "pros": [
+            "A real, finished, public thing built through the app.",
+            "Nothing like it exists on any AI product's page."
+          ],
+          "cons": [
+            "Needs a recording from your tablet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "desktop-card",
+          "label": "Desktop restyle: a still of your glass-style Plasma desktop, 'built by describing it'",
+          "pros": [
+            "Visually striking; shows the app can change the look of the whole system."
+          ],
+          "cons": [
+            "That project is private, so the card can show but not link.",
+            "Needs a clean screenshot of your desktop with nothing personal on it."
+          ]
+        },
+        {
+          "id": "install-card",
+          "label": "Install card: deb, rpm, pacman and AppImage named plainly, no asterisks",
+          "pros": [
+            "Linux users ask 'which file' before anything else."
+          ],
+          "cons": [
+            "The download window already asks the distro; this would repeat it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "The device card for everyone else",
+      "path": "What Windows, Mac and phone visitors see in place of the Linux cards",
+      "headline": "Should visitors who are not on Linux see the 'customize your whole device' card too?",
+      "today": "There is no device card at all. The swipe keyboard only works on Linux.",
+      "problem": "If the card is Linux-only, most visitors never learn the app can reach outside itself. If everyone sees a Linux example, Windows and Mac visitors may read it as 'not for me'.",
+      "proposal": "Pick who sees the device story.",
+      "options": [
+        {
+          "id": "everyone-labelled",
+          "label": "Everyone sees it, labelled 'Built on Linux' with the same clip",
+          "pros": [
+            "The idea reaches every visitor.",
+            "Honest about where it was built."
+          ],
+          "cons": [
+            "A Windows visitor cannot use that exact thing."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "linux-only",
+          "label": "Linux visitors only",
+          "pros": [
+            "Every card a visitor sees applies to them."
+          ],
+          "cons": [
+            "The strongest 'it can do anything' proof is hidden from most people."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "The swipe keyboard clip",
+      "path": "How the keyboard recording gets made",
+      "headline": "How should the swipe keyboard clip be recorded?",
+      "today": "Every other clip is filmed by a script from a practice copy of the app. The keyboard lives on your tablet's screen, which that script cannot reach.",
+      "problem": "Someone has to point a recorder at the real tablet keyboard while a sentence is swiped.",
+      "proposal": "Pick how. Either way I trim it to about ten seconds and match the other clips' size and pace.",
+      "options": [
+        {
+          "id": "you-record",
+          "label": "You record it with the screen recorder when convenient and drop the file in chat",
+          "pros": [
+            "You choose the moment and the sentence.",
+            "Nothing of mine runs on your live desktop."
+          ],
+          "cons": [
+            "Waits on you."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "i-record",
+          "label": "I start a screen recording from this session while you swipe a sentence",
+          "pros": [
+            "Done in one sitting."
+          ],
+          "cons": [
+            "A recorder running from a session on your working machine; low risk but it is your live desktop."
+          ]
+        },
+        {
+          "id": "still-only",
+          "label": "A still picture of the keyboard with a swipe trail, no motion",
+          "pros": [
+            "Easiest."
+          ],
+          "cons": [
+            "Swiping is motion; a still undersells it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "The demo clips",
+      "intro": "You asked to re-record most demos and zoom them in. These set how far and which ones."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Every feature clip",
+      "path": "The recordings in the feature cards",
+      "headline": "How much closer should the clips be filmed?",
+      "today": "Clips are filmed at 1.15 times the app's normal size and then shown at about half their recorded width on the page, so the app's 15-pixel text lands under 8 pixels tall on a desktop screen.",
+      "problem": "You cannot read what the assistant is saying without leaning in, and on a phone it is a few pixels.",
+      "proposal": "Film every clip closer. The number is how much bigger than normal the app is filmed; the page then shows it at the same card size, so everything in it reads bigger. Beyond about 1.5 the app's own layout starts hiding things, so that is the ceiling.",
+      "options": [
+        {
+          "id": "zoom-130",
+          "label": "1.3 times, 'just a bit more'",
+          "pros": [
+            "Text about 13 percent bigger than today.",
+            "Every scene still fits; no layout surprises."
+          ],
+          "cons": [
+            "Still small on a phone."
+          ],
+          "measured": "15 px text shows at about 8.8 px on the card, up from 7.8",
+          "recommended": true
+        },
+        {
+          "id": "zoom-145",
+          "label": "1.45 times",
+          "pros": [
+            "Text about 26 percent bigger; readable without leaning in."
+          ],
+          "cons": [
+            "The side panel and the quick chips get cramped; some scenes may need re-scripting."
+          ],
+          "measured": "15 px text shows at about 9.8 px on the card"
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "pick": "several",
+      "surface": "Which clips get new content",
+      "path": "The recordings in the feature cards",
+      "headline": "Every clip gets re-filmed closer. Which ones should also get new content? Tick them.",
+      "today": "Eight clips: the Grok 'chaos goblin' model joke, the spreadsheet chart, the morning inbox with permission cards, the projects screen, the tags pop-up, the laptop-to-phone pair, the theme built from a sentence, and the games.",
+      "problem": "Some clips just need the closer framing. Others tell the old story or show empty space: the conversation in several fills the top third of the window and the rest is wallpaper.",
+      "proposal": "Tick the clips whose content should change. Unticked ones are re-filmed as they are, only closer.",
+      "options": [
+        {
+          "id": "new-home",
+          "label": "New: the Home page, scrolling its rooms and flipping a light",
+          "pros": [
+            "The single most striking screen in the app, never shown on the page today."
+          ],
+          "cons": [
+            "New scene to script."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "new-finance",
+          "label": "New: the Finance page, net worth chart and the 'needs you' list",
+          "pros": [
+            "Proves 'a page for your money', with fictional data already in the demo."
+          ],
+          "cons": [
+            "New scene to script."
+          ]
+        },
+        {
+          "id": "new-build-page",
+          "label": "New: ask for a page in chat and watch it appear",
+          "pros": [
+            "Shows the how; the other two show the result."
+          ],
+          "cons": [
+            "Needs a scripted reply that builds a small page."
+          ]
+        },
+        {
+          "id": "redo-model",
+          "label": "Redo the model clip with a useful switch instead of the Grok joke",
+          "pros": [
+            "The joke lands with developers, less with students and parents."
+          ],
+          "cons": [
+            "The joke is the one memorable clip on the page today."
+          ]
+        },
+        {
+          "id": "redo-organize",
+          "label": "Redo projects and tags as one clip if the cards merge",
+          "pros": [
+            "Matches the merged card."
+          ],
+          "cons": [
+            "Fifteen seconds is tight for both."
+          ]
+        },
+        {
+          "id": "redo-yours",
+          "label": "Redo the theme clip to end on a mascot or wallpaper change you can see",
+          "pros": [
+            "Today the clip ends on a chat message about a theme; the change itself is small on screen."
+          ],
+          "cons": [
+            "Longer clip."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Clips on a phone",
+      "path": "The feature cards when the page is open on a phone",
+      "headline": "On a phone, should the cards play clips filmed at phone size?",
+      "today": "A phone shows the same desktop recording shrunk to the phone's width. The app's text becomes a few pixels tall.",
+      "problem": "On a phone the clips are unreadable, and a phone is where many first visits happen.",
+      "proposal": "Film a second, phone-shaped take of each clip and play that one on phones.",
+      "options": [
+        {
+          "id": "phone-all",
+          "label": "A phone take for every card",
+          "pros": [
+            "Every clip readable on a phone."
+          ],
+          "cons": [
+            "Doubles the filming and the files to keep current."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "phone-some",
+          "label": "Phone takes only for the Pages clips and the phone-sync card",
+          "pros": [
+            "Half the work; the most visual cards get it."
+          ],
+          "cons": [
+            "The rest stay tiny on phones."
+          ]
+        },
+        {
+          "id": "phone-none",
+          "label": "Keep the desktop recordings on phones",
+          "pros": [
+            "No extra filming."
+          ],
+          "cons": [
+            "The phone problem stays as it is."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Small cleanups and how we work",
+      "intro": "Things I found that are wrong or stale, and one question about process."
+    },
+    {
+      "id": "Q-14",
+      "words": true,
+      "pick": "several",
+      "surface": "The whole page",
+      "path": "Copy and small fixes across the page",
+      "headline": "Which of these cleanups do you want? Tick every one.",
+      "today": "The page calls the product both 'YouCoded' and 'YouCoded Assistant'. The iOS button has an asterisk whose explanation is ten screens down. The integrations grid lists sixteen services while the registry marks four ready and the rest planned. The 'How we got here' story runs two screens on a phone. The section header 'Everything the app gives you' is a filler line.",
+      "problem": "Each is small, but together they read as a page nobody has checked lately.",
+      "proposal": "Tick the ones to fix now. All are wording or layout; none change the app.",
+      "options": [
+        {
+          "id": "one-name",
+          "label": "One name everywhere: 'YouCoded'",
+          "pros": [
+            "'YouCoded Assistant' contradicts the everything-app positioning."
+          ],
+          "cons": [
+            "None."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ios-note",
+          "label": "Put the iOS note right under the download buttons",
+          "pros": [
+            "The asterisk finally explains itself where it is seen."
+          ],
+          "cons": [
+            "One more line under the buttons."
+          ]
+        },
+        {
+          "id": "integrations-honest",
+          "label": "Split the integrations grid into 'Ready' and 'Planned'",
+          "pros": [
+            "Nobody installs for Canva and finds it is not there yet."
+          ],
+          "cons": [
+            "The ready row is short: Apple, Google, iMessage, Todoist."
+          ]
+        },
+        {
+          "id": "story-fold",
+          "label": "Fold the story on phones behind a 'Read the story' line",
+          "pros": [
+            "Two screens of text become one line until tapped."
+          ],
+          "cons": [
+            "Fewer phone visitors read it."
+          ]
+        },
+        {
+          "id": "section-headers",
+          "label": "Rewrite the section headers to the new story",
+          "pros": [
+            "'What you get / Everything the app gives you' becomes something like 'An assistant that does the work' and 'An app that becomes anything'."
+          ],
+          "cons": [
+            "None."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-15",
+      "words": true,
+      "surface": "How this work runs",
+      "path": "The steps between your answers here and the finished page",
+      "headline": "Skip the full design route and go straight to a copy preview plus one Before/After deck?",
+      "today": "The full route for a feature runs a fresh tester before the first deck, a written contract, a code reviewer, a second tester and a grader. The short route is: build it, show you a Before/After deck, you say yes or no.",
+      "problem": "This is a web page with clear direction from you, not an app feature. The full route would cost about a dozen helper sessions and days of waiting for a page you can judge by looking at it.",
+      "proposal": "Yes means: I draft the copy and show it on the page-shaped copy preview, film the clips, then show one Before/After deck of the finished page at desktop and phone size. No means the full route runs."
+    }
+  ]
+}

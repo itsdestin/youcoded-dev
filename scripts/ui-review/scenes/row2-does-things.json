@@ -1,9 +1,10 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox&seed=none&title=morning+inbox&replySpeed=2.5",
   "theme": "creme",
-  "zoom": 1.15,
+  "zoom": 1.3,
   "boot": 3000,
-  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, 1.5 s end hold, typing 32 a second). The one exception to 2x: this reply is ~18 s of text and tool steps at normal speed, and at 2x the loop still sat at 20 s, so it plays at 2.5x. Every Yes still waits for its card to exist before clicking; only the pauses after were trimmed.",
+  "pauseBackground": true,
+  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, 1.5 s end hold, typing 32 a second). The one exception to 2x: this reply is ~18 s of text and tool steps at normal speed, and at 2x the loop still sat at 20 s, so it plays at 2.5x. Every Yes still waits for its card to exist before clicking; only the pauses after were trimmed. 2026-10-21 (Destin, website-everything-app #79): re-filmed at zoom 1.3 and once per site theme (THEME env overrides this scene's `theme`), so the page plays the visitor's theme.",
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },

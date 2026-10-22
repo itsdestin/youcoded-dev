@@ -140,6 +140,21 @@ class ShootCropTests(unittest.TestCase):
         self.assertEqual(r['boxes']['S-1']['midnight']['before'], [1, 2, 3, 4])
         self.assertEqual(r['boxes']['S-1']['midnight']['after'], [1, 2, 3, 4])
 
+    def test_pictures_missing_in_a_theme_name_the_shoot_command_that_takes_them(self):
+        # The deck wants a theme the sweep never took: say exactly which --themes to retake with.
+        spec = load_spec(_shoot_spec(self.tmp, themes=['midnight', 'light', 'creme']))
+        said = []
+        r = crop_images(spec, log=said.append)
+        self.assertTrue(any('creme/' in m for m in r['missing']), r['missing'])
+        hint = [m for m in said if m.startswith('hint:')]
+        self.assertEqual(len(hint), 1, said)
+        self.assertIn("'settings/sound'", hint[0]); self.assertIn('--themes creme,light,midnight', hint[0])
+
+    def test_no_hint_when_every_theme_was_taken(self):
+        said = []
+        crop_images(load_spec(_shoot_spec(self.tmp)), log=said.append)
+        self.assertFalse(any(m.startswith('hint:') for m in said), said)
+
     def test_a_picture_shoot_marked_not_ok_is_missing_never_blank(self):
         shoot_run(os.path.join(self.tmp, 'runs', 'before'),
                  [{'name': 'settings/sound', 'theme': t, 'ok': False, 'reason': 'its mark is not on the page'} for t in ('midnight', 'light')])

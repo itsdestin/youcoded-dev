@@ -165,6 +165,30 @@ function linkMissingCommands(componentDir, lock) {
   }
   return linked;
 }
+/**
+ * Replace a component's node_modules with a real install that shares no files with any other
+ * checkout: `npm ci` runs in a staging folder BESIDE the component (same disk, so the final step
+ * is a rename, not a copy — /tmp is often another disk), then the old folder is swapped out and
+ * deleted. Deleting a hardlink farm only drops link counts, so no other checkout is touched, and
+ * `npm ci` never runs inside a linked node_modules (the in-place write glob-guard exists to stop).
+ * The component's `scripts/` and `.npmrc` go along because install hooks run from them. A failed
+ * install changes nothing.
+ */
+export function freshInstall(componentDir, { npm = 'npm' } = {}) {
+  const stage = fs.mkdtempSync(path.join(path.dirname(componentDir), `.fresh-deps-${path.basename(componentDir)}-`));
+  try {
+    for (const name of ['package.json', 'package-lock.json', '.npmrc']) {
+      if (exists(path.join(componentDir, name))) fs.copyFileSync(path.join(componentDir, name), path.join(stage, name));
+    }
+    if (exists(path.join(componentDir, 'scripts'))) fs.cpSync(path.join(componentDir, 'scripts'), path.join(stage, 'scripts'), { recursive: true });
+    execFileSync(npm, ['ci', '--no-audit', '--no-fund'], { cwd: stage, stdio: ['ignore', 'pipe', 'pipe'] });
+    const target = path.join(componentDir, 'node_modules');
+    if (exists(target)) fs.renameSync(target, path.join(stage, 'old-node_modules'));
+    fs.renameSync(path.join(stage, 'node_modules'), target);
+  } finally {
+    fs.rmSync(stage, { recursive: true, force: true, maxRetries: 5 });
+  }
+}
 export function fillMissingPackages(componentDir, label = path.basename(componentDir)) {
   let lock;
   try { lock = JSON.parse(fs.readFileSync(path.join(componentDir, 'package-lock.json'), 'utf8')); } catch { return []; }
@@ -189,8 +213,15 @@ export function fillMissingPackages(componentDir, label = path.basename(componen
   }
   const notes = [];
   if (gaps.length > MAX_FILLED_PACKAGES) {
-    // Deleting a hardlink farm only drops link counts, so a real install is safe from here.
-    return [`${label}/node_modules is missing or outdated in ${gaps.length} packages, too many to fetch one by one — delete it and run npm ci in ${componentDir}`];
+    // WHY install here instead of advising it (card #19(h), 4th hit 2026-10-21): this note used to say
+    // "delete it and run npm ci", which glob-guard rightly refuses inside a worktree, so each session
+    // rebuilt a scratch-folder install by hand (~6 calls). freshInstall does that safely itself.
+    try {
+      freshInstall(componentDir);
+      return [`${label}/node_modules was missing or outdated in ${gaps.length} packages — replaced with a fresh install of its own (no shared files)`];
+    } catch (error) {
+      return [`${label}/node_modules is missing or outdated in ${gaps.length} packages and a fresh install failed (${String(error.message).split('\n')[0]}) — retry with: node scripts/fill-missing-deps.mjs --fresh ${componentDir}`];
+    }
   }
   // Parents before their nested packages: a replaced parent carries its nested
   // node_modules over, and a fetched child needs its parent's directory.

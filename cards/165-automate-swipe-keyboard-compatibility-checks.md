@@ -10,11 +10,14 @@ why: Destin: "fully automate the maintenance burden ... automatically works with
 work: session/165-swipe-release-pipeline
 ---
 Progress
-Done: Native prediction source363fd2a frozen/pushed; required parallel platform CI39526485965 active. Actual stock-native tap/swipe→Space→three centered-best suggestions and each-slot insertion demonstrated; privacy stale-touch demo passed. Native docs corrected. Focused reviewer found no actionable bugs; ARM evidence investigation completed without speculative source changes.
-Next: ARM worker135 resumes one precise authorized-replacement forwarding probe while four-platform CI builds363fd2a; parent coordinates final artifacts/Flatpak stable+beta checks/owner update. No redundant full review rounds or intermediate CI reruns.
+Done: Gated four-platform release pipeline (protected tag build + approval, manifest/SHA verification) shipped and used for v0.3.0-1.
+Next: Scheduled distro canaries, signed Arch/COPR update channels and routine rebuild policy remain.
 Blocked: ARM correction/word deletion/i18n/privacy runtime acceptance remains REQUIRED. Final363fd2a four-platform packages not yet built/accepted; owner native package not updated; PR3 unmerged and no corrective release published.
 
 Chats
+- 2026-10-22 session/165-swipe-release-pipeline: chat started
+- 2026-10-22 session/165-swipe-release-pipeline: chat started
+- 2026-10-21 session/165-swipe-release-pipeline: chat started
 - 2026-10-21 session/165-swipe-release-pipeline: chat started
 - 2026-10-21 session/165-swipe-release-pipeline: chat started
 - 2026-10-21 session/165-swipe-release-pipeline: chat started

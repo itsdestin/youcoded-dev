@@ -294,6 +294,9 @@ async function makeTab(b, targetId) {
   let themeScript = null; let size = '';
   return {
     send, evaluate,
+    // WHY (2026-10-21): record.mjs must reach a sandboxed page's iframe, which Chrome runs as its own
+    // target; its session can only be addressed through the browser connection and this tab's session.
+    browser: b, sessionId,
     /** Every protocol event for this tab (console messages, navigations…). Returns an unsubscribe. */
     on: (f) => { listeners.add(f); return () => listeners.delete(f); },
     still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),

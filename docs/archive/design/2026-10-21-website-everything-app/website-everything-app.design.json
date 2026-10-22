@@ -1,0 +1,172 @@
+{
+  "title": "youcoded.ai — the new page, drawn: pick a layout, approve the parts",
+  "key": "website-everything-app-design",
+  "out": "website-everything-app.design.html",
+  "stage": "design",
+  "images": "images/website-everything-app.design",
+  "runs": { "today": "runs/today" },
+  "labels": { "today": "Mockup" },
+  "themes": ["youcoded"],
+  "crops": {
+    "fan":      ["site", "fan-1", "1440x900+0+0"],
+    "fan-more": ["site", "fan-2", "1440x900+0+0"],
+    "bento":    ["site", "bento-0", "1440x900+0+0"],
+    "theater":  ["site", "theater-1", "1440x900+0+0"],
+    "chips":    ["site", "hero-chips", "1440x900+0+0"],
+    "keyboard": ["site", "theater-2", "1440x900+0+0"],
+    "about":    ["site", "about", "1440x900+0+0"],
+    "ideas":    ["site", "ideas", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "The feature list",
+      "path": "youcoded.ai, the 'Yours to shape. Yours to use.' section",
+      "headline": "Which way should the feature cards be laid out? Three ways, same eleven cards, same order.",
+      "notice": "Every picture is the real page with placeholder stills: the Home and Finance pictures are screenshots from the demo, the keyboard is the live animation, and the old loops stand in where a clip will be re-filmed. Only the shape of the section is being decided here.",
+      "risk": "Whichever you pick, every clip is re-filmed at 1.3 zoom in all four site themes before this ships, so what plays inside the frames will change.",
+      "variants": [
+        {
+          "id": "fan",
+          "label": "Stacked cards, as today",
+          "crop": "fan",
+          "summary": "Each card slides up and parks on the pile as you scroll; the clip takes two thirds of the card. The page keeps its current feel; only the order and the cards change.",
+          "measured": "11 cards, about 6 screens of scrolling",
+          "risk": "A long scroll before the assistant cards appear, since customization goes first."
+        },
+        {
+          "id": "bento",
+          "label": "Tiled grid, all at once",
+          "crop": "bento",
+          "summary": "Four big tiles for the customization story, then six smaller ones for the assistant basics, then the roadmap across the bottom. Everything is on screen within two scrolls and the clips play side by side.",
+          "measured": "11 cards, about 3 screens of scrolling",
+          "risk": "Smaller clips: the six assistant tiles show the app at about a third of its filmed width."
+        },
+        {
+          "id": "theater",
+          "label": "One stage with a chip rail",
+          "crop": "theater",
+          "summary": "One big frame stays put on the right while the words scroll on the left; a row of chips above it names every card, lights the current one, and jumps on click. The clip is the largest of the three.",
+          "measured": "11 cards, about 5 screens of scrolling",
+          "risk": "One clip at a time, so there is no sense of how many cards there are without reading the rail."
+        }
+      ]
+    },
+    {
+      "id": "B-1",
+      "new": true,
+      "surface": "The hero demo",
+      "path": "The live demo window at the top of the page",
+      "crop": "chips",
+      "highlight": { "box": [8, 32, 36, 24] },
+      "headline": "Labelled tips over the demo, each pointing at a real button, with an x and a Hide tips switch.",
+      "changed": "Nine tips fan out from the demo's own toolbar buttons: Settings, Pages, Projects, Home, Finance on the left; Files, Browser, Games on the right; Commands at the message box. Hovering one opens a sentence (Home is shown open). Each has an x, and Hide tips at the corner clears them all. They disappear the moment you open a page inside the demo.",
+      "notice": "A visitor sees what the demo can do before touching it, and the Home and Finance pages stop being two unlabelled icons.",
+      "risk": "The tips sit over the chat bubbles until dismissed; on a phone they will need to collapse to a single row of chips under the demo instead."
+    },
+    {
+      "id": "B-2",
+      "new": true,
+      "surface": "The device card",
+      "path": "'Your whole device' in the feature list",
+      "crop": "keyboard",
+      "highlight": { "box": [39, 33, 54, 53] },
+      "headline": "A drawn, animated swipe keyboard stands in for a tablet recording.",
+      "changed": "A keyboard in the app's own look sits under a generic browser tab. A glowing trail swipes y-o-u-r-s, the keys light as it passes, the guess bar offers 'yours · your · yolks', and the word lands in the page's search field after 'make your technology'. It loops every seven seconds and recolours with the site theme.",
+      "notice": "Crisp at any size and in every theme, with nothing of your real tablet on the page. Polish still to come: a thinner trail, and the word typed straight into the address bar.",
+      "risk": "It is a drawing of the keyboard, not the keyboard; the card's words say so by linking to the real project."
+    },
+    {
+      "id": "B-3",
+      "new": true,
+      "surface": "The opening paragraph",
+      "path": "'What is this?' right under the hero",
+      "crop": "about",
+      "highlight": { "box": [8, 15, 84, 40] },
+      "headline": "One story in one paragraph: an assistant that does what you want, with the screens and features you want.",
+      "changed": "The headline becomes 'One app. Whatever you want it to be.' The paragraph names files, research and writing, then a control panel for your house, a page for your money, a game, and changing its own look, and ends on 'you decide what it is'. The models line is one sentence under it. 'YouCoded Assistant' is gone everywhere; it is 'YouCoded'. The features header reads 'Yours to shape. Yours to use.'",
+      "notice": "The first thing a visitor reads matches the headline above it. Exact wording is yours to edit on the copy preview next.",
+      "risk": "Fewer concrete assistant examples than today's paragraph (three instead of five)."
+    },
+    {
+      "id": "B-4",
+      "new": true,
+      "surface": "The bottom gallery",
+      "path": "Where 'See what people have built' is today",
+      "crop": "ideas",
+      "highlight": { "box": [7, 40, 86, 36] },
+      "headline": "The gallery becomes an ideas wall: a page, and the sentence that would make it.",
+      "changed": "Titled 'Say it, and it's a page in the app.' Each tile is a still of a sample page with the words you would type under it in quotes. Four tiles have real pictures today (Home, Finance, the paint studio, the trip board). Four more (weather, a Todoist board, headlines, a link reader) exist in the app only as a permission card, so their sample pages have to be made before they can be shown.",
+      "notice": "The wall teaches how to ask, which the old gallery did not, and it is honest about who made what.",
+      "risk": "Four of the eight tiles need new sample pages built first; until then the wall ships with four."
+    },
+    {
+      "id": "B-5",
+      "new": true,
+      "surface": "The feature list",
+      "path": "The cards, in order",
+      "crop": "fan-more",
+      "highlight": { "box": [8, 61, 84, 36] },
+      "headline": "Eleven cards in this order, with one of them for Linux visitors only.",
+      "changed": "Make it yours · Your home, your way · Your money, your way · Your whole device (the keyboard, labelled Built on Linux, shown to everyone) · Your desktop, too (Linux visitors only, the dashed outline marks it) · Any model · Real work, edited live · You're in control · Stay organized (projects and tags merged) · Works everywhere · On the roadmap (Hand it off, relabelled). The vague headers are gone.",
+      "notice": "Customization leads, the assistant basics follow, and the page is one card longer than today's nine.",
+      "risk": "The desktop card has a grey placeholder until there is a clean screenshot of your desktop with the Control Center open."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The desktop card",
+      "path": "'Your desktop, too', Linux visitors only",
+      "headline": "How should the desktop screenshot with the Control Center open get taken?",
+      "today": "The card shows a grey placeholder. The only screenshots on disk of your restyled desktop have a browser full of personal tabs and your Wi-Fi name in the Control Center.",
+      "problem": "A screenshot of your real desktop goes on a public page, so what is open on it matters more than usual.",
+      "proposal": "Pick how the picture gets made.",
+      "options": [
+        {
+          "id": "you-capture",
+          "label": "You take it when convenient: desktop clear, Control Center open, Wi-Fi name hidden",
+          "pros": ["You decide exactly what is on screen.", "Nothing of mine runs on your working desktop."],
+          "cons": ["Waits on you."],
+          "recommended": true
+        },
+        {
+          "id": "i-capture",
+          "label": "I take it from this session after you tidy the screen and open the Control Center",
+          "pros": ["Done in one sitting."],
+          "cons": ["A screenshot command running on your live desktop, and I cannot see what is on it before it fires."]
+        },
+        {
+          "id": "drop-card",
+          "label": "Drop the desktop card; the keyboard card carries the device story alone",
+          "pros": ["Nothing personal on the page; one less card."],
+          "cons": ["Linux visitors lose the most visual proof that the app reaches the whole machine."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The hero demo",
+      "path": "The tips over the demo",
+      "headline": "Should the tips also appear inside the demo's Settings and the Home page, or on the chat page only for now?",
+      "today": "The mockup draws tips on the chat page only.",
+      "problem": "You suggested tips on specific pages too, such as explaining the settings panel's options. Each page's tips are their own set to write and position, and the demo's settings panel has many rows.",
+      "proposal": "Pick the scope for this round.",
+      "options": [
+        {
+          "id": "chat-only",
+          "label": "Chat page only this round; page tips later",
+          "pros": ["Ships with the rest of the page.", "We see whether visitors use the chat tips before writing more."],
+          "cons": ["Settings stays unexplained in the demo for now."],
+          "recommended": true
+        },
+        {
+          "id": "settings-too",
+          "label": "Chat page plus the Settings panel now",
+          "pros": ["The most-opened panel gets explained in the same release."],
+          "cons": ["Another set of tips to write and position before this ships."]
+        }
+      ]
+    }
+  ]
+}
