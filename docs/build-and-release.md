@@ -37,8 +37,9 @@ The release procedure is `youcoded-admin/skills/release/SKILL.md`: review the ap
 
 ### Bug-fix releases (hotfixes)
 
-**A bug fix can ship on its own, without the unreleased work on master** (Destin, 2026-10-22,
-card #29). Feature releases come from master and bump the middle number (`1.4.0` → `1.5.0`);
+**A major or breaking bug fix can ship on its own, without the unreleased work on master** —
+only with Destin's express consent; minor bugs ship with the next feature release (Destin,
+2026-10-22, card #29). Feature releases come from master and bump the middle number (`1.4.0` → `1.5.0`);
 bug-fix releases come from the line's lane, the app branch `release/X.Y.x`, and bump the last
 number (`1.4.0` → `1.4.1`). The procedure is `youcoded-admin/skills/hotfix/SKILL.md`: decide it is
 a hotfix (no feature, setting or visible design change), fix master first where possible, copy the
