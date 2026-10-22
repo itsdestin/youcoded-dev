@@ -20,6 +20,15 @@ comparison articles, so YouCoded has to exist in those places.
 ask for), not with "a GUI for Claude Code." The narrow hook gets the click; the bigger idea
 is what makes someone install it.
 
+## Status (2026-10-22)
+
+Done: awesome-claude-code (issue #3209, awaiting maintainer), AlternativeTo (in review),
+SourceForge (live, synced by release webhook), winget (microsoft/winget-pkgs #459618, CLA
+signed, awaiting review), Google Search Console + Bing Webmaster Tools (sitemap submitted),
+README rewritten. Blocked: AUR (registration closed; card #186). Parked by Destin:
+r/opensource (his draft: `2026-10-22-r-opensource-post.md`). Not started: r/LocalLLaMA,
+Show HN, r/ClaudeAI, r/SideProject, Product Hunt. Per-release winget upkeep: card #29.
+
 ## Order to do them in
 
 | # | Where | Effort | Why |

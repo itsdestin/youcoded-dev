@@ -1222,3 +1222,11 @@ recurred — the repetition is the data.
 - A master flake (unhandled rejection from `ProviderRegistry.init`) → fixed on sight with a `.catch` and WHY comment in the app.
 - Known issues filed as cards #176, #177 (Destin's request).
 - deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.
+
+## 2026-10-22 — search and AI discovery: site metadata, listings, README (session/seo-discovery, session/readme-refresh)
+- Knowing what the app does TODAY took a ~97k-token read-only sweep (20 claims checked against code); the README had drifted (macOS 11 vs Electron 41's macOS 12, 4 vs 6 themes, 2 vs 4 games, six weeks of features missing) → dropped as a workspace change: the README, llms.txt and Linux store text are now verified copies, and no cheap executable check can pin marketing claims to code.
+- Destin: public posts under his name are assembled from his own words (interview, voice notes), all lowercase on his social posts, never generated → applied: `~/system/me/preferences.md`; his voice notes saved at `docs/vision/2026-10-22-why-youcoded-voice-notes.md`.
+- New store listings each need per-release upkeep (winget manifest PR; AUR once registration reopens) → recorded on card #29's next steps (a new card was refused as overlapping #29); AUR stays card #186.
+- youcoded has auto-merge disabled, so a merge waits on CI by hand → dropped: a background `until` loop on `gh pr checks` covered it in one call.
+- Removing the merged session worktree failed on an untracked draft Destin had open in an editor → handled: waited for the editor lock to clear, saved the draft as `status: parked` before removing.
+- deleted/merged: the README's stale pitch, requirements and duplicated privacy notes replaced by one verified version; the Linux "Desktop GUI for Claude Code" synopsis and old store blurb replaced.
