@@ -49,10 +49,10 @@ verify:
 
 ## Reducer state (`chat-reducer.ts`)
 - **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map never clears.
-- **Always use the `endTurn()` helper** on turn-ending paths — fails orphaned tools, resets turn state. Only `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR` spread-then-override.
+- **Always use the `endTurn()` helper** on turn-ending paths — fails orphaned tools, resets turn state. Only `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR` (and `TRANSCRIPT_REPLAY_COMPLETE`) spread-then-override.
 - **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'|'stalled'` — five reachable states, each with a writer.** `stalled` = a PARKED native turn; a stall WARNING is `'stuck'`, the ONLY amber state. **`stalledSince` is stamped once and held, ONLY while already `'stalled'`** — nine `'ok'` writers never clear it; the guard sits at the WRITE site.
 - **`NATIVE_PARTS_DROPPED` removes only the TRAILING run of matching segments**, stopping at the first non-match: part ids repeat across steps, so a whole-turn `.filter()` deleted finished paragraphs.
-- **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends. **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design.
+- **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends; `sendRefused` and `sendEpoch` rows never match an echo. **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design.
 - **A permission ask binds ONLY to a running tool with a MATCHING NAME** — else a CONSENT bug.
 - **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, failed not complete** — also fires on a live re-dock.
 - **Claude Code PTY attention is classifier-driven** — its renderer fallback gates transcript/permission resets to `'ok'` on `hasBuffer`: never reset a state you never set. Native heartbeat events separately write `'ok'`, `'stuck'` warnings and parked `'stalled'` turns.

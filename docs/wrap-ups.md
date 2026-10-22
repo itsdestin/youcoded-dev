@@ -1211,3 +1211,14 @@ recurred — the repetition is the data.
 - Skipped asking before taking the short route (feature-flow says ask) → dropped: the rule exists; my lapse, said so in chat.
 - Destin's idea-adjacent follow-up filed: #178 (workbench chats dated 2025 now read as dates in screenshots and site clips).
 - deleted/merged: removed workspace-start's "delete it and run npm ci" advice (it contradicted glob-guard).
+
+## 2026-10-21 — v1.3.2 release, website demo rebuilt automatically (session/ship-v132)
+- The website demo and its stills were refreshed by hand at release time, and 1.3.2 shipped with a stale demo until Destin noticed → applied: youcoded `.github/workflows/site-deploy.yml` rebuilds the demo from the newest official release and reshoots the stills (`docs/tools/embed-stills.mjs`) after every Desktop Release; Pages switched to Actions; release skill step 4.6 now just checks the run happened. Serves goal 2 (a manual release step became automatic).
+- Destin: download buttons must offer official releases only → applied in `docs/index.html` (per-platform newest official release that has the file), pinned by `docs/tools/download-links.test.mjs` (run in the site workflow on every PR).
+- Both still shooters took pictures in the wrong theme: the async paint check was never awaited (`!!promise` is always true) and, without `Page.enable`, the pre-load theme script never ran (~6 calls to diagnose) → applied: fixed in `embed-stills.mjs` and `scripts/ui-review/embed-posters.mjs`, with WHY comments at both spots.
+- A still was first built from master (which holds unreleased work) instead of the release tag → applied: the workflow checks out the release tag itself; no session decides.
+- `shoot --check` page-kit menu flake (Escape landed before the frame's menu opened) → fixed on sight in `shoot.mjs` (wait for iframe focus).
+- RECURRED card #19(h): `npm ci` blocked inside the worktree, hand-built scratch install → no new action: `freshInstall` in workspace-start (landed the same day by another session) now covers it.
+- A master flake (unhandled rejection from `ProviderRegistry.init`) → fixed on sight with a `.catch` and WHY comment in the app.
+- Known issues filed as cards #176, #177 (Destin's request).
+- deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.

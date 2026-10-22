@@ -73,7 +73,9 @@ process.on('exit', cleanup);
 
 const waitUntil = async (tab, expr, what) => {
   for (const t0 = Date.now(); Date.now() - t0 < READY_MAX;) {
-    if (await tab.evaluate(`!!(${expr})`).catch(() => false)) return;
+    // WHY await: PAINTED is an async check, and `!!promise` is always true -- the still was
+    // taken before the theme had loaded (every one came out in the default look).
+    if (await tab.evaluate(`(async () => !!(await (${expr})))()`).catch(() => false)) return;
     await new Promise((r) => setTimeout(r, 200));
   }
   throw new Error(`timed out waiting for ${what}`);

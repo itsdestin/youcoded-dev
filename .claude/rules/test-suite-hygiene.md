@@ -36,7 +36,7 @@ verify:
 # Writing tests that stay green under load — and on Windows
 
 **A test that fails only sometimes is worse than one that fails always.** Depth:
-`docs/testing-under-load.md`. **CI runs this suite on Windows and macOS too.**
+`docs/testing-under-load.md`. **CI runs this suite on Windows and macOS on master pushes and nightly; PRs run Linux only, so a Windows-only break shows after merge.**
 
 ## Windows runs this suite too
 **Invariant:** a path from `import.meta.url` is `fileURLToPath(new URL(…))`, never
@@ -94,7 +94,7 @@ CSS↔TSX coupling).
 ## A test lives with its feature and is named for its behaviour
 **Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), named for
 what it renders or calls — never a new file per task. Titles state behaviour: no dates, `§`,
-task ids or review rounds; shared setup in `tests/helpers/`. **Why:** 826 files, 62% in name clusters.
+task ids or review rounds; shared setup in `tests/helpers/`. **Why:** name clusters (826 files when written; now over 1,000).
 **Guard:** `scripts/ast-grep/rules/test-name-describes-behaviour.yml`.
 
 ## Before calling a failure "flake"

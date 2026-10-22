@@ -46,7 +46,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## Theme color contrast (`desktop/scripts/audit-theme-contrast.mjs`; CI `wecoded-themes/scripts/audit-contrast.mjs`)
 - **Surface/text/accent thresholds are BLOCKING CI** (`audit-contrast.mjs`) — the numbers live in the depth doc; you cannot violate them silently.
-- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit; the audit does NOT catch this one.
+- **chat-pane bg == drawer-pane bg (both `--canvas`; the Files/Browser panel painted inside the drawer pane is `--panel`)** — change them in the SAME edit; the audit does NOT catch this one.
 - **Status colour == `StatusDot.tsx` STATUS_LABEL** (green *Working*, blue *Response Ready*), and it goes in the ring/tint, NEVER the word — fixed across themes, so as text it fails the pale ones · depth doc → "Status colours".
 
 ## Header bar (`HeaderBar.tsx`)

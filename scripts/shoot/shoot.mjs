@@ -288,6 +288,15 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // so the strip rightly goes with it — that is the page closing, not a second layer.
       const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip' && l.kind !== 'status');
       const label = (ls) => ls.map((l) => `${l.kind} "${l.name}"`);
+      // WHY wait (2026-10-21): a Page's demo menu (`pagesMenu`) opens on the frame's own `load`, after the screen's
+      // mark shows; on a busy machine Escape landed first and closed the panel instead of the menu. Opening it
+      // focuses the frame (page-kit.ts sel.focus), so focus inside the iframe is the signal it is open.
+      if (screen.params?.pagesMenu) {
+        const deadline = Date.now() + 10_000;
+        while (Date.now() < deadline && !(await tab.evaluate(`document.activeElement?.tagName === 'IFRAME'`, 5000).catch(() => false))) {
+          await new Promise((r) => setTimeout(r, 100));
+        }
+      }
       const beforeLs = await layersNow();
       const before = label(beforeLs);
       if (before.length) {
