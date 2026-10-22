@@ -1,0 +1,5831 @@
+{
+  "scenario": {
+    "revision": 1,
+    "lane": "pathlist-stream",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-22T11:39:51.930Z",
+  "label": "listfix",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded",
+      "sha": "254ff9983aa3657a937dfd65011beb3c6e6508c9",
+      "branch": "session/96-merged-evaluation",
+      "dirty": "3c937cd909bc"
+    },
+    "new": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-list-stream-fix/youcoded",
+      "sha": "0fba696ff13efc3db6ddd704a2198a4254731f7f",
+      "branch": "session/93-list-stream-fix",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "pathlist-prose-2000",
+      "variant": "prose",
+      "n": 2000,
+      "deltas": 22007,
+      "perSec": 490,
+      "streamMs": 44912,
+      "atCloudSpeed": false,
+      "expectedChips": 2000,
+      "lastPath": "/home/user/project/src/dir24/file1999.ts",
+      "lastDecoy": null,
+      "outro": "That is every file I found.",
+      "chars": 84162
+    },
+    {
+      "id": "pathlist-prose-5000",
+      "variant": "prose",
+      "n": 5000,
+      "deltas": 55007,
+      "perSec": 1223,
+      "streamMs": 44977,
+      "atCloudSpeed": false,
+      "expectedChips": 5000,
+      "lastPath": "/home/user/project/src/dir24/file4999.ts",
+      "lastDecoy": null,
+      "outro": "That is every file I found.",
+      "chars": 211962
+    },
+    {
+      "id": "pathlist-proseControl-2000",
+      "variant": "proseControl",
+      "n": 2000,
+      "deltas": 22007,
+      "perSec": 490,
+      "streamMs": 44912,
+      "atCloudSpeed": false,
+      "expectedChips": 0,
+      "lastPath": null,
+      "lastDecoy": "_home_user_project_src_dir24_file1999.ts",
+      "outro": "That is every file I found.",
+      "chars": 84162
+    },
+    {
+      "id": "pathlist-proseControl-5000",
+      "variant": "proseControl",
+      "n": 5000,
+      "deltas": 55007,
+      "perSec": 1223,
+      "streamMs": 44977,
+      "atCloudSpeed": false,
+      "expectedChips": 0,
+      "lastPath": null,
+      "lastDecoy": "_home_user_project_src_dir24_file4999.ts",
+      "outro": "That is every file I found.",
+      "chars": 211962
+    },
+    {
+      "id": "pathlist-code-2000",
+      "variant": "code",
+      "n": 2000,
+      "deltas": 20009,
+      "perSec": 445,
+      "streamMs": 44964,
+      "atCloudSpeed": false,
+      "expectedChips": 2000,
+      "lastPath": "/home/user/project/src/dir24/file1999.ts",
+      "lastDecoy": null,
+      "outro": "That is every file I found.",
+      "chars": 80170
+    },
+    {
+      "id": "pathlist-code-5000",
+      "variant": "code",
+      "n": 5000,
+      "deltas": 50009,
+      "perSec": 1112,
+      "streamMs": 44972,
+      "atCloudSpeed": false,
+      "expectedChips": 5000,
+      "lastPath": "/home/user/project/src/dir24/file4999.ts",
+      "lastDecoy": null,
+      "outro": "That is every file I found.",
+      "chars": 201970
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 409,
+        "streamLongtaskTotalMs": 30840,
+        "streamLongtaskCount": 291,
+        "settleLongtaskMaxMs": 385,
+        "settleLongtaskTotalMs": 385,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 487.4,
+        "settleTimerStallMaxMs": 373,
+        "streamFrameGapMaxMs": 410,
+        "settleFrameGapMaxMs": 386,
+        "mainMaxDelayMs": 399,
+        "mainTotalStallMs": 399,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 342.6,
+        "typingSettleMaxMs": 299.2,
+        "typingSaturated": false,
+        "endToPaintMs": 480.6,
+        "peakPssMb": 1068.2,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.6 cores on average over 48 s (limit 1): git ×10 (pids 3598889, 3601843, 3598739, 3602265, +6 more) used 0.9 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1745093, 1540338, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 409,
+        "worstTypingMs": 342.6,
+        "worstStalledMs": 31225,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 409,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 342.6,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 932,
+        "streamLongtaskTotalMs": 38471,
+        "streamLongtaskCount": 194,
+        "settleLongtaskMaxMs": 1717,
+        "settleLongtaskTotalMs": 1717,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1907.8,
+        "settleTimerStallMaxMs": 1710.3,
+        "streamFrameGapMaxMs": 934,
+        "settleFrameGapMaxMs": 1718,
+        "mainMaxDelayMs": 1853.3,
+        "mainTotalStallMs": 1853.3,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 762.7,
+        "typingSettleMaxMs": 1786.7,
+        "typingSaturated": false,
+        "endToPaintMs": 1984.5,
+        "peakPssMb": 1321.1,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.6 cores on average over 49 s (limit 1): git ×9 (pids 3598889, 3604843, 3598739, 3605130, +5 more) used 0.7 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1745093, +2 more) used 0.2 cores"
+          ]
+        },
+        "worstLongtaskMs": 1717,
+        "worstTypingMs": 1786.7,
+        "worstStalledMs": 40188,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1717,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1786.7,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1984.5,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 607,
+        "streamLongtaskTotalMs": 27850,
+        "streamLongtaskCount": 293,
+        "settleLongtaskMaxMs": 288,
+        "settleLongtaskTotalMs": 415,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 591.5,
+        "settleTimerStallMaxMs": 289.3,
+        "streamFrameGapMaxMs": 608,
+        "settleFrameGapMaxMs": 289,
+        "mainMaxDelayMs": 408.9,
+        "mainTotalStallMs": 408.9,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 499.5,
+        "typingSettleMaxMs": 230.9,
+        "typingSaturated": false,
+        "endToPaintMs": 471.7,
+        "peakPssMb": 930,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.2 cores on average over 48 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; git ×5 (pids 3598889, 3605916, 3598739, 3606373, +1 more) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 607,
+        "worstTypingMs": 499.5,
+        "worstStalledMs": 28265,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 607,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 499.5,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 1188,
+        "streamLongtaskTotalMs": 37529,
+        "streamLongtaskCount": 200,
+        "settleLongtaskMaxMs": 1623,
+        "settleLongtaskTotalMs": 1623,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1175.4,
+        "settleTimerStallMaxMs": 1646.7,
+        "streamFrameGapMaxMs": 1189,
+        "settleFrameGapMaxMs": 1625,
+        "mainMaxDelayMs": 1860.7,
+        "mainTotalStallMs": 1860.7,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 1059,
+        "typingSettleMaxMs": 1756,
+        "typingSaturated": false,
+        "endToPaintMs": 1932.9,
+        "peakPssMb": 1009.4,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.5 cores on average over 49 s (limit 1): git ×8 (pids 3598739, 3598889, 3607619, 3607683, +4 more) used 0.7 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1623,
+        "worstTypingMs": 1756,
+        "worstStalledMs": 39152,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1623,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1756,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1932.9,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "deltas": 20009,
+        "perSec": 445,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 232,
+        "settleLongtaskTotalMs": 375,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 215.9,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 234,
+        "mainMaxDelayMs": 376.1,
+        "mainTotalStallMs": 376.1,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 26.6,
+        "typingSettleMaxMs": 284.6,
+        "typingSaturated": false,
+        "endToPaintMs": 418.3,
+        "peakPssMb": 749,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.4 cores on average over 48 s (limit 1): git ×11 (pids 3598889, 3608442, 3608915, 3598737, +7 more) used 1.3 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1745093, +2 more) used 0.3 cores"
+          ]
+        },
+        "worstLongtaskMs": 232,
+        "worstTypingMs": 284.6,
+        "worstStalledMs": 375,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 284.6,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "pathlist-code-5000",
+        "variant": "code",
+        "n": 5000,
+        "deltas": 50009,
+        "perSec": 1112,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 414,
+        "streamLongtaskTotalMs": 414,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 1270,
+        "settleLongtaskTotalMs": 1270,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 452.9,
+        "settleTimerStallMaxMs": 1255,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 1271,
+        "mainMaxDelayMs": 1706.1,
+        "mainTotalStallMs": 1706.1,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 10.4,
+        "typingSettleMaxMs": 1558.8,
+        "typingSaturated": false,
+        "endToPaintMs": 1790.2,
+        "peakPssMb": 874,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.4 cores on average over 49 s (limit 1): git ×8 (pids 3615200, 3614885, 3615622, 3615731, +4 more) used 0.6 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1635378, +3 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1270,
+        "worstTypingMs": 1558.8,
+        "worstStalledMs": 1684,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1270,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1558.8,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1790.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 519,
+        "settleLongtaskTotalMs": 519,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 502.7,
+        "streamFrameGapMaxMs": 41,
+        "settleFrameGapMaxMs": 520,
+        "mainMaxDelayMs": 398.6,
+        "mainTotalStallMs": 398.6,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 33.6,
+        "typingSettleMaxMs": 341.2,
+        "typingSaturated": false,
+        "endToPaintMs": 615.9,
+        "peakPssMb": 1053.8,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.6 cores on average over 48 s (limit 1): git ×12 (pids 3614885, 3616559, 3614834, 3617011, +8 more) used 0.8 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1635378, +4 more) used 0.5 cores; claude ×6 (pids 1343127, 1540338, 1658190, 1343193, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 519,
+        "worstTypingMs": 341.2,
+        "worstStalledMs": 519,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 519,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 341.2,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 590,
+        "streamLongtaskTotalMs": 38476,
+        "streamLongtaskCount": 199,
+        "settleLongtaskMaxMs": 1813,
+        "settleLongtaskTotalMs": 1813,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1116.9,
+        "settleTimerStallMaxMs": 1814.4,
+        "streamFrameGapMaxMs": 539,
+        "settleFrameGapMaxMs": 1815,
+        "mainMaxDelayMs": 1973,
+        "mainTotalStallMs": 1973,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 592.1,
+        "typingSettleMaxMs": 1928.5,
+        "typingSaturated": false,
+        "endToPaintMs": 2114.2,
+        "peakPssMb": 1201.3,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1813,
+        "worstTypingMs": 1928.5,
+        "worstStalledMs": 40289,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1813,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1928.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2114.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 338,
+        "streamLongtaskTotalMs": 338,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 102,
+        "settleLongtaskTotalMs": 102,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 328.7,
+        "settleTimerStallMaxMs": 98.7,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 339,
+        "mainMaxDelayMs": 407.6,
+        "mainTotalStallMs": 407.6,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 29.4,
+        "typingSettleMaxMs": 431.9,
+        "typingSaturated": false,
+        "endToPaintMs": 479.2,
+        "peakPssMb": 817.5,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.9 cores on average over 48 s (limit 1): git ×7 (pids 3614885, 3619332, 3619626, 3614834, +3 more) used 1 core; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; claude ×6 (pids 1343127, 1727377, 1343193, 1658190, +2 more) used 0.2 cores"
+          ]
+        },
+        "worstLongtaskMs": 338,
+        "worstTypingMs": 431.9,
+        "worstStalledMs": 440,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 338,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 431.9,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 2336,
+        "streamLongtaskTotalMs": 37456,
+        "streamLongtaskCount": 209,
+        "settleLongtaskMaxMs": 1775,
+        "settleLongtaskTotalMs": 1775,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 2332.6,
+        "settleTimerStallMaxMs": 1767.2,
+        "streamFrameGapMaxMs": 2337,
+        "settleFrameGapMaxMs": 1776,
+        "mainMaxDelayMs": 1880.8,
+        "mainTotalStallMs": 1880.8,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 2252.6,
+        "typingSettleMaxMs": 1802.3,
+        "typingSaturated": false,
+        "endToPaintMs": 1948.8,
+        "peakPssMb": 1058.6,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "a burst of other programs used 2.2 cores for 2 s (limit 2): claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.8 cores; cc1plus (pid 3625879) used 0.6 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.6 cores"
+          ]
+        },
+        "worstLongtaskMs": 2336,
+        "worstTypingMs": 2252.6,
+        "worstStalledMs": 39231,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 2336,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 2252.6,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1948.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "deltas": 20009,
+        "perSec": 445,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 144,
+        "streamLongtaskTotalMs": 144,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 258,
+        "settleLongtaskTotalMs": 258,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 138.8,
+        "settleTimerStallMaxMs": 241.2,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 259,
+        "mainMaxDelayMs": 354.9,
+        "mainTotalStallMs": 354.9,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 26.4,
+        "typingSettleMaxMs": 215.5,
+        "typingSaturated": false,
+        "endToPaintMs": 422.7,
+        "peakPssMb": 741.2,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.5 cores on average over 48 s (limit 1): git ×7 (pids 3629769, 3629841, 3630138, 3630251, +3 more) used 0.8 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343193, 1540338, 1658190, 1343127, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 258,
+        "worstTypingMs": 215.5,
+        "worstStalledMs": 402,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 258,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "pathlist-code-5000",
+        "variant": "code",
+        "n": 5000,
+        "deltas": 50009,
+        "perSec": 1112,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 1038,
+        "settleLongtaskTotalMs": 1632,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1021.8,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 1039,
+        "mainMaxDelayMs": 1622.9,
+        "mainTotalStallMs": 1622.9,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 22,
+        "typingSettleMaxMs": 1492.9,
+        "typingSaturated": false,
+        "endToPaintMs": 1675.8,
+        "peakPssMb": 818.9,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1 cores on average over 49 s (limit 1): youcoded ×4 (pids 1342321, 1342393, 1342460, 1342549) used 0.5 cores; git ×3 (pids 3630571, 3631031, 3631131) used 0.3 cores; claude ×6 (pids 1343193, 1658190, 1540338, 1343127, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1038,
+        "worstTypingMs": 1492.9,
+        "worstStalledMs": 1632,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1038,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1492.9,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1675.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 510,
+        "settleLongtaskTotalMs": 510,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 494.9,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 511,
+        "mainMaxDelayMs": 393.8,
+        "mainTotalStallMs": 393.8,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 33.2,
+        "typingSettleMaxMs": 288.6,
+        "typingSaturated": false,
+        "endToPaintMs": 562,
+        "peakPssMb": 953.8,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1 cores on average over 48 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342396, 1342460, +3 more) used 0.5 cores; git ×2 (pids 3632696, 3632913) used 0.3 cores; claude ×6 (pids 1343127, 1343193, 1727377, 1540338, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 510,
+        "worstTypingMs": 288.6,
+        "worstStalledMs": 510,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 510,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 288.6,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 544,
+        "streamLongtaskTotalMs": 38613,
+        "streamLongtaskCount": 200,
+        "settleLongtaskMaxMs": 1744,
+        "settleLongtaskTotalMs": 1744,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1027.6,
+        "settleTimerStallMaxMs": 1737.6,
+        "streamFrameGapMaxMs": 545,
+        "settleFrameGapMaxMs": 1746,
+        "mainMaxDelayMs": 1886,
+        "mainTotalStallMs": 1886,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 522.3,
+        "typingSettleMaxMs": 1806.1,
+        "typingSaturated": false,
+        "endToPaintMs": 2038.1,
+        "peakPssMb": 1292.9,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1744,
+        "worstTypingMs": 1806.1,
+        "worstStalledMs": 40357,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1744,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1806.1,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2038.1,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 357,
+        "streamLongtaskTotalMs": 357,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 86,
+        "settleLongtaskTotalMs": 86,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 347.9,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 358,
+        "mainMaxDelayMs": 419.9,
+        "mainTotalStallMs": 419.9,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 35,
+        "typingSettleMaxMs": 243.8,
+        "typingSaturated": false,
+        "endToPaintMs": 489.1,
+        "peakPssMb": 822.2,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 357,
+        "worstTypingMs": 243.8,
+        "worstStalledMs": 443,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 357,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 2397,
+        "streamLongtaskTotalMs": 37636,
+        "streamLongtaskCount": 206,
+        "settleLongtaskMaxMs": 1045,
+        "settleLongtaskTotalMs": 1487,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 2775,
+        "settleTimerStallMaxMs": 1031.9,
+        "streamFrameGapMaxMs": 2399,
+        "settleFrameGapMaxMs": 1046,
+        "mainMaxDelayMs": 1888.8,
+        "mainTotalStallMs": 1888.8,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 2373.8,
+        "typingSettleMaxMs": 1810.1,
+        "typingSaturated": false,
+        "endToPaintMs": 1954,
+        "peakPssMb": 1020,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.6 cores on average over 49 s (limit 1): git ×8 (pids 3635183, 3635737, 3635899, 3635971, +4 more) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 2397,
+        "worstTypingMs": 2373.8,
+        "worstStalledMs": 39123,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 2397,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 2373.8,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1954,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "deltas": 20009,
+        "perSec": 445,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 154,
+        "streamLongtaskTotalMs": 154,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 222,
+        "settleLongtaskTotalMs": 222,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 152.2,
+        "settleTimerStallMaxMs": 211.4,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 223,
+        "mainMaxDelayMs": 355.1,
+        "mainTotalStallMs": 355.1,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 9.5,
+        "typingSettleMaxMs": 282.5,
+        "typingSaturated": false,
+        "endToPaintMs": 408.5,
+        "peakPssMb": 697.7,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 222,
+        "worstTypingMs": 282.5,
+        "worstStalledMs": 376,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 282.5,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "pathlist-code-5000",
+        "variant": "code",
+        "n": 5000,
+        "deltas": 50009,
+        "perSec": 1112,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 1123,
+        "settleLongtaskTotalMs": 1622,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1133,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 1124,
+        "mainMaxDelayMs": 1646.6,
+        "mainTotalStallMs": 1646.6,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 10.6,
+        "typingSettleMaxMs": 1508,
+        "typingSaturated": false,
+        "endToPaintMs": 1703.8,
+        "peakPssMb": 818.8,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.3 cores on average over 49 s (limit 1): git ×4 (pids 3638389, 3638603, 3638815, 3638841) used 0.5 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1123,
+        "worstTypingMs": 1508,
+        "worstStalledMs": 1622,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1123,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1508,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1703.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 228,
+        "streamLongtaskTotalMs": 31362,
+        "streamLongtaskCount": 303,
+        "settleLongtaskMaxMs": 429,
+        "settleLongtaskTotalMs": 429,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 354.2,
+        "settleTimerStallMaxMs": 416.6,
+        "streamFrameGapMaxMs": 229,
+        "settleFrameGapMaxMs": 430,
+        "mainMaxDelayMs": 397.7,
+        "mainTotalStallMs": 397.7,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 175.2,
+        "typingSettleMaxMs": 293,
+        "typingSaturated": false,
+        "endToPaintMs": 492.6,
+        "peakPssMb": 1023.2,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 429,
+        "worstTypingMs": 293,
+        "worstStalledMs": 31791,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 429,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 293,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 561,
+        "streamLongtaskTotalMs": 38442,
+        "streamLongtaskCount": 195,
+        "settleLongtaskMaxMs": 1757,
+        "settleLongtaskTotalMs": 1757,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 882.8,
+        "settleTimerStallMaxMs": 1745.6,
+        "streamFrameGapMaxMs": 562,
+        "settleFrameGapMaxMs": 1758,
+        "mainMaxDelayMs": 1955.9,
+        "mainTotalStallMs": 1955.9,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 512.6,
+        "typingSettleMaxMs": 1888.5,
+        "typingSaturated": false,
+        "endToPaintMs": 2119,
+        "peakPssMb": 1216.9,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.1 cores on average over 49 s (limit 1): youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 0.5 cores; git ×3 (pids 3641093, 3641300, 3641497) used 0.3 cores; claude ×6 (pids 1343193, 1540338, 1745093, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1757,
+        "worstTypingMs": 1888.5,
+        "worstStalledMs": 40199,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1757,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1888.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2119,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 205,
+        "streamLongtaskTotalMs": 28492,
+        "streamLongtaskCount": 301,
+        "settleLongtaskMaxMs": 313,
+        "settleLongtaskTotalMs": 468,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 387.3,
+        "settleTimerStallMaxMs": 451.7,
+        "streamFrameGapMaxMs": 206,
+        "settleFrameGapMaxMs": 313,
+        "mainMaxDelayMs": 396.2,
+        "mainTotalStallMs": 396.2,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 191.1,
+        "typingSettleMaxMs": 389.6,
+        "typingSaturated": false,
+        "endToPaintMs": 629.3,
+        "peakPssMb": 902,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 313,
+        "worstTypingMs": 389.6,
+        "worstStalledMs": 28960,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 313,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 389.6,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 1298,
+        "streamLongtaskTotalMs": 37401,
+        "streamLongtaskCount": 201,
+        "settleLongtaskMaxMs": 1693,
+        "settleLongtaskTotalMs": 1693,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1293.6,
+        "settleTimerStallMaxMs": 1687.8,
+        "streamFrameGapMaxMs": 1299,
+        "settleFrameGapMaxMs": 1695,
+        "mainMaxDelayMs": 1895.7,
+        "mainTotalStallMs": 1895.7,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 1122.3,
+        "typingSettleMaxMs": 1780.7,
+        "typingSaturated": false,
+        "endToPaintMs": 1992.2,
+        "peakPssMb": 993.5,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1693,
+        "worstTypingMs": 1780.7,
+        "worstStalledMs": 39094,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1693,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1780.7,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1992.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "deltas": 20009,
+        "perSec": 445,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 215,
+        "settleLongtaskTotalMs": 371,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 208,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 216,
+        "mainMaxDelayMs": 358.9,
+        "mainTotalStallMs": 358.9,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 8.8,
+        "typingSettleMaxMs": 262.2,
+        "typingSaturated": false,
+        "endToPaintMs": 436.1,
+        "peakPssMb": 802.5,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.2 cores on average over 48 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; git ×3 (pids 3644216, 3644440, 3644502) used 0.5 cores; claude ×6 (pids 1343193, 1727377, 1745093, 1343127, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 215,
+        "worstTypingMs": 262.2,
+        "worstStalledMs": 371,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 262.2,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "pathlist-code-5000",
+        "variant": "code",
+        "n": 5000,
+        "deltas": 50009,
+        "perSec": 1112,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 581,
+        "streamLongtaskTotalMs": 581,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 1054,
+        "settleLongtaskTotalMs": 1054,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1048,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 1055,
+        "mainMaxDelayMs": 1632.2,
+        "mainTotalStallMs": 1632.2,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 26.5,
+        "typingSettleMaxMs": 1522.3,
+        "typingSaturated": false,
+        "endToPaintMs": 1715.7,
+        "peakPssMb": 896,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1054,
+        "worstTypingMs": 1522.3,
+        "worstStalledMs": 1635,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1054,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1522.3,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1715.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 287,
+        "streamLongtaskTotalMs": 31073,
+        "streamLongtaskCount": 292,
+        "settleLongtaskMaxMs": 421,
+        "settleLongtaskTotalMs": 421,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 414.6,
+        "settleTimerStallMaxMs": 408.1,
+        "streamFrameGapMaxMs": 288,
+        "settleFrameGapMaxMs": 422,
+        "mainMaxDelayMs": 396.2,
+        "mainTotalStallMs": 396.2,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 173.9,
+        "typingSettleMaxMs": 242.2,
+        "typingSaturated": false,
+        "endToPaintMs": 474.5,
+        "peakPssMb": 1041.8,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.3 cores on average over 48 s (limit 1): git ×4 (pids 3646669, 3646882, 3647052, 3647111) used 0.6 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; claude ×6 (pids 1343193, 1540338, 1745093, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 421,
+        "worstTypingMs": 242.2,
+        "worstStalledMs": 31494,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 421,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 536,
+        "streamLongtaskTotalMs": 38634,
+        "streamLongtaskCount": 200,
+        "settleLongtaskMaxMs": 1726,
+        "settleLongtaskTotalMs": 1726,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 673.4,
+        "settleTimerStallMaxMs": 1721,
+        "streamFrameGapMaxMs": 516,
+        "settleFrameGapMaxMs": 1728,
+        "mainMaxDelayMs": 1988.1,
+        "mainTotalStallMs": 1988.1,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 414.1,
+        "typingSettleMaxMs": 1882.3,
+        "typingSaturated": false,
+        "endToPaintMs": 2111.8,
+        "peakPssMb": 1312.4,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1726,
+        "worstTypingMs": 1882.3,
+        "worstStalledMs": 40360,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1726,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1882.3,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2111.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 443,
+        "streamLongtaskTotalMs": 28090,
+        "streamLongtaskCount": 290,
+        "settleLongtaskMaxMs": 163,
+        "settleLongtaskTotalMs": 163,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 428.4,
+        "settleTimerStallMaxMs": 271.6,
+        "streamFrameGapMaxMs": 444,
+        "settleFrameGapMaxMs": 284,
+        "mainMaxDelayMs": 424.4,
+        "mainTotalStallMs": 424.4,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 316.8,
+        "typingSettleMaxMs": 248.3,
+        "typingSaturated": false,
+        "endToPaintMs": 479.5,
+        "peakPssMb": 916.4,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.4 cores on average over 48 s (limit 1): git ×6 (pids 3649058, 3649117, 3649282, 3649523, +2 more) used 0.7 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 443,
+        "worstTypingMs": 316.8,
+        "worstStalledMs": 28253,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 443,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 316.8,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 1459,
+        "streamLongtaskTotalMs": 37579,
+        "streamLongtaskCount": 207,
+        "settleLongtaskMaxMs": 1587,
+        "settleLongtaskTotalMs": 1587,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 1454.9,
+        "settleTimerStallMaxMs": 1591.2,
+        "streamFrameGapMaxMs": 1445,
+        "settleFrameGapMaxMs": 1588,
+        "mainMaxDelayMs": 1872.4,
+        "mainTotalStallMs": 1872.4,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 1403.5,
+        "typingSettleMaxMs": 1761.9,
+        "typingSaturated": false,
+        "endToPaintMs": 1981.2,
+        "peakPssMb": 1074,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.1 cores on average over 49 s (limit 1): youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; git ×3 (pids 3649967, 3650340, 3650401) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1587,
+        "worstTypingMs": 1761.9,
+        "worstStalledMs": 39166,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1587,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1761.9,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1981.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "deltas": 20009,
+        "perSec": 445,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 224,
+        "settleLongtaskTotalMs": 364,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 215.6,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 225,
+        "mainMaxDelayMs": 356.9,
+        "mainTotalStallMs": 356.9,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 30.5,
+        "typingSettleMaxMs": 225.9,
+        "typingSaturated": false,
+        "endToPaintMs": 424.8,
+        "peakPssMb": 720,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 224,
+        "worstTypingMs": 225.9,
+        "worstStalledMs": 364,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "old",
+      "round": 3,
+      "position": 1,
+      "row": {
+        "id": "pathlist-code-5000",
+        "variant": "code",
+        "n": 5000,
+        "deltas": 50009,
+        "perSec": 1112,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 1186,
+        "settleLongtaskTotalMs": 1634,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1177.5,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 1187,
+        "mainMaxDelayMs": 1625.8,
+        "mainTotalStallMs": 1625.8,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 34.9,
+        "typingSettleMaxMs": 1521,
+        "typingSaturated": false,
+        "endToPaintMs": 1686.4,
+        "peakPssMb": 837.4,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.2 cores on average over 49 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; git ×3 (pids 3652225, 3652734, 3652784) used 0.4 cores; claude ×6 (pids 1343193, 1540338, 1658190, 1727377, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1186,
+        "worstTypingMs": 1521,
+        "worstStalledMs": 1634,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1186,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1521,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1686.4,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-2000",
+        "variant": "prose",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 586,
+        "settleLongtaskTotalMs": 586,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 57.7,
+        "settleTimerStallMaxMs": 576.5,
+        "streamFrameGapMaxMs": 40,
+        "settleFrameGapMaxMs": 587,
+        "mainMaxDelayMs": 411,
+        "mainTotalStallMs": 411,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 27.3,
+        "typingSettleMaxMs": 360.6,
+        "typingSaturated": false,
+        "endToPaintMs": 642.1,
+        "peakPssMb": 1009.8,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 586,
+        "worstTypingMs": 360.6,
+        "worstStalledMs": 586,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 586,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 360.6,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-prose-5000",
+        "variant": "prose",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 545,
+        "streamLongtaskTotalMs": 38663,
+        "streamLongtaskCount": 193,
+        "settleLongtaskMaxMs": 947,
+        "settleLongtaskTotalMs": 1493,
+        "settleLongtaskCount": 2,
+        "streamTimerStallMaxMs": 1041.5,
+        "settleTimerStallMaxMs": 1082.7,
+        "streamFrameGapMaxMs": 533,
+        "settleFrameGapMaxMs": 948,
+        "mainMaxDelayMs": 1948.6,
+        "mainTotalStallMs": 1948.6,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 506,
+        "typingSettleMaxMs": 1866.1,
+        "typingSaturated": false,
+        "endToPaintMs": 2076.7,
+        "peakPssMb": 1210.7,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.3 cores on average over 49 s (limit 1): git ×4 (pids 3654951, 3655176, 3655338, 3655401) used 0.5 cores; youcoded ×4 (pids 1342321, 1342393, 1342460, 1342549) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 947,
+        "worstTypingMs": 1866.1,
+        "worstStalledMs": 40156,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 947,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1866.1,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 2076.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-2000",
+        "variant": "proseControl",
+        "n": 2000,
+        "deltas": 22007,
+        "perSec": 490,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 422,
+        "streamLongtaskTotalMs": 422,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "settleLongtaskCount": 0,
+        "streamTimerStallMaxMs": 426,
+        "settleTimerStallMaxMs": 0,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 423,
+        "mainMaxDelayMs": 411.4,
+        "mainTotalStallMs": 411.4,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 25,
+        "typingSettleMaxMs": 225,
+        "typingSaturated": false,
+        "endToPaintMs": 473.2,
+        "peakPssMb": 824.2,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 422,
+        "worstTypingMs": 225,
+        "worstStalledMs": 422,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 422,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-proseControl-5000",
+        "variant": "proseControl",
+        "n": 5000,
+        "deltas": 55007,
+        "perSec": 1223,
+        "atCloudSpeed": false,
+        "expectedChips": 0,
+        "streamLongtaskMaxMs": 936,
+        "streamLongtaskTotalMs": 37353,
+        "streamLongtaskCount": 209,
+        "settleLongtaskMaxMs": 1757,
+        "settleLongtaskTotalMs": 1757,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 924.1,
+        "settleTimerStallMaxMs": 1755.7,
+        "streamFrameGapMaxMs": 937,
+        "settleFrameGapMaxMs": 1759,
+        "mainMaxDelayMs": 1905.8,
+        "mainTotalStallMs": 1905.8,
+        "typingIdleMaxMs": 3.5,
+        "typingStreamMaxMs": 757.4,
+        "typingSettleMaxMs": 1787.5,
+        "typingSaturated": false,
+        "endToPaintMs": 1983.4,
+        "peakPssMb": 1056.4,
+        "chipsRendered": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.3 cores on average over 49 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; git ×4 (pids 3657571, 3657788, 3657968, 3658031) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1745093, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 1757,
+        "worstTypingMs": 1787.5,
+        "worstStalledMs": 39110,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1757,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1787.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1983.4,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "deltas": 20009,
+        "perSec": 445,
+        "atCloudSpeed": false,
+        "expectedChips": 2000,
+        "streamLongtaskMaxMs": 144,
+        "streamLongtaskTotalMs": 144,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 243,
+        "settleLongtaskTotalMs": 243,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 149.1,
+        "settleTimerStallMaxMs": 226.8,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 244,
+        "mainMaxDelayMs": 360.6,
+        "mainTotalStallMs": 360.6,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 28.2,
+        "typingSettleMaxMs": 287.1,
+        "typingSaturated": false,
+        "endToPaintMs": 409.7,
+        "peakPssMb": 736.6,
+        "chipsRendered": 2000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 243,
+        "worstTypingMs": 287.1,
+        "worstStalledMs": 387,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 287.1,
+            "limit": 250
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 3,
+      "position": 2,
+      "row": {
+        "id": "pathlist-code-5000",
+        "variant": "code",
+        "n": 5000,
+        "deltas": 50009,
+        "perSec": 1112,
+        "atCloudSpeed": false,
+        "expectedChips": 5000,
+        "streamLongtaskMaxMs": 441,
+        "streamLongtaskTotalMs": 441,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 1228,
+        "settleLongtaskTotalMs": 1228,
+        "settleLongtaskCount": 1,
+        "streamTimerStallMaxMs": 439.7,
+        "settleTimerStallMaxMs": 1212.8,
+        "streamFrameGapMaxMs": 0,
+        "settleFrameGapMaxMs": 1229,
+        "mainMaxDelayMs": 1645.7,
+        "mainTotalStallMs": 1645.7,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 30.7,
+        "typingSettleMaxMs": 1502.5,
+        "typingSaturated": false,
+        "endToPaintMs": 1697.6,
+        "peakPssMb": 811.9,
+        "chipsRendered": 5000,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1228,
+        "worstTypingMs": 1502.5,
+        "worstStalledMs": 1669,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1228,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1502.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1697.6,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.6 cores on average over 50 s (limit 1): git ×11 (pids 3601349, 3598889, 3601843, 3598739, +7 more) used 0.9 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1635378, +1 more) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1745093, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.62,
+      "foreignPeak2sCores": 1.93,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3601349,
+            3598889,
+            3601843,
+            3598739,
+            3602265,
+            3598737,
+            3602633,
+            3602781,
+            3603229,
+            3603453,
+            3603604
+          ],
+          "cores": 0.88
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1635378,
+            1342549
+          ],
+          "cores": 0.45
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1745093,
+            1727377,
+            1540338
+          ],
+          "cores": 0.11
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12,
+        "max": 15
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 20.3,
+        "pptWattsMax": 24.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.5 cores on average over 52 s (limit 1): git ×9 (pids 3598739, 3598889, 3604843, 3605130, +5 more) used 0.7 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1635378, +3 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1727377, +2 more) used 0.2 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 51.8,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 1.53,
+      "foreignPeak2sCores": 2.68,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3598739,
+            3598889,
+            3604843,
+            3605130,
+            3605484,
+            3605544,
+            3605721,
+            3605836,
+            3605916
+          ],
+          "cores": 0.68
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1635378,
+            1342549,
+            2722,
+            1383992
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1727377,
+            1745093,
+            1658190
+          ],
+          "cores": 0.2
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12.2,
+        "max": 18.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 18.7,
+        "pptWattsMax": 27,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.2 cores on average over 50 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; git ×5 (pids 3598889, 3605916, 3598739, 3606373, +1 more) used 0.4 cores; claude ×6 (pids 1343127, 1727377, 1540338, 1658190, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.2,
+      "foreignPeak2sCores": 1.95,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2726,
+            1343137
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "git",
+          "pids": [
+            3598889,
+            3605916,
+            3598739,
+            3606373,
+            3606446
+          ],
+          "cores": 0.42
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1727377,
+            1540338,
+            1658190,
+            1745093,
+            1343193
+          ],
+          "cores": 0.11
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.6,
+        "max": 15.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 20.9,
+        "pptWattsMax": 25,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.4 cores on average over 51 s (limit 1): git ×8 (pids 3598889, 3598739, 3607619, 3607683, +4 more) used 0.7 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.44,
+      "foreignPeak2sCores": 2.02,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3598889,
+            3598739,
+            3607619,
+            3607683,
+            3607908,
+            3608074,
+            3608153,
+            3608369
+          ],
+          "cores": 0.67
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2722,
+            1635392,
+            1342396
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.12
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 11.6,
+        "max": 16.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 18.8,
+        "pptWattsMax": 25.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.4 cores on average over 50 s (limit 1): git ×12 (pids 3598889, 3608442, 3598739, 3608915, +8 more) used 1.3 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.2 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 2.37,
+      "foreignPeak2sCores": 13.92,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3598889,
+            3608442,
+            3598739,
+            3608915,
+            3598737,
+            3608941,
+            3608943,
+            3610215,
+            3614834,
+            3614885,
+            3615139,
+            3615200
+          ],
+          "cores": 1.31
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1635392
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1658190,
+            1745093,
+            1727377
+          ],
+          "cores": 0.24
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12,
+        "max": 57.5
+      },
+      "pressure": {
+        "cpuMax": 0.32,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 6,
+        "busyMedian": 8,
+        "busyMax": 14,
+        "pptWattsMin": 20,
+        "pptWattsMax": 43.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:pathlist-code-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.4 cores on average over 51 s (limit 1): git ×8 (pids 3614885, 3615200, 3614834, 3615622, +4 more) used 0.6 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1540338, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 51.2,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.4,
+      "foreignPeak2sCores": 2.81,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3614885,
+            3615200,
+            3614834,
+            3615622,
+            3615731,
+            3615794,
+            3616343,
+            3616559
+          ],
+          "cores": 0.59
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            6378,
+            2722
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1540338,
+            1745093,
+            1727377
+          ],
+          "cores": 0.13
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.3,
+        "max": 18.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 20.7,
+        "pptWattsMax": 25.5,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.6 cores on average over 50 s (limit 1): git ×12 (pids 3616559, 3614885, 3614834, 3617011, +8 more) used 0.8 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1635378, +4 more) used 0.5 cores; claude ×6 (pids 1343127, 1540338, 1745093, 1343193, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 50.2,
+      "samples": 101,
+      "overflow": false,
+      "foreignAvgCores": 1.62,
+      "foreignPeak2sCores": 2.13,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3616559,
+            3614885,
+            3614834,
+            3617011,
+            3617121,
+            3617190,
+            3614832,
+            3617344,
+            3617436,
+            3617553,
+            3617617,
+            3617776
+          ],
+          "cores": 0.84
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1635378,
+            1342549,
+            1383992,
+            1635392,
+            1343137
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1540338,
+            1745093,
+            1343193,
+            1658190,
+            1727377
+          ],
+          "cores": 0.11
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.7,
+        "max": 15.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 20.6,
+        "pptWattsMax": 24.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 51.6,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 0.94,
+      "foreignPeak2sCores": 1.8,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2722,
+            1342396
+          ],
+          "cores": 0.46
+        },
+        {
+          "name": "git",
+          "pids": [
+            3617884,
+            3614885,
+            3614834
+          ],
+          "cores": 0.18
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1658190,
+            1540338,
+            1745093
+          ],
+          "cores": 0.12
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.3,
+        "max": 15.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 20.7,
+        "pptWattsMax": 24.6,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.8 cores on average over 50 s (limit 1): git ×7 (pids 3614885, 3619332, 3619626, 3614834, +3 more) used 0.9 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; claude ×6 (pids 1343127, 1540338, 1343193, 1745093, +2 more) used 0.2 cores",
+        "youcoded (pid 1342393) held the graphics chip 7% of the time"
+      ],
+      "durationS": 49.9,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.81,
+      "foreignPeak2sCores": 10.53,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3614885,
+            3619332,
+            3619626,
+            3614834,
+            3619795,
+            3619879,
+            3614832
+          ],
+          "cores": 0.91
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1383992,
+            2726
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1540338,
+            1343193,
+            1745093,
+            1727377,
+            1658190
+          ],
+          "cores": 0.17
+        },
+        {
+          "name": "cc1plus",
+          "pids": [
+            3621297,
+            3623989
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 11.1,
+        "max": 60.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 8,
+        "busyMax": 9,
+        "pptWattsMin": 18.5,
+        "pptWattsMax": 42.7,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.07
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "a burst of other programs used 2.2 cores for 2 s (limit 2): claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.8 cores; cc1plus (pid 3625879) used 0.6 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.6 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 0.98,
+      "foreignPeak2sCores": 2.24,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342393,
+            1342460,
+            1342321,
+            1342549,
+            1635378,
+            1635392,
+            2722,
+            1343137
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1540338,
+            1658190,
+            1745093
+          ],
+          "cores": 0.23
+        },
+        {
+          "name": "cc1plus",
+          "pids": [
+            3625879,
+            3626411,
+            3626498,
+            3627638
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.7,
+        "max": 19.5
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0.32,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 7,
+        "busyMax": 10,
+        "pptWattsMin": 17.8,
+        "pptWattsMax": 27,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.5 cores on average over 50 s (limit 1): git ×7 (pids 3629769, 3629841, 3630138, 3630251, +3 more) used 0.8 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343193, 1540338, 1727377, 1658190, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.5,
+      "foreignPeak2sCores": 1.93,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3629769,
+            3629841,
+            3630138,
+            3630251,
+            3630297,
+            3630485,
+            3630571
+          ],
+          "cores": 0.75
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722,
+            1635378
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1540338,
+            1727377,
+            1658190,
+            1745093,
+            1343127
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.1,
+        "max": 13.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.3,
+        "pptWattsMax": 23.4,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:pathlist-code-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.1 cores on average over 51 s (limit 1): youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; git ×3 (pids 3630571, 3631031, 3631131) used 0.3 cores; claude ×6 (pids 1343127, 1540338, 1727377, 1343193, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51,
+      "samples": 102,
+      "overflow": false,
+      "foreignAvgCores": 1.07,
+      "foreignPeak2sCores": 1.82,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2726
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "git",
+          "pids": [
+            3630571,
+            3631031,
+            3631131
+          ],
+          "cores": 0.35
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1540338,
+            1727377,
+            1343193,
+            1658190,
+            1745093
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8.1,
+        "max": 13.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 19.8,
+        "pptWattsMax": 23.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1 cores on average over 50 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.5 cores; git ×2 (pids 3632696, 3632913) used 0.2 cores; claude ×6 (pids 1343127, 1658190, 1343193, 1727377, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1,
+      "foreignPeak2sCores": 2.04,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1342396,
+            2722,
+            1343137
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "git",
+          "pids": [
+            3632696,
+            3632913
+          ],
+          "cores": 0.25
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1658190,
+            1343193,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8.7,
+        "max": 16.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.5,
+        "pptWattsMax": 24.6,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 0.96,
+      "foreignPeak2sCores": 1.89,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "git",
+          "pids": [
+            3633384,
+            3633451
+          ],
+          "cores": 0.26
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1745093,
+            1540338,
+            1727377,
+            1658190
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.2,
+        "max": 14.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 20.9,
+        "pptWattsMax": 24.3,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.94,
+      "foreignPeak2sCores": 1.85,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1383992,
+            6378,
+            2722
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "git",
+          "pids": [
+            3635134,
+            3635183
+          ],
+          "cores": 0.19
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1540338,
+            1745093
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7.7,
+        "max": 13.8
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 10,
+        "pptWattsMin": 19.2,
+        "pptWattsMax": 23.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.6 cores on average over 51 s (limit 1): git ×8 (pids 3635183, 3635737, 3635899, 3635971, +4 more) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343193, 1540338, 1745093, 1727377, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.2,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.6,
+      "foreignPeak2sCores": 1.99,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3635183,
+            3635737,
+            3635899,
+            3635971,
+            3636170,
+            3636217,
+            3636400,
+            3636469
+          ],
+          "cores": 0.89
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            6378,
+            1635392
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1540338,
+            1745093,
+            1727377,
+            1343127,
+            1658190
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12.2,
+        "max": 16.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 20.4,
+        "pptWattsMax": 25.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.72,
+      "foreignPeak2sCores": 0.91,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1658190,
+            1343127,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 6.3,
+        "max": 8.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.5,
+        "pptWattsMax": 21.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:pathlist-code-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.3 cores on average over 51 s (limit 1): git ×4 (pids 3638389, 3638603, 3638815, 3638841) used 0.5 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; claude ×6 (pids 1343127, 1727377, 1745093, 1343193, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.1,
+      "samples": 102,
+      "overflow": false,
+      "foreignAvgCores": 1.26,
+      "foreignPeak2sCores": 2.24,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3638389,
+            3638603,
+            3638815,
+            3638841
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1727377,
+            1745093,
+            1343193,
+            1658190,
+            1540338
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8.9,
+        "max": 17
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.5,
+        "pptWattsMax": 23.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.71,
+      "foreignPeak2sCores": 0.91,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1658190,
+            1745093,
+            1727377
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8.7,
+        "max": 12.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 17.9,
+        "pptWattsMax": 22.5,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.1 cores on average over 51 s (limit 1): youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 0.5 cores; git ×3 (pids 3641093, 3641300, 3641497) used 0.3 cores; claude ×6 (pids 1343193, 1540338, 1343127, 1745093, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.5,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.07,
+      "foreignPeak2sCores": 2.18,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1383992,
+            1635392,
+            1343137,
+            2726,
+            1635378
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "git",
+          "pids": [
+            3641093,
+            3641300,
+            3641497
+          ],
+          "cores": 0.31
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1540338,
+            1343127,
+            1745093,
+            1658190,
+            1727377
+          ],
+          "cores": 0.06
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.5,
+        "max": 19.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 10,
+        "pptWattsMin": 18.3,
+        "pptWattsMax": 25.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.9,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.93,
+      "foreignPeak2sCores": 1.76,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722,
+            6378
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "git",
+          "pids": [
+            3641594
+          ],
+          "cores": 0.19
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1658190,
+            1745093,
+            1540338
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.6,
+        "max": 12.5
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 19.7,
+        "pptWattsMax": 24.2,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.2,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 0.76,
+      "foreignPeak2sCores": 1.48,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1745093,
+            1540338,
+            1727377
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.6,
+        "max": 14.5
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.3,
+        "pptWattsMax": 24.6,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.2 cores on average over 50 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; git ×4 (pids 3643753, 3644216, 3644440, 3644502) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.8,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.23,
+      "foreignPeak2sCores": 1.88,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1342396,
+            2722
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "git",
+          "pids": [
+            3643753,
+            3644216,
+            3644440,
+            3644502
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8,
+        "max": 12.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 19.8,
+        "pptWattsMax": 24,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:pathlist-code-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51,
+      "samples": 102,
+      "overflow": false,
+      "foreignAvgCores": 0.76,
+      "foreignPeak2sCores": 1.1,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1540338,
+            1658190,
+            1745093,
+            1727377,
+            1343127
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7,
+        "max": 10.5
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.9,
+        "pptWattsMax": 21.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.3 cores on average over 50 s (limit 1): git ×4 (pids 3646669, 3646882, 3647052, 3647111) used 0.5 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1540338, 1658190, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.29,
+      "foreignPeak2sCores": 2.01,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3646669,
+            3646882,
+            3647052,
+            3647111
+          ],
+          "cores": 0.53
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1383992
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1540338,
+            1658190,
+            1727377,
+            1745093
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.8,
+        "max": 15.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.6,
+        "pptWattsMax": 25.4,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.4,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 0.74,
+      "foreignPeak2sCores": 0.92,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635392,
+            1383992,
+            2722
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1658190,
+            1745093,
+            1540338
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.4,
+        "max": 16.5
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 18.7,
+        "pptWattsMax": 23.9,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.4 cores on average over 50 s (limit 1): git ×6 (pids 3649058, 3649117, 3649282, 3649523, +2 more) used 0.7 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; claude ×6 (pids 1343193, 1745093, 1540338, 1343127, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.6,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 1.42,
+      "foreignPeak2sCores": 1.97,
+      "offenders": [
+        {
+          "name": "git",
+          "pids": [
+            3649058,
+            3649117,
+            3649282,
+            3649523,
+            3649561,
+            3649770
+          ],
+          "cores": 0.65
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1343137,
+            1635378
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1745093,
+            1540338,
+            1343127,
+            1727377,
+            1658190
+          ],
+          "cores": 0.09
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 11.3,
+        "max": 16.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.6,
+        "pptWattsMax": 25.2,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.2 cores on average over 51 s (limit 1): youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.5 cores; git ×3 (pids 3649967, 3650340, 3650401) used 0.4 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.3,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.17,
+      "foreignPeak2sCores": 1.91,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "git",
+          "pids": [
+            3649967,
+            3650340,
+            3650401
+          ],
+          "cores": 0.45
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 10.7,
+        "max": 14.6
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 20.8,
+        "pptWattsMax": 25.2,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.7,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.86,
+      "foreignPeak2sCores": 1.9,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2726
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1727377,
+            1343127,
+            1658190,
+            1745093,
+            1540338
+          ],
+          "cores": 0.08
+        },
+        {
+          "name": "git",
+          "pids": [
+            3652006,
+            3652225
+          ],
+          "cores": 0.08
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.06
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 6.9,
+        "max": 12.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 19,
+        "pptWattsMax": 23,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-a:pathlist-code-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.2 cores on average over 51 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; git ×3 (pids 3652225, 3652734, 3652784) used 0.4 cores; claude ×6 (pids 1745093, 1343193, 1727377, 1343127, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.2,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.18,
+      "foreignPeak2sCores": 1.92,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635392,
+            6378
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "git",
+          "pids": [
+            3652225,
+            3652734,
+            3652784
+          ],
+          "cores": 0.42
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1745093,
+            1343193,
+            1727377,
+            1343127,
+            1540338,
+            1658190
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8.5,
+        "max": 14
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 20.4,
+        "pptWattsMax": 23.6,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-prose-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 49.9,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.79,
+      "foreignPeak2sCores": 0.99,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1342396,
+            2722,
+            1383992
+          ],
+          "cores": 0.53
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1540338,
+            1658190,
+            1343127,
+            1343193,
+            1727377,
+            1745093
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.06
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 8,
+        "max": 12.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.8,
+        "pptWattsMax": 22.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-prose-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.3 cores on average over 51 s (limit 1): youcoded ×4 (pids 1342321, 1342393, 1342460, 1342549) used 0.5 cores; git ×4 (pids 3654951, 3655176, 3655338, 3655401) used 0.5 cores; claude ×6 (pids 1343193, 1540338, 1658190, 1745093, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.4,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.26,
+      "foreignPeak2sCores": 2.06,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "git",
+          "pids": [
+            3654951,
+            3655176,
+            3655338,
+            3655401
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1540338,
+            1658190,
+            1745093,
+            1343127,
+            1727377
+          ],
+          "cores": 0.07
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 11.4,
+        "max": 15.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 8,
+        "busyMax": 8,
+        "pptWattsMin": 19,
+        "pptWattsMax": 25.3,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-proseControl-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 50.5,
+      "samples": 101,
+      "overflow": false,
+      "foreignAvgCores": 0.77,
+      "foreignPeak2sCores": 1.02,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1745093,
+            1540338
+          ],
+          "cores": 0.08
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.06
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7,
+        "max": 10.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.4,
+        "pptWattsMax": 22.4,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-proseControl-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.2 cores on average over 51 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores; git ×4 (pids 3657571, 3657788, 3657968, 3658031) used 0.5 cores; claude ×6 (pids 1343127, 1343193, 1658190, 1727377, +2 more) used 0.1 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 51.4,
+      "samples": 103,
+      "overflow": false,
+      "foreignAvgCores": 1.24,
+      "foreignPeak2sCores": 1.88,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1343137
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "git",
+          "pids": [
+            3657571,
+            3657788,
+            3657968,
+            3658031
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1658190,
+            1727377,
+            1540338,
+            1745093
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 11.1,
+        "max": 16.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.8,
+        "pptWattsMax": 26.3,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 50,
+      "samples": 100,
+      "overflow": false,
+      "foreignAvgCores": 0.8,
+      "foreignPeak2sCores": 1.48,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549
+          ],
+          "cores": 0.52
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343127,
+            1343193,
+            1727377,
+            1745093,
+            1540338,
+            1658190
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.06
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 6.7,
+        "max": 12.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 19,
+        "pptWattsMax": 23.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r3-b:pathlist-code-5000",
+      "verdict": "disturbed",
+      "reasons": [
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 50.9,
+      "samples": 102,
+      "overflow": false,
+      "foreignAvgCores": 0.97,
+      "foreignPeak2sCores": 1.89,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722,
+            2726,
+            6378
+          ],
+          "cores": 0.53
+        },
+        {
+          "name": "git",
+          "pids": [
+            3660196,
+            3660416
+          ],
+          "cores": 0.19
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1540338,
+            1745093,
+            1343193,
+            1658190,
+            1727377,
+            1343127
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1504933
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7.8,
+        "max": 15.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 7,
+        "busyMedian": 7,
+        "busyMax": 8,
+        "pptWattsMin": 18.7,
+        "pptWattsMax": 23.8,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    }
+  ],
+  "aggregate": {
+    "pathlist-prose-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 287,
+            "min": 228,
+            "max": 409,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 31073,
+            "min": 30840,
+            "max": 31362,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 421,
+            "min": 385,
+            "max": 429,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 421,
+            "min": 385,
+            "max": 429,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 175.2,
+            "min": 173.9,
+            "max": 342.6,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 293,
+            "min": 242.2,
+            "max": 299.2,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 480.6,
+            "min": 474.5,
+            "max": 492.6,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1041.8,
+            "min": 1023.2,
+            "max": 1068.2,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 2000,
+            "min": 2000,
+            "max": 2000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 519,
+            "min": 510,
+            "max": 586,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 519,
+            "min": 510,
+            "max": 586,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 33.2,
+            "min": 27.3,
+            "max": 33.6,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 341.2,
+            "min": 288.6,
+            "max": 360.6,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 615.9,
+            "min": 562,
+            "max": 642.1,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1009.8,
+            "min": 953.8,
+            "max": 1053.8,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 2000,
+            "min": 2000,
+            "max": 2000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-prose-5000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 561,
+            "min": 536,
+            "max": 932,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 38471,
+            "min": 38442,
+            "max": 38634,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1726,
+            "min": 1717,
+            "max": 1757,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1726,
+            "min": 1717,
+            "max": 1757,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 512.6,
+            "min": 414.1,
+            "max": 762.7,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1882.3,
+            "min": 1786.7,
+            "max": 1888.5,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 2111.8,
+            "min": 1984.5,
+            "max": 2119,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1312.4,
+            "min": 1216.9,
+            "max": 1321.1,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 5000,
+            "min": 5000,
+            "max": 5000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 545,
+            "min": 544,
+            "max": 590,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 38613,
+            "min": 38476,
+            "max": 38663,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1744,
+            "min": 947,
+            "max": 1813,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1744,
+            "min": 1493,
+            "max": 1813,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 522.3,
+            "min": 506,
+            "max": 592.1,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1866.1,
+            "min": 1806.1,
+            "max": 1928.5,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 2076.7,
+            "min": 2038.1,
+            "max": 2114.2,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1210.7,
+            "min": 1201.3,
+            "max": 1292.9,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 5000,
+            "min": 5000,
+            "max": 5000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-proseControl-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 443,
+            "min": 205,
+            "max": 607,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 28090,
+            "min": 27850,
+            "max": 28492,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 288,
+            "min": 163,
+            "max": 313,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 415,
+            "min": 163,
+            "max": 468,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 316.8,
+            "min": 191.1,
+            "max": 499.5,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 248.3,
+            "min": 230.9,
+            "max": 389.6,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 479.5,
+            "min": 471.7,
+            "max": 629.3,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 916.4,
+            "min": 902,
+            "max": 930,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 357,
+            "min": 338,
+            "max": 422,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 357,
+            "min": 338,
+            "max": 422,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 86,
+            "min": 0,
+            "max": 102,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 86,
+            "min": 0,
+            "max": 102,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 29.4,
+            "min": 25,
+            "max": 35,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 243.8,
+            "min": 225,
+            "max": 431.9,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 479.2,
+            "min": 473.2,
+            "max": 489.1,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 822.2,
+            "min": 817.5,
+            "max": 824.2,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-proseControl-5000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 1298,
+            "min": 1188,
+            "max": 1459,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 37529,
+            "min": 37401,
+            "max": 37579,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1623,
+            "min": 1587,
+            "max": 1693,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1623,
+            "min": 1587,
+            "max": 1693,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 1122.3,
+            "min": 1059,
+            "max": 1403.5,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1761.9,
+            "min": 1756,
+            "max": 1780.7,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 1981.2,
+            "min": 1932.9,
+            "max": 1992.2,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1009.4,
+            "min": 993.5,
+            "max": 1074,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 2336,
+            "min": 936,
+            "max": 2397,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 37456,
+            "min": 37353,
+            "max": 37636,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1757,
+            "min": 1045,
+            "max": 1775,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1757,
+            "min": 1487,
+            "max": 1775,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 2252.6,
+            "min": 757.4,
+            "max": 2373.8,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1802.3,
+            "min": 1787.5,
+            "max": 1810.1,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 1954,
+            "min": 1948.8,
+            "max": 1983.4,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 1056.4,
+            "min": 1020,
+            "max": 1058.6,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-code-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "measured"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 224,
+            "min": 215,
+            "max": 232,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 371,
+            "min": 364,
+            "max": 375,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 26.6,
+            "min": 8.8,
+            "max": 30.5,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 262.2,
+            "min": 225.9,
+            "max": 284.6,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 424.8,
+            "min": 418.3,
+            "max": 436.1,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 749,
+            "min": 720,
+            "max": 802.5,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 2000,
+            "min": 2000,
+            "max": 2000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 144,
+            "min": 144,
+            "max": 154,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 144,
+            "min": 144,
+            "max": 154,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 243,
+            "min": 222,
+            "max": 258,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 243,
+            "min": 222,
+            "max": 258,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 26.4,
+            "min": 9.5,
+            "max": 28.2,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 282.5,
+            "min": 215.5,
+            "max": 287.1,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 409.7,
+            "min": 408.5,
+            "max": 422.7,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 736.6,
+            "min": 697.7,
+            "max": 741.2,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 2000,
+            "min": 2000,
+            "max": 2000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    },
+    "pathlist-code-5000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 414,
+            "min": 0,
+            "max": 581,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 414,
+            "min": 0,
+            "max": 581,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1186,
+            "min": 1054,
+            "max": 1270,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1270,
+            "min": 1054,
+            "max": 1634,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 26.5,
+            "min": 10.4,
+            "max": 34.9,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1522.3,
+            "min": 1521,
+            "max": 1558.8,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 1715.7,
+            "min": 1686.4,
+            "max": 1790.2,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 874,
+            "min": 837.4,
+            "max": 896,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 5000,
+            "min": 5000,
+            "max": 5000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 441,
+            "n": 3,
+            "of": 3
+          },
+          "streamLongtaskTotalMs": {
+            "median": 0,
+            "min": 0,
+            "max": 441,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskMaxMs": {
+            "median": 1123,
+            "min": 1038,
+            "max": 1228,
+            "n": 3,
+            "of": 3
+          },
+          "settleLongtaskTotalMs": {
+            "median": 1622,
+            "min": 1228,
+            "max": 1632,
+            "n": 3,
+            "of": 3
+          },
+          "typingStreamMaxMs": {
+            "median": 22,
+            "min": 10.6,
+            "max": 30.7,
+            "n": 3,
+            "of": 3
+          },
+          "typingSettleMaxMs": {
+            "median": 1502.5,
+            "min": 1492.9,
+            "max": 1508,
+            "n": 3,
+            "of": 3
+          },
+          "endToPaintMs": {
+            "median": 1697.6,
+            "min": 1675.8,
+            "max": 1703.8,
+            "n": 3,
+            "of": 3
+          },
+          "peakPssMb": {
+            "median": 818.8,
+            "min": 811.9,
+            "max": 818.9,
+            "n": 3,
+            "of": 3
+          },
+          "chipsRendered": {
+            "median": 5000,
+            "min": 5000,
+            "max": 5000,
+            "n": 3,
+            "of": 3
+          }
+        }
+      }
+    }
+  }
+}
