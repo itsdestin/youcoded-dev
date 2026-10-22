@@ -1,0 +1,5640 @@
+{
+  "title": "busy machine, exploratory — interleaved design",
+  "aa": false,
+  "rounds": 3,
+  "minRunsPerSide": 3,
+  "candidates": {
+    "a": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+    "b": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded"
+  },
+  "noiseSource": null,
+  "runs": [
+    {
+      "round": 1,
+      "position": 1,
+      "key": "a",
+      "label": "r1-a",
+      "exit": 4,
+      "report": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-1643-d0a7211-vs-9aef7eb-busy-interleaved-freeze-batch-1-lanef/2026-10-22-1643-d0a7211-r1-a.json",
+      "error": null,
+      "incomplete": 15
+    },
+    {
+      "round": 1,
+      "position": 2,
+      "key": "b",
+      "label": "r1-b",
+      "exit": 4,
+      "report": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-1643-d0a7211-vs-9aef7eb-busy-interleaved-freeze-batch-1-lanef/2026-10-22-1649-9aef7eb-r1-b.json",
+      "error": null,
+      "incomplete": 5
+    },
+    {
+      "round": 2,
+      "position": 1,
+      "key": "b",
+      "label": "r2-b",
+      "exit": 4,
+      "report": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-1643-d0a7211-vs-9aef7eb-busy-interleaved-freeze-batch-1-lanef/2026-10-22-1654-9aef7eb-r2-b.json",
+      "error": null,
+      "incomplete": 7
+    },
+    {
+      "round": 2,
+      "position": 2,
+      "key": "a",
+      "label": "r2-a",
+      "exit": 4,
+      "report": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-1643-d0a7211-vs-9aef7eb-busy-interleaved-freeze-batch-1-lanef/2026-10-22-1658-d0a7211-r2-a.json",
+      "error": null,
+      "incomplete": 15
+    },
+    {
+      "round": 3,
+      "position": 1,
+      "key": "a",
+      "label": "r3-a",
+      "exit": 4,
+      "report": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-1643-d0a7211-vs-9aef7eb-busy-interleaved-freeze-batch-1-lanef/2026-10-22-1703-d0a7211-r3-a.json",
+      "error": null,
+      "incomplete": 10
+    },
+    {
+      "round": 3,
+      "position": 2,
+      "key": "b",
+      "label": "r3-b",
+      "exit": 4,
+      "report": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-1643-d0a7211-vs-9aef7eb-busy-interleaved-freeze-batch-1-lanef/2026-10-22-1709-9aef7eb-r3-b.json",
+      "error": null,
+      "incomplete": 11
+    }
+  ],
+  "load": {
+    "windows": 84,
+    "verdicts": {
+      "clean": 45,
+      "disturbed": 39,
+      "unknown": 0
+    },
+    "medianCores": 0.9,
+    "maxCores": 2.4,
+    "bySide": {
+      "a": {
+        "windows": 44,
+        "medianCores": 1.3,
+        "maxCores": 2.4
+      },
+      "b": {
+        "windows": 40,
+        "medianCores": 0.6,
+        "maxCores": 1.5
+      }
+    },
+    "topOffenders": [
+      {
+        "name": "git",
+        "windows": 53,
+        "meanCores": 0.7,
+        "maxCores": 1
+      },
+      {
+        "name": "chrome",
+        "windows": 82,
+        "meanCores": 0.1,
+        "maxCores": 0.6
+      },
+      {
+        "name": "claude",
+        "windows": 84,
+        "meanCores": 0.1,
+        "maxCores": 0.2
+      },
+      {
+        "name": "node-MainThread",
+        "windows": 83,
+        "meanCores": 0.1,
+        "maxCores": 0.5
+      },
+      {
+        "name": "youcoded",
+        "windows": 16,
+        "meanCores": 0.1,
+        "maxCores": 0.4
+      },
+      {
+        "name": "plasma-keyboard",
+        "windows": 3,
+        "meanCores": 0.1,
+        "maxCores": 0.2
+      }
+    ]
+  },
+  "counts": {
+    "no clear difference": 201,
+    "B slower": 8,
+    "B faster": 11
+  },
+  "rows": [
+    {
+      "rung": "csv-rows-64kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 129.2,
+        "max": 142.7
+      },
+      "rangeB": {
+        "min": 127.8,
+        "max": 130.8
+      },
+      "medianA": 129.9,
+      "medianB": 128.1,
+      "delta": -1.8,
+      "deltaPct": -1.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-64kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 70.9,
+        "max": 92
+      },
+      "rangeB": {
+        "min": 66.3,
+        "max": 74.5
+      },
+      "medianA": 87.8,
+      "medianB": 66.6,
+      "delta": -21.2,
+      "deltaPct": -24.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-64kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1.7,
+        "max": 5.4
+      },
+      "rangeB": {
+        "min": 2,
+        "max": 3.5
+      },
+      "medianA": 2.3,
+      "medianB": 2.3,
+      "delta": 0,
+      "deltaPct": 0,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-64kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 25.8,
+        "max": 35.1
+      },
+      "rangeB": {
+        "min": 23.4,
+        "max": 32.9
+      },
+      "medianA": 33,
+      "medianB": 31.9,
+      "delta": -1.1,
+      "deltaPct": -3.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-64kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 706.2,
+        "max": 712.8
+      },
+      "rangeB": {
+        "min": 656.2,
+        "max": 718.3
+      },
+      "medianA": 710.9,
+      "medianB": 711.2,
+      "delta": 0.3,
+      "deltaPct": 0,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-256kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 97,
+        "max": 103.8
+      },
+      "rangeB": {
+        "min": 95.7,
+        "max": 101.9
+      },
+      "medianA": 99.4,
+      "medianB": 98.2,
+      "delta": -1.2,
+      "deltaPct": -1.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-256kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 67.7,
+        "max": 81.6
+      },
+      "rangeB": {
+        "min": 46.5,
+        "max": 78.7
+      },
+      "medianA": 71.6,
+      "medianB": 68.7,
+      "delta": -2.9,
+      "deltaPct": -4.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-256kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.3,
+        "max": 3.7
+      },
+      "rangeB": {
+        "min": 0.5,
+        "max": 3.4
+      },
+      "medianA": 1.1,
+      "medianB": 0.8,
+      "delta": -0.3,
+      "deltaPct": -27.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-256kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.7,
+        "max": 13.9
+      },
+      "rangeB": {
+        "min": 5.9,
+        "max": 27.9
+      },
+      "medianA": 8.7,
+      "medianB": 12,
+      "delta": 3.3,
+      "deltaPct": 37.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-256kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 712,
+        "max": 735.6
+      },
+      "rangeB": {
+        "min": 655.4,
+        "max": 720.3
+      },
+      "medianA": 712.2,
+      "medianB": 711.6,
+      "delta": -0.6,
+      "deltaPct": -0.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-1024kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 113.4,
+        "max": 157.8
+      },
+      "rangeB": {
+        "min": 118.3,
+        "max": 158.5
+      },
+      "medianA": 145.5,
+      "medianB": 145.8,
+      "delta": 0.3,
+      "deltaPct": 0.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-1024kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 71.2,
+        "max": 97.7
+      },
+      "rangeB": {
+        "min": 87,
+        "max": 93.9
+      },
+      "medianA": 92.6,
+      "medianB": 92.4,
+      "delta": -0.2,
+      "deltaPct": -0.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-1024kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1.8,
+        "max": 9.8
+      },
+      "rangeB": {
+        "min": 1,
+        "max": 13.7
+      },
+      "medianA": 6,
+      "medianB": 2.3,
+      "delta": -3.7,
+      "deltaPct": -61.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-1024kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 29.6,
+        "max": 36.7
+      },
+      "rangeB": {
+        "min": 34.1,
+        "max": 43.5
+      },
+      "medianA": 30.1,
+      "medianB": 34.5,
+      "delta": 4.4,
+      "deltaPct": 14.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-1024kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 735.5,
+        "max": 764.5
+      },
+      "rangeB": {
+        "min": 687.3,
+        "max": 767.5
+      },
+      "medianA": 744.6,
+      "medianB": 722.8,
+      "delta": -21.8,
+      "deltaPct": -2.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-3072kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 150.3,
+        "max": 209.1
+      },
+      "rangeB": {
+        "min": 203.5,
+        "max": 215.6
+      },
+      "medianA": 195.2,
+      "medianB": 213.1,
+      "delta": 17.9,
+      "deltaPct": 9.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-3072kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 139.7,
+        "max": 151.4
+      },
+      "rangeB": {
+        "min": 135.8,
+        "max": 158.8
+      },
+      "medianA": 147.4,
+      "medianB": 141.4,
+      "delta": -6,
+      "deltaPct": -4.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-3072kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.6,
+        "max": 4.5
+      },
+      "rangeB": {
+        "min": 2.8,
+        "max": 5.2
+      },
+      "medianA": 3.6,
+      "medianB": 4.7,
+      "delta": 1.1,
+      "deltaPct": 30.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-3072kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 73.9,
+        "max": 107.4
+      },
+      "rangeB": {
+        "min": 80.9,
+        "max": 99.5
+      },
+      "medianA": 94,
+      "medianB": 83.5,
+      "delta": -10.5,
+      "deltaPct": -11.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-rows-3072kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 787.4,
+        "max": 809
+      },
+      "rangeB": {
+        "min": 759.3,
+        "max": 809.6
+      },
+      "medianA": 794.2,
+      "medianB": 805.7,
+      "delta": 11.5,
+      "deltaPct": 1.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-64kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 93.2,
+        "max": 144.8
+      },
+      "rangeB": {
+        "min": 96.2,
+        "max": 112.9
+      },
+      "medianA": 99.2,
+      "medianB": 105.2,
+      "delta": 6,
+      "deltaPct": 6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-64kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 65.6,
+        "max": 98.3
+      },
+      "rangeB": {
+        "min": 64,
+        "max": 70.6
+      },
+      "medianA": 68.7,
+      "medianB": 66.4,
+      "delta": -2.3,
+      "deltaPct": -3.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-64kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 4
+      },
+      "rangeB": {
+        "min": 0.3,
+        "max": 4.5
+      },
+      "medianA": 0.7,
+      "medianB": 0.9,
+      "delta": 0.2,
+      "deltaPct": 28.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-64kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 4,
+        "max": 18.6
+      },
+      "rangeB": {
+        "min": 4.8,
+        "max": 11.6
+      },
+      "medianA": 5.3,
+      "medianB": 8.8,
+      "delta": 3.5,
+      "deltaPct": 66,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-64kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 792.2,
+        "max": 803.5
+      },
+      "rangeB": {
+        "min": 793.7,
+        "max": 804.2
+      },
+      "medianA": 793.4,
+      "medianB": 800.6,
+      "delta": 7.2,
+      "deltaPct": 0.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-256kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 101.3,
+        "max": 117.4
+      },
+      "rangeB": {
+        "min": 104,
+        "max": 110.9
+      },
+      "medianA": 113.4,
+      "medianB": 110.5,
+      "delta": -2.9,
+      "deltaPct": -2.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-256kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 75.5,
+        "max": 98.5
+      },
+      "rangeB": {
+        "min": 77,
+        "max": 83.1
+      },
+      "medianA": 91,
+      "medianB": 80.4,
+      "delta": -10.6,
+      "deltaPct": -11.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-256kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.3,
+        "max": 4.4
+      },
+      "rangeB": {
+        "min": 0.3,
+        "max": 3.5
+      },
+      "medianA": 0.6,
+      "medianB": 3.4,
+      "delta": 2.8,
+      "deltaPct": 466.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-256kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 7.1,
+        "max": 22.7
+      },
+      "rangeB": {
+        "min": 11,
+        "max": 14.7
+      },
+      "medianA": 18.9,
+      "medianB": 11.7,
+      "delta": -7.2,
+      "deltaPct": -38.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-256kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 809.4,
+        "max": 810.3
+      },
+      "rangeB": {
+        "min": 812.7,
+        "max": 843
+      },
+      "medianA": 809.8,
+      "medianB": 819.1,
+      "delta": 9.3,
+      "deltaPct": 1.1,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-1024kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 116.4,
+        "max": 145.9
+      },
+      "rangeB": {
+        "min": 109.3,
+        "max": 114.9
+      },
+      "medianA": 145.8,
+      "medianB": 111.2,
+      "delta": -34.6,
+      "deltaPct": -23.7,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-1024kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 97.5,
+        "max": 107.4
+      },
+      "rangeB": {
+        "min": 90.5,
+        "max": 93.7
+      },
+      "medianA": 102,
+      "medianB": 91.2,
+      "delta": -10.8,
+      "deltaPct": -10.6,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-1024kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.7,
+        "max": 4.3
+      },
+      "rangeB": {
+        "min": 0.7,
+        "max": 3.4
+      },
+      "medianA": 2.2,
+      "medianB": 3.2,
+      "delta": 1,
+      "deltaPct": 45.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-1024kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 28,
+        "max": 40.6
+      },
+      "rangeB": {
+        "min": 21.8,
+        "max": 25.5
+      },
+      "medianA": 28,
+      "medianB": 22,
+      "delta": -6,
+      "deltaPct": -21.4,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-1024kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 827.2,
+        "max": 852.9
+      },
+      "rangeB": {
+        "min": 833.2,
+        "max": 867.4
+      },
+      "medianA": 829.5,
+      "medianB": 840.2,
+      "delta": 10.7,
+      "deltaPct": 1.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-3072kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 158.2,
+        "max": 165.3
+      },
+      "rangeB": {
+        "min": 150.3,
+        "max": 176.4
+      },
+      "medianA": 162.8,
+      "medianB": 162.7,
+      "delta": -0.1,
+      "deltaPct": -0.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-3072kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 124.2,
+        "max": 142.9
+      },
+      "rangeB": {
+        "min": 122.7,
+        "max": 133.5
+      },
+      "medianA": 128.9,
+      "medianB": 127.6,
+      "delta": -1.3,
+      "deltaPct": -1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-3072kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.4,
+        "max": 4.6
+      },
+      "rangeB": {
+        "min": 0.8,
+        "max": 4.8
+      },
+      "medianA": 3.4,
+      "medianB": 4.7,
+      "delta": 1.3,
+      "deltaPct": 38.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-3072kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 60.2,
+        "max": 69.6
+      },
+      "rangeB": {
+        "min": 58.8,
+        "max": 68.3
+      },
+      "medianA": 67.7,
+      "medianB": 64.4,
+      "delta": -3.3,
+      "deltaPct": -4.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-wide-3072kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 784.2,
+        "max": 863.7
+      },
+      "rangeB": {
+        "min": 839.1,
+        "max": 902.5
+      },
+      "medianA": 842,
+      "medianB": 842.7,
+      "delta": 0.7,
+      "deltaPct": 0.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-64kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 88.5,
+        "max": 97.8
+      },
+      "rangeB": {
+        "min": 90.9,
+        "max": 97.4
+      },
+      "medianA": 93,
+      "medianB": 93.8,
+      "delta": 0.8,
+      "deltaPct": 0.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-64kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 32.8,
+        "max": 53.5
+      },
+      "rangeB": {
+        "min": 50.6,
+        "max": 58.9
+      },
+      "medianA": 52,
+      "medianB": 56.5,
+      "delta": 4.5,
+      "deltaPct": 8.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-64kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 4.3
+      },
+      "rangeB": {
+        "min": 0.3,
+        "max": 1.4
+      },
+      "medianA": 2.4,
+      "medianB": 0.8,
+      "delta": -1.6,
+      "deltaPct": -66.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-64kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.2,
+        "max": 5.9
+      },
+      "rangeB": {
+        "min": 4.7,
+        "max": 19.5
+      },
+      "medianA": 3.1,
+      "medianB": 18.2,
+      "delta": 15.1,
+      "deltaPct": 487.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-64kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 766.5,
+        "max": 875.9
+      },
+      "rangeB": {
+        "min": 766,
+        "max": 925
+      },
+      "medianA": 810.6,
+      "medianB": 816.9,
+      "delta": 6.3,
+      "deltaPct": 0.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-256kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 93.4,
+        "max": 101
+      },
+      "rangeB": {
+        "min": 92.2,
+        "max": 101.5
+      },
+      "medianA": 96.9,
+      "medianB": 95.6,
+      "delta": -1.3,
+      "deltaPct": -1.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-256kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 60.2,
+        "max": 73.1
+      },
+      "rangeB": {
+        "min": 62.5,
+        "max": 72
+      },
+      "medianA": 64.1,
+      "medianB": 63.6,
+      "delta": -0.5,
+      "deltaPct": -0.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-256kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 3.1
+      },
+      "rangeB": {
+        "min": 0.5,
+        "max": 3.7
+      },
+      "medianA": 0.6,
+      "medianB": 0.5,
+      "delta": -0.1,
+      "deltaPct": -16.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-256kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 5.3,
+        "max": 11
+      },
+      "rangeB": {
+        "min": 7.5,
+        "max": 16
+      },
+      "medianA": 6.1,
+      "medianB": 9.4,
+      "delta": 3.3,
+      "deltaPct": 54.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-256kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 767.9,
+        "max": 890.4
+      },
+      "rangeB": {
+        "min": 770,
+        "max": 939.1
+      },
+      "medianA": 806.5,
+      "medianB": 778.1,
+      "delta": -28.4,
+      "deltaPct": -3.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-1024kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 94.6,
+        "max": 101.6
+      },
+      "rangeB": {
+        "min": 100.8,
+        "max": 110
+      },
+      "medianA": 98.4,
+      "medianB": 108.8,
+      "delta": 10.4,
+      "deltaPct": 10.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-1024kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 71.4,
+        "max": 76.8
+      },
+      "rangeB": {
+        "min": 73.5,
+        "max": 92.4
+      },
+      "medianA": 76.2,
+      "medianB": 83.4,
+      "delta": 7.2,
+      "deltaPct": 9.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-1024kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.4,
+        "max": 3.8
+      },
+      "rangeB": {
+        "min": 0.4,
+        "max": 3
+      },
+      "medianA": 3,
+      "medianB": 0.6,
+      "delta": -2.4,
+      "deltaPct": -80,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-1024kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 16,
+        "max": 17.3
+      },
+      "rangeB": {
+        "min": 16.9,
+        "max": 21.2
+      },
+      "medianA": 17.1,
+      "medianB": 20.4,
+      "delta": 3.3,
+      "deltaPct": 19.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-1024kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 771,
+        "max": 913.7
+      },
+      "rangeB": {
+        "min": 774,
+        "max": 959.8
+      },
+      "medianA": 809.3,
+      "medianB": 781.7,
+      "delta": -27.6,
+      "deltaPct": -3.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-3072kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 134.9,
+        "max": 149.2
+      },
+      "rangeB": {
+        "min": 133.4,
+        "max": 152.1
+      },
+      "medianA": 142.7,
+      "medianB": 147.9,
+      "delta": 5.2,
+      "deltaPct": 3.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-3072kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 101.2,
+        "max": 115.2
+      },
+      "rangeB": {
+        "min": 105.4,
+        "max": 117.2
+      },
+      "medianA": 101.6,
+      "medianB": 106.9,
+      "delta": 5.3,
+      "deltaPct": 5.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-3072kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.2,
+        "max": 5.5
+      },
+      "rangeB": {
+        "min": 1.1,
+        "max": 4.2
+      },
+      "medianA": 4.4,
+      "medianB": 3.9,
+      "delta": -0.5,
+      "deltaPct": -11.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-3072kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 42.1,
+        "max": 55.9
+      },
+      "rangeB": {
+        "min": 51.1,
+        "max": 54.3
+      },
+      "medianA": 42.2,
+      "medianB": 51.4,
+      "delta": 9.2,
+      "deltaPct": 21.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-quoted-3072kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 797.1,
+        "max": 910.4
+      },
+      "rangeB": {
+        "min": 797.6,
+        "max": 1010.4
+      },
+      "medianA": 830.2,
+      "medianB": 807.2,
+      "delta": -23,
+      "deltaPct": -2.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "csv-fullread-5120kib",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 2,
+      "rangeA": {
+        "min": 561.4,
+        "max": 611.4
+      },
+      "rangeB": {
+        "min": 560.4,
+        "max": 600
+      },
+      "medianA": 594.8,
+      "medianB": 580.2,
+      "delta": -14.6,
+      "deltaPct": -2.5,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 3, B 2; need 3 each)",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "csv-fullread-5120kib",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 2,
+      "rangeA": {
+        "min": 278.2,
+        "max": 290.4
+      },
+      "rangeB": {
+        "min": 247.1,
+        "max": 280.6
+      },
+      "medianA": 281,
+      "medianB": 263.9,
+      "delta": -17.1,
+      "deltaPct": -6.1,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 3, B 2; need 3 each)",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "csv-fullread-5120kib",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 2,
+      "rangeA": {
+        "min": 1.5,
+        "max": 5.5
+      },
+      "rangeB": {
+        "min": 2.9,
+        "max": 4.6
+      },
+      "medianA": 3,
+      "medianB": 3.8,
+      "delta": 0.8,
+      "deltaPct": 26.7,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 3, B 2; need 3 each)",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "csv-fullread-5120kib",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 2,
+      "rangeA": {
+        "min": 233.4,
+        "max": 248.1
+      },
+      "rangeB": {
+        "min": 222.6,
+        "max": 226.1
+      },
+      "medianA": 235.5,
+      "medianB": 224.4,
+      "delta": -11.1,
+      "deltaPct": -4.7,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 3, B 2; need 3 each)",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "csv-fullread-5120kib",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 2,
+      "rangeA": {
+        "min": 851.7,
+        "max": 872.3
+      },
+      "rangeB": {
+        "min": 808.2,
+        "max": 852.7
+      },
+      "medianA": 860.5,
+      "medianB": 830.5,
+      "delta": -30,
+      "deltaPct": -3.5,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 3, B 2; need 3 each)",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-32x32",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 231.1,
+        "max": 476.3
+      },
+      "rangeB": {
+        "min": 254.9,
+        "max": 445.6
+      },
+      "medianA": 241.5,
+      "medianB": 430.4,
+      "delta": 188.9,
+      "deltaPct": 78.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-32x32",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 69.5,
+        "max": 84.7
+      },
+      "rangeB": {
+        "min": 64,
+        "max": 75.5
+      },
+      "medianA": 75.6,
+      "medianB": 66.6,
+      "delta": -9,
+      "deltaPct": -11.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-32x32",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1.7,
+        "max": 5.1
+      },
+      "rangeB": {
+        "min": 0.8,
+        "max": 4.8
+      },
+      "medianA": 2.9,
+      "medianB": 2.8,
+      "delta": -0.1,
+      "deltaPct": -3.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-32x32",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 38.9,
+        "max": 80.1
+      },
+      "rangeB": {
+        "min": 44.7,
+        "max": 79.3
+      },
+      "medianA": 56.5,
+      "medianB": 52.8,
+      "delta": -3.7,
+      "deltaPct": -6.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-32x32",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 705.3,
+        "max": 717.5
+      },
+      "rangeB": {
+        "min": 700.9,
+        "max": 712.8
+      },
+      "medianA": 707.9,
+      "medianB": 710.7,
+      "delta": 2.8,
+      "deltaPct": 0.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-128x128",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 93.3,
+        "max": 95.9
+      },
+      "rangeB": {
+        "min": 91.3,
+        "max": 97.2
+      },
+      "medianA": 95,
+      "medianB": 97.1,
+      "delta": 2.1,
+      "deltaPct": 2.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-128x128",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 5.1,
+        "max": 19.5
+      },
+      "rangeB": {
+        "min": 5.8,
+        "max": 20.6
+      },
+      "medianA": 5.3,
+      "medianB": 11.4,
+      "delta": 6.1,
+      "deltaPct": 115.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-128x128",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 4.3
+      },
+      "rangeB": {
+        "min": 0.3,
+        "max": 4.5
+      },
+      "medianA": 0.8,
+      "medianB": 3.6,
+      "delta": 2.8,
+      "deltaPct": 350,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-128x128",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.1,
+        "max": 7.1
+      },
+      "rangeB": {
+        "min": 2.5,
+        "max": 12.9
+      },
+      "medianA": 4.8,
+      "medianB": 7.7,
+      "delta": 2.9,
+      "deltaPct": 60.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-128x128",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 707.9,
+        "max": 715.6
+      },
+      "rangeB": {
+        "min": 705.9,
+        "max": 717.9
+      },
+      "medianA": 711.9,
+      "medianB": 714.1,
+      "delta": 2.2,
+      "deltaPct": 0.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-300x300",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 132.9,
+        "max": 142.9
+      },
+      "rangeB": {
+        "min": 142.1,
+        "max": 144.3
+      },
+      "medianA": 139.5,
+      "medianB": 143.1,
+      "delta": 3.6,
+      "deltaPct": 2.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-300x300",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 27.4,
+        "max": 43.9
+      },
+      "rangeB": {
+        "min": 37.2,
+        "max": 39.5
+      },
+      "medianA": 39.2,
+      "medianB": 38.7,
+      "delta": -0.5,
+      "deltaPct": -1.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-300x300",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1,
+        "max": 7
+      },
+      "rangeB": {
+        "min": 0.5,
+        "max": 4.7
+      },
+      "medianA": 4.4,
+      "medianB": 2.2,
+      "delta": -2.2,
+      "deltaPct": -50,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-300x300",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 17.2,
+        "max": 29.5
+      },
+      "rangeB": {
+        "min": 7.4,
+        "max": 23.7
+      },
+      "medianA": 22.3,
+      "medianB": 21.2,
+      "delta": -1.1,
+      "deltaPct": -4.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-300x300",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 711,
+        "max": 766.4
+      },
+      "rangeB": {
+        "min": 719.5,
+        "max": 759.9
+      },
+      "medianA": 713.6,
+      "medianB": 751.4,
+      "delta": 37.8,
+      "deltaPct": 5.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-400x500",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 238.5,
+        "max": 281.7
+      },
+      "rangeB": {
+        "min": 206.6,
+        "max": 247.9
+      },
+      "medianA": 244.4,
+      "medianB": 244.2,
+      "delta": -0.2,
+      "deltaPct": -0.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-400x500",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 79.4,
+        "max": 94.3
+      },
+      "rangeB": {
+        "min": 74.7,
+        "max": 89.9
+      },
+      "medianA": 92.8,
+      "medianB": 86.7,
+      "delta": -6.1,
+      "deltaPct": -6.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-400x500",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1.3,
+        "max": 8.7
+      },
+      "rangeB": {
+        "min": 1.4,
+        "max": 2.8
+      },
+      "medianA": 3.6,
+      "medianB": 2.5,
+      "delta": -1.1,
+      "deltaPct": -30.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-400x500",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 53,
+        "max": 70.4
+      },
+      "rangeB": {
+        "min": 50.5,
+        "max": 64.8
+      },
+      "medianA": 62,
+      "medianB": 58.6,
+      "delta": -3.4,
+      "deltaPct": -5.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-merge-400x500",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 776.8,
+        "max": 797.8
+      },
+      "rangeB": {
+        "min": 779.3,
+        "max": 835.2
+      },
+      "medianA": 780.7,
+      "medianB": 780.8,
+      "delta": 0.1,
+      "deltaPct": 0,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-1",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 103.8,
+        "max": 106.4
+      },
+      "rangeB": {
+        "min": 103.1,
+        "max": 114.8
+      },
+      "medianA": 103.9,
+      "medianB": 111.7,
+      "delta": 7.8,
+      "deltaPct": 7.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-1",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 70,
+        "max": 73.3
+      },
+      "rangeB": {
+        "min": 70.9,
+        "max": 78.8
+      },
+      "medianA": 71,
+      "medianB": 72.7,
+      "delta": 1.7,
+      "deltaPct": 2.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-1",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 2.8
+      },
+      "rangeB": {
+        "min": 0.5,
+        "max": 17.1
+      },
+      "medianA": 1.7,
+      "medianB": 2.4,
+      "delta": 0.7,
+      "deltaPct": 41.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-1",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 20.8,
+        "max": 21.6
+      },
+      "rangeB": {
+        "min": 19.6,
+        "max": 29.5
+      },
+      "medianA": 21.5,
+      "medianB": 21.5,
+      "delta": 0,
+      "deltaPct": 0,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-1",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 771.6,
+        "max": 799.9
+      },
+      "rangeB": {
+        "min": 779.4,
+        "max": 828
+      },
+      "medianA": 775.5,
+      "medianB": 787.3,
+      "delta": 11.8,
+      "deltaPct": 1.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-8",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 142.1,
+        "max": 155.2
+      },
+      "rangeB": {
+        "min": 144.3,
+        "max": 147.5
+      },
+      "medianA": 143.5,
+      "medianB": 145.7,
+      "delta": 2.2,
+      "deltaPct": 1.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-8",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 65.4,
+        "max": 75.6
+      },
+      "rangeB": {
+        "min": 66.3,
+        "max": 80.1
+      },
+      "medianA": 68.1,
+      "medianB": 72.4,
+      "delta": 4.3,
+      "deltaPct": 6.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-8",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.7,
+        "max": 4.1
+      },
+      "rangeB": {
+        "min": 0.8,
+        "max": 3.8
+      },
+      "medianA": 1,
+      "medianB": 1.6,
+      "delta": 0.6,
+      "deltaPct": 60,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-8",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 7.9,
+        "max": 48.1
+      },
+      "rangeB": {
+        "min": 5.2,
+        "max": 11.2
+      },
+      "medianA": 13.7,
+      "medianB": 9,
+      "delta": -4.7,
+      "deltaPct": -34.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-8",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 784.9,
+        "max": 814.4
+      },
+      "rangeB": {
+        "min": 765.9,
+        "max": 800.7
+      },
+      "medianA": 788.5,
+      "medianB": 791.9,
+      "delta": 3.4,
+      "deltaPct": 0.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-32",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 246,
+        "max": 315.1
+      },
+      "rangeB": {
+        "min": 241.2,
+        "max": 254.1
+      },
+      "medianA": 268.8,
+      "medianB": 250.9,
+      "delta": -17.9,
+      "deltaPct": -6.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-32",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 67.7,
+        "max": 76.9
+      },
+      "rangeB": {
+        "min": 67.6,
+        "max": 84.5
+      },
+      "medianA": 75.6,
+      "medianB": 74.8,
+      "delta": -0.8,
+      "deltaPct": -1.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-32",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 3.5
+      },
+      "rangeB": {
+        "min": 1.3,
+        "max": 4.9
+      },
+      "medianA": 2.9,
+      "medianB": 4.8,
+      "delta": 1.9,
+      "deltaPct": 65.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-32",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 8.6,
+        "max": 30.6
+      },
+      "rangeB": {
+        "min": 6.9,
+        "max": 20.8
+      },
+      "medianA": 28,
+      "medianB": 14.8,
+      "delta": -13.2,
+      "deltaPct": -47.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "xlsx-sheets-32",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 800.4,
+        "max": 830.1
+      },
+      "rangeB": {
+        "min": 781.1,
+        "max": 818.8
+      },
+      "medianA": 803.7,
+      "medianB": 807.1,
+      "delta": 3.4,
+      "deltaPct": 0.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-100",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 130.3,
+        "max": 166.7
+      },
+      "rangeB": {
+        "min": 141.6,
+        "max": 183.8
+      },
+      "medianA": 147.3,
+      "medianB": 181.4,
+      "delta": 34.1,
+      "deltaPct": 23.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-100",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 31.6,
+        "max": 35.9
+      },
+      "rangeB": {
+        "min": 28.6,
+        "max": 32.6
+      },
+      "medianA": 34.2,
+      "medianB": 29,
+      "delta": -5.2,
+      "deltaPct": -15.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-100",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.3,
+        "max": 0.9
+      },
+      "rangeB": {
+        "min": 0.3,
+        "max": 3.8
+      },
+      "medianA": 0.4,
+      "medianB": 0.5,
+      "delta": 0.1,
+      "deltaPct": 25,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-100",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 17.2,
+        "max": 36.2
+      },
+      "rangeB": {
+        "min": 32.8,
+        "max": 37.4
+      },
+      "medianA": 32.3,
+      "medianB": 33.7,
+      "delta": 1.4,
+      "deltaPct": 4.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-100",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 704.7,
+        "max": 706.1
+      },
+      "rangeB": {
+        "min": 703.6,
+        "max": 707.2
+      },
+      "medianA": 705.9,
+      "medianB": 706.6,
+      "delta": 0.7,
+      "deltaPct": 0.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-1000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 109.3,
+        "max": 141.7
+      },
+      "rangeB": {
+        "min": 99,
+        "max": 106.7
+      },
+      "medianA": 138.5,
+      "medianB": 99.7,
+      "delta": -38.8,
+      "deltaPct": -28,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-1000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 16.5,
+        "max": 34
+      },
+      "rangeB": {
+        "min": 21.3,
+        "max": 31.1
+      },
+      "medianA": 29.7,
+      "medianB": 25.4,
+      "delta": -4.3,
+      "deltaPct": -14.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-1000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.6,
+        "max": 3.9
+      },
+      "rangeB": {
+        "min": 0.5,
+        "max": 4.7
+      },
+      "medianA": 2.7,
+      "medianB": 3,
+      "delta": 0.3,
+      "deltaPct": 11.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-1000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 13.9,
+        "max": 23
+      },
+      "rangeB": {
+        "min": 7.2,
+        "max": 14.6
+      },
+      "medianA": 14.4,
+      "medianB": 12.6,
+      "delta": -1.8,
+      "deltaPct": -12.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-1000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 706.6,
+        "max": 722.4
+      },
+      "rangeB": {
+        "min": 702.8,
+        "max": 726
+      },
+      "medianA": 708,
+      "medianB": 723.3,
+      "delta": 15.3,
+      "deltaPct": 2.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-5000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 292.5,
+        "max": 350.2
+      },
+      "rangeB": {
+        "min": 342.4,
+        "max": 349.2
+      },
+      "medianA": 345.6,
+      "medianB": 345.3,
+      "delta": -0.3,
+      "deltaPct": -0.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-5000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 123,
+        "max": 287.5
+      },
+      "rangeB": {
+        "min": 156.5,
+        "max": 160.3
+      },
+      "medianA": 148.5,
+      "medianB": 157.1,
+      "delta": 8.6,
+      "deltaPct": 5.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-5000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1.1,
+        "max": 7.4
+      },
+      "rangeB": {
+        "min": 0.8,
+        "max": 4.3
+      },
+      "medianA": 4,
+      "medianB": 1.1,
+      "delta": -2.9,
+      "deltaPct": -72.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-5000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 112.8,
+        "max": 129.6
+      },
+      "rangeB": {
+        "min": 157,
+        "max": 170.3
+      },
+      "medianA": 122.6,
+      "medianB": 169,
+      "delta": 46.4,
+      "deltaPct": 37.8,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-paragraphs-5000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 773,
+        "max": 803.3
+      },
+      "rangeB": {
+        "min": 812.4,
+        "max": 816
+      },
+      "medianA": 802.3,
+      "medianB": 814.7,
+      "delta": 12.4,
+      "deltaPct": 1.5,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-25x10",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 43.8,
+        "max": 102.9
+      },
+      "rangeB": {
+        "min": 56.6,
+        "max": 98.6
+      },
+      "medianA": 68.3,
+      "medianB": 93.7,
+      "delta": 25.4,
+      "deltaPct": 37.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-25x10",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 12.2,
+        "max": 25.1
+      },
+      "rangeB": {
+        "min": 9.7,
+        "max": 18.9
+      },
+      "medianA": 12.3,
+      "medianB": 15,
+      "delta": 2.7,
+      "deltaPct": 22,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-25x10",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.3,
+        "max": 3.6
+      },
+      "rangeB": {
+        "min": 0.3,
+        "max": 2.3
+      },
+      "medianA": 2.9,
+      "medianB": 2,
+      "delta": -0.9,
+      "deltaPct": -31,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-25x10",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 7.7,
+        "max": 13.1
+      },
+      "rangeB": {
+        "min": 6.6,
+        "max": 9.7
+      },
+      "medianA": 12.1,
+      "medianB": 8.2,
+      "delta": -3.9,
+      "deltaPct": -32.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-25x10",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 828.5,
+        "max": 897.2
+      },
+      "rangeB": {
+        "min": 823.9,
+        "max": 890.7
+      },
+      "medianA": 883.6,
+      "medianB": 884,
+      "delta": 0.4,
+      "deltaPct": 0,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-250x10",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 242.7,
+        "max": 260.3
+      },
+      "rangeB": {
+        "min": 141.9,
+        "max": 245.4
+      },
+      "medianA": 244.1,
+      "medianB": 145.4,
+      "delta": -98.7,
+      "deltaPct": -40.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-250x10",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 94.6,
+        "max": 99.6
+      },
+      "rangeB": {
+        "min": 89.2,
+        "max": 187
+      },
+      "medianA": 95.4,
+      "medianB": 97.6,
+      "delta": 2.2,
+      "deltaPct": 2.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-250x10",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.1,
+        "max": 3.8
+      },
+      "rangeB": {
+        "min": 2.4,
+        "max": 5.1
+      },
+      "medianA": 3.6,
+      "medianB": 3.8,
+      "delta": 0.2,
+      "deltaPct": 5.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-250x10",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 85.7,
+        "max": 92.9
+      },
+      "rangeB": {
+        "min": 78.1,
+        "max": 96.1
+      },
+      "medianA": 87.9,
+      "medianB": 87.7,
+      "delta": -0.2,
+      "deltaPct": -0.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-250x10",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 815,
+        "max": 854.1
+      },
+      "rangeB": {
+        "min": 830.3,
+        "max": 890.7
+      },
+      "medianA": 838.3,
+      "medianB": 832.9,
+      "delta": -5.4,
+      "deltaPct": -0.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-1000x10",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 854,
+        "max": 861.6
+      },
+      "rangeB": {
+        "min": 864.7,
+        "max": 897.1
+      },
+      "medianA": 857.8,
+      "medianB": 881.3,
+      "delta": 23.5,
+      "deltaPct": 2.7,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-1000x10",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 713,
+        "max": 800
+      },
+      "rangeB": {
+        "min": 693.1,
+        "max": 818
+      },
+      "medianA": 734.5,
+      "medianB": 700.7,
+      "delta": -33.8,
+      "deltaPct": -4.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-1000x10",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.7,
+        "max": 3.7
+      },
+      "rangeB": {
+        "min": 3.6,
+        "max": 5.7
+      },
+      "medianA": 2,
+      "medianB": 5.4,
+      "delta": 3.4,
+      "deltaPct": 170,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-1000x10",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 444.2,
+        "max": 451.9
+      },
+      "rangeB": {
+        "min": 337.2,
+        "max": 454.4
+      },
+      "medianA": 446.2,
+      "medianB": 442.1,
+      "delta": -4.1,
+      "deltaPct": -0.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "docx-table-1000x10",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 997.8,
+        "max": 1146.1
+      },
+      "rangeB": {
+        "min": 954.7,
+        "max": 1143
+      },
+      "medianA": 1080.4,
+      "medianB": 975.2,
+      "delta": -105.2,
+      "deltaPct": -9.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 3,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-1x256",
+      "metric": "operationMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 288.1,
+        "max": 288.1
+      },
+      "rangeB": {
+        "min": 250.3,
+        "max": 250.3
+      },
+      "medianA": 288.1,
+      "medianB": 250.3,
+      "delta": -37.8,
+      "deltaPct": -13.1,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-1x256",
+      "metric": "rendererMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 31.5,
+        "max": 31.5
+      },
+      "rangeB": {
+        "min": 34.2,
+        "max": 34.2
+      },
+      "medianA": 31.5,
+      "medianB": 34.2,
+      "delta": 2.7,
+      "deltaPct": 8.6,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-1x256",
+      "metric": "mainMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 1,
+        "max": 1
+      },
+      "rangeB": {
+        "min": 6.1,
+        "max": 6.1
+      },
+      "medianA": 1,
+      "medianB": 6.1,
+      "delta": 5.1,
+      "deltaPct": 510,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-1x256",
+      "metric": "inputLatencyMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 14.8,
+        "max": 14.8
+      },
+      "rangeB": {
+        "min": 19.4,
+        "max": 19.4
+      },
+      "medianA": 14.8,
+      "medianB": 19.4,
+      "delta": 4.6,
+      "deltaPct": 31.1,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-1x256",
+      "metric": "peakPssMb",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 726.9,
+        "max": 726.9
+      },
+      "rangeB": {
+        "min": 736.2,
+        "max": 736.2
+      },
+      "medianA": 726.9,
+      "medianB": 736.2,
+      "delta": 9.3,
+      "deltaPct": 1.3,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-4x256",
+      "metric": "operationMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 441.8,
+        "max": 441.8
+      },
+      "rangeB": {
+        "min": 447,
+        "max": 447
+      },
+      "medianA": 441.8,
+      "medianB": 447,
+      "delta": 5.2,
+      "deltaPct": 1.2,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-4x256",
+      "metric": "rendererMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 52.5,
+        "max": 52.5
+      },
+      "rangeB": {
+        "min": 55.7,
+        "max": 55.7
+      },
+      "medianA": 52.5,
+      "medianB": 55.7,
+      "delta": 3.2,
+      "deltaPct": 6.1,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-4x256",
+      "metric": "mainMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 3.8,
+        "max": 3.8
+      },
+      "rangeB": {
+        "min": 3.5,
+        "max": 3.5
+      },
+      "medianA": 3.8,
+      "medianB": 3.5,
+      "delta": -0.3,
+      "deltaPct": -7.9,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-4x256",
+      "metric": "inputLatencyMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 20.3,
+        "max": 20.3
+      },
+      "rangeB": {
+        "min": 19.1,
+        "max": 19.1
+      },
+      "medianA": 20.3,
+      "medianB": 19.1,
+      "delta": -1.2,
+      "deltaPct": -5.9,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-4x256",
+      "metric": "peakPssMb",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 761.6,
+        "max": 761.6
+      },
+      "rangeB": {
+        "min": 763.1,
+        "max": 763.1
+      },
+      "medianA": 761.6,
+      "medianB": 763.1,
+      "delta": 1.5,
+      "deltaPct": 0.2,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-8x512",
+      "metric": "operationMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 2590.1,
+        "max": 2590.1
+      },
+      "rangeB": {
+        "min": 2556.3,
+        "max": 2556.3
+      },
+      "medianA": 2590.1,
+      "medianB": 2556.3,
+      "delta": -33.8,
+      "deltaPct": -1.3,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-8x512",
+      "metric": "rendererMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 406.1,
+        "max": 406.1
+      },
+      "rangeB": {
+        "min": 462,
+        "max": 462
+      },
+      "medianA": 406.1,
+      "medianB": 462,
+      "delta": 55.9,
+      "deltaPct": 13.8,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-8x512",
+      "metric": "mainMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 12.4,
+        "max": 12.4
+      },
+      "rangeB": {
+        "min": 7.3,
+        "max": 7.3
+      },
+      "medianA": 12.4,
+      "medianB": 7.3,
+      "delta": -5.1,
+      "deltaPct": -41.1,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-8x512",
+      "metric": "inputLatencyMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 207.6,
+        "max": 207.6
+      },
+      "rangeB": {
+        "min": 209.3,
+        "max": 209.3
+      },
+      "medianA": 207.6,
+      "medianB": 209.3,
+      "delta": 1.7,
+      "deltaPct": 0.8,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-assets-8x512",
+      "metric": "peakPssMb",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 888.4,
+        "max": 888.4
+      },
+      "rangeB": {
+        "min": 874.2,
+        "max": 874.2
+      },
+      "medianA": 888.4,
+      "medianB": 874.2,
+      "delta": -14.2,
+      "deltaPct": -1.6,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-script-250ms",
+      "metric": "operationMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 394.3,
+        "max": 394.3
+      },
+      "rangeB": {
+        "min": 389.2,
+        "max": 389.2
+      },
+      "medianA": 394.3,
+      "medianB": 389.2,
+      "delta": -5.1,
+      "deltaPct": -1.3,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-script-250ms",
+      "metric": "rendererMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 47.7,
+        "max": 47.7
+      },
+      "rangeB": {
+        "min": 60.3,
+        "max": 60.3
+      },
+      "medianA": 47.7,
+      "medianB": 60.3,
+      "delta": 12.6,
+      "deltaPct": 26.4,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-script-250ms",
+      "metric": "mainMaxDelayMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 0.7,
+        "max": 0.7
+      },
+      "rangeB": {
+        "min": 3.9,
+        "max": 3.9
+      },
+      "medianA": 0.7,
+      "medianB": 3.9,
+      "delta": 3.2,
+      "deltaPct": 457.1,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-script-250ms",
+      "metric": "inputLatencyMs",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 2.9,
+        "max": 2.9
+      },
+      "rangeB": {
+        "min": 2.7,
+        "max": 2.7
+      },
+      "medianA": 2.9,
+      "medianB": 2.7,
+      "delta": -0.2,
+      "deltaPct": -6.9,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "html-script-250ms",
+      "metric": "peakPssMb",
+      "nA": 1,
+      "nB": 1,
+      "rangeA": {
+        "min": 841.8,
+        "max": 841.8
+      },
+      "rangeB": {
+        "min": 830.2,
+        "max": 830.2
+      },
+      "medianA": 841.8,
+      "medianB": 830.2,
+      "delta": -11.6,
+      "deltaPct": -1.4,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 1, B 1; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 1,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "path-list-1000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 145.1,
+        "max": 152
+      },
+      "rangeB": {
+        "min": 134.2,
+        "max": 155
+      },
+      "medianA": 148.9,
+      "medianB": 144.5,
+      "delta": -4.4,
+      "deltaPct": -3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-1000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 115.1,
+        "max": 131.9
+      },
+      "rangeB": {
+        "min": 115.6,
+        "max": 142.6
+      },
+      "medianA": 127.8,
+      "medianB": 119.9,
+      "delta": -7.9,
+      "deltaPct": -6.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-1000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 0.9
+      },
+      "rangeB": {
+        "min": 0.4,
+        "max": 0.9
+      },
+      "medianA": 0.7,
+      "medianB": 0.5,
+      "delta": -0.2,
+      "deltaPct": -28.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-1000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 68.1,
+        "max": 81.9
+      },
+      "rangeB": {
+        "min": 66.6,
+        "max": 80.2
+      },
+      "medianA": 68.6,
+      "medianB": 70,
+      "delta": 1.4,
+      "deltaPct": 2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-1000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 704.1,
+        "max": 718.7
+      },
+      "rangeB": {
+        "min": 711.5,
+        "max": 721.1
+      },
+      "medianA": 712.1,
+      "medianB": 714.9,
+      "delta": 2.8,
+      "deltaPct": 0.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-10000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1202.4,
+        "max": 1214.9
+      },
+      "rangeB": {
+        "min": 1123.3,
+        "max": 1196.9
+      },
+      "medianA": 1210.4,
+      "medianB": 1152.4,
+      "delta": -58,
+      "deltaPct": -4.8,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-10000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1173.8,
+        "max": 1194.2
+      },
+      "rangeB": {
+        "min": 1107.6,
+        "max": 1147.9
+      },
+      "medianA": 1189.3,
+      "medianB": 1129.6,
+      "delta": -59.7,
+      "deltaPct": -5,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-10000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.8,
+        "max": 2.5
+      },
+      "rangeB": {
+        "min": 0.7,
+        "max": 1
+      },
+      "medianA": 1,
+      "medianB": 0.9,
+      "delta": -0.1,
+      "deltaPct": -10,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-10000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1110.2,
+        "max": 1125.3
+      },
+      "rangeB": {
+        "min": 1033.2,
+        "max": 1092.8
+      },
+      "medianA": 1116.1,
+      "medianB": 1052,
+      "delta": -64.1,
+      "deltaPct": -5.7,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-10000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 964.7,
+        "max": 978
+      },
+      "rangeB": {
+        "min": 976,
+        "max": 981.4
+      },
+      "medianA": 968.8,
+      "medianB": 977.6,
+      "delta": 8.8,
+      "deltaPct": 0.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-20000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3671.4,
+        "max": 3751.8
+      },
+      "rangeB": {
+        "min": 2344.9,
+        "max": 2375.7
+      },
+      "medianA": 3701.9,
+      "medianB": 2353.6,
+      "delta": -1348.3,
+      "deltaPct": -36.4,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-20000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3668.9,
+        "max": 3707.3
+      },
+      "rangeB": {
+        "min": 2287.9,
+        "max": 2384.4
+      },
+      "medianA": 3695.2,
+      "medianB": 2322.6,
+      "delta": -1372.6,
+      "deltaPct": -37.1,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-20000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.6,
+        "max": 1.1
+      },
+      "rangeB": {
+        "min": 0.4,
+        "max": 1
+      },
+      "medianA": 0.7,
+      "medianB": 0.6,
+      "delta": -0.1,
+      "deltaPct": -14.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-20000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3512.1,
+        "max": 3546.4
+      },
+      "rangeB": {
+        "min": 2164.1,
+        "max": 2219.8
+      },
+      "medianA": 3529,
+      "medianB": 2197,
+      "delta": -1332,
+      "deltaPct": -37.7,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "path-list-20000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1386.1,
+        "max": 1400.9
+      },
+      "rangeB": {
+        "min": 1399.6,
+        "max": 1407.3
+      },
+      "medianA": 1391.8,
+      "medianB": 1401,
+      "delta": 9.2,
+      "deltaPct": 0.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 1,
+      "nDisturbedA": 2,
+      "nDisturbedB": 2,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-500",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 91.8,
+        "max": 99.1
+      },
+      "rangeB": {
+        "min": 85.7,
+        "max": 107.7
+      },
+      "medianA": 97.5,
+      "medianB": 87.7,
+      "delta": -9.8,
+      "deltaPct": -10.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-500",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 9.6,
+        "max": 16.4
+      },
+      "rangeB": {
+        "min": 18.8,
+        "max": 33.6
+      },
+      "medianA": 13.6,
+      "medianB": 29.9,
+      "delta": 16.3,
+      "deltaPct": 119.9,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-500",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.5,
+        "max": 0.9
+      },
+      "rangeB": {
+        "min": 0.9,
+        "max": 2.7
+      },
+      "medianA": 0.7,
+      "medianB": 1.4,
+      "delta": 0.7,
+      "deltaPct": 100,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-500",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1.8,
+        "max": 2.6
+      },
+      "rangeB": {
+        "min": 2.1,
+        "max": 3.2
+      },
+      "medianA": 2,
+      "medianB": 2.3,
+      "delta": 0.3,
+      "deltaPct": 15,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-500",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 695.8,
+        "max": 700.9
+      },
+      "rangeB": {
+        "min": 699.9,
+        "max": 709.7
+      },
+      "medianA": 697.3,
+      "medianB": 701.5,
+      "delta": 4.2,
+      "deltaPct": 0.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-5000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 119,
+        "max": 152.8
+      },
+      "rangeB": {
+        "min": 138.1,
+        "max": 141.5
+      },
+      "medianA": 149.8,
+      "medianB": 141,
+      "delta": -8.8,
+      "deltaPct": -5.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-5000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.4,
+        "max": 12.1
+      },
+      "rangeB": {
+        "min": 0.2,
+        "max": 11.2
+      },
+      "medianA": 0.6,
+      "medianB": 2.3,
+      "delta": 1.7,
+      "deltaPct": 283.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-5000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.8,
+        "max": 0.9
+      },
+      "rangeB": {
+        "min": 0.6,
+        "max": 0.7
+      },
+      "medianA": 0.8,
+      "medianB": 0.6,
+      "delta": -0.2,
+      "deltaPct": -25,
+      "verdict": "B faster",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-5000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.1,
+        "max": 4.7
+      },
+      "rangeB": {
+        "min": 2.5,
+        "max": 3.2
+      },
+      "medianA": 3.1,
+      "medianB": 3.1,
+      "delta": 0,
+      "deltaPct": 0,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-5000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 711.4,
+        "max": 718.1
+      },
+      "rangeB": {
+        "min": 716,
+        "max": 725.8
+      },
+      "medianA": 716,
+      "medianB": 717.9,
+      "delta": 1.9,
+      "deltaPct": 0.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-20000",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 997.5,
+        "max": 1049.7
+      },
+      "rangeB": {
+        "min": 1022,
+        "max": 1044.6
+      },
+      "medianA": 1044.2,
+      "medianB": 1026.5,
+      "delta": -17.7,
+      "deltaPct": -1.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-20000",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 8.5,
+        "max": 15.3
+      },
+      "rangeB": {
+        "min": 14.2,
+        "max": 16.4
+      },
+      "medianA": 9.6,
+      "medianB": 15,
+      "delta": 5.4,
+      "deltaPct": 56.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-20000",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.5,
+        "max": 7.5
+      },
+      "rangeB": {
+        "min": 0.6,
+        "max": 3.6
+      },
+      "medianA": 3.7,
+      "medianB": 1.5,
+      "delta": -2.2,
+      "deltaPct": -59.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-20000",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.4,
+        "max": 10.5
+      },
+      "rangeB": {
+        "min": 3.4,
+        "max": 3.8
+      },
+      "medianA": 5.9,
+      "medianB": 3.6,
+      "delta": -2.3,
+      "deltaPct": -39,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "large-diff-20000",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 719.1,
+        "max": 746.6
+      },
+      "rangeB": {
+        "min": 725,
+        "max": 754.9
+      },
+      "medianA": 738.9,
+      "medianB": 754.6,
+      "delta": 15.7,
+      "deltaPct": 2.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "background-index-large-history",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3180.1,
+        "max": 3201.9
+      },
+      "rangeB": {
+        "min": 3187.2,
+        "max": 3211.5
+      },
+      "medianA": 3182.4,
+      "medianB": 3200.4,
+      "delta": 18,
+      "deltaPct": 0.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "background-index-large-history",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 11.4,
+        "max": 12.6
+      },
+      "rangeB": {
+        "min": 13.5,
+        "max": 14.4
+      },
+      "medianA": 11.4,
+      "medianB": 13.8,
+      "delta": 2.4,
+      "deltaPct": 21.1,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "background-index-large-history",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 0.7,
+        "max": 1.3
+      },
+      "rangeB": {
+        "min": 0.5,
+        "max": 1.3
+      },
+      "medianA": 1.2,
+      "medianB": 0.7,
+      "delta": -0.5,
+      "deltaPct": -41.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "background-index-large-history",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2,
+        "max": 2.2
+      },
+      "rangeB": {
+        "min": 1.8,
+        "max": 2.3
+      },
+      "medianA": 2.2,
+      "medianB": 1.9,
+      "delta": -0.3,
+      "deltaPct": -13.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "background-index-large-history",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 724.4,
+        "max": 735.8
+      },
+      "rangeB": {
+        "min": 690.5,
+        "max": 731.1
+      },
+      "medianA": 728.1,
+      "medianB": 715.2,
+      "delta": -12.9,
+      "deltaPct": -1.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-1024x768",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 98.9,
+        "max": 157.9
+      },
+      "rangeB": {
+        "min": 129.3,
+        "max": 190.9
+      },
+      "medianA": 156,
+      "medianB": 155.7,
+      "delta": -0.3,
+      "deltaPct": -0.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-1024x768",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 49,
+        "max": 63.8
+      },
+      "rangeB": {
+        "min": 55.4,
+        "max": 59.7
+      },
+      "medianA": 52.3,
+      "medianB": 58.4,
+      "delta": 6.1,
+      "deltaPct": 11.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-1024x768",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.1,
+        "max": 4.8
+      },
+      "rangeB": {
+        "min": 4.1,
+        "max": 4.4
+      },
+      "medianA": 4.3,
+      "medianB": 4.1,
+      "delta": -0.2,
+      "deltaPct": -4.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-1024x768",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 30.1,
+        "max": 44.1
+      },
+      "rangeB": {
+        "min": 34.4,
+        "max": 45.5
+      },
+      "medianA": 40.7,
+      "medianB": 37.9,
+      "delta": -2.8,
+      "deltaPct": -6.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-1024x768",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 724.2,
+        "max": 787.9
+      },
+      "rangeB": {
+        "min": 738,
+        "max": 784.5
+      },
+      "medianA": 758.6,
+      "medianB": 744.2,
+      "delta": -14.4,
+      "deltaPct": -1.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-2048x1536",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 176.5,
+        "max": 201.9
+      },
+      "rangeB": {
+        "min": 201.9,
+        "max": 231
+      },
+      "medianA": 190.5,
+      "medianB": 207.1,
+      "delta": 16.6,
+      "deltaPct": 8.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-2048x1536",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 29.9,
+        "max": 36.2
+      },
+      "rangeB": {
+        "min": 25.4,
+        "max": 35.5
+      },
+      "medianA": 34.2,
+      "medianB": 32.6,
+      "delta": -1.6,
+      "deltaPct": -4.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-2048x1536",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.6,
+        "max": 5.2
+      },
+      "rangeB": {
+        "min": 4.4,
+        "max": 5.5
+      },
+      "medianA": 4.2,
+      "medianB": 4.7,
+      "delta": 0.5,
+      "deltaPct": 11.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-2048x1536",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 7.8,
+        "max": 14
+      },
+      "rangeB": {
+        "min": 14,
+        "max": 27.7
+      },
+      "medianA": 9.9,
+      "medianB": 15.1,
+      "delta": 5.2,
+      "deltaPct": 52.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-2048x1536",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 842.4,
+        "max": 876.6
+      },
+      "rangeB": {
+        "min": 883.5,
+        "max": 993.5
+      },
+      "medianA": 873.3,
+      "medianB": 890.4,
+      "delta": 17.1,
+      "deltaPct": 2,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 3,
+      "nCleanB": 2,
+      "nDisturbedA": 0,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-png-4096x3072",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 469.4,
+        "max": 752.7
+      },
+      "rangeB": {
+        "min": 558.5,
+        "max": 1348.6
+      },
+      "medianA": 612.4,
+      "medianB": 593.2,
+      "delta": -19.2,
+      "deltaPct": -3.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-png-4096x3072",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 79.4,
+        "max": 107.4
+      },
+      "rangeB": {
+        "min": 85.8,
+        "max": 130.1
+      },
+      "medianA": 84.2,
+      "medianB": 126.9,
+      "delta": 42.7,
+      "deltaPct": 50.7,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-png-4096x3072",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 5.3,
+        "max": 12.9
+      },
+      "rangeB": {
+        "min": 8.8,
+        "max": 19.1
+      },
+      "medianA": 6.9,
+      "medianB": 13.4,
+      "delta": 6.5,
+      "deltaPct": 94.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-png-4096x3072",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 41,
+        "max": 83
+      },
+      "rangeB": {
+        "min": 40,
+        "max": 82.5
+      },
+      "medianA": 57.9,
+      "medianB": 59.7,
+      "delta": 1.8,
+      "deltaPct": 3.1,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-png-4096x3072",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 1149.7,
+        "max": 1242.4
+      },
+      "rangeB": {
+        "min": 1248.6,
+        "max": 1272.1
+      },
+      "medianA": 1227.1,
+      "medianB": 1271.4,
+      "delta": 44.3,
+      "deltaPct": 3.6,
+      "verdict": "B slower",
+      "note": "ranges separate; no A/A noise available",
+      "nCleanA": 1,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-1024x768",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 78.2,
+        "max": 129.5
+      },
+      "rangeB": {
+        "min": 102.6,
+        "max": 126.7
+      },
+      "medianA": 105.2,
+      "medianB": 105.5,
+      "delta": 0.3,
+      "deltaPct": 0.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-1024x768",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 11.1,
+        "max": 16.3
+      },
+      "rangeB": {
+        "min": 13,
+        "max": 19.6
+      },
+      "medianA": 11.4,
+      "medianB": 16.9,
+      "delta": 5.5,
+      "deltaPct": 48.2,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-1024x768",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.7,
+        "max": 7.3
+      },
+      "rangeB": {
+        "min": 5,
+        "max": 8.2
+      },
+      "medianA": 6.7,
+      "medianB": 7.4,
+      "delta": 0.7,
+      "deltaPct": 10.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-1024x768",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.5,
+        "max": 8.9
+      },
+      "rangeB": {
+        "min": 2.9,
+        "max": 7.9
+      },
+      "medianA": 8.1,
+      "medianB": 5.2,
+      "delta": -2.9,
+      "deltaPct": -35.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-1024x768",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 744.4,
+        "max": 786.3
+      },
+      "rangeB": {
+        "min": 741.6,
+        "max": 777.2
+      },
+      "medianA": 759.2,
+      "medianB": 749.1,
+      "delta": -10.1,
+      "deltaPct": -1.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-2048x1536",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 127.9,
+        "max": 217.8
+      },
+      "rangeB": {
+        "min": 100.2,
+        "max": 211.9
+      },
+      "medianA": 184.4,
+      "medianB": 164.5,
+      "delta": -19.9,
+      "deltaPct": -10.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-2048x1536",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 11.6,
+        "max": 17.7
+      },
+      "rangeB": {
+        "min": 12.6,
+        "max": 15.4
+      },
+      "medianA": 16.4,
+      "medianB": 13.2,
+      "delta": -3.2,
+      "deltaPct": -19.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-2048x1536",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.1,
+        "max": 4.3
+      },
+      "rangeB": {
+        "min": 3.6,
+        "max": 4.4
+      },
+      "medianA": 3.4,
+      "medianB": 4.1,
+      "delta": 0.7,
+      "deltaPct": 20.6,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-2048x1536",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3.4,
+        "max": 6.7
+      },
+      "rangeB": {
+        "min": 3,
+        "max": 7.7
+      },
+      "medianA": 4,
+      "medianB": 5.7,
+      "delta": 1.7,
+      "deltaPct": 42.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-2048x1536",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 792.9,
+        "max": 810.1
+      },
+      "rangeB": {
+        "min": 774.8,
+        "max": 798.5
+      },
+      "medianA": 797.7,
+      "medianB": 778,
+      "delta": -19.7,
+      "deltaPct": -2.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 1,
+      "nCleanB": 2,
+      "nDisturbedA": 2,
+      "nDisturbedB": 1,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-4096x3072",
+      "metric": "operationMs",
+      "nA": 2,
+      "nB": 3,
+      "rangeA": {
+        "min": 176.4,
+        "max": 403.3
+      },
+      "rangeB": {
+        "min": 268.1,
+        "max": 351.2
+      },
+      "medianA": 289.9,
+      "medianB": 342.6,
+      "delta": 52.7,
+      "deltaPct": 18.2,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 2, B 3; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-4096x3072",
+      "metric": "rendererMaxDelayMs",
+      "nA": 2,
+      "nB": 3,
+      "rangeA": {
+        "min": 35.1,
+        "max": 46.1
+      },
+      "rangeB": {
+        "min": 26.4,
+        "max": 35.6
+      },
+      "medianA": 40.6,
+      "medianB": 33.8,
+      "delta": -6.8,
+      "deltaPct": -16.7,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 2, B 3; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-4096x3072",
+      "metric": "mainMaxDelayMs",
+      "nA": 2,
+      "nB": 3,
+      "rangeA": {
+        "min": 4.6,
+        "max": 5.5
+      },
+      "rangeB": {
+        "min": 3.5,
+        "max": 4.3
+      },
+      "medianA": 5.1,
+      "medianB": 4.3,
+      "delta": -0.8,
+      "deltaPct": -15.7,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 2, B 3; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-4096x3072",
+      "metric": "inputLatencyMs",
+      "nA": 2,
+      "nB": 3,
+      "rangeA": {
+        "min": 8.6,
+        "max": 33.7
+      },
+      "rangeB": {
+        "min": 4.6,
+        "max": 6.3
+      },
+      "medianA": 21.2,
+      "medianB": 5,
+      "delta": -16.2,
+      "deltaPct": -76.4,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 2, B 3; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-4096x3072",
+      "metric": "peakPssMb",
+      "nA": 2,
+      "nB": 3,
+      "rangeA": {
+        "min": 1037.4,
+        "max": 1089.8
+      },
+      "rangeB": {
+        "min": 1087.7,
+        "max": 1099.3
+      },
+      "medianA": 1063.6,
+      "medianB": 1094.6,
+      "delta": 31,
+      "deltaPct": 2.9,
+      "verdict": "no clear difference",
+      "note": "too few measured runs (A 2, B 3; need 3 each)",
+      "nCleanA": 0,
+      "nCleanB": 3,
+      "nDisturbedA": 2,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-original-wealth-game",
+      "metric": "operationMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 74.1,
+        "max": 167.9
+      },
+      "rangeB": {
+        "min": 103,
+        "max": 165
+      },
+      "medianA": 136.7,
+      "medianB": 132,
+      "delta": -4.7,
+      "deltaPct": -3.4,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 2,
+      "nCleanB": 3,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-original-wealth-game",
+      "metric": "rendererMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 15.4,
+        "max": 17.6
+      },
+      "rangeB": {
+        "min": 11.6,
+        "max": 15.5
+      },
+      "medianA": 17.4,
+      "medianB": 14,
+      "delta": -3.4,
+      "deltaPct": -19.5,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 2,
+      "nCleanB": 3,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-original-wealth-game",
+      "metric": "mainMaxDelayMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 2.6,
+        "max": 4
+      },
+      "rangeB": {
+        "min": 2.8,
+        "max": 5.3
+      },
+      "medianA": 3.9,
+      "medianB": 4.6,
+      "delta": 0.7,
+      "deltaPct": 17.9,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 2,
+      "nCleanB": 3,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-original-wealth-game",
+      "metric": "inputLatencyMs",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 3,
+        "max": 5.5
+      },
+      "rangeB": {
+        "min": 3.3,
+        "max": 7.7
+      },
+      "medianA": 4.7,
+      "medianB": 3.7,
+      "delta": -1,
+      "deltaPct": -21.3,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 2,
+      "nCleanB": 3,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    },
+    {
+      "rung": "image-jpeg-original-wealth-game",
+      "metric": "peakPssMb",
+      "nA": 3,
+      "nB": 3,
+      "rangeA": {
+        "min": 760.6,
+        "max": 792.8
+      },
+      "rangeB": {
+        "min": 755.4,
+        "max": 812.8
+      },
+      "medianA": 762.9,
+      "medianB": 756.7,
+      "delta": -6.2,
+      "deltaPct": -0.8,
+      "verdict": "no clear difference",
+      "note": "ranges overlap",
+      "nCleanA": 2,
+      "nCleanB": 3,
+      "nDisturbedA": 1,
+      "nDisturbedB": 0,
+      "noise": null
+    }
+  ]
+}
