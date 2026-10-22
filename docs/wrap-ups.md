@@ -1222,3 +1222,11 @@ recurred — the repetition is the data.
 - A master flake (unhandled rejection from `ProviderRegistry.init`) → fixed on sight with a `.catch` and WHY comment in the app.
 - Known issues filed as cards #176, #177 (Destin's request).
 - deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.
+
+## 2026-10-22 — phone keeps disconnecting, can't refresh or send (session/remote-access-audit, card #182)
+- Destin's symptoms were filed nowhere and the session never joined an item → applied: card #182 in his words, linked to this branch, with the real-phone pass and the connection-status work (review F10, "computer is asleep", always-there reload) as next steps; laptop-freeze findings recorded on #93 with the next step (a dev build that logs synchronous child-process calls for a day).
+- After a compaction, the replayed stub of an earlier Read of the deck server's output (3 lines) was trusted over the finished file, which also held "submitted · 5 yes"; the session restarted the server and only learned of the answers from its rotation notice (~3 wasted calls) → dropped as a workspace change: `serve.py` already prints the summary on exit and its docstring says the exit is the signal; the lapse was not re-reading a finished task's output.
+- Moving a review run folder (runs/after → runs/round1) left its manifest pointing at the old path, so the "Last round" pictures showed the new screens until a sed rewrite (~3 calls) → dropped: one occurrence; the deck preview's contact sheet is what caught it, which is the existing check working.
+- Line budgets fired twice (pieces, then review fixes) → no change: the check worked as designed; growth recorded with reasons in `line-budgets.json`.
+- Independent reviewer (fresh agent) found 6 medium + 6 low defects, none high; F1–F6, F8, F9 fixed with tests each seen red before green; F7, F10–F12 triaged in `docs/active/reviews/2026-10-22-phone-reliability-code-review.md`.
+- deleted/merged: an unnecessary emoji-boundary guard in the piece splitter (JSON escaping already makes a split safe; the test proved it), and a misplaced `stop()` doc comment that sat above the Tailscale retry. Android not built or tested here (no JDK found); no real-phone run.

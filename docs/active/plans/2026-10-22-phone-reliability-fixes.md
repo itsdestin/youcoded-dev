@@ -1,5 +1,5 @@
 ---
-status: draft (revised after independent review 2026-10-22)
+status: active (built, independently reviewed and fixed 2026-10-22; real-phone pass pending — card #182)
 date: 2026-10-22
 evidence: docs/active/investigations/2026-10-22-phone-app-reliability-deep-dive.md (causes 1–8, sections B–C)
 approved-by: Destin 2026-10-22 ("fix all of 1/3/4 and do your other recommendations"; always-there reload = explore, not committed)
