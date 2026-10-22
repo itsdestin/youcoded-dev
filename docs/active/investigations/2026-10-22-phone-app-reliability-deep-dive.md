@@ -210,6 +210,17 @@ Read.
   - **Unproven** until a long freeze lands on it.
   - **Next step if it never does:** temporarily log, in a dev build, every synchronous
     child-process call on the main thread with its duration.
+- **Watcher, ~2 h 45 min (03:27):**
+  - 436 main-stall entries since the watcher started; the longest was **0.53 s** (08:43:10Z).
+    Still no freeze ≥1 s, let alone ≥10 s.
+  - During that 0.53 s stall the main thread was **running** (state R), not waiting, while a
+    long `git -c credential.helper=…` child (~19 s alive) was open. So that one was CPU work
+    alongside git, not a blocked wait on it.
+  - The git children are near-constant in the samples, which weakens them as a distinguishing
+    clue: they are present whether or not a stall happens.
+  - Conclusion so far: the 10–51 s freezes did not recur during a quiet overnight stretch (8
+    sessions, 4 windows, little activity). The watcher cannot catch what does not happen; the
+    dev-build logging step above is the reliable route.
 - Related open card: **#93** (Background freezes, P1, needs-repro). This is evidence for it.
 
 ## C. Laptop sleep
