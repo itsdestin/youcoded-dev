@@ -52,6 +52,7 @@ reading the report. Do not let this table drift optimistic.
 | terminal (six sessions, 40 switches in terminal view, atlas clears per switch) | `scenario-terminal.mjs` | **covered** since 2026-09-10 — software GL only, GPU upload cost NOT measured |
 | a native reply streaming at cloud-model speed (150 deltas/s, six sessions open): on screen, while switching, and hidden | `scenario-native-stream.mjs` + `fake-provider.mjs` | **covered** since 2026-09-16 — text deltas only; no tool calls, no thinking, no buddy window |
 | Resume list over 100 native sessions, resuming a 400-turn native session, a history page, a reply, tear-off into a new window, a reply into the other window | `scenario-native-resume.mjs` | **covered** since 2026-09-16 — the detached window's own rendering is NOT measured |
+| a phone over a slow network (cold open, reopen, reconnect; 300-turn conversation + full terminal) | `scenario-phone.mjs` + `net-shape.mjs` | **covered** since 2026-10-22 — standalone, NOT in `run.mjs`'s phase list (needs Tailscale and Chrome; its own report). Link speed beyond the 470 ms round trip is an assumption; no loss or jitter |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
 | themes / theme switching | — | **NOT covered** |
@@ -1227,3 +1228,28 @@ do not invent them.
 | `docs/archive/investigations/2026-08-26-perf-lab-plan-corrections.md` | the 18 verified corrections, each with its mechanism |
 | `docs/archive/handoffs/2026-08-26-perf-loop-operating-manual.md` | operating the measure → change → re-measure loop |
 | `docs/archive/plans/2026-08-23-perf-lab-and-optimization-loop.md` | the original plan — **history, not truth**; several of its specifics were wrong about this machine and this app |
+
+---
+
+## Phone over a slow network
+
+```bash
+node scripts/perf-lab/scenario-phone.mjs [--checkout <app worktree>] [--repeats 3] \
+  [--rtt 470] [--down-mbit 5] [--up-mbit 2] [--turns 300] [--label <text>] [--out perf-reports/]
+```
+
+Boots the packaged app (built on demand by `build.mjs`) in the lab's throwaway HOME with remote
+access on and a throwaway password written to that HOME's remote config, opens one long
+conversation with a full terminal, then drives a headless Chrome (390x844, touch, fresh profile each
+repeat) through `net-shape.mjs`, a TCP proxy that adds half the round trip each way and a shared
+bandwidth cap per direction. Three legs per repeat: **cold** (load, type password, conversation
+drawn), **reopen** (reload), **reconnect** (proxy drops every socket). Output: median [min-max] per
+step plus bytes through the proxy, as `perf-reports/<stamp>-<sha>-phone[-label].{json,md}`.
+
+- Numbers come from the app's own `timings (...)` lines in the fixture's `desktop.log`
+  (`src/main/remote-timings.ts`), not from the page. If that wording changes, `parseTimings` fails
+  loudly (`tests/scenario-phone.test.mjs`).
+- The default 5 / 2 Mbit/s is an **assumption**; only the ~470 ms round trip was measured on a real
+  phone. The proxy models delay, bandwidth and the handshake round trip; not loss, jitter or slow start.
+- Sanity check: `--rtt 0 --down-mbit 0 --up-mbit 0 --label unshaped` removes the link. Uses lab
+  ports 9565 (app debugging), 9566 (Chrome), 10070 (remote), and the Tailscale address of this computer.
