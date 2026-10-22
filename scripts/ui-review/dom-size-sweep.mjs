@@ -69,7 +69,7 @@ function printHelp() {
   console.log(`node scripts/ui-review/dom-size-sweep.mjs [--worktree <name|branch|path>] [--rows 2000]
   [--only settings/*,projects/conversations] [--budget 8000] [--width 1440] [--height 900] [--dump]
   Diagnostic only: --growth --only projects/conversations (exactly 2000 rows,
-  desktop width, ten bounded scroll checkpoints then tab close/reopen/reset).
+  desktop width, up to 60 bounded scroll checkpoints (the whole 2000 rows) then tab close/reopen/reset).
   Growth emits revisioned JSON; cap exhaustion is incomplete, not saturation.
   Optional --growth-screenshot /absolute/fresh.png captures the final owned tab.
 

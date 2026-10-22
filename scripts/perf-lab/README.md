@@ -337,7 +337,7 @@ discovery, nested-file following, rerun or packaged-byte attestation is performe
   imported plain-stream report at `scratch/stream-completion-runtime-BPiBTZ/2026-10-21-0034-bc9e437-stream-completion.json`
   also reports old bc9 source. Its completion evidence revalidates, but remains
   unreviewed diagnostic evidence, not current-source or standard Markdown acceptance.
-- **Separate domains:** DOM growth remains incomplete at its cap (550/2000 rows,
+- **Separate domains:** DOM growth: the historical run was incomplete at its old 10-checkpoint cap (550/2000 rows; the cap is now 60 so a run reaches all 2000 rows,
   reset proven); sensor preflight retains EACCES/truncated discovery, not app energy.
 
 App fixes were merged in app PR **665**, supporting sources/docs in workspace PR
@@ -1470,6 +1470,27 @@ never adopted or signalled. A malformed read that persists for the same (pid, st
 ownership proofs call `readProc` directly and still fail closed (pinned by proc-forensics.test.mjs). Limits: virtual 60 Hz presentation, not physical scanout/vblank/VRR; compositor
 cleanup is polling-based and fails closed (see the 2026-10-21 `Malformed proc status` race in the report).
 Historical method/readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`.
+
+## Lane F — workload breadth and the original JPEG (`--only workloads`)
+
+Opt-in, alone, never in the default or `full` selection. `node scripts/perf-lab/run.mjs --only workloads --checkout <stamped checkout> --cached-only`
+(overnight: `queues/overnight-1.json`; A/B: `ab.mjs --mode workloads`). One app boot per family per pass (13 families x `--workloads-repeats`,
+default 3); a rung that kills the app is recorded and the rungs it never reached run in a fresh boot (max 3 boots per family).
+
+- **Rungs**: CSV (64 KiB-3 MiB, three shapes), XLSX, DOCX, HTML, PNG and JPEG 1024x768 / 2048x1536 / 4096x3072, the owner's original JPEG
+  (`image-jpeg-original-wealth-game`, a byte copy made read-only in the fixture area, SHA-256 pinned in `workload-lane.mjs`; the source file is never opened by the
+  app), plus four workloads: `csv-fullread-5120kib` (open a 5 MiB CSV, click "Load the whole file"), `path-list-*` (a long path list shown in a chat message through
+  the transcript -> UserMessage -> FilepathToken path), `large-diff-*` (a big Edit shown in the tool card's diff view) and `background-index-large-history`
+  (the app's chat-history search-index refresh after a session ends; the app has no project-file-tree indexer).
+- **Status per rung**: `measured`, `slow` (a named threshold in `WORKLOAD_THRESHOLDS` was breached; the breach is kept), `failed:<reason>` or
+  `unsupported-by-candidate` (the candidate's source lacks the feature; evidence = files/patterns looked for; never a zero). Failures that are findings
+  (`failed:timeout`, `failed:memory-limit`, `failed:memory-bound`, `failed:viewer`) do not void the report; instrument failures (`INSTRUMENT_REASONS`) do.
+- **Memory bound**: fixture generation, image read-back and the original copy run in child processes under `systemd-run --user --scope -p MemoryMax=...`
+  (swap off), falling back to `prlimit --as` (looser: address-space cap); the report records which applied (`workloads.memoryBound`). A bound kill is a
+  `failed:memory-bound` row. Nothing is installed or reconfigured.
+- **Interference**: each family window carries a clean/disturbed/unknown verdict (owner decision Q-6); a disturbed one makes the report INCOMPLETE.
+- **Compare**: `workloads.median.rungs.<id>.{operationMs,rendererMaxDelayMs,mainMaxDelayMs}` (`WORKLOAD_PATHS` in `compare.mjs`); samples at `workloads.runs[].rungs`.
+- **Not measured**: GPU paint (software rendering), composer typing/paste of paths, the cold OS disk cache.
 
 ## Tests
 

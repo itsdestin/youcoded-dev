@@ -58,7 +58,7 @@ test('parseAbArgs: defaults, presets, and explicit refusals', () => {
   assert.deepEqual([...parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--only', 'terminal'], { root: '/r' }).cfg.only], ['terminal']);
   assert.throws(() => parseAbArgs(['--a', '/x/a'], { root: '/r' }), /both --a and --b/);
   assert.throws(() => parseAbArgs(['--a', '/x/a', '--b-package', '/p'], { root: '/r' }), /not supported/);
-  assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--mode', 'fast'], { root: '/r' }), /quick, full or energy/);
+  assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--mode', 'fast'], { root: '/r' }), /quick, full, energy or workloads/);
   assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--only', 'nope'], { root: '/r' }), /unknown phase/);
   assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--control-b-delay-ms', '0'], { root: '/r' }), /whole number/);
 });

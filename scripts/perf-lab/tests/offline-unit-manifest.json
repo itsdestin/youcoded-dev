@@ -68,7 +68,13 @@
     "ab.test.mjs",
     "workstream-e.test.mjs",
     "energy-lane.test.mjs",
-    "queue.test.mjs"
+    "queue.test.mjs",
+    "image-encode.test.mjs",
+    "bounded-exec.test.mjs",
+    "stall-fixtures-ladder.test.mjs",
+    "workload-lane.test.mjs",
+    "scenario-workloads.test.mjs",
+    "workloads-run.test.mjs"
   ],
   "uiFiles": [
     "scripts/ui-review/tests/dom-growth.test.mjs",
@@ -158,7 +164,13 @@
     "supervised-compositor-proofs.test.py": "Injected getxattr/lstat/connect and an in-process socketpair only; the module never opens the kwin binary, a Wayland socket or a compositor when imported.",
     "workstream-e.test.mjs": "Offline: fake CDP/clock/proc readers only; reducer-queue conservation, minimize/restore proof and background-window pricing. No app, window manager, network or sensor.",
     "energy-lane.test.mjs": "Offline: scripted fake meter/battery/interference watch/clock/environment, injected discovery lists and a fake Worker class; proves responsive vs insensitive meters, per-window interference exclusion, too-few-clean incomplete, environment-change invalidation, battery only when discharging, separate discovery budgets, and the ab energy rows. No sensor, app, real thread or process.",
-    "queue.test.mjs": "Offline: injected child runner, clock, leftover-process check and in-memory files; proves one-at-a-time order, deadline skipping, halt on leftover processes, status classification and plan/validation. Nothing is spawned, no lock taken, no app or sensor."
+    "queue.test.mjs": "Offline: injected child runner, clock, leftover-process check and in-memory files; proves one-at-a-time order, deadline skipping, halt on leftover processes, status classification and plan/validation. Nothing is spawned, no lock taken, no app or sensor.",
+    "image-encode.test.mjs": "Offline: pure PNG/JPEG encoders on tiny in-memory pixels; node:zlib only; an optional independent-decoder cross-check runs only where one is already installed. No app, no network, no installs.",
+    "bounded-exec.test.mjs": "Offline: argv construction and exit classification, plus the run wrapper with a FAKE child process and short real timers; no systemd-run/prlimit execution, no memory pressure.",
+    "stall-fixtures-ladder.test.mjs": "Disposable temp directories; dependency-free fixture kinds only (CSV, HTML, path list); no app, no packages, no network.",
+    "workload-lane.test.mjs": "Pure lane orchestration with fake fixtures/boots/runners, classifier and report-contract checks; no app, no files beyond injected fakes.",
+    "scenario-workloads.test.mjs": "Injected bounded runner, fake CDP/fs seams, vm-evaluated page sources against a minimal fake DOM, and disposable temp directories for the copy/child-op checks; the pinned original JPEG is only READ if present (never copied or opened elsewhere). No app launch.",
+    "workloads-run.test.mjs": "Pure run.mjs/identity/ab/queue helper calls and reading the checked-in queue file; nothing launches, no build, no machine state."
   },
   "excludedEffectfulExamples": {
     "ipc-close-reproducer.integration.mjs": "Real Node fork/disconnect reproduction; not source-only.",

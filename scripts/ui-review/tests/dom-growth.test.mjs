@@ -24,6 +24,26 @@ function rig({ virtual = false, cap = false, wrong = false, noMove = false, miss
   return { driver, options: { now: () => now++, maxCheckpoints: 3, bound: async operation => operation() } };
 }
 
+test('default cap reveals all 2000 rows in 40 scrolls and reaches the proven end (no longer stops at 550)', async () => {
+  const { driver, options } = rig();
+  let revealed = 50, top = 0, closed = false;
+  const inspect = driver.inspect;
+  driver.inspect = async () => ({ ...await inspect(), shown: !closed, renderedRows: revealed, firstIndex: 0, lastIndex: revealed - 1,
+    hasMore: revealed < 2000, scrollTop: top, scrollHeight: revealed * 100, clientHeight: 500 });
+  driver.settle = async () => ({ status: 'measured', nodes: 200 + revealed * 20 });
+  driver.scroll = async () => { top = revealed * 100 - 500; revealed = Math.min(2000, revealed + 50); return { applied: true }; };
+  driver.close = async () => { closed = true; return { ok: true }; };
+  driver.closedProof = async () => ({ absent: closed, unmounted: closed, filesShown: closed, settle: { status: 'measured', nodes: 900 } });
+  driver.reopen = async () => { closed = false; revealed = 50; top = 0; return { ok: true }; };
+  const { maxCheckpoints, ...rest } = options;
+  const report = await runDomGrowth(driver, rest);
+  assert.equal(report.checkpoints.length, 40);
+  assert.equal(report.checkpoints.at(-1).snapshot.renderedRows, 2000);
+  assert.equal(report.reachedEnd, true);
+  assert.equal(report.status, 'measured');
+  assert.equal(report.reset.proven, true);
+});
+
 test('source-realistic 50-row chunks exhaust exactly ten checkpoints but retain close/reopen reset evidence', async () => {
   const { driver, options } = rig();
   let revealed = 50, top = 0, closed = false, actions = 0;
@@ -161,6 +181,6 @@ test('growth caps and external operation deadlines are bounded with fake clock/t
   await assert.rejects(bound(() => { started = true; }, 'expired'), /deadline/);
   assert.equal(started, false);
   const { driver, options } = rig();
-  await assert.rejects(runDomGrowth(driver, { ...options, maxCheckpoints: 11 }), /1..10/);
-  assert.equal(GROWTH_DESCRIPTOR.maxScrollCheckpoints, 10);
+  await assert.rejects(runDomGrowth(driver, { ...options, maxCheckpoints: 61 }), /1..60/);
+  assert.equal(GROWTH_DESCRIPTOR.maxScrollCheckpoints, 60);
 });

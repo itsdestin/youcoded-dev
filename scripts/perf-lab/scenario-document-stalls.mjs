@@ -1,6 +1,7 @@
 // Real viewer adapter only: never launches an app, downloads a model or infers
 // an idle event loop from missing long-task entries. Controller owns deadlines.
-import { readFileSync, readlinkSync } from 'node:fs';
+import { appendFileSync, readFileSync, readdirSync, readlinkSync, statSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { readFile, stat, realpath } from 'node:fs/promises';
 import { resolve, relative, isAbsolute, basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,14 +21,14 @@ const sha = b => createHash('sha256').update(b).digest('hex');
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const finite = n => typeof n==='number' && Number.isFinite(n) && n>=0;
 const contained = (root,file) => {const r=relative(root,file);return r && !r.startsWith('..') && !isAbsolute(r);};
-export function validateDocumentManifest(manifest,{images=false}={}) {
+export function validateDocumentManifest(manifest,{images=false,extraKinds=[]}={}) {
   const imageManifest=images&&manifest?.schema===2&&manifest.imagesRevision===1&&manifest.profile==='images-opt-in';
   if(imageManifest){validateImagePlan(manifest.cases.map(f=>({...f.shape,id:f.id,format:f.kind==='image-png'?'png':f.kind==='image-jpeg'?'jpeg':null})));if(manifest.cases.reduce((n,f)=>n+f.bytes,0)>IMAGE_LIMITS.maxAggregateBytes)throw Error('Image aggregate cap');}
   if((manifest?.schema!==1&&!imageManifest) || !isAbsolute(manifest.root??'') || !Array.isArray(manifest.cases) || manifest.cases.length>64)throw Error('Invalid document manifest');
   const ids=new Set();
   for(const f of manifest.cases){
     if(!/^[\w-]+$/.test(f.id) || ids.has(f.id) || !isAbsolute(f.file??'') || !contained(resolve(manifest.root),resolve(f.file)) || !finite(f.bytes) || f.bytes>16*1024*1024 || !/^[a-f0-9]{64}$/.test(f.sha256??'') || !f.marker || !f.shape)throw Error('Invalid/oversized/outside-root document fixture');
-    if(!(imageManifest?['image-png','image-jpeg']:['xlsx-merge','xlsx-sheets','csv-rows','csv-wide','csv-quoted','docx-paragraphs','docx-table','html-assets','html-script','path-list']).includes(f.kind))throw Error('Unsupported document fixture kind');
+    if(!(imageManifest?['image-png','image-jpeg']:['xlsx-merge','xlsx-sheets','csv-rows','csv-wide','csv-quoted','csv-fullread','docx-paragraphs','docx-table','html-assets','html-script','path-list',...extraKinds]).includes(f.kind))throw Error('Unsupported document fixture kind');
     let assetBytes=0;
     for(const a of f.assets??[]){
       if(!isAbsolute(a.file??'') || !contained(resolve(manifest.root),resolve(a.file)) || !finite(a.bytes) || !/^[a-f0-9]{64}$/.test(a.sha256??''))throw Error('Invalid/outside-root HTML asset');
@@ -173,6 +174,37 @@ export async function readActiveHtmlFrame(browser,f) {
   return null;
 }
 
+// WHY these two sources (lane F): the app's "Load the whole file" bar (PartialFileBanner) and the sheet viewer's "Large sheet" note are
+// the only DOM facts that distinguish "first 3 MiB read" from "whole file read". Both are looked up inside the active content pane only.
+export const CSV_FULLREAD_STATE_SOURCE = `(() => {const p=window.__perfArt.contentPane();if(!p)return null;
+  const root=p.closest('.relative')??p.parentElement??p;
+  const bar=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='Load the whole file')??null;
+  const note=/Large sheet/.test(p.textContent);
+  return {banner:!!bar,note,hasTable:!!p.querySelector('table')};})()`;
+export const CSV_FULLREAD_CLICK_SOURCE = `(() => {const p=window.__perfArt.contentPane();const root=p?.closest('.relative')??p?.parentElement??p;
+  const hits=[...(root?.querySelectorAll('button')??[])].filter(b=>b.textContent.trim()==='Load the whole file');
+  if(hits.length!==1||hits[0].disabled)return {ok:false,reason:'Expected exactly one enabled "Load the whole file" button, found '+hits.length};
+  hits[0].click();return {ok:true};})()`;
+// WHY the user bubble scan: a user message in the transcript is rendered by UserMessage (bg-accent .user-bubble) with every detected path as a
+// FilepathToken <button data-file-path>. The marker is part of every generated path, so it identifies OUR message among earlier ones.
+export function pathListStateSource(marker, lastPath) {
+  return `(() => {const bubbles=[...document.querySelectorAll('.user-bubble')].filter(b=>!b.closest('[aria-hidden="true"]'));
+  const m=bubbles.find(b=>b.textContent.includes(${JSON.stringify(marker)}));if(!m)return null;
+  return {tokens:m.querySelectorAll('[data-file-path]').length,hasLastPath:m.textContent.includes(${JSON.stringify(lastPath)}),textLength:m.textContent.length};})()`;
+}
+/** One user line in the Claude Code transcript shape the app's TranscriptWatcher reads (same fields as fixture.mjs transcriptLines). */
+export function pathListTranscriptLine({ sessionId, cwd, text, now = new Date() }) {
+  return JSON.stringify({ type: 'user', uuid: randomUUID(), parentUuid: null, promptId: randomUUID(), isMeta: false, sessionId, cwd,
+    version: '2.1.229', gitBranch: '', userType: 'external', timestamp: now.toISOString(), message: { role: 'user', content: text } });
+}
+/** The newest transcript file the fake Claude created for `cwd` under the fixture HOME (its session id is the file stem). */
+export function findSessionTranscript(home, cwd, { readdir = readdirSync, stat = statSync } = {}) {
+  const dir = join(home, '.claude', 'projects', cwd.replace(/[^a-zA-Z0-9]/g, '-'));
+  const files = readdir(dir).filter(n => n.endsWith('.jsonl')).map(n => ({ n, t: stat(join(dir, n)).mtimeMs })).sort((a, b) => b.t - a.t);
+  if (!files.length) throw Error('No fake-Claude transcript file exists yet for the private session');
+  return { path: join(dir, files[0].n), sessionId: files[0].n.replace(/\.jsonl$/, '') };
+}
+
 async function waitUntil(fn,{timeoutMs=10000}={}) {
   const start=performance.now();let last;
   while(performance.now()-start<timeoutMs){last=await fn();if(last)return last;await sleep(25);}
@@ -288,13 +320,13 @@ export async function collectDocumentProvenance(app,checkout,build,{images=false
     verificationScope:'Executed path + owned main identity + stamp/runner/current source fingerprint; stamp does not attest package byte contents'};
 }
 
-export async function runDocumentStallCases(app,fixture,manifest,{sessionId,checkout,build,timeoutMs=15000,maxRssMb=1536,onCase=async()=>{},caseIds,images=false,imageRenderingEvidence,imageSequenceMs=120000,imageGlobalBudgetMs=120000,onImageStep=async()=>{}}={}) {
+export async function runDocumentStallCases(app,fixture,manifest,{sessionId,checkout,build,timeoutMs=15000,maxRssMb=1536,onCase=async()=>{},caseIds,images=false,imageRenderingEvidence,imageSequenceMs=120000,imageGlobalBudgetMs=120000,onImageStep=async()=>{},custom={}}={}) {
   if(!Number.isFinite(timeoutMs)||timeoutMs<100||timeoutMs>60000||!Number.isFinite(maxRssMb)||maxRssMb<128||maxRssMb>4096)throw Error('Invalid document case limits');
   const imageLane=images?requireSoftwareImageLane(imageRenderingEvidence):null;
   if(images&&(timeoutMs>15000||maxRssMb>1536))throw Error('Image diagnostics retain15s/1536MiB caps');
   const imagePolicy=images?imageDeadlinePolicy({stepMs:timeoutMs,sequenceMs:imageSequenceMs,globalBudgetMs:imageGlobalBudgetMs,maxRssMb}):null;
   const imageBudgetStarted=performance.now();
-  const selected=validateDocumentManifest(manifest,{images}).filter(f=>!caseIds||caseIds.includes(f.id));
+  const selected=validateDocumentManifest(manifest,{images,extraKinds:Object.keys(custom)}).filter(f=>!caseIds||caseIds.includes(f.id));
   const cdp=app.cdp;let ownSession=false,fatal=false,browser;
   const cases=[],controls=[];
   const descriptor={revision:DOCUMENT_ADAPTER_REVISION,scope:'app-viewer',fixtureFilesystem:'caller-provided; tmpfs checks are not disk-I/O claims',
@@ -317,7 +349,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
       }
       await waitUntil(()=>cdp.evaluate(`(() => {const p=[...document.querySelectorAll('[data-session-strip] [data-session-id]')].find(p=>p.dataset.sessionId===${JSON.stringify(sessionId)});p?.click();return !!document.querySelector('[data-chat-session-id="'+${JSON.stringify(sessionId)}+'"]:not([aria-hidden="true"])') && !document.body.textContent.includes('Initializing session');})()`));
       const folder=await cdp.evaluate(`window.claude.folders.add(${JSON.stringify(manifest.root)},'Stall lab private fixtures')`);if(!folder)throw Error('folders.add refused private fixture root');
-      const files=Object.fromEntries(selected.filter(f=>f.kind!=='path-list').map(f=>[f.id,{rel:relative(manifest.root,f.file),abs:f.file}]));
+      const files=Object.fromEntries(selected.filter(f=>f.kind!=='path-list'&&!custom[f.kind]).map(f=>[f.id,{rel:relative(manifest.root,f.file),abs:f.file}]));
       await registerArtifacts(cdp,manifest.root,sessionId,files);
       descriptor.sessionId=sessionId;
       return true;
@@ -353,7 +385,6 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
       const identity={bytes:f.bytes,sha256:f.sha256,shape:f.shape,assets:f.assets};
       const base={id:f.id,kind:f.kind,fixture:identity,runtime:{mainPid:app.pid,cacheState:seen.has(f.kind)?'repeat-viewer-use':'first-viewer-use'},proof:{attempted:false,correctTarget:false,correctResult:false},operationMs:null};
       if(fatal){await emit({...base,status:'unreviewed',error:'Owned app stopped by previous case'});continue;}
-      if(f.kind==='path-list'){await emit({...base,status:'unreviewed',error:'Actual UserMessage path-list insertion not implemented; isolated-core detector already measured'});continue;}
       const imageCase=f.kind.startsWith('image-');let primaryImageFailure=null;
       const remainingImageBudget=images?imageGlobalBudgetMs-(performance.now()-imageBudgetStarted):null;
       if(imageCase&&remainingImageBudget<100){await emit({...base,status:'unreviewed',error:'Caller image global budget exhausted before sequence'});continue;}
@@ -366,6 +397,26 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
           if(assetPath!==resolve(asset.file)||(await stat(assetPath)).size!==asset.bytes||sha(await readFile(assetPath))!==asset.sha256)throw Error('HTML asset identity mismatch');
         }
         const unmountedBefore=await closePrevious(cdp);
+        if(custom[f.kind]){
+          // WHY (lane F): workloads that are not "open a file" (large diff, background indexing) reuse this function's session,
+          // calibration, provenance, probes and watchdog by supplying only the action; `proof` must satisfy assessViewerEvidence.
+          const hook=custom[f.kind],ctx={f,app,fixture,cdp,manifest,sessionId,signal,unmountedBefore,waitUntil,transcript:()=>findSessionTranscript(fixture.home,manifest.root)};
+          // prepare() runs OUTSIDE the measured window (e.g. creating a session to destroy later) so setup is never charged to the app.
+          if(typeof hook!=='function'&&hook.prepare)ctx.prepared=await hook.prepare(ctx);
+          return await measureDocumentCase(app,sessionId,f.id,()=>(typeof hook==='function'?hook:hook.run)(ctx),{signal});
+        }
+        if(f.kind==='path-list'){
+          // WHY (lane F): the real path-list render path is transcript -> TranscriptWatcher -> reducer -> UserMessage -> detectFilepaths ->
+          // one FilepathToken per path. Appending a user line to the private session's own transcript drives exactly that path (the
+          // composer's attachment chips are a different, unmeasured path).
+          const text=(await readFile(path,'utf8')).trimEnd();const lines=text.split('\n'),lastPath=lines.at(-1);
+          const transcript=findSessionTranscript(fixture.home,manifest.root);
+          return await measureDocumentCase(app,sessionId,f.id,async()=>{
+            appendFileSync(transcript.path,pathListTranscriptLine({sessionId:transcript.sessionId,cwd:manifest.root,text})+'\n');
+            const ready=await waitUntil(async()=>{const s=await cdp.evaluate(pathListStateSource(f.marker,lastPath));return s?.hasLastPath&&s.tokens>0?s:false;});
+            return {attempted:true,correctTarget:true,correctResult:true,unmountedBefore,viewer:'user-message-path-list',marker:f.marker,pathsExpected:lines.length,pathTokens:ready.tokens,textLength:ready.textLength};
+          },{signal});
+        }
         await waitUntil(()=>cdp.evaluate(`window.__perfArt.rowNames()?.includes(${JSON.stringify(basename(f.file))})`));
         if(f.kind.startsWith('image-')){
           const open=async()=>{const click=await cdp.evaluate(`window.__perfArt.clickListRow(${JSON.stringify(basename(f.file))})`);if(!click?.ok)throw Error(click?.reason??'Image row click failed');};
@@ -385,6 +436,7 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
           return {imageSteps:steps,proof:steps[0].proof,imageDiagnostic:true,operationMs:null,scope:'image-suboperations; each independently measured, no aggregate input window',visualReview:'not-executed'};
         }
         const evidence=await measureDocumentCase(app,sessionId,f.id,async()=>{
+          const actionStartedAt=performance.now();
           const click=await cdp.evaluate(`window.__perfArt.clickListRow(${JSON.stringify(basename(f.file))})`);if(!click?.ok)throw Error(click?.reason??'File row click failed');
           let ready;
           if(f.kind.startsWith('html-')){
@@ -395,6 +447,16 @@ export async function runDocumentStallCases(app,fixture,manifest,{sessionId,chec
               return {...state,...actual,correctResult:true,marker:f.marker};
             });
           }else ready=await waitUntil(async()=>{const s=await cdp.evaluate(viewerProofSource(f));return s?.correctResult?s:false;});
+          if(f.kind==='csv-fullread'){
+            // Phase 1 (partial view) is already proven by the marker cell; phase 2 is the explicit full read the user asks for.
+            const before=await cdp.evaluate(CSV_FULLREAD_STATE_SOURCE);
+            if(!before?.banner||before.note)throw Error('Partial-view bar missing (or already truncated) before the full read: '+JSON.stringify(before));
+            const openMs=performance.now()-actionStartedAt;
+            const click=await cdp.evaluate(CSV_FULLREAD_CLICK_SOURCE);if(!click?.ok)throw Error(click.reason);
+            const clickedAt=performance.now();
+            const after=await waitUntil(async()=>{const s=await cdp.evaluate(CSV_FULLREAD_STATE_SOURCE);return s&&!s.banner&&s.note&&s.hasTable?s:false;});
+            return {...ready,attempted:true,correctTarget:ready.marker===f.marker,correctResult:ready.correctResult,unmountedBefore,fullRead:{openMs,fullReadMs:performance.now()-clickedAt,sizeBytes:f.bytes,evidence:'bar gone and "Large sheet" note appeared (file holds more rows than the 2000 the viewer shows)',before,after}};
+          }
           return {...ready,attempted:true,correctTarget:ready.marker===f.marker,correctResult:ready.correctResult,unmountedBefore};
         },{signal});
         return evidence;

@@ -22,6 +22,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const ENERGY_MEASURES = Object.freeze({
   scenario: 'energy', lane: 'C',
+  // WHY question/configuration/clocks: assessComparability requires every measures descriptor to carry
+  // them; without them each energy report was refused as "malformed measures.energy" and `ab --mode energy` could never compare.
+  question: 'How much more whole-chip power (PPT) does the app draw while streaming a reply than while sitting idle, and does the meter even respond to CPU work on this machine right now?',
+  configuration: ['CPU-coverage self-check first (worker-thread load, 3 baseline/load/baseline triples); app workload skipped when the meter does not respond',
+    'baseline/workload/baseline windows, 7 attempts (+3 replacements), at least 5 clean repeats required', 'native reply streamed into the visible pane from the fake endpoint; six sessions open',
+    'battery read only while discharging in all three windows', 'disturbed or unknown interference windows excluded and listed'],
+  clocks: { windows: 'Date.now() in the controller around each baseline/workload window', meter: 'amdgpu hwmon power1_input sampled by the lane (driver-averaged)', battery: 'power_supply power_now or current_now x voltage_now while discharging' },
   workload: { name: 'native-stream-visible', deltas: STREAM_DELTAS, perSec: STREAM_PER_SEC, description: 'one native reply streamed into the visible pane at cloud speed from the fake endpoint; six sessions open' },
   baseline: 'same boot and sessions, nothing streaming, hold still',
   meter: 'amdgpu hwmon power1 (PPT), whole-chip; differential estimate only',

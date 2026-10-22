@@ -8,13 +8,13 @@ import { settleAndCount } from './dom-settle.mjs';
 export const GROWTH_SCREEN = 'projects/conversations';
 export const GROWTH_DESCRIPTOR = Object.freeze({ revision: 1, lane: 'workbench-dom-growth-diagnostic', screen: GROWTH_SCREEN,
   standardAcceptanceCoverage: false, runtimeValidated: false, declaredMechanism: 'chunked-reveal-retains-rows-not-virtualized',
-  effectiveRows: 2000, maxScrollCheckpoints: 10, maxMs: 600000, initialNodeBudget: 8000,
+  effectiveRows: 2000, maxScrollCheckpoints: 60, maxMs: 600000, initialNodeBudget: 8000,
   deadlineScope: 'per-surface preparation and diagnostic operations; existing engine build and registry discovery retain their own timeouts',
   resetScope: 'Conversations tab unmounted by opening registered projects/files, then reopened by name in the same document/project',
   counterScope: 'CDP target renderer-wide, not per-component CPU or layout attribution',
   gaps: ['Only projects/conversations at desktop width is supported; not all app lists.', 'No hidden-window, queue, process RAM, DOM-memory or physical presentation measurement.',
     'Geometry and DOM-count reads are boundary observer work; counter intervals include settling and instrumentation, not isolated scroll CPU cost.',
-    'Ten checkpoints may not reveal all 2000 rows: cap exhaustion is incomplete, not a successful saturation test.',
+    'The checkpoint cap (60) is sized for the 2000-row list at 50 rows per reveal (about 40 scrolls); a run that still exhausts it is incomplete, not a successful saturation test.',
     'Source hashes identify selected inspected source files; engine build path is not a content attestation of served assets.', 'No runtime validation or observer-overhead calibration performed.'] });
 const COUNTERS = ['LayoutCount', 'RecalcStyleCount', 'LayoutDuration', 'RecalcStyleDuration', 'TaskDuration'];
 const finite = n => typeof n === 'number' && Number.isFinite(n) && n >= 0;
@@ -53,8 +53,10 @@ function delta(before, after) {
   return { status: gaps.length ? 'unmeasured' : 'measured', values, gaps, scope: GROWTH_DESCRIPTOR.counterScope };
 }
 
-export async function runDomGrowth(driver, { maxCheckpoints = 10, now = () => performance.now(), bound = makeGrowthBound({ now }) } = {}) {
-  if (!Number.isInteger(maxCheckpoints) || maxCheckpoints < 1 || maxCheckpoints > 10) throw Error('growth checkpoints must be 1..10');
+// WHY 60 (was 10): ten 50-row reveals only ever reached 550 of the 2000 rows, so every run ended 'incomplete' at the cap. 2000 rows need 40
+// scrolls; 60 leaves headroom while staying bounded by the same 600 s deadline, the per-step timeouts and the no-progress check below.
+export async function runDomGrowth(driver, { maxCheckpoints = GROWTH_DESCRIPTOR.maxScrollCheckpoints, now = () => performance.now(), bound = makeGrowthBound({ now }) } = {}) {
+  if (!Number.isInteger(maxCheckpoints) || maxCheckpoints < 1 || maxCheckpoints > GROWTH_DESCRIPTOR.maxScrollCheckpoints) throw Error(`growth checkpoints must be 1..${GROWTH_DESCRIPTOR.maxScrollCheckpoints}`);
   const report = { descriptor: GROWTH_DESCRIPTOR, status: 'incomplete', reason: null, checkpoints: [], initial: null, closed: null, reopened: null, reachedEnd: false };
   let source, initialSnapshot;
   const observe = async phase => {

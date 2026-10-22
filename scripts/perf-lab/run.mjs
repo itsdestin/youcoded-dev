@@ -58,7 +58,7 @@ function buildFixture(root, options = {}) {
  */
 export function selectionNeedsAssets(cfg) {
   // WHY energy is model-free: it streams from the fake endpoint with seedEngine:false (scenario-energy.mjs energyFixtureOptions).
-  return [...cfg.only].some((p) => !(p === 'artifacts' || p === 'energy' || (p === 'native-stream' && cfg.streamCompletionDiagnostics)));
+  return [...cfg.only].some((p) => !(p === 'artifacts' || p === 'energy' || p === 'workloads' || (p === 'native-stream' && cfg.streamCompletionDiagnostics)));
 }
 
 /**
@@ -92,6 +92,7 @@ import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
 import { replayEvidenceProblems } from './replay-evidence.mjs';
 import { LEGACY_EXECUTION_REVISION, buildLegacyExecution, legacyEvidenceProblems } from './legacy-evidence.mjs';
 import { ENERGY_LANE, energyLaneProblems } from './energy-lane.mjs';
+import { WORKLOAD_LANE, WORKLOAD_MEASURES, WORKLOAD_THRESHOLDS, ladderGroups, probeCandidateSupport, runWorkloadsLane, workloadsMarkdown, workloadsProblems } from './workload-lane.mjs';
 import { MEASURES as ARTIFACT_DESCRIPTOR } from './scenario-artifacts.mjs';
 import { STREAM_DRAIN_DESCRIPTOR, assessStreamDrain, buildDrainFixture } from './stream-drain.mjs';
 
@@ -223,8 +224,16 @@ export function fixtureIdentity(cfg) {
     default: {}, artifacts: artifactFixtureOptions(), nativeStream: nativeStreamFixtureOptions(cfg),
     nativeResume: { fakeProvider: true, nativeSessions: true }, stallDocuments: { profile: 'smoke' },
     // WHY conditional: existing reports' fixture identity must stay byte-identical so they remain comparable.
+    // WHY conditional: existing reports' fixture identity must stay byte-identical so they remain comparable. Lane F's rungs, thresholds and
+    // per-group fixture recipes decide WHAT it measures; a changed ladder or recipe must read as a different fixture, not as a regression.
+    ...(cfg.only?.has('workloads') ? { workloads: { profile: 'ladder', groups: ladderGroups().map((g) => ({ id: g.id, mode: g.mode, rungs: g.rungs.map((r) => r.id), fixture: workloadFixtureOptions(g) })), thresholds: WORKLOAD_THRESHOLDS } } : {}),
     ...(cfg.only?.has('energy') ? { energy: { fakeProvider: true, seedEngine: false, historySizes: { small: 4, medium: 8, huge: 12 }, decoyCount: 0 } } : {}),
   } };
+}
+
+/** The app-fixture recipe lane F builds per group: the model-free artifacts recipe, except the indexing group which needs the default large history. */
+export function workloadFixtureOptions(group) {
+  return group.id === 'background-indexing' ? { seedEngine: false, fakeProvider: false } : artifactFixtureOptions();
 }
 
 /** Boots a configuration will perform, by kind — shared by --check output and ab.mjs preflight. */
@@ -240,6 +249,7 @@ export function bootPlan(cfg) {
     nativeResume: has('native-resume') ? cfg.nativeResumeRepeats : 0,
     scrollback: has('scrollback') ? 1 : 0,
     energy: has('energy') ? 1 : 0,   // one boot holds every energy window (lane C)
+    workloads: has('workloads') ? ladderGroups().length * cfg.workloadsRepeats : 0,   // one boot per group per repeat (retries after a fatal rung add more)
   };
   return { ...plan, total: Object.values(plan).reduce((a, b) => a + b, 0) };
 }
@@ -459,7 +469,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0, loadAvgAfter: null, quietWaitMs: 0, neverQuiet: null },
     // WHY: one verdict per measured window (interference-watch.mjs); a disturbed or unknown window makes the report INCOMPLETE.
     interference: { windows: [] },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null, energy: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null, energy: null, workloads: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -467,7 +477,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], nativeStreamBoots: [], nativeResumeBoots: [], scrollbackBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], nativeStreamBoots: [], nativeResumeBoots: [], scrollbackBoot: null, workloadsBoots: [] },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -562,6 +572,8 @@ export function validateReport(report, only) {
   problems.push(...interferenceProblems(report));
   // WHY an early return: the energy lane has no PRIMARY paths or legacy phases; its own contract decides measured vs not.
   if (report.energyExecution) return [...problems, ...energyLaneProblems(report)];
+  // WHY the same early return: lane F has no PRIMARY phases or legacy manifest; workload-lane.mjs's workloadsProblems owns its contract.
+  if (report.workloadsExecution) return [...problems, ...workloadsProblems(report)];
   if (only.has('artifacts') && report.artifacts?.documents) problems.push(...documentProblems(report.artifacts.documents));
   if (only.has('artifacts') && report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) problems.push('documents: required section missing');
   const need = (ok, msg) => { if (!ok) problems.push(msg); };
@@ -949,6 +961,8 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  lines.push(...workloadsMarkdown(report.workloads));
+
   if (report.energy) {
     const e = report.energy;
     lines.push('', '## Energy lane (C) — ESTIMATE of whole-chip power difference, not application watts', '',
@@ -1064,7 +1078,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'energy-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
+const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'energy-repeats', 'workloads-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
 const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics', 'allow-asset-download'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
@@ -1072,6 +1086,7 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   node scripts/perf-lab/run.mjs [options]
 
   --scrollback-repeats <n>  scroll-back ceiling passes   (default 3, own boot)
+  --workloads-repeats <n>   lane F: full passes over every rung (default ${WORKLOAD_LANE.repeats}; >= 2 is needed for a spread); used by --only workloads
   --energy-repeats <n>      energy lane: baseline/workload/baseline repeats (default ${ENERGY_LANE.repeats}, min ${ENERGY_LANE.minCleanRepeats}); used by --only energy
   --checkout <dir>          youcoded checkout to build   (default worktrees/perf-lab)
   --runs <n>                cold-start runs              (default 5)
@@ -1086,6 +1101,8 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --stream-completion-diagnostics  opt-in plain fixture/receipt/reveal diagnostic; requires --only native-stream; NOT a standard timing baseline
   --native-resume-repeats <n>  Resume list / resume / tear-off (default 3, one boot each)
   --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
+                           or --only workloads ALONE: lane F, file-size ladders (CSV/XLSX/DOCX/HTML/images incl. 4096x3072 + the owner's original JPEG),
+                           CSV full read, long path list, large diff, background index refresh; one boot per family; opt-in, own report contract
                            or --only energy ALONE: lane C, an ESTIMATE of whole-chip power difference (amdgpu PPT), one boot,
                            CPU-coverage self-check first; opt-in, never part of the default selection
   --force-build             rebuild even if the tree fingerprint is unchanged
@@ -1132,9 +1149,10 @@ export function parseArgs(argv, { root = ROOT } = {}) {
   const onlyTokens = (raw.only ?? PHASES.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
   // WHY energy is not in PHASES: it has its own report contract (energy-lane.mjs), runs only on a quiet machine with a
   // differential schedule, and must never join the default/full selection or the legacy PRIMARY contract.
-  const unknown = onlyTokens.filter((p) => !PHASES.includes(p) && p !== 'energy');
-  if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}, energy (alone)`);
+  const unknown = onlyTokens.filter((p) => !PHASES.includes(p) && p !== 'energy' && p !== 'workloads');
+  if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}, energy (alone), workloads (alone)`);
   if (onlyTokens.includes('energy') && onlyTokens.length !== 1) throw new Error('perf-lab: --only energy must be used alone (its windows need a quiet, undisturbed machine and its own report contract)');
+  if (onlyTokens.includes('workloads') && onlyTokens.length !== 1) throw new Error('perf-lab: --only workloads must be used alone (its rungs need a quiet machine and its own report contract)');
   if (!onlyTokens.length) throw new Error('perf-lab: --only selected no phases.');
   if (raw['stream-completion-diagnostics'] && (onlyTokens.length !== 1 || onlyTokens[0] !== 'native-stream')) throw Error('Completion diagnostic requires --only native-stream (only native-stream, no other phases)');
   if (raw['stream-completion-diagnostics'] && posInt('native-stream-repeats', 3) > 3) throw Error('Completion diagnostic supports at most 3 repeats');
@@ -1178,6 +1196,8 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     allowAssetDownload: raw['allow-asset-download'] === true || assetDownloadEnvAllowed(),
     only: new Set(onlyTokens),
     energyLane: onlyTokens.length === 1 && onlyTokens[0] === 'energy',
+    workloadsRepeats: posInt('workloads-repeats', WORKLOAD_LANE.repeats),
+    workloadsLane: onlyTokens.length === 1 && onlyTokens[0] === 'workloads',
     label: raw.label ?? '',
     forceBuild: raw['force-build'] === true,
     dryRun: raw['dry-run'] === true || raw.check === true,
@@ -1509,6 +1529,14 @@ async function loadNativeResume() {
   }
 }
 
+async function loadWorkloads() {
+  try {
+    return await import('./scenario-workloads.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the workloads lane needs scripts/perf-lab/scenario-workloads.mjs, which could not be loaded: ${e.message}`);
+  }
+}
+
 async function loadEnergy() {
   try {
     return await import('./scenario-energy.mjs');
@@ -1637,13 +1665,14 @@ async function mainRun(argv, ctx, cleanup) {
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
       `  document profile  smoke (bounded subset); ${cfg.documentCaseIds.join(', ')}`,
       `  document controls ${DOCUMENT_CONTROL_TYPES.join(', ')}; renderer-block includes async wait then sync block; 15000ms / 1536MiB conservative family RSS safety cap per case`,
-      `  document coverage selected viewers only; hardware, watchers, path-list UI, CSV full-read and larger ladders unsupported/unmeasured`,
+      `  document coverage selected viewers only; hardware and watchers unmeasured; path-list, CSV full-read and the larger ladders are lane F (--only workloads), not these smoke documents`,
       `  projects passes   ${cfg.only.has('projects') ? `${cfg.projectsRepeats}, own boot` : '—'}`,
       `  terminal passes   ${cfg.only.has('terminal') ? `${cfg.terminalRepeats}, one boot each` : '—'}`,
       `  native-stream     ${cfg.only.has('native-stream') ? `${cfg.nativeStreamRepeats}, one boot each (fake endpoint on :${FAKE_PROVIDER_PORT})` : '—'}`,
       `  stream profile    ${cfg.streamCompletionDiagnostics ? 'PLAIN COMPLETION DIAGNOSTIC revision 2; NOT standard Markdown timing baseline; 3000 deltas at 150/s; 10s bounded bridge/reveal waits' : 'standard Markdown timing profile'}`,
       `  native-resume     ${cfg.only.has('native-resume') ? `${cfg.nativeResumeRepeats}, one boot each (100 seeded native sessions)` : '—'}`,
       `  energy lane       ${cfg.only.has('energy') ? `${cfg.energyRepeats} baseline/workload/baseline repeats (>= ${ENERGY_LANE.minCleanRepeats} clean needed) after a CPU-coverage self-check, one boot; ESTIMATE of whole-chip power difference` : '—'}`,
+      `  workloads lane    ${cfg.only.has('workloads') ? `${cfg.workloadsRepeats} pass(es) over ${ladderGroups().length} groups (${ladderGroups().reduce((n, g) => n + g.rungs.length, 0)} rungs, one boot per group per pass, extra boots only after a fatal rung); thresholds ${Object.entries(WORKLOAD_THRESHOLDS).map(([k, v]) => `${k} ${v}`).join(', ')}; generation memory-bounded outside the child` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
@@ -1721,8 +1750,9 @@ async function mainRun(argv, ctx, cleanup) {
   setInterferenceSink(report.interference.windows);
   // WHY before execution: an exception on repeat 3 cannot redefine 2 as complete.
   // WHY an empty manifest for energy: buildLegacyExecution knows only the legacy phases; energyExecution carries the lane's contract.
-  report.legacyExecution = cfg.energyLane ? { revision: LEGACY_EXECUTION_REVISION, phases: {} } : buildLegacyExecution(cfg);
+  report.legacyExecution = cfg.energyLane || cfg.workloadsLane ? { revision: LEGACY_EXECUTION_REVISION, phases: {} } : buildLegacyExecution(cfg);
   if (cfg.energyLane) report.energyExecution = { revision: ENERGY_LANE.revision, repeats: cfg.energyRepeats, minCleanRepeats: ENERGY_LANE.minCleanRepeats, workload: 'native-stream-visible', meter: 'amdgpu-hwmon-power1-PPT' };
+  if (cfg.workloadsLane) report.workloadsExecution = { revision: WORKLOAD_LANE.revision, repeats: cfg.workloadsRepeats, groups: ladderGroups().map((g) => g.id) };
   configureStreamCompletion(report, cfg);
   let exitCode = EXIT.OK;
   let stem = uniqueStem(cfg.out, stemFor({ timestamp: report.timestamp, sha: 'nosha', label: cfg.label }), { extraTaken: logsTaken });
@@ -2174,6 +2204,41 @@ async function mainRun(argv, ctx, cleanup) {
         // Only the windows that fed the median become the report's interference record; excluded ones are counted in
         // report.energy.excluded (a disturbed window never silently disappears, it is listed with its reasons).
         for (const t of report.energy.repeats ?? []) if (t.clean) report.interference.windows.push(...t.verdicts);
+      }
+    }
+
+    // ---- Workloads lane (F): opt-in via `--only workloads` alone ------------------------------------------------------------
+    // One boot per family per pass. WHY a private sink for withBoot's boot-wide verdict (same reason as energy): each group's own
+    // window decides; the boot-wide one is kept for reference only. Group windows are pushed to report.interference.windows by
+    // recordInterference below, so a disturbed group makes the report INCOMPLETE (owner decision Q-6).
+    if (cfg.only.has('workloads')) {
+      const { createWorkloadDeps, memoryBoundRecord } = await loadWorkloads();
+      report.measures.workloads = WORKLOAD_MEASURES;
+      checkDeadline();
+      const bootVerdicts = [];
+      const deps = createWorkloadDeps({
+        checkout: cfg.checkout, build,
+        makeFixtureBase: (group) => { const f = buildFixture(SCRATCH, { ...workloadFixtureOptions(group), log }); f.checkout = cfg.checkout; return f; },
+        withBoot: async (fixture, fn, group) => {
+          await gate(`workloads-${group?.id ?? 'group'}`);
+          setInterferenceSink(bootVerdicts);
+          try { return await withBoot(build, fixture, fn, { mainLoop: true }); }
+          finally { setInterferenceSink(report.interference.windows); report.errors.workloadsBoots.push(readErrorLines(fixture, stem, `workloads-${group?.id ?? 'group'}`)); }
+        },
+        getRenderer: getCapturedRenderer,
+        recordInterference: (verdict) => { report.interference.windows.push(verdict); log(`interference ${verdictLine(verdict)}`); },
+      });
+      const support = probeCandidateSupport(cfg.checkout);
+      report.workloads = { revision: WORKLOAD_LANE.revision, expectedRepeats: cfg.workloadsRepeats, plan: { rungIds: [] }, runs: [] };
+      try {
+        report.workloads = await runWorkloadsLane({
+          support, repeats: cfg.workloadsRepeats, memoryBound: memoryBoundRecord(deps.state.bound), original: null, deps, log, checkDeadline,
+          onProgress: (section) => { report.workloads = section; checkpoint(); },
+        });
+      } finally {
+        // the original-JPEG copy record (path + hash + proof it matched the source) is known once its rung generated
+        if (report.workloads?.plan?.groups) report.workloads.original = deps.state.original;
+        report.workloads.bootInterference = bootVerdicts;
       }
     }
   } catch (e) {

@@ -84,6 +84,8 @@ export function executionIdentity(cfg) {
     streamCompletionDiagnostics: cfg.streamCompletionDiagnostics === true,
     // WHY conditional: only energy-lane runs carry it, so every existing report's execution identity is unchanged.
     ...(cfg.only.has('energy') ? { energyRepeats: cfg.energyRepeats } : {}),
+    // WHY conditional: same reason; lane F's pass count decides what it measured and whether a spread exists.
+    ...(cfg.only.has('workloads') ? { workloadsRepeats: cfg.workloadsRepeats } : {}),
   };
 }
 

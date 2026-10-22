@@ -33,11 +33,11 @@ function provenanceProblems(section) {
 
 export const DOCUMENT_CASE_IDS = ['xlsx-merge-32x32', 'xlsx-sheets-1', 'csv-rows-64kib', 'csv-wide-64kib', 'csv-quoted-64kib', 'docx-paragraphs-100', 'docx-table-25x10', 'html-assets-1x256', 'html-script-250ms'];
 export const DOCUMENT_OPTIONAL_COVERAGE = [
-  { id: 'path-list', reason: 'Visible UserMessage adapter not implemented; not credited as viewer coverage' },
+  { id: 'path-list', reason: 'Not part of the smoke documents; measured by lane F (--only workloads) through the visible UserMessage render path' },
   { id: 'hardware', reason: 'Not integrated in this document-viewer package' },
   { id: 'watcher-startup', reason: 'Not integrated in this document-viewer package; existing burst scenarios are separate' },
-  { id: 'csv-full-read', reason: 'Explicit full-read interaction not implemented; default preview only' },
-  { id: 'larger-ladders', reason: 'Only selected bounded smoke cases run; unselected ladders are not measured' },
+  { id: 'csv-full-read', reason: 'Not part of the smoke documents; measured by lane F (--only workloads) as the "Load the whole file" interaction on a 5 MiB CSV' },
+  { id: 'larger-ladders', reason: 'Only selected bounded smoke cases run here; the CSV/XLSX/DOCX/HTML/image ladders belong to lane F (--only workloads)' },
 ];
 const controls = DOCUMENT_CONTROL_IDS;
 const finite = n => typeof n === 'number' && Number.isFinite(n) && n >= 0;

@@ -9,6 +9,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { assessComparability } from './comparability.mjs';
 import { legacyTailRegressions } from './legacy-evidence.mjs';
+import { workloadPaths } from './workload-lane.mjs';
 import { DOCUMENT_BUDGETS, compareDocuments, documentComparabilityProblems } from './document-report.mjs';
 
 // Energy-lane metrics (lane C). Kept OUT of PRIMARY on purpose: PRIMARY feeds validateReport's per-phase contract and the
@@ -20,6 +21,12 @@ export const ENERGY_PATHS = [
   'energy.median.baselineWatts',       // idle level the difference was taken from (W): a context row, shows drift between sides
   'energy.battery.median.deltaWatts',  // only when the battery was discharging in every window; absent otherwise
 ];
+
+// Workload-lane metrics (lane F): per rung, time to render + worst renderer long task + worst main-process stall. Built from the lane's own
+// plan so a new rung appears automatically. Kept OUT of PRIMARY for the same reason as ENERGY_PATHS; ab.mjs passes them for `--mode workloads`.
+// Raw samples sit at workloads.runs[].rungs.<id>.<metric> (runsFor), so spread is computed like every other metric. A rung that failed or is
+// unsupported has no number: the row reads "absent", never zero.
+export const WORKLOAD_PATHS = workloadPaths();
 
 // The metrics every experiment is judged against. All are lower-is-better,
 // and every one has a `runs` array behind its median so spreadPct can be computed.

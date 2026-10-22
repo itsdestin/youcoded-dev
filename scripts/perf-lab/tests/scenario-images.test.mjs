@@ -6,7 +6,10 @@ import vm from 'node:vm';
 import {parseSystemInfo} from '../gpu.mjs';
 import {classifyRenderingLane} from '../capabilities.mjs';
 import {assessImageState,requireSoftwareImageLane,imageControlSource,imageStateSource,runImageOperations,imageDeadlinePolicy,guardImageSequence,IMAGE_SOURCE_FILES,imageCoverage} from '../scenario-images.mjs';
-const checkout=resolve('youcoded'),require=createRequire(join(checkout,'desktop/package.json'));
+// WHY no checkout/require: fixtures are written by the lab's own dependency-free encoders (image-encode.mjs), so this test no longer
+// depends on the working directory or on any installed package (it used to fail with "Cannot find module 'pngjs'").
+const checkout=resolve('no-checkout-needed');
+import {inflateSync} from 'node:zlib';import {jpegSize,pngSize} from '../image-encode.mjs';
 test('image dimension and aggregate caps checked before RGBA allocation/encoder work',()=>{
  assert.equal(validateImagePlan(IMAGE_PLAN).length,3);
  for(const plan of [[{id:'x',format:'png',width:8193,height:1}],[{id:'x',format:'png',width:8192,height:8192}],Array(5).fill({id:'x',format:'png',width:1,height:1})])assert.throws(()=>validateImagePlan(plan));
@@ -14,8 +17,10 @@ test('image dimension and aggregate caps checked before RGBA allocation/encoder 
 });
 test('small PNG/JPEG deterministic fixtures decode dimensions, pattern and source identity',async()=>{
  for(const format of ['png','jpeg']){
-  const spec={id:`tiny-${format}`,format,width:16,height:12,seed:123};const a=encodeImageFixture(spec,{checkout}),b=encodeImageFixture(spec,{checkout});assert.deepEqual(a.data,b.data);assert.equal(a.shape.width,16);assert.equal(a.shape.height,12);assert.ok(a.shape.encoder.version);assert.match(a.shape.generatorSha256,/^[a-f0-9]{64}$/);
-  const d=format==='png'?require('pngjs').PNG.sync.read(a.data):require('jpeg-js').decode(a.data);assert.equal(d.width,16);assert.equal(d.height,12);assert.equal(d.data[3],255);
+  const spec={id:`tiny-${format}`,format,width:16,height:12,seed:123};const a=encodeImageFixture(spec),b=encodeImageFixture(spec);assert.deepEqual(a.data,b.data);assert.equal(a.shape.width,16);assert.equal(a.shape.height,12);assert.ok(a.shape.encoder.version);assert.match(a.shape.generatorSha256,/^[a-f0-9]{64}$/);
+  // PNG: inflate the IDAT and check the first pixel is the quadrant-0 colour; JPEG: baseline SOF dimensions and SOI/EOI framing.
+  if(format==='png'){const d=pngSize(a.data);assert.equal(d.width,16);assert.equal(d.height,12);const idatLen=a.data.readUInt32BE(33),raw=inflateSync(a.data.subarray(41,41+idatLen));assert.equal(raw.length,12*(1+16*3));assert.equal(raw[0],0);assert.deepEqual([...raw.subarray(1,4)],[220,40^(123&7),40]);}
+  else{const d=jpegSize(a.data);assert.equal(d.width,16);assert.equal(d.height,12);assert.equal(d.baseline,true);assert.deepEqual([...a.data.subarray(-2)],[0xff,0xd9]);}
  }
  const root=await mkdtemp(join(tmpdir(),'image-fixture-'));try{const m=await buildImageFixtures(root,{checkout,plan:[{id:'tiny',format:'png',width:16,height:12,seed:7}]});assert.equal(m.schema,2);assert.equal(m.imagesRevision,1);assert.equal((await readFile(m.cases[0].file)).length,m.cases[0].bytes);await assert.rejects(buildImageFixtures(root,{checkout,plan:[{id:'tiny',format:'png',width:16,height:12,seed:7}]}),/empty/);}finally{await rm(root,{recursive:true,force:true});}
 });
