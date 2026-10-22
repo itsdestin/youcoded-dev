@@ -221,6 +221,10 @@ Read.
   - Conclusion so far: the 10–51 s freezes did not recur during a quiet overnight stretch (8
     sessions, 4 windows, little activity). The watcher cannot catch what does not happen; the
     dev-build logging step above is the reliable route.
+- **Watcher, ~3 h 45 min (04:27, final check):** 65 more stalls in the last hour, longest
+  0.16 s. The whole run caught no freeze ≥1 s. **No culprit identified.** The passive watcher
+  is retired; the next step is the dev-build logging of synchronous child-process calls,
+  run during a normal working day.
 - Related open card: **#93** (Background freezes, P1, needs-repro). This is evidence for it.
 
 ## C. Laptop sleep
