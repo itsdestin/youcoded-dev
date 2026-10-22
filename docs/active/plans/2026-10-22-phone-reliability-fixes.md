@@ -259,3 +259,31 @@ explore it, with alternatives such as the header menu or pull-down, on the same 
   - "<name> is back · Switch"
   - "Opened on another tab"
   - the restore toast
+
+## Status (2026-10-22, end of build session)
+
+Built on `session/remote-access-audit` (youcoded), each with tests seen red, then green:
+
+| Item | Status |
+|---|---|
+| 1.1 | Done: keep pairing, reconnect at launch with a gate, "Use this phone only", wording fix, Tailscale pre-check removed |
+| 1.2 | Done |
+| 1.3 | Done: 20 s window, `slow` flag, `offline` short-circuit, 60 s queue-send timeout. The `session:open` probe-skip was dropped: the 20 s window covers it |
+| 1.4 | Done: queue `lookup` action, settle on send / reconnect / start, restore into an empty box |
+| 1.5 | Done: `refill-retry.ts`; drops don't use up first loads; catch-up guard. "Refresh while disconnected" is not needed, because the strip is "Reconnecting" then |
+| 1.6 | Done: `refillPush`, `CLOSE_REPLACED` |
+| 1.7 | Done |
+| 1.8 | Done |
+| Phase 3.1 (terminal once) | Done, server side |
+| Phase 3.2 (compression) | Done, level 1 |
+| Phase 3.3 (dedupe tail vs page) | **Dropped**: `fill-equivalence.test.ts` showed the tail can carry a newer version of a line than the page (a native retry's `dropPart`), so filtering by uuid resurrected discarded text |
+
+**Phase 2 (laptop freezes):** open. A passive `/proc` sampler caught no freeze over 1 s in its first ~70 min. The one lead is brief `anon_pipe_read` waits while `git … credential.helper` children ran.
+
+**Phase 4 (connection indicator UI):** not started. It needs its own deck.
+
+**Review deck:** `docs/active/design/2026-10-22-phone-reliability/phone-reliability.review.json`.
+
+**Verification:**
+- `verify.sh --full` is green apart from one test that was mid red-check, which passes on rerun.
+- Not yet run on a real phone. An `assembleReleaseTest` APK is needed from a worktree with its own (non-hardlinked) `node_modules`.
