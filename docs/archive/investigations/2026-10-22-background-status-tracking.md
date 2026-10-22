@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-10-22
 ---
 # Background helpers and background commands — status accuracy audit + fix plan
@@ -123,3 +123,20 @@ Healthy while the app runs: `native:shell-event` through `publish` reaches windo
    launches/notices/TaskStop).
 3. **New chip + card wording** (this session): Before/After deck first (short route), then built on
    top of 1 + 2.
+
+## Shipped, and what is still open
+
+Shipped 2026-10-22 on `session/bg-tracking-audit` (app + workspace), after a fresh code review
+(`docs/archive/reviews/2026-10-22-bg-tracking-audit-code-review.md`, its triage at the end).
+Known limits left open, none filed as cards yet:
+
+- Native: a command re-attached after a restart is invisible to the assistant's own
+  BashOutput/KillShell, and its output no longer streams (the card and chip still show and stop it).
+- Native: stopping a command in a conversation that is not open on this computer needs that
+  conversation reopened (no Stop is offered meanwhile — review F1).
+- Native: a specialist child's own background commands are not saved across a restart.
+- Claude Code: when a non-persistent Monitor ends at its own timeout is unknown (no notice measured).
+- Claude Code: a separate-terminal `claude` on the same transcript cannot be detected.
+- Claude Code: a rare late notice (about 9 of 141 measured) can make a resumed helper read finished early.
+- Claude Code: "needs you" on a helper relies on the hook's `agent_id`, verified from schema only.
+- Android was not run on this branch (no SDK on the machine that day).
