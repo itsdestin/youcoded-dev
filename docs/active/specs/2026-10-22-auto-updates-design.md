@@ -145,7 +145,23 @@ App side:
   `QuitSessionsPrompt`.
 - Delete the three `MOCK_ONLY` rows; the workbench mock keeps its hand-written versions (now
   mirroring real channels).
-- UpdatePanel: already built against these shapes; the only change is the Update-now path in §4.
+- UpdatePanel: already built against these shapes, plus the Update-now path in §4 and the fix
+  below.
+
+### 7. A download survives closing the popup (Destin, 2026-10-22, chat)
+
+Bug today: "closing the popup after pressing download seems to revert to 'download?' state and
+cancel update". Confirmed in code: UpdatePanel's close effect calls `update.cancel(jobId)` and
+resets to idle on purpose (2026-04-22 design, written when the popup was the only owner of a
+download). Now main owns downloads (§2), so:
+- Closing the popup no longer cancels; the download keeps going in main.
+- Main exposes the in-flight job: `update:get-cached-download` (existing, desktopOnly) is widened
+  to also report `{ downloading: { jobId, percent } }` when a job is active, so reopening the
+  popup shows the same "Downloading… 45%" button state it had, then Ready when it finishes.
+- No new UI: the button states already exist. The chip keeps saying "Update available" while
+  downloading (approved risk line on R-1).
+- Remove the `abortedRef` close-guard; a download finishing while the popup is closed lands as
+  `downloaded` through the status push.
 
 ## Data shape
 
@@ -173,6 +189,7 @@ progress throttled as today.
 - Restart: sessions open + cancel ⇒ `{restarting:false}`, no quit; password cancel ⇒ app keeps
   running; per-platform argv (Windows `/S --updated --force-run`, Mac helper script content,
   AppImage rename).
+- UpdatePanel: closing mid-download sends no cancel; reopening shows the job's progress (§7).
 - IPC parity (`ipc-channels.test.ts`, `update-install-ipc.test.ts`), mock-shim contract.
 
 ## Not in scope
