@@ -13,7 +13,7 @@ area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse
-work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge
+work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge, session/93-batcher-counters
 ---
 Progress
 Done: Session-start hardening previously merged in youcoded#629 (bc9e43752); crash hardening in #654 (0a020c3f7). Viewer first-frame/draft/rename/stale-read fixes, including final watcher/action-delivery review corrections, exact background comparisons (#110), and complete off-thread search indexing including tags now merged in itsdestin/youcoded#665 as 254ff9983aa3657a937dfd65011beb3c6e6508c9. Final local verification: 5546 related tests passed, 36 skipped; 136 focused passed; all nine gates green. Remote CI passed four Linux test shards/four package formats plus Android JVM and debug/releaseTest APK jobs. App-only lifecycle records prepared on session/93-app-fixes-merge.
@@ -21,6 +21,7 @@ Next: Keep this broader card open. Recheck the original app-only JPEG freeze wit
 Blocked: No blocker for merged app subtask. Original incident, broader blocking/memory issues and production effectiveness remain unresolved. Local full Android payload was blocked by apk-version tooling; remote APK CI subsequently passed, not device runtime.
 
 Chats
+- 2026-10-22 session/93-batcher-counters: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
