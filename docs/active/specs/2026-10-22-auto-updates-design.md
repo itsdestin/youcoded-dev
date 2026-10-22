@@ -259,3 +259,41 @@ download is deferred (D19); hashing streams.
 Delta updates; staged rollout (separate card); rolling back an installed pulled release;
 metered-network detection; Android (Play Store / APK); a "last update didn't finish" notice
 (needs a deck).
+
+## Rev 4 amendments (review 3, all accepted; these override the text above where they differ)
+
+- **Staging moves to download time (F4, F5).** Right after a download verifies, the platform
+  stages it: Mac — attach, `ditto`, `codesign -R` check, detach (writable: beside the bundle;
+  password case: mode-700 temp folder); AppImage — copy to a hidden file beside the running
+  AppImage, re-hash it. `pending` records the staged path's NAME (derived, never read back as a
+  path). Windows and Linux packages need no staging. Prepare-at-quit is then only the brake +
+  a re-hash of the staged thing.
+- **The exit hook does only instant work (F4, F9).** AppImage: one synchronous `rename`. Mac:
+  write the helper's go file. Windows: one `spawn` (detached, unref). Plus the small
+  `attempt.json` write. These are the only sync calls added to `src/main`, each on the exit
+  path after teardown, allowlisted in `main-blocking-calls.test.ts` with that reason.
+- **Mac helper needs a go signal (F2).** Both helpers (user and root) wait for our pid to exit,
+  then look for `go` in the staging folder. Present ⇒ swap (and reopen if the go file says so).
+  Absent ⇒ remove staging and exit. A helper also gives up after 24 h. So a held Restart, a
+  crash, a SIGTERM or a plain quit with the switch off never swaps.
+- **Quit install is opt-in (F3).** A module flag `internalQuit` is set by every `app.quit()` our
+  own code raises (`launch()`'s `scheduleQuit`, app-restart, Restart to update itself, and any
+  other internal caller found by a repo search during the build). The `'install'` exit action is
+  set only when a quit reaches `gatedQuit` with `internalQuit` false and no restart requested.
+- **Restart prompt and shutdowns (F1).** `settleAll` resolves update requests as Cancel, not as
+  `{close:true}`. After the answer, step 3 first checks `shuttingDown`; if a shutdown began, the
+  Restart returns `{ restarting: false }` and does nothing.
+- **Untrack after the gate (F6).** `reopen:false` untracking moves into the exit action's
+  prepare step, which runs only after `gatedQuit`'s unsaved-files gate passed.
+- **Dropped restart (F7).** When app-restart turns a restart into a plain quit (unsaved edits
+  after teardown), `'install-relaunch'` becomes `'install'`: the update still installs, the app
+  does not reopen (Windows without `--force-run`, Mac go file without reopen, AppImage without
+  relaunch).
+- **Brake timing (F8).** The brake result is cached for 10 minutes; it is refreshed in the
+  background whenever the popup shows Ready and when a quit begins. A quit waits at most 3 s
+  for it; no fresh result ⇒ no install that quit.
+
+Tests added: settleAll during an update prompt ⇒ no install (F1); helper without go file does
+nothing (F2, script test on Linux runners via `/bin/sh`); `launch()`'s quit never quit-installs
+(F3); exit hook makes no async call (F4); held Restart keeps sessions tracked (F6); dropped
+restart installs without relaunch (F7).
