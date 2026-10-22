@@ -9,8 +9,8 @@ created: 2026-10-22
 why: Destin: fully eliminate FUTO and make it super open source (best of Apache/MIT). Needs our own swipe recognizer written clean-room from a description, our own swipe and next-word models, and word lists rebuilt from FineWeb-2. License choice between MIT-or-Apache and MPL still open.
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Roadmap with phases/checkpoints: swipe-keyboard docs/active/plans/2026-10-22-open-engine-roadmap.md (branch feature/170-open-nextword); reviewed independently
+Next: Phase 0: authorship audit + license pick, geometric swipe spike, scoreboard, real ES/FR/DE swipe set
 Blocked: nothing.
 
 Chats
