@@ -1,0 +1,125 @@
+{
+  "title": "Automatic updates — contract",
+  "key": "auto-updates-contract",
+  "out": "auto-updates.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/183-auto-updates",
+  "sources": {
+    "auto-updates-questions": "auto-updates.questions.json",
+    "auto-updates-review": "auto-updates.review.json",
+    "auto-updates-review-2": "auto-updates.review-2.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Automatic updates",
+      "path": "The version chip, the update popup, Settings → Help & feedback and the close-window prompt",
+      "headline": "This is what done means for automatic updates.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Install updates automatically can be switched off in Settings or the update popup, beside Get beta builds, and both stay in sync.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-switch"
+        },
+        {
+          "id": "R2",
+          "statement": "The switch looks like Get beta builds, with a circular-arrows icon and the description \"Downloads new versions by itself\", and starts on.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review#R-5"
+        },
+        {
+          "id": "R3",
+          "statement": "Get beta builds and Install updates automatically sit together under their own Updates heading in Help & feedback.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review-2#R2-2"
+        },
+        {
+          "id": "R4",
+          "statement": "Once an update has downloaded, the version chip keeps its yellow pulse.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-chip"
+        },
+        {
+          "id": "R5",
+          "statement": "Once an update has downloaded, the version chip still shows the version and says it is ready and a restart is needed.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review-2#R2-1",
+          "note": "no still keep the version. my b"
+        },
+        {
+          "id": "R6",
+          "statement": "The update popup says Update ready, that it installs when you next quit, and offers Restart to update from one version to the next.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review#R-2"
+        },
+        {
+          "id": "R7",
+          "statement": "Where installing needs a password, the popup says restarting asks for it, and quitting never pops up a password box.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review#R-3"
+        },
+        {
+          "id": "R8",
+          "statement": "On package installs, a password box appears only after you press Restart to update, never without you asking.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-linux"
+        },
+        {
+          "id": "R9",
+          "statement": "With the switch off, the popup line reads \"Downloaded. Restart when you are ready.\" and changes the moment you flip the switch.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review#R-6"
+        },
+        {
+          "id": "R10",
+          "statement": "Pressing Restart to update while chats are open shows the standard close prompt with the Resume on Next Launch switch.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-busy",
+          "note": "just show the standard closeout prompt that offers to resume sessions and stuff. if a user chooses not to exit by closing the prompt, cancel the restart."
+        },
+        {
+          "id": "R11",
+          "statement": "Closing that prompt with the X cancels the restart and leaves the app running.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-busy",
+          "note": "just show the standard closeout prompt that offers to resume sessions and stuff. if a user chooses not to exit by closing the prompt, cancel the restart."
+        },
+        {
+          "id": "R12",
+          "statement": "The restart prompt is titled Restart to update, says restarting ends your active sessions, and its red button reads Restart.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "auto-updates-review#R-4"
+        },
+        {
+          "id": "R13",
+          "statement": "A broken release is pulled by removing its signed list; apps stop offering it and drop it before installing if already downloaded.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-brake-how"
+        },
+        {
+          "id": "R14",
+          "statement": "People on a pulled release see no automatic message; any notice goes out through the announcement chip when worthwhile.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "auto-updates-questions#Q-brake-notice"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Automatic updates — one Mac question to confirm",
+  "key": "auto-updates-questions-2",
+  "out": "auto-updates.questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-mac-2",
+      "words": true,
+      "surface": "Updates on Mac",
+      "path": "A Mac where the person using YouCoded is not the computer's administrator",
+      "headline": "On a Mac that will not let YouCoded replace itself, should it work like Linux: download by itself, then ask for a password on Restart?",
+      "today": "Mac updates open a disk image and you drag the new app into Applications yourself.",
+      "problem": "Automatic updates swap the app by themselves on most Macs. On a Mac account that is not an administrator, the Mac refuses that swap, so the update cannot install by itself on quit.",
+      "proposal": "What you said in chat: the update still downloads by itself and the chip still says it is ready. Quitting does not install it. Restart to update shows the Mac's own password box, then installs. If you cancel the box or it fails, the disk image opens as today. Yes makes this the plan; No means we talk it through again."
+    }
+  ]
+}
