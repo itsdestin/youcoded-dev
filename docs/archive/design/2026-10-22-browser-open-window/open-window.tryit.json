@@ -1,0 +1,26 @@
+{
+  "title": "Browser panel — does the open button show the assistant's own browser?",
+  "key": "browser-open-window-tryit",
+  "out": "open-window.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "T-1",
+      "surface": "Browser panel",
+      "path": "Ask the assistant to open any website, then look at the buttons at the top right of the Browser panel",
+      "headline": "Press the box-and-arrow button. Does the assistant's own browser open as a window, showing the same page?",
+      "dev": {
+        "worktree": "session/browser-open-window",
+        "label": "Browser open window",
+        "offset": 130,
+        "profile": "browseropenwindow"
+      },
+      "changed": "Before, this button sent the page's address to your own Chrome, which opened it as you, not as the assistant. Now it opens the assistant's browser itself in a window, with its sign-ins and tabs. Hovering says 'Open the browser in its own window'.",
+      "notice": "First a box asks 'Open the browser window?' and warns that pages reload. After you agree, a separate browser window appears showing the same page. Press the button again (now highlighted) to hide it.",
+      "risk": "Opening or hiding the window reloads every open page, so anything typed and not yet sent is lost. That's why it asks first. This test window is a second copy of the app; close it when you're done. Your own app is not touched.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    }
+  ]
+}
