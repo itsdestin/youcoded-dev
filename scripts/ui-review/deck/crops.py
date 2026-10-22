@@ -482,6 +482,15 @@ def crop_images(spec, log=print):
             boxes[st['id']][theme] = per_run
     for m in missing:
         log('missing: ' + m)
+    # WHY name the fix (2026-10-21, second deck in a row): shoot takes two sample themes by default
+    # while the deck shows every theme Destin cycles through, so a first build reports pictures
+    # missing in themes nobody asked shoot for — and each session rebuilt twice working out which.
+    absent = sorted({m.split(': ', 1)[1].split('/', 1)[0] for m in missing if 'no picture for' in m})
+    if absent:
+        screens = sorted({split_region(st['crop'])[0] for st in spec['steps'] if isinstance(st.get('crop'), str)})
+        wanted = sorted({t for st in spec['steps'] for t in step_themes(spec, st)})
+        log(f'hint: no pictures in {", ".join(absent)} — retake with shoot '
+            f'{" ".join(repr(s) for s in screens)} --themes {",".join(wanted)} (plus your --before/--after/--out)')
     return {'boxes': boxes, 'missing': missing, 'warnings': warnings, 'count': len(cut)}
 
 
