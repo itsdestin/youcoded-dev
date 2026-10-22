@@ -204,6 +204,8 @@ async function startPhone(profileDir) {
   if (!target) { try { chrome.kill('SIGKILL'); } catch {} throw new Error(`phone scenario: headless Chrome never opened its debugging port: ${err}`); }
   const cdp = await connect(target.webSocketDebuggerUrl);
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
+  // PHONE_CONSOLE=1: echo the page's console (debugging the page itself; off by default).
+  if (process.env.PHONE_CONSOLE) cdp.on('Runtime.consoleAPICalled', (e) => console.log(`[phone ${e.type}]`, (e.args ?? []).map((a) => a.value ?? a.description ?? '').join(' ').slice(0, 300)));
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true });
   await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   await cdp.send('Emulation.setUserAgentOverride', { userAgent: PHONE_UA });
