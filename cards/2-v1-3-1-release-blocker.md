@@ -1,7 +1,7 @@
 ---
 id: 2
 title: Reopened chats: wrong labels and wrong times
-stage: planning
+stage: merged
 priority: P1
 tags: chat-data, desktop, chat, bug
 report: docs/active/plans/2026-09-16-simplification-phases.md
