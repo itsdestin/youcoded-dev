@@ -115,6 +115,7 @@ Choose by the action being requested, not by whether a skill happens to be insta
 | Audit workspace guidance | `/audit` is fix-executing maintenance, not the read-only review above. Run it only when edits are authorized, in an isolated session; its command file owns the audit procedure. |
 | Wrap up a session | Use `.claude/skills/wrap-up/SKILL.md` to review and account for this session's work. Verify the standing checkpoint backups of this session's approved work; wrap-up does not authorize a merge or expand a read-only task. Report unfinished work and backup blockers. |
 | Ship a release | Use `youcoded-admin/skills/release/SKILL.md` for the app release, subject to its own go/no-go. A request to review release readiness is not permission to tag or publish. |
+| Ship one bug fix without master's unreleased work | Use `youcoded-admin/skills/hotfix/SKILL.md` (release lane `release/X.Y.x`, version `X.Y.(Z+1)`), subject to its own go/no-go. |
 
 If a named skill cannot be invoked in the current runtime, read its repository `SKILL.md` or command instructions and follow the applicable procedure; if neither exists, report the missing procedure rather than improvising approval or shipping steps. **The root `CLAUDE.md` and live-app safety rule win over a conflicting skill or older recipe.** This table routes tasks; it does not grant permission to perform them.
 

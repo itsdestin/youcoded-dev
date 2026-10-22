@@ -35,6 +35,39 @@ The release procedure is `youcoded-admin/skills/release/SKILL.md`: review the ap
 4. Check the actual release assets, including `youcoded-release.json` and `youcoded-release.json.sig` — without both the in-app Update button refuses the release even if installers uploaded. **Verify contents, not just names:** download all release installers and the manifest/signature into an empty temporary directory, confirm the manifest version and every installer's SHA-256/byte size match the downloaded files, and verify the signature against `desktop/src/main/update-signing-key.ts` (helpers exported by `desktop/scripts/generate-release-manifest.mjs`). If `Sign release manifest` warned, diagnose it and get approval for manual signing: use a NEW EMPTY folder containing ONLY installers downloaded from that exact release, then from `youcoded/` run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with desktop/src/main/update-signing-key.ts`. Inspect the newly generated manifest before upload. If the release already has either manifest file, check what is there first; use `gh release upload vX.Y.Z <folder>/youcoded-release.json <folder>/youcoded-release.json.sig --clobber` only after confirming an intentional replacement of the pair. Never mix installers from another release into the signing folder.
 5. PartyKit deploys on a master push touching `desktop/partykit/**` (or explicit dispatch), not because a later release tag was pushed. Verify the actual relevant deployment run if game-server changes are part of the release.
 
+### Bug-fix releases (hotfixes)
+
+**A bug fix can ship on its own, without the unreleased work on master** (Destin, 2026-10-22,
+card #29). Feature releases come from master and bump the middle number (`1.4.0` → `1.5.0`);
+bug-fix releases come from the line's lane, the app branch `release/X.Y.x`, and bump the last
+number (`1.4.0` → `1.4.1`). The procedure is `youcoded-admin/skills/hotfix/SKILL.md`: decide it is
+a hotfix (no feature, setting or visible design change), fix master first where possible, copy the
+fix onto the lane with `git cherry-pick -x`, put the changelog entry on BOTH branches (the in-app
+"What's new" reads master's CHANGELOG), give it a short review, get Destin's go/no-go, then tag
+`vX.Y.(Z+1)` on the lane. Same tag workflows, signing, manifest and asset verification as a
+feature release.
+
+- **Why the version scheme (option A over a fourth number):** the updater, website and build tools
+  compare three whole numbers, so `1.3.21` would sort ABOVE `1.3.3` and strand everyone on it, and a
+  four-part `1.3.2.1` is not a version npm/electron-builder accept. A for the middle number costs
+  nothing; it is how VS Code (1.95.0 → 1.95.1), Firefox and Electron number theirs.
+- **Why a lane:** compared 2026-10-22 against per-fix Git Flow hotfix branches (concurrent fixes
+  collide), an always-shippable master behind feature switches (Chrome/GitHub style; every unfinished
+  feature would need a switch first) and scheduled channels (Chrome/Firefox; overkill — the beta
+  channel already covers it). The lane is the VS Code/Electron/Kubernetes model.
+- **The lane is created lazily** at the line's newest release tag the first time a fix is needed
+  (for 1.3 that is `v1.3.2`: 1.3.1 and 1.3.2 came from master before lanes existed).
+- **Only the newest line gets fixes; the old lane freezes when `X.(Y+1).0` ships.** The website
+  takes the newest-published official release, and GitHub's "latest" (what the in-app checker reads)
+  follows publication too, so a later `1.3.4` would be offered over `1.4.0`.
+- **Nothing in CI is master-only for this path:** `desktop-ci.yml` runs for PRs into any branch;
+  both release workflows trigger on any `v*` tag; signing admits `v*` tags; Android's `versionCode`
+  comes from the one release workflow's run number and keeps rising.
+- **Future:** gradual rollout of new versions is card #184; automatic installs and the emergency
+  brake that make a fast fix path matter more are card #183.
+<!-- verify: {"path": "youcoded/scripts/beta-version.mjs", "contains": "WHY next MINOR, not next patch"} -->
+<!-- verify: {"path": "youcoded-admin/skills/hotfix/SKILL.md", "contains": "release/X.Y.x"} -->
+
 ### Worker (wecoded-marketplace)
 **The Cloudflare Worker auto-deploys on push to master — never tell Destin to run `wrangler deploy` manually.** `.github/workflows/worker-deploy.yml` runs on `push` to `master` (filtered to `worker/**` and the workflow file itself) plus `workflow_dispatch`. The job runs `npm ci` → `npm run typecheck` → `npm test` → `wrangler d1 migrations apply --remote` → `wrangler deploy` → `wrangler secret put` for every required secret. Cloudflare credentials live in repo secrets (`CF_API_TOKEN`, `CF_ACCOUNT_ID`); no local `wrangler login` needed.
 
@@ -82,9 +115,9 @@ AppImage was testable pre-v1.3.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "\\*\\.pacman"} -->
 
 ```bash
-# No version to type: blank `base` automatically selects the next patch beta line.
-# After release 1.3.1: 1.3.2-beta.1, .2, ...; after 1.3.2: 1.3.3-beta.1.
-# An explicit `base` must match the automatically selected next-patch prefix.
+# No version to type: blank `base` automatically selects the next FEATURE release's beta line.
+# After 1.3.x: 1.4.0-beta.1, .2, ... (a 1.3.3 bug fix does not reset it); after 1.4.0: 1.5.0-beta.1.
+# An explicit `base` must match the automatically selected prefix.
 gh workflow run desktop-test-build.yml --repo itsdestin/youcoded --ref <branch>
 
 gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
@@ -145,9 +178,10 @@ on 2026-09-13, after `1.3.0-beta.80` was built, so every published build before 
 `/releases/latest` and can never be offered a beta — the beta testers on .72–.80 have to
 reinstall from youcoded.ai once, and a pre-release cannot deliver a fix to them. **That is
 what an official release is for, and 1.3.0 (2026-09-20) is the one that moves v1.2.4 users
-and those testers forward.** Blank `base` now advances the beta line automatically to one patch
-AHEAD of the latest official release, so a beta is never offered a downgrade and the next
-release ends the run.
+and those testers forward.** Blank `base` now advances the beta line automatically to the next
+FEATURE release (`1.3.x` → `1.4.0-beta`), so a beta is never offered a downgrade, a bug-fix
+release never "updates" a beta tester onto a build without the beta's features, and the next
+feature release ends the run.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
@@ -163,8 +197,8 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
 `.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
-Leave `base` blank to select the next patch automatically; an explicit prefix must match
-that next-patch `X.Y.Z-beta` line. It uses the same release-scoped policy as `desktop-test-build.yml`; the outputs are
+Leave `base` blank to select the next feature release automatically; an explicit prefix must match
+that `X.(Y+1).0-beta` line. It uses the same release-scoped policy as `desktop-test-build.yml`; the outputs are
 named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
 
@@ -173,7 +207,7 @@ not.** Its APKs used to inherit the hand-set `versionName` in `app/build.gradle.
 May release), so every dogfood build reported itself to analytics as a 1.2.4 build — a 1.3 beta
 landing in your own version breakdown as last spring's release. It now takes the same `base` input
 and uses the shared release-scoped beta resolver; the build type adds `-dev` / `-releasetest`
-on top, e.g. `1.3.2-beta.1-dev` after official release 1.3.1. **`versionCode` is deliberately left alone**: these install as separate
+on top, e.g. `1.4.0-beta.1-dev` after official release 1.3.1. **`versionCode` is deliberately left alone**: these install as separate
 apps, so Play never sees the number, and raising it would block installing a LOCAL build (still the
 hand-set `20`) over a CI one, because Android refuses a lower `versionCode`.
 <!-- verify: {"path": "youcoded/.github/workflows/android-test-build.yml", "contains": "Stamp dogfood version"} -->
@@ -198,15 +232,19 @@ state doesn't. Quit the running app before launching a beta: two instances on on
 over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
-**Betas number themselves, resetting after each official release.** All three beta build paths
+**Betas number themselves, resetting after each FEATURE release.** All three beta build paths
 use `youcoded/scripts/beta-version.mjs` through `.github/actions/beta-version`. Blank `base`
-selects the next patch after the highest published official release: release `1.3.1` →
-`1.3.2-beta.1`, `.2`, …; release `1.3.2` → `1.3.3-beta.1`. Explicit prefixes must match that
-next-patch line: reusing a future-version prefix across releases could otherwise duplicate
-a beta version when its counter resets.
+selects the next feature release after the highest published official release: `1.3.x` →
+`1.4.0-beta.1`, `.2`, …; release `1.4.0` → `1.5.0-beta.1`. The last number belongs to bug-fix
+releases (see **Bug-fix releases** below), so a `1.4.1` fix does not change or reset the beta line.
+Explicit prefixes must match that line: reusing a future-version prefix across releases could
+otherwise duplicate a beta version when its counter resets.
 
 The number is the workflow's lifetime run number minus its last run number from before the
-official release's publication. Each workflow counts separately; failed/cancelled attempts
+publication of the **first** official release of the latest line (`X.Y.0`, or that line's earliest
+release). Counting from the latest release instead would let a bug fix restart the count and
+build a second, different `1.4.0-beta.1`. The 1.3 line's first release is 1.3.0, so the first
+1.4.0 betas carry numbers in the tens rather than 1 — unique, just not small. Each workflow counts separately; failed/cancelled attempts
 reserve numbers, while reruns keep the original version because resolution uses the original
 run's creation time. Drafts and prereleases do not reset it. A workflow introduced after a
 release counts from its first run. **Preserve workflow run records:** every resolution checks
@@ -257,8 +295,8 @@ answer computed against the other channel.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->
 
 **The `base` prefix is still load-bearing — read this before changing it.** A beta must sort above
-the release it is ahead of, so `scripts/beta-version.mjs` accepts only the next patch after the
-latest official release (`1.3.2-beta` now) and throws on anything else: `1.3.1-beta` sorts *below* the
+the release it is ahead of, so `scripts/beta-version.mjs` accepts only the next feature release after the
+latest official release (`1.4.0-beta` after 1.3.x) and throws on anything else: `1.3.1-beta` sorts *below* the
 released `1.3.1`, so it would show "update available" and offer to downgrade itself. Leave `base` blank.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
 
