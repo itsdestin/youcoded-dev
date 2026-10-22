@@ -12,8 +12,8 @@ area: Workspace
 work: chore/conversation-triage-script
 ---
 Progress
-Done: (h)/(iv) guard half: glob-guard guard 8 now judges a leading absolute 'cd <non-worktree> &&' as where the install runs (session/short-campaign-links, 2026-10-21; 3rd hit)
-Next: (h) still wanted: fill-missing-deps.mjs --fresh, and workspace-start provisioning wecoded-marketplace/worker node_modules (shared copy was too old for vitest-pool-workers 2026-10-21)
+Done: (h) fresh-install half built on branch session/2-message-timestamps-wrapup (not yet merged): workspace-start now replaces a far-behind node_modules itself (freshInstall: npm ci beside the component, swapped in), and fill-missing-deps.mjs --fresh runs it on demand; test red before green. 4th hit 2026-10-21. Earlier: glob-guard guard 8 judges a leading absolute 'cd <non-worktree> &&' as where the install runs (session/short-campaign-links, 3rd hit)
+Next: (h) merge that branch; then workspace-start provisioning wecoded-marketplace/worker node_modules (shared copy was too old for vitest-pool-workers 2026-10-21); glob-guard guard 8 also blocks a plain text search whose pattern contains an install command (2026-10-21)
 Blocked: nothing recorded.
 
 Chats
