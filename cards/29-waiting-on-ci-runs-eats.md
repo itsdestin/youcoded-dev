@@ -14,7 +14,7 @@ work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpa
 ---
 Progress
 Done: Bug-fix release path on session/29-hotfix-lane (app 269ab17e7, admin c2f81de, workspace 2cd72e9a): hotfix skill + contract test, release/X.Y.x lane, numbering A (features bump middle, fixes bump last), betas now X.(Y+1).0-beta counted from the line's first release; 17 beta + 20 admin tests pass, anchors OK.
-Next: Destin review; merge all three; symlink skills/hotfix into ~/.claude/skills like release. Next feature release is 1.4.0.
+Next: Release upkeep for store listings: YouCoded is now in winget (microsoft/winget-pkgs PR #459618, YouCoded.YouCoded 1.3.2). Each release needs a new manifest PR or winget users stay on the old version; automate it from the release workflow (e.g. a winget-releaser action). AUR youcoded-bin (#186) will need the same once published.
 Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
 
 Chats
