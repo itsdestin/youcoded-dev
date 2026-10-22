@@ -25,13 +25,19 @@ export async function beginBackgroundWindow(app, label, deps = {}) {
     if (hz.status !== 'supported') return { label, failed: { status: hz.status, reason: hz.reason } };
     const members = pids(app);
     const before = await snapshot(members, { hz: hz.hz, epoch: epoch() });
-    return { label, hz: hz.hz, epoch: epoch(), members, before };
+    // WHY mark: the boot-level interference watch (app.interference) owns the samples; remembering where this window
+    // began lets it give THIS window its own verdict without a second sampler.
+    return { label, hz: hz.hz, epoch: epoch(), members, before, interferenceMark: app.interference?.mark?.() ?? null };
   } catch (e) { return { label, failed: { status: 'failed', reason: e.message } }; }
 }
 
 export async function endBackgroundWindow(app, handle, deps = {}) {
   const { pids = ownedFamilyPids, snapshot = readBackgroundSnapshot, delta = backgroundDelta } = deps;
   const out = { label: handle.label, workLabel: WORK_LABEL, powerAttribution: false };
+  // A window we could not watch says so ('unknown'); it is never omitted as if clean.
+  const watched = () => handle.interferenceMark === null || handle.interferenceMark === undefined
+    ? { verdict: 'unknown', reasons: ['no interference watch was running for this window'] }
+    : app.interference.verdictSince(handle.interferenceMark, handle.label);
   if (handle.failed) return { ...out, status: handle.failed.status, reason: handle.failed.reason };
   try {
     let after = await snapshot(handle.members, { hz: handle.hz, epoch: handle.epoch });
@@ -48,7 +54,7 @@ export async function endBackgroundWindow(app, handle, deps = {}) {
     }
     const d = delta(before, after);
     const wholeFamily = !vanished.length && !appeared.length;
-    return { ...out, status: d.status, reason: d.reason, delta: d.status === 'supported' ? d : undefined,
+    return { ...out, interference: watched(), status: d.status, reason: d.reason, delta: d.status === 'supported' ? d : undefined,
       membership: { startedWith, measured: after.processes?.length ?? 0, vanished, appeared, wholeFamily,
         note: wholeFamily ? 'same processes at both ends' : 'processes that vanished or appeared during the window are NOT priced (not zero)' } };
   } catch (e) { return { ...out, status: 'failed', reason: e.message }; }

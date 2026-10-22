@@ -23,11 +23,11 @@ const example = () => ({
 const copy = (v) => structuredClone(v);
 const compare = (change) => { const b = example(); const c = copy(b); change(c); return assessComparability(b, c); };
 
-test('matched report identities and overlapping descriptors are comparable with a midrun warning', () => {
+test('matched report identities and overlapping descriptors are comparable with an interference-scope warning', () => {
   const result = assessComparability(example(), example());
   assert.equal(result.comparable, true, result.reasons.join('; '));
   assert.deepEqual(result.reasons, []);
-  assert.match(result.warnings.join(' '), /pre-boot.*midrun|midrun.*pre-boot/i);
+  assert.match(result.warnings.join(' '), /interference/i);
 });
 
 test('machine identity must be present and exactly equal', () => {

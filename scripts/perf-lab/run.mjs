@@ -249,6 +249,7 @@ import { formatLayoutCostLine, worstVerdict } from './layout-cost.mjs';
 import { launchApp, resolveXvfbBin, startXvfb } from './launch.mjs';
 import { collectStartup } from './metrics-startup.mjs';
 import { cpuPercent, cpuSnapshot, loadAvg1, machineBusyPct, pssMb } from './procs.mjs';
+import { createInterferenceWatch, describeOffenders, interferenceProblems, readEnvironment, topForeignProcesses, verdictLine } from './interference-watch.mjs';
 import { MEASURES as HISTORY_MEASURES, MESSAGE_COUNT_EXPR, runHistoryScenario } from './scenario-history.mjs';
 import { SCREEN_NAMES, capture } from './screenshots.mjs';
 
@@ -451,6 +452,8 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // carries its own answer, and on this machine that answer is llvmpipe: software.
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0, loadAvgAfter: null, quietWaitMs: 0, neverQuiet: null },
+    // WHY: one verdict per measured window (interference-watch.mjs); a disturbed or unknown window makes the report INCOMPLETE.
+    interference: { windows: [] },
     startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
@@ -550,7 +553,8 @@ export function validateReport(report, only) {
   }
   const problems = legacyEvidenceProblems(report, { primary: PRIMARY, only });
   // WHY: a run that stopped because the machine never went quiet took no valid measurement; never healthy.
-  if (report.noise?.neverQuiet) problems.push(`machine never became quiet: load ${report.noise.neverQuiet.load}, ${report.noise.neverQuiet.busyPct}% cpu after ${report.noise.neverQuiet.waitedS}s — measurement not taken`);
+  if (report.noise?.neverQuiet) problems.push(`machine never became quiet: load ${report.noise.neverQuiet.load}, ${report.noise.neverQuiet.busyPct}% cpu after ${report.noise.neverQuiet.waitedS}s${report.noise.neverQuiet.blockedBy ? ` (blocked by: ${report.noise.neverQuiet.blockedBy})` : ''} — measurement not taken`);
+  problems.push(...interferenceProblems(report));
   if (only.has('artifacts') && report.artifacts?.documents) problems.push(...documentProblems(report.artifacts.documents));
   if (only.has('artifacts') && report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) problems.push('documents: required section missing');
   const need = (ok, msg) => { if (!ok) problems.push(msg); };
@@ -944,6 +948,14 @@ export function renderMarkdown(report, stem) {
     `worst accepted load ${report.noise?.maxLoadAvgAccepted ?? '—'} / busy ${report.noise?.maxBusyPctAccepted ?? '—'}%, ` +
     `discarded ${report.noise?.discardedRuns ?? 0}`,
   );
+  {
+    const w = report.interference?.windows;
+    if (!Array.isArray(w)) lines.push('interference: NOT RECORDED (this report predates the watch)');
+    else {
+      const bad = w.filter((x) => x.verdict !== 'clean');
+      lines.push(`interference: ${w.length} window(s) watched, ${w.length - bad.length} clean${bad.length ? `, ${bad.length} NOT CLEAN — ${bad.map(verdictLine).join(' | ')}` : ''}`);
+    }
+  }
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
     `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
@@ -1200,6 +1212,14 @@ async function captureRenderer(app) {
   log(formatRendererLine(capturedRenderer));
 }
 
+// Where withBoot appends each window's verdict (report.interference.windows) and the label it uses.
+// WHY module state: withBoot has ten call sites and a signature tests rely on; main() sets these once
+// and each phase names its window right before its boot (see `gate` in main).
+let interferenceSink = null;
+let windowLabel = 'boot';
+export function setInterferenceSink(sink) { interferenceSink = sink; }
+export function setWindowLabel(label) { windowLabel = label; }
+
 /** Boot, run `fn`, and always tear down — with the error-masking rule above. */
 export async function withBoot(build, fixture, fn, { mainLoop = false, _deps = {} } = {}) {
   const deps = { launchApp, freeInspectorPort, connectMainLoop, waitFor, captureRenderer, ..._deps };
@@ -1211,17 +1231,37 @@ export async function withBoot(build, fixture, fn, { mainLoop = false, _deps = {
     extraArgs: mainLoop ? [`--inspect=127.0.0.1:${port}`] : [] });
   liveApp = app;
   let bodyFailed = false;
+  let watch = null;
   try {
     // The app is up when the renderer has listed sessions — that is the first moment
     // every startup mark this report reads has actually fired.
     await deps.waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 90_000 });
     await deps.captureRenderer(app);
     if (mainLoop) app.mainLoop = await deps.connectMainLoop(app, { binary: build.binary, home: fixture.home, port });
+    // WHY the watch starts here: noiseGate only looks BEFORE the boot; from here to the end of `fn`
+    // is the measured window, and another app starting inside it must be noticed, not accepted.
+    // Owned = this app's family (re-read every sample, it changes as windows open); the lab's own
+    // process tree is excluded inside the watch. The watch is also exposed as app.interference so
+    // background / native-stream sub-windows can take their own verdict from the same samples.
+    if (interferenceSink) {
+      watch = (deps.createWatch ?? createInterferenceWatch)();
+      watch.start(() => { try { return app.family(); } catch { return []; } });
+      app.interference = watch;
+    }
     return await fn(app);
   } catch (e) {
     bodyFailed = true;
     throw e;
   } finally {
+    // WHY before teardown and in `finally`: an aborted boot still has a window worth reporting, and
+    // teardown's own process churn must not be counted as interference.
+    if (watch) {
+      try {
+        const v = watch.stop(windowLabel);
+        interferenceSink.push(v);
+        log(`interference ${verdictLine(v)}`);
+      } catch (error) { console.error(`[perf-lab] interference watch failed to stop: ${error.message}`); }
+    }
     // Disconnect must never prevent the externally owned process teardown.
     try { app.mainLoop?.close(); }
     catch (error) {
@@ -1278,12 +1318,17 @@ export const NOISE_GATE_MAX_WAIT_MS = 20 * 60_000;
 export async function noiseGate(noise, {
   maxWaitMs = NOISE_GATE_MAX_WAIT_MS, onWaited = () => {}, pollMs = NOISE_GATE_POLL_MS,
   now = Date.now, sleep: nap = sleep, loadAvg = loadAvg1, busyPct = machineBusyPct, say = log,
+  // WHY the default depends on busyPct: a test that injects a fake busyPct has no real /proc to scan
+  // (and must not wait real seconds); only the real sensor path also looks up WHO is busy.
+  whoIsBusy = busyPct === machineBusyPct ? (s) => topForeignProcesses({ seconds: s }) : async () => [],
 } = {}) {
   const startedAt = now();
   const credit = () => { const ms = now() - startedAt; noise.quietWaitMs += ms; onWaited(ms); };
   for (;;) {
     const la = loadAvg();
-    const busy = round1(await busyPct(3));
+    // Both readings span the same 3 s; the offender scan is free here and only used when the machine is busy.
+    const [busyRaw, offenders] = await Promise.all([busyPct(3), whoIsBusy(3).catch(() => [])]);
+    const busy = round1(busyRaw);
     if (la < 4 && busy < 10) {
       // loadAvgBefore/machineBusyPctBefore are the FIRST accepted reading (the state
       // the report started from); the max fields say how bad it got across all gates.
@@ -1297,12 +1342,12 @@ export async function noiseGate(noise, {
     const waitedS = Math.round(waitedMs / 1000);
     if (waitedMs + pollMs > maxWaitMs) {
       credit();
-      noise.neverQuiet = { waitedS, load: la, busyPct: busy, boundMin: Math.round(maxWaitMs / 60000) };
-      throw Object.assign(new Error(`machine never became quiet: load ${la}, ${busy}% cpu after ${waitedS}s of waiting (bound ${Math.round(maxWaitMs / 60000)} min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.`), { exitCode: EXIT.INCOMPLETE });
+      noise.neverQuiet = { waitedS, load: la, busyPct: busy, boundMin: Math.round(maxWaitMs / 60000), blockedBy: describeOffenders(offenders) };
+      throw Object.assign(new Error(`machine never became quiet: load ${la}, ${busy}% cpu after ${waitedS}s of waiting${offenders.length ? ` (blocked by: ${describeOffenders(offenders)})` : ''} (bound ${Math.round(maxWaitMs / 60000)} min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.`), { exitCode: EXIT.INCOMPLETE });
     }
     // Says WAITING, and how long it has been, so a queued run is never mistaken
     // for a hung one.
-    say(`machine busy (load ${la}, ${busy}% cpu) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round(maxWaitMs / 60000)} min; does not use the --max-minutes budget)`);
+    say(`machine busy (load ${la}, ${busy}% cpu${offenders.length ? `; waiting: ${describeOffenders(offenders)}` : ''}) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round(maxWaitMs / 60000)} min; does not use the --max-minutes budget)`);
     noise.discardedRuns++;
     await nap(pollMs);
   }
@@ -1510,6 +1555,9 @@ async function mainRun(argv, ctx, cleanup) {
     maxWaitMs: cfg.maxQuietWaitMinutes * 60_000,
     onWaited: (ms) => { deadline += ms; rearmWatchdog(); },
   };
+  // WHY gate(label): the quiet check before a boot also names the measured window that boot opens, so
+  // the interference verdicts in the report say which phase they belong to.
+  const gate = (label) => { setWindowLabel(label); return noiseGate(report.noise, quiet); };
   const checkDeadline = () => {
     if (Date.now() > deadline) throw Object.assign(new Error(`--max-minutes ${cfg.maxMinutes} exceeded`), { exitCode: EXIT.TIMEOUT });
   };
@@ -1635,6 +1683,7 @@ async function mainRun(argv, ctx, cleanup) {
   resetCapturedRenderer();
 
   const report = emptyReport({ label: cfg.label });
+  setInterferenceSink(report.interference.windows);
   // WHY before execution: an exception on repeat 3 cannot redefine 2 as complete.
   report.legacyExecution = buildLegacyExecution(cfg);
   configureStreamCompletion(report, cfg);
@@ -1665,7 +1714,7 @@ async function mainRun(argv, ctx, cleanup) {
     // WHY here: the package is only known after the build/cached validation, and hashing it
     // before any boot proves WHICH bytes are about to be measured (acceptance A3).
     report.identity = buildIdentity({ cfg, fixture: fixtureIdentity(cfg), instrument: instrumentIdentity(LAB_DIR),
-      pkg: await packageIdentity(build.appDir), control });
+      pkg: await packageIdentity(build.appDir), control, environment: readEnvironment() });
     log(`built ${build.sha.slice(0, 7)} (${build.branch}${dirtyNote(build.dirty)}) → ${build.binary}`);
 
     // Let startXvfb's own error through untouched — it names the exact install command.
@@ -1680,7 +1729,7 @@ async function mainRun(argv, ctx, cleanup) {
       const runs = [];
       for (let i = 0; i < cfg.runs; i++) {
         checkDeadline();
-        await noiseGate(report.noise, quiet);
+        await gate(`startup-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log });
         const run = await withBoot(build, fixture, async (app) => {
           const startup = await collectStartup(app, fixture);
@@ -1724,7 +1773,7 @@ async function mainRun(argv, ctx, cleanup) {
       const wruns = [];
       for (let i = 0; i < cfg.workloadRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, quiet);
+        await gate(`workload-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runWorkloadScenario(app, fixture, report.legacyExecution.phases.workload.options);
@@ -1739,7 +1788,7 @@ async function mainRun(argv, ctx, cleanup) {
     // ---- One scenario boot for history + screenshots -----------------------
     if (['history', 'shots'].some((p) => cfg.only.has(p))) {
       checkDeadline();
-      await noiseGate(report.noise, quiet);
+      await gate('history+shots');
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
         const shotDir = join(cfg.out, 'shots', stem);
@@ -1847,7 +1896,7 @@ async function mainRun(argv, ctx, cleanup) {
     // last. A clean boot is the only state in which the blame means anything.
     if (cfg.only.has('stall')) {
       checkDeadline();
-      await noiseGate(report.noise, quiet);
+      await gate('stall');
       const { runReplayStallScenario, MEASURES: STALL_MEASURES } = await loadReplayStall();
       report.measures.stall = STALL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1875,7 +1924,7 @@ async function mainRun(argv, ctx, cleanup) {
     // keeps a failure in this phase from silently corrupting a different one.
     if (cfg.only.has('artifacts')) {
       checkDeadline();
-      await noiseGate(report.noise, quiet);
+      await gate('artifacts');
       const { runArtifactScenario, medianRun: artifactMedian, MEASURES: ARTIFACT_MEASURES } = await loadArtifacts();
       report.measures.artifacts = ARTIFACT_MEASURES;
       const fixtureOptions = artifactFixtureOptions();
@@ -1933,7 +1982,7 @@ async function mainRun(argv, ctx, cleanup) {
     // rebuild contract still holds and nothing else ever sees the extra project.
     if (cfg.only.has('projects')) {
       checkDeadline();
-      await noiseGate(report.noise, quiet);
+      await gate('projects');
       const { runProjectsScenario, seedProjectsFixture, medianRun: projectsMedian, MEASURES: PROJECTS_MEASURES } = await loadProjects();
       report.measures.projects = PROJECTS_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1965,7 +2014,7 @@ async function mainRun(argv, ctx, cleanup) {
       const truns = [];
       for (let i = 0; i < cfg.terminalRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, quiet);
+        await gate(`terminal-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runTerminalScenario(app, fixture, report.legacyExecution.phases.terminal.options);
@@ -1989,7 +2038,7 @@ async function mainRun(argv, ctx, cleanup) {
       const sruns = [];
       for (let i = 0; i < cfg.nativeStreamRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, quiet);
+        await gate(`native-stream-${i + 1}`);
         const fixture = createNativeStreamFixture(SCRATCH, cfg, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runNativeStreamScenario(app, fixture, report.legacyExecution.phases['native-stream'].options);
@@ -2014,7 +2063,7 @@ async function mainRun(argv, ctx, cleanup) {
       const rruns = [];
       for (let i = 0; i < cfg.nativeResumeRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, quiet);
+        await gate(`native-resume-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log, fakeProvider: true, nativeSessions: true });
         await withBoot(build, fixture, async (app) => {
           const r = await runNativeResumeScenario(app, fixture);
@@ -2034,7 +2083,7 @@ async function mainRun(argv, ctx, cleanup) {
     // look like a regression it did not cause. It runs LAST for the same reason.
     if (cfg.only.has('scrollback')) {
       checkDeadline();
-      await noiseGate(report.noise, quiet);
+      await gate('scrollback');
       const { runScrollbackScenario, medianRun: scrollMedian, MEASURES: SCROLL_MEASURES } = await loadScrollback();
       report.measures.scrollback = SCROLL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -2078,6 +2127,7 @@ async function mainRun(argv, ctx, cleanup) {
   report.machine.renderer = capturedRenderer;
   // WHY: load was only sampled before boots; one end-of-run reading shows whether it climbed.
   try { report.noise.loadAvgAfter = loadAvg1(); } catch { /* sensor unavailable: leave null */ }
+  setInterferenceSink(null);
   report.incomplete = validateReport(report, cfg.only);
   mkdirSync(cfg.out, { recursive: true });
   const jsonPath = join(cfg.out, `${stem}.json`);

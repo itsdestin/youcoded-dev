@@ -4,6 +4,7 @@
   "policy": "files + uiFiles are offline-unit: no app/browser/build/sensor/network/paid execution. Disposable fixtures, format libraries, jsdom/VM, fake CDP/events/proc and source-only Node CLI subprocesses are allowed. readOnlyGitFiles is a separate source-inspection addition, never Git commits. pythonFiles uses injected gate operations only. offlineLocalFiles is separately authorized fake loopback HTTP only, never outside connections. No broad-glob execution; every addition requires source-boundary review.",
   "files": [
     "asset-gate-quiet-wait.test.mjs",
+    "interference-watch.test.mjs",
     "cached-build.test.mjs",
     "stream-completion-runner.test.mjs",
     "coverage.test.mjs",
@@ -83,6 +84,7 @@
     "fake-provider.test.mjs"
   ],
   "notes": {
+    "interference-watch.test.mjs": "Offline: scripted fake /proc, sysfs and clock readers only (injected); proves the mid-window interference verdicts, report incomplete mapping and comparability refusals. No app, no real /proc or sensor reads.",
     "asset-gate-quiet-wait.test.mjs": "Offline: injected fs/network stubs and fake clock/load only; proves asset-download refusal and the separate quiet-wait bound. No app, network or sensor.",
     "scenario-native-stream.test.mjs": "Pure summaries, deterministic delta splitting and VM/parse-only emitted sources; no server/app.",
     "legacy-evidence.test.mjs": "Synthetic legacy execution/report fixtures and validators only.",

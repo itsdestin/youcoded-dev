@@ -42,7 +42,7 @@ export function validLegacyReport(phases, repeats = 3) {
   const cfg = { only: new Set(phases) };
   for (const c of Object.values(LEGACY_CONTRACTS)) if (c.count) cfg[c.count] = repeats;
   // WHY identity: assessComparability now refuses reports without it (acceptance A3).
-  const report = { legacyExecution: buildLegacyExecution(cfg), identity: sampleIdentity() };
+  const report = { legacyExecution: buildLegacyExecution(cfg), identity: sampleIdentity(), interference: { windows: [] } };
   for (const phase of phases) {
     const spec = report.legacyExecution.phases[phase];
     if (phase === 'shots') { report.screens = { names: spec.names.slice(), failures: [] }; continue; }
@@ -67,6 +67,7 @@ export function addLegacyFixtureEvidence(report, phases, counts = {}) {
   }
   report.legacyExecution = buildLegacyExecution(cfg);
   report.identity ??= sampleIdentity();
+  report.interference ??= { windows: [] };
   const fill = (target, defaults) => {
     for (const [key, value] of Object.entries(defaults)) {
       if (target[key] === undefined) target[key] = structuredClone(value);

@@ -4,6 +4,7 @@ import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
 import { replayEvidenceProblems } from './replay-evidence.mjs';
 import { legacyEvidenceProblems } from './legacy-evidence.mjs';
 import { identityMismatches, identityProblems } from './identity.mjs';
+import { interferenceProblems } from './interference-watch.mjs';
 
 // A report can contain good-looking numbers without evidence that the two runs
 // measured the same thing. Keep this check pure so partial and historical JSON can
@@ -25,7 +26,7 @@ const measuredSections = {
 export function assessComparability(baseline, candidate, { primary = [] } = {}) {
   const reasons = [];
   const warnings = [
-    'Pre-boot noise samples do not prove absence of interference during measurement; midrun interference was not measured.',
+    'Interference is judged from /proc samples every 500 ms: it names other programs using the CPU, disk or memory, but cannot see everything (e.g. another program holding the graphics chip is only attributed where /proc allows).',
   ];
   for (const [label, report] of [['baseline', baseline], ['candidate', candidate]]) {
     if (!record(report)) { reasons.push(`${label}: invalid report`); continue; }
@@ -43,6 +44,11 @@ export function assessComparability(baseline, candidate, { primary = [] } = {}) 
     // repeat counts decide what a number MEANS. A report without them (every report written
     // before identity existed) is incomparable with an explicit reason, never assumed equal.
     reasons.push(...identityProblems(report).map(problem => `${label}: ${problem}`));
+    // WHY (owner request 2026-10-21): a window another program disturbed, or one nobody watched, is not a
+    // quiet-machine number. validateReport already makes such a report incomplete; this refuses it again
+    // here so a hand-edited or older report cannot slip a disturbed window into a comparison.
+    if (!Array.isArray(report.interference?.windows)) reasons.push(`${label}: no interference record (taken before the watch existed); remeasure`);
+    else reasons.push(...interferenceProblems(report).map(problem => `${label}: ${problem}`));
     const machine = report.machine;
     for (const key of machineFields) {
       if (!text(machine?.[key])) reasons.push(`${label}: missing or invalid machine.${key}`);

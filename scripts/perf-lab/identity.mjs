@@ -85,8 +85,11 @@ export function executionIdentity(cfg) {
   };
 }
 
-export function buildIdentity({ cfg, fixture, instrument, pkg, control = null }) {
-  return { revision: IDENTITY_REVISION, instrument, fixture, package: pkg, execution: executionIdentity(cfg), control };
+// WHY environment lives in identity: the power profile ("quiet" vs "performance") and mains power change
+// clocks and power caps, so two runs under different ones measured different machines. Recording it with
+// the rest of identity means compare/ab refuse the pair through the same path as every other identity gap.
+export function buildIdentity({ cfg, fixture, instrument, pkg, control = null, environment = null }) {
+  return { revision: IDENTITY_REVISION, instrument, fixture, package: pkg, execution: executionIdentity(cfg), control, environment };
 }
 
 /** Why one report's identity block cannot certify a comparison. Empty = well formed. */
@@ -105,6 +108,8 @@ export function identityProblems(report) {
       if (/Repeats$|^runs$/.test(key) && !(Number.isInteger(v) && v >= 1)) problems.push(`execution.${key} must be a whole number >= 1`);
     }
   }
+  const env = id.environment;
+  if (!record(env) || !('platformProfile' in env) || !('acOnline' in env)) problems.push('environment snapshot (power profile, charger state) missing');
   return problems;
 }
 
@@ -122,6 +127,12 @@ export function identityMismatches(a, b) {
     const keys = [...new Set([...Object.keys(ea), ...Object.keys(eb)])].filter((k) => !isDeepStrictEqual(ea[k], eb[k]));
     reasons.push(`execution options / repeat counts differ (${keys.join(', ')})`);
   }
+  // WHY null counts as a value: a machine with no readable profile on BOTH sides is the same environment;
+  // readable-vs-unreadable is a difference we cannot call equal.
+  const ea = a?.environment ?? {}, eb = b?.environment ?? {};
+  for (const [key, what] of [['platformProfile', 'power profile'], ['acOnline', 'charger state']]) {
+    if (ea[key] !== eb[key]) reasons.push(`${what} differs (${String(ea[key])} vs ${String(eb[key])}); remeasure both sides under the same ${what}`);
+  }
   // package and control are deliberately NOT compared: differing packages are the point of an
   // A/B run, and a control run is compared (and labelled) on purpose.
   return reasons;
@@ -137,6 +148,7 @@ export function sampleIdentity(overrides = {}) {
     package: { executableSha256: h('exe'), asarSha256: h('asar') },
     execution: { only: ['history'], runs: 5, historyRepeats: 3, workloadRepeats: 3, stallRepeats: 3, artifactRepeats: 3, projectsRepeats: 3, terminalRepeats: 3, nativeStreamRepeats: 3, nativeResumeRepeats: 3, scrollbackRepeats: 3, documentCaseIds: ['a'], streamCompletionDiagnostics: false },
     control: null,
+    environment: { platformProfile: 'performance', acOnline: true },
     ...overrides,
   };
 }
