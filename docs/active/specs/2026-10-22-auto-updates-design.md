@@ -3,10 +3,10 @@ status: active
 card: 183
 contract: docs/active/design/2026-10-22-auto-updates/auto-updates.contract.json
 branch: session/183-auto-updates (youcoded + youcoded-dev)
-reviews: docs/active/reviews/2026-10-22-auto-updates-design-review-1.md
+reviews: docs/active/reviews/2026-10-22-auto-updates-design-review-{1,2}.md
 ---
 
-# Automatic updates — technical design (rev 2, after review 1)
+# Automatic updates — technical design (rev 3, after reviews 1–2)
 
 The UI is built and approved (the contract, 16 rows). This document is the backend behind it.
 Everything reuses the existing updater in `desktop/src/main/update-*.ts`. `Dn` marks a change
@@ -58,8 +58,11 @@ The service owns every download through one function, `ensureDownloaded(reason)`
 - Steps: (1) a verified file for `latest` already recorded? done. (2) A file on disk named for
   `latest` (`findCachedDownload`, made async — D18)? verify it. (3) Otherwise download with the
   existing engine. (4) Verify with `verifyDownloadedUpdate` against THAT release's own signed
-  file. Pass ⇒ record `pending = { version, tag, manifestUrl, signatureUrl, filePath }` in
-  memory and in `update-cache/pending.json` (D13). Fail ⇒ delete that file; `signature-invalid`
+  file. Pass ⇒ record `pending = { version, tag, manifestUrl, signatureUrl, assetName }` in
+  memory and in `update-cache/pending.json` (D13), and push status to every window (E13). The
+  file path is always `update-cache/<assetName>` with `assetName` taken from the signed file's
+  entry and checked with the existing `deriveDownloadFilename` rules — never a path read back
+  from `pending.json` (E10). Changing the beta channel clears `pending` (E3). Fail ⇒ delete that file; `signature-invalid`
   (no signed file — the brake) is not retried until the next check; network failures retry at
   the next check.
 - A newer release appearing while an older one is `pending` downloads the newer one; the older
@@ -88,9 +91,11 @@ closed arrives as `downloaded` through the status push. No new UI.
   async:
   - Linux package installs (`linuxInstallKind()` is deb/rpm/pacman).
   - macOS when the `.app` bundle or its parent folder is not writable by this user.
-  - Windows when the install folder (the exe's directory) is not writable — a per-machine
-    install under Program Files (D24).
-  - Never AppImage (an unwritable AppImage stays the existing `appimage-not-writable` error).
+  - Windows when the exe lives under `%ProgramFiles%` or `%ProgramFiles(x86)%` — a
+    per-machine install (D24). Not `fs.access`, which ignores Windows ACLs (E4).
+  - Never AppImage. Instead the AppImage's folder is probed for writing at startup (create and
+    remove a temp file beside it); not writable ⇒ no background download and no quit install,
+    and Restart shows the existing `appimage-not-writable` error (E9).
 - Install is refused outright (no auto-install, Restart falls back to today's interactive
   installer / disk image) when the app is unpackaged, or on macOS when the bundle is not named
   `YouCoded.app` or runs from an App Translocation path (D9).
@@ -102,14 +107,15 @@ closed arrives as `downloaded` through the status push. No new UI.
 2. Re-hashes the exact file it is about to run against the signed file (`verifyBeforeLaunch`
    on `pending.filePath`, using `pending`'s own tag and URLs), then hands that path — never a
    renderer value — to the platform step (D12).
-3. Writes `update-cache/attempt.json` (`{ version, at }`) (D7/D21). On the next launch: running
-   version ≥ attempted ⇒ success, delete the attempt and the file. Still older ⇒ log
-   "install did not complete", delete the attempt, keep `pending` so the popup is simply Ready
-   again (no new notice — no deck approved one).
+3. At spawn, writes `update-cache/attempt.json` (`{ version, at, failures }`) (D7/D21/E2). On
+   the next launch: running version ≥ attempted ⇒ success, delete the attempt and the file.
+   Still older ⇒ log "install did not complete", increment `failures`, keep `pending` so the
+   popup is simply Ready again (no new notice — no deck approved one). At two failures, quits
+   stop installing that version; Restart still tries (E8).
 
 | Platform | Quit install (switch on, no password) | Restart to update |
 |---|---|---|
-| Windows per-user | NSIS installer `/S --updated`, spawned detached from `will-quit` after teardown (D6) | same plus `--force-run` (NSIS relaunches the app), then quit |
+| Windows per-user | NSIS installer `/S --updated`, spawned detached from `will-quit` after teardown (D6) | same plus `--force-run` (NSIS relaunches the app), from the same exit hook |
 | Windows per-machine | never | interactive installer as today (its own Windows permission prompt) |
 | macOS writable | stage (below), then a detached `/bin/sh` helper spawned from `will-quit` waits for our pid to exit, swaps, rolls back on failure | same, helper `open`s the new app when done |
 | macOS needs password | never (R15) | stage, then ONE `osascript … with administrator privileges` (the Mac's own password box) that starts the same helper as root in the background and returns at once; cancel ⇒ open the disk image as today, app keeps running (R16). The helper restores the bundle's owner after the swap so the next update needs no password (D9) |
@@ -119,7 +125,12 @@ closed arrives as `downloaded` through the status push. No new UI.
 macOS staging (D8–D11): `hdiutil attach -nobrowse -readonly -mountpoint <tmp>`; `ditto` the
 `.app` to `<bundle parent>/.YouCoded-update-<version>.app` (writable case) or
 `$TMPDIR/youcoded-update-<version>/` (password case); detach; `codesign --verify --deep --strict`
-the staged copy. Any failure ⇒ disk image fallback. The swap NEVER runs while our process
+the staged copy against the RUNNING app's own designated requirement (`codesign -d -r-` of the
+running bundle, then `codesign --verify --deep --strict -R=<that requirement>` on the staged one),
+so only an app signed by us passes (E6). Password case: staging is a mode-700 folder; the root
+helper is fixed script text passed inline to `osascript` (never a file someone else can
+rewrite), takes ownership of the staged copy, and re-runs the same `codesign -R` check before
+moving it (E5). Any failure ⇒ disk image fallback. The swap NEVER runs while our process
 lives: the helper polls our pid, then `mv old → old.bak`, `mv staged → bundle`, `rm -rf old.bak`;
 any failed step moves `old.bak` back. Paths reach the helper as positional arguments to a
 fixed script (`quoted form of` in AppleScript), never interpolated. Startup sweeps stale
@@ -128,16 +139,32 @@ run (writable and non-admin account, macOS 15 and 26) is a release gate, listed 
 handoff.** App Management protection on newer macOS may refuse the helper; that path must fall
 back to the disk image, and the test above must confirm it.
 
+### The exit hook: one place that spawns (rev 3)
+
+`app-restart.ts` already owns "do something as the process really exits": `gatedQuit` (the
+unsaved-files gate, then teardown) marks a restart, and `onWillQuit` relaunches — called from
+Electron's `will-quit` AND from the 10 s watchdog right before `app.exit` (E2). It generalises
+to an exit action: `'relaunch'` (today's restart), `'install'` (quit install) or
+`'install-relaunch'` (Restart to update). The installer spawn (or Mac helper start, or AppImage
+rename) happens only there — after teardown, after the unsaved-files gate, on every exit route
+that runs teardown (E1, E2, E7). The attempt record is written at the moment of spawn (E2).
+
+During teardown, a prepare step (`prepareInstall`, inside `runShutdown`, run in parallel with
+the other steps, capped at 5 s, started as soon as the quit begins — E12) runs the brake (§5)
+and the hash re-check and leaves a ready-to-spawn plan in memory; the exit hook only spawns a
+plan that prepared in time. No plan ⇒ the app just exits.
+
 ### When a quit installs
 
-`shutdownApp({ installUpdate })` (D5): the intent is set only by a person's quit —
-`window-all-closed`, the app-menu Quit / Cmd+Q (`before-quit` not raised by our own code) — and
-never by SIGTERM/SIGINT, app-restart relaunches, or when any relaunch is queued. A Windows
-`session-end` (logoff/shutdown) and macOS/Linux `powerMonitor` `shutdown` set a system-shutdown
-flag that vetoes it (D4). Conditions: switch on, `pending` exists, `needs_password` false,
-install not refused (§3). The brake runs during teardown, capped at 5 s; the spawn happens in
-`will-quit` after teardown; children are `detached` + `unref`ed. Known limit: a launcher that
-runs YouCoded inside a kill-on-close Windows job object kills the installer with it (D25).
+The `'install'` action is set only by a person's quit: `gatedQuit` with no restart requested
+(menu Quit, Cmd+Q, last window closed). SIGTERM/SIGINT never pass through `gatedQuit`, and a
+settings restart uses `'relaunch'` (D5). A Windows `session-end` (logoff/shutdown) and
+macOS/Linux `powerMonitor` `shutdown` set a system-shutdown flag that vetoes it (D4).
+Conditions: switch on; `pending.version === latest` (E3); `needs_password` false; install not
+refused (§3); fewer than two failed attempts for this version (E8). Offline quits do not
+install (the brake cannot confirm the release) and retry at the next quit (E12). Children are
+`detached` + `unref`ed. Known limit: a launcher that runs YouCoded inside a kill-on-close
+Windows job object kills the installer with it (D25).
 
 ### Restart to update (`update:restart-to-update`, desktopOnly)
 
@@ -146,10 +173,14 @@ runs YouCoded inside a kill-on-close Windows job object kills the installer with
    One answer covers every window's sessions (D23; the prompt already counts them all).
 2. Answer cancel, or ANY quit starting while the prompt is open ⇒ `{ restarting: false }`;
    the update does not install (D22). The other quit proceeds as it would have.
-3. Yes: password platforms ask first (step above); a cancel there leaves the app running with
-   the popup's existing state. Then untrack sessions if `reopen` is false, run the platform
-   step with `relaunch: true`, return `{ restarting: true }`, and quit through
-   `shutdownApp({ installUpdate: false })` (the install is already handed off).
+3. Yes: password platforms ask now, while the app still runs (Linux `pkexec` installs here, as
+   today; the Mac password box starts the root helper, which waits for our exit). A cancel
+   leaves the app running with the popup's existing state. Untrack sessions if `reopen` is
+   false, mark the exit action `'install-relaunch'`, return `{ restarting: true }`, and quit
+   through the normal path (`app.quit()` → `gatedQuit`), so the unsaved-files list still
+   appears (E1). If that gate holds the quit, the action is forgotten exactly like a held
+   restart today; a Mac root helper already started then simply waits for the next exit (its
+   swap is the verified staged app, so that is safe).
 
 "Update now" (switch off, nothing downloaded): the popup awaits `ensureDownloaded`, then calls
 `restartToUpdate()` — one press, as today, but it ends in the same restart path.
@@ -163,7 +194,8 @@ the previous release. Notice, when worth it, through the announcement chip (R14)
 
 App, before any install (D1):
 - Fetch `pending`'s own signed file and signature from the release download host (not the
-  rate-limited API). 404 ⇒ pulled: delete the file, clear `pending`, do not install. Any other
+  rate-limited API). `fetchUrlToBuffer`'s error gains the HTTP status of the final hop (E11).
+  404 ⇒ pulled: delete the file, clear `pending`, do not install. Any other
   failure or timeout (5 s) ⇒ do not install this time; keep the file.
 - Re-verify the file's hash against it (§4 step 2).
 - Restart additionally runs a result-returning `checkNow()` against the API; if that fresh,
@@ -187,8 +219,8 @@ A release someone already installed is not rolled back (out of scope; R14).
 
 `config.json`: `{ "updates": { "betaChannel": bool|null, "autoInstall": bool } }`.
 `UpdateStatus` += `downloaded?: boolean; needs_password?: boolean`.
-`update-cache/pending.json` `{ version, tag, manifestUrl, signatureUrl, file }` and
-`update-cache/attempt.json` `{ version, at }`. Mac staging folders are transient and swept.
+`update-cache/pending.json` `{ version, tag, manifestUrl, signatureUrl, assetName }` and
+`update-cache/attempt.json` `{ version, at, failures }`. Mac staging folders are transient and swept.
 
 ## Performance
 
@@ -210,7 +242,14 @@ download is deferred (D19); hashing streams.
 - Restart: own request key; quit during prompt ⇒ no install; cancel ⇒ `{restarting:false}`;
   password cancel ⇒ app runs; per-platform argv; Mac helper with spaces and quotes in paths and
   its rollback branch (D9, D10, D22).
-- Attempt record: success and failure on next launch (D7).
+- Attempt record: success and failure on next launch; two failures stop quit installs (D7, E8).
+- Exit hook: spawns from both `will-quit` and the watchdog exit; a held quit (unsaved files)
+  spawns nothing; Restart passes the unsaved-files gate (E1, E2, E7).
+- `pending.version !== latest` ⇒ no quit install; beta-channel change clears `pending` (E3).
+- Windows per-machine by path; AppImage folder probe (E4, E9).
+- Brake fetch: 404 / 403 / 500 / 404 on a redirect hop (E11); `pending.json` path ignored (E10);
+  status pushed when `pending` changes (E13).
+- Mac: staged app with a different signer is refused (E6).
 - UpdatePanel: closing mid-download sends no cancel; reopening shows the job's progress.
 - IPC parity (`ipc-channels.test.ts`, `update-install-ipc.test.ts`,
   `channel-table-families.test.ts`), mock-shim contract.
