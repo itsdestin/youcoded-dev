@@ -1200,3 +1200,14 @@ recurred — the repetition is the data.
 - RECURRED (3rd hit, card #19(h)/(iv)): glob-guard guard 8 refused `npm ci` in a scratch folder because it judged the session cwd; ~4 wasted calls → applied: a leading absolute `cd <non-worktree> &&` (and no other cd) now counts as where the install runs; new test observed red before green (137/137). Moved up the ladder from card text to an executing guard.
 - The shared `wecoded-marketplace/worker/node_modules` was too old for the current vitest pool (`cloudflareTest` export missing), and workspace-start provisions only `youcoded/desktop` → recorded on card #19 next-steps rather than a new card.
 - deleted/merged: the utm `buildCampaignLink` helper replaced by `campaignLabels` + `buildShortLink`; no new docs. Dropped adding 0009 to the MAP row: the row already names the analytics routes and migration folder, which lead to it.
+
+## 2026-10-21 — message times: real day, last-updated, kept after reopening (session/2-message-timestamps, card #2)
+- RECURRED (4th hit, card #19(h)): workspace-start's note for a far-behind `node_modules` said "delete it and run npm ci", which glob-guard refuses in a worktree; ~6 calls rebuilding a scratch install by hand (plus /tmp being another disk, so `cp -al`/rename across failed) → applied: `freshInstall` in `workspace-start.mjs` installs beside the component and swaps it in, run automatically at startup and via `fill-missing-deps.mjs --fresh`; test red before green. Moved from card text to code.
+- RECURRED (2nd deck in a row, previous entry dropped it as "documented"): shoot's two default themes vs the deck's full list → 2 rebuilds again → applied: the deck build prints the exact `shoot … --themes <list>` to retake; tests red before green.
+- glob-guard guard 8 blocked a plain `rg` whose PATTERN contained an install command → recorded on #19's next steps (no new card).
+- `shoot --before master` built from the shared checkout, whose deps were stale → worked around with a detached origin/master worktree; dropped as a separate item: same root as #19(h).
+- A bug I shipped to Destin's dev check (a reply that opens with a tool step kept the reopen time) slipped past tests that all started replies with text → pinned by a test; no workspace change. An independent reviewer then found one perf cost (a reply-map copy per tool event) → fixed (whole-minute moves only).
+- Two pre-existing flakes fixed on sight: `shoot --check` kit dropdown screen under load (hold until the frame has focus; proven with a 3 s delay) and CI ENOTEMPTY in `specialist-run.test.ts` (wait for the parent's delivery pass).
+- Skipped asking before taking the short route (feature-flow says ask) → dropped: the rule exists; my lapse, said so in chat.
+- Destin's idea-adjacent follow-up filed: #178 (workbench chats dated 2025 now read as dates in screenshots and site clips).
+- deleted/merged: removed workspace-start's "delete it and run npm ci" advice (it contradicted glob-guard).
