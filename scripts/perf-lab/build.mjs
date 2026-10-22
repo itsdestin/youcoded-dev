@@ -20,9 +20,9 @@ const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 // through this same helper. Without `quiet` their stdout (a commit sha, a
 // branch name) would print *above* the JSON on every invocation, including the
 // fresh-path no-op, and break that contract. Only the long build steps stream.
-function sh(cmd, args, cwd, step, { quiet = false, raw = false } = {}) {
+function sh(cmd, args, cwd, step, { quiet = false, raw = false, env } = {}) {
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], ...(env ? { env } : {}) });
     let out = '';
     let err = '';
     // Preserve UTF-8 names even when a character crosses a pipe chunk boundary.
@@ -102,8 +102,9 @@ function cachedBuild(checkout, fp) {
   return { ...prev, ...fp, binary, appDir, cachedOnly: true };
 }
 
-export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), { skipIfFresh = true, cachedOnly = false, checkSpace = requireDiskHeadroom, _deps = {} } = {}) {
+export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), { skipIfFresh = true, cachedOnly = false, perfCounters = false, checkSpace = requireDiskHeadroom, _deps = {} } = {}) {
   if (typeof cachedOnly !== 'boolean') throw Error('cached-only must be boolean');
+  if (typeof perfCounters !== 'boolean') throw Error('perfCounters must be boolean');
   if (cachedOnly && !skipIfFresh) throw Error('cached-only conflicts with forced rebuild');
   checkout = resolve(checkout);
   const fingerprint = _deps.fingerprint ?? treeFingerprint;
@@ -119,7 +120,8 @@ export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), {
   const fp = await fingerprint(checkout);
   if (skipIfFresh && existsSync(binary) && existsSync(stamp)) {
     const prev = JSON.parse(readFileSync(stamp, 'utf8'));
-    if (prev.sha === fp.sha && prev.dirty === fp.dirty) return { binary, appDir, ...prev };
+    // WHY the flag is part of freshness: a counters build and a normal build of the same source are different packages.
+    if (prev.sha === fp.sha && prev.dirty === fp.dirty && Boolean(prev.perfCounters) === perfCounters) return { binary, appDir, ...prev };
   }
   // WHY: the measured package alone is ~540 MB; allow staging as well as the
   // shared disk reserve. Reusing a verified cached build needs no new allocation.
@@ -130,15 +132,18 @@ export async function buildApp(checkout = join(ROOT, 'worktrees', 'perf-lab'), {
   await node("require('fs').cpSync('src/main/pty-worker.js','dist/main/pty-worker.js')", 'copy pty-worker.js');
   await node("require('fs').mkdirSync('dist/renderer/data',{recursive:true})", 'mkdir dist/renderer/data');
   await node("require('fs').cpSync('src/renderer/data/skill-registry.json','dist/renderer/data/skill-registry.json')", 'copy skill-registry.json');
-  await exec('npx', ['vite', 'build'], desktop, 'vite build');
+  // WHY: VITE_PERF_COUNTERS=1 compiles in the transcript-batcher counters + window.__transcriptBatcherCounters
+  // (renderer/state/transcript-batch-counters.ts). Absent for every normal build, so a lab candidate without the flag
+  // measures the shipping code path.
+  await exec('npx', ['vite', 'build'], desktop, 'vite build', perfCounters ? { env: { ...process.env, VITE_PERF_COUNTERS: '1' } } : undefined);
   await exec('npx', ['electron-builder', '--linux', 'dir'], desktop, 'electron-builder');
   if (!existsSync(binary)) throw new Error(`build finished but ${binary} is missing`);
-  const info = { ...fp, builtAt: new Date().toISOString(), buildMs: Date.now() - t0 };
+  const info = { ...fp, perfCounters, builtAt: new Date().toISOString(), buildMs: Date.now() - t0 };
   writeFileSync(stamp, JSON.stringify(info, null, 2));
   return { binary, appDir, ...info };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const r = await buildApp(process.argv[2] ? resolve(process.argv[2]) : undefined, { skipIfFresh: !process.argv.includes('--force') });
+  const r = await buildApp(process.argv[2] ? resolve(process.argv[2]) : undefined, { skipIfFresh: !process.argv.includes('--force'), perfCounters: process.argv.includes('--perf-counters') });
   console.log(JSON.stringify(r, null, 2));
 }

@@ -64,7 +64,8 @@
     "run-lock.test.mjs",
     "report-stem.test.mjs",
     "compare-all.test.mjs",
-    "ab.test.mjs"
+    "ab.test.mjs",
+    "workstream-e.test.mjs"
   ],
   "uiFiles": [
     "scripts/ui-review/tests/dom-growth.test.mjs",
@@ -150,7 +151,8 @@
     "ab.test.mjs": "A/B orchestration with run.mjs main() replaced by a fake, injected freshness/hash/lock/disk adapters and temp dirs; no build, app or process.",
     "supervised-compositor-inferred.test.mjs": "Fake /proc status/cmdline/stat, fake file-capability bytes and injected SO_PEERCRED/xattr readers only; also pins the bounded role-refusal reason object (no-role, duplicate-role, receipt-mismatch, substitution, unreadable); the Python proof helper is never run. No real process, socket, xattr, compositor, app or sensor access.",
     "supervised-wayland-binding.test.mjs": "Pure supervised plan validation and env/argv builders, injected lstat and fake backend; no worker, gate, socket, app or compositor.",
-    "supervised-compositor-proofs.test.py": "Injected getxattr/lstat/connect and an in-process socketpair only; the module never opens the kwin binary, a Wayland socket or a compositor when imported."
+    "supervised-compositor-proofs.test.py": "Injected getxattr/lstat/connect and an in-process socketpair only; the module never opens the kwin binary, a Wayland socket or a compositor when imported.",
+    "workstream-e.test.mjs": "Offline: fake CDP/clock/proc readers only; reducer-queue conservation, minimize/restore proof and background-window pricing. No app, window manager, network or sensor."
   },
   "excludedEffectfulExamples": {
     "ipc-close-reproducer.integration.mjs": "Real Node fork/disconnect reproduction; not source-only.",

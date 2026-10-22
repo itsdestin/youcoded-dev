@@ -1,15 +1,20 @@
-// Optional lab-only observation of the existing transcript bridge. No app hooks.
-export const STREAM_DRAIN_DESCRIPTOR = Object.freeze({ revision: 2, lane: 'native-stream-completion-diagnostic', standardAcceptance: false,
+export const BATCHER_ABSENT_REASON = 'candidate lacks counters';
+// Optional lab-only observation of the existing transcript bridge. Revision 3 (workstream E): the reducer queue is read
+// from the candidate's perf-only batcher counters when the candidate was built with them; otherwise it is reported unavailable.
+export const STREAM_DRAIN_DESCRIPTOR = Object.freeze({ revision: 3, lane: 'native-stream-completion-diagnostic', standardAcceptance: false,
   maxEvents: 10000, maxBytes: 1024 * 1024, plannedStreamMaxMs: 30000, drainMs: 10000, pollMs: 100,
   fixture: 'plain alphanumeric tokens at the existing planned delta count/rate; not the legacy Markdown workload',
   receipt: 'native live assistant-text events APPEND by partId with unique uuid; coalesced/replayed/cumulative/replacement evidence is not accepted as live delta conservation',
   clocks: 'Producer Date.now timestamps, renderer performance.now receipt timestamps, controller monotonic drain duration are retained separately; no cross-clock subtraction.',
   visibility: 'Boundary snapshots prove hidden session wrapper with a different active session, not continuous visibility; real OS-hidden/minimized-window activity unsupported.',
-  reducerQueue: { available: false, reason: 'Reducer/batcher queue is closure-local and not exposed by existing bridge; bridge receipt is not reducer drain.' },
-  limits: ['Observer overhead is uncalibrated; opt-in only, not a comparable standard baseline.', 'Exact post-reveal visible output is not hidden reducer completion or physical presentation.', 'No persistence substitute, CPU/energy attribution or internal queue conservation claim.'] });
+  reducerQueue: { available: 'feature-detected', source: 'window.__transcriptBatcherCounters (perf-only build flag VITE_PERF_COUNTERS=1)',
+    absent: { available: false, reason: BATCHER_ABSENT_REASON },
+    identity: 'producerSent = bridgeReceived = enqueued(assistant-text) = applied + dropped, plus total queue unaccounted = 0 and empty at the end of the leg',
+    scope: 'Counts transcript-batcher actions only: arrival into and exit from the frame queue. Not React render/paint completion.' },
+  limits: ['Observer overhead is uncalibrated; opt-in only, not a comparable standard baseline.', 'Exact post-reveal visible output is not hidden reducer completion or physical presentation.', 'No persistence substitute or CPU/energy attribution claim; queue conservation only where the counters exist.'] });
 
 export function buildDrainFixture(leg, count) {
-  const code = { visible: 'v', switching: 's', hidden: 'h' }[leg];
+  const code = { visible: 'v', switching: 's', hidden: 'h', oshidden: 'o' }[leg];
   if (!code || !Number.isInteger(count) || count < 3 || count > 10000) throw Error('Drain fixture requires known leg and 3..10000 deltas');
   // splitDeltas includes leading space in its six-character token cap.
   const marker = `Z${code.toUpperCase()}END`;
@@ -85,6 +90,47 @@ const bounded = (promise, ms) => {
   const guard = new Promise((_, reject) => { timer = setTimeout(() => reject(Error('Stream drain controller deadline')), ms); });
   return Promise.race([promise, guard]).finally(() => clearTimeout(timer));
 };
+
+
+// ---- Reducer queue (transcript-batcher counters), feature-detected ---------------------------------
+/** Read the candidate's perf-only batcher counters. Absent (normal build, historical candidate) is
+ * `{ available:false, reason }`, never zeros: a zero would read as "nothing queued". */
+export async function readBatcherCounters(cdp) {
+  try {
+    const r = await bounded(cdp.evaluate('(() => window.__transcriptBatcherCounters ? { present: true, snapshot: window.__transcriptBatcherCounters.snapshot() } : { present: false })()'), 1000);
+    if (!r?.present) return { available: false, reason: BATCHER_ABSENT_REASON };
+    return { available: true, ...r.snapshot };
+  } catch (e) { return { available: false, reason: `counter read failed: ${e.message}` }; }
+}
+export async function resetBatcherCounters(cdp) {
+  try {
+    const r = await bounded(cdp.evaluate('(() => { if (!window.__transcriptBatcherCounters) return false; window.__transcriptBatcherCounters.reset(); return true; })()'), 1000);
+    return r === true;
+  } catch { return false; }
+}
+
+/** Conservation + queue shape for one leg. `counters` is a readBatcherCounters() result taken AFTER the leg
+ * drained and AFTER a reset BEFORE it began. Unavailable counters never fail the leg and never read as zero. */
+export function assessReducerQueue({ producer, receipt, counters, resetOk = true, actionType = 'TRANSCRIPT_ASSISTANT_TEXT' }) {
+  if (!counters?.available) return { available: false, reason: counters?.reason ?? BATCHER_ABSENT_REASON };
+  const row = counters.byType?.[actionType] ?? { enqueued: 0, applied: 0, dropped: 0 };
+  const producerSent = producer?.deltasSent ?? null, bridgeReceived = receipt?.textEvents ?? null;
+  const dropped = row.dropped;
+  const failures = [];
+  if (!resetOk) failures.push('counters could not be reset before the leg');
+  if (producerSent !== bridgeReceived) failures.push(`producerSent ${producerSent} != bridgeReceived ${bridgeReceived}`);
+  if (bridgeReceived !== row.enqueued) failures.push(`bridgeReceived ${bridgeReceived} != enqueued ${row.enqueued}`);
+  if (row.enqueued !== row.applied + dropped) failures.push(`enqueued ${row.enqueued} != applied ${row.applied} + dropped ${dropped}`);
+  if (counters.unaccounted !== 0) failures.push(`queue unaccounted ${counters.unaccounted}`);
+  if (counters.pendingDepth !== 0) failures.push(`queue not empty at leg end (${counters.pendingDepth} waiting)`);
+  return { available: true, source: 'window.__transcriptBatcherCounters', actionType,
+    conservation: { producerSent, bridgeReceived, enqueued: row.enqueued, applied: row.applied, dropped, holds: failures.length === 0, failures },
+    totals: { pushed: counters.pushed, enqueued: counters.enqueued, applied: counters.applied, droppedOnDispose: counters.droppedOnDispose,
+      droppedAfterDispose: counters.droppedAfterDispose, droppedOnDispatchError: counters.droppedOnDispatchError, flushes: counters.flushes },
+    queue: { maxPendingDepth: counters.maxPendingDepth, pendingDepthNow: counters.pendingDepth, oldestPendingAgeMsNow: counters.oldestPendingAgeMs,
+      maxOldestPendingAgeMs: counters.maxOldestPendingAgeMs, units: 'actions / ms (renderer performance.now)' },
+    scope: STREAM_DRAIN_DESCRIPTOR.reducerQueue.scope };
+}
 
 export function assessStreamDrain({ expected, producer, receipt }) {
   const reasons = [];
@@ -165,7 +211,9 @@ export async function beginStreamDiagnostic(cdp, fake, { leg, sessionId, deltas,
   const requestIndex = fake.requests.length;
   const visibilityStart = await bounded(cdp.evaluate(sessionVisibilitySource(sessionId)), 1000);
   await bounded(cdp.evaluate(receiptSource({ sessionId, expected })), 1000);
-  return { fixture, requestIndex, visibilityStart, sessionId, leg };
+  // WHY reset here: the identity is per leg, so the counters must start the leg at zero. Absent counters: no-op.
+  const countersReset = await resetBatcherCounters(cdp);
+  return { fixture, requestIndex, visibilityStart, sessionId, leg, countersReset };
 }
 
 export async function finishStreamDiagnostic(cdp, plan, record) {
@@ -177,18 +225,23 @@ export async function finishStreamDiagnostic(cdp, plan, record) {
   if (record?.index !== plan.requestIndex) result.reasons.push('Producer request index does not match registered plan');
   if (drained.receipt?.sessionId !== plan.sessionId) result.reasons.push('Receipt session does not match registered plan');
   if (drained.error) result.reasons.push(drained.error);
+  // WHY after the bridge drain and before anything else touches the page: the queue must be empty by now.
+  const counters = await readBatcherCounters(cdp);
+  const reducerQueue = assessReducerQueue({ producer, receipt: drained.receipt, counters, resetOk: plan.countersReset !== false || !counters.available });
+  if (reducerQueue.available && !reducerQueue.conservation.holds) result.reasons.push(`Reducer queue conservation failed: ${reducerQueue.conservation.failures.join('; ')}`);
   let visibilityEnd = null;
   try { visibilityEnd = await bounded(cdp.evaluate(sessionVisibilitySource(plan.sessionId)), 1000); }
   catch (e) { result.reasons.push(`Visibility proof failed: ${e.message}`); }
-  for (const view of [plan.visibilityStart, visibilityEnd]) {
-    if (view?.ownedCount !== 1 || view.activeCount !== 1 || view.documentVisibility !== 'visible'
+  // WHY: the OS-hidden leg starts with the window minimized (document 'hidden') and is restored before this runs.
+  for (const [view, wantDoc] of [[plan.visibilityStart, plan.leg === 'oshidden' ? 'hidden' : 'visible'], [visibilityEnd, 'visible']]) {
+    if (view?.ownedCount !== 1 || view.activeCount !== 1 || view.documentVisibility !== wantDoc
       || (plan.leg === 'hidden' && (!view.hidden || !view.activeSessionId || view.activeSessionId === plan.sessionId))) {
       result.reasons.push('Session wrapper/other active session/document visibility proof incomplete');
     }
   }
   return { ...result, status: result.reasons.length ? 'incomplete' : 'measured', fixture: plan.fixture,
     bridgeDrain: drained, visibility: { start: plan.visibilityStart, end: visibilityEnd },
-    reducerQueue: STREAM_DRAIN_DESCRIPTOR.reducerQueue, osHiddenWindow: 'unsupported' };
+    reducerQueue, osHiddenWindow: 'unsupported' }; // WHY unchanged: these legs never hide the window; the whole-window case is the separate os-hidden phase
 }
 
 /** WHY not __perfLab.switchTo: it starts a page-owned RAF blank watcher and

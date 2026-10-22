@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "identity": {
+    "revision": 1,
+    "instrument": {
+      "hashes": {
+        "atomic-report.mjs": "e78c96f2a21d6e5a13536b5f7663ec2d3f8c807e1490ba1aaf032972321cab37",
+        "background-cost.mjs": "76be03f16a07a01402b6ee4342b22920a62bd2cc17b9526347e66a25e8f2d883",
+        "background-window.mjs": "c399b5100fb361086821c24e211e2af5ae5c0fc334875ff9e637a6b51ac30b93",
+        "build.mjs": "ae00fab25b9d4d1c09b026fdb7ce71f93cbeb824fbc90569713c55c1550cef31",
+        "capabilities.mjs": "8d51dc2db4e54d57087c0c53db568926433f6749dae8d44fd724b2c5e9c65852",
+        "cdp.mjs": "9fc89dbe15183656479f16ce2c090ca0c66937d7d82202346122ce0537cb1c5f",
+        "content.mjs": "d331a809a820004f56da3f602f065d32a1ec8481de64f39fde1ac79d6627d05a",
+        "control.mjs": "5b3a56a575ebcf8acf4bb7aedf7f4aaafcbadc41cbb42a09e56eafeafbf2f1e8",
+        "coverage.mjs": "45f93e67925ebe23d6541db33fd369b8d8850184968f9569973e18a08df0d7b4",
+        "disk-budget.mjs": "79919d06d7e30b10a56787fe01d6c8958865698b481c6da0984fdcab59b07808",
+        "document-input.mjs": "13b003acfae2f48df1b2cb926ee618f0a644ae57ae81a948566724a435da30ea",
+        "document-report.mjs": "c40e02fdf34798b2d8e5fe1fd344de0f23007b6238eef08e413c50891370b124",
+        "download.mjs": "04b23ecbcb38723113659205d397b4aed3188a9154fe7eaab4294e907b0c11da",
+        "energy-controller.mjs": "19d53426b2bf5d8a52fc9e82af73f589e023e7a96f89107d2509cc0b1a3bd117",
+        "energy-helper.mjs": "651fa4226442ccf6c7d7ca1b5892bc7bf25c7d51f96bf19111d731e2f485c18c",
+        "energy-sensors.mjs": "d35eee3a0a1b9312fbaeebbc0e4961bc6e5ba02aacc81ec6ed718631dded0a7a",
+        "energy.mjs": "342e1a2010eece6cdc0b106ac5ba8f9a3d5215101ea015afa19dc186e409300a",
+        "eyeball.mjs": "7f4bf536c26d8e384c026348a1067fc5e7644532e0789aea3d95ae86b4ca537c",
+        "fake-claude.cjs": "6b895f64d8d6bd8b5db357a27586f364395eae456afc8a10fe20cef7ad644945",
+        "fake-provider.mjs": "6f59ae081c7750625a28dd56b8bbc2ff8ac68828f6e66c980ab81e8ade777136",
+        "fixture.mjs": "32d62689ce132f3731416d3abb474e57bdc5d2da79639d835815943ecdb07ff3",
+        "gpu-bind-run.mjs": "57a8ad1023e2cb3d61674027044efb5f388fd8c6b54102e4362232a72244a13b",
+        "gpu-bind.mjs": "2866d114d9a827d57ef16982c3cb19c42b6cd3342640f5e769abc9a02c5d1bc4",
+        "gpu-control/control.html": "1676f0162665bcda280ebf6bd3829cee0b46be5ade4fa6e194988e32e88fbbe7",
+        "gpu-cost-parse.mjs": "99740955b0099c7cc7c1221f48391d32d5f42801a2c8e9746c3bbf9615ec11e9",
+        "gpu-cost.mjs": "44751e059679e9e327219fc0cb56ee113836fdd8a08cc0101f00b8b866fd97b3",
+        "gpu-theme.mjs": "cc587fcd9891771e1e790b5ad5a0a01e208776420414feb4a8329c5a5e17f6bf",
+        "gpu.mjs": "0b8cfb59ec4a6640b62e8fad3b69df3b3582723a8c7247b3346462cbf9fe6e4e",
+        "history-activation.mjs": "99ff0498fd84e2ab2b40868b62c1cf0fae41b8c0d125a1c8cb1352d27cd6f4e5",
+        "hitch-report.mjs": "bb398fbbfb8476079d2c1bb908470f78308d15abb91f41cc4dd024254015756a",
+        "hops.mjs": "fcc84015f3e7b4628e6a174ec7934ae4cd241b0557550a8b9a2100cdce712709",
+        "identity.mjs": "f685ffdbdcee75ccd36098969a9e3db06b8539886f3a1d16b38e9889997cc2c8",
+        "idle-overhead.mjs": "f2e56df3e276e952153b081d48167697e42e137b2f58220f9f6d474ba342005a",
+        "input-stream.mjs": "5834a7d5ceca27433c6a30772eaccad28e5c0c2c503634520b872475841c1983",
+        "late-content.mjs": "39bb5b6efd22ead117b32485cd722b40e4c97e4711a4417a355a9c6c6cf74997",
+        "launch-supervised-app.mjs": "6af002fe096f92d7c0db61514c44c125b665e2c6d8a33708e2dbd9410b01d858",
+        "launch.mjs": "f127076609e01ddbffd18dbecd985d50f88a989ab69b68ec261005dff182c448",
+        "layout-cost.mjs": "e75e5743ba3af0e97156ab335f4a01a392ff109f9621f543fa3671a79f708b8d",
+        "legacy-evidence.mjs": "ddab2c28affb2e2796785ef51611245d4053a292377ab97d581814bf1061de55",
+        "legacy-ipc-boundary.mjs": "035d6525a37f10eda381079f48565645cbf2784981a2dd2d1bab527a13c4506e",
+        "lifecycle-evidence.mjs": "e56001e8caa1b02cc6ef77956fe28242836717f3f40262a8a8bfcbd613fea3bc",
+        "main-loop-probe.mjs": "f699518b7c69cc3b8cb78262fc617e05cef1b15b1aa4c6d24eb99e19b70a4b2c",
+        "metrics-startup.mjs": "583ea73fe71028b9c28c50b389c406d6fe8b467f1b2128a38b2413dc43be7403",
+        "mixed-activity.mjs": "ecf10f298ce1dbb55fbae2d8dc92f851156907e9214b90a30e08f318dd3972cc",
+        "mixed-cpu-profile.mjs": "ca4acf5d66660d604190a7abdb1cf2b9c687e55ab7adb17d9e5192d5029f5351",
+        "mixed-diagnostics.mjs": "04cd121177e30b5749eef1d518d14f7689ff4ee18e9f846a631e281f38acfd3f",
+        "mixed-history-files.mjs": "141753f3ec51dde5e8142880c8d677cac2c54f4f31ba0cee5ff27d7c5d035d30",
+        "mixed-presentation.mjs": "b8b9d9ac0616df69430ab84ea6cb4ed5499ed39b0e216ee1f9e737d82a387a91",
+        "mixed-provider.mjs": "b6ac906278c13634b1e7d6e907addf20697148211f29249f15eb11ea7bdec1aa",
+        "natural-settle.mjs": "0d232d4e9a8504be8ab9f9e58606eb776bed62faad87b4e16f476795dc69019c",
+        "os-hidden.mjs": "c521f1a89d314b7cc0b6e6ec775eb5551eae8d3291baafe5221c9d019d4bed47",
+        "owned-processes.mjs": "7e075fbdc5f9c5431cec03ae5ebdef17ae6fd8108c33a67132c91c3829f737a2",
+        "owner-home.mjs": "76616b1aeaef2639f77463c85c2024895989a0a63712d9f816824964cb9077f3",
+        "presentation-capture.mjs": "1899d350de9503ddfc5b3a975e8be7af1f9bf884976facb560deb4de88686c44",
+        "presentation-protocol.mjs": "bf3da1c1a4f844a5ea48ca5d8334c1d17d1c4864076405371a2c4b7093b83fd9",
+        "presentation-workload.mjs": "7eb983c02195001c89c60965b2128d9f0ee539e500fc9d8aa80465fc6b9b36f2",
+        "probe-ipc.mjs": "75890fe71cc7f4f1283d87a48ff483e0144e8e568d392ea7818f4be61e8060f8",
+        "probe-loop.mjs": "0f102b41109e33745720dabcb0e12bc8ea151c74403507e1044560061634afa5",
+        "proc-forensics.mjs": "31057e19aedc9ae907de0e386502c68a21dd7143b536244e4e84bbdbebc1aa2e",
+        "process-roles.mjs": "15d07d2b36a0211c51f62ff6fec59862aca5fe3c72d0bcb35e79f2d86b8ed1e2",
+        "procs.mjs": "f7a906815357d7596f66444da8910e09f678c4cfe6ae4cffa47a474daaffd3de",
+        "profile-open.mjs": "adad6aedc8cca40bbdbefac37ba95bab6f58116782a91599c256741b18b9be77",
+        "real-scale-startup.mjs": "44860aa297c9ed8617686c9cb13664849fd66c04c20679bd61e99afa6f48d085",
+        "realism-load.mjs": "855ceede166612cf2ddfd25e58b2a327e23b9b815a6665f365a2a0fa4fcd7892",
+        "realism-page.mjs": "d155e1c9875a5d375bd8b19f0e54e023e8b2857392bf81ba3583423c64abff78",
+        "realism-stats.mjs": "4d971ec7d77930154d7aa6c6690a9463b448af6e6a04c8e8932c6d7d3bf7349a",
+        "realism-table.mjs": "bd854b12e2f58902ed0aa6df94ccbbc0bca9321745913187262c6122a9850601",
+        "realism.mjs": "982a28f50050806537a6625bccb2acd70f6e2a49b5655d1494f16d11e8821dcf",
+        "replay-evidence.mjs": "7bc9f4b014bf00090a9ac94cda0b07a7a38160b58b60ee5f67f66847993525dd",
+        "resource-checkpoint.mjs": "88bbbc758d8de177f1fdcbf8df82ffd792f89804ec3d423017f2dfa7341ec8ce",
+        "role-reanalysis.mjs": "885942050777db0c46b6e62bd6ba4c36aa7122c9b894d20ad86026dead46f86c",
+        "run-lock.mjs": "b177ebe927ab5d8075b5e1918e981b10434cc18b466f05366df0f759de41d65a",
+        "run.mjs": "21223f18398233b02518317b29426dd80c523ad072a6ead880ad7a046eb7f174",
+        "scenario-artifacts.mjs": "3a6b292ec0f98e24a9902fdb3b1a18d8eaa26201c7883a9dd1e62550b48f46d3",
+        "scenario-document-stalls.mjs": "fc794f35a61a641daa6670ebf4522278c887cc43126fc5c1ccd35841d56665c5",
+        "scenario-history.mjs": "7f92a6a7b7fb0f10e22385f85d00e99b138b262c0df2c191bd9bde28518c4746",
+        "scenario-idle.mjs": "d1e982a3b606292cd2bdaa8b70caf8926072f440c876c7cdad1ef6cd78b76336",
+        "scenario-images.mjs": "6040388b0d56b39de359ad2bcc47f4176b87a00564ad9c227a8a442489593eb5",
+        "scenario-native-resume.mjs": "e2bd64bc5cd11e3272609c8ec8c7100866649b702cc98868964934ee7d41d9ed",
+        "scenario-native-stream.mjs": "be097eff681b5e77428a7a915df5903fccf8047182bdc2f04b8f5f031e08d249",
+        "scenario-projects.mjs": "6165d0b200f6cc0055f13dff8e6adb102a89404a24d33a5f9a84a65ac216e7e5",
+        "scenario-replay-stall.mjs": "203715d136b727d63828b1967680e488c9580d03c0af405be3622b56146e2f31",
+        "scenario-scrollback.mjs": "a29c03525ed07779a3e9c5ae901ab3f079280caf8e7909cc5d24a4bb12278fff",
+        "scenario-terminal.mjs": "2abe66e2fd552928e550276d043d9fb329caa262f3a5c2e2c2d4c042d9b135a3",
+        "scenario-workload.mjs": "55e28d62bb3019d6ae6b35a3ab5ef4afe176359fffdc971fe6c582728be091a9",
+        "screenshots.mjs": "87e7e315364ffa954814463a011be9637b562010d1ce15e3bb4ed906a90b4379",
+        "scroll-deferral.mjs": "f953897e8dc3f9b6d03b00735307ed74712254a1ad8353e9de767a80ec803097",
+        "sheet-pictures.mjs": "5cb2d2a1b44c0cc7cfee210239fa58659cce7a7a41342dc431d1601c5f4f698a",
+        "short-lifecycle.mjs": "ef52c5856fc46f4b9b4290f1c6b9e89feecf58057d76a9912274869c0837c9b8",
+        "show-flood.py": "b7fdffacdcf0d0ef8d0fe479096c012fcbfd061ddec2f39be00178a57cfe8f92",
+        "stall-attribution.mjs": "deb931fb1e55fb306a262918d4bf071459935339f8c340c8a787bf4ac7de5003",
+        "stall-core.mjs": "eb821317e10cf5934c8cf4530e418283a071d5285dee14c6d8d2c7da1b87c5d6",
+        "stall-fixtures.mjs": "5031add265432af101930fa951cc9a4421f80c3edb5e29fe90a96647c5068d57",
+        "stream-drain.mjs": "cf93c0d4a9a6fe36ec2634abeeeb3673177cd8231fa3c82762379aee3a7d6092",
+        "supervised-compositor-controller.mjs": "f4f856b994013ff7dcc7685e295e4c13a31bbd66bfcf4e07b2053b2c32a82fed",
+        "supervised-compositor-core.mjs": "ca649a59cb84dce204df2ed581ad5e95031529a6603d64854ca8cfde7440eb1e",
+        "supervised-compositor-helpers.mjs": "e21a3884c713fe454077653ff7456e5811c47ae3a6544b8e15aac090c1310129",
+        "supervised-compositor-inferred.mjs": "9a28daa8e37552569ecb6946e405201bf41e4297dcd26d5212d75cda8c9a1f6d",
+        "supervised-compositor-linux.mjs": "40b8c6efd54f355646e95eda50094affa316513d0a1d91f02197fa5301bccddc",
+        "supervised-compositor-policy.mjs": "6569ea108d677ee03d571eedfe99fe4745453a9acd6e48cb71e55197d34ee394",
+        "supervised-compositor-proofs.py": "d5fd49c312bd4f9798de9eaa5706053975c651a1b988ba520bc7be1f38aa3551",
+        "supervised-compositor-worker.mjs": "ef774eac0a8320f03060bc66cf8690ef4b7c65f322c1e396414c120d0ad55788",
+        "supervised-exec-gate.py": "8005d79dbc7482284a265436b424cea3a67d707b069456570833574fe4221ac3",
+        "supervised-launch-core.mjs": "d55d3d8d9ac7a6f2ef01be1953ac5eb75f7b6a04099d0971c5c3c5276e9543e0",
+        "supervised-launch-linux.mjs": "638cb83b94232d2b893c429dac71e5185eb40416faf6b87369f8418d459f1ca4",
+        "supervised-launch-worker.mjs": "81c4dad07fc4a517aa357f33f04fe002061130e628870b12d9a8365d0cafe383",
+        "supervised-launch.mjs": "e4bb1f5f11d7395300134de376634eb5654e01b2604810e86f214c09f59225d6",
+        "supervised-package.mjs": "ad6d2e75c85038566ca12da3790761f85ce636d81e22a8acc3d6e4fc09cc55cd",
+        "supervised-protocol.mjs": "342d407852a3c9bd9f1c8e003ffef138445fca8baf9e3e99a64aeb04a995b00f",
+        "supervised-retirement.mjs": "dad9bc589c72b8b91cd03d34959efc3a14d9d1f589c2092ba2027e73770b7ef3",
+        "suspects-b.mjs": "7b40dc54e0fbaa8ed61f8e0989edd21895308b3813e38e78d23b07cbf5d0915d",
+        "suspects.mjs": "4252d8b219dd58b99dfe9a571e0658235dbe41f2adf402d5e62788e8eab12add",
+        "switch-analysis.mjs": "ec3c8f4c205ecef6a07edd374da544d09f5899858ef4c363b533ab0249888634",
+        "switch-page.mjs": "bd682a29f11c23ca25ea6079acfbf72fd2c9af2caf0785924189f8f1b22db715",
+        "switch-pingpong.mjs": "a1410c95207c145d74fe7d49e9a12277a34a4f147a287799043ddc69052665aa",
+        "switch-table.mjs": "e9ecde25f7f71aa0d452e3c4e5a07e9cd3163c1f0dbf9add9fc223c369be2819",
+        "switchmarks-leg.mjs": "412bd44b9b5bace7957d01f2ba5978615ae4534caa738b080738d055fffb8405",
+        "terminal-burst.mjs": "bb80db916760d772deeb0b47c02beb0dbcd953e859df3a5246ed1ef1bc89809c",
+        "trace-main.mjs": "82d3d28791a7c470da97ebd422506a34aa018598852cd304b43f86f106b617ff",
+        "watcher-burst.mjs": "88acad3c0cab53c82368cc4ba9cd2cd27a6879a3c8502dd225c547f78e7d4726",
+        "xwheel.py": "004c27058594c29c800bd61cb507aca6950425926e3badf15b992102457a15ca"
+      },
+      "combined": "11604e95ac34e4ebfa31ae1c959c88c77ee9d78f9595069f467f885e02d7e948"
+    },
+    "fixture": {
+      "options": {
+        "default": {},
+        "artifacts": {
+          "seedEngine": false,
+          "historySizes": {
+            "small": 12
+          },
+          "decoyCount": 0
+        },
+        "nativeStream": {
+          "fakeProvider": true,
+          "seedEngine": false,
+          "historySizes": {
+            "small": 4,
+            "medium": 8,
+            "huge": 12
+          },
+          "decoyCount": 0
+        },
+        "nativeResume": {
+          "fakeProvider": true,
+          "nativeSessions": true
+        },
+        "stallDocuments": {
+          "profile": "smoke"
+        }
+      }
+    },
+    "package": {
+      "executableSha256": "09f76150ca151b0d8eec9d984ef290393ae73583bf6508655799a61a351086d2",
+      "asarSha256": "92b1e34258ec5fb2c51db41336908e9d26d8845719214e6c0cfb20155d427d93"
+    },
+    "execution": {
+      "only": [
+        "native-stream"
+      ],
+      "runs": 5,
+      "historyRepeats": 5,
+      "workloadRepeats": 3,
+      "stallRepeats": 3,
+      "artifactRepeats": 3,
+      "projectsRepeats": 3,
+      "terminalRepeats": 3,
+      "nativeStreamRepeats": 1,
+      "nativeResumeRepeats": 3,
+      "scrollbackRepeats": 3,
+      "documentCaseIds": [
+        "xlsx-merge-32x32",
+        "xlsx-sheets-1",
+        "csv-rows-64kib",
+        "csv-wide-64kib",
+        "csv-quoted-64kib",
+        "docx-paragraphs-100",
+        "docx-table-25x10",
+        "html-assets-1x256",
+        "html-script-250ms"
+      ],
+      "streamCompletionDiagnostics": true
+    },
+    "control": null
+  },
+  "stallMeasurementRevision": 2,
+  "label": "e-counters",
+  "sha": "4562b61f943cb91e009e7085d91cb57ab188fc3b",
+  "branch": "session/93-batcher-counters",
+  "dirty": "a811c1cc8195",
+  "timestamp": "2026-10-22T00:41:10.870Z",
+  "machine": {
+    "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "ramGb": 121,
+    "kernel": "7.2.9-1-cachyos",
+    "node": "v26.10.0",
+    "renderer": null
+  },
+  "noise": {
+    "loadAvgBefore": null,
+    "machineBusyPctBefore": null,
+    "maxLoadAvgAccepted": null,
+    "maxBusyPctAccepted": null,
+    "discardedRuns": 36,
+    "loadAvgAfter": 4.96,
+    "quietWaitMs": 1194142,
+    "neverQuiet": {
+      "waitedS": 1194,
+      "load": 5.13,
+      "busyPct": 19.1,
+      "boundMin": 20
+    }
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "projects": null,
+  "terminal": null,
+  "nativeStream": null,
+  "nativeResume": null,
+  "scrollback": null,
+  "measures": {
+    "nativeStream": {
+      "scenario": "native-stream-completion-diagnostic",
+      "profile": "plain-completion-diagnostic",
+      "question": "Did producer writes reach the owned renderer bridge and exact output after reveal?",
+      "configuration": [
+        "plain alphanumeric tokens at the existing planned delta count/rate; not the legacy Markdown workload"
+      ],
+      "clocks": {
+        "receipt": "Producer Date.now timestamps, renderer performance.now receipt timestamps, controller monotonic drain duration are retained separately; no cross-clock subtraction."
+      },
+      "blindTo": [
+        "Observer overhead is uncalibrated; opt-in only, not a comparable standard baseline.",
+        "Exact post-reveal visible output is not hidden reducer completion or physical presentation.",
+        "No persistence substitute or CPU/energy attribution claim; queue conservation only where the counters exist."
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "projectsBoot": null,
+    "terminalBoots": [],
+    "nativeStreamBoots": [],
+    "nativeResumeBoots": [],
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": "machine never became quiet: load 5.13, 19.1% cpu after 1194s of waiting (bound 20 min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.",
+  "incomplete": [
+    "stream-completion: expected repeats missing/mismatched",
+    "stream-completion: aborted: machine never became quiet: load 5.13, 19.1% cpu after 1194s of waiting (bound 20 min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot."
+  ],
+  "legacyExecution": {
+    "revision": 2,
+    "phases": {
+      "native-stream": {
+        "expectedRepeats": 1,
+        "groups": [
+          "nativeStream"
+        ],
+        "steps": [
+          "visible",
+          "switching",
+          "hidden"
+        ],
+        "rows": [
+          {
+            "path": "switching.switches",
+            "expectedRows": 8,
+            "identity": "i",
+            "ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ]
+          }
+        ],
+        "options": {
+          "switchCount": 8,
+          "deltas": 3000,
+          "completionDiagnostics": true,
+          "perSec": 150
+        }
+      }
+    }
+  },
+  "standardAcceptance": false,
+  "diagnosticExecution": {
+    "revision": 1,
+    "profile": "plain-completion-diagnostic",
+    "expectedRepeats": 1,
+    "descriptor": {
+      "revision": 3,
+      "lane": "native-stream-completion-diagnostic",
+      "standardAcceptance": false,
+      "maxEvents": 10000,
+      "maxBytes": 1048576,
+      "plannedStreamMaxMs": 30000,
+      "drainMs": 10000,
+      "pollMs": 100,
+      "fixture": "plain alphanumeric tokens at the existing planned delta count/rate; not the legacy Markdown workload",
+      "receipt": "native live assistant-text events APPEND by partId with unique uuid; coalesced/replayed/cumulative/replacement evidence is not accepted as live delta conservation",
+      "clocks": "Producer Date.now timestamps, renderer performance.now receipt timestamps, controller monotonic drain duration are retained separately; no cross-clock subtraction.",
+      "visibility": "Boundary snapshots prove hidden session wrapper with a different active session, not continuous visibility; real OS-hidden/minimized-window activity unsupported.",
+      "reducerQueue": {
+        "available": "feature-detected",
+        "source": "window.__transcriptBatcherCounters (perf-only build flag VITE_PERF_COUNTERS=1)",
+        "absent": {
+          "available": false,
+          "reason": "candidate lacks counters"
+        },
+        "identity": "producerSent = bridgeReceived = enqueued(assistant-text) = applied + dropped, plus total queue unaccounted = 0 and empty at the end of the leg",
+        "scope": "Counts transcript-batcher actions only: arrival into and exit from the frame queue. Not React render/paint completion."
+      },
+      "limits": [
+        "Observer overhead is uncalibrated; opt-in only, not a comparable standard baseline.",
+        "Exact post-reveal visible output is not hidden reducer completion or physical presentation.",
+        "No persistence substitute or CPU/energy attribution claim; queue conservation only where the counters exist."
+      ]
+    },
+    "standardAcceptance": false,
+    "fixture": {
+      "fakeProvider": true,
+      "seedEngine": false,
+      "historySizes": {
+        "small": 4,
+        "medium": 8,
+        "huge": 12
+      },
+      "decoyCount": 0
+    },
+    "buildPolicy": "cached-only-no-build",
+    "instrumentHashes": {
+      "run.mjs": "21223f18398233b02518317b29426dd80c523ad072a6ead880ad7a046eb7f174",
+      "stream-drain.mjs": "cf93c0d4a9a6fe36ec2634abeeeb3673177cd8231fa3c82762379aee3a7d6092",
+      "scenario-native-stream.mjs": "be097eff681b5e77428a7a915df5903fccf8047182bdc2f04b8f5f031e08d249",
+      "fake-provider.mjs": "6f59ae081c7750625a28dd56b8bbc2ff8ac68828f6e66c980ab81e8ade777136",
+      "os-hidden.mjs": "c521f1a89d314b7cc0b6e6ec775eb5551eae8d3291baafe5221c9d019d4bed47",
+      "background-window.mjs": "c399b5100fb361086821c24e211e2af5ae5c0fc334875ff9e637a6b51ac30b93"
+    },
+    "provenancePolicy": "Runner build/machine/lab-source provenance retained; this diagnostic is not a standard timing baseline"
+  }
+}

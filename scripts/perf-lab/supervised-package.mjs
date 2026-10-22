@@ -13,14 +13,18 @@ const APPROVED_CHECKOUT = resolve(fileURLToPath(new URL('../../youcoded', import
 // by CLI, environment, a receipt or a neighboring checkout's own registration.
 const WORKSPACE = dirname(APPROVED_CHECKOUT);
 export const MERGED_EVALUATION_CHECKOUT = resolve(WORKSPACE, '../96-merged-evaluation/youcoded');
+// WHY (perf-lab workstream E, 2026-10-21): the transcript-batcher counters live in a separate app
+// branch (session/93-batcher-counters). It is approved by exact path like the other two; this is one
+// added entry, not a pattern, so no neighbouring checkout becomes approved by accident.
+export const BATCHER_COUNTERS_CHECKOUT = resolve(WORKSPACE, '../93-batcher-counters/youcoded');
 const EXPECTED_COMMON = resolve(WORKSPACE, '../../../youcoded/.git');
-export function assertApprovedCheckoutPath(checkout, { approvedCheckouts = [APPROVED_CHECKOUT, MERGED_EVALUATION_CHECKOUT], canonical = realpathSync } = {}) {
+export function assertApprovedCheckoutPath(checkout, { approvedCheckouts = [APPROVED_CHECKOUT, MERGED_EVALUATION_CHECKOUT, BATCHER_COUNTERS_CHECKOUT], canonical = realpathSync } = {}) {
   if (!approvedCheckouts.includes(checkout) || resolve(checkout) !== checkout || canonical(checkout) !== checkout) throw Error('Supervisor requires exact approved isolated checkout');
   return checkout;
 }
 const PRODUCTION_PATHS = ['/opt/YouCoded/youcoded','/opt/youcoded/youcoded','/usr/bin/youcoded','/usr/local/bin/youcoded'];
 const defaults = {
-  approvedCheckouts: [APPROVED_CHECKOUT, MERGED_EVALUATION_CHECKOUT], expectedCommon: EXPECTED_COMMON,
+  approvedCheckouts: [APPROVED_CHECKOUT, MERGED_EVALUATION_CHECKOUT, BATCHER_COUNTERS_CHECKOUT], expectedCommon: EXPECTED_COMMON,
   readRegistration: path => readBoundedText(path, { maxBytes: 4096 }).trim(),
   uid: () => process.getuid(), canonical: realpathSync,
   stat: path => { const st = lstatSync(path); if (st.isSymbolicLink()) throw Error('Package executable is a symlink'); return st; },

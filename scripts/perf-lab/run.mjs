@@ -122,7 +122,7 @@ export function configureStreamCompletion(report, cfg) {
     fixture: nativeStreamFixtureOptions(cfg), buildPolicy: cfg.cachedOnly ? 'cached-only-no-build' : 'allow-build',
     // WHY hashFiles (identity.mjs): one hashing implementation for this diagnostic and the
     // every-report instrument identity, so the two cannot drift.
-    instrumentHashes: hashFiles(join(ROOT, 'scripts/perf-lab'), ['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs']),
+    instrumentHashes: hashFiles(join(ROOT, 'scripts/perf-lab'), ['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs', 'os-hidden.mjs', 'background-window.mjs']),
     provenancePolicy: 'Runner build/machine/lab-source provenance retained; this diagnostic is not a standard timing baseline' };
   report.measures.nativeStream = { scenario: 'native-stream-completion-diagnostic', profile: 'plain-completion-diagnostic',
     question: 'Did producer writes reach the owned renderer bridge and exact output after reveal?', configuration: [STREAM_DRAIN_DESCRIPTOR.fixture],
@@ -144,7 +144,7 @@ export function streamCompletionProblems(report) {
     && fixturePolicy.historySizes?.small === 4 && fixturePolicy.historySizes?.medium === 8 && fixturePolicy.historySizes?.huge === 12,
     'model-free diagnostic fixture policy missing/mismatched');
   need(['allow-build', 'cached-only-no-build'].includes(execution?.buildPolicy), 'build execution policy missing');
-  need(['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs'].every(name => /^[a-f0-9]{64}$/.test(execution?.instrumentHashes?.[name] ?? '')), 'instrument provenance hashes missing');
+  need(['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs', 'os-hidden.mjs', 'background-window.mjs'].every(name => /^[a-f0-9]{64}$/.test(execution?.instrumentHashes?.[name] ?? '')), 'instrument provenance hashes missing');
   if (Array.isArray(report.incomplete) && report.incomplete.length) problems.push('stream-completion: report declares incomplete evidence');
   need(Number.isInteger(execution?.expectedRepeats) && execution.expectedRepeats >= 1 && execution.expectedRepeats <= 3
     && report.legacyExecution?.phases?.['native-stream']?.expectedRepeats === execution.expectedRepeats
@@ -190,6 +190,9 @@ export function streamCompletionProblems(report) {
       need(typeof sid === 'string' && sid.length > 0, `${leg} missing owned session`);
       for (const view of [evidence?.visibility?.start, evidence?.visibility?.end]) need(view?.sessionId === sid && view.ownedCount === 1 && view.activeCount === 1 && view.documentVisibility === 'visible'
         && (leg !== 'hidden' || view.hidden === true && typeof view.activeSessionId === 'string' && view.activeSessionId !== sid), `${leg} visibility proof incomplete`);
+      // WHY: counters present means the identity sent = received = enqueued = applied + dropped must hold; counters absent is
+      // 'unavailable' (never zero) and does not fail a candidate that simply lacks them.
+      need(evidence?.reducerQueue?.available === false || (evidence?.reducerQueue?.available === true && evidence.reducerQueue.conservation?.holds === true), `${leg} reducer queue neither unavailable nor conserved`);
       need(!requests.has(evidence?.producer?.index), `${leg} duplicate producer request index`); requests.add(evidence?.producer?.index);
     }
     const final = d?.hiddenPostReveal;
@@ -764,10 +767,16 @@ export function renderMarkdown(report, stem) {
   ];
   if (report.diagnosticExecution) {
     lines.push('## Diagnostic-only stream completion — not a standard timing baseline',
-      'Plain fixture and receipt observer overhead differ from Markdown PRIMARY measurements. Reducer queue unavailable; post-reveal output is not hidden reducer drain.', '');
+      'Plain fixture and receipt observer overhead differ from Markdown PRIMARY measurements. Reducer queue is read only from candidates built with the perf counters (otherwise "unavailable"); post-reveal output is not hidden reducer drain.', '');
     for (const [i, r] of (report.nativeStream?.runs ?? []).entries()) {
       const d = r.completionDiagnostic;
       lines.push(`- Repeat ${i + 1}: ${d?.status ?? 'missing'}; legs ${Object.entries(d?.legs ?? {}).map(([name, leg]) => `${name}: ${leg.status}; ${(leg.reasons ?? []).join('; ')}`).join(' | ')}; reveal ${d?.hiddenPostReveal?.status ?? 'missing'}${d?.hiddenPostReveal?.error ? `: ${d.hiddenPostReveal.error}` : ''}`);
+      for (const [name, leg] of Object.entries(d?.legs ?? {})) {
+        const q = leg.reducerQueue;
+        lines.push(`  - ${name} reducer queue: ${q?.available ? `${q.conservation.holds ? 'conserved' : 'NOT CONSERVED'} (sent ${q.conservation.producerSent}, received ${q.conservation.bridgeReceived}, enqueued ${q.conservation.enqueued}, applied ${q.conservation.applied}, dropped ${q.conservation.dropped}); max depth ${q.queue.maxPendingDepth} actions, oldest ${Math.round(q.queue.maxOldestPendingAgeMs)} ms` : `unavailable (${q?.reason ?? 'missing'})`}`);
+      }
+      if (d?.osHidden) lines.push(`  - OS-hidden window: ${d.osHidden.status}${d.osHidden.visibilityDuring ? ` (${d.osHidden.visibilityDuring.hidden}/${d.osHidden.visibilityDuring.samples} samples hidden)` : ''}${d.osHidden.reason ? ` — ${d.osHidden.reason}` : ''}`);
+      for (const [name, b] of Object.entries(d?.backgroundCost ?? {})) lines.push(`  - background ${name}: ${b.status === 'supported' ? `${b.delta.cpuSeconds.toFixed(2)} CPU-s over ${b.delta.elapsedSeconds.toFixed(1)} s (${b.delta.cpuPctOneCore.toFixed(1)}% of one core), ${b.delta.contextSwitches} context switches (leader threads only) — work, not energy` : `${b.status}${b.reason ? `: ${b.reason}` : ''}`}`);
     }
     lines.push('');
   }
