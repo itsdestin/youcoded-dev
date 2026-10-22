@@ -199,8 +199,17 @@ Read.
     mounts fail and restart after every sleep. No YouCoded setting points there, so this is
     unproven.
   - a system-service call such as the password keyring.
-- **In progress:** a read-only watcher samples, twice a second, what YouCoded's main part
-  is waiting on. Results go to the session scratchpad. The next freeze will name the culprit.
+- **Watcher, first ~1 h 40 min:**
+  - A read-only `/proc` watcher sampled YouCoded's main thread twice a second. It recorded the
+    thread's wait state and the helper programs it had started.
+  - It captured **no freeze over 1 s** in that time, so freezes appear to cluster in heavy-use
+    periods rather than arrive evenly.
+  - **Only lead:** the main thread was seen briefly blocked reading a pipe (`anon_pipe_read`)
+    while a `git -c credential.helper=…` child (the GitHub sync / backup push) was running.
+    That is the signature of a synchronous wait on a git child.
+  - **Unproven** until a long freeze lands on it.
+  - **Next step if it never does:** temporarily log, in a dev build, every synchronous
+    child-process call on the main thread with its duration.
 - Related open card: **#93** (Background freezes, P1, needs-repro). This is evidence for it.
 
 ## C. Laptop sleep
