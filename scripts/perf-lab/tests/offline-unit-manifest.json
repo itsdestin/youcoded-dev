@@ -66,6 +66,7 @@
     "report-stem.test.mjs",
     "compare-all.test.mjs",
     "ab.test.mjs",
+    "busy-interleave.test.mjs",
     "workstream-e.test.mjs",
     "energy-lane.test.mjs",
     "queue.test.mjs",
@@ -170,7 +171,8 @@
     "stall-fixtures-ladder.test.mjs": "Disposable temp directories; dependency-free fixture kinds only (CSV, HTML, path list); no app, no packages, no network.",
     "workload-lane.test.mjs": "Pure lane orchestration with fake fixtures/boots/runners, classifier and report-contract checks; no app, no files beyond injected fakes.",
     "scenario-workloads.test.mjs": "Injected bounded runner, fake CDP/fs seams, vm-evaluated page sources against a minimal fake DOM, and disposable temp directories for the copy/child-op checks; the pinned original JPEG is only READ if present (never copied or opened elsewhere). No app launch.",
-    "workloads-run.test.mjs": "Pure run.mjs/identity/ab/queue helper calls and reading the checked-in queue file; nothing launches, no build, no machine state."
+    "workloads-run.test.mjs": "Pure run.mjs/identity/ab/queue helper calls and reading the checked-in queue file; nothing launches, no build, no machine state.",
+    "busy-interleave.test.mjs": "Busy-machine interleaved comparison: pure schedule/verdict/summary functions on fake reports plus ab.mjs loop with run.mjs main() replaced by a fake and injected freshness/hash/lock/disk adapters; temp dir only; no build, app or process."
   },
   "excludedEffectfulExamples": {
     "ipc-close-reproducer.integration.mjs": "Real Node fork/disconnect reproduction; not source-only.",

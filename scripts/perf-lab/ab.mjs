@@ -23,6 +23,7 @@ import { ENERGY_PATHS, PRIMARY, WORKLOAD_PATHS, compareAll, renderComparisonMark
 import { requireDiskHeadroom } from './disk-budget.mjs';
 import { LAB_DIR, instrumentIdentity, packageIdentity } from './identity.mjs';
 import { acquireRunLock } from './run-lock.mjs';
+import { buildBusySummary, interleaveSchedule, noiseFromAaSummary, renderBusySummaryMarkdown } from './busy-interleave.mjs';
 import { EXIT, PHASES, ROOT, SCRATCH, assetPreflight, bootPlan, buildFreshness, dirtyNote, main as runLab, parseArgs, stemFor } from './run.mjs';
 
 export const MODES = {
@@ -52,13 +53,19 @@ export const AB_USAGE = `perf-lab ab — run the same work against two app candi
   --max-minutes <n>          per-run measurement cap passed to run.mjs (default 90); quiet-machine waiting is NOT counted
   --max-quiet-wait-minutes <n>  longest each run waits for a quiet machine before stopping, before launching (default 20)
   --allow-asset-download     explicitly authorize downloading the ~490 MB model + engine archive if missing (default: refuse)
+  --interleave --rounds <n> --busy-machine [--aa] [--noise-from <aa summary.json>]
+                             BUSY-MACHINE, EXPLORATORY comparison (lane F, --mode workloads): n rounds, each runs A and B once, order
+                             alternating every round (A,B / B,A ...) so background load hits both alike; one pass per run; median + range
+                             per rung metric with a conservative verdict (see busy-interleave.mjs). Never replaces the strict path, which
+                             still refuses busy/disturbed reports. --aa runs A against A (two A slots per round; --b not needed) to measure
+                             the noise; --noise-from feeds a finished A/A summary.json into the verdicts.
   --label <text>             appended to the comparison directory name
   --out <dir>                parent directory (default perf-reports/ab/)
   --help`;
 
 export function parseAbArgs(argv, { root = ROOT } = {}) {
-  const valueFlags = ['a', 'b', 'mode', 'only', 'control-b-delay-ms', 'max-minutes', 'max-quiet-wait-minutes', 'label', 'out'];
-  const boolFlags = ['repeat-a', 'build', 'check', 'help', 'allow-asset-download'];
+  const valueFlags = ['a', 'b', 'mode', 'only', 'control-b-delay-ms', 'max-minutes', 'max-quiet-wait-minutes', 'label', 'out', 'rounds', 'noise-from'];
+  const boolFlags = ['repeat-a', 'build', 'check', 'help', 'allow-asset-download', 'interleave', 'busy-machine', 'aa'];
   const raw = {};
   for (let i = 0; i < argv.length; i++) {
     const tok = argv[i];
@@ -72,7 +79,16 @@ export function parseAbArgs(argv, { root = ROOT } = {}) {
     raw[name] = value;
   }
   if (raw.help) return { help: true };
-  if (!raw.a || !raw.b) throw new Error('ab: both --a and --b are required');
+  // WHY the interleave guards: the busy-machine path is explicitly labelled exploratory, so it must be asked for as such; and only
+  // lane F has a busy-machine summary today.
+  if (raw.aa && !raw.interleave) throw new Error('ab: --aa needs --interleave');
+  if (raw.interleave) {
+    if (!raw['busy-machine']) throw new Error('ab: --interleave is the busy-machine comparison; add --busy-machine (the strict path waits for a quiet machine instead)');
+    if ((raw.mode ?? 'quick') !== 'workloads') throw new Error('ab: --interleave currently supports --mode workloads only');
+    if (raw['control-b-delay-ms'] !== undefined || raw['repeat-a']) throw new Error('ab: --interleave cannot be combined with --control-b-delay-ms or --repeat-a');
+    if (!/^[1-9]\d*$/.test(raw.rounds ?? '')) throw new Error('ab: --interleave needs --rounds <whole number >= 1>');
+  } else if (raw.rounds || raw['busy-machine'] || raw['noise-from']) throw new Error('ab: --rounds, --busy-machine and --noise-from only apply with --interleave');
+  if (!raw.a || (!raw.b && !raw.aa)) throw new Error('ab: both --a and --b are required');
   const mode = raw.mode ?? 'quick';
   if (!Object.hasOwn(MODES, mode)) throw new Error(`ab: --mode must be quick, full, energy or workloads, got ${JSON.stringify(mode)}`);
   let controlMs = null;
@@ -87,11 +103,14 @@ export function parseAbArgs(argv, { root = ROOT } = {}) {
     ...(raw['max-minutes'] ? ['--max-minutes', raw['max-minutes']] : []),
     ...(raw['max-quiet-wait-minutes'] ? ['--max-quiet-wait-minutes', raw['max-quiet-wait-minutes']] : []),
     // WHY forwarded verbatim: the opt-in must reach BOTH runs, and absent means refuse (never download).
-    ...(raw['allow-asset-download'] ? ['--allow-asset-download'] : []), ...(raw.build ? [] : ['--cached-only'])];
+    ...(raw['allow-asset-download'] ? ['--allow-asset-download'] : []), ...(raw.build ? [] : ['--cached-only']),
+    // WHY one pass per run: each interleaved run is one lane F pass; the repeats come from the rounds, so A and B alternate between passes.
+    ...(raw.interleave ? ['--busy-machine', '--workloads-repeats', '1'] : [])];
   // Validate with run.mjs's own parser so a bad --only fails here, before any lock or run.
   const cfg = parseArgs([...common, '--checkout', resolve(raw.a)], { root });
   return {
-    a: resolve(raw.a), b: resolve(raw.b), mode, common, cfg, controlMs, repeatA: raw['repeat-a'] === true,
+    interleave: raw.interleave === true, aa: raw.aa === true, rounds: raw.interleave ? Number(raw.rounds) : null, noiseFrom: raw['noise-from'] ? resolve(raw['noise-from']) : null,
+    a: resolve(raw.a), b: resolve(raw.b ?? raw.a), mode, common, cfg, controlMs, repeatA: raw['repeat-a'] === true,
     build: raw.build === true, check: raw.check === true, label: raw.label ?? '',
     out: resolve(raw.out ?? join(root, 'perf-reports', 'ab')),
   };
@@ -99,6 +118,7 @@ export function parseAbArgs(argv, { root = ROOT } = {}) {
 
 /** The ordered runs: A, B, and (optionally) A again. */
 export function sequenceFor(plan) {
+  if (plan.interleave) return interleaveSchedule(plan.rounds, { aa: plan.aa }).map((s) => ({ ...s, checkout: s.key === 'b' ? plan.b : plan.a, control: false }));
   return [
     { key: 'a', checkout: plan.a, label: 'a', control: false },
     { key: 'b', checkout: plan.b, label: 'b', control: plan.controlMs !== null },
@@ -156,6 +176,48 @@ export function describePlan(plan, candidates, { disk, instrument, assetFn } = {
   return lines.join('\n');
 }
 
+/**
+ * The busy-machine interleaved loop. WHY a run that dies is recorded and the loop CONTINUES: one crash in a 60-minute session must not
+ * throw away the other rounds; the summary lists the dead slot and counts it as no measurement (never as zero). The summary is rewritten
+ * after every slot so an interrupted session still leaves a readable result.
+ */
+export async function runInterleaved(plan, { dir, stem, run, env, log, readReport, readFile = (p) => readFileSync(p, 'utf8') }) {
+  let noiseByKey = null, noiseSource = null;
+  if (plan.noiseFrom) { noiseByKey = noiseFromAaSummary(JSON.parse(readFile(plan.noiseFrom))); noiseSource = plan.noiseFrom; }
+  const slots = sequenceFor(plan);
+  const runs = [];
+  const rungOrder = null;
+  const write = () => {
+    const summary = buildBusySummary({ runs, plan, noiseByKey, noiseSource, rungOrder });
+    writeFileSync(join(dir, 'busy-summary.md'), renderBusySummaryMarkdown(summary, { title: plan.aa ? 'A/A noise check' : 'Old vs new' }));
+    writeFileSync(join(dir, 'busy-summary.json'), JSON.stringify(summary, null, 2));
+    return summary;
+  };
+  let exit = EXIT.OK;
+  for (const slot of slots) {
+    const ctx = { lockHeld: true };
+    delete env[CONTROL_ENV];
+    log(`--- round ${slot.round} slot ${slot.position}: ${slot.key.toUpperCase()} ${slot.checkout}`);
+    const rec = { ...slot };
+    try {
+      rec.exit = await run([...plan.common, '--checkout', slot.checkout, '--out', dir, '--label', slot.label], ctx);
+      rec.jsonPath = ctx.jsonPath ?? null;
+      if (rec.jsonPath) rec.report = readReport(rec.jsonPath);
+      else rec.error = 'run produced no report';
+      if (rec.exit !== EXIT.OK && rec.exit !== EXIT.INCOMPLETE) rec.error = `run exited ${rec.exit}`;
+    } catch (e) { rec.error = `run threw: ${e.message}`; rec.exit = EXIT.ERROR; }
+    if (rec.exit === EXIT.INTERRUPTED) { runs.push(rec); write(); log('interrupted; stopping'); return EXIT.INTERRUPTED; }
+    // WHY INCOMPLETE is expected: a --busy-machine report is always marked exploratory, so it is not an error here.
+    if (rec.error) { exit = EXIT.INCOMPLETE; log(`run ${slot.label} had a problem (${rec.error}); continuing with the remaining rounds`); }
+    runs.push(rec);
+    write();
+  }
+  const summary = write();
+  log(`busy summary: ${join(dir, 'busy-summary.md')}`);
+  log(`counts: ${Object.entries(summary.counts).map(([k, v]) => `${v} ${k}`).join(', ')}`);
+  return exit;
+}
+
 export async function runAb(argv, deps = {}) {
   const log = deps.log ?? ((...a) => console.log(...a));
   const run = deps.main ?? runLab;
@@ -178,7 +240,7 @@ export async function runAb(argv, deps = {}) {
 
   const now = (deps.now ?? (() => new Date()))().toISOString();
   const slug = String(plan.label).replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
-  const stem = `${stemFor({ timestamp: now, sha: candidates[0].fresh.sha, label: '' })}-vs-${String(candidates[1].fresh.sha ?? 'nosha').slice(0, 7)}${plan.controlMs ? '-CONTROL' : ''}${slug ? `-${slug}` : ''}`;
+  const stem = `${stemFor({ timestamp: now, sha: candidates[0].fresh.sha, label: '' })}-vs-${String(candidates[1].fresh.sha ?? 'nosha').slice(0, 7)}${plan.controlMs ? '-CONTROL' : ''}${plan.interleave ? (plan.aa ? '-busy-AA' : '-busy-interleaved') : ''}${slug ? `-${slug}` : ''}`;
   let lock;
   try { lock = (deps.acquireRunLock ?? acquireRunLock)(join(SCRATCH, 'run.lock'), { label: `ab ${stem}` }); } catch (e) { console.error(`ab: ${e.message}`); return EXIT.ERROR; }
   let dir;
@@ -188,6 +250,7 @@ export async function runAb(argv, deps = {}) {
   try {
     dir = claimComparisonDir(plan.out, stem, deps);
     log(`comparison directory: ${dir}`);
+    if (plan.interleave) { exit = await runInterleaved(plan, { dir, stem, run, env, log, readReport: deps.readReport ?? ((path) => JSON.parse(readFileSync(path, 'utf8'))), readFile: deps.readFile }); return exit; }
     for (const step of sequenceFor(plan)) {
       const ctx = { lockHeld: true };
       const priorControl = env[CONTROL_ENV];
