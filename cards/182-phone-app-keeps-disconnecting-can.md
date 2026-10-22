@@ -10,8 +10,8 @@ why: Destin: "i have serious stability/reliability/performance issues with the m
 work: session/remote-access-audit
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Phone keeps its computer through outages, rides out freezes up to ~30 s, unlock checks instead of reconnecting, one lost send no longer blocks others, failed refills retry, loads compressed/sent once/in pieces, connection logging, Tailscale retry; brand start-up screens approved (review-2); independent review F1–F6, F8, F9 fixed
+Next: Real-phone pass with an assembleReleaseTest build (Destin chose not to test before merge). Then: honest connection status on the phone incl. 'your computer is asleep' and a Use-this-phone-only way out from screens other than an open conversation (review F10) — needs a review deck; explore an always-there reload only if refresh trouble remains.
 Blocked: nothing.
 
 Chats
