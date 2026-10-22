@@ -57,7 +57,8 @@ function buildFixture(root, options = {}) {
  * phase calls the default seeding fixture.
  */
 export function selectionNeedsAssets(cfg) {
-  return [...cfg.only].some((p) => !(p === 'artifacts' || (p === 'native-stream' && cfg.streamCompletionDiagnostics)));
+  // WHY energy is model-free: it streams from the fake endpoint with seedEngine:false (scenario-energy.mjs energyFixtureOptions).
+  return [...cfg.only].some((p) => !(p === 'artifacts' || p === 'energy' || (p === 'native-stream' && cfg.streamCompletionDiagnostics)));
 }
 
 /**
@@ -89,7 +90,8 @@ import { controlFromEnv } from './control.mjs';
 import { acquireRunLock } from './run-lock.mjs';
 import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
 import { replayEvidenceProblems } from './replay-evidence.mjs';
-import { buildLegacyExecution, legacyEvidenceProblems } from './legacy-evidence.mjs';
+import { LEGACY_EXECUTION_REVISION, buildLegacyExecution, legacyEvidenceProblems } from './legacy-evidence.mjs';
+import { ENERGY_LANE, energyLaneProblems } from './energy-lane.mjs';
 import { MEASURES as ARTIFACT_DESCRIPTOR } from './scenario-artifacts.mjs';
 import { STREAM_DRAIN_DESCRIPTOR, assessStreamDrain, buildDrainFixture } from './stream-drain.mjs';
 
@@ -220,6 +222,8 @@ export function fixtureIdentity(cfg) {
   return { options: {
     default: {}, artifacts: artifactFixtureOptions(), nativeStream: nativeStreamFixtureOptions(cfg),
     nativeResume: { fakeProvider: true, nativeSessions: true }, stallDocuments: { profile: 'smoke' },
+    // WHY conditional: existing reports' fixture identity must stay byte-identical so they remain comparable.
+    ...(cfg.only?.has('energy') ? { energy: { fakeProvider: true, seedEngine: false, historySizes: { small: 4, medium: 8, huge: 12 }, decoyCount: 0 } } : {}),
   } };
 }
 
@@ -235,6 +239,7 @@ export function bootPlan(cfg) {
     nativeStream: has('native-stream') ? cfg.nativeStreamRepeats : 0,
     nativeResume: has('native-resume') ? cfg.nativeResumeRepeats : 0,
     scrollback: has('scrollback') ? 1 : 0,
+    energy: has('energy') ? 1 : 0,   // one boot holds every energy window (lane C)
   };
   return { ...plan, total: Object.values(plan).reduce((a, b) => a + b, 0) };
 }
@@ -454,7 +459,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0, loadAvgAfter: null, quietWaitMs: 0, neverQuiet: null },
     // WHY: one verdict per measured window (interference-watch.mjs); a disturbed or unknown window makes the report INCOMPLETE.
     interference: { windows: [] },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null, energy: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -555,6 +560,8 @@ export function validateReport(report, only) {
   // WHY: a run that stopped because the machine never went quiet took no valid measurement; never healthy.
   if (report.noise?.neverQuiet) problems.push(`machine never became quiet: load ${report.noise.neverQuiet.load}, ${report.noise.neverQuiet.busyPct}% cpu after ${report.noise.neverQuiet.waitedS}s${report.noise.neverQuiet.blockedBy ? ` (blocked by: ${report.noise.neverQuiet.blockedBy})` : ''} — measurement not taken`);
   problems.push(...interferenceProblems(report));
+  // WHY an early return: the energy lane has no PRIMARY paths or legacy phases; its own contract decides measured vs not.
+  if (report.energyExecution) return [...problems, ...energyLaneProblems(report)];
   if (only.has('artifacts') && report.artifacts?.documents) problems.push(...documentProblems(report.artifacts.documents));
   if (only.has('artifacts') && report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) problems.push('documents: required section missing');
   const need = (ok, msg) => { if (!ok) problems.push(msg); };
@@ -942,6 +949,16 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  if (report.energy) {
+    const e = report.energy;
+    lines.push('', '## Energy lane (C) — ESTIMATE of whole-chip power difference, not application watts', '',
+      `status: **${e.status}**${e.reason ? ` — ${e.reason}` : ''}`,
+      `meter responds to a CPU-only load: **${String(e.meterRespondsToCpu)}** (${e.cpuCoverage?.reason ?? 'not checked'})`,
+      `repeats: ${e.counts?.clean ?? 0} clean of ${e.counts?.attempted ?? 0} attempted (need ${e.counts?.minClean ?? '?'}); excluded: ${(e.excluded ?? []).map((x) => `#${x.repeat} (${x.reasons[0]})`).join('; ') || 'none'}`);
+    if (e.median) lines.push(`workload minus idle: **${e.median.deltaWatts} W** (median; range ${e.spread?.deltaWattsRange} W) — idle ${e.median.baselineWatts} W, workload ${e.median.workloadWatts} W`);
+    lines.push(`battery: ${e.battery?.status ?? 'n/a'}${e.battery?.median ? ` — ${e.battery.median.deltaWatts} W` : e.battery?.reason ? ` — ${e.battery.reason}` : ''}`,
+      `environment: power profile ${e.environment?.start?.platformProfile ?? '—'}, charger ${e.environment?.start?.acOnline ?? '—'}${e.environment?.changed?.length ? `; CHANGED: ${e.environment.changed.join(', ')}` : ''}`);
+  }
   lines.push('');
   lines.push(
     `noise: load ${report.noise?.loadAvgBefore ?? '—'}, busy ${report.noise?.machineBusyPctBefore ?? '—'}%, ` +
@@ -1047,7 +1064,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
+const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'energy-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
 const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics', 'allow-asset-download'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
@@ -1055,6 +1072,7 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   node scripts/perf-lab/run.mjs [options]
 
   --scrollback-repeats <n>  scroll-back ceiling passes   (default 3, own boot)
+  --energy-repeats <n>      energy lane: baseline/workload/baseline repeats (default ${ENERGY_LANE.repeats}, min ${ENERGY_LANE.minCleanRepeats}); used by --only energy
   --checkout <dir>          youcoded checkout to build   (default worktrees/perf-lab)
   --runs <n>                cold-start runs              (default 5)
   --history-repeats <n>     resume measurements per size (default 5)
@@ -1068,6 +1086,8 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --stream-completion-diagnostics  opt-in plain fixture/receipt/reveal diagnostic; requires --only native-stream; NOT a standard timing baseline
   --native-resume-repeats <n>  Resume list / resume / tear-off (default 3, one boot each)
   --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
+                           or --only energy ALONE: lane C, an ESTIMATE of whole-chip power difference (amdgpu PPT), one boot,
+                           CPU-coverage self-check first; opt-in, never part of the default selection
   --force-build             rebuild even if the tree fingerprint is unchanged
   --cached-only             execution refuses missing/stale/non-regular package or stamp before ANY build command; conflicts with --force-build
   --label <text>            appended to the output filename stem
@@ -1110,8 +1130,11 @@ export function parseArgs(argv, { root = ROOT } = {}) {
 
   if (raw['cached-only'] && raw['force-build']) throw Error('--cached-only conflicts with --force-build');
   const onlyTokens = (raw.only ?? PHASES.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
-  const unknown = onlyTokens.filter((p) => !PHASES.includes(p));
-  if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}`);
+  // WHY energy is not in PHASES: it has its own report contract (energy-lane.mjs), runs only on a quiet machine with a
+  // differential schedule, and must never join the default/full selection or the legacy PRIMARY contract.
+  const unknown = onlyTokens.filter((p) => !PHASES.includes(p) && p !== 'energy');
+  if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}, energy (alone)`);
+  if (onlyTokens.includes('energy') && onlyTokens.length !== 1) throw new Error('perf-lab: --only energy must be used alone (its windows need a quiet, undisturbed machine and its own report contract)');
   if (!onlyTokens.length) throw new Error('perf-lab: --only selected no phases.');
   if (raw['stream-completion-diagnostics'] && (onlyTokens.length !== 1 || onlyTokens[0] !== 'native-stream')) throw Error('Completion diagnostic requires --only native-stream (only native-stream, no other phases)');
   if (raw['stream-completion-diagnostics'] && posInt('native-stream-repeats', 3) > 3) throw Error('Completion diagnostic supports at most 3 repeats');
@@ -1142,6 +1165,8 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     // conversations, so this is the most expensive phase per repeat — raise it
     // only when a delta is close to the noise.
     scrollbackRepeats: posInt('scrollback-repeats', 3),
+    // Q-3: at least 5 repeats; the lane attempts a few extra when some are disturbed.
+    energyRepeats: (() => { const v = posInt('energy-repeats', ENERGY_LANE.repeats); if (v < ENERGY_LANE.minCleanRepeats) throw new Error(`perf-lab: --energy-repeats must be at least ${ENERGY_LANE.minCleanRepeats} (owner decision Q-3)`); return v; })(),
     // 45 -> 90 on 2026-08-27: the default selection went from 6 boots to 8 (stall and
     // artifacts each take one of their own), and the stall phase alone is 9 transcript
     // resumes. A deadline that fires mid-phase throws away every minute already spent,
@@ -1152,6 +1177,7 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     maxQuietWaitMinutes: posInt('max-quiet-wait-minutes', 20),
     allowAssetDownload: raw['allow-asset-download'] === true || assetDownloadEnvAllowed(),
     only: new Set(onlyTokens),
+    energyLane: onlyTokens.length === 1 && onlyTokens[0] === 'energy',
     label: raw.label ?? '',
     forceBuild: raw['force-build'] === true,
     dryRun: raw['dry-run'] === true || raw.check === true,
@@ -1483,6 +1509,14 @@ async function loadNativeResume() {
   }
 }
 
+async function loadEnergy() {
+  try {
+    return await import('./scenario-energy.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the energy lane needs scripts/perf-lab/scenario-energy.mjs, which could not be loaded: ${e.message}`);
+  }
+}
+
 async function loadScrollback() {
   try {
     return await import('./scenario-scrollback.mjs');
@@ -1609,6 +1643,7 @@ async function mainRun(argv, ctx, cleanup) {
       `  native-stream     ${cfg.only.has('native-stream') ? `${cfg.nativeStreamRepeats}, one boot each (fake endpoint on :${FAKE_PROVIDER_PORT})` : '—'}`,
       `  stream profile    ${cfg.streamCompletionDiagnostics ? 'PLAIN COMPLETION DIAGNOSTIC revision 2; NOT standard Markdown timing baseline; 3000 deltas at 150/s; 10s bounded bridge/reveal waits' : 'standard Markdown timing profile'}`,
       `  native-resume     ${cfg.only.has('native-resume') ? `${cfg.nativeResumeRepeats}, one boot each (100 seeded native sessions)` : '—'}`,
+      `  energy lane       ${cfg.only.has('energy') ? `${cfg.energyRepeats} baseline/workload/baseline repeats (>= ${ENERGY_LANE.minCleanRepeats} clean needed) after a CPU-coverage self-check, one boot; ESTIMATE of whole-chip power difference` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
@@ -1685,7 +1720,9 @@ async function mainRun(argv, ctx, cleanup) {
   const report = emptyReport({ label: cfg.label });
   setInterferenceSink(report.interference.windows);
   // WHY before execution: an exception on repeat 3 cannot redefine 2 as complete.
-  report.legacyExecution = buildLegacyExecution(cfg);
+  // WHY an empty manifest for energy: buildLegacyExecution knows only the legacy phases; energyExecution carries the lane's contract.
+  report.legacyExecution = cfg.energyLane ? { revision: LEGACY_EXECUTION_REVISION, phases: {} } : buildLegacyExecution(cfg);
+  if (cfg.energyLane) report.energyExecution = { revision: ENERGY_LANE.revision, repeats: cfg.energyRepeats, minCleanRepeats: ENERGY_LANE.minCleanRepeats, workload: 'native-stream-visible', meter: 'amdgpu-hwmon-power1-PPT' };
   configureStreamCompletion(report, cfg);
   let exitCode = EXIT.OK;
   let stem = uniqueStem(cfg.out, stemFor({ timestamp: report.timestamp, sha: 'nosha', label: cfg.label }), { extraTaken: logsTaken });
@@ -2110,6 +2147,34 @@ async function mainRun(argv, ctx, cleanup) {
         };
         report.errors.scrollbackBoot = readErrorLines(fixture, stem, 'scrollback');
       });
+    }
+
+    // ---- Energy lane (C): ONE boot holds every window; opt-in via `--only energy` alone -----
+    if (cfg.only.has('energy')) {
+      const { runEnergyScenario, ENERGY_MEASURES, energyFixtureOptions } = await loadEnergy();
+      report.measures.energy = ENERGY_MEASURES;
+      checkDeadline();
+      await gate('energy');
+      const fixture = buildFixture(SCRATCH, { ...energyFixtureOptions(), log });
+      // WHY a private sink: withBoot's boot-wide verdict spans the CPU self-check too, and a disturbed boot must not
+      // void windows that were individually clean. Per-window verdicts decide; the boot-wide one is kept for reference.
+      const bootVerdicts = [];
+      setInterferenceSink(bootVerdicts);
+      try {
+        await withBoot(build, fixture, async (app) => {
+          report.energy = await runEnergyScenario(app, fixture, {
+            repeats: cfg.energyRepeats, log, checkDeadline,
+            onProgress: (section) => { report.energy = section; checkpoint(); },
+          });
+          report.errors.energyBoot = readErrorLines(fixture, stem, 'energy');
+        });
+      } finally { setInterferenceSink(report.interference.windows); }
+      if (report.energy) {
+        report.energy.bootInterference = bootVerdicts;
+        // Only the windows that fed the median become the report's interference record; excluded ones are counted in
+        // report.energy.excluded (a disturbed window never silently disappears, it is listed with its reasons).
+        for (const t of report.energy.repeats ?? []) if (t.clean) report.interference.windows.push(...t.verdicts);
+      }
     }
   } catch (e) {
     // The numbers already collected cost real minutes, so the report is still written —

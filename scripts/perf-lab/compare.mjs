@@ -11,6 +11,16 @@ import { assessComparability } from './comparability.mjs';
 import { legacyTailRegressions } from './legacy-evidence.mjs';
 import { DOCUMENT_BUDGETS, compareDocuments, documentComparabilityProblems } from './document-report.mjs';
 
+// Energy-lane metrics (lane C). Kept OUT of PRIMARY on purpose: PRIMARY feeds validateReport's per-phase contract and the
+// keep/reject gate, and a missing PRIMARY path fails that gate closed, which would retire every existing baseline.
+// ab.mjs passes these explicitly (instead of PRIMARY) when the selection is `--only energy`. Lower is better for all.
+// energy.median.* has its raw samples at energy.runs[] (runsFor), so spread is computed exactly like every other metric.
+export const ENERGY_PATHS = [
+  'energy.median.deltaWatts',          // ESTIMATE of whole-chip power difference, workload minus surrounding idle (W)
+  'energy.median.baselineWatts',       // idle level the difference was taken from (W): a context row, shows drift between sides
+  'energy.battery.median.deltaWatts',  // only when the battery was discharging in every window; absent otherwise
+];
+
 // The metrics every experiment is judged against. All are lower-is-better,
 // and every one has a `runs` array behind its median so spreadPct can be computed.
 export const PRIMARY = [

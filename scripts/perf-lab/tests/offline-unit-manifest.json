@@ -66,7 +66,9 @@
     "report-stem.test.mjs",
     "compare-all.test.mjs",
     "ab.test.mjs",
-    "workstream-e.test.mjs"
+    "workstream-e.test.mjs",
+    "energy-lane.test.mjs",
+    "queue.test.mjs"
   ],
   "uiFiles": [
     "scripts/ui-review/tests/dom-growth.test.mjs",
@@ -154,7 +156,9 @@
     "supervised-compositor-inferred.test.mjs": "Fake /proc status/cmdline/stat, fake file-capability bytes and injected SO_PEERCRED/xattr readers only; also pins the bounded role-refusal reason object (no-role, duplicate-role, receipt-mismatch, substitution, unreadable); the Python proof helper is never run. No real process, socket, xattr, compositor, app or sensor access.",
     "supervised-wayland-binding.test.mjs": "Pure supervised plan validation and env/argv builders, injected lstat and fake backend; no worker, gate, socket, app or compositor.",
     "supervised-compositor-proofs.test.py": "Injected getxattr/lstat/connect and an in-process socketpair only; the module never opens the kwin binary, a Wayland socket or a compositor when imported.",
-    "workstream-e.test.mjs": "Offline: fake CDP/clock/proc readers only; reducer-queue conservation, minimize/restore proof and background-window pricing. No app, window manager, network or sensor."
+    "workstream-e.test.mjs": "Offline: fake CDP/clock/proc readers only; reducer-queue conservation, minimize/restore proof and background-window pricing. No app, window manager, network or sensor.",
+    "energy-lane.test.mjs": "Offline: scripted fake meter/battery/interference watch/clock/environment, injected discovery lists and a fake Worker class; proves responsive vs insensitive meters, per-window interference exclusion, too-few-clean incomplete, environment-change invalidation, battery only when discharging, separate discovery budgets, and the ab energy rows. No sensor, app, real thread or process.",
+    "queue.test.mjs": "Offline: injected child runner, clock, leftover-process check and in-memory files; proves one-at-a-time order, deadline skipping, halt on leftover processes, status classification and plan/validation. Nothing is spawned, no lock taken, no app or sensor."
   },
   "excludedEffectfulExamples": {
     "ipc-close-reproducer.integration.mjs": "Real Node fork/disconnect reproduction; not source-only.",

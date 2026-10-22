@@ -34,33 +34,38 @@ function sensorKey(sensor){const bounded=boundedSensor(sensor);return SENSOR_FIE
 export async function discoverEnergySensors({platform=process.platform,list=listDiagnosticDirectory,read=readDiagnosticText,maxSensors=32,canonical=list===listDiagnosticDirectory?realpath:async p=>p}={}){
  if(platform!=='linux')return fail('unsupported',`Sensor adapter not implemented for ${platform}`,{sensors:[],errors:[]});
  if(!Number.isInteger(maxSensors)||maxSensors<1||maxSensors>64)throw Error('Invalid sensor cap');
- const sensors=[],errors=[],omissions=[],visited=new Set();let truncated=false,entries=0,duplicateAliases=0;
+ // WHY separate per-family budgets (matrix gap, 2026-10-21): one shared entry/sensor budget let a large powercap tree
+ // (or many hwmon chips) use up the room, so the battery was never reached and looked absent. Each family now has its
+ // own directory-entry budget and its own sensor cap; maxSensors is the cap PER FAMILY, and truncation still reports.
+ const sensors=[],errors=[],omissions=[],visited=new Set();let truncated=false,duplicateAliases=0;
+ const entriesBy={powercap:0,hwmon:0,battery:0},countBy={powercap:0,hwmon:0,battery:0};
+ const familyOf=kind=>kind==='powercap'?'powercap':kind==='hwmon-power'?'hwmon':'battery';
  const omit=(path,reason)=>{truncated=true;if(omissions.length<64)omissions.push({path,reason});};
  const recordError=(e,path)=>{if(errors.length<64)errors.push(readFailure(e,path));else truncated=true;};
- const names=async path=>{try{const values=await list(path);if(!Array.isArray(values))throw Error('Directory listing invalid');const room=Math.max(0,256-entries);if(values.length>room)truncated=true;const bounded=values.slice(0,room);entries+=bounded.length;return bounded.filter(v=>typeof v==='string'&&v.length<=128&&/^[\w.:-]+$/.test(v)).sort();}catch(e){recordError(e,path);return [];}};
+ const names=async(path,family)=>{try{const values=await list(path);if(!Array.isArray(values))throw Error('Directory listing invalid');const room=Math.max(0,256-entriesBy[family]);if(values.length>room)truncated=true;const bounded=values.slice(0,room);entriesBy[family]+=bounded.length;return bounded.filter(v=>typeof v==='string'&&v.length<=128&&/^[\w.:-]+$/.test(v)).sort();}catch(e){recordError(e,path);return [];}};
  const label=async path=>{try{return text(await read(path)).slice(0,128);}catch(e){recordError(e,path);return 'unavailable';}};
- const add=s=>{if(sensors.length<maxSensors)sensors.push({...s,id:s.path,source:'linux-sysfs',appAttributable:false});else truncated=true;};
+ const add=s=>{const family=familyOf(s.kind);if(countBy[family]<maxSensors){countBy[family]++;sensors.push({...s,id:s.path,source:'linux-sysfs',appAttributable:false});}else truncated=true;};
  // WHY: powercap exposes the SAME zone through class aliases and parent
  // directories. Deduplicate canonical directories BEFORE reading/descending.
- const powercap=async(path,depth)=>{for(const name of await names(path)){
+ const powercap=async(path,depth)=>{for(const name of await names(path,'powercap')){
   if(!/^[\w-]+:\d+(?::\d+)*$/.test(name))continue;
   const dir=join(path,name);let identity;
   try{identity=await canonical(dir);if(typeof identity!=='string'||identity.length>2048||!identity.startsWith('/'))throw Error('Invalid canonical zone identity');}catch(e){recordError(e,dir);continue;}
   if(visited.has(identity)){duplicateAliases++;continue;}
   if(visited.size>=64){omit(dir,'canonical-zone-cap');continue;}visited.add(identity);
-  const files=await names(dir);
+  const files=await names(dir,'powercap');
   if(files.includes('energy_uj'))add({kind:'powercap',path:join(identity,'energy_uj'),rangePath:join(identity,'max_energy_range_uj'),scope:`powercap-domain:${await label(join(dir,'name'))}`,unit:'microjoule'});
   if(files.some(f=>/^[\w-]+:\d+(?::\d+)*$/.test(f))){if(depth<3)await powercap(dir,depth+1);else omit(dir,'depth-limit');}
  }};
  await powercap('/sys/class/powercap',0);
- for(const name of await names('/sys/class/hwmon')){if(!/^hwmon\d+$/.test(name))continue;const dir=join('/sys/class/hwmon',name),files=await names(dir),device=await label(join(dir,'name'));
+ for(const name of await names('/sys/class/hwmon','hwmon')){if(!/^hwmon\d+$/.test(name))continue;const dir=join('/sys/class/hwmon',name),files=await names(dir,'hwmon'),device=await label(join(dir,'name'));
   for(const file of files)if(/^power\d+_(average|input)$/.test(file))add({kind:'hwmon-power',path:join(dir,file),scope:`whole-device-or-domain:${device}`,unit:'microwatt',semantics:file.endsWith('average')?'driver-averaged power':'driver instantaneous power'});
  }
- for(const name of await names('/sys/class/power_supply')){const dir=join('/sys/class/power_supply',name),files=await names(dir);if(!files.includes('type')||await label(join(dir,'type'))!=='Battery')continue;
+ for(const name of await names('/sys/class/power_supply','battery')){const dir=join('/sys/class/power_supply',name),files=await names(dir,'battery');if(!files.includes('type')||await label(join(dir,'type'))!=='Battery')continue;
   for(const [file,kind,unit] of [['power_now','battery-power','microwatt'],['energy_now','battery-energy','microwatt-hour']])if(files.includes(file))add({kind,path:join(dir,file),statusPath:join(dir,'status'),scope:`whole-system-battery:${name}`,unit,semantics:'coarse battery telemetry; charging/AC state matters, not wall-plug or app power'});
  }
  const inaccessible=errors.some(e=>e.status==='incomplete'||e.status==='failed');
- return {status:truncated||inaccessible?'incomplete':sensors.length?'supported':'unsupported',reason:sensors.length?'Readable candidates require snapshot validation':'No supported sensor candidates found',sensors,errors,truncated,omissions,duplicateAliases,canonicalZonesVisited:visited.size,entriesVisited:entries,appAttributable:false};
+ return {status:truncated||inaccessible?'incomplete':sensors.length?'supported':'unsupported',reason:sensors.length?'Readable candidates require snapshot validation':'No supported sensor candidates found',sensors,errors,truncated,omissions,duplicateAliases,canonicalZonesVisited:visited.size,entriesVisited:entriesBy.powercap+entriesBy.hwmon+entriesBy.battery,entriesByFamily:entriesBy,sensorsByFamily:countBy,appAttributable:false};
 }
 export async function readEnergySnapshot(sensor,{read=readDiagnosticText,now=()=>performance.now(),epoch,identity=read===readDiagnosticText?realpath:async p=>p}={}){
  const startMs=now();try{

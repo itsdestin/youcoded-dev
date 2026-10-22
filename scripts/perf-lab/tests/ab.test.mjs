@@ -58,7 +58,7 @@ test('parseAbArgs: defaults, presets, and explicit refusals', () => {
   assert.deepEqual([...parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--only', 'terminal'], { root: '/r' }).cfg.only], ['terminal']);
   assert.throws(() => parseAbArgs(['--a', '/x/a'], { root: '/r' }), /both --a and --b/);
   assert.throws(() => parseAbArgs(['--a', '/x/a', '--b-package', '/p'], { root: '/r' }), /not supported/);
-  assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--mode', 'fast'], { root: '/r' }), /quick or full/);
+  assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--mode', 'fast'], { root: '/r' }), /quick, full or energy/);
   assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--only', 'nope'], { root: '/r' }), /unknown phase/);
   assert.throws(() => parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--control-b-delay-ms', '0'], { root: '/r' }), /whole number/);
 });
@@ -163,4 +163,10 @@ test('claimComparisonDir picks the first free directory name', () => {
     const first = claimComparisonDir(root, 's'); const second = claimComparisonDir(root, 's'); const third = claimComparisonDir(root, 's');
     assert.deepEqual([first, second, third].map((p) => p.slice(root.length + 1)), ['s', 's-2', 's-3']);
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('parseAbArgs: --mode energy selects the opt-in energy lane alone', () => {
+  const plan = parseAbArgs(['--a', '/x/a', '--b', '/x/b', '--mode', 'energy'], { root: '/r' });
+  assert.deepEqual([...plan.cfg.only], ['energy']);
+  assert.equal(MODES.energy.only, 'energy');
 });

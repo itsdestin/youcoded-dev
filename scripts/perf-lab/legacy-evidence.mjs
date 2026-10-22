@@ -149,6 +149,8 @@ function validateRow(row, path, c, spec, problems) {
 /** All expected repeats, not just >=2 surviving numeric values. `only` narrows a
  * run's requested validation; comparisons inspect every declared/existing phase. */
 export function legacyEvidenceProblems(report, { primary = [], only = null } = {}) {
+  // WHY: an energy-lane report has no legacy phases; energy-lane.mjs's energyLaneProblems owns its contract.
+  if (report?.energyExecution) return [];
   const problems = [], manifest = report?.legacyExecution;
   if (manifest?.revision !== LEGACY_EXECUTION_REVISION || !object(manifest.phases)) return ['legacy execution manifest missing or unsupported; remeasure'];
   if (Object.keys(manifest.phases).length === 0) problems.push('legacy execution manifest selects no phases');

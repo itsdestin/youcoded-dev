@@ -20,6 +20,12 @@ export function reserveSensorOutput(out,{lstat=lstatSync,mkdir=mkdirSync,open=op
 export function installHelperLifetime(input,{durationMs,setTimer=setTimeout,clearTimer=clearTimeout,exit=n=>process.exit(n)}={}){
  const dead=()=>exit(1),timer=setTimer(dead,Math.min(135000,durationMs+12000));input.once('end',dead);input.once('close',dead);return ()=>{clearTimer(timer);input.removeListener('end',dead);input.removeListener('close',dead);};
 }
+export function shareSensors(discovery,cap){
+ if(!discovery||!Array.isArray(discovery.sensors)||discovery.sensors.length<=cap)return discovery;
+ const family=s=>s.kind==='powercap'?0:s.kind==='hwmon-power'?1:2,buckets=[[],[],[]];for(const s of discovery.sensors)buckets[family(s)].push(s);
+ const kept=[];for(let i=0;kept.length<cap&&buckets.some(b=>i<b.length);i++)for(const b of buckets)if(i<b.length&&kept.length<cap)kept.push(b[i]);
+ return {...discovery,sensors:kept,truncated:true,status:'incomplete',reason:`${discovery.sensors.length} sensors found; trimmed to ${cap} (fairly across families)`};
+}
 export async function executeDiagnosticRequest(request,{discover=discoverEnergySensors,sample=sampleEnergyWindow,publish,canonical=realpath,emit=async frame=>new Promise((resolve,reject)=>process.stdout.write(encodeSensorFrame(frame),e=>e?reject(e):resolve()))}={}){
  validateSensorRequest(request);
  if(!publish){const reserved=reserveSensorOutput(request.out);publish=async value=>reserved.publish(value);}
@@ -30,7 +36,11 @@ export async function executeDiagnosticRequest(request,{discover=discoverEnergyS
  };
  await checkpoint('initial');
  try{
+  // WHY per-family discovery then a fair trim: discovery now budgets powercap/hwmon/battery separately so the battery is
+  // never starved by a big powercap tree; the request's maxSensors still bounds the TOTAL readings, so when more were
+  // found than allowed the trim takes one sensor from each family in turn (never all from the first) and says it trimmed.
   state.discovery=await discover({maxSensors:request.options.maxSensors});
+  state.discovery=shareSensors(state.discovery,request.options.maxSensors);
   // Canonical identity is independent of class aliases for EVERY sensor kind.
   for(const sensor of state.discovery.sensors){sensor.path=await canonical(sensor.path);sensor.id=sensor.path;}
   encodeSensorFrame({type:'result',report:state});await checkpoint('discovered');

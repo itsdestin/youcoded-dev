@@ -19,7 +19,7 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CONTROL_ENV, CONTROL_MAX_MS } from './control.mjs';
-import { compareAll, renderComparisonMarkdown } from './compare.mjs';
+import { ENERGY_PATHS, PRIMARY, compareAll, renderComparisonMarkdown } from './compare.mjs';
 import { requireDiskHeadroom } from './disk-budget.mjs';
 import { LAB_DIR, instrumentIdentity, packageIdentity } from './identity.mjs';
 import { acquireRunLock } from './run-lock.mjs';
@@ -31,6 +31,8 @@ export const MODES = {
   // first measured durations are recorded in README after real runs, not promised here.
   quick: { only: 'startup,history', flags: ['--runs', '3', '--history-repeats', '3'] },
   full: { only: PHASES.join(','), flags: [] },
+  // Lane C alone (quiet machine, ~10-15 min per side). Opt-in; never part of quick/full.
+  energy: { only: 'energy', flags: [] },
 };
 
 export const AB_USAGE = `perf-lab ab — run the same work against two app candidates and compare.
@@ -38,7 +40,7 @@ export const AB_USAGE = `perf-lab ab — run the same work against two app candi
   node scripts/perf-lab/ab.mjs --a <checkout> --b <checkout> [options]
 
   --a, --b <dir>             stamped youcoded checkouts (a build in desktop/release/ + .perf-lab-build.json)
-  --mode quick|full          quick = ${MODES.quick.only} x3 samples (default) · full = every phase, run.mjs defaults
+  --mode quick|full|energy   energy = lane C alone (--only energy: ESTIMATE of whole-chip power difference) · quick = ${MODES.quick.only} x3 samples (default) · full = every phase, run.mjs defaults
   --only a,b,c               replace the mode's phases: ${PHASES.join(', ')}
   --repeat-a                 run A, B, then A again, and print the A1-vs-A2 noise table
   --control-b-delay-ms <n>   known-change control: inject an n ms delay (1..${CONTROL_MAX_MS}) into B's terminal scenario
@@ -70,7 +72,7 @@ export function parseAbArgs(argv, { root = ROOT } = {}) {
   if (raw.help) return { help: true };
   if (!raw.a || !raw.b) throw new Error('ab: both --a and --b are required');
   const mode = raw.mode ?? 'quick';
-  if (!Object.hasOwn(MODES, mode)) throw new Error(`ab: --mode must be quick or full, got ${JSON.stringify(mode)}`);
+  if (!Object.hasOwn(MODES, mode)) throw new Error(`ab: --mode must be quick, full or energy, got ${JSON.stringify(mode)}`);
   let controlMs = null;
   if (raw['control-b-delay-ms'] !== undefined) {
     controlMs = Number(raw['control-b-delay-ms']);
@@ -201,7 +203,9 @@ export async function runAb(argv, deps = {}) {
     const readReport = deps.readReport ?? ((path) => JSON.parse(readFileSync(path, 'utf8')));
     if (results.a?.ctx.jsonPath && results.b?.ctx.jsonPath) {
       const a = readReport(results.a.ctx.jsonPath), b = readReport(results.b.ctx.jsonPath);
-      const result = compareAll(a, b, { evidence: { a: results.a.ctx.jsonPath, b: results.b.ctx.jsonPath } });
+      // WHY: an energy-only selection has no PRIMARY phases; comparing PRIMARY would print only 'phase not run' rows.
+      const paths = plan.cfg.only.has('energy') ? ENERGY_PATHS : PRIMARY;
+      const result = compareAll(a, b, { paths, evidence: { a: results.a.ctx.jsonPath, b: results.b.ctx.jsonPath } });
       const md = renderComparisonMarkdown(result, { title: `A/B comparison — ${stem}`, aLabel: plan.a, bLabel: plan.b });
       writeFileSync(join(dir, 'comparison.md'), md);
       writeFileSync(join(dir, 'comparison.json'), JSON.stringify(result, null, 2));
@@ -209,7 +213,7 @@ export async function runAb(argv, deps = {}) {
       log(`counts: ${Object.entries(result.counts).map(([k, v]) => `${v} ${k}`).join(', ')}${result.comparability.comparable ? '' : '  (INCOMPARABLE: not ranked)'}`);
       if (results.a2?.ctx.jsonPath) {
         // A1 vs A2: the same candidate twice. Anything flagged here is the lab's own noise.
-        const noise = compareAll(a, readReport(results.a2.ctx.jsonPath), { evidence: { a: results.a.ctx.jsonPath, b: results.a2.ctx.jsonPath } });
+        const noise = compareAll(a, readReport(results.a2.ctx.jsonPath), { paths, evidence: { a: results.a.ctx.jsonPath, b: results.a2.ctx.jsonPath } });
         writeFileSync(join(dir, 'noise-a1-vs-a2.md'), renderComparisonMarkdown(noise, { title: `Noise: A run 1 vs A run 2 — ${stem}`, aLabel: 'A run 1', bLabel: 'A run 2' }));
         log('A1-vs-A2 noise table:');
         for (const r of noise.rows.filter((x) => x.status !== 'missing')) log(`  ${r.path.padEnd(48)} ${String(r.a).padStart(9)} -> ${String(r.b).padStart(9)}  ${r.deltaPct === null ? '—' : `${r.deltaPct}%`}  ${r.status}`);

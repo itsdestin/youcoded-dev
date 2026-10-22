@@ -82,6 +82,8 @@ export function executionIdentity(cfg) {
     nativeResumeRepeats: cfg.nativeResumeRepeats, scrollbackRepeats: cfg.scrollbackRepeats,
     documentCaseIds: [...cfg.documentCaseIds],
     streamCompletionDiagnostics: cfg.streamCompletionDiagnostics === true,
+    // WHY conditional: only energy-lane runs carry it, so every existing report's execution identity is unchanged.
+    ...(cfg.only.has('energy') ? { energyRepeats: cfg.energyRepeats } : {}),
   };
 }
 
