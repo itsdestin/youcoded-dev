@@ -14,6 +14,7 @@
 // caps), and three legs are timed:
 //   cold       load the page, type the password, wait until the conversation is drawn
 //   reopen     reload the page (saved key, cached code), wait until drawn
+//   revisit    open the page again from its address with the connections gone (a bookmark, minutes later)
 //   reconnect  the proxy hard-closes every connection while the page stays open; the page
 //              reconnects by itself and redraws
 //
@@ -271,6 +272,17 @@ async function oneRepeat({ proxy, logPath }) {
     legs.reopen = legRecord(rep, proxy.stats(), s0, performance.now() - w0, {});
     await sleep(1000);
 
+    // ── revisit ── opening the page again from a bookmark or the home screen, minutes later: the radio's connections are gone
+    // (dropped first), and the browser may use its kept copy of the page (a reload above always asks the computer for it).
+    await cdp.send('Page.navigate', { url: 'about:blank' });
+    await sleep(300);
+    proxy.dropConnections();
+    since = new Date().toISOString(); s0 = proxy.stats(); w0 = performance.now();
+    await cdp.send('Page.navigate', { url });
+    rep = await waitForReport(logPath, since, 'load');
+    legs.revisit = legRecord(rep, proxy.stats(), s0, performance.now() - w0, {});
+    await sleep(1000);
+
     // ── reconnect ──
     since = new Date().toISOString(); s0 = proxy.stats(); w0 = performance.now();
     const dropped = proxy.dropConnections();
@@ -302,7 +314,7 @@ const mb = (b) => (b == null ? null : Math.round(b / 1024) / 1024);
 
 export function buildSummary(runs) {
   const out = {};
-  for (const leg of ['cold', 'reopen', 'reconnect']) {
+  for (const leg of ['cold', 'reopen', 'revisit', 'reconnect']) {
     const L = runs.map((r) => r[leg]).filter(Boolean);
     out[leg] = {
       marks: Object.fromEntries(MARK_ORDER.map((k) => [k, summarise(L.map((l) => l.marks[k]))]).filter(([, v]) => v)),
@@ -321,7 +333,7 @@ export function buildSummary(runs) {
 
 export function renderMarkdown(report) {
   const { meta, summary } = report;
-  const legs = ['cold', 'reopen', 'reconnect'];
+  const legs = ['cold', 'reopen', 'revisit', 'reconnect'];
   const row = (label, f) => `| ${label} | ${legs.map((l) => f(summary[l])).join(' | ')} |`;
   const lines = [
     `# Phone over a slow network — ${meta.label ?? meta.stamp}`,
@@ -372,7 +384,7 @@ export async function runPhoneScenario(opts) {
     for (let i = 0; i < repeats; i++) {
       const legs = await oneRepeat({ proxy, logPath: seeded.logPath });
       runs.push(legs);
-      log(`repeat ${i + 1}/${repeats}: cold drawn ${legs.cold.marks.drawn} ms, reopen ${legs.reopen.marks.drawn} ms, reconnect ${legs.reconnect.marks.drawn} ms`);
+      log(`repeat ${i + 1}/${repeats}: cold drawn ${legs.cold.marks.drawn} ms, reopen ${legs.reopen.marks.drawn} ms, revisit ${legs.revisit.marks.drawn} ms, reconnect ${legs.reconnect.marks.drawn} ms`);
     }
     const stamp = new Date().toISOString().slice(0, 16).replace('T', '-').replace(':', '');
     const report = {
