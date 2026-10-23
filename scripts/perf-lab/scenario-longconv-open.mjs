@@ -184,7 +184,7 @@ export function classifyRung(plan, raw, thresholds = LONGCONV_THRESHOLDS) {
     typingSaturated: ty?.complete ? ty.saturated : null, typingKeysOpen: ty?.complete ? ty.keysStream : null,
     typingKeysAfterOpen: ty?.complete ? ty.keysSettle : null, typingKeysScroll: ty?.complete ? ty.keysAfter : null,
     scrollVerdict: late?.verdict ?? null, scrollBlankFrames: num(late?.framesWithLate), scrollMaxBlankInView: num(late?.maxLateInViewport),
-    scrollJumpedFrames: num(late?.jumpedFrames), scrollTopDeltaFramesInfo: num(late?.scrollTopDeltaFrames), scrollInput: late?.scrollInput ?? null, scrollFrames: num(late?.frames), scrollPx: num(late?.scrolledPx), scrollBlankAtRest: late ? (late.settledAtRest === false ? 1 : 0) : null,
+    scrollJumpedFrames: num(late?.jumpedFrames), scrollTopDeltaFramesInfo: num(late?.scrollTopDeltaFrames), scrollMaxShiftPx: num(late?.maxShiftPx), scrollLastJumpTo: num(late?.lastJumpTo), scrollWheelEvents: num(late?.wheelEvents), scrollInput: late?.scrollInput ?? null, scrollFrames: num(late?.frames), scrollPx: num(late?.scrolledPx), scrollBlankAtRest: late ? (late.settledAtRest === false ? 1 : 0) : null,
     peakPssMb: round1(raw?.memory?.peakPssMb), heapMb: round1(raw?.census?.heapMb), domNodes: num(raw?.census?.domNodes),
     toolCardTextHits: num(raw?.census?.toolCardTextHits), scrollHeightPx: num(raw?.census?.scrollHeightPx), entryKinds: raw?.census?.entryKinds ?? null,
     interference: raw?.interference ?? null,
