@@ -1,0 +1,92 @@
+{
+ "deck": "auto-updates-contract-acceptance",
+ "started": "2026-10-23T02:11:34.672Z",
+ "submitted": "2026-10-23T02:11:49Z",
+ "cur": 11,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "t": 1792721496546,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R1": {
+   "v": "yes",
+   "t": 1792721499124,
+   "seconds": 3,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R4": {
+   "v": "yes",
+   "t": 1792721501391,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R5": {
+   "v": "yes",
+   "t": 1792721503419,
+   "seconds": 2,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R7": {
+   "v": "yes",
+   "t": 1792721504717,
+   "seconds": 1,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R8": {
+   "v": "yes",
+   "t": 1792721505209,
+   "seconds": 0,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R10": {
+   "v": "yes",
+   "t": 1792721506126,
+   "seconds": 1,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R11": {
+   "v": "yes",
+   "t": 1792721506923,
+   "seconds": 1,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R13": {
+   "v": "yes",
+   "t": 1792721507424,
+   "seconds": 1,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R14": {
+   "v": "yes",
+   "t": 1792721507881,
+   "seconds": 0,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R15": {
+   "v": "yes",
+   "t": 1792721508332,
+   "seconds": 0,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "R16": {
+   "v": "yes",
+   "t": 1792721508934,
+   "seconds": 1,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
