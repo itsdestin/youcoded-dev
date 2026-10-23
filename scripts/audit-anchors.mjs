@@ -409,6 +409,13 @@ export function checkAnchor(root, anchor) {
   }
   const rel = anchor.path ?? anchor.test;
   if (!rel) return { ok: false, reason: `anchor has neither path nor test: ${JSON.stringify(anchor)}` };
+  // WHY skip an absent repo (2026-10-22, #29): MAP paths already do (see check 3). A doc anchor
+  // into youcoded-admin — the private repo workspace CI never clones — failed CI as "missing"
+  // although the file exists upstream. Unverifiable is not drift; it is reported as skipped.
+  const repo = rel.split('/')[0];
+  if (REPOS.includes(repo) && !fs.existsSync(path.join(subRepoRoot(root), repo, '.git'))) {
+    return { ok: true, skipped: `${rel} (repo ${repo} not on disk)` };
+  }
   const abs = path.join(baseFor(root, rel), rel);
   if (!fs.existsSync(abs)) return { ok: false, reason: `missing: ${rel}` };
   if (anchor.contains !== undefined) {
@@ -839,6 +846,7 @@ function main() {
       result.anchors.total++;
       const r = checkAnchor(root, anchor);
       if (!r.ok) result.anchors.failed.push({ source: `.claude/rules/${f}`, anchor, reason: r.reason });
+      if (r.skipped) (result.anchors.skipped ??= []).push(r.skipped);
     }
     const words = countBodyWords(text);
     if (words > BUDGETS.ruleBodyWords) {
@@ -855,6 +863,7 @@ function main() {
         result.anchors.total++;
         const r = checkAnchor(root, anchor);
         if (!r.ok) result.anchors.failed.push({ source: relFile, anchor, reason: r.reason });
+        if (r.skipped) (result.anchors.skipped ??= []).push(r.skipped);
       }
     }
   }
@@ -1014,6 +1023,7 @@ function printHuman(r, root = process.cwd()) {
   dump('MAP paths missing', r.mapPaths.missing);
   dump('scripts named in skills/commands/CLAUDE.md that do not exist', r.scriptPaths?.missing ?? []);
   warn('MAP paths in a repo that is not on disk (unverifiable here, not drift)', r.mapPaths.skipped || []);
+  warn('anchors in a repo that is not on disk (unverifiable here, not drift)', r.anchors.skipped || []);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
   // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.
