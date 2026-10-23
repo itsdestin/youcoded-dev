@@ -10,8 +10,8 @@ why: Destin: "i have serious stability/reliability/performance issues with the m
 work: session/remote-access-audit
 ---
 Progress
-Done: Phone keeps its computer through outages, rides out freezes up to ~30 s, unlock checks instead of reconnecting, one lost send no longer blocks others, failed refills retry, loads compressed/sent once/in pieces, connection logging, Tailscale retry; brand start-up screens approved (review-2); independent review F1–F6, F8, F9 fixed
-Next: Real-phone pass with an assembleReleaseTest build (Destin chose not to test before merge). Then: honest connection status on the phone incl. 'your computer is asleep' and a Use-this-phone-only way out from screens other than an open conversation (review F10) — needs a review deck; explore an always-there reload only if refresh trouble remains.
+Done: Second half (speed): first open 8.4→6.1 s, reload 3.6→2.0 s, reconnect 1.9→1.0 s, resume 11→~1 s on the rig's 470 ms link; startup download 1.9→1.0 MB over gzip; connection notices above the message box (deck approved); placeholder centering fixed. Merged with session/remote-access-audit.
+Next: Read real 'waited after waking' timings from desktop.log once Destin uses the phone after a long absence; only if resumes still feel slow, consider a phone-side copy of the last conversation (set aside 2026-10-22). Android app real-phone pass (assembleReleaseTest). Honest status incl. 'your computer is asleep' and Use-this-phone-only off the conversation screen (review F10) — needs a deck.
 Blocked: nothing.
 
 Chats
