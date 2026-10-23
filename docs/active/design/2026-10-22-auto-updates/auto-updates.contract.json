@@ -133,6 +133,102 @@
           "checkedBy": "live-app",
           "threshold": "pass/fail",
           "source": "auto-updates-questions-2#Q-mac-2"
+        },
+        {
+          "id": "R17",
+          "statement": "On a Mac that needs a password, Restart checks the downloaded update is still there first, and otherwise opens the disk image.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-service.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F1"
+        },
+        {
+          "id": "R18",
+          "statement": "On a Mac, the password-powered install checks and installs a copy that only the administrator can alter.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-staging.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F2"
+        },
+        {
+          "id": "R19",
+          "statement": "A switch you turned off stays off even when the saved setting cannot be read at that moment.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-service.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F3"
+        },
+        {
+          "id": "R20",
+          "statement": "A release whose signed file was removed is no longer offered, on stable or beta; beta offers the next good one.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-release-status.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F4"
+        },
+        {
+          "id": "R21",
+          "statement": "The popup says the update installs by itself on quit only when a quit really will install it.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/UpdatePanel.test.tsx",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F5"
+        },
+        {
+          "id": "R22",
+          "statement": "If Restart cannot get the install ready in time, it says so instead of quitting and reopening the old version.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-restart.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F6"
+        },
+        {
+          "id": "R23",
+          "statement": "When Restart fails, the popup shows the real cause or a general error, never a made-up installer or network cause.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/UpdatePanel.test.tsx",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F7"
+        },
+        {
+          "id": "R24",
+          "statement": "A download that keeps failing waits longer between tries instead of re-downloading the whole update every half hour.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-service.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F8"
+        },
+        {
+          "id": "R25",
+          "statement": "Pressing Update now while old downloads are being tidied never loses the download that is starting.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-service.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F9"
+        },
+        {
+          "id": "R26",
+          "statement": "The Mac helper leaves no leftover update files after waiting, and a stale install signal cannot trigger an unwanted install.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-staging.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F10"
+        },
+        {
+          "id": "R27",
+          "statement": "If you quit just as a restart finishes, a later Restart press is not wrongly refused as busy.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-restart.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F11"
+        },
+        {
+          "id": "R28",
+          "statement": "Your saved automatic-install choice is read when YouCoded starts, so the popup shows it right away.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/update-service.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-10-22-auto-updates-code-review.md#F12"
         }
       ]
     }
