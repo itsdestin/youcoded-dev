@@ -11,8 +11,8 @@ why: Destin, 2026-10-22: messages stuck on 'unconfirmed' with the text in the te
 work: session/queue-delivery-fixes
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
+Done: Six fixes built and reviewed twice (plan + regressions); real-CLI smoke 9/9 incl. a dropped-joiner mode; 28 width probes match Claude Code 2.1.309; verify.sh green.
+Next: Destin runs the dev-window checklist (item 3: Claude opens attached non-image files with only an 'Attached:' line — unproven with real Claude). Rare edge left open: an instant queue bubble whose send is accepted but never recorded stays 'sending'.
 Blocked: nothing.
 
 Chats
