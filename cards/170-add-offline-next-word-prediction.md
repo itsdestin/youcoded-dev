@@ -10,8 +10,8 @@ why: Destin requested a separate parallel feature track: after confirming a swip
 work: session/170-swipe-next-word, session/170-multilingual-prediction, feature/170-open-nextword
 ---
 Progress
-Done: Spanish pilot step 0-1 (branch feature/170-open-nextword): scoring tool + 3 fair test sets; FineWeb-2+Tatoeba x30 trigram beats today on all sets (top-3: Tatoeba 31.1 vs 30.7, everyday 25.2 vs 21.4, web 28.7 vs 21.2 at 42 MB); n-gram suggestions ~6x faster (identical output).
-Next: Owner picks size; then same recipe for FR/DE; then own 5M neural model must beat this baseline.
+Done: Gboard (14.2, emulator, learning off) vs ours measured on ES/FR/DE everyday text: ours roughly even; new ES file ahead
+Next: Phase 1 of the roadmap: FR/DE/EN files
 Blocked: Non-English contextual model/vocabulary assets do not currently exist in pinned packs; wordfreq frequencies alone are not contextual predictions. Data/model provenance and real language-specific behavior must be implemented, not only capability flags. Existing ARM/finalFlatpak release acceptance remains tracked separately on165.
 
 Chats
