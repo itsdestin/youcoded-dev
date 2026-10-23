@@ -55,7 +55,10 @@ Repeat back exactly, nothing else: 👨‍👩‍👧 می‌خواهم a‌b
 ```
 
 - [ ] It sends at once and is not left in the terminal box or marked "Unconfirmed".
-- [ ] The family emoji comes back as one family, not three separate people.
+- [ ] The family emoji comes back as one family, not three separate people, in the chat **and in terminal view**.
+- [ ] Terminal view shows the line cleanly (no leftover letters such as "kabxactly").
+- [ ] Your **next** message sends normally, with no "Claude Code is waiting on something" warning.
+- [ ] Bonus: try `Repeat back: 👍🏽 ❤️ 1️⃣ 🏳️‍🌈` and check the terminal view stays clean.
 
 ## 6. A message with several lines
 
