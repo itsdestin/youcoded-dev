@@ -1,0 +1,23 @@
+{
+ "deck": "model-switch-divider-review",
+ "started": "2026-10-23T05:26:20.092Z",
+ "submitted": "2026-10-23T05:26:44Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1792733186917,
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1792733203372,
+   "note": "do these stay recorded and persist after restarts/resume?",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
