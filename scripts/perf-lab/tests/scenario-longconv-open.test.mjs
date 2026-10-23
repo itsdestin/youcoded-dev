@@ -111,3 +111,9 @@ test('CLI', () => {
   assert.deepEqual(c.turns, [40, 200]); assert.equal(c.rounds, 2);
   assert.throws(() => parseCli(['--a', '/x', '--turns', '1'])); assert.throws(() => parseCli(['--turns', '40'])); assert.throws(() => parseCli(['--a', '/x', '--bogus']));
 });
+
+test('--scroll-input: wheel by default, none accepted, anything else refused', () => {
+  assert.equal(parseCli(['--a', '/x']).scrollInput, 'wheel');
+  assert.equal(parseCli(['--a', '/x', '--scroll-input', 'none']).scrollInput, 'none');
+  assert.throws(() => parseCli(['--a', '/x', '--scroll-input', 'touch']), /wheel or none/);
+});

@@ -42,7 +42,35 @@
  * both the motion that found the bug and a case that scenario's `blindTo` calls out
  * as unmeasured.
  */
-export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, settleMs }) => `(async () => {
+/**
+ * Did the APP move the viewport during one scroll step? PURE, and injected verbatim into the page
+ * (via toString) so the tests exercise the exact code the probe runs.
+ *
+ * WHY ON-SCREEN OFFSET, NOT scrollTop. The first version counted a frame as "the app moved the
+ * viewport" whenever scrollTop differed from the value we assigned by more than 4 px. Browser scroll
+ * anchoring does exactly that legitimately: content above the viewport changes height, the browser
+ * shifts scrollTop to compensate, and what the user is LOOKING AT does not move. That is not a jump.
+ * A jump is the thing the user sees: the entry at the top of the view ends up somewhere other than
+ * where the scroll step alone would have put it.
+ *
+ *   prevOffsetPx    top-visible entry's top edge relative to the pane top, before the step
+ *   newOffsetPx     the same entry's offset after the frame
+ *   intendedDeltaPx how far the step meant to scroll (commanded - scrollTop before assigning); a
+ *                   positive scroll moves content UP the screen, so the offset should shrink by it
+ * Returns the unexplained shift in px (0 when the entry landed where the step alone puts it).
+ */
+export function unexplainedShiftPx({ prevOffsetPx, newOffsetPx, intendedDeltaPx }) {
+  return Math.abs(newOffsetPx - (prevOffsetPx - intendedDeltaPx));
+}
+
+/** A shift bigger than this is a visible jump. Sub-pixel layout and rounding noise stay below it. */
+export const VIEWPORT_SHIFT_TOLERANCE_PX = 2;
+
+/** 'wheel' (default): every step is preceded by a wheel event, like a real mouse/trackpad. 'none': no input events. */
+export const SCROLL_INPUTS = Object.freeze(['wheel', 'none']);
+
+export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, settleMs, scrollInput = 'wheel' }) => `(async () => {
+  const unexplainedShiftPx = ${unexplainedShiftPx.toString()};
   const pane = [...document.querySelectorAll('.chat-scroll')].find((e) => !e.closest('[aria-hidden="true"]'));
   if (!pane) return { ok: false, reason: 'no visible .chat-scroll' };
 
@@ -135,17 +163,64 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
   // view to the end, and the blank entries were the ones at the destination. That is
   // a real thing a user might see, but it is an AUTO-SCROLL, not late content, and
   // merging the two would be exactly the conflation this instrument exists to avoid.
-  const JUMP_TOLERANCE_PX = 4;
-  let jumpedFrames = 0, lastJumpTo = null;
+  //
+  // HOW "THE APP MOVED THE VIEWPORT" IS DECIDED (revised 2026-10-22). By where the entry at the top
+  // of the view ENDS UP on screen, not by whether scrollTop equals what we assigned — see
+  // unexplainedShiftPx. The old raw scrollTop comparison is kept as scrollTopDeltaFrames, an
+  // INFORMATIONAL count only: scroll anchoring makes it non-zero without anything visibly moving.
+  const SHIFT_TOLERANCE_PX = ${VIEWPORT_SHIFT_TOLERANCE_PX};
+  const RAW_TOLERANCE_PX = 4;
+  const SCROLL_INPUT = ${JSON.stringify(scrollInput)};
+  let jumpedFrames = 0, lastJumpTo = null, scrollTopDeltaFrames = 0, anchorLostFrames = 0, maxShiftPx = 0, wheelEvents = 0;
+  // The first entry whose bottom edge is below the pane top: the one the user's eye is on.
+  const topEntry = () => {
+    const view = pane.getBoundingClientRect();
+    for (const el of pane.querySelectorAll('.timeline-entry')) {
+      const r = el.getBoundingClientRect();
+      if (r.height > 0 && r.bottom > view.top + 1) return { el, offset: r.top - view.top };
+    }
+    return null;
+  };
+  // WHY A WHEEL EVENT PER STEP. Real wheel/trackpad scrolling fires 'wheel', and the app listens for
+  // it (ChatView releases its history-page anchor correction on wheel/touch/key). A probe that only
+  // assigns scrollTop exercises a path no wheel user ever takes. The event is dispatched on the
+  // element under the pane's centre so it bubbles to the pane like a real one. It is synthetic
+  // (CDP-injected input waits for a free main thread, which would distort the very timing measured),
+  // but the app's listeners do not check isTrusted. scrollTop is still assigned afterwards so the
+  // commanded position, and therefore the px/s rate, stays exact. 'none' skips the event on purpose:
+  // programmatic / scrollbar-drag scrolling is a separate real path.
+  const fireWheel = (deltaY) => {
+    const v = pane.getBoundingClientRect();
+    const x = v.left + v.width / 2, y = v.top + v.height / 2;
+    const target = document.elementFromPoint(x, y) || pane;
+    target.dispatchEvent(new WheelEvent('wheel', { deltaY, deltaMode: 0, clientX: x, clientY: y, bubbles: true, cancelable: true }));
+    wheelEvents++;
+  };
   const t0 = performance.now();
   let travelled = 0;
   while (true) {
     const elapsed = performance.now() - t0;
     travelled = Math.min(max, (rate * elapsed) / 1000);
     const commanded = down ? travelled : max - travelled;
+    const before = pane.scrollTop;
+    const anchor = topEntry();
+    const intended = commanded - before;
+    if (SCROLL_INPUT === 'wheel') fireWheel(intended);
     pane.scrollTop = commanded;
     await new Promise((r) => requestAnimationFrame(r));
-    if (Math.abs(pane.scrollTop - commanded) > JUMP_TOLERANCE_PX) {
+    const rawMoved = Math.abs(pane.scrollTop - commanded) > RAW_TOLERANCE_PX;
+    if (rawMoved) scrollTopDeltaFrames++;
+    let jumped = false;
+    if (anchor && anchor.el.isConnected) {
+      const view = pane.getBoundingClientRect();
+      const shift = unexplainedShiftPx({ prevOffsetPx: anchor.offset, newOffsetPx: anchor.el.getBoundingClientRect().top - view.top, intendedDeltaPx: intended });
+      maxShiftPx = Math.max(maxShiftPx, shift);
+      jumped = shift > SHIFT_TOLERANCE_PX;
+    } else if (anchor) {
+      // The entry we were tracking left the DOM; no offset to compare. Counted, never silently a pass.
+      anchorLostFrames++;
+    }
+    if (jumped) {
       jumpedFrames++;
       lastJumpTo = Math.round(pane.scrollTop);
     } else {
@@ -166,7 +241,7 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
     frames, framesWithLate, maxLate, maxSpacersAnywhere, totalEntriesSeen,
     lateAfterStop, firstLate,
     settledAtRest, settleTookMs, lateAtRest,
-    jumpedFrames, lastJumpTo,
+    jumpedFrames, lastJumpTo, scrollTopDeltaFrames, anchorLostFrames, maxShiftPx: Math.round(maxShiftPx * 10) / 10, wheelEvents, scrollInput: SCROLL_INPUT,
     scrollHeight: pane.scrollHeight, clientHeight: pane.clientHeight,
     scrollablePx: max,
     // What the pass ACTUALLY did, so a reader can judge the reading rather than
@@ -186,8 +261,9 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
 export const HUMAN_SCROLL_PX_PER_SECOND = 1500;
 
 /** Drive one scroll pass and return the raw page reading. */
-export async function scrollAndCount(cdp, { durationMs = 8000, direction = 'down', pxPerSecond = HUMAN_SCROLL_PX_PER_SECOND, settleMs = 3000 } = {}) {
-  return cdp.evaluate(SCROLL_PROBE_EXPRESSION({ durationMs, direction, pxPerSecond, settleMs }));
+export async function scrollAndCount(cdp, { durationMs = 8000, direction = 'down', pxPerSecond = HUMAN_SCROLL_PX_PER_SECOND, settleMs = 3000, scrollInput = 'wheel' } = {}) {
+  if (!SCROLL_INPUTS.includes(scrollInput)) throw new Error(`scrollInput must be one of ${SCROLL_INPUTS.join(', ')}, got ${scrollInput}`);
+  return cdp.evaluate(SCROLL_PROBE_EXPRESSION({ durationMs, direction, pxPerSecond, settleMs, scrollInput }));
 }
 
 /**
@@ -206,7 +282,7 @@ export function summariseLateContent(raw) {
     spacersSeenAnywhere: null, totalEntriesSeen: null,
     lateAfterStop: null, firstLate: null,
     settledAtRest: null, settleTookMs: null, lateAtRest: null,
-    jumpedFrames: null, lastJumpTo: null,
+    jumpedFrames: null, lastJumpTo: null, scrollTopDeltaFrames: null, anchorLostFrames: null, maxShiftPx: null, wheelEvents: null, scrollInput: null,
     scrolledPx: null, scrollablePx: null, pxPerSecond: null, elapsedMs: null,
     verdict: 'unmeasured', reason: null,
   };
@@ -223,6 +299,12 @@ export function summariseLateContent(raw) {
   out.lateAtRest = raw.lateAtRest ?? null;
   out.jumpedFrames = raw.jumpedFrames ?? 0;
   out.lastJumpTo = raw.lastJumpTo ?? null;
+  // INFORMATIONAL: frames where scrollTop != commanded. Scroll anchoring inflates it with nothing visibly moving, so it is never a verdict input.
+  out.scrollTopDeltaFrames = raw.scrollTopDeltaFrames ?? null;
+  out.anchorLostFrames = raw.anchorLostFrames ?? null;
+  out.maxShiftPx = raw.maxShiftPx ?? null;
+  out.wheelEvents = raw.wheelEvents ?? null;
+  out.scrollInput = raw.scrollInput ?? null;
   out.firstLate = raw.firstLate ?? null;
   out.elapsedMs = raw.elapsedMs ?? null;
   out.scrolledPx = typeof raw.travelledPx === 'number' ? raw.travelledPx : null;
@@ -279,7 +361,7 @@ export function formatLateContentLine(m) {
   if (m.verdict === 'blank-at-rest') return `late content: ${m.lateAtRest} BLANK ENTRIES while STANDING STILL after ${m.settleTookMs}ms — worse than a scroll artefact`;
   if (m.verdict === 'no-folding') return `late content: NOTHING LAZY RAN — ${m.totalEntriesSeen} entries, 0 spacers over ${m.frames} frames (not a pass)`;
   if (m.verdict === 'clean') return `late content: 0 blank entries in view across ${m.frames} frames at ${m.pxPerSecond} px/s`
-    + `${m.jumpedFrames ? `, ${m.jumpedFrames} frame(s) skipped where the app scrolled itself` : ''}`
+    + `${m.jumpedFrames ? `, ${m.jumpedFrames} frame(s) skipped where the app visibly moved the viewport` : ''}`
     + ` (${m.spacersSeenAnywhere} spacers existed off-screen)`;
   const where = m.firstLate ? ` first at scrollTop ${m.firstLate.atScrollTop}, ${m.firstLate.heightPx}px, key ${m.firstLate.key ?? '?'}` : '';
   return `late content: ${m.maxLateInViewport} BLANK ENTRIES IN VIEW (worst frame), on ${m.framesWithLate}/${m.frames} frames `

@@ -9,6 +9,8 @@ import {
   scrollAndCount,
   summariseLateContent,
   worstLateVerdict,
+  unexplainedShiftPx,
+  VIEWPORT_SHIFT_TOLERANCE_PX,
 } from '../late-content.mjs';
 
 // ── The verdict ─────────────────────────────────────────────────────────────
@@ -86,7 +88,7 @@ test('frames where the APP scrolled are excluded, not counted as late content', 
   const m = summariseLateContent(raw({ maxLate: 0, framesWithLate: 0, frames: 336, jumpedFrames: 1, lastJumpTo: 4504200 }));
   assert.equal(m.verdict, 'clean');
   assert.equal(m.jumpedFrames, 1);
-  assert.match(formatLateContentLine(m), /1 frame\(s\) skipped where the app scrolled itself/);
+  assert.match(formatLateContentLine(m), /1 frame\(s\) skipped where the app visibly moved the viewport/);
 });
 
 test('a pass the app hijacked almost entirely is not a pass', () => {
@@ -116,6 +118,39 @@ test('worstLateVerdict never lets a clean repeat bury a defective one', () => {
   assert.equal(worstLateVerdict(['clean', 'no-folding']), 'no-folding');
   assert.equal(worstLateVerdict(['clean', 'clean']), 'clean');
   assert.equal(worstLateVerdict([]), 'unmeasured');
+});
+
+// ── What counts as "the app moved the viewport" ─────────────────────────────
+
+test('a pure scroll step leaves no unexplained shift, in either direction', () => {
+  // down 25 px: the top entry slides up 25 px on screen
+  assert.equal(unexplainedShiftPx({ prevOffsetPx: 40, newOffsetPx: 15, intendedDeltaPx: 25 }), 0);
+  // up 25 px: it slides down
+  assert.equal(unexplainedShiftPx({ prevOffsetPx: 40, newOffsetPx: 65, intendedDeltaPx: -25 }), 0);
+});
+
+test('scroll anchoring (scrollTop shifted, visible content unmoved) is not a jump', () => {
+  // The browser changed scrollTop by hundreds of px to compensate for content added above, so the
+  // entry is exactly where the step alone puts it. Raw scrollTop would have called this a jump.
+  const shift = unexplainedShiftPx({ prevOffsetPx: 40, newOffsetPx: 15, intendedDeltaPx: 25 });
+  assert.ok(shift <= VIEWPORT_SHIFT_TOLERANCE_PX);
+});
+
+test('the app yanking the view (entry lands somewhere the step cannot explain) is a jump', () => {
+  assert.ok(unexplainedShiftPx({ prevOffsetPx: 40, newOffsetPx: 340, intendedDeltaPx: 25 }) > VIEWPORT_SHIFT_TOLERANCE_PX);
+  assert.ok(unexplainedShiftPx({ prevOffsetPx: 40, newOffsetPx: -900, intendedDeltaPx: 25 }) > VIEWPORT_SHIFT_TOLERANCE_PX);
+});
+
+test('summary keeps the raw scrollTop count as its own informational field, separate from the jump count', () => {
+  const m = summariseLateContent(raw({ jumpedFrames: 0, scrollTopDeltaFrames: 17, wheelEvents: 240, scrollInput: 'wheel', maxShiftPx: 0.4 }));
+  assert.equal(m.jumpedFrames, 0);
+  assert.equal(m.scrollTopDeltaFrames, 17);
+  assert.equal(m.scrollInput, 'wheel');
+  assert.equal(m.wheelEvents, 240);
+});
+
+test('scrollAndCount refuses an unknown scroll input', async () => {
+  await assert.rejects(() => scrollAndCount({ evaluate: async () => ({}) }, { scrollInput: 'touch' }), /scrollInput must be/);
 });
 
 // ── The live proof ──────────────────────────────────────────────────────────
@@ -208,5 +243,53 @@ test('LIVE: pop-in is caught, and an eager re-render is not', { skip: haveChrome
       chrome.kill();
     });
     if (profile) try { rmSync(profile, { recursive: true, force: true }); } catch { /* the OS will reap it */ }
+  }
+});
+
+test('LIVE: wheel mode fires wheel events; anchoring is not a jump; a real yank is', { skip: haveChrome ? false : `${CHROME} not on PATH` }, async () => {
+  const port = 9785;
+  let chrome = null, profile = null, cdp = null;
+  try {
+    let targets;
+    ({ chrome, profile, targets } = await startLiveChrome(CHROME, port, ['--window-size=900,800'], 'perf-lab-jump-'));
+    cdp = await connect(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
+    // mode 'anchor': every 5th wheel event inserts 60 px of content ABOVE the viewport and Chrome's own
+    // scroll anchoring adjusts scrollTop - visible content does not move. mode 'yank': the page itself
+    // sets scrollTop 700 px away on every 20th wheel event - a real visible jump.
+    const build = (mode) => cdp.evaluate(`(() => {
+      document.body.style.margin = '0';
+      document.body.innerHTML = '<div class="chat-scroll" style="height:600px;overflow:auto"></div>';
+      const pane = document.querySelector('.chat-scroll');
+      const mk = (i) => { const d = document.createElement('div'); d.className = 'timeline-entry'; d.setAttribute('data-entry-key', 'e-' + i); d.style.height = '100px'; d.appendChild(Object.assign(document.createElement('p'), { textContent: 'm' + i })); return d; };
+      for (let i = 0; i < 400; i++) pane.appendChild(mk(i));
+      window.__wheels = 0;
+      pane.addEventListener('wheel', () => {
+        window.__wheels++;
+        // in a frame callback, AFTER the probe's scrollTop assignment, like a real late layout change; inserting synchronously here would be overwritten by that assignment
+        if (${JSON.stringify(mode)} === 'anchor' && window.__wheels % 5 === 0) requestAnimationFrame(() => { const d = mk('x' + window.__wheels); d.style.height = '60px'; pane.insertBefore(d, pane.firstChild); });
+        if (${JSON.stringify(mode)} === 'yank' && window.__wheels % 20 === 0) requestAnimationFrame(() => { pane.scrollTop = pane.scrollTop + 700; });
+      });
+      return true;
+    })()`);
+    await build('anchor');
+    const anchored = summariseLateContent(await scrollAndCount(cdp, { durationMs: 2000, direction: 'down', pxPerSecond: 1500, settleMs: 500 }));
+    assert.equal(anchored.scrollInput, 'wheel');
+    assert.ok(anchored.wheelEvents > 20, `wheel events must fire every step, got ${anchored.wheelEvents}`);
+    assert.equal(anchored.jumpedFrames, 0, `anchoring must not read as a jump, got ${anchored.jumpedFrames} (max shift ${anchored.maxShiftPx}px)`);
+
+    await build('yank');
+    const yanked = summariseLateContent(await scrollAndCount(cdp, { durationMs: 2000, direction: 'down', pxPerSecond: 1500, settleMs: 500 }));
+    assert.ok(yanked.jumpedFrames > 0, 'a 700 px yank by the page must be counted as the app moving the viewport');
+
+    await build('anchor');
+    const none = summariseLateContent(await scrollAndCount(cdp, { durationMs: 1000, direction: 'down', pxPerSecond: 1500, settleMs: 500, scrollInput: 'none' }));
+    assert.equal(none.wheelEvents, 0, 'no-input mode must fire no wheel events');
+    assert.equal(await cdp.evaluate('window.__wheels'), 0);
+  } finally {
+    try { cdp?.close(); } catch { /* already closed */ }
+    await new Promise((r) => setTimeout(r, 300));
+    try { chrome?.kill(); } catch { /* gone */ }
+    await new Promise((r) => setTimeout(r, 500));
+    try { if (profile) rmSync(profile, { recursive: true, force: true }); } catch { /* best effort */ }
   }
 });

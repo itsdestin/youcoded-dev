@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/perf-lab/longconv-open-run.mjs — standalone entry for "open a long saved conversation" (see scenario-longconv-open.mjs).
 //
-//   node scripts/perf-lab/longconv-open-run.mjs --a <checkout> [--b <checkout>] [--rounds 2] [--label x] [--turns 40,200,1000] [--out <dir>] [--check]
+//   node scripts/perf-lab/longconv-open-run.mjs --a <checkout> [--b <checkout>] [--rounds 2] [--label x] [--turns 40,200,1000] [--scroll-input wheel|none] [--out <dir>] [--check]
 //
 // Same contract as the other standalone scenarios: cached-only builds (never builds, never downloads), busy-machine semantics with every
 // window's interference verdict kept, A/B interleaved, a run lock, one app boot per rung, exploratory label. No model: the conversation is a
@@ -46,7 +46,7 @@ export function seedLongConversation(fixture, turns) {
   return { claudeSessionId: ns.big.sessionId, projectSlug: ns.slug, projectPath: ns.cwd, provider: 'native', binding: ns.binding, bytes: statSync(ns.big.path).size };
 }
 
-export async function measureRung(app, fixture, plan, detail, { _deps = {} } = {}) {
+export async function measureRung(app, fixture, plan, detail, { _deps = {}, scrollInput = SCROLL_UP.scrollInput } = {}) {
   const cdp = app.cdp;
   const d = { installProbe, stopProbe, installLoopProbe, readLoopProbe, exchangeDocumentClock, installDocumentReceipt, startTypingTrain, scrollAndCount, sleep, ..._deps };
   let train = null, loopToken = null;
@@ -80,7 +80,7 @@ export async function measureRung(app, fixture, plan, detail, { _deps = {} } = {
       await d.sleep(AFTER_OPEN_MS);                           // typing watched while the conversation just sits there
       const afterEndMs = await cdp.evaluate('performance.now()');
       census = await cdp.evaluate(censusSource);
-      lateRaw = await d.scrollAndCount(cdp, SCROLL_UP);       // scroll-up stability, typing probe still running
+      lateRaw = await d.scrollAndCount(cdp, { ...SCROLL_UP, scrollInput });       // scroll-up stability, typing probe still running
       late = summariseLateContent(lateRaw);
       open.afterEndMs = afterEndMs;
     }
@@ -108,14 +108,14 @@ export async function measureRung(app, fixture, plan, detail, { _deps = {} } = {
   }
 }
 
-export async function runRung(build, plan, label) {
+export async function runRung(build, plan, label, { scrollInput = SCROLL_UP.scrollInput } = {}) {
   setWindowLabel(label);
   const fixture = buildFixture(SCRATCH, { ...nativeStreamFixtureOptions({ streamCompletionDiagnostics: true }), nativeSessions: { count: 1, bigTurns: plan.turns, smallTurns: 1 }, checkout: FIXTURE_CHECKOUT, log: () => {} });
   const detail = seedLongConversation(fixture, plan.turns);
   let raw;
   try {
     raw = await withBoot(build, fixture, async (app) => {
-      const guarded = await withDocumentWatchdog(app, () => measureRung(app, fixture, plan, detail), {
+      const guarded = await withDocumentWatchdog(app, () => measureRung(app, fixture, plan, detail, { scrollInput }), {
         timeoutMs: OPEN_TIMEOUT_MS + RUNG_GRACE_MS + AFTER_OPEN_MS + SCROLL_UP.durationMs + SCROLL_UP.settleMs, maxRssMb: PSS_CAP_MB, memoryBasis: MEMORY_BASIS.pss });
       if (guarded.status) return { failure: { status: guarded.status, error: guarded.error }, memory: guarded.memory };
       return { ...guarded.value, memory: guarded.memory };
@@ -127,7 +127,7 @@ export async function runRung(build, plan, label) {
 }
 
 export function parseCli(argv) {
-  const o = { rounds: 2, label: '', turns: [...TURN_COUNTS], check: false, out: join(resolve(fileURLToPath(new URL('../..', import.meta.url))), 'perf-reports', 'longconv-open') };
+  const o = { scrollInput: SCROLL_UP.scrollInput, rounds: 2, label: '', turns: [...TURN_COUNTS], check: false, out: join(resolve(fileURLToPath(new URL('../..', import.meta.url))), 'perf-reports', 'longconv-open') };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i], v = () => { const x = argv[++i]; if (x === undefined) throw new Error(`${k} needs a value`); return x; };
     if (k === '--a') o.a = resolve(v());
@@ -136,11 +136,15 @@ export function parseCli(argv) {
     else if (k === '--label') o.label = v();
     else if (k === '--turns') o.turns = v().split(',').map((x) => Number(x.trim())).filter((x) => x);
     else if (k === '--out') o.out = resolve(v());
+    // WHY: 'wheel' (default) fires a wheel event per scroll step like a real mouse/trackpad; 'none' scrolls programmatically with no input events
+    // (scrollbar-like), which exposes a separate real app path. See late-content.mjs.
+    else if (k === '--scroll-input') o.scrollInput = v();
     else if (k === '--check') o.check = true;
     else if (k === '--cached-only' || k === '--busy-machine') { /* always on; accepted so command lines match the lab's */ }
     else throw new Error(`unknown argument ${k}`);
   }
   if (!o.a) throw new Error('--a <checkout> is required');
+  if (!['wheel', 'none'].includes(o.scrollInput)) throw new Error('--scroll-input takes wheel or none');
   if (!Number.isInteger(o.rounds) || o.rounds < 1) throw new Error('--rounds must be a whole number >= 1');
   if (!o.turns.length || !o.turns.every((n) => Number.isInteger(n) && n >= 2)) throw new Error('--turns takes whole numbers >= 2');
   return o;
@@ -160,7 +164,7 @@ export async function main(argv) {
   const lock = acquireRunLock(join(SCRATCH, 'run.lock'), { label: `longconv-open ${cfg.label}` });
   const interference = [];
   setInterferenceSink(interference);
-  const report = { scenario: LONGCONV_SCENARIO, timestamp: new Date().toISOString(), label: cfg.label, thresholds: LONGCONV_THRESHOLDS,
+  const report = { scenario: LONGCONV_SCENARIO, timestamp: new Date().toISOString(), label: cfg.label, scrollInput: cfg.scrollInput, thresholds: LONGCONV_THRESHOLDS,
     exploratory: { mode: 'busy-machine', note: 'measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers' },
     standIn: 'a generated native-session transcript resumed through the app\'s own resume event (no model); not a Claude Code conversation',
     sides: {}, plans, rows: [], interference };
@@ -179,7 +183,7 @@ export async function main(argv) {
       if (!sides[side]) continue;
       for (const plan of plans) {
         say(`${slot.label} ${plan.id}`);
-        const row = await runRung(builds[side], plan, `${slot.label}:${plan.id}`);
+        const row = await runRung(builds[side], plan, `${slot.label}:${plan.id}`, { scrollInput: cfg.scrollInput });
         report.rows.push({ side, round: slot.round, position: slot.position, row });
         say(`  -> ${row.status}${row.reason ? ` (${row.reason})` : ''}`);
         report.aggregate = aggregateRounds(report.rows, TABLE_METRICS);

@@ -1036,7 +1036,7 @@ export function renderMarkdown(report, stem) {
           + `(${n(s.lateContent.spacersSeenAnywhere)} spacers existed off-screen)`
           + `${s.lateContent.lateAfterStop ? ' — ⚠ still blank after the scroll stopped' : ''}`
           + `${s.lateContent.settledAtRest === false ? ` — ⚠ ${s.lateContent.lateAtRest} still blank while STANDING STILL` : ''}`
-          + `${s.lateContent.jumpedFrames ? ` · ${s.lateContent.jumpedFrames} frame(s) skipped where the app scrolled itself` : ''}`
+          + `${s.lateContent.jumpedFrames ? ` · ${s.lateContent.jumpedFrames} frame(s) skipped where the app visibly moved the viewport` : ''}`
           + `${s.lateContent.verdict === 'clean' ? '' : ' — ⚠ NOT a pass'}`
           + `${s.lateContent.firstLate ? ` · first at scrollTop ${s.lateContent.firstLate.atScrollTop}, key ${s.lateContent.firstLate.key ?? '?'}` : ''}`
         : '— (not measured)'} |`,

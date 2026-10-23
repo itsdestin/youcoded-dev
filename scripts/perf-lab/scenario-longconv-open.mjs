@@ -20,7 +20,7 @@ import { stableUuid } from './fixture.mjs';
 import { PATHLIST_THRESHOLDS, RUNG_GRACE_MS, median } from './scenario-pathlist-stream.mjs';
 import { summariseLateContent } from './late-content.mjs';
 
-export const LONGCONV_SCENARIO = Object.freeze({ revision: 1, lane: 'longconv-open', exploratory: true });
+export const LONGCONV_SCENARIO = Object.freeze({ revision: 2, lane: 'longconv-open', exploratory: true });
 export const TURN_COUNTS = Object.freeze([40, 200, 1000]);
 export const LONGCONV_THRESHOLDS = Object.freeze({ ...PATHLIST_THRESHOLDS, openToNewestPaintMs: 3000 });
 export { RUNG_GRACE_MS };
@@ -33,7 +33,7 @@ export const PSS_CAP_MB = 3072;
 // WHY 16 s: the app opens only the newest page of history (~30 turns, ~18,000 px), so at a human 1,500 px/s the pass needs ~12 s just to reach
 // the top of that page - the point where the next older page loads and the viewport is most likely to jump. A 6 s pass (the first exploratory
 // run) never got there, so it could not tell a 40-turn from a 1,000-turn conversation.
-export const SCROLL_UP = Object.freeze({ durationMs: 16_000, direction: 'up', pxPerSecond: 1500, settleMs: 3000 });
+export const SCROLL_UP = Object.freeze({ durationMs: 16_000, direction: 'up', pxPerSecond: 1500, settleMs: 3000, scrollInput: 'wheel' });
 
 // ── the conversation on disk ─────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -184,7 +184,7 @@ export function classifyRung(plan, raw, thresholds = LONGCONV_THRESHOLDS) {
     typingSaturated: ty?.complete ? ty.saturated : null, typingKeysOpen: ty?.complete ? ty.keysStream : null,
     typingKeysAfterOpen: ty?.complete ? ty.keysSettle : null, typingKeysScroll: ty?.complete ? ty.keysAfter : null,
     scrollVerdict: late?.verdict ?? null, scrollBlankFrames: num(late?.framesWithLate), scrollMaxBlankInView: num(late?.maxLateInViewport),
-    scrollJumpedFrames: num(late?.jumpedFrames), scrollFrames: num(late?.frames), scrollPx: num(late?.scrolledPx), scrollBlankAtRest: late ? (late.settledAtRest === false ? 1 : 0) : null,
+    scrollJumpedFrames: num(late?.jumpedFrames), scrollTopDeltaFramesInfo: num(late?.scrollTopDeltaFrames), scrollInput: late?.scrollInput ?? null, scrollFrames: num(late?.frames), scrollPx: num(late?.scrolledPx), scrollBlankAtRest: late ? (late.settledAtRest === false ? 1 : 0) : null,
     peakPssMb: round1(raw?.memory?.peakPssMb), heapMb: round1(raw?.census?.heapMb), domNodes: num(raw?.census?.domNodes),
     toolCardTextHits: num(raw?.census?.toolCardTextHits), scrollHeightPx: num(raw?.census?.scrollHeightPx), entryKinds: raw?.census?.entryKinds ?? null,
     interference: raw?.interference ?? null,
