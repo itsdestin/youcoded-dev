@@ -1232,3 +1232,10 @@ recurred — the repetition is the data.
 - Destin said, filed: closing the update popup cancelled the download (fixed in this branch, contract R-rows); the beta tester's "no Updates entry in Settings" is offered to Destin, not filed (his call).
 - Not provable here: macOS and Windows install paths (no machines) — recorded on card #183 as the pre-release gate.
 - deleted/merged: dead `hasPending` and unused update-service members; the popup's close-cancels-download effect.
+
+## 2026-10-22 — Office icon: document with a spreadsheet in front (session/office-icon)
+- verify.sh's screens check sat 25 minutes on `desktop/scripts/fetch-office.mjs`: its `fetch()` has no time limit, a GitHub download stalled, and `scripts/shoot/office-editor.mjs` ran it with no timeout; workspace-start never provisions `office-addon/`, so every new worktree re-downloads it (12 worktrees held identical copies) → applied: `ensureOfficeAddon` copies the shared checkout's add-on when it is the pinned version for this platform, and the fallback download is cut off at 180 s with a message saying so; `office-editor.test.mjs` shown red (60 s hang) before green. Serves goals 1 and 2.
+- The first icon round was a scratch HTML sheet, not a review deck (CLAUDE.md says decks) → dropped: for picking among unbuilt glyph drafts the sheet took ~5 calls against a multi-worktree shoot rig; Destin picked from it twice without friction. The change itself was a one-line glyph swap he chose directly.
+- glob-guard blocked a `kill $p` loop (zsh) and a backup-restore from scratch; both guards worked as designed → no change.
+- deleted/merged: the inline fetch block in `ensureOfficeEditor` moved into `ensureOfficeAddon`; six code comments that called the icon "the briefcase" renamed.
+- Shipped on explicit "merge": app PR #687 (`1b8846fe`), all CI green; local verify.sh passed after the add-on copy.
