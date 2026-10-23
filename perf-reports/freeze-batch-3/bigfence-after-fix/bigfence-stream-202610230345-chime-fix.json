@@ -1,0 +1,3040 @@
+{
+  "scenario": {
+    "revision": 1,
+    "lane": "bigfence-stream",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-23T03:45:10.744Z",
+  "label": "chime-fix",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+      "sha": "d0a7211ad3a8d150400c47d54c57fc556a10613a",
+      "branch": "perf/93-baseline-master",
+      "dirty": "3c937cd909bc"
+    },
+    "new": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded",
+      "sha": "1791dc128688763c4f644ebbf260b1d5c41dde19",
+      "branch": "session/93-freeze-combined",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "bigfence-code-2000",
+      "variant": "code",
+      "n": 2000,
+      "deltas": 36706,
+      "perSec": 612,
+      "streamMs": 59977,
+      "atCloudSpeed": false,
+      "lineCount": 2000,
+      "fenceChars": 136459,
+      "overLimit": true,
+      "lastTail": "nst value1999: number = compute(1999, \"key59\"); // line 1999",
+      "outro": "That is the whole file.",
+      "chars": 136532
+    },
+    {
+      "id": "bigfence-code-20000",
+      "variant": "code",
+      "n": 20000,
+      "deltas": 376846,
+      "perSec": 6281,
+      "streamMs": 59998,
+      "atCloudSpeed": false,
+      "lineCount": 20000,
+      "fenceChars": 1424599,
+      "overLimit": true,
+      "lastTail": " value19999: number = compute(19999, \"key17\"); // line 19999",
+      "outro": "That is the whole file.",
+      "chars": 1424672
+    },
+    {
+      "id": "bigfence-json-700",
+      "variant": "json",
+      "n": 700,
+      "deltas": 175044,
+      "perSec": 2918,
+      "streamMs": 59988,
+      "atCloudSpeed": false,
+      "lineCount": 32,
+      "fenceChars": 700089,
+      "overLimit": true,
+      "lastTail": "]",
+      "outro": "That is the whole file.",
+      "chars": 700164
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 1923,
+        "settleLongtaskTotalMs": 1923,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.8,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1918.2,
+        "mainMaxDelayMs": 1157.1,
+        "mainTotalStallMs": 1157.1,
+        "typingIdleMaxMs": 3.5,
+        "typingStreamMaxMs": 17.1,
+        "typingSettleMaxMs": 1788.3,
+        "typingScrollMaxMs": 3.5,
+        "typingSaturated": false,
+        "typingKeysStream": 169,
+        "typingKeysSettle": 6,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 1981.7,
+        "peakPssMb": 994.9,
+        "heapMb": 35.6,
+        "domNodes": 16326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 12.2 cores on average over 68 s (limit 1): python (pid 3935017) used 8 cores; git ×12 (pids 109432, 110348, 110643, 110867, +8 more) used 0.9 cores; swipekb-languag (pid 109289) used 0.6 cores"
+          ]
+        },
+        "worstLongtaskMs": 1923,
+        "worstTypingMs": 1788.3,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1923,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1788.3,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1981.7,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": null,
+        "streamLongtaskTotalMs": null,
+        "streamLongtaskCount": null,
+        "settleLongtaskMaxMs": null,
+        "settleLongtaskTotalMs": null,
+        "scrollLongtaskMaxMs": null,
+        "scrollFrameGapMaxMs": null,
+        "scrollFramesOver50": null,
+        "streamTimerStallMaxMs": null,
+        "settleTimerStallMaxMs": null,
+        "mainMaxDelayMs": null,
+        "mainTotalStallMs": null,
+        "typingIdleMaxMs": null,
+        "typingStreamMaxMs": null,
+        "typingSettleMaxMs": null,
+        "typingScrollMaxMs": null,
+        "typingSaturated": null,
+        "typingKeysStream": null,
+        "typingKeysSettle": null,
+        "typingKeysScroll": null,
+        "typingExhausted": null,
+        "endToPaintMs": null,
+        "peakPssMb": 2087.3,
+        "heapMb": null,
+        "domNodes": null,
+        "coloured": null,
+        "interference": null,
+        "worstLongtaskMs": null,
+        "worstTypingMs": null,
+        "status": "failed:timeout",
+        "reason": "External case deadline 218998 ms"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 8968,
+        "streamLongtaskTotalMs": 64480,
+        "streamLongtaskCount": 73,
+        "settleLongtaskMaxMs": 9576,
+        "settleLongtaskTotalMs": 62228,
+        "scrollLongtaskMaxMs": 760,
+        "scrollFrameGapMaxMs": 397.4,
+        "scrollFramesOver50": 2,
+        "streamTimerStallMaxMs": 41116.4,
+        "settleTimerStallMaxMs": 38448.5,
+        "mainMaxDelayMs": 26112.3,
+        "mainTotalStallMs": 26399.1,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 8947.8,
+        "typingSettleMaxMs": 26507.3,
+        "typingScrollMaxMs": null,
+        "typingSaturated": true,
+        "typingKeysStream": 165,
+        "typingKeysSettle": 70,
+        "typingKeysScroll": 0,
+        "typingExhausted": true,
+        "endToPaintMs": 70954.4,
+        "peakPssMb": 2913,
+        "heapMb": 631.3,
+        "domNodes": 245977,
+        "coloured": 1,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 8.1 cores on average over 135 s (limit 1): python ×33 (pids 129905, 129948, 129949, 129950, +29 more) used 5.6 cores; ngram-build ×4 (pids 127792, 129263, 129446, 131275) used 0.7 cores; git ×13 (pids 128577, 128672, 128902, 128994, +9 more) used 0.7 cores"
+          ]
+        },
+        "worstLongtaskMs": 9576,
+        "worstTypingMs": 26507.3,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 9576,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 26507.3,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 70954.4,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 162,
+        "streamLongtaskTotalMs": 418,
+        "streamLongtaskCount": 5,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.8,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 176.5,
+        "settleTimerStallMaxMs": 0,
+        "mainMaxDelayMs": 1045.8,
+        "mainTotalStallMs": 1622.2,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 266.2,
+        "typingSettleMaxMs": 944,
+        "typingScrollMaxMs": 2.9,
+        "typingSaturated": false,
+        "typingKeysStream": 164,
+        "typingKeysSettle": 3,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 1101,
+        "peakPssMb": 880.4,
+        "heapMb": 24.8,
+        "domNodes": 326,
+        "coloured": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 12.3 cores on average over 68 s (limit 1): python ×33 (pids 133615, 133662, 133663, 133664, +29 more) used 9.8 cores; git ×8 (pids 133000, 133197, 133453, 133536, +4 more) used 0.8 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores"
+          ]
+        },
+        "worstLongtaskMs": 162,
+        "worstTypingMs": 944,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 944,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1101,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 63,
+        "streamLongtaskTotalMs": 63,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 447,
+        "settleLongtaskTotalMs": 447,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 20.2,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 60.3,
+        "settleTimerStallMaxMs": 443.2,
+        "mainMaxDelayMs": 69242.5,
+        "mainTotalStallMs": 72963.7,
+        "typingIdleMaxMs": 3.4,
+        "typingStreamMaxMs": 454.4,
+        "typingSettleMaxMs": 70134.9,
+        "typingScrollMaxMs": 7.8,
+        "typingSaturated": true,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 20,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 71808.4,
+        "peakPssMb": 1355.4,
+        "heapMb": 51,
+        "domNodes": 326,
+        "coloured": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 8.6 cores on average over 139 s (limit 1): swipekb-nextwor ×44 (pids 139186, 139187, 139188, 139189, +40 more) used 5.9 cores; ngram-build ×3 (pids 135792, 137183, 138745) used 0.7 cores; git ×13 (pids 134872, 135805, 135935, 136091, +9 more) used 0.6 cores"
+          ]
+        },
+        "worstLongtaskMs": 447,
+        "worstTypingMs": 70134.9,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 447,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 70134.9,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 71808.4,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 434,
+        "streamLongtaskTotalMs": 30035,
+        "streamLongtaskCount": 377,
+        "settleLongtaskMaxMs": 148,
+        "settleLongtaskTotalMs": 236,
+        "scrollLongtaskMaxMs": 61,
+        "scrollFrameGapMaxMs": 61.7,
+        "scrollFramesOver50": 1,
+        "streamTimerStallMaxMs": 436.3,
+        "settleTimerStallMaxMs": 0,
+        "mainMaxDelayMs": 12381.5,
+        "mainTotalStallMs": 13942.1,
+        "typingIdleMaxMs": 3.8,
+        "typingStreamMaxMs": 396.3,
+        "typingSettleMaxMs": 13040.2,
+        "typingScrollMaxMs": 3.2,
+        "typingSaturated": true,
+        "typingKeysStream": 170,
+        "typingKeysSettle": 16,
+        "typingKeysScroll": 3,
+        "typingExhausted": false,
+        "endToPaintMs": 13287.2,
+        "peakPssMb": 1208.7,
+        "heapMb": 35.6,
+        "domNodes": 330,
+        "coloured": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 5.6 cores on average over 76 s (limit 1): swipekb-nextwor ×16 (pids 139187, 139189, 139190, 139191, +12 more) used 3 cores; git ×13 (pids 139935, 140755, 140930, 141018, +9 more) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.6 cores"
+          ]
+        },
+        "worstLongtaskMs": 434,
+        "worstTypingMs": 13040.2,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 434,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 13040.2,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 13287.2,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 64,
+        "streamLongtaskTotalMs": 64,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.7,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 51.9,
+        "settleTimerStallMaxMs": 0,
+        "mainMaxDelayMs": 1071.3,
+        "mainTotalStallMs": 1424.8,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 176.5,
+        "typingSettleMaxMs": 1079,
+        "typingScrollMaxMs": 3,
+        "typingSaturated": false,
+        "typingKeysStream": 170,
+        "typingKeysSettle": 4,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 1134,
+        "peakPssMb": 886.9,
+        "heapMb": 35.6,
+        "domNodes": 326,
+        "coloured": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.8 cores on average over 68 s (limit 1): swipekb-languag ×3 (pids 142939, 144228, 144982) used 1 core; git ×7 (pids 143550, 143684, 143869, 144020, +3 more) used 0.6 cores; youcoded ×6 (pids 1342393, 1342460, 1342549, 1342321, +2 more) used 0.5 cores"
+          ]
+        },
+        "worstLongtaskMs": 64,
+        "worstTypingMs": 1079,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 1079,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1134,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 61,
+        "streamLongtaskTotalMs": 61,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 460,
+        "settleLongtaskTotalMs": 460,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 44.8,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 58.8,
+        "settleTimerStallMaxMs": 451.8,
+        "mainMaxDelayMs": 55075.4,
+        "mainTotalStallMs": 57980.7,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 277.5,
+        "typingSettleMaxMs": 56234.9,
+        "typingScrollMaxMs": 2.9,
+        "typingSaturated": true,
+        "typingKeysStream": 170,
+        "typingKeysSettle": 16,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 56319.6,
+        "peakPssMb": 1293.5,
+        "heapMb": 51,
+        "domNodes": 326,
+        "coloured": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 2.7 cores on average over 123 s (limit 1): swipekb-languag ×3 (pids 144982, 146644, 147539) used 0.8 cores; git ×16 (pids 145965, 146250, 146472, 146721, +12 more) used 0.7 cores; youcoded ×10 (pids 1342321, 1342393, 1342460, 1342549, +6 more) used 0.6 cores"
+          ]
+        },
+        "worstLongtaskMs": 460,
+        "worstTypingMs": 56234.9,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 460,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 56234.9,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 56319.6,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 379,
+        "streamLongtaskTotalMs": 30727,
+        "streamLongtaskCount": 384,
+        "settleLongtaskMaxMs": 303,
+        "settleLongtaskTotalMs": 936,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 50.3,
+        "scrollFramesOver50": 1,
+        "streamTimerStallMaxMs": 633,
+        "settleTimerStallMaxMs": 0,
+        "mainMaxDelayMs": 28564.7,
+        "mainTotalStallMs": 30027.9,
+        "typingIdleMaxMs": 3.2,
+        "typingStreamMaxMs": 248.6,
+        "typingSettleMaxMs": 29006.7,
+        "typingScrollMaxMs": 11.8,
+        "typingSaturated": true,
+        "typingKeysStream": 170,
+        "typingKeysSettle": 15,
+        "typingKeysScroll": 4,
+        "typingExhausted": false,
+        "endToPaintMs": 29438.8,
+        "peakPssMb": 1206.6,
+        "heapMb": 35.6,
+        "domNodes": 330,
+        "coloured": 0,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 10.7 cores on average over 92 s (limit 1): python ×33 (pids 151299, 151373, 151374, 151375, +29 more) used 7.7 cores; git ×11 (pids 149070, 149574, 149738, 149802, +7 more) used 0.7 cores; youcoded ×10 (pids 1342321, 1342393, 1342460, 1342549, +6 more) used 0.6 cores"
+          ]
+        },
+        "worstLongtaskMs": 379,
+        "worstTypingMs": 29006.7,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 379,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 29006.7,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 29438.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 52,
+        "streamLongtaskTotalMs": 52,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 3875,
+        "settleLongtaskTotalMs": 4008,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 42.5,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 52.7,
+        "settleTimerStallMaxMs": 3878.4,
+        "mainMaxDelayMs": 3095,
+        "mainTotalStallMs": 3095,
+        "typingIdleMaxMs": 3.3,
+        "typingStreamMaxMs": 31.3,
+        "typingSettleMaxMs": 3832.2,
+        "typingScrollMaxMs": 7,
+        "typingSaturated": false,
+        "typingKeysStream": 168,
+        "typingKeysSettle": 16,
+        "typingKeysScroll": 17,
+        "typingExhausted": false,
+        "endToPaintMs": 6115.8,
+        "peakPssMb": 907.8,
+        "heapMb": 57.5,
+        "domNodes": 16326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 10.4 cores on average over 77 s (limit 1): python ×33 (pids 154513, 154549, 154550, 154551, +29 more) used 7.4 cores; git ×10 (pids 152642, 152992, 153143, 153194, +6 more) used 0.8 cores; ngram-build ×3 (pids 152438, 153704, 154237) used 0.7 cores"
+          ]
+        },
+        "worstLongtaskMs": 3875,
+        "worstTypingMs": 3832.2,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 3875,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 3832.2,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 6115.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": null,
+        "streamLongtaskTotalMs": null,
+        "streamLongtaskCount": null,
+        "settleLongtaskMaxMs": null,
+        "settleLongtaskTotalMs": null,
+        "scrollLongtaskMaxMs": null,
+        "scrollFrameGapMaxMs": null,
+        "scrollFramesOver50": null,
+        "streamTimerStallMaxMs": null,
+        "settleTimerStallMaxMs": null,
+        "mainMaxDelayMs": null,
+        "mainTotalStallMs": null,
+        "typingIdleMaxMs": null,
+        "typingStreamMaxMs": null,
+        "typingSettleMaxMs": null,
+        "typingScrollMaxMs": null,
+        "typingSaturated": null,
+        "typingKeysStream": null,
+        "typingKeysSettle": null,
+        "typingKeysScroll": null,
+        "typingExhausted": null,
+        "endToPaintMs": null,
+        "peakPssMb": 2058.5,
+        "heapMb": null,
+        "domNodes": null,
+        "coloured": null,
+        "interference": null,
+        "worstLongtaskMs": null,
+        "worstTypingMs": null,
+        "status": "failed:timeout",
+        "reason": "External case deadline 218998 ms"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": null,
+        "streamLongtaskTotalMs": null,
+        "streamLongtaskCount": null,
+        "settleLongtaskMaxMs": null,
+        "settleLongtaskTotalMs": null,
+        "scrollLongtaskMaxMs": null,
+        "scrollFrameGapMaxMs": null,
+        "scrollFramesOver50": null,
+        "streamTimerStallMaxMs": null,
+        "settleTimerStallMaxMs": null,
+        "mainMaxDelayMs": null,
+        "mainTotalStallMs": null,
+        "typingIdleMaxMs": null,
+        "typingStreamMaxMs": null,
+        "typingSettleMaxMs": null,
+        "typingScrollMaxMs": null,
+        "typingSaturated": null,
+        "typingKeysStream": null,
+        "typingKeysSettle": null,
+        "typingKeysScroll": null,
+        "typingExhausted": null,
+        "endToPaintMs": null,
+        "peakPssMb": 3113.9,
+        "heapMb": null,
+        "domNodes": null,
+        "coloured": null,
+        "interference": null,
+        "worstLongtaskMs": null,
+        "worstTypingMs": null,
+        "status": "failed:memory-limit",
+        "reason": "Lab safety cap: owned app family PSS 3114 MiB exceeded the 3072 MiB cap (summed RSS 3558 MiB double-counts shared pages)"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:bigfence-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 12.2 cores on average over 70 s (limit 1): python (pid 3935017) used 8 cores; git ×12 (pids 109432, 110348, 110643, 110867, +8 more) used 0.9 cores; swipekb-languag (pid 109289) used 0.6 cores"
+      ],
+      "durationS": 70.5,
+      "samples": 141,
+      "overflow": false,
+      "foreignAvgCores": 12.18,
+      "foreignPeak2sCores": 13.03,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            3935017
+          ],
+          "cores": 7.98
+        },
+        {
+          "name": "git",
+          "pids": [
+            109432,
+            110348,
+            110643,
+            110867,
+            111209,
+            111421,
+            111475,
+            111576,
+            111893,
+            112060,
+            112215,
+            112741
+          ],
+          "cores": 0.91
+        },
+        {
+          "name": "swipekb-languag",
+          "pids": [
+            109289
+          ],
+          "cores": 0.65
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2722
+          ],
+          "cores": 0.6
+        },
+        {
+          "name": "tst_nextwordint",
+          "pids": [
+            110766
+          ],
+          "cores": 0.55
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 44.4,
+        "max": 49.8
+      },
+      "pressure": {
+        "cpuMax": 0.62,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 6,
+        "busyMax": 6,
+        "pptWattsMin": 36.5,
+        "pptWattsMax": 42.5,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:bigfence-code-20000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 12.6 cores on average over 219 s (limit 1): python ×67 (pids 3935017, 116766, 116826, 116827, +63 more) used 8.5 cores; git ×41 (pids 113172, 113359, 113683, 113961, +37 more) used 0.8 cores; youcoded ×12 (pids 1342321, 1342393, 1342460, 1342549, +8 more) used 0.5 cores"
+      ],
+      "durationS": 219,
+      "samples": 416,
+      "overflow": false,
+      "foreignAvgCores": 12.62,
+      "foreignPeak2sCores": 30.36,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            3935017,
+            116766,
+            116826,
+            116827,
+            116828,
+            116829,
+            116830,
+            116831,
+            116832,
+            116833,
+            116834,
+            116835,
+            116836,
+            116837,
+            116838,
+            116839,
+            116840,
+            116841,
+            116842,
+            116843,
+            116844,
+            116845,
+            116846,
+            116847,
+            116848,
+            116849,
+            116850,
+            116851,
+            116852,
+            116853,
+            116854,
+            116855,
+            116856,
+            116857,
+            126331,
+            126429,
+            126430,
+            126431,
+            126432,
+            126433,
+            126434,
+            126435,
+            126436,
+            126437,
+            126438,
+            126439,
+            126440,
+            126441,
+            126442,
+            126443,
+            126444,
+            126445,
+            126446,
+            126447,
+            126448,
+            126449,
+            126450,
+            126451,
+            126452,
+            126453,
+            126454,
+            126455,
+            126456,
+            126457,
+            126458,
+            126459,
+            126460
+          ],
+          "cores": 8.54
+        },
+        {
+          "name": "git",
+          "pids": [
+            113172,
+            113359,
+            113683,
+            113961,
+            114100,
+            114754,
+            114909,
+            115451,
+            115788,
+            115947,
+            116227,
+            116460,
+            116602,
+            116966,
+            118391,
+            120648,
+            120785,
+            120923,
+            121554,
+            121916,
+            122185,
+            122895,
+            123247,
+            123447,
+            123671,
+            123874,
+            124088,
+            124127,
+            124337,
+            124926,
+            125170,
+            125406,
+            125655,
+            125916,
+            126080,
+            126188,
+            126572,
+            127522,
+            127682,
+            127780,
+            128162
+          ],
+          "cores": 0.83
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2726,
+            1383992,
+            1342396,
+            1343137,
+            2722,
+            1635392,
+            113002
+          ],
+          "cores": 0.54
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1343193,
+            1497018,
+            1540338,
+            1658190,
+            3959213,
+            4029660,
+            1745093
+          ],
+          "cores": 0.35
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4028753,
+            4029036,
+            4028705,
+            4029696,
+            4028220
+          ],
+          "cores": 0.35
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 46.2,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 30.5,
+        "ioMax": 0.36,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 6,
+        "busyMax": 10,
+        "pptWattsMin": 27.2,
+        "pptWattsMax": 75.7,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-a:bigfence-json-700",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 8.1 cores on average over 137 s (limit 1): python ×33 (pids 129905, 129948, 129949, 129950, +29 more) used 5.5 cores; ngram-build ×4 (pids 127792, 129263, 129446, 131275) used 0.7 cores; git ×14 (pids 128162, 128577, 128672, 128902, +10 more) used 0.7 cores"
+      ],
+      "durationS": 136.6,
+      "samples": 264,
+      "overflow": false,
+      "foreignAvgCores": 8.05,
+      "foreignPeak2sCores": 30.03,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            129905,
+            129948,
+            129949,
+            129950,
+            129951,
+            129952,
+            129953,
+            129954,
+            129955,
+            129956,
+            129957,
+            129958,
+            129959,
+            129960,
+            129961,
+            129962,
+            129963,
+            129964,
+            129965,
+            129966,
+            129967,
+            129968,
+            129969,
+            129970,
+            129971,
+            129972,
+            129973,
+            129974,
+            129975,
+            129976,
+            129977,
+            129978,
+            129979
+          ],
+          "cores": 5.49
+        },
+        {
+          "name": "ngram-build",
+          "pids": [
+            127792,
+            129263,
+            129446,
+            131275
+          ],
+          "cores": 0.71
+        },
+        {
+          "name": "git",
+          "pids": [
+            128162,
+            128577,
+            128672,
+            128902,
+            128994,
+            129697,
+            130102,
+            130698,
+            130775,
+            131655,
+            131788,
+            131882,
+            132112,
+            132214
+          ],
+          "cores": 0.66
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1383992,
+            1635392,
+            2722
+          ],
+          "cores": 0.4
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4029036,
+            4028753,
+            4028705
+          ],
+          "cores": 0.27
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 30.6,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 24.15,
+        "ioMax": 1.63,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 6,
+        "busyMax": 21,
+        "pptWattsMin": 22.7,
+        "pptWattsMax": 76.2,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:bigfence-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 12.1 cores on average over 69 s (limit 1): python ×33 (pids 133615, 133662, 133663, 133664, +29 more) used 9.6 cores; git ×8 (pids 133000, 133197, 133453, 133536, +4 more) used 0.7 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.4 cores"
+      ],
+      "durationS": 69.4,
+      "samples": 136,
+      "overflow": false,
+      "foreignAvgCores": 12.08,
+      "foreignPeak2sCores": 30.33,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            133615,
+            133662,
+            133663,
+            133664,
+            133665,
+            133666,
+            133667,
+            133668,
+            133669,
+            133670,
+            133671,
+            133672,
+            133673,
+            133674,
+            133675,
+            133676,
+            133677,
+            133678,
+            133679,
+            133680,
+            133681,
+            133682,
+            133683,
+            133684,
+            133685,
+            133686,
+            133687,
+            133688,
+            133689,
+            133690,
+            133691,
+            133692,
+            133693
+          ],
+          "cores": 9.58
+        },
+        {
+          "name": "git",
+          "pids": [
+            133000,
+            133197,
+            133453,
+            133536,
+            134190,
+            134371,
+            134731,
+            134872
+          ],
+          "cores": 0.74
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1343137
+          ],
+          "cores": 0.42
+        },
+        {
+          "name": "ngram-build",
+          "pids": [
+            131275,
+            132936,
+            133353
+          ],
+          "cores": 0.39
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028212,
+            4028296,
+            4028147,
+            4029036,
+            4028753,
+            4028705,
+            4028220
+          ],
+          "cores": 0.29
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 41.9,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 20.71,
+        "ioMax": 0.84,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 6,
+        "busyMax": 7,
+        "pptWattsMin": 21.8,
+        "pptWattsMax": 75.9,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:bigfence-code-20000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 8.6 cores on average over 141 s (limit 1): swipekb-nextwor ×44 (pids 139186, 139187, 139188, 139189, +40 more) used 5.9 cores; ngram-build ×3 (pids 135792, 137183, 138745) used 0.7 cores; git ×13 (pids 134872, 135805, 135935, 136091, +9 more) used 0.6 cores"
+      ],
+      "durationS": 141.1,
+      "samples": 278,
+      "overflow": false,
+      "foreignAvgCores": 8.61,
+      "foreignPeak2sCores": 30.37,
+      "offenders": [
+        {
+          "name": "swipekb-nextwor",
+          "pids": [
+            139186,
+            139187,
+            139188,
+            139189,
+            139190,
+            139191,
+            139192,
+            139193,
+            139194,
+            139197,
+            139199,
+            139203,
+            139204,
+            139205,
+            139206,
+            139207,
+            139208,
+            139209,
+            139210,
+            139211,
+            139214,
+            139216,
+            139221,
+            139223,
+            139224,
+            139225,
+            139226,
+            139227,
+            139228,
+            139229,
+            139230,
+            139248,
+            139249,
+            139253,
+            139254,
+            139255,
+            139256,
+            139257,
+            139259,
+            139260,
+            139261,
+            139262,
+            139265,
+            139266
+          ],
+          "cores": 5.89
+        },
+        {
+          "name": "ngram-build",
+          "pids": [
+            135792,
+            137183,
+            138745
+          ],
+          "cores": 0.68
+        },
+        {
+          "name": "git",
+          "pids": [
+            134872,
+            135805,
+            135935,
+            136091,
+            136306,
+            136365,
+            137418,
+            137651,
+            138876,
+            138958,
+            139404,
+            139646,
+            139935
+          ],
+          "cores": 0.58
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            6378,
+            2722,
+            1383992,
+            2726,
+            1635392,
+            1342396
+          ],
+          "cores": 0.44
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4029036,
+            4028753,
+            4029696,
+            4028705
+          ],
+          "cores": 0.28
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 32.8,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 41.17,
+        "ioMax": 2.12,
+        "memoryMax": 0.72
+      },
+      "gpu": {
+        "busyMin": 5,
+        "busyMedian": 6,
+        "busyMax": 16,
+        "pptWattsMin": 23.5,
+        "pptWattsMax": 77.3,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:bigfence-json-700",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 5.8 cores on average over 78 s (limit 1): swipekb-nextwor ×18 (pids 139187, 139188, 139189, 139190, +14 more) used 3.2 cores; git ×13 (pids 139935, 140755, 140930, 141018, +9 more) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.6 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 77.8,
+      "samples": 155,
+      "overflow": false,
+      "foreignAvgCores": 5.83,
+      "foreignPeak2sCores": 19.99,
+      "offenders": [
+        {
+          "name": "swipekb-nextwor",
+          "pids": [
+            139187,
+            139188,
+            139189,
+            139190,
+            139191,
+            139192,
+            139193,
+            139197,
+            139199,
+            139206,
+            139207,
+            139216,
+            139225,
+            139226,
+            139249,
+            139256,
+            139257,
+            139265
+          ],
+          "cores": 3.24
+        },
+        {
+          "name": "git",
+          "pids": [
+            139935,
+            140755,
+            140930,
+            141018,
+            141207,
+            141327,
+            141412,
+            141639,
+            141963,
+            142044,
+            142669,
+            142859,
+            143143
+          ],
+          "cores": 0.92
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1383992
+          ],
+          "cores": 0.61
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4028753,
+            4029036,
+            4028705,
+            4028220
+          ],
+          "cores": 0.26
+        },
+        {
+          "name": "cc1plus",
+          "pids": [
+            142412,
+            142414,
+            142415,
+            142417,
+            142418,
+            142419,
+            142421,
+            142422,
+            142433,
+            142435,
+            142436,
+            142437,
+            142523,
+            142525
+          ],
+          "cores": 0.2
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 27,
+        "max": 78
+      },
+      "pressure": {
+        "cpuMax": 26.59,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 9,
+        "busyMedian": 10,
+        "busyMax": 10,
+        "pptWattsMin": 26.8,
+        "pptWattsMax": 72.5,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:bigfence-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.8 cores on average over 69 s (limit 1): swipekb-languag ×3 (pids 142939, 144228, 144982) used 1 core; git ×7 (pids 143550, 143684, 143869, 144020, +3 more) used 0.6 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.5 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 69.5,
+      "samples": 139,
+      "overflow": false,
+      "foreignAvgCores": 2.78,
+      "foreignPeak2sCores": 3.47,
+      "offenders": [
+        {
+          "name": "swipekb-languag",
+          "pids": [
+            142939,
+            144228,
+            144982
+          ],
+          "cores": 0.99
+        },
+        {
+          "name": "git",
+          "pids": [
+            143550,
+            143684,
+            143869,
+            144020,
+            144234,
+            144487,
+            144570
+          ],
+          "cores": 0.62
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            2722,
+            1635378
+          ],
+          "cores": 0.54
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028212,
+            4028296,
+            4028147,
+            4028753,
+            4028705,
+            4029036
+          ],
+          "cores": 0.24
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1658190,
+            1745093,
+            4029660,
+            1497018,
+            1343193,
+            1540338
+          ],
+          "cores": 0.12
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 13.6,
+        "max": 18.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 9,
+        "busyMedian": 10,
+        "busyMax": 10,
+        "pptWattsMin": 24.8,
+        "pptWattsMax": 32.1,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:bigfence-code-20000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.7 cores on average over 125 s (limit 1): swipekb-languag ×3 (pids 144982, 146644, 147539) used 0.8 cores; git ×16 (pids 145965, 146250, 146472, 146721, +12 more) used 0.6 cores; youcoded ×10 (pids 1342321, 1342393, 1342460, 1342549, +6 more) used 0.6 cores",
+        "youcoded (pid 1342393) held the graphics chip 5% of the time"
+      ],
+      "durationS": 124.9,
+      "samples": 249,
+      "overflow": false,
+      "foreignAvgCores": 2.7,
+      "foreignPeak2sCores": 4.44,
+      "offenders": [
+        {
+          "name": "swipekb-languag",
+          "pids": [
+            144982,
+            146644,
+            147539
+          ],
+          "cores": 0.83
+        },
+        {
+          "name": "git",
+          "pids": [
+            145965,
+            146250,
+            146472,
+            146721,
+            146831,
+            146922,
+            147127,
+            147287,
+            147417,
+            148074,
+            148148,
+            148415,
+            148515,
+            148604,
+            148678,
+            148983
+          ],
+          "cores": 0.64
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1383992,
+            2722,
+            1635392,
+            1343137,
+            6378
+          ],
+          "cores": 0.55
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4028753,
+            4028705,
+            4029036,
+            4029696,
+            4028220
+          ],
+          "cores": 0.26
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1658190,
+            1745093,
+            1343193,
+            1497018,
+            1540338,
+            4029660
+          ],
+          "cores": 0.16
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 14.9,
+        "max": 27.5
+      },
+      "pressure": {
+        "cpuMax": 0.18,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 8,
+        "busyMedian": 9,
+        "busyMax": 10,
+        "pptWattsMin": 23.8,
+        "pptWattsMax": 33.2,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.05
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-b:bigfence-json-700",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 10.5 cores on average over 94 s (limit 1): python ×33 (pids 151299, 151373, 151374, 151375, +29 more) used 7.6 cores; git ×11 (pids 149070, 149574, 149738, 149802, +7 more) used 0.7 cores; youcoded ×10 (pids 1342321, 1342393, 1342460, 1342549, +6 more) used 0.6 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 94,
+      "samples": 185,
+      "overflow": false,
+      "foreignAvgCores": 10.51,
+      "foreignPeak2sCores": 30.29,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            151299,
+            151373,
+            151374,
+            151375,
+            151376,
+            151377,
+            151378,
+            151379,
+            151380,
+            151381,
+            151382,
+            151383,
+            151384,
+            151385,
+            151386,
+            151387,
+            151388,
+            151389,
+            151390,
+            151391,
+            151392,
+            151393,
+            151394,
+            151395,
+            151396,
+            151397,
+            151398,
+            151399,
+            151400,
+            151401,
+            151402,
+            151403,
+            151404
+          ],
+          "cores": 7.61
+        },
+        {
+          "name": "git",
+          "pids": [
+            149070,
+            149574,
+            149738,
+            149802,
+            150507,
+            150629,
+            150699,
+            151153,
+            151277,
+            152198,
+            152394
+          ],
+          "cores": 0.72
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1635392,
+            6378,
+            2722,
+            1342396,
+            2726
+          ],
+          "cores": 0.64
+        },
+        {
+          "name": "python3",
+          "pids": [
+            149407,
+            2591,
+            149770,
+            1038070,
+            150643,
+            150933
+          ],
+          "cores": 0.62
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4028705,
+            4028753,
+            4029036,
+            4028220
+          ],
+          "cores": 0.3
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 39.9,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 22.61,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 8,
+        "busyMedian": 10,
+        "busyMax": 19,
+        "pptWattsMin": 24.5,
+        "pptWattsMax": 77.6,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:bigfence-code-2000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 10.4 cores on average over 79 s (limit 1): python ×33 (pids 154513, 154549, 154550, 154551, +29 more) used 7.4 cores; git ×10 (pids 152642, 152992, 153143, 153194, +6 more) used 0.8 cores; ngram-build ×3 (pids 152438, 153704, 154237) used 0.7 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 78.6,
+      "samples": 154,
+      "overflow": false,
+      "foreignAvgCores": 10.36,
+      "foreignPeak2sCores": 30.87,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            154513,
+            154549,
+            154550,
+            154551,
+            154552,
+            154553,
+            154554,
+            154555,
+            154556,
+            154557,
+            154558,
+            154559,
+            154560,
+            154561,
+            154562,
+            154563,
+            154564,
+            154565,
+            154566,
+            154567,
+            154568,
+            154569,
+            154570,
+            154571,
+            154572,
+            154573,
+            154574,
+            154575,
+            154576,
+            154577,
+            154578,
+            154579,
+            154580
+          ],
+          "cores": 7.35
+        },
+        {
+          "name": "git",
+          "pids": [
+            152642,
+            152992,
+            153143,
+            153194,
+            153423,
+            153531,
+            154196,
+            154425,
+            154875,
+            155059
+          ],
+          "cores": 0.81
+        },
+        {
+          "name": "ngram-build",
+          "pids": [
+            152438,
+            153704,
+            154237
+          ],
+          "cores": 0.71
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2722,
+            1383992
+          ],
+          "cores": 0.64
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028212,
+            4028296,
+            4028147,
+            4028753,
+            4028705,
+            4029036,
+            4029696
+          ],
+          "cores": 0.28
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 36.6,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 19.44,
+        "ioMax": 0.54,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 9,
+        "busyMedian": 10,
+        "busyMax": 10,
+        "pptWattsMin": 26.2,
+        "pptWattsMax": 77.2,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:bigfence-code-20000",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 9.5 cores on average over 219 s (limit 1): python ×67 (pids 154513, 157484, 157538, 157539, +63 more) used 6.7 cores; git ×27 (pids 155223, 155889, 156057, 156168, +23 more) used 0.8 cores; ngram-build ×6 (pids 155878, 157081, 157310, 158547, +2 more) used 0.6 cores"
+      ],
+      "durationS": 219,
+      "samples": 419,
+      "overflow": false,
+      "foreignAvgCores": 9.49,
+      "foreignPeak2sCores": 30.32,
+      "offenders": [
+        {
+          "name": "python",
+          "pids": [
+            154513,
+            157484,
+            157538,
+            157539,
+            157540,
+            157541,
+            157542,
+            157543,
+            157544,
+            157545,
+            157546,
+            157547,
+            157548,
+            157549,
+            157550,
+            157551,
+            157552,
+            157553,
+            157554,
+            157555,
+            157556,
+            157557,
+            157558,
+            157559,
+            157560,
+            157561,
+            157562,
+            157563,
+            157564,
+            157565,
+            157566,
+            157567,
+            157568,
+            157569,
+            160679,
+            160719,
+            160720,
+            160721,
+            160722,
+            160723,
+            160724,
+            160725,
+            160726,
+            160727,
+            160728,
+            160729,
+            160730,
+            160731,
+            160732,
+            160733,
+            160734,
+            160735,
+            160736,
+            160737,
+            160738,
+            160739,
+            160740,
+            160741,
+            160744,
+            160748,
+            160752,
+            160753,
+            160754,
+            160755,
+            160757,
+            160758,
+            160759
+          ],
+          "cores": 6.69
+        },
+        {
+          "name": "git",
+          "pids": [
+            155223,
+            155889,
+            156057,
+            156168,
+            156484,
+            156612,
+            156771,
+            156907,
+            157011,
+            157212,
+            157396,
+            157495,
+            158353,
+            158461,
+            158687,
+            158828,
+            159185,
+            159300,
+            159682,
+            159854,
+            159924,
+            160173,
+            160315,
+            160401,
+            160663,
+            161003,
+            161596
+          ],
+          "cores": 0.8
+        },
+        {
+          "name": "ngram-build",
+          "pids": [
+            155878,
+            157081,
+            157310,
+            158547,
+            160069,
+            160415
+          ],
+          "cores": 0.63
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            2722,
+            1635392,
+            1383992,
+            1343137,
+            155369
+          ],
+          "cores": 0.54
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028212,
+            4028296,
+            4028147,
+            4028705,
+            4028753,
+            4029036,
+            4028220,
+            4029696
+          ],
+          "cores": 0.24
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 35.3,
+        "max": 100
+      },
+      "pressure": {
+        "cpuMax": 24.86,
+        "ioMax": 0.87,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 9,
+        "busyMax": 12,
+        "pptWattsMin": 19.2,
+        "pptWattsMax": 78,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r2-a:bigfence-json-700",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 2.8 cores on average over 83 s (limit 1): ngram-build (pid 162355) used 0.8 cores; git ×8 (pids 161879, 162174, 162330, 162362, +4 more) used 0.6 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.5 cores",
+        "youcoded (pid 1342393) held the graphics chip 6% of the time"
+      ],
+      "durationS": 83.3,
+      "samples": 165,
+      "overflow": false,
+      "foreignAvgCores": 2.81,
+      "foreignPeak2sCores": 4.32,
+      "offenders": [
+        {
+          "name": "ngram-build",
+          "pids": [
+            162355
+          ],
+          "cores": 0.79
+        },
+        {
+          "name": "git",
+          "pids": [
+            161879,
+            162174,
+            162330,
+            162362,
+            162760,
+            162867,
+            163090,
+            163165
+          ],
+          "cores": 0.65
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1342321,
+            1342393,
+            1342460,
+            1342549,
+            1635378,
+            1342396,
+            2726,
+            161833
+          ],
+          "cores": 0.53
+        },
+        {
+          "name": "electron",
+          "pids": [
+            4028147,
+            4028212,
+            4028296,
+            4028753,
+            4029036,
+            4028705
+          ],
+          "cores": 0.26
+        },
+        {
+          "name": "python",
+          "pids": [
+            160679
+          ],
+          "cores": 0.17
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 16.2,
+        "max": 26.8
+      },
+      "pressure": {
+        "cpuMax": 11.54,
+        "ioMax": 2.72,
+        "memoryMax": 0.54
+      },
+      "gpu": {
+        "busyMin": 9,
+        "busyMedian": 10,
+        "busyMax": 10,
+        "pptWattsMin": 27.8,
+        "pptWattsMax": 35.5,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1342393,
+            "name": "youcoded",
+            "share": 0.06
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    }
+  ],
+  "aggregate": {
+    "bigfence-code-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 26,
+            "min": 0,
+            "max": 52,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 26,
+            "min": 0,
+            "max": 52,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 2899,
+            "min": 1923,
+            "max": 3875,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 30.15,
+            "min": 17.8,
+            "max": 42.5,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 24.200000000000003,
+            "min": 17.1,
+            "max": 31.3,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 2810.25,
+            "min": 1788.3,
+            "max": 3832.2,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 5.25,
+            "min": 3.5,
+            "max": 7,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 4048.75,
+            "min": 1981.7,
+            "max": 6115.8,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 951.3499999999999,
+            "min": 907.8,
+            "max": 994.9,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 46.55,
+            "min": 35.6,
+            "max": 57.5,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 16326,
+            "min": 16326,
+            "max": 16326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 2,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 113,
+            "min": 64,
+            "max": 162,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 241,
+            "min": 64,
+            "max": 418,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 17.75,
+            "min": 17.7,
+            "max": 17.8,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 221.35,
+            "min": 176.5,
+            "max": 266.2,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 1011.5,
+            "min": 944,
+            "max": 1079,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 2.95,
+            "min": 2.9,
+            "max": 3,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 1117.5,
+            "min": 1101,
+            "max": 1134,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 883.65,
+            "min": 880.4,
+            "max": 886.9,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 30.200000000000003,
+            "min": 24.8,
+            "max": 35.6,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 326,
+            "min": 326,
+            "max": 326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    },
+    "bigfence-code-20000": {
+      "old": {
+        "statuses": [
+          "failed:timeout",
+          "failed:timeout"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 2072.9,
+            "min": 2058.5,
+            "max": 2087.3,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "domNodes": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "coloured": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 62,
+            "min": 61,
+            "max": 63,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 62,
+            "min": 61,
+            "max": 63,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 453.5,
+            "min": 447,
+            "max": 460,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 32.5,
+            "min": 20.2,
+            "max": 44.8,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 365.95,
+            "min": 277.5,
+            "max": 454.4,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 63184.899999999994,
+            "min": 56234.9,
+            "max": 70134.9,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 5.35,
+            "min": 2.9,
+            "max": 7.8,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 64064,
+            "min": 56319.6,
+            "max": 71808.4,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 1324.45,
+            "min": 1293.5,
+            "max": 1355.4,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 51,
+            "min": 51,
+            "max": 51,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 326,
+            "min": 326,
+            "max": 326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    },
+    "bigfence-json-700": {
+      "old": {
+        "statuses": [
+          "slow",
+          "failed:memory-limit"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 8968,
+            "min": 8968,
+            "max": 8968,
+            "n": 1,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 64480,
+            "min": 64480,
+            "max": 64480,
+            "n": 1,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 9576,
+            "min": 9576,
+            "max": 9576,
+            "n": 1,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 760,
+            "min": 760,
+            "max": 760,
+            "n": 1,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 397.4,
+            "min": 397.4,
+            "max": 397.4,
+            "n": 1,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 8947.8,
+            "min": 8947.8,
+            "max": 8947.8,
+            "n": 1,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 26507.3,
+            "min": 26507.3,
+            "max": 26507.3,
+            "n": 1,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 70954.4,
+            "min": 70954.4,
+            "max": 70954.4,
+            "n": 1,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 3013.45,
+            "min": 2913,
+            "max": 3113.9,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 631.3,
+            "min": 631.3,
+            "max": 631.3,
+            "n": 1,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 245977,
+            "min": 245977,
+            "max": 245977,
+            "n": 1,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 1,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 406.5,
+            "min": 379,
+            "max": 434,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 30381,
+            "min": 30035,
+            "max": 30727,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 225.5,
+            "min": 148,
+            "max": 303,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 30.5,
+            "min": 0,
+            "max": 61,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 56,
+            "min": 50.3,
+            "max": 61.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 322.45,
+            "min": 248.6,
+            "max": 396.3,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 21023.45,
+            "min": 13040.2,
+            "max": 29006.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 7.5,
+            "min": 3.2,
+            "max": 11.8,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 21363,
+            "min": 13287.2,
+            "max": 29438.8,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 1207.65,
+            "min": 1206.6,
+            "max": 1208.7,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 35.6,
+            "min": 35.6,
+            "max": 35.6,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 330,
+            "min": 330,
+            "max": 330,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    }
+  }
+}
