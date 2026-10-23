@@ -1,7 +1,7 @@
 ---
 id: 183
 title: Automatic app updates with an emergency brake
-stage: planning
+stage: merged
 tags: desktop, updates, release, feature
 vision: everywhere.added.update
 branch: 183-automatic-app-updates-with-an

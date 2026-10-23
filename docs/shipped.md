@@ -880,3 +880,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-21 #110 Comparing two big, different files freezes the app (https://github.com/itsdestin/youcoded/pull/665)
 - [x] 2026-10-21 #79 Website: landing page fixes, visitor stats and how it leads (youcoded#671 74c11f117, youcoded-dev#294 f3078e46)
 - [x] 2026-10-22 #2 Reopened chats: wrong labels and wrong times (youcoded#675 4562b61f, youcoded-dev#297 c42b9c2f)
+- [x] 2026-10-23 #183 Automatic app updates with an emergency brake (youcoded#685 (c3b48bc3d), youcoded-admin#18, youcoded-dev#306)
