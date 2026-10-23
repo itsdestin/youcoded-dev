@@ -1,0 +1,172 @@
+[
+  {
+    "name": "chat#phone-reconnecting",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-reconnecting/halftone-dimension.png",
+    "ms": 1765,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-slow",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-slow/meadow-mist.png",
+    "ms": 1825,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-catching-up",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-catching-up/meadow-mist.png",
+    "ms": 1845,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-out-of-date",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-out-of-date/halftone-dimension.png",
+    "ms": 1858,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-slow",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-slow/halftone-dimension.png",
+    "ms": 1872,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-out-of-date",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-out-of-date/meadow-mist.png",
+    "ms": 1884,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-catching-up",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-catching-up/halftone-dimension.png",
+    "ms": 1899,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#remote-reconnecting-wide",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#remote-reconnecting-wide/halftone-dimension.png",
+    "ms": 1908,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#remote-reconnecting-wide",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#remote-reconnecting-wide/meadow-mist.png",
+    "ms": 1918,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#phone-reconnecting",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/remote-access-audit/docs/active/design/2026-10-22-connection-notices/runs/after/chat#phone-reconnecting/meadow-mist.png",
+    "ms": 1919,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  }
+]
