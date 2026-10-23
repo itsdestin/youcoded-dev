@@ -161,3 +161,40 @@ can strand it.
   `docs/cc-dependencies.md` cannot be followed as written.
 - `cc-dependencies.md` must gain entries for anything new that depends on Claude Code
   behaviour (composer dropping zero-width chars; transcript text == staged wire text).
+
+## What was built (branch `session/queue-delivery-fixes`, app + workspace)
+
+Independent review of this plan changed it in places; measurements replaced guesses.
+
+- **Measured (CLI 2.1.309, offline fake API, `test-conpty/probe-composer-fill.mjs`):** the composer always drops
+  U+200B, U+200E, U+2060, U+FEFF, U+00AD, U+034F and C0 controls; drops U+200C/U+200D only outside a real joining
+  context (kept in emoji ZWJ sequences, Persian, Indic); turns CR/CRLF into LF. NBSP, tabs, 3,000-character and
+  40-line text are kept. **Mid-turn admission (`probe-queue-attachment-wording.mjs`):** every wording — trailing
+  `Attached:`, a leading bare path, the read instruction — reached the running turn, recorded as a `queued_command`
+  attachment equal to the wire. The 2026-10-19 deferral did not reproduce.
+- **Issue 1:** queue gets the expanded chip text; host strips the always-dropped set; the plugin accepts a read-back
+  equal to the wire minus measured drops as its own and admission submits the exact original bytes (so emoji/Persian
+  joiners still reach the model). Proposal 3's "not placed" path was dropped as unnecessary (reviewer B1's loop risk
+  disappears with it). Real-CLI smoke mode `joiner` fails without the fix (the stuck message) and passes with it.
+- **Issue 2:** `Attached: "<path>"` lines at the end; read instruction for `@file` only; the transcript watcher
+  strips both back off (`shared/claude-queue-wire.ts`) so bubbles show the person's words with file chips everywhere.
+  Retained clipboard/upload copies keep their original file name after the hash, so those chips read sensibly.
+- **Issue 3:** reviewer B2's narrower rule: `pauseCause` records the attempt that paused a running queue; dismissing
+  exactly it resumes and wakes the queue; restart/Clear/identity pauses clear the cause and stay paused. Dismiss
+  returns the words to the clicking screen's empty message box. The row explains itself ("may not have reached Claude
+  Code… Dismiss puts the words back"). "Send again" was not added: Dismiss + the restored words gives the same result
+  without an extra button or a confirm step for a possible double send. Reviewer B3: text in Claude Code's own box is
+  now "waiting for the message box in the terminal to be empty", never Unconfirmed.
+- **Issue 4:** instant pending bubble for idle sends (`canDrawSendNow`, not slash commands), `sendTransport:'queue'`
+  (excluded from the renderer's retry Enter), confirmed by the host's published `bound` sendId→transcript uuid list
+  (reviewer S3: identity, not hashing), removed if the host lists the send in the strip (spinner lowered), removed on
+  refusal/fallback; same-sendId bubbles deduplicate. Hidden idle items reveal in the strip after 8 s.
+- **Issue 5 (reproduced mechanism, ~40 real-CLI runs):** no permanent stall reproduced; confirmed a lost wake — a wake
+  that arrives during an attempt was dropped, and a failed attempt on an idle Claude Code then waited the 20 s idle
+  poll per message (terminal view's larger screen raises the "not safe" fraction 3.3 % → 8.2 %). Fixed: wake latched
+  and answered when the attempt ends; an ask/card closing wakes the queue; backstop poll 3 s while runnable work
+  waits; a busy screen at release time defers the worker release (retried on wake) instead of failing the event, which
+  produced spurious "Unconfirmed" in 3/8 fuzz runs; each silent decline now logs its reason (rate-limited).
+- **Harness:** the transport smoke runs `$CLAUDE_CLI` or the newest installed CLI (2.1.303 was pruned); its
+  `failed-admitted` mode had failed on every version (it waited for one of two equivalent not-invoked wordings).
+  All nine modes pass on the final code.
