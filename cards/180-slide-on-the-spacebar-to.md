@@ -1,7 +1,7 @@
 ---
 id: 180
 title: Slide on the spacebar to move the cursor in Swipe Keyboard
-stage: explore
+stage: merged
 tags: swipe-keyboard, feature
 branch: 180-slide-on-the-spacebar-to
 created: 2026-10-22
