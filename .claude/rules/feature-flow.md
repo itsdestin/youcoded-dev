@@ -81,7 +81,9 @@ signed (`.contract.answers.json`, step `yes`); the acceptance deck submitted.
 **Invariant:** technical design → reviewer rounds writing
 `docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings marked accepted /
 rejected / already handled; stop on a round accepting nothing, cap three) → task breakdown → subagent build, per-task reviewer, both checking `.claude/rules/performance.md`.
-**Why:** whether rounds improve or churn a design is unmeasured.
+Every design reviewer gets the signed contract and names any row the design does not deliver.
+**Why:** whether rounds improve or churn a design is unmeasured; #183's three design rounds
+never saw the contract, so a row (R13) went unbuilt until the final code review.
 **Guard:** none — candidate.
 
 ## Two reviewers, a stranger grades, then the deck
