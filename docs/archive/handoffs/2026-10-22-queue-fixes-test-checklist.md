@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # Testing checklist: message queue fixes
 
