@@ -114,3 +114,23 @@ test('dropConnections closes the phone side abruptly and the proxy keeps accepti
   assert.equal((await read(again, 2)).toString(), 'hi');
   again.destroy(); await proxy.close(); await echo.close();
 });
+
+test('goSilent stops a connection carrying anything without closing either side, and new connections still work', async () => {
+  const echo = await echoServer();
+  const proxy = await createShapedProxy({ target: { host: '127.0.0.1', port: echo.port }, rttMs: 20, downMbit: 0, upMbit: 0 });
+  try {
+    const s = await open(proxy.port);
+    let closed = false; s.on('close', () => { closed = true; });
+    s.write('a'); await read(s, 1);
+    assert.equal(proxy.goSilent(), 1);
+    let got = 0; s.on('data', (d) => { got += d.length; });
+    s.write('lost');
+    await new Promise((r) => setTimeout(r, 200));
+    assert.equal(got, 0);
+    assert.equal(closed, false);
+    const fresh = await open(proxy.port);
+    fresh.write('ok');
+    assert.equal((await read(fresh, 2)).toString(), 'ok');
+    s.destroy(); fresh.destroy();
+  } finally { await proxy.close(); await echo.close(); }
+});

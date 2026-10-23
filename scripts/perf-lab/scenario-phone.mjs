@@ -15,6 +15,7 @@
 //   cold       load the page, type the password, wait until the conversation is drawn
 //   reopen     reload the page (saved key, cached code), wait until drawn
 //   revisit    open the page again from its address with the connections gone (a bookmark, minutes later)
+//   resume     hide the page, silence the link 75 s, then show it again (a phone put down and picked up)
 //   reconnect  the proxy hard-closes every connection while the page stays open; the page
 //              reconnects by itself and redraws
 //
@@ -207,6 +208,13 @@ async function startPhone(profileDir) {
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   // PHONE_CONSOLE=1: echo the page's console (debugging the page itself; off by default).
   if (process.env.PHONE_CONSOLE) cdp.on('Runtime.consoleAPICalled', (e) => console.log(`[phone ${e.type}]`, (e.args ?? []).map((a) => a.value ?? a.description ?? '').join(' ').slice(0, 300)));
+  // PHONE_NET=1: list each request the page makes, with when it started and finished (seconds, the browser's clock).
+  if (process.env.PHONE_NET) {
+    await cdp.send('Network.enable');
+    const urls = new Map();
+    cdp.on('Network.requestWillBeSent', (e) => { urls.set(e.requestId, e.request.url); console.log(`[net ${e.timestamp.toFixed(3)} start] ${e.request.url.slice(-70)} (${e.type ?? ''}, ${e.initiator?.type ?? ''})`); });
+    cdp.on('Network.loadingFinished', (e) => console.log(`[net ${e.timestamp.toFixed(3)} done ] ${String(urls.get(e.requestId)).slice(-70)} ${e.encodedDataLength} B`));
+  }
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true });
   await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   await cdp.send('Emulation.setUserAgentOverride', { userAgent: PHONE_UA });
@@ -242,7 +250,10 @@ async function tapSubmit(cdp) {
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
 }
 
-/** One full repeat: cold → reopen → reconnect, each in its own record. */
+/** How long the resume leg leaves the phone: past the computer's ~60 s of unanswered pings (remote-server MAX_MISSED_PINGS). */
+const AWAY_MS = 75_000;
+
+/** One full repeat: cold → reopen → revisit → reconnect → resume, each in its own record. */
 async function oneRepeat({ proxy, logPath }) {
   const profile = mkdtempSync(join(tmpdir(), 'perf-lab-phone-'));
   const phone = await startPhone(profile);
@@ -288,6 +299,20 @@ async function oneRepeat({ proxy, logPath }) {
     const dropped = proxy.dropConnections();
     rep = await waitForReport(logPath, since, 'reconnect');
     legs.reconnect = legRecord(rep, proxy.stats(), s0, performance.now() - w0, { droppedSockets: dropped });
+    await sleep(1000);
+
+    // ── resume ── the phone was put down for a while: the page hidden, the radio silent (no close reaches either side), and
+    // the computer gives up on its unanswered pings. Then the phone is picked up again. WHY not also Page.setWebLifecycleState
+    // 'frozen': a page frozen and resumed that way never drew another frame in headless Chrome, so its report never went out.
+    // A hidden page does no checks of its own (remote-shim), so hidden is what matters here.
+    const setVisible = (state) => cdp.evaluate(`(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => '${state}' }); document.dispatchEvent(new Event('visibilitychange')); return true; })()`);
+    await setVisible('hidden');
+    proxy.goSilent();
+    await sleep(AWAY_MS);
+    since = new Date().toISOString(); s0 = proxy.stats(); w0 = performance.now();
+    await setVisible('visible');
+    rep = await waitForReport(logPath, since, 'reconnect');
+    legs.resume = legRecord(rep, proxy.stats(), s0, performance.now() - w0, { awayMs: AWAY_MS });
   } finally {
     phone.stop();
     await sleep(300);
@@ -308,16 +333,18 @@ function legRecord(rep, stats1, stats0, wallMs, extra) {
 
 // ── report ─────────────────────────────────────────────────────────────────────────────
 
-const MARK_ORDER = ['page', 'code ran', 'first frame', 'connection code', 'connecting', 'connected', 'signed in', 'list', 'terminal', 'conversation', 'drawn'];
+const MARK_ORDER = ['waited after waking', 'page', 'code ran', 'first frame', 'connection code', 'connecting', 'connected', 'signed in', 'list', 'terminal', 'conversation', 'drawn'];
 const fmtS = (s) => (s ? `${s.median}${s.n > 1 ? ` [${s.min}–${s.max}]` : ''}` : '—');
 const mb = (b) => (b == null ? null : Math.round(b / 1024) / 1024);
 
 export function buildSummary(runs) {
   const out = {};
-  for (const leg of ['cold', 'reopen', 'revisit', 'reconnect']) {
+  for (const leg of ['cold', 'reopen', 'revisit', 'reconnect', 'resume']) {
     const L = runs.map((r) => r[leg]).filter(Boolean);
     out[leg] = {
       marks: Object.fromEntries(MARK_ORDER.map((k) => [k, summarise(L.map((l) => l.marks[k]))]).filter(([, v]) => v)),
+      // A resume's whole wait: how long after waking the new connection began, plus its own time to drawn.
+      drawnAfterWaking: summarise(L.map((l) => (l.marks['waited after waking'] != null && l.marks.drawn != null ? l.marks['waited after waking'] + l.marks.drawn : null))),
       drawnAfterSignInPressed: summarise(L.map((l) => (l.submitAtPageMs != null && l.marks.drawn != null ? l.marks.drawn - l.submitAtPageMs : null))),
       wallMs: summarise(L.map((l) => l.wallMs)),
       conversationAnsweredMs: summarise(L.map((l) => l.conversationAnswer?.ms)),
@@ -333,7 +360,7 @@ export function buildSummary(runs) {
 
 export function renderMarkdown(report) {
   const { meta, summary } = report;
-  const legs = ['cold', 'reopen', 'revisit', 'reconnect'];
+  const legs = ['cold', 'reopen', 'revisit', 'reconnect', 'resume'];
   const row = (label, f) => `| ${label} | ${legs.map((l) => f(summary[l])).join(' | ')} |`;
   const lines = [
     `# Phone over a slow network — ${meta.label ?? meta.stamp}`,
@@ -345,6 +372,7 @@ export function renderMarkdown(report) {
     `| step (ms) | ${legs.join(' | ')} |`, `|---|${legs.map(() => '---').join('|')}|`,
     ...MARK_ORDER.map((k) => row(k, (s) => fmtS(s.marks[k]))),
     row('drawn, counted from pressing Connect', (s) => fmtS(s.drawnAfterSignInPressed)),
+    row('drawn, counted from waking', (s) => fmtS(s.drawnAfterWaking)),
     row('rig wall clock (coarse, ±100 ms)', (s) => fmtS(s.wallMs)),
     row('computer took to answer the conversation', (s) => fmtS(s.conversationAnsweredMs)),
     row('conversation answer, KB', (s) => fmtS(s.conversationAnswerKB)),
@@ -384,7 +412,7 @@ export async function runPhoneScenario(opts) {
     for (let i = 0; i < repeats; i++) {
       const legs = await oneRepeat({ proxy, logPath: seeded.logPath });
       runs.push(legs);
-      log(`repeat ${i + 1}/${repeats}: cold drawn ${legs.cold.marks.drawn} ms, reopen ${legs.reopen.marks.drawn} ms, revisit ${legs.revisit.marks.drawn} ms, reconnect ${legs.reconnect.marks.drawn} ms`);
+      log(`repeat ${i + 1}/${repeats}: cold drawn ${legs.cold.marks.drawn} ms, reopen ${legs.reopen.marks.drawn} ms, revisit ${legs.revisit.marks.drawn} ms, reconnect ${legs.reconnect.marks.drawn} ms, resume ${legs.resume.marks['waited after waking'] ?? '?'}+${legs.resume.marks.drawn} ms`);
     }
     const stamp = new Date().toISOString().slice(0, 16).replace('T', '-').replace(':', '');
     const report = {
@@ -396,6 +424,7 @@ export async function runPhoneScenario(opts) {
           'One app boot serves all repeats; each repeat uses a new Chrome profile, so each cold open really is cold. The first cold open also pays the app\'s first-ever conversation answer.',
           'Reopen is Page.reload with the cache allowed (saved key, cached code). A phone tab revisited without a reload may be faster.',
           'Reconnect = the proxy closes every connection at once. The page marks count from the new connection; the rig wall clock also includes the page noticing the drop and its retry wait. A reconnect asks only for what it missed, so its conversation answer is ~0 KB.',
+          'Resume = the page hidden and the link silent (nothing, not even a close, crosses it) for 75 s, then shown again. "Waited after waking" is the time before the new connection began (the page deciding the old one is dead); the other marks count from that connection.',
           'Not modelled: packet loss, jitter, TCP slow start. The server side is not slowed, only what crosses the link.',
         ],
       },

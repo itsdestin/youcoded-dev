@@ -106,6 +106,7 @@ export async function createShapedProxy({ target, listenPort = 0, listenHost = '
   const down = new Link(downMbit * 1e6, oneWay);
   const up = new Link(upMbit * 1e6, oneWay);
   const live = new Set();           // every socket, both sides, for dropConnections / close
+  const conns = new Set();          // { upPipe, downPipe, client, upstream, silent }, for goSilent
   let accepted = 0;
 
   const server = net.createServer((client) => {
@@ -116,10 +117,12 @@ export async function createShapedProxy({ target, listenPort = 0, listenHost = '
     const acceptedAt = performance.now() + performance.timeOrigin;
     const upPipe = new Pipe(up, client, upstream, acceptedAt + handshakeRtts * rttMs);
     const downPipe = new Pipe(down, upstream, client, 0);
+    const conn = { upPipe, downPipe, client, upstream, silent: false };
+    conns.add(conn);
     const teardown = () => {
       upPipe.stop(); downPipe.stop();
       client.destroy(); upstream.destroy();
-      live.delete(client); live.delete(upstream);
+      live.delete(client); live.delete(upstream); conns.delete(conn);
     };
     // A client that goes away (or any socket error) ends both sides at once. A server that
     // closes first is different: its queued bytes are still "on the wire", so wait for the
@@ -127,6 +130,8 @@ export async function createShapedProxy({ target, listenPort = 0, listenHost = '
     client.on('error', teardown); upstream.on('error', teardown);
     client.on('close', teardown);
     upstream.on('close', () => {
+      // A silent link carries nothing, not even the close: the phone keeps believing in its connection.
+      if (conn.silent) { upstream.destroy(); live.delete(upstream); return; }
       const wait = () => { if (!downPipe.queue.length || client.destroyed) teardown(); else setTimeout(wait, 20); };
       wait();
     });
@@ -140,6 +145,9 @@ export async function createShapedProxy({ target, listenPort = 0, listenHost = '
     stats: () => ({ down: down.bytes, up: up.bytes, connections: accepted }),
     /** Hard-close every connection from the proxy side (the phone sees an abrupt drop). Returns how many sockets. */
     dropConnections() { const n = live.size; for (const s of [...live]) s.destroy(); return n; },
+    /** Every open connection stops carrying anything, both ways, with no close on either side — a phone whose radio went
+     *  to sleep. The computer's pings go unanswered and it hangs up; the phone hears nothing. New connections work. */
+    goSilent() { for (const c of conns) { c.silent = true; c.upPipe.stop(); c.downPipe.stop(); } return conns.size; },
     async close() {
       for (const s of [...live]) s.destroy();
       await new Promise((r) => server.close(r));
