@@ -29,19 +29,23 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 
 The release procedure is `youcoded-admin/skills/release/SKILL.md`: review the app diff and readiness, prepare an isolated candidate, review its PR and candidate-specific checks where authorized, then obtain Destin's explicit go/no-go **to merge, push master and tag**. Tag the verified result on remote master. A candidate branch push solely for CI requires its own permission and is not release approval; when candidate CI cannot run, disclose that at go/no-go. Never commit or tag in a shared checkout to stage a release. `youcoded-core` is archived; it has no release steps.
 
-1. Regenerate the landing-page demos with `bash scripts/ui-review/site-assets.sh <app-worktree>`; inspect the gallery and media output and include approved files in the candidate. The site's loops and embed come from the renderer and otherwise go stale.
+1. Regenerate the landing-page demos with `bash scripts/ui-review/site-assets.sh <app-worktree>`; inspect the gallery and media output and include approved files in the candidate. The site's loops come from the renderer and otherwise go stale. The live demo and its stills (`docs/site`, `docs/media/embed-*`) now rebuild themselves from the newest official release (`.github/workflows/site-deploy.yml`, "Website"; runs after a successful Desktop Release, on master pushes touching `docs/**`, and on dispatch; needs Pages source = GitHub Actions).
 2. Review one app CHANGELOG entry and check the candidate on desktop and Android. The **tag**, not locally edited version files, sets the shipped version: desktop CI patches `package.json`; Android CI stamps `versionName` and a monotonic `versionCode`. Local Gradle values are not Play release values.
 3. After candidate review, explicit release go/no-go, and the authorized merge/push, tag `vX.Y.Z` on the verified app commit on remote master. Its two workflows must both pass: desktop waits for every OS before upload; Android uploads APK/AAB. They contribute to one GitHub Release, but the tag push alone does not prove the release finished.
 4. Check the actual release assets, including `youcoded-release.json` and `youcoded-release.json.sig` — without both the in-app Update button refuses the release even if installers uploaded. **Verify contents, not just names:** download all release installers and the manifest/signature into an empty temporary directory, confirm the manifest version and every installer's SHA-256/byte size match the downloaded files, and verify the signature against `desktop/src/main/update-signing-key.ts` (helpers exported by `desktop/scripts/generate-release-manifest.mjs`). If `Sign release manifest` warned, diagnose it and get approval for manual signing: use a NEW EMPTY folder containing ONLY installers downloaded from that exact release, then from `youcoded/` run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with desktop/src/main/update-signing-key.ts`. Inspect the newly generated manifest before upload. If the release already has either manifest file, check what is there first; use `gh release upload vX.Y.Z <folder>/youcoded-release.json <folder>/youcoded-release.json.sig --clobber` only after confirming an intentional replacement of the pair. Never mix installers from another release into the signing folder.
 5. PartyKit deploys on a master push touching `desktop/partykit/**` (or explicit dispatch), not because a later release tag was pushed. Verify the actual relevant deployment run if game-server changes are part of the release.
+6. Arch Linux: `youcoded/packaging/aur/PKGBUILD` (AUR package `youcoded-bin`) hard-codes `pkgver` and checksums of the release's `.pacman` file. After a release, bump `pkgver`, run `updpkgsums`, regenerate `.SRCINFO` and publish it (never done by the tag workflows).
 
 ### Bug-fix releases (hotfixes)
 
 **A major or breaking bug fix can ship on its own, without the unreleased work on master** —
 only with Destin's express consent; minor bugs ship with the next feature release (Destin,
-2026-10-22, card #29). Feature releases come from master and bump the middle number (`1.4.0` → `1.5.0`);
-bug-fix releases come from the line's lane, the app branch `release/X.Y.x`, and bump the last
-number (`1.4.0` → `1.4.1`). The procedure is `youcoded-admin/skills/hotfix/SKILL.md`: decide it is
+2026-10-22, card #29). **Numbering (Destin, 2026-10-23):** the middle number is for BIG feature
+releases from master (`1.4.0` → `1.5.0`). The last number is NOT reserved for hotfixes: it also
+serves small releases from master (mostly fixes, speedups and very small features; `1.3.2` →
+`1.3.3`), and urgent fixes shipped alone from the line's lane, the app branch `release/X.Y.x`,
+bump it too (`1.4.0` → `1.4.1`). Beta builds still lead to the next middle-number release
+(`1.4.0-beta`), which stays above every last-number release. The procedure is `youcoded-admin/skills/hotfix/SKILL.md`: decide it is
 a hotfix (no feature, setting or visible design change), fix master first where possible, copy the
 fix onto the lane with `git cherry-pick -x`, put the changelog entry on BOTH branches (the in-app
 "What's new" reads master's CHANGELOG), give it a short review, get Destin's go/no-go, then tag
@@ -64,8 +68,9 @@ feature release.
 - **Nothing in CI is master-only for this path:** `desktop-ci.yml` runs for PRs into any branch;
   both release workflows trigger on any `v*` tag; signing admits `v*` tags; Android's `versionCode`
   comes from the one release workflow's run number and keeps rising.
-- **Future:** gradual rollout of new versions is card #184; automatic installs and the emergency
-  brake that make a fast fix path matter more are card #183.
+- **Auto-install shipped (card #183, youcoded#685):** `updates.autoInstall` defaults on; an update installs
+  when a person quits, "Restart to update" does it at once, and a release without its signed manifest
+  is not offered (the brake). Gradual rollout of new versions is still card #184.
 <!-- verify: {"path": "youcoded/scripts/beta-version.mjs", "contains": "WHY next MINOR, not next patch"} -->
 <!-- verify: {"path": "youcoded-admin/skills/hotfix/SKILL.md", "contains": "release/X.Y.x"} -->
 
@@ -171,7 +176,7 @@ tests never ran on Windows.
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
 website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` reads
-the `/releases` list and deliberately stays there to keep offering betas (Destin, 2026-09-23); reverting is his call, asked at each release).
+the `/releases` list but, since 2026-10-21, filters out pre-releases and drafts, so a public pre-release is NOT served by the website; see `youcoded-admin/skills/release/SKILL.md`).
 
 **Only an official release reaches an install that is not ON the beta channel, and no
 published build had that channel until `1.3.0-beta.86` (2026-09-19).** The channel shipped
@@ -236,8 +241,9 @@ over the same LevelDB.
 **Betas number themselves, resetting after each FEATURE release.** All three beta build paths
 use `youcoded/scripts/beta-version.mjs` through `.github/actions/beta-version`. Blank `base`
 selects the next feature release after the highest published official release: `1.3.x` →
-`1.4.0-beta.1`, `.2`, …; release `1.4.0` → `1.5.0-beta.1`. The last number belongs to bug-fix
-releases (see **Bug-fix releases** below), so a `1.4.1` fix does not change or reset the beta line.
+`1.4.0-beta.1`, `.2`, …; release `1.4.0` → `1.5.0-beta.1`. The last number is for small
+releases from master and lane fixes (see **Bug-fix releases** below; Destin, 2026-10-23), so a
+`1.3.3` or `1.4.1` release does not change or reset the beta line.
 Explicit prefixes must match that line: reusing a future-version prefix across releases could
 otherwise duplicate a beta version when its counter resets.
 
@@ -290,7 +296,7 @@ running betas, who are the ones the channel exists for. An explicit choice wins 
 and turning it off while on a beta is safe: the next stable release still sorts above every beta of
 its line. Settings → Help & feedback → **Get beta builds** (under "Help build YouCoded"), and the same switch under the release
 notes in the version pill's update popup (Destin moved it out of About on 2026-09-13: the rows it now
-sits with are the ones for people helping with the app rather than only using it). Desktop only,
+sits with are the ones for people helping with the app rather than only using it). The settings screen is desktop only (the get/set channel and auto-install calls are also allowed over the phone door, `main/ipc/update.ts`),
 because Android has no in-app updater. Changing it re-checks immediately rather than leaving the 30-minute cache showing an
 answer computed against the other channel.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->

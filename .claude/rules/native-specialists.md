@@ -9,7 +9,7 @@ paths:
   - "**/desktop/src/renderer/components/Specialists*.tsx"
   - "**/desktop/src/renderer/components/specialists/**"
   - "**/desktop/src/renderer/hooks/useSpecialists.ts"
-last_verified: 2026-08-16
+last_verified: 2026-10-23
 verify:
   - path: youcoded/desktop/src/main/harness/specialists/registry.ts
   - path: youcoded/desktop/src/main/harness/specialists/child-ask-router.ts
@@ -60,5 +60,5 @@ Sibling rule: `native-permissions.md` (the permission-store quad/v2 half of 1b).
 - **Specialists have no per-child step cap.** `SPECIALIST_SPAWN_BUDGET_PER_SESSION = 30` remains the per-parent lifetime runaway-delegation backstop; concurrency/single-writer limits, doom-loop, permissions and lifecycle controls remain.
 - **A child's ask DOES reach a real user — routed to the PARENT's card, and it waits with NO timeout**, exactly like the parent's own asks (2026-09-16: the 5-minute hold, redirect, `PermissionHeld` and late-answer route were removed — never reintroduce them). `childAskRouter` re-registers the ask on the broker under the parent's sessionId (`raisedBy` = child) and calls `broker.ask()` with no options; it settles only on an answer or a cancel (parent or child teardown). Guard: `specialist-child-ask-router.test.ts` ("stays pending long past the old 5-minute mark").
 - **A per-parent delegation ledger is the durable record of every spawn** (one sidecar per parent, `sessions/<slug>/<parentId>.delegations.json`). A claim is a LEASE, not a delivery: `claimUndelivered` stamps owner/timestamp but leaves `delivered: false`; only `confirmDelivered`, called AFTER the injected turn ran, flips it. A lease held by a dead process (`isOwnerAlive` false) is reclaimable, so a crash between claim and injection re-delivers exactly once instead of losing it.
-- **Background completions, the per-turn status block and steers are history-only — never a new transcript event** (`runNotice`, `<specialists-status>`, `postSteer`'s `<steer>`); the frozen `TranscriptEventType` surface did not grow.
+- **Background completions, steers (the per-turn `<specialists-status>` block was retired 2026-09-09; `Task {list:true}` replaces it) are history-only — never a new transcript event** (`runNotice`, `postSteer`'s `<steer>`); the frozen `TranscriptEventType` surface did not grow.
 - **Permission-store rule identity is a quad, and the store is versioned** (depth: `native-permissions.md`) — `specialist?: string` joined `(tool, pattern, action)` at every comparison site.
