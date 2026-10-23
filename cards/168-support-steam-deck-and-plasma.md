@@ -10,8 +10,8 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support, session/168-swipe-release-integration
 ---
 Progress
-Done: Steam Deck Gaming Mode swipe + next-word support merged to swipe-keyboard main (PR #5, c940c16): opt-in installer with separate outside-access block, switch watcher, failsafe, review fixes, faster CI; VM-verified M4-M9. Not released yet.
-Next: Real Steam Deck pass (M11: Steam+X chord, Steam text garbling); throwaway Steam account for the weekly canary; hosted update repo (GPG key, secrets, Pages); version bump + README link at first release; daemon /tmp fallback; Plasma Mobile half.
+Done: v0.4.0-1 published 2026-10-23 (PR #8, main aac9b9b): Gaming Mode preview download (virtual Deck only), spacebar slide speed-up, no ?123 pause. ARM tag-byte test skipped by owner choice.
+Next: M11 real-Deck pass; 0.4.1 automatic updates on branch feat/auto-updates (plan docs/active/plans/2026-10-23-auto-updates.md).
 Blocked: 
 
 Chats
