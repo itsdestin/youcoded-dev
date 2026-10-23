@@ -21,6 +21,17 @@ class CliTests(unittest.TestCase):
     def test_build_crops_and_writes_the_page(self):
         code, out, err = self.run_cli('build', self.p); self.assertEqual(code, 0, err)
         self.assertIn('4 crops', out); self.assertIn('wrote', out); self.assertTrue(os.path.exists(os.path.join(self.d, 'fixture.html')))
+    def test_an_answered_deck_is_not_rebuilt(self):
+        # An answered deck's pictures are the record of what Destin approved; a rebuild rewrites them.
+        stem = os.path.splitext(os.path.basename(self.p))[0]
+        json.dump({'submitted': '2026-10-22T00:00:00Z', 'answers': {}}, open(os.path.join(self.d, stem + '.answers.json'), 'w'))
+        code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 1); self.assertIn('already answered', err)
+        self.assertFalse(os.path.exists(os.path.join(self.d, 'fixture.html')))
+        code, _, err = self.run_cli('build', self.p, '--rebuild-answered'); self.assertEqual(code, 0, err)
+    def test_an_unsubmitted_answers_file_does_not_block_a_build(self):
+        stem = os.path.splitext(os.path.basename(self.p))[0]
+        json.dump({'answers': {}}, open(os.path.join(self.d, stem + '.answers.json'), 'w'))
+        code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 0, err)
     def test_build_reports_missing_as_failure_and_writes_no_page(self):
         s = json.load(open(self.p)); s['steps'][1]['highlight'] = {'selector': '#nope'}; json.dump(s, open(self.p, 'w'))
         code, _, err = self.run_cli('build', self.p); self.assertEqual(code, 1); self.assertIn('missing: S-2', err)
