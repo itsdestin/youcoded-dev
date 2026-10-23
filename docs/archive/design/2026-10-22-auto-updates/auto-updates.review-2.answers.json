@@ -1,0 +1,23 @@
+{
+ "deck": "auto-updates-review-2",
+ "started": "2026-10-22T21:23:05.073Z",
+ "submitted": "2026-10-22T21:23:22Z",
+ "cur": 1,
+ "answers": {
+  "R2-1": {
+   "v": "other",
+   "t": 1792704197549,
+   "note": "no still keep the version. my b",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1792704201763,
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -92,6 +92,16 @@ def shared_key_specs(spec):
     return twins
 
 
+def answered(spec):
+    """True when this deck's own answers file says Destin submitted it."""
+    path = os.path.join(spec['_base'], spec['_stem'] + '.answers.json')
+    try:
+        with open(path) as f:
+            return bool(json.load(f).get('submitted'))
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def build(spec):
     """Crop + resolve boxes + write the page. Returns 0, or 1 with the reasons on stderr and NO page written."""
     errors, warnings = validate(spec)
@@ -138,6 +148,8 @@ def main(argv):
     sv.add_argument('--port', type=int, default=0)
     for c in ('build', 'preview', 'serve'):
         sub.choices[c].add_argument('--theme', help="open the deck on this theme instead of the one the app is on")
+        sub.choices[c].add_argument('--rebuild-answered', action='store_true',
+                                    help='rebuild a deck whose answers file says submitted (rewrites its approved pictures)')
     # `selfie` is the one command with no spec of its own: it WRITES one.
     sf = sub.add_parser('selfie')
     sf.add_argument('--before', default='origin/master', help='the git ref to compare this worktree against')
@@ -179,6 +191,16 @@ def main(argv):
         # WHY here and not in load_spec(): only the two commands that PAINT a page follow the
         # app's theme. contract-check and acceptance read the same spec and must see the order
         # its author wrote, or a row's meaning would depend on which theme Destin is using.
+        # WHY refuse (2026-10-22, #183 wrap-up): a grader "re-checking" an approved step ran a
+        # build on an ANSWERED round-2 deck and silently rewrote the 12 pictures Destin had
+        # approved — the only record of what he said yes to. The rule already said "re-serve an
+        # answered deck with --no-build"; this makes it execute instead of asking.
+        rebuilds = a.cmd in ('build', 'preview') or (a.cmd == 'serve' and not a.no_build)
+        if rebuilds and not a.rebuild_answered and answered(spec):
+            print(f'[deck] {os.path.basename(a.spec)} is already answered — rebuilding would rewrite the pictures '
+                  'Destin approved. Use `serve --no-build` to show it again, shoot new pictures into a run folder '
+                  'to compare against it, or pass --rebuild-answered if a rebuild is truly intended.', file=sys.stderr)
+            return 1
         if a.cmd in ('build', 'preview', 'serve'):
             apply_live_theme(spec, a.theme, log=lambda m: print(m, file=sys.stderr))
         if a.cmd == 'build':

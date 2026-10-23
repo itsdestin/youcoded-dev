@@ -1,0 +1,34 @@
+{
+  "title": "Automatic updates — your two changes",
+  "key": "auto-updates-review-2",
+  "out": "auto-updates.review-2.html",
+  "images": "images/auto-updates.review-2",
+  "stage": "review",
+  "runs": {
+    "before": "runs/r2/before",
+    "after": "runs/r2/after"
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Status bar",
+      "path": "The version chip at the bottom of the window, once an update has downloaded",
+      "crop": "chat#update-ready@1000x140+0+860",
+      "headline": "The chip now reads \"Ready - restart needed\", with the same yellow pulse.",
+      "changed": "\"v1.4.0 ready — restart to update\" becomes \"Ready - restart needed\", your words in sentence case (only the first word capitalised, like every label in the app).",
+      "notice": "The chip is shorter. The version number is still on the chip's hover hint and on the popup's Restart to update button.",
+      "risk": "The chip no longer says which version is waiting until you hover it or open the popup."
+    },
+    {
+      "id": "R2-2",
+      "surface": "Settings",
+      "path": "Settings → Help & feedback, scrolled to the bottom",
+      "crop": "settings/help#updates",
+      "highlight": "panel",
+      "headline": "Get beta builds and Install updates automatically now sit under their own heading, Updates.",
+      "changed": "Contribute to YouCoded stays alone under Help build YouCoded; a new last group, Updates, holds the two switches, the same name the update popup uses for them.",
+      "notice": "The switches are under a heading that says what they are.",
+      "risk": "Get beta builds moved down one group from where it was before today."
+    }
+  ]
+}
