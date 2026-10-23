@@ -16,7 +16,7 @@ vision: everywhere.added.remoteenc, chat.converse.voice
 ---
 Progress
 Done: nothing recorded.
-Next: not decided.
+Next: Start at the technical design. 2026-10-22 (session/remote-access-audit, Destin: record it, decide later): not worth it for speed alone — after the buddy-picture fix the phone downloads ~1.0 MB over gzip vs ~0.8 MB with brotli (~0.3 s, first open after an update only), while the extra encryption handshake adds ~0.5 s to every new connection and every resume on a slow link. Worth it as its own feature for: voice typing in the phone browser (#117), an installable home-screen app that opens instantly and could show the last conversation offline, and phone notifications ('Claude finished' / 'needs your OK'). Keep the plain address as a fallback; update remote-origin checks and the Android app's address.
 Blocked: nothing recorded.
 
 See also #117: 115's encrypted browser connection is exactly what would give a phone browser the microphone that 117(a) is missing.

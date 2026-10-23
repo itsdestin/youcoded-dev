@@ -1,0 +1,70 @@
+{
+  "R2": {
+    "verdict": "pass",
+    "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png; approved images/auto-updates.review-2/settings__help~updates--midnight--after.png; same wording, order, icons and layout; Get beta builds toggle, Install updates automatically with circular-arrows icon, 'Downloads new versions by itself', switch on"
+  },
+  "R3": {
+    "verdict": "pass",
+    "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png; approved images/auto-updates.review-2/settings__help~updates--midnight--after.png; same wording, order, icons and layout; both rows under an 'Updates' heading"
+  },
+  "R6": {
+    "verdict": "pass",
+    "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/update#ready/midnight.png; approved images/auto-updates.review/chat__update~ready--midnight--after.png; same wording, order, icons and layout; 'Update ready', 'Installs by itself the next time you quit YouCoded', 'Restart to update: v1.3.2 -> v1.4.0'. Chip now 'v1.4.0 - Ready - restart needed' per round 2 (R2-1)"
+  },
+  "R9": {
+    "verdict": "pass",
+    "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/update#ready-manual/midnight.png; approved images/auto-updates.review/chat__update~ready-manual--midnight--after.png; same wording, order, icons and layout; switch off, line reads 'Downloaded. Restart when you are ready.'. Live flip not shown in a still; UpdatePanel.test.tsx 'says installs by itself only when the switch is on AND a quit really will install' covers the switching of the line"
+  },
+  "R12": {
+    "verdict": "pass",
+    "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/quit-sessions#update/midnight.png; approved images/auto-updates.review/chat__quit-sessions~update--midnight--after.png; same wording, order, icons and layout; title 'Restart to update', 'Restarting will end your active sessions...', red Restart button"
+  },
+  "R17": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-service.test.ts (5 update test files run together, 219 passed, 0 failed); read test: update-service.test.ts 'Restart when the staged copy has gone missing (F1)': re-stages before any password, falls back to disk image"
+  },
+  "R18": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-staging.test.ts (5 update test files run together, 219 passed, 0 failed); read test: update-staging.test.ts 'root mode: an app swapped into the user-side folder AFTER the signature check is never installed (F2)' and 'swapped in while being copied fails the check on the copy'"
+  },
+  "R19": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-service.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'keeps a saved off when a later re-read fails' (line 176)"
+  },
+  "R20": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-release-status.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'does not offer a release whose signed files were removed' and 'on the beta listing a pulled release is skipped and the next good one is offered'"
+  },
+  "R21": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/UpdatePanel.test.tsx (5 update test files run together, 219 passed, 0 failed); read test: 'says installs by itself only when the switch is on AND a quit really will install'; service test 'the status says a quit will install only when it really will'"
+  },
+  "R22": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-restart.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'tells the person now when the install cannot be prepared, instead of quitting and reopening the old version (F6)'"
+  },
+  "R23": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/UpdatePanel.test.tsx (5 update test files run together, 219 passed, 0 failed); read test: 'a Restart that fails for no installer reason is not called an installer failure; it shows the general error with the real text'"
+  },
+  "R24": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-service.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'does not start the same failing download again at every check (F8): backs off 1 h, then 2 h'"
+  },
+  "R25": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-service.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'a download started while the stale-file sweep is still reading the folder waits for it (F9)'"
+  },
+  "R26": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-staging.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'waits for the app to exit, and gives up after its limit... removing its staging' and 'stale go files at startup (F10)'"
+  },
+  "R27": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-restart.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'frees the launch lock when a shutdown takes over after the installer ran (F11)'; also update-service.test.ts releaseLaunch test"
+  },
+  "R28": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/update-service.test.ts (5 update test files run together, 219 passed, 0 failed); read test: 'reads the saved switch at startup, not only when something first asks (F12)'"
+  }
+}
