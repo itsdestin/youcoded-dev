@@ -69,7 +69,7 @@ export const VIEWPORT_SHIFT_TOLERANCE_PX = 2;
 /** 'wheel' (default): every step is preceded by a wheel event, like a real mouse/trackpad. 'none': no input events. */
 export const SCROLL_INPUTS = Object.freeze(['wheel', 'none']);
 
-export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, settleMs, scrollInput = 'wheel' }) => `(async () => {
+export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, settleMs, scrollInput = 'wheel', relative = false, minHistoryLoads = 0, maxDurationMs = 0 }) => `(async () => {
   const unexplainedShiftPx = ${unexplainedShiftPx.toString()};
   const pane = [...document.querySelectorAll('.chat-scroll')].find((e) => !e.closest('[aria-hidden="true"]'));
   if (!pane) return { ok: false, reason: 'no visible .chat-scroll' };
@@ -196,12 +196,47 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
     target.dispatchEvent(new WheelEvent('wheel', { deltaY, deltaMode: 0, clientX: x, clientY: y, bubbles: true, cancelable: true }));
     wheelEvents++;
   };
+  // WHY RELATIVE (longconv): absolute targets are computed from the scroll range read ONCE at the start.
+  // When an older history page is prepended the document grows above the view and the app moves scrollTop
+  // down to keep the entry in place; the next absolute command then teleported the view back to a stale
+  // position, so the probe undid the app's own compensation and mis-scored it (and the 16 s pass stopped
+  // at the OLD top, never reaching the page it was meant to cross). A person scrolls RELATIVE to where the
+  // view is now, so with relative=true each step moves from the CURRENT scrollTop by rate x elapsed since
+  // the last step, the pass runs the full duration, and prepends are crossed like a real scroll.
+  const RELATIVE = ${JSON.stringify(!!relative)};
+  // A history page arriving = the number of timeline entries jumping by 10+ in one frame (a page is ~60).
+  // The document height is NOT a signal: unfolding a spacer to its real body also grows it by thousands of px.
+  const heightEvents = [], jumpLog = [];
+  const MIN_LOADS = ${Number(minHistoryLoads)}, MAX_DURATION = Math.max(duration, ${Number(maxDurationMs)});
+  const entryCount = () => pane.querySelectorAll('.timeline-entry').length;
+  let lastCount = entryCount(), lastLoadAt = null;
+  const entriesStart = pane.querySelectorAll('.timeline-entry').length;
+  let historyLoads = 0, lastHeight = pane.scrollHeight, lastT = performance.now();
+  // 'none' mode = a scrollbar drag / programmatic scroll: no wheel, touch or key events. A real scrollbar grab
+  // does produce ONE pointerdown in the gutter, and that is what un-pins the chat from the bottom (see
+  // use-stick-to-bottom.ts). Without it the chat stays pinned and every height change snaps the view back to the
+  // bottom - that is "pinned to the bottom", not a defect of history anchoring, and it would bury what 'none' is for.
+  if (SCROLL_INPUT === 'none') {
+    const v = pane.getBoundingClientRect();
+    const gutterX = v.left + pane.clientWidth + Math.max(1, (pane.offsetWidth - pane.clientWidth) / 2);
+    (document.elementFromPoint(gutterX, v.top + v.height / 2) || pane).dispatchEvent(new PointerEvent('pointerdown', { clientX: gutterX, clientY: v.top + v.height / 2, bubbles: true }));
+  }
   const t0 = performance.now();
   let travelled = 0;
   while (true) {
     const elapsed = performance.now() - t0;
-    travelled = Math.min(max, (rate * elapsed) / 1000);
-    const commanded = down ? travelled : max - travelled;
+    const nowT = performance.now();
+    let commanded;
+    if (RELATIVE) {
+      const step = (rate * (nowT - lastT)) / 1000;
+      lastT = nowT;
+      const curMax = Math.max(0, pane.scrollHeight - pane.clientHeight);
+      commanded = Math.max(0, Math.min(curMax, pane.scrollTop + (down ? step : -step)));
+      travelled += Math.abs(commanded - pane.scrollTop);
+    } else {
+      travelled = Math.min(max, (rate * elapsed) / 1000);
+      commanded = down ? travelled : max - travelled;
+    }
     const before = pane.scrollTop;
     const anchor = topEntry();
     const intended = commanded - before;
@@ -210,24 +245,37 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
     await new Promise((r) => requestAnimationFrame(r));
     const rawMoved = Math.abs(pane.scrollTop - commanded) > RAW_TOLERANCE_PX;
     if (rawMoved) scrollTopDeltaFrames++;
-    let jumped = false;
+    let jumped = false, shiftNow = 0;
     if (anchor && anchor.el.isConnected) {
       const view = pane.getBoundingClientRect();
       const shift = unexplainedShiftPx({ prevOffsetPx: anchor.offset, newOffsetPx: anchor.el.getBoundingClientRect().top - view.top, intendedDeltaPx: intended });
+      shiftNow = shift;
       maxShiftPx = Math.max(maxShiftPx, shift);
       jumped = shift > SHIFT_TOLERANCE_PX;
     } else if (anchor) {
       // The entry we were tracking left the DOM; no offset to compare. Counted, never silently a pass.
       anchorLostFrames++;
     }
+    const nowCount = entryCount();
+    if (nowCount >= lastCount + 10) { historyLoads++; lastLoadAt = nowT; }
+    lastCount = nowCount;
+    const nowHeight = pane.scrollHeight;
+    if (Math.abs(nowHeight - lastHeight) > 100 && heightEvents.length < 60) heightEvents.push({ t: Math.round(nowT - t0), from: lastHeight, to: nowHeight, top: Math.round(pane.scrollTop) });
+    lastHeight = nowHeight;
     if (jumped) {
+      if (jumpLog.length < 40) jumpLog.push({ t: Math.round(nowT - t0), top: Math.round(pane.scrollTop), before: Math.round(before), intended: Math.round(intended), shift: Math.round(shiftNow), entries: nowCount });
       jumpedFrames++;
       lastJumpTo = Math.round(pane.scrollTop);
     } else {
       sample();
     }
     // Stop at the time budget, or early if we ran out of document to scroll.
-    if (elapsed >= duration || travelled >= max) break;
+    // Relative passes with a history requirement keep going past the base duration until a page has loaded
+    // AND 2.5 s of scrolling followed it (the app's settle window), or the hard cap.
+    if (RELATIVE) {
+      const loadedEnough = historyLoads >= MIN_LOADS && (MIN_LOADS === 0 || (lastLoadAt !== null && nowT - lastLoadAt >= 2500));
+      if (elapsed >= MAX_DURATION || (elapsed >= duration && loadedEnough)) break;
+    } else if (elapsed >= duration || travelled >= max) break;
   }
   // Sample once more after the motion stops. An entry still blank HERE is worse
   // than one blank mid-scroll: nothing is going to prompt another render.
@@ -241,7 +289,7 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
     frames, framesWithLate, maxLate, maxSpacersAnywhere, totalEntriesSeen,
     lateAfterStop, firstLate,
     settledAtRest, settleTookMs, lateAtRest,
-    jumpedFrames, lastJumpTo, scrollTopDeltaFrames, anchorLostFrames, maxShiftPx: Math.round(maxShiftPx * 10) / 10, wheelEvents, scrollInput: SCROLL_INPUT,
+    jumpedFrames, lastJumpTo, scrollTopDeltaFrames, anchorLostFrames, maxShiftPx: Math.round(maxShiftPx * 10) / 10, wheelEvents, scrollInput: SCROLL_INPUT, historyLoads, heightEvents, jumpLog, entriesStart, entriesEnd: pane.querySelectorAll('.timeline-entry').length, relative: RELATIVE,
     scrollHeight: pane.scrollHeight, clientHeight: pane.clientHeight,
     scrollablePx: max,
     // What the pass ACTUALLY did, so a reader can judge the reading rather than
@@ -261,9 +309,9 @@ export const SCROLL_PROBE_EXPRESSION = ({ durationMs, direction, pxPerSecond, se
 export const HUMAN_SCROLL_PX_PER_SECOND = 1500;
 
 /** Drive one scroll pass and return the raw page reading. */
-export async function scrollAndCount(cdp, { durationMs = 8000, direction = 'down', pxPerSecond = HUMAN_SCROLL_PX_PER_SECOND, settleMs = 3000, scrollInput = 'wheel' } = {}) {
+export async function scrollAndCount(cdp, { durationMs = 8000, direction = 'down', pxPerSecond = HUMAN_SCROLL_PX_PER_SECOND, settleMs = 3000, scrollInput = 'wheel', relative = false, minHistoryLoads = 0, maxDurationMs = 0 } = {}) {
   if (!SCROLL_INPUTS.includes(scrollInput)) throw new Error(`scrollInput must be one of ${SCROLL_INPUTS.join(', ')}, got ${scrollInput}`);
-  return cdp.evaluate(SCROLL_PROBE_EXPRESSION({ durationMs, direction, pxPerSecond, settleMs, scrollInput }));
+  return cdp.evaluate(SCROLL_PROBE_EXPRESSION({ durationMs, direction, pxPerSecond, settleMs, scrollInput, relative, minHistoryLoads, maxDurationMs }));
 }
 
 /**
@@ -282,7 +330,7 @@ export function summariseLateContent(raw) {
     spacersSeenAnywhere: null, totalEntriesSeen: null,
     lateAfterStop: null, firstLate: null,
     settledAtRest: null, settleTookMs: null, lateAtRest: null,
-    jumpedFrames: null, lastJumpTo: null, scrollTopDeltaFrames: null, anchorLostFrames: null, maxShiftPx: null, wheelEvents: null, scrollInput: null,
+    jumpedFrames: null, lastJumpTo: null, scrollTopDeltaFrames: null, anchorLostFrames: null, maxShiftPx: null, wheelEvents: null, scrollInput: null, historyLoads: null,
     scrolledPx: null, scrollablePx: null, pxPerSecond: null, elapsedMs: null,
     verdict: 'unmeasured', reason: null,
   };
@@ -305,6 +353,11 @@ export function summariseLateContent(raw) {
   out.maxShiftPx = raw.maxShiftPx ?? null;
   out.wheelEvents = raw.wheelEvents ?? null;
   out.scrollInput = raw.scrollInput ?? null;
+  out.historyLoads = raw.historyLoads ?? null;
+  out.heightEvents = raw.heightEvents ?? null;
+  out.jumpLog = raw.jumpLog ?? null;
+  out.entriesStart = raw.entriesStart ?? null;
+  out.entriesEnd = raw.entriesEnd ?? null;
   out.firstLate = raw.firstLate ?? null;
   out.elapsedMs = raw.elapsedMs ?? null;
   out.scrolledPx = typeof raw.travelledPx === 'number' ? raw.travelledPx : null;

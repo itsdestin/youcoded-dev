@@ -116,7 +116,7 @@ export async function runRung(build, plan, label, { scrollInput = SCROLL_UP.scro
   try {
     raw = await withBoot(build, fixture, async (app) => {
       const guarded = await withDocumentWatchdog(app, () => measureRung(app, fixture, plan, detail, { scrollInput }), {
-        timeoutMs: OPEN_TIMEOUT_MS + RUNG_GRACE_MS + AFTER_OPEN_MS + SCROLL_UP.durationMs + SCROLL_UP.settleMs, maxRssMb: PSS_CAP_MB, memoryBasis: MEMORY_BASIS.pss });
+        timeoutMs: OPEN_TIMEOUT_MS + RUNG_GRACE_MS + AFTER_OPEN_MS + SCROLL_UP.maxDurationMs + SCROLL_UP.settleMs, maxRssMb: PSS_CAP_MB, memoryBasis: MEMORY_BASIS.pss });
       if (guarded.status) return { failure: { status: guarded.status, error: guarded.error }, memory: guarded.memory };
       return { ...guarded.value, memory: guarded.memory };
     }, { mainLoop: true });

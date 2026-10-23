@@ -1,0 +1,856 @@
+{
+  "scenario": {
+    "revision": 2,
+    "lane": "longconv-open",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-23T07:43:30.340Z",
+  "label": "renderer-fixes-none",
+  "scrollInput": "none",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000,
+    "openToNewestPaintMs": 3000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "standIn": "a generated native-session transcript resumed through the app's own resume event (no model); not a Claude Code conversation",
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+      "sha": "d0a7211ad3a8d150400c47d54c57fc556a10613a",
+      "branch": "perf/93-baseline-master",
+      "dirty": "3c937cd909bc"
+    },
+    "new": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded",
+      "sha": "6183168e6de44123ee866e9744c27b7cb0f1e29c",
+      "branch": "session/93-freeze-combined",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "longconv-200",
+      "turns": 200,
+      "marker": "NEWEST-TURN-MARKER-7c1f",
+      "toolTurns": 57
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "longconv-200",
+        "turns": 200,
+        "toolTurns": 57,
+        "openToPaneMs": 82.7,
+        "openToFirstEntryMs": 704.1,
+        "openToNewestPaintMs": 718.3,
+        "openToSettledMs": 1035.1,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 191,
+        "openLongtaskTotalMs": 265,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 193.3,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 202,
+        "mainMaxDelayMs": 8.9,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 87.3,
+        "typingAfterOpenMaxMs": 3.2,
+        "typingScrollMaxMs": 6.8,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 169,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 4,
+        "scrollTopDeltaFramesInfo": 32,
+        "scrollMaxShiftPx": 1256,
+        "scrollLastJumpTo": 19490,
+        "scrollWheelEvents": 0,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 915,
+            "from": 16632,
+            "to": 17048,
+            "top": 14874
+          },
+          {
+            "t": 1465,
+            "from": 17049,
+            "to": 17985,
+            "top": 14987
+          },
+          {
+            "t": 3015,
+            "from": 17984,
+            "to": 18640,
+            "top": 13319
+          },
+          {
+            "t": 5032,
+            "from": 18640,
+            "to": 20644,
+            "top": 12299
+          },
+          {
+            "t": 6633,
+            "from": 20644,
+            "to": 21840,
+            "top": 11105
+          },
+          {
+            "t": 8365,
+            "from": 21840,
+            "to": 23156,
+            "top": 9832
+          },
+          {
+            "t": 10832,
+            "from": 23156,
+            "to": 23852,
+            "top": 6827
+          },
+          {
+            "t": 11565,
+            "from": 23852,
+            "to": 25088,
+            "top": 6961
+          },
+          {
+            "t": 13164,
+            "from": 25089,
+            "to": 26385,
+            "top": 5867
+          },
+          {
+            "t": 15332,
+            "from": 26385,
+            "to": 28649,
+            "top": 4889
+          },
+          {
+            "t": 17098,
+            "from": 28650,
+            "to": 29186,
+            "top": 2780
+          },
+          {
+            "t": 18631,
+            "from": 29185,
+            "to": 46604,
+            "top": 17906
+          },
+          {
+            "t": 18796,
+            "from": 46604,
+            "to": 47240,
+            "top": 18542
+          },
+          {
+            "t": 20215,
+            "from": 47240,
+            "to": 48456,
+            "top": 17631
+          },
+          {
+            "t": 21315,
+            "from": 48456,
+            "to": 49012,
+            "top": 16542
+          },
+          {
+            "t": 22565,
+            "from": 49013,
+            "to": 50469,
+            "top": 16130
+          },
+          {
+            "t": 23682,
+            "from": 50470,
+            "to": 51726,
+            "top": 15715
+          },
+          {
+            "t": 25898,
+            "from": 51727,
+            "to": 53003,
+            "top": 13666
+          },
+          {
+            "t": 27032,
+            "from": 53003,
+            "to": 53499,
+            "top": 12462
+          },
+          {
+            "t": 28181,
+            "from": 53499,
+            "to": 54495,
+            "top": 11738
+          },
+          {
+            "t": 28981,
+            "from": 54495,
+            "to": 55191,
+            "top": 11237
+          },
+          {
+            "t": 30965,
+            "from": 55191,
+            "to": 56147,
+            "top": 9219
+          },
+          {
+            "t": 31881,
+            "from": 56147,
+            "to": 57323,
+            "top": 9023
+          },
+          {
+            "t": 33364,
+            "from": 57323,
+            "to": 57919,
+            "top": 7397
+          },
+          {
+            "t": 33914,
+            "from": 57919,
+            "to": 58035,
+            "top": 6691
+          },
+          {
+            "t": 35781,
+            "from": 58034,
+            "to": 58790,
+            "top": 4653
+          },
+          {
+            "t": 36548,
+            "from": 58790,
+            "to": 58966,
+            "top": 3680
+          },
+          {
+            "t": 37431,
+            "from": 58966,
+            "to": 59462,
+            "top": 2853
+          },
+          {
+            "t": 37914,
+            "from": 59462,
+            "to": 60598,
+            "top": 3264
+          },
+          {
+            "t": 39782,
+            "from": 60597,
+            "to": 77812,
+            "top": 17686
+          },
+          {
+            "t": 39906,
+            "from": 77812,
+            "to": 79616,
+            "top": 19490
+          },
+          {
+            "t": 41481,
+            "from": 79621,
+            "to": 79757,
+            "top": 17264
+          }
+        ],
+        "scrollJumpLog": [
+          {
+            "t": 18796,
+            "top": 18542,
+            "before": 17906,
+            "intended": -248,
+            "shift": 248,
+            "entries": 120
+          },
+          {
+            "t": 23682,
+            "top": 15715,
+            "before": 14484,
+            "intended": -25,
+            "shift": 1256,
+            "entries": 120
+          },
+          {
+            "t": 28981,
+            "top": 11237,
+            "before": 10565,
+            "intended": -24,
+            "shift": 696,
+            "entries": 120
+          },
+          {
+            "t": 39906,
+            "top": 19490,
+            "before": 17686,
+            "intended": -187,
+            "shift": 187,
+            "entries": 180
+          }
+        ],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "none",
+        "scrollFrames": 2522,
+        "scrollPx": 63446,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 633.6,
+        "heapMb": 26.3,
+        "domNodes": 598,
+        "toolCardTextHits": 2,
+        "scrollHeightPx": 16633,
+        "entryKinds": {
+          "msg-rk#x#d-#": 30,
+          "turn-rk#x#d-#": 30
+        },
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.6 cores on average over 46 s (limit 1): youcoded ×7 (pids 1354978, 1355494, 1355602, 1455186, +3 more) used 0.8 cores; git ×4 (pids 1457325, 1457538, 1457796, 1457863) used 0.5 cores; claude ×6 (pids 1357313, 1357316, 1357321, 1357322, +2 more) used 0.1 cores"
+          ]
+        },
+        "worstLongtaskMs": 191,
+        "worstTypingMs": 87.3,
+        "breaches": [
+          {
+            "metric": "scrollJumpedFrames",
+            "value": 4,
+            "limit": 0
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "longconv-200",
+        "turns": 200,
+        "toolTurns": 57,
+        "openToPaneMs": 73,
+        "openToFirstEntryMs": 681.7,
+        "openToNewestPaintMs": 694.3,
+        "openToSettledMs": 994.8,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 184,
+        "openLongtaskTotalMs": 249,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 190.5,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 204,
+        "mainMaxDelayMs": 117.1,
+        "mainTotalStallMs": 117.1,
+        "typingOpenMaxMs": 80,
+        "typingAfterOpenMaxMs": 3.6,
+        "typingScrollMaxMs": 136.4,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 168,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 5,
+        "scrollMaxShiftPx": 1,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 0,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 18627,
+            "from": 29185,
+            "to": 60596,
+            "top": 31879
+          },
+          {
+            "t": 39594,
+            "from": 60597,
+            "to": 88583,
+            "top": 28451
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "none",
+        "scrollFrames": 2514,
+        "scrollPx": 63166,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 654.6,
+        "heapMb": 26.3,
+        "domNodes": 598,
+        "toolCardTextHits": 2,
+        "scrollHeightPx": 29169,
+        "entryKinds": {
+          "msg-yedvfy-#": 30,
+          "turn-yedvfy-#": 30
+        },
+        "interference": {
+          "verdict": "disturbed",
+          "reasons": [
+            "other programs used 1.9 cores on average over 46 s (limit 1): chrome ×28 (pids 1354976, 1355211, 1355314, 1355317, +24 more) used 0.6 cores; claude ×6 (pids 1357313, 1357314, 1357321, 1357322, +2 more) used 0.4 cores; youcoded ×4 (pids 1354978, 1355494, 1355602, 1356580) used 0.3 cores"
+          ]
+        },
+        "worstLongtaskMs": 184,
+        "worstTypingMs": 136.4,
+        "breaches": [],
+        "status": "measured"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:longconv-200",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.6 cores on average over 48 s (limit 1): youcoded ×8 (pids 1354978, 1355494, 1355602, 1356580, +4 more) used 0.8 cores; git ×4 (pids 1457325, 1457538, 1457796, 1457863) used 0.4 cores; claude ×6 (pids 1357313, 1357321, 1357322, 1357315, +2 more) used 0.1 cores",
+        "youcoded (pid 1355494) held the graphics chip 11% of the time"
+      ],
+      "durationS": 48.5,
+      "samples": 97,
+      "overflow": false,
+      "foreignAvgCores": 1.62,
+      "foreignPeak2sCores": 2.48,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            1354978,
+            1355494,
+            1355602,
+            1356580,
+            1355520,
+            1455186,
+            2722,
+            1357276
+          ],
+          "cores": 0.78
+        },
+        {
+          "name": "git",
+          "pids": [
+            1457325,
+            1457538,
+            1457796,
+            1457863
+          ],
+          "cores": 0.44
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1357313,
+            1357321,
+            1357322,
+            1357315,
+            1357316,
+            1357314
+          ],
+          "cores": 0.13
+        },
+        {
+          "name": "node-MainThread",
+          "pids": [
+            4074650,
+            4074652,
+            1357268,
+            1367137,
+            1357226,
+            4074651,
+            1357217
+          ],
+          "cores": 0.08
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9,
+        "max": 14.5
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 0,
+        "busyMedian": 18,
+        "busyMax": 25,
+        "pptWattsMin": 18.3,
+        "pptWattsMax": 30.3,
+        "attribution": "partial",
+        "foreignHolders": [
+          {
+            "pid": 1355494,
+            "name": "youcoded",
+            "share": 0.11
+          }
+        ]
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    },
+    {
+      "label": "r1-b:longconv-200",
+      "verdict": "disturbed",
+      "reasons": [
+        "other programs used 1.9 cores on average over 48 s (limit 1): chrome ×28 (pids 1354976, 1355211, 1355314, 1355317, +24 more) used 0.6 cores; claude ×6 (pids 1357313, 1357315, 1357316, 1357321, +2 more) used 0.4 cores; youcoded ×4 (pids 1354978, 1355494, 1355602, 1356580) used 0.3 cores"
+      ],
+      "durationS": 48.2,
+      "samples": 97,
+      "overflow": false,
+      "foreignAvgCores": 1.93,
+      "foreignPeak2sCores": 5.83,
+      "offenders": [
+        {
+          "name": "chrome",
+          "pids": [
+            1354976,
+            1355211,
+            1355314,
+            1355317,
+            1355213,
+            1355230,
+            1355286,
+            1458763,
+            1458774,
+            1458775,
+            1355089,
+            1355495,
+            1355517,
+            1458884,
+            1458904,
+            1458917,
+            1458964,
+            1459038,
+            1459053,
+            1459094,
+            1459113,
+            1459247,
+            1459387,
+            1459550,
+            1459561,
+            1459577,
+            1459594,
+            1459739
+          ],
+          "cores": 0.56
+        },
+        {
+          "name": "claude",
+          "pids": [
+            1357313,
+            1357315,
+            1357316,
+            1357321,
+            1357322,
+            1357314
+          ],
+          "cores": 0.41
+        },
+        {
+          "name": "youcoded",
+          "pids": [
+            1354978,
+            1355494,
+            1355602,
+            1356580
+          ],
+          "cores": 0.3
+        },
+        {
+          "name": "plasma-keyboard",
+          "pids": [
+            1354485
+          ],
+          "cores": 0.19
+        },
+        {
+          "name": "node-MainThread",
+          "pids": [
+            1357268,
+            4074650,
+            4074652,
+            1367137,
+            1357217,
+            4074651,
+            1357226,
+            1357232,
+            1459427,
+            1459876,
+            1461917
+          ],
+          "cores": 0.13
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 11.3,
+        "max": 29.2
+      },
+      "pressure": {
+        "cpuMax": 0.35,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": 4,
+        "busyMedian": 5,
+        "busyMax": 12,
+        "pptWattsMin": 18.6,
+        "pptWattsMax": 31.7,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [
+        "performance"
+      ],
+      "acStates": [
+        true
+      ]
+    }
+  ],
+  "aggregate": {
+    "longconv-200": {
+      "old": {
+        "statuses": [
+          "slow"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 718.3,
+            "min": 718.3,
+            "max": 718.3,
+            "n": 1,
+            "of": 1
+          },
+          "openToSettledMs": {
+            "median": 1035.1,
+            "min": 1035.1,
+            "max": 1035.1,
+            "n": 1,
+            "of": 1
+          },
+          "openLongtaskMaxMs": {
+            "median": 191,
+            "min": 191,
+            "max": 191,
+            "n": 1,
+            "of": 1
+          },
+          "openLongtaskTotalMs": {
+            "median": 265,
+            "min": 265,
+            "max": 265,
+            "n": 1,
+            "of": 1
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "typingOpenMaxMs": {
+            "median": 87.3,
+            "min": 87.3,
+            "max": 87.3,
+            "n": 1,
+            "of": 1
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 3.2,
+            "min": 3.2,
+            "max": 3.2,
+            "n": 1,
+            "of": 1
+          },
+          "typingScrollMaxMs": {
+            "median": 6.8,
+            "min": 6.8,
+            "max": 6.8,
+            "n": 1,
+            "of": 1
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "scrollJumpedFrames": {
+            "median": 4,
+            "min": 4,
+            "max": 4,
+            "n": 1,
+            "of": 1
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 1,
+            "of": 1
+          },
+          "peakPssMb": {
+            "median": 633.6,
+            "min": 633.6,
+            "max": 633.6,
+            "n": 1,
+            "of": 1
+          },
+          "heapMb": {
+            "median": 26.3,
+            "min": 26.3,
+            "max": 26.3,
+            "n": 1,
+            "of": 1
+          },
+          "domNodes": {
+            "median": 598,
+            "min": 598,
+            "max": 598,
+            "n": 1,
+            "of": 1
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "measured"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 694.3,
+            "min": 694.3,
+            "max": 694.3,
+            "n": 1,
+            "of": 1
+          },
+          "openToSettledMs": {
+            "median": 994.8,
+            "min": 994.8,
+            "max": 994.8,
+            "n": 1,
+            "of": 1
+          },
+          "openLongtaskMaxMs": {
+            "median": 184,
+            "min": 184,
+            "max": 184,
+            "n": 1,
+            "of": 1
+          },
+          "openLongtaskTotalMs": {
+            "median": 249,
+            "min": 249,
+            "max": 249,
+            "n": 1,
+            "of": 1
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "typingOpenMaxMs": {
+            "median": 80,
+            "min": 80,
+            "max": 80,
+            "n": 1,
+            "of": 1
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 3.6,
+            "min": 3.6,
+            "max": 3.6,
+            "n": 1,
+            "of": 1
+          },
+          "typingScrollMaxMs": {
+            "median": 136.4,
+            "min": 136.4,
+            "max": 136.4,
+            "n": 1,
+            "of": 1
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "scrollJumpedFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 1,
+            "of": 1
+          },
+          "peakPssMb": {
+            "median": 654.6,
+            "min": 654.6,
+            "max": 654.6,
+            "n": 1,
+            "of": 1
+          },
+          "heapMb": {
+            "median": 26.3,
+            "min": 26.3,
+            "max": 26.3,
+            "n": 1,
+            "of": 1
+          },
+          "domNodes": {
+            "median": 598,
+            "min": 598,
+            "max": 598,
+            "n": 1,
+            "of": 1
+          }
+        }
+      }
+    }
+  }
+}
