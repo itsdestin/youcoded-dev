@@ -418,7 +418,8 @@ fi
 # 2026-10-01 (one-core R5-1): +1 — no-paired-session-send-and-broadcast (its fixture fires once; its -ok twin is clean).
 #   411 + 1 = 412.
 # Merge of master (2026-10-13): the branch's +1 above on master's 412. 412 + 1 = 413.
-EXPECTED_VIOLATIONS=413
+# 2026-10-22 phone speed: +2 — codemirror-only-in-lazy-editor and its -tsx twin (each fixture fires once). 413 + 2 = 415.
+EXPECTED_VIOLATIONS=415
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

@@ -1223,6 +1223,14 @@ recurred — the repetition is the data.
 - Known issues filed as cards #176, #177 (Destin's request).
 - deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.
 
+## 2026-10-22 — phone keeps disconnecting, can't refresh or send (session/remote-access-audit, card #182)
+- Destin's symptoms were filed nowhere and the session never joined an item → applied: card #182 in his words, linked to this branch, with the real-phone pass and the connection-status work (review F10, "computer is asleep", always-there reload) as next steps; laptop-freeze findings recorded on #93 with the next step (a dev build that logs synchronous child-process calls for a day).
+- After a compaction, the replayed stub of an earlier Read of the deck server's output (3 lines) was trusted over the finished file, which also held "submitted · 5 yes"; the session restarted the server and only learned of the answers from its rotation notice (~3 wasted calls) → dropped as a workspace change: `serve.py` already prints the summary on exit and its docstring says the exit is the signal; the lapse was not re-reading a finished task's output.
+- Moving a review run folder (runs/after → runs/round1) left its manifest pointing at the old path, so the "Last round" pictures showed the new screens until a sed rewrite (~3 calls) → dropped: one occurrence; the deck preview's contact sheet is what caught it, which is the existing check working.
+- Line budgets fired twice (pieces, then review fixes) → no change: the check worked as designed; growth recorded with reasons in `line-budgets.json`.
+- Independent reviewer (fresh agent) found 6 medium + 6 low defects, none high; F1–F6, F8, F9 fixed with tests each seen red before green; F7, F10–F12 triaged in `docs/active/reviews/2026-10-22-phone-reliability-code-review.md`.
+- deleted/merged: an unnecessary emoji-boundary guard in the piece splitter (JSON escaping already makes a split safe; the test proved it), and a misplaced `stop()` doc comment that sat above the Tailscale retry. Android not built or tested here (no JDK found); no real-phone run.
+
 ## 2026-10-22 — automatic updates with an emergency brake (session/183-auto-updates, card #183; earlier the hotfix lane, #29)
 - The grader re-checking approved steps rebuilt the ANSWERED round-2 deck and silently rewrote the 12 pictures Destin approved (caught only in `git status`) → applied: `review-cards.py` build/preview/serve refuse a deck whose answers file says submitted unless `--rebuild-answered`; test seen red before green (322 deck tests pass).
 - Three design-review rounds (50 findings) never saw the contract, so row R13 ("apps stop offering a pulled release") went unbuilt until the final code review → applied: `.claude/rules/feature-flow.md` build-stage invariant now says every design reviewer gets the signed contract and names undelivered rows.
@@ -1239,3 +1247,12 @@ recurred — the repetition is the data.
 - glob-guard blocked a `kill $p` loop (zsh) and a backup-restore from scratch; both guards worked as designed → no change.
 - deleted/merged: the inline fetch block in `ensureOfficeEditor` moved into `ensureOfficeAddon`; six code comments that called the icon "the briefcase" renamed.
 - Shipped on explicit "merge": app PR #687 (`1b8846fe`), all CI green; local verify.sh passed after the add-on copy.
+
+## 2026-10-22 — phone remote access feels near-instant (session/remote-access-audit, card #182, second half)
+- A phone on the plain-http Tailscale address is offered only gzip, which cannot match repeats 100 KB+ apart, so the five buddy pose drawings per theme (each embedding the same picture) cost ~0.9 MB of a 1.9 MB startup download → applied: `shareMascotPictures` in `vite.config.ts` with its WHY, pinned by `tests/vite-mascot-pictures.test.ts` (byte-identical drawings, one shared copy each); measured 1,906,734 → 1,022,268 bytes. Serves goal 1: the next speed session starts from the measured cause, not a sweep.
+- Loading eight screens on demand split startup into ~25 small files, which on a phone's six connections cost extra round trips (~0.4 s); only the perf-lab rig's shaped link showed it, no test → applied: one `startup` file via `codeSplitting.groups` with its WHY; the rig's `PHONE_NET` flag now lists requests per leg.
+- The placeholder-centering bug took two wrong fixes (forced one line clipped Halftone's text; a width observer alone did nothing, ~8 calls and two screenshot rounds) before the cause — the box measured before the theme font loaded → applied: `use-remeasure-on-font-or-width.ts`, pinned by an InputBar test.
+- `claude-queue` test took 27–41 s → fixed on sight (`maxCheckouts` option). The rig's resume leg froze the page and so never drew → fixed in `scenario-phone.mjs`.
+- Started the workbench without naming the worktree, so it served the shared checkout and failed its imports → dropped: `run-workbench.sh` documents `<worktree>`; my lapse.
+- Destin said, filed: the secure (https) address — "just have that recorded as a card" → findings added to existing card #115 (not worth it for speed; worth it for phone voice typing, a home-screen app and notifications). A phone-side copy of the last conversation, set aside pending real resume timings → #182 next step.
+- deleted/merged: compression moved out of `remote-server.ts` into `remote-asset-compression.ts`; `QUICK_WAKE_CHECK_MS` removed; the connection band moved out of ChatView into `ConnectionStrip.tsx`; the settings Toggle split out of SettingsPanel.

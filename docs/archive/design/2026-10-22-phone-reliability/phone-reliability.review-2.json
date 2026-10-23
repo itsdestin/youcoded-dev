@@ -1,0 +1,104 @@
+{
+  "title": "Phone connection: the four screens, redrawn",
+  "key": "phone-reliability-review-2",
+  "out": "phone-reliability.review-2.html",
+  "images": "images/phone-reliability.review-2",
+  "runs": {
+    "before": "runs/round1",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Chat, on a phone",
+      "path": "The strip at the top of a conversation while the Android app is reconnecting",
+      "crop": "chat#phone-reconnecting@390x150+0+30",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Use this phone only is now an outlined button on its own line, so the status line stays on one line.",
+      "changed": "The button had no outline and sat beside the words. It now spans the strip under them.",
+      "notice": "The title and the hint each fit on one line at phone width, and the button looks pressable.",
+      "risk": "The strip is a little taller on Android. Phone browsers do not get this button, so theirs is unchanged.",
+      "highlight": {
+        "box": [
+          2,
+          10,
+          96,
+          85
+        ]
+      }
+    },
+    {
+      "id": "R2-2",
+      "surface": "Android app, opening",
+      "path": "The screen the Android app shows on launch while it connects to your computer",
+      "crop": "dev/gate#connecting@390x440+0+150",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "The connecting screen now wears setup's look: lavender, the youcoded name, and the app's spinner beside Connecting to Home PC.",
+      "changed": "Plain bold YouCoded Remote over grey words became the brand screen from first-time setup.",
+      "notice": "Opening the app, connecting, and the screens below all look like one branded start-up.",
+      "risk": "It stays lavender in every theme, like setup. Your chosen theme starts once the conversation opens.",
+      "highlight": "panel"
+    },
+    {
+      "id": "R2-3",
+      "surface": "Android app, opening",
+      "path": "The same launch screen when the computer cannot be reached",
+      "crop": "dev/gate#unreachable@390x440+0+150",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Can't reach Home PC is now one white card: a heading, a line, Try again filled and Use this phone only outlined.",
+      "changed": "Loose centred lines and a borderless button became one card. Try now is renamed Try again, the app's word everywhere.",
+      "notice": "The card says it keeps trying by itself, and the way out is a real button.",
+      "risk": "While a retry runs, the heading reads Trying to connect and Try again greys out for a moment.",
+      "highlight": "panel"
+    },
+    {
+      "id": "R2-4",
+      "surface": "Phone browser page",
+      "path": "The web version on a phone or tablet, after another tab of the same browser took over",
+      "crop": "dev/gate#tab@390x440+0+150",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "A tab another tab took over now shows one card, Open in another tab, with only a Reload this tab button.",
+      "changed": "The password box and Connect are gone from this screen; a password cannot fix it. The same card shows when the page is older than the computer's YouCoded.",
+      "notice": "One clear button. Reloading signs back in with no typing.",
+      "risk": "Reloading this tab takes the connection back from the other tab, which then shows this same card.",
+      "highlight": "panel"
+    },
+    {
+      "id": "R2-5",
+      "new": true,
+      "surface": "Phone browser page",
+      "path": "The sign-in page of the web version, when a password is needed",
+      "crop": "dev/gate#login@390x440+0+150",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "headline": "The password screen gets the same look: a card titled Connect to your computer, the box named above it, Connect in the brand gradient.",
+      "changed": "It was YouCoded Remote in plain bold, a bare box and a button on the theme's colours. Not on the last deck; changed to match the others.",
+      "notice": "Every screen before the app now looks the same. A wrong password still shows its message under the box.",
+      "risk": "Like setup, it is lavender in every theme, so it no longer matches a dark theme you picked on the computer."
+    }
+  ]
+}

@@ -1,0 +1,716 @@
+{
+  "meta": {
+    "stamp": "2026-10-23-0048",
+    "label": "net-debug",
+    "rttMs": 470,
+    "downMbit": 5,
+    "upMbit": 2,
+    "turns": 300,
+    "glyphLines": 2000,
+    "repeats": 1,
+    "appSha": "7b487cbb0d2f270c0623b917b3808d49dd70245b",
+    "appBranch": "session/remote-access-audit",
+    "appDirty": "e3e37e883fb8",
+    "desktopEntries": 0,
+    "bandwidthNote": "ASSUMED mobile profile, not measured on a real phone",
+    "notes": [
+      "One app boot serves all repeats; each repeat uses a new Chrome profile, so each cold open really is cold. The first cold open also pays the app's first-ever conversation answer.",
+      "Reopen is Page.reload with the cache allowed (saved key, cached code). A phone tab revisited without a reload may be faster.",
+      "Reconnect = the proxy closes every connection at once. The page marks count from the new connection; the rig wall clock also includes the page noticing the drop and its retry wait. A reconnect asks only for what it missed, so its conversation answer is ~0 KB.",
+      "Resume = the page hidden and the link silent (nothing, not even a close, crosses it) for 75 s, then shown again. \"Waited after waking\" is the time before the new connection began (the page deciding the old one is dead); the other marks count from that connection.",
+      "Not modelled: packet loss, jitter, TCP slow start. The server side is not slowed, only what crosses the link."
+    ]
+  },
+  "runs": [
+    {
+      "cold": {
+        "marks": {
+          "page": 952,
+          "code ran": 5382,
+          "first frame": 5384,
+          "connection code": 5688,
+          "connecting": 5763,
+          "connected": 6711,
+          "signed in": 7212,
+          "list": 7237,
+          "terminal": 7739,
+          "conversation": 7877,
+          "drawn": 8075
+        },
+        "nav": "navigate",
+        "pageReportedDownloadedBytes": 1009664,
+        "conversationAnswer": {
+          "what": "conversation",
+          "ms": 14,
+          "bytes": 328704
+        },
+        "terminalAnswer": {
+          "what": "terminal",
+          "ms": 2,
+          "bytes": 228352
+        },
+        "proxy": {
+          "downBytes": 1115997,
+          "upBytes": 19635,
+          "connections": 15
+        },
+        "wallMs": 8382,
+        "formShownMs": 5723,
+        "submitAtPageMs": 5727
+      },
+      "reopen": {
+        "marks": {
+          "page": 650,
+          "code ran": 706,
+          "first frame": 707,
+          "connection code": 752,
+          "connecting": 752,
+          "connected": 1703,
+          "signed in": 1705,
+          "list": 1733,
+          "terminal": 1730,
+          "conversation": 1865,
+          "drawn": 2039
+        },
+        "nav": "reload",
+        "pageReportedDownloadedBytes": 3072,
+        "conversationAnswer": {
+          "what": "conversation",
+          "ms": 12,
+          "bytes": 327680
+        },
+        "terminalAnswer": {
+          "what": "terminal",
+          "ms": 2,
+          "bytes": 227328
+        },
+        "proxy": {
+          "downBytes": 167063,
+          "upBytes": 6159,
+          "connections": 1
+        },
+        "wallMs": 2313
+      },
+      "revisit": {
+        "marks": {
+          "page": 2,
+          "code ran": 200,
+          "first frame": 201,
+          "connection code": 212,
+          "connecting": 215,
+          "connected": 1166,
+          "signed in": 1167,
+          "list": 1218,
+          "terminal": 1215,
+          "conversation": 1342,
+          "drawn": 1544
+        },
+        "nav": "navigate",
+        "pageReportedDownloadedBytes": 3072,
+        "conversationAnswer": {
+          "what": "conversation",
+          "ms": 10,
+          "bytes": 327680
+        },
+        "terminalAnswer": {
+          "what": "terminal",
+          "ms": 1,
+          "bytes": 227328
+        },
+        "proxy": {
+          "downBytes": 129998,
+          "upBytes": 4002,
+          "connections": 3
+        },
+        "wallMs": 1812
+      },
+      "reconnect": {
+        "marks": {
+          "connected": 951,
+          "signed in": 951,
+          "list": 955,
+          "terminal": 955,
+          "conversation": 956,
+          "drawn": 957
+        },
+        "nav": null,
+        "pageReportedDownloadedBytes": null,
+        "conversationAnswer": {
+          "what": "conversation",
+          "ms": 0,
+          "bytes": 0
+        },
+        "terminalAnswer": {
+          "what": "terminal",
+          "ms": 0,
+          "bytes": 0
+        },
+        "proxy": {
+          "downBytes": 2041,
+          "upBytes": 2777,
+          "connections": 1
+        },
+        "wallMs": 2211,
+        "droppedSockets": 6
+      },
+      "resume": {
+        "marks": {
+          "waited after waking": 2501,
+          "connected": 950,
+          "signed in": 952,
+          "list": 955,
+          "terminal": 955,
+          "conversation": 955,
+          "drawn": 962
+        },
+        "nav": null,
+        "pageReportedDownloadedBytes": null,
+        "conversationAnswer": {
+          "what": "conversation",
+          "ms": 0,
+          "bytes": 0
+        },
+        "terminalAnswer": {
+          "what": "terminal",
+          "ms": 0,
+          "bytes": 0
+        },
+        "proxy": {
+          "downBytes": 2041,
+          "upBytes": 2789,
+          "connections": 1
+        },
+        "wallMs": 3722,
+        "awayMs": 75000
+      }
+    }
+  ],
+  "summary": {
+    "cold": {
+      "marks": {
+        "page": {
+          "median": 952,
+          "min": 952,
+          "max": 952,
+          "n": 1
+        },
+        "code ran": {
+          "median": 5382,
+          "min": 5382,
+          "max": 5382,
+          "n": 1
+        },
+        "first frame": {
+          "median": 5384,
+          "min": 5384,
+          "max": 5384,
+          "n": 1
+        },
+        "connection code": {
+          "median": 5688,
+          "min": 5688,
+          "max": 5688,
+          "n": 1
+        },
+        "connecting": {
+          "median": 5763,
+          "min": 5763,
+          "max": 5763,
+          "n": 1
+        },
+        "connected": {
+          "median": 6711,
+          "min": 6711,
+          "max": 6711,
+          "n": 1
+        },
+        "signed in": {
+          "median": 7212,
+          "min": 7212,
+          "max": 7212,
+          "n": 1
+        },
+        "list": {
+          "median": 7237,
+          "min": 7237,
+          "max": 7237,
+          "n": 1
+        },
+        "terminal": {
+          "median": 7739,
+          "min": 7739,
+          "max": 7739,
+          "n": 1
+        },
+        "conversation": {
+          "median": 7877,
+          "min": 7877,
+          "max": 7877,
+          "n": 1
+        },
+        "drawn": {
+          "median": 8075,
+          "min": 8075,
+          "max": 8075,
+          "n": 1
+        }
+      },
+      "drawnAfterWaking": null,
+      "drawnAfterSignInPressed": {
+        "median": 2348,
+        "min": 2348,
+        "max": 2348,
+        "n": 1
+      },
+      "wallMs": {
+        "median": 8382,
+        "min": 8382,
+        "max": 8382,
+        "n": 1
+      },
+      "conversationAnsweredMs": {
+        "median": 14,
+        "min": 14,
+        "max": 14,
+        "n": 1
+      },
+      "conversationAnswerKB": {
+        "median": 321,
+        "min": 321,
+        "max": 321,
+        "n": 1
+      },
+      "terminalAnswerKB": {
+        "median": 223,
+        "min": 223,
+        "max": 223,
+        "n": 1
+      },
+      "proxyDownKB": {
+        "median": 1090,
+        "min": 1090,
+        "max": 1090,
+        "n": 1
+      },
+      "proxyUpKB": {
+        "median": 19,
+        "min": 19,
+        "max": 19,
+        "n": 1
+      },
+      "connections": {
+        "median": 15,
+        "min": 15,
+        "max": 15,
+        "n": 1
+      }
+    },
+    "reopen": {
+      "marks": {
+        "page": {
+          "median": 650,
+          "min": 650,
+          "max": 650,
+          "n": 1
+        },
+        "code ran": {
+          "median": 706,
+          "min": 706,
+          "max": 706,
+          "n": 1
+        },
+        "first frame": {
+          "median": 707,
+          "min": 707,
+          "max": 707,
+          "n": 1
+        },
+        "connection code": {
+          "median": 752,
+          "min": 752,
+          "max": 752,
+          "n": 1
+        },
+        "connecting": {
+          "median": 752,
+          "min": 752,
+          "max": 752,
+          "n": 1
+        },
+        "connected": {
+          "median": 1703,
+          "min": 1703,
+          "max": 1703,
+          "n": 1
+        },
+        "signed in": {
+          "median": 1705,
+          "min": 1705,
+          "max": 1705,
+          "n": 1
+        },
+        "list": {
+          "median": 1733,
+          "min": 1733,
+          "max": 1733,
+          "n": 1
+        },
+        "terminal": {
+          "median": 1730,
+          "min": 1730,
+          "max": 1730,
+          "n": 1
+        },
+        "conversation": {
+          "median": 1865,
+          "min": 1865,
+          "max": 1865,
+          "n": 1
+        },
+        "drawn": {
+          "median": 2039,
+          "min": 2039,
+          "max": 2039,
+          "n": 1
+        }
+      },
+      "drawnAfterWaking": null,
+      "drawnAfterSignInPressed": null,
+      "wallMs": {
+        "median": 2313,
+        "min": 2313,
+        "max": 2313,
+        "n": 1
+      },
+      "conversationAnsweredMs": {
+        "median": 12,
+        "min": 12,
+        "max": 12,
+        "n": 1
+      },
+      "conversationAnswerKB": {
+        "median": 320,
+        "min": 320,
+        "max": 320,
+        "n": 1
+      },
+      "terminalAnswerKB": {
+        "median": 222,
+        "min": 222,
+        "max": 222,
+        "n": 1
+      },
+      "proxyDownKB": {
+        "median": 163,
+        "min": 163,
+        "max": 163,
+        "n": 1
+      },
+      "proxyUpKB": {
+        "median": 6,
+        "min": 6,
+        "max": 6,
+        "n": 1
+      },
+      "connections": {
+        "median": 1,
+        "min": 1,
+        "max": 1,
+        "n": 1
+      }
+    },
+    "revisit": {
+      "marks": {
+        "page": {
+          "median": 2,
+          "min": 2,
+          "max": 2,
+          "n": 1
+        },
+        "code ran": {
+          "median": 200,
+          "min": 200,
+          "max": 200,
+          "n": 1
+        },
+        "first frame": {
+          "median": 201,
+          "min": 201,
+          "max": 201,
+          "n": 1
+        },
+        "connection code": {
+          "median": 212,
+          "min": 212,
+          "max": 212,
+          "n": 1
+        },
+        "connecting": {
+          "median": 215,
+          "min": 215,
+          "max": 215,
+          "n": 1
+        },
+        "connected": {
+          "median": 1166,
+          "min": 1166,
+          "max": 1166,
+          "n": 1
+        },
+        "signed in": {
+          "median": 1167,
+          "min": 1167,
+          "max": 1167,
+          "n": 1
+        },
+        "list": {
+          "median": 1218,
+          "min": 1218,
+          "max": 1218,
+          "n": 1
+        },
+        "terminal": {
+          "median": 1215,
+          "min": 1215,
+          "max": 1215,
+          "n": 1
+        },
+        "conversation": {
+          "median": 1342,
+          "min": 1342,
+          "max": 1342,
+          "n": 1
+        },
+        "drawn": {
+          "median": 1544,
+          "min": 1544,
+          "max": 1544,
+          "n": 1
+        }
+      },
+      "drawnAfterWaking": null,
+      "drawnAfterSignInPressed": null,
+      "wallMs": {
+        "median": 1812,
+        "min": 1812,
+        "max": 1812,
+        "n": 1
+      },
+      "conversationAnsweredMs": {
+        "median": 10,
+        "min": 10,
+        "max": 10,
+        "n": 1
+      },
+      "conversationAnswerKB": {
+        "median": 320,
+        "min": 320,
+        "max": 320,
+        "n": 1
+      },
+      "terminalAnswerKB": {
+        "median": 222,
+        "min": 222,
+        "max": 222,
+        "n": 1
+      },
+      "proxyDownKB": {
+        "median": 127,
+        "min": 127,
+        "max": 127,
+        "n": 1
+      },
+      "proxyUpKB": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "n": 1
+      },
+      "connections": {
+        "median": 3,
+        "min": 3,
+        "max": 3,
+        "n": 1
+      }
+    },
+    "reconnect": {
+      "marks": {
+        "connected": {
+          "median": 951,
+          "min": 951,
+          "max": 951,
+          "n": 1
+        },
+        "signed in": {
+          "median": 951,
+          "min": 951,
+          "max": 951,
+          "n": 1
+        },
+        "list": {
+          "median": 955,
+          "min": 955,
+          "max": 955,
+          "n": 1
+        },
+        "terminal": {
+          "median": 955,
+          "min": 955,
+          "max": 955,
+          "n": 1
+        },
+        "conversation": {
+          "median": 956,
+          "min": 956,
+          "max": 956,
+          "n": 1
+        },
+        "drawn": {
+          "median": 957,
+          "min": 957,
+          "max": 957,
+          "n": 1
+        }
+      },
+      "drawnAfterWaking": null,
+      "drawnAfterSignInPressed": null,
+      "wallMs": {
+        "median": 2211,
+        "min": 2211,
+        "max": 2211,
+        "n": 1
+      },
+      "conversationAnsweredMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "n": 1
+      },
+      "conversationAnswerKB": {
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "n": 1
+      },
+      "terminalAnswerKB": {
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "n": 1
+      },
+      "proxyDownKB": {
+        "median": 2,
+        "min": 2,
+        "max": 2,
+        "n": 1
+      },
+      "proxyUpKB": {
+        "median": 3,
+        "min": 3,
+        "max": 3,
+        "n": 1
+      },
+      "connections": {
+        "median": 1,
+        "min": 1,
+        "max": 1,
+        "n": 1
+      }
+    },
+    "resume": {
+      "marks": {
+        "waited after waking": {
+          "median": 2501,
+          "min": 2501,
+          "max": 2501,
+          "n": 1
+        },
+        "connected": {
+          "median": 950,
+          "min": 950,
+          "max": 950,
+          "n": 1
+        },
+        "signed in": {
+          "median": 952,
+          "min": 952,
+          "max": 952,
+          "n": 1
+        },
+        "list": {
+          "median": 955,
+          "min": 955,
+          "max": 955,
+          "n": 1
+        },
+        "terminal": {
+          "median": 955,
+          "min": 955,
+          "max": 955,
+          "n": 1
+        },
+        "conversation": {
+          "median": 955,
+          "min": 955,
+          "max": 955,
+          "n": 1
+        },
+        "drawn": {
+          "median": 962,
+          "min": 962,
+          "max": 962,
+          "n": 1
+        }
+      },
+      "drawnAfterWaking": {
+        "median": 3463,
+        "min": 3463,
+        "max": 3463,
+        "n": 1
+      },
+      "drawnAfterSignInPressed": null,
+      "wallMs": {
+        "median": 3722,
+        "min": 3722,
+        "max": 3722,
+        "n": 1
+      },
+      "conversationAnsweredMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "n": 1
+      },
+      "conversationAnswerKB": {
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "n": 1
+      },
+      "terminalAnswerKB": {
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "n": 1
+      },
+      "proxyDownKB": {
+        "median": 2,
+        "min": 2,
+        "max": 2,
+        "n": 1
+      },
+      "proxyUpKB": {
+        "median": 3,
+        "min": 3,
+        "max": 3,
+        "n": 1
+      },
+      "connections": {
+        "median": 1,
+        "min": 1,
+        "max": 1,
+        "n": 1
+      }
+    }
+  }
+}

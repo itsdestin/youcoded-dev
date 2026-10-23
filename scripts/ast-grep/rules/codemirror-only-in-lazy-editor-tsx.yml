@@ -1,0 +1,21 @@
+id: codemirror-only-in-lazy-editor-tsx
+language: tsx
+severity: error
+message: >-
+  A renderer component loads CodeMirror (a value import from @codemirror/*) outside
+  the code editor's own lazy files, which puts ~380 KB of editor into every first
+  page load. Import only types, or move the code into CodeEditorView.tsx (loaded
+  only when a file is opened). Twin of codemirror-only-in-lazy-editor (.ts files).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/codemirror-only-in-lazy-editor-tsx.tsx"
+ignores:
+  - "**/artifact-views/CodeEditorView.tsx"
+  - "**/*.test.tsx"
+rule:
+  kind: import_statement
+  has:
+    kind: string
+    regex: "^['\"]@codemirror/"
+  not:
+    regex: "^import type"

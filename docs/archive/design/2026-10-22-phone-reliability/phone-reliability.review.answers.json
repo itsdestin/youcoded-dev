@@ -1,0 +1,54 @@
+{
+ "deck": "phone-reliability-review",
+ "started": "2026-10-22T15:56:30.494Z",
+ "submitted": "2026-10-22T15:58:36Z",
+ "cur": 5,
+ "answers": {
+  "P-1": {
+   "v": "other",
+   "t": 1792684620368,
+   "note": "dont likr thr button styling or wrapped copy",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "t": 1792684632165,
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-3": {
+   "note": "style this properly w brand material",
+   "t": 1792684666361,
+   "v": "other",
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-4": {
+   "note": "this ugly",
+   "t": 1792684681932,
+   "v": "other",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-5": {
+   "note": "also ugly. this breaks a bunch of design guide principles",
+   "t": 1792684699726,
+   "v": "other",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-6": {
+   "v": "yes",
+   "t": 1792684715238,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
