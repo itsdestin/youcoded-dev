@@ -64,7 +64,7 @@ export const AB_USAGE = `perf-lab ab — run the same work against two app candi
   --help`;
 
 export function parseAbArgs(argv, { root = ROOT } = {}) {
-  const valueFlags = ['a', 'b', 'mode', 'only', 'control-b-delay-ms', 'max-minutes', 'max-quiet-wait-minutes', 'label', 'out', 'rounds', 'noise-from'];
+  const valueFlags = ['a', 'b', 'mode', 'only', 'control-b-delay-ms', 'max-minutes', 'max-quiet-wait-minutes', 'label', 'out', 'rounds', 'noise-from', 'document-cases'];
   const boolFlags = ['repeat-a', 'build', 'check', 'help', 'allow-asset-download', 'interleave', 'busy-machine', 'aa'];
   const raw = {};
   for (let i = 0; i < argv.length; i++) {
@@ -101,6 +101,8 @@ export function parseAbArgs(argv, { root = ROOT } = {}) {
   const only = raw.only ?? MODES[mode].only;
   const common = ['--only', only, ...MODES[mode].flags,
     ...(raw['max-minutes'] ? ['--max-minutes', raw['max-minutes']] : []),
+    // WHY (2026-10-23): the same subset must reach both runs; the full smoke set's html-script case stops the owned app on current builds.
+    ...(raw['document-cases'] ? ['--document-cases', raw['document-cases']] : []),
     ...(raw['max-quiet-wait-minutes'] ? ['--max-quiet-wait-minutes', raw['max-quiet-wait-minutes']] : []),
     // WHY forwarded verbatim: the opt-in must reach BOTH runs, and absent means refuse (never download).
     ...(raw['allow-asset-download'] ? ['--allow-asset-download'] : []), ...(raw.build ? [] : ['--cached-only']),

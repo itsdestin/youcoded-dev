@@ -79,6 +79,11 @@ export async function measureRung(app, fixture, plan, { _deps = {} } = {}) {
     // so 250 ms keys would run out before the scroll pass - leaving the finished-page typing delay unmeasured.
     train = d.startTypingTrain(cdp, { everyMs: 350 });
     await d.sleep(1500);   // idle typing baseline
+    // WHY opt-in CPU profile (2026-10-23, item 4 of the desktop quiet run): the long-task numbers say HOW LONG the page was blocked but not
+    // WHICH functions were running. PERF_LAB_BIGFENCE_PROFILE_DIR=<dir> records one V8 CPU profile of the renderer from just before the send
+    // until the final paint, so the highlight-limit crossing and the periodic gaps can be read function by function. Off by default.
+    const profileDir = process.env.PERF_LAB_BIGFENCE_PROFILE_DIR || null;
+    if (profileDir) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start'); }
     const sendMs = await cdp.evaluate('performance.now()');
     const send = await cdp.evaluate(`window.claude.native.send(${JSON.stringify(sessionId)}, 'bigfence-stream')`);
     if (!send || send.status === 'failed') throw Object.assign(new Error(`native.send failed: ${JSON.stringify(send)}`), { status: 'instrument' });
@@ -86,6 +91,11 @@ export async function measureRung(app, fixture, plan, { _deps = {} } = {}) {
     const timeOrigin = await cdp.evaluate('performance.timeOrigin');
     const streamEndMs = rec.endedAt - timeOrigin;
     const final = await cdp.evaluate(awaitFinalPaintSource(plan, SETTLE_TIMEOUT_MS));
+    if (profileDir) {
+      const { profile } = await cdp.send('Profiler.stop'); await cdp.send('Profiler.disable');
+      mkdirSync(profileDir, { recursive: true });
+      writeFileSync(join(profileDir, `${plan.id}-${process.env.PERF_LAB_BIGFENCE_PROFILE_TAG || 'run'}.cpuprofile`), JSON.stringify({ ...profile, perfLab: { sendPerfNowMs: sendMs, streamEndPerfNowMs: streamEndMs, paintedAtMs: final.paintedAtMs, timeOrigin } }));
+    }
     // Finished-page half. Only when the reply really painted: scrolling a half-drawn page would measure something else.
     let scroll = null, finished = null;
     if (final.ok) {
