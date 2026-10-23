@@ -1257,19 +1257,18 @@ recurred — the repetition is the data.
 - Destin said, filed: the secure (https) address — "just have that recorded as a card" → findings added to existing card #115 (not worth it for speed; worth it for phone voice typing, a home-screen app and notifications). A phone-side copy of the last conversation, set aside pending real resume timings → #182 next step.
 - deleted/merged: compression moved out of `remote-server.ts` into `remote-asset-compression.ts`; `QUICK_WAKE_CHECK_MS` removed; the connection band moved out of ChatView into `ConnectionStrip.tsx`; the settings Toggle split out of SettingsPanel.
 
-<<<<<<< HEAD
-## 2026-10-22 — new YouCoded themes not selectable; built-ins in Library and Marketplace (session/builtin-themes-visible, no card)
-- Root cause: the theme-favorites seed runs once, so profiles seeded before 1.3.1 never got the two new built-ins, and the favorites-only Appearance panel was the only place a built-in appeared → applied: `offerNewBuiltinThemes` (each new built-in starred once, recorded in `themeFavoritesOffered`) + built-ins listed in Library/Marketplace (`isBuiltin`), tests seen red before green; deck builtin-themes-review, 3/3 kept.
-- Nothing tied DEFAULT_THEME_FAVORITES to the shipped built-ins (only a "must stay in sync" comment) → applied: the seed test now reads the slugs from `themes/builtin/*.json`, seen red with one slug removed.
-- `youcoded/desktop/CLAUDE.md` described adding a theme via a `THEMES` array and SettingsPanel swatches, neither of which exists → applied: rewritten Theming bullets naming the five places a built-in lives.
-- A new export from theme-context broke tests that stand in the whole module (vi.mock without it) → dropped as a rule: verify.sh caught it in one run; the fix read built-ins from the live theme state instead.
-- `shoot --before master` failed building the shared checkout (stale deps) → dropped: `--before-file` (documented in shoot README) did the job in one call.
-- deleted/merged: the stale "Adding a theme" recipe; the pre-1.3.1 "Seeded with the four built-ins" type comment.
-=======
 ## 2026-10-22 — model switches as a divider, both runtimes (session/model-switch-divider, card #191)
 - The app's own code said Claude Code writes the `/model` line only when it RUNS the switch; local transcripts showed 15+ "Kept model as" replies after a recorded `/model` (a declined "Switch model?"), so a divider keyed on the command line would have announced switches that never happened (~6 calls to find, before anything shipped) → applied: the divider reads the "Set model to" reply; `cc-dependencies.md` (new entry + the R5-4a (d) text) records both facts with the measurement.
 - Driving a dev window took hand-written screenshot and click helpers over its debug port (`cdp-eval.mjs` only evaluates); a DOM `.click()` on a guessed "Close" hit the window's close button and a row title opened Rename (~10 calls) → dropped: one session's need; real input events by coordinate from a screenshot worked, and `explore.mjs` covers the workbench case.
 - The Welcome back / Resume preview hides the first entry of a short chat under its pinned title card (found while proving the divider survives a restart) → card #190.
 - A Claude Code `/model` also rewrites `model` in `~/.claude/settings.json` ("saved as your default for new sessions"), so the dev test changed the terminal default → dropped as a change: Claude Code's own behaviour, and YouCoded sets each chat's model itself; told Destin.
 - deleted/merged: the host-drawn model divider (`session-live.ts` divider ids and retraction) and the renderer's typed-`/model` optimistic marker, replaced by the one `model-switch` event both runtimes write.
->>>>>>> origin/master
+
+## 2026-10-22 — new YouCoded themes not selectable; built-ins in Library and Marketplace (session/builtin-themes-visible, no card)
+- Root cause: the theme-favorites seed runs once, so profiles seeded before 1.3.1 never got the two new built-ins, and the favorites-only Appearance panel was the only place a built-in appeared → applied: `offerNewBuiltinThemes` (each new built-in starred once, recorded in `themeFavoritesOffered`) + built-ins listed in Library/Marketplace (`isBuiltin`), tests seen red before green; deck builtin-themes-review, 3/3 kept.
+- Nothing tied DEFAULT_THEME_FAVORITES to the shipped built-ins (only a "must stay in sync" comment) → applied: the seed test now reads the slugs from `themes/builtin/*.json`, seen red with one slug removed.
+- `youcoded/desktop/CLAUDE.md` described adding a theme via a `THEMES` array and SettingsPanel swatches, neither of which exists → applied: rewritten Theming bullets naming the five places a built-in lives.
+- A new export from theme-context broke tests that stand in the whole module (vi.mock without it) → dropped as a rule: verify.sh caught it in one run; the fix read built-ins from the live theme state instead.
+- `shoot --before master` failed building the shared checkout (stale deps) → dropped: `--before-file` (documented in shoot README) did the job in one call.
+- RECURRED ("never chain … behind a check", workspace-workflows): a ledger conflict-fix script failed and the same command still committed and pushed the file with conflict markers to the feature branch (fixed forward before merge, ~3 calls) → dropped as a new rule: the existing one covers it; my lapse.
+- deleted/merged: the stale "Adding a theme" recipe; the pre-1.3.1 "Seeded with the four built-ins" type comment.
