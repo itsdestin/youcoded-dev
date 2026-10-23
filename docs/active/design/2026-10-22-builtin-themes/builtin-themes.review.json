@@ -1,0 +1,51 @@
+{
+  "title": "Built-in themes in Your library and the Marketplace",
+  "key": "builtin-themes-review",
+  "out": "builtin-themes.review.html",
+  "images": "images/builtin-themes-review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "BT-1",
+      "surface": "Your library",
+      "path": "Your library › Themes",
+      "crop": "library/themes",
+      "highlight": "panel",
+      "headline": "Your library's Themes tab now lists the six themes built into the app, beside the ones you downloaded.",
+      "changed": "Light, Dark, Midnight, Crème, YouCoded and YouCoded Night each get a card, labelled YouCoded as the maker. Starred ones sit under Favorite themes, the rest under Installed themes.",
+      "measured": "Themes count 3 → 9 on this test profile",
+      "notice": "A built-in theme you unstarred is no longer lost: find it here and star it again to put it back in Appearance.",
+      "risk": "Six more cards to scroll past before you reach the themes you downloaded."
+    },
+    {
+      "id": "BT-2",
+      "surface": "Marketplace",
+      "path": "Marketplace › Themes",
+      "crop": "marketplace/themes",
+      "highlight": "panel",
+      "headline": "The Marketplace's Themes tab lists the built-in themes too, after the ones you can download.",
+      "changed": "The six built-in themes come after the theme store's themes, already installed, so they have a star instead of an Install button.",
+      "measured": "Themes count 7 → 13",
+      "notice": "Searching the Marketplace for “night” or “dark” now finds the built-in ones too.",
+      "risk": "Someone browsing for new themes sees six they already have at the end of the list."
+    },
+    {
+      "id": "BT-3",
+      "surface": "Marketplace",
+      "path": "Click a built-in theme's card",
+      "crop": "marketplace/theme-detail/builtin",
+      "runs": ["after"],
+      "labels": { "after": "New" },
+      "new": true,
+      "headline": "A built-in theme's page offers only Apply theme and the star, with a line saying it's always there.",
+      "changed": "No Uninstall, like or share buttons: these themes ship inside the app, so there's nothing to remove and no store page to like or share. It reads “Built into YouCoded, so it's always here.”",
+      "notice": "Opening YouCoded Night from either screen lets you switch to it in one click.",
+      "risk": "Built-in themes can't be liked, so they never show a like count like store themes do."
+    }
+  ]
+}
