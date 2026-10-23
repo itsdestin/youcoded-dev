@@ -28,7 +28,7 @@
      "settle": 1500
     },
     {
-     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "click": "[aria-label='Open your library' i],[title='Your library' i]",
      "settle": 1200
     }
    ],

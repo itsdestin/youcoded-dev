@@ -88,7 +88,10 @@ fi
 NPNG=$(ls "$TMP"/*/*.png | wc -l)
 if [[ "$NPNG" -ne 48 ]]; then echo "[site-assets] expected 48 gallery shots (8 screens × 6 themes), got $NPNG" >&2; exit 1; fi
 mkdir -p "$OUT/gallery"
-rm -f "$OUT/gallery/"*.png "$OUT/gallery/"*.webp
+# WHY: the hand-captured idea-*.webp stills share this folder and the page shows them; a blanket
+# *.webp delete removed all four during the v1.3.3 release run (2026-10-23). Delete only the
+# generated <screen>-<theme> stills.
+find "$OUT/gallery" -maxdepth 1 \( -name '*.png' -o -name '*.webp' \) ! -name 'idea-*' -delete
 for f in "$TMP"/*/*.png; do
   theme="$(basename "$(dirname "$f")")"; name="$(basename "$f" .png)"
   magick "$f" -resize 1200x -quality 80 "$OUT/gallery/$name-$theme.webp"
