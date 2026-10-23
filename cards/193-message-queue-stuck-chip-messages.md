@@ -1,7 +1,7 @@
 ---
 id: 193
 title: Message queue: stuck chip messages, attachment wording, recovery, instant bubble, terminal-view stall, emoji terminal widths
-stage: polish
+stage: merged
 tags: claude-code-integration, chat-data, sessions, bug
 related: 169
 branch: 193-message-queue-stuck-chip-messages
