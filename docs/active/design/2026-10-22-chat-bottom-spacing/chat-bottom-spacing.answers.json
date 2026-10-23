@@ -1,0 +1,31 @@
+{
+ "deck": "chat-bottom-spacing",
+ "started": "2026-10-23T07:02:48.392Z",
+ "submitted": "2026-10-23T07:04:15Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1792739008158,
+   "note": "we cant tight just very very slightly",
+   "seconds": 40,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1792739016887,
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1792739054892,
+   "note": "also, a message adding to the que should auto scroll the the last message up a bit if its at the bottom, so it stays visible above the queued item",
+   "seconds": 38,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

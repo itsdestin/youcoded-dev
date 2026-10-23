@@ -1,0 +1,51 @@
+{
+  "title": "Spacing above the message box \u2014 one even gap",
+  "key": "chat-bottom-spacing",
+  "out": "chat-bottom-spacing.review.html",
+  "images": "images/chat-bottom-spacing",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "light",
+    "meadow-mist",
+    "halftone-dimension",
+    "strawberry-kitty"
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Two messages waiting to send, above the message box",
+      "crop": "chat#queue-stack@1440x290+0+610",
+      "headline": "The waiting messages, the gaps between them and the last reply now all sit the same distance apart.",
+      "changed": "Before, the waiting cards sat 12px above the message box, 6px apart, and the top card covered the bottom of the last reply. Now every one of those gaps is the same 8px, in every theme and every bar style.",
+      "measured": "Before 12 / 6 / -2 px; after 8 / 8 / 8 px",
+      "notice": "The last reply is no longer cut off under the top waiting card, and the cards look evenly stacked.",
+      "risk": "The cards sit 4px closer to the message box than before, so the stack takes slightly less room overall."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Any conversation, scrolled to the newest message",
+      "crop": "chat@1440x290+0+610",
+      "headline": "The newest reply now rests the same small gap above the message box in every theme.",
+      "changed": "In themes with a floating message box (Halftone, Strawberry Kitty) the chat stopped short of the bottom, so the newest reply slid under the box. In the plain themes it nearly touched the frame. It now ends 8px above the box everywhere.",
+      "measured": "Before 3 px to -16 px depending on theme; after 8 px in all four",
+      "notice": "The time stamp on the last reply is always readable, and switching themes no longer leaves the chat scrolled slightly up.",
+      "risk": "A reply from you (not the assistant) sits about 6px higher than an assistant reply, because your messages carry a little more space below them."
+    },
+    {
+      "id": "S-3",
+      "surface": "Chat on a phone",
+      "path": "Two waiting messages, phone-width window",
+      "crop": "chat#queue-stack-phone@390x420+0+424",
+      "headline": "On a phone the waiting messages get the same even 8px spacing.",
+      "changed": "Same change as on the computer: the cards, the gap between them and the gap to the last reply all use one value.",
+      "measured": "8 px between every layer",
+      "notice": "The newest reply stays visible above the waiting cards instead of tucking under them.",
+      "risk": ""
+    }
+  ]
+}
