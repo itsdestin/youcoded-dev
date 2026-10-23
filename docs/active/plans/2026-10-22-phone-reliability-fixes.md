@@ -282,7 +282,7 @@ Built on `session/remote-access-audit` (youcoded), each with tests seen red, the
 
 **Phase 4 (connection indicator UI):** not started. It needs its own deck.
 
-**Review deck:** `docs/active/design/2026-10-22-phone-reliability/phone-reliability.review.json`.
+**Review deck:** `docs/archive/design/2026-10-22-phone-reliability/phone-reliability.review.json`.
 
 **Verification:**
 - `verify.sh --full` is green apart from one test that was mid red-check, which passes on rerun.
