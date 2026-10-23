@@ -1,22 +1,46 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Work board</title>
 <!-- WHY a shell (2026-10-16): the board is drawn by its program from the live work items each time it opens, so
-     this file never goes stale. -->
+     this file never goes stale.
+     WHY the last board first (2026-10-23, Destin: "it just takes wayyyy too long … make loading states clearer with
+     our youcoded spinner"): drawing a fresh board takes seconds, so the shell shows the last board drawn on this
+     computer at once, checks for changes behind a small spinner, and swaps only when something changed. The app's
+     spinner is the page kit's .yc-loading, the same one LoadingState draws in the app. -->
 <style>body{margin:0;font:13px/1.5 var(--font-sans,system-ui);color:var(--fg,#1a1a1a);background:var(--canvas,#f2f2f2)}
-.boot{max-width:28rem;margin:20vh auto;padding:16px;text-align:center;color:var(--fg-muted,#5e5e5e)}</style></head>
-<body><div class="boot" id="boot">Loading your work items…</div>
+.boot{max-width:28rem;margin:20vh auto;padding:16px;text-align:center;color:var(--fg-muted,#5e5e5e)}
+.boot.yc-loading{margin:20vh auto 0}
+.wb-status{position:fixed;right:16px;bottom:16px;z-index:40;display:flex;align-items:center;gap:8px;padding:6px 12px;
+  background:var(--panel,#fff);border:1px solid var(--edge,#ddd);border-radius:var(--radius-full,9999px);
+  box-shadow:0 2px 8px rgb(0 0 0 / .12);font-size:11px;color:var(--fg-muted,#5e5e5e)}
+.wb-status .yc-loading{padding:0}
+.wb-status button{font:inherit;color:var(--accent,#5b5bd6);background:none;border:0;padding:0;cursor:pointer}</style></head>
+<body><div class="boot yc-loading" id="boot">Loading your work items…</div>
 <script>
 (async () => {
-  const say = (t) => { document.getElementById('boot').textContent = t; };
-  try {
-    if (!window.youcoded || !window.youcoded.program) { say('This page needs a YouCoded version that lets pages run their program.'); return; }
-    const r = await window.youcoded.program.run('work-items.mjs', JSON.stringify({ op: 'page' }));
-    if (!r.ok) { say(r.reason || 'The page\'s program did not run.'); return; }
+  const say = (t) => { const b = document.getElementById('boot'); b.classList.remove('yc-loading'); b.textContent = t; };
+  // WHY window.name: it survives this frame reloading. 'board-fresh:<tab>:<scroll>' = the reload that swapped in a
+  // newer board, which is already the newest; 'board-toast:' = the board saved a change (its own script shows the
+  // message), so the last board is out of date and a fresh one is waited for.
+  const mark = window.name;
+  const swapped = mark.startsWith('board-fresh:');
+  const afterSave = mark.startsWith('board-toast:');
+  if (swapped) window.name = '';
+
+  async function ask(req) {
+    const r = await window.youcoded.program.run('work-items.mjs', JSON.stringify({ op: 'page', gzip: true, ...req }));
+    if (!r.ok) throw new Error(r.reason || 'The page\'s program did not run.');
     const j = JSON.parse(r.output || '{}');
-    if (j.error) { say(j.error); return; }
-    // WHY move the parts in, not document.write: the app put its security rules, theme and page tools in this
-    // document's head; replacing the document would drop them. So the board's styles join the head, its body
-    // replaces this one, and its scripts run in order, as they would have in their own file.
-    const doc = new DOMParser().parseFromString(j.html, 'text/html');
+    if (j.error) throw new Error(j.error);
+    if (!j.gz) return null;
+    // WHY gzip: the app refuses a program answer over 2 MB and the board alone is ~1.9 MB; packed it is ~0.4 MB
+    const bytes = Uint8Array.from(atob(j.gz), (c) => c.charCodeAt(0));
+    return await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  }
+
+  // WHY move the parts in, not document.write: the app put its security rules, theme and page tools in this
+  // document's head; replacing the document would drop them. So the board's styles join the head, its body
+  // replaces this one, and its scripts run in order, as they would have in their own file.
+  function show(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
     for (const s of doc.head.querySelectorAll('style')) { const n = document.createElement('style'); n.textContent = s.textContent; document.head.appendChild(n); }
     const scripts = [...doc.body.querySelectorAll('script')].map((s) => s.textContent);
     doc.body.querySelectorAll('script').forEach((s) => s.remove());
@@ -24,6 +48,52 @@
     for (const code of scripts) { const n = document.createElement('script'); n.textContent = code; document.body.appendChild(n); }
     // The board's scripts wait for the page to finish loading, which already happened.
     document.dispatchEvent(new Event('DOMContentLoaded'));
+  }
+
+  // The small corner note while the board on screen is the last one, not yet checked
+  let pill = null;
+  function status(html) {
+    if (!pill) { pill = document.createElement('div'); pill.className = 'wb-status'; pill.setAttribute('role', 'status'); document.body.appendChild(pill); }
+    pill.innerHTML = html;
+  }
+  const done = () => { if (pill) { pill.remove(); pill = null; } };
+
+  // WHY wait for a quiet moment: reloading under an open popup or a half-typed reason would throw it away
+  const busy = () => !!document.querySelector('#iwrap:not([hidden]), .scrim:not([hidden])') || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
+  function swapIn() {
+    if (busy()) { setTimeout(swapIn, 1000); return; }
+    const tab = document.querySelector('[role="tab"][aria-selected="true"]')?.dataset.view || '';
+    window.name = `board-fresh:${tab}:${Math.round(document.getElementById('scroller')?.scrollTop || 0)}`;
+    location.reload();
+  }
+
+  async function refresh(shown) {
+    status('<span class="yc-loading yc-loading--inline">Checking for changes…</span>');
+    try {
+      const fresh = await ask({});
+      if (fresh && fresh !== shown) swapIn(); else done();
+    } catch (e) {
+      status(`Showing your last board. Couldn't check for changes: ${String(e && e.message || e).replace(/</g, '&lt;')} <button type="button">Try again</button>`);
+      pill.querySelector('button').onclick = () => refresh(shown);
+    }
+  }
+
+  try {
+    if (!window.youcoded || !window.youcoded.program) { say('This page needs a YouCoded version that lets pages run their program.'); return; }
+    const last = afterSave ? null : await ask({ cached: true });
+    if (last) {
+      show(last);
+      if (swapped) {
+        // Back where the person was before the newer board came in
+        const [, tab, top] = mark.split(':');
+        if (tab) document.querySelector(`[role="tab"][data-view="${CSS.escape(tab)}"]`)?.click();
+        const sc = document.getElementById('scroller'); if (sc) sc.scrollTop = +top || 0;
+      } else refresh(last);
+      return;
+    }
+    const fresh = await ask({});
+    if (!fresh) { say('The Work board could not load: its program sent nothing back.'); return; }
+    show(fresh);
   } catch (e) { say('The Work board could not load: ' + (e && e.message || e)); }
 })();
 </script></body></html>
