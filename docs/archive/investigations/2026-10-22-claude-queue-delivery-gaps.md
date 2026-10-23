@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # Claude Code message queue (1.3.2): reported gaps, findings, proposals
 
