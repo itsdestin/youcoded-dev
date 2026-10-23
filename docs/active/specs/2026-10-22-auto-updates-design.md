@@ -67,8 +67,11 @@ The service owns every download through one function, `ensureDownloaded(reason)`
   the next check.
 - A newer release appearing while an older one is `pending` downloads the newer one; the older
   file is deleted only after the newer has verified (D13).
-- Cancel (the popup's existing button while downloading) stops the job and suppresses background
-  downloads until the next check.
+- The popup has no Cancel button (closing it was the only "cancel", and that was the bug
+  Destin reported), so a started download runs to completion; a failed one lands the popup in
+  its existing download ErrorState (Try again). The `update:cancel` channel still works and
+  suppresses background downloads until the next check. (Corrected after the T2 review: an
+  earlier line here named a Cancel button that does not exist.)
 - `cleanupStaleDownloads` runs after the first check (not at startup), async, and never deletes
   the `pending` file or a file for the current `latest` (D15).
 - Never downloads in an unpackaged build unless `YOUCODED_DEV_FAKE_UPDATE=1` (pinned, D26).
