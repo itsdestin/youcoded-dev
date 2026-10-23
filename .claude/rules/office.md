@@ -6,7 +6,7 @@ paths:
   - "**/desktop/src/shared/office-types.ts"
   - "**/desktop/office-pin.json"
   - "**/desktop/scripts/fetch-office.mjs"
-last_verified: 2026-10-02
+last_verified: 2026-10-23
 verify:
   - path: youcoded/docs/office.md
   - path: youcoded/desktop/src/main/office/office-ipc.ts

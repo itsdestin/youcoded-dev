@@ -7,7 +7,7 @@ paths:
   # until 2026-07-26, so editing it injected NO rule — exactly the file where
   # the wrong-transcript bug landed.
   - "**/desktop/src/main/session-id-mapping.ts"
-last_verified: 2026-08-26
+last_verified: 2026-10-23
 verify:
   - path: youcoded/desktop/src/main/conversations/transcript-mirror.ts
     contains: "shrunk"

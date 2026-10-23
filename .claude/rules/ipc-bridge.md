@@ -11,7 +11,7 @@ paths:
   - "**/desktop/src/main/dev-tools.ts"
   - "**/app/**/HostJsBridge.kt"
   - "**/desktop/src/main/remote-local.ts"
-last_verified: 2026-10-04
+last_verified: 2026-10-23
 verify:
   - path: youcoded/desktop/src/main/preload.ts
   - path: youcoded/desktop/src/renderer/remote-shim.ts
