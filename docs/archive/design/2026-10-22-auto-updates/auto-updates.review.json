@@ -1,0 +1,110 @@
+{
+  "title": "Automatic updates — what you will see",
+  "key": "auto-updates-review",
+  "out": "auto-updates.review.html",
+  "images": "images/auto-updates.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/r1/before",
+    "after": "runs/r1/after"
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Status bar",
+      "path": "The version chip at the bottom of the window, once an update has downloaded",
+      "crop": "chat#update-ready@1000x140+0+860",
+      "headline": "Once the new version has downloaded by itself, the chip says it is ready instead of available. Same yellow pulse.",
+      "changed": "\"v1.4.0 — Update available\" becomes \"v1.4.0 ready — restart to update\". The tint and the pulse stay, as you picked.",
+      "notice": "You know the update is already on your computer, and that a restart (or just quitting later) is all it takes.",
+      "risk": "While it is still downloading, the chip keeps saying \"Update available\", so for a few minutes after a release it reads as it does today."
+    },
+    {
+      "id": "R-2",
+      "surface": "Update popup",
+      "path": "Click the version chip",
+      "crop": "chat/update#ready",
+      "headline": "The popup says the update is ready and when it will install, and Restart to update replaces Update now.",
+      "changed": "Title \"Update ready\", with one line under it: \"Downloaded. Installs by itself the next time you quit YouCoded.\" The button reads \"Restart to update: v1.3.2 → v1.4.0\". The Updates card gains \"Install updates automatically\" under Get beta builds.",
+      "notice": "Doing nothing is fine: it installs on its own when you next quit. The button is only for getting it right now.",
+      "risk": "Nothing new to learn, but someone who never quits YouCoded (laptop always asleep, never closed) only gets updates when they press the button."
+    },
+    {
+      "id": "R-3",
+      "surface": "Update popup",
+      "path": "Click the version chip, on a computer where installing needs a password (Linux package installs, a Mac account that is not an administrator)",
+      "crop": "chat/update#ready-password",
+      "headline": "Where installing needs a password, the line under the title says the button will ask for it, and quitting does not install.",
+      "changed": "The line reads \"Downloaded. Restarting asks for your password, then installs it.\" Everything else matches the step before.",
+      "notice": "No password box ever pops up while you are closing the app; it only appears after you press Restart to update.",
+      "risk": "On these computers the update waits until someone presses the button, so they can fall behind if nobody opens the popup.",
+      "highlight": "panel"
+    },
+    {
+      "id": "R-6",
+      "surface": "Update popup",
+      "path": "Click the version chip after turning Install updates automatically off",
+      "crop": "chat/update#ready-manual",
+      "headline": "With the switch off, the line under the title stops promising an install on quit.",
+      "changed": "It reads \"Downloaded. Restart when you are ready.\" and changes the moment you flip the switch below it. The switch's own description is now \"Downloads new versions by itself. Off: you choose when to update.\"",
+      "notice": "The popup never tells you something that your switch has turned off.",
+      "risk": "An update that had already downloaded before you turned the switch off stays ready; turning it off stops the next ones, not this one."
+    },
+    {
+      "id": "R-4",
+      "surface": "Close window prompt",
+      "path": "Press Restart to update while conversations are open",
+      "crop": "chat/quit-sessions#update",
+      "headline": "Restart to update shows the same close-window prompt as quitting, worded for a restart. Closing it with the ✕ cancels the restart.",
+      "changed": "Same prompt and Resume on Next Launch switch you already know. Only three words change: the title \"Restart to update\", \"Restarting will end your active sessions\", and the red button \"Restart\" instead of \"Close window\".",
+      "notice": "You can still ask for your conversations to come back after the restart, exactly as when you quit.",
+      "risk": "You asked for \"the standard closeout prompt\"; the wording change is mine, so a button saying \"Restart\" does not read as quitting for good. Say no to keep \"Close window\" word for word."
+    },
+    {
+      "id": "R-5",
+      "surface": "Settings",
+      "path": "Settings → Help & feedback, scrolled to the bottom",
+      "crop": "settings/help#updates",
+      "headline": "Install updates automatically sits right under Get beta builds, in the Help build YouCoded group.",
+      "changed": "One new row with the same look as Get beta builds: a circular-arrows icon, \"Downloads new versions by itself\", and a switch that starts on.",
+      "notice": "Turning it off here or in the update popup is the same setting; each shows the other's change.",
+      "risk": "The group is named Help build YouCoded, which fits beta builds better than automatic updates."
+    },
+    {
+      "id": "Q-group",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings → Help & feedback, the last group",
+      "headline": "Should the two update switches get their own group in Help & feedback?",
+      "today": "Get beta builds sits in the group \"Help build YouCoded\", under Contribute to YouCoded. The new switch went right beside it, as you asked.",
+      "problem": "The tester looked for the update switch and found it last, after scrolling, under a heading about contributing. Automatic updates have nothing to do with helping build the app.",
+      "proposal": "Keep both switches together, but decide which heading they sit under.",
+      "options": [
+        {
+          "id": "own-group",
+          "label": "A new \"Updates\" group",
+          "summary": "Contribute stays alone under Help build YouCoded; a new last group, Updates, holds Get beta builds and Install updates automatically — the same name the update popup already uses for them.",
+          "pros": [
+            "The heading says what the switches are.",
+            "Same name as in the update popup, so both places match."
+          ],
+          "cons": [
+            "One more heading in the popup.",
+            "Get beta builds moves from where it is today."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep them under Help build YouCoded",
+          "pros": [
+            "Nothing moves."
+          ],
+          "cons": [
+            "The automatic-updates switch sits under a heading about contributing."
+          ]
+        }
+      ]
+    }
+  ]
+}

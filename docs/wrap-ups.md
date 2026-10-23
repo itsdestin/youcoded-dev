@@ -1223,6 +1223,16 @@ recurred — the repetition is the data.
 - Known issues filed as cards #176, #177 (Destin's request).
 - deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.
 
+## 2026-10-22 — automatic updates with an emergency brake (session/183-auto-updates, card #183; earlier the hotfix lane, #29)
+- The grader re-checking approved steps rebuilt the ANSWERED round-2 deck and silently rewrote the 12 pictures Destin approved (caught only in `git status`) → applied: `review-cards.py` build/preview/serve refuse a deck whose answers file says submitted unless `--rebuild-answered`; test seen red before green (322 deck tests pass).
+- Three design-review rounds (50 findings) never saw the contract, so row R13 ("apps stop offering a pulled release") went unbuilt until the final code review → applied: `.claude/rules/feature-flow.md` build-stage invariant now says every design reviewer gets the signed contract and names undelivered rows.
+- Destin's Mac answer existed only in chat, so the contract agent could not cite it → needed a one-question deck; dropped as a rule change: the rule ("a chat answer is not a source") is right and the extra deck cost one round trip.
+- Builders twice pasted a truncated `verify.sh` tail (no "screens open"/"journeys" lines) → dropped: briefs now ask for the full summary block; one-off.
+- `pty-worker-flow.test.ts` failed under load → fixed on sight (waits for a RAW-READY signal; reproduced deterministically with an 800 ms delay).
+- Destin said, filed: closing the update popup cancelled the download (fixed in this branch, contract R-rows); the beta tester's "no Updates entry in Settings" is offered to Destin, not filed (his call).
+- Not provable here: macOS and Windows install paths (no machines) — recorded on card #183 as the pre-release gate.
+- deleted/merged: dead `hasPending` and unused update-service members; the popup's close-cancels-download effect.
+
 ## 2026-10-22 — Office icon: document with a spreadsheet in front (session/office-icon)
 - verify.sh's screens check sat 25 minutes on `desktop/scripts/fetch-office.mjs`: its `fetch()` has no time limit, a GitHub download stalled, and `scripts/shoot/office-editor.mjs` ran it with no timeout; workspace-start never provisions `office-addon/`, so every new worktree re-downloads it (12 worktrees held identical copies) → applied: `ensureOfficeAddon` copies the shared checkout's add-on when it is the pinned version for this platform, and the fallback download is cut off at 180 s with a message saying so; `office-editor.test.mjs` shown red (60 s hang) before green. Serves goals 1 and 2.
 - The first icon round was a scratch HTML sheet, not a review deck (CLAUDE.md says decks) → dropped: for picking among unbuilt glyph drafts the sheet took ~5 calls against a multi-worktree shoot rig; Destin picked from it twice without friction. The change itself was a one-line glyph swap he chose directly.

@@ -1,0 +1,87 @@
+[
+  {
+    "name": "chat/quit-sessions#update",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/183-auto-updates/docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/quit-sessions#update/midnight.png",
+    "ms": 1563,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 338,
+      "w": 420,
+      "h": 224
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/update#ready-manual",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/183-auto-updates/docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/update#ready-manual/midnight.png",
+    "ms": 1633,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 246,
+      "w": 600,
+      "h": 409
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#update-ready",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/183-auto-updates/docs/archive/design/2026-10-22-auto-updates/runs/grade/chat#update-ready/midnight.png",
+    "ms": 1656,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/update#ready",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/183-auto-updates/docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/update#ready/midnight.png",
+    "ms": 1743,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 246,
+      "w": 600,
+      "h": 409
+    },
+    "parts": []
+  },
+  {
+    "name": "settings/help#updates",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/183-auto-updates/docs/archive/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png",
+    "ms": 2528,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 510,
+      "y": 156,
+      "w": 420,
+      "h": 588
+    },
+    "parts": []
+  }
+]

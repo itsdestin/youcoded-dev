@@ -1,0 +1,14 @@
+{
+ "deck": "auto-updates-questions-2",
+ "started": "2026-10-22T22:56:59.936Z",
+ "submitted": "2026-10-22T22:57:05Z",
+ "cur": 0,
+ "answers": {
+  "Q-mac-2": {
+   "v": "yes",
+   "t": 1792709824803,
+   "seconds": 5,
+   "theme": "youcoded"
+  }
+ }
+}

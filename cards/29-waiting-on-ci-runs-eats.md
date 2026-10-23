@@ -13,8 +13,8 @@ vision: everywhere.added.update
 work: session/release-1-3-2, session/29-beta-counter-reset, session/29-ci-fastpaths, session/29-linux-build-bench, session/29-android-build-bench, session/29-linux-ci-winner, session/29-android-paired-bench, session/29-full-ci-five-minute, session/29-full-ci-source-probe, session/29-ci-followup-record, session/29-hotfix-lane
 ---
 Progress
-Done: Bug-fix release path on session/29-hotfix-lane (app 269ab17e7, admin c2f81de, workspace 2cd72e9a): hotfix skill + contract test, release/X.Y.x lane, numbering A (features bump middle, fixes bump last), betas now X.(Y+1).0-beta counted from the line's first release; 17 beta + 20 admin tests pass, anchors OK.
-Next: Release upkeep for store listings: YouCoded is now in winget (microsoft/winget-pkgs PR #459618, YouCoded.YouCoded 1.3.2). Each release needs a new manifest PR or winget users stay on the old version; automate it from the release workflow (e.g. a winget-releaser action). AUR youcoded-bin (#186) will need the same once published.
+Done: Hotfix lane merged: youcoded#686 (bug-fix releases own the last number; betas lead to the next feature release), youcoded-admin#19 (hotfix skill, major bugs only with Destin's consent), youcoded-dev#305 (docs; audit skips anchors in repos CI does not clone).
+Next: The rest of this card (faster test runs, build upkeep) is other sessions' work.
 Blocked: No blocker for the merged checkpoint. Five-minute cold/default/all-platform CI is not established; no paid runner, release/signing or branch-protection changes authorized.
 
 Chats
