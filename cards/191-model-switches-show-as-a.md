@@ -1,7 +1,7 @@
 ---
 id: 191
 title: Model switches show as a divider, not a bubble, and native chats keep their switch history
-stage: build
+stage: merged
 tags: chat, native-runtime, claude-code
 branch: 191-model-switches-show-as-a
 finish: A model switch in either kind of chat shows a 'Model switched to …' line that survives reopening; a declined switch shows none.
