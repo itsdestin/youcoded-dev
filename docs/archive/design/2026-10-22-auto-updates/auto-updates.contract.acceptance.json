@@ -33,7 +33,7 @@
      "threshold": "pass/fail",
      "source": "auto-updates-review#R-5",
      "verdict": "pass",
-     "evidence": "re-shot docs/active/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png; approved images/auto-updates.review-2/settings__help~updates--midnight--after.png; same wording, order, icons and layout; Get beta builds toggle, Install updates automatically with circular-arrows icon, 'Downloads new versions by itself', switch on"
+     "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png; approved images/auto-updates.review-2/settings__help~updates--midnight--after.png; same wording, order, icons and layout; Get beta builds toggle, Install updates automatically with circular-arrows icon, 'Downloads new versions by itself', switch on"
     },
     {
      "id": "R3",
@@ -42,7 +42,7 @@
      "threshold": "pass/fail",
      "source": "auto-updates-review-2#R2-2",
      "verdict": "pass",
-     "evidence": "re-shot docs/active/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png; approved images/auto-updates.review-2/settings__help~updates--midnight--after.png; same wording, order, icons and layout; both rows under an 'Updates' heading"
+     "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/settings/help#updates/midnight.png; approved images/auto-updates.review-2/settings__help~updates--midnight--after.png; same wording, order, icons and layout; both rows under an 'Updates' heading"
     },
     {
      "id": "R4",
@@ -66,7 +66,7 @@
      "threshold": "pass/fail",
      "source": "auto-updates-review#R-2",
      "verdict": "pass",
-     "evidence": "re-shot docs/active/design/2026-10-22-auto-updates/runs/grade/chat/update#ready/midnight.png; approved images/auto-updates.review/chat__update~ready--midnight--after.png; same wording, order, icons and layout; 'Update ready', 'Installs by itself the next time you quit YouCoded', 'Restart to update: v1.3.2 -> v1.4.0'. Chip now 'v1.4.0 - Ready - restart needed' per round 2 (R2-1)"
+     "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/update#ready/midnight.png; approved images/auto-updates.review/chat__update~ready--midnight--after.png; same wording, order, icons and layout; 'Update ready', 'Installs by itself the next time you quit YouCoded', 'Restart to update: v1.3.2 -> v1.4.0'. Chip now 'v1.4.0 - Ready - restart needed' per round 2 (R2-1)"
     },
     {
      "id": "R7",
@@ -89,7 +89,7 @@
      "threshold": "pass/fail",
      "source": "auto-updates-review#R-6",
      "verdict": "pass",
-     "evidence": "re-shot docs/active/design/2026-10-22-auto-updates/runs/grade/chat/update#ready-manual/midnight.png; approved images/auto-updates.review/chat__update~ready-manual--midnight--after.png; same wording, order, icons and layout; switch off, line reads 'Downloaded. Restart when you are ready.'. Live flip not shown in a still; UpdatePanel.test.tsx 'says installs by itself only when the switch is on AND a quit really will install' covers the switching of the line"
+     "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/update#ready-manual/midnight.png; approved images/auto-updates.review/chat__update~ready-manual--midnight--after.png; same wording, order, icons and layout; switch off, line reads 'Downloaded. Restart when you are ready.'. Live flip not shown in a still; UpdatePanel.test.tsx 'says installs by itself only when the switch is on AND a quit really will install' covers the switching of the line"
     },
     {
      "id": "R10",
@@ -114,7 +114,7 @@
      "threshold": "pass/fail",
      "source": "auto-updates-review#R-4",
      "verdict": "pass",
-     "evidence": "re-shot docs/active/design/2026-10-22-auto-updates/runs/grade/chat/quit-sessions#update/midnight.png; approved images/auto-updates.review/chat__quit-sessions~update--midnight--after.png; same wording, order, icons and layout; title 'Restart to update', 'Restarting will end your active sessions...', red Restart button"
+     "evidence": "re-shot docs/archive/design/2026-10-22-auto-updates/runs/grade/chat/quit-sessions#update/midnight.png; approved images/auto-updates.review/chat__quit-sessions~update--midnight--after.png; same wording, order, icons and layout; title 'Restart to update', 'Restarting will end your active sessions...', red Restart button"
     },
     {
      "id": "R13",

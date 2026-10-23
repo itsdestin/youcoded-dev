@@ -1,9 +1,9 @@
 ---
-status: active
+status: shipped
 card: 183
-contract: docs/active/design/2026-10-22-auto-updates/auto-updates.contract.json
+contract: docs/archive/design/2026-10-22-auto-updates/auto-updates.contract.json
 branch: session/183-auto-updates (youcoded + youcoded-dev)
-reviews: docs/active/reviews/2026-10-22-auto-updates-design-review-{1,2}.md
+reviews: docs/archive/reviews/2026-10-22-auto-updates-design-review-{1,2}.md
 ---
 
 # Automatic updates — technical design (rev 3, after reviews 1–2)

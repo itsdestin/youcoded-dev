@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 card: 183
-design: docs/active/specs/2026-10-22-auto-updates-design.md
+design: docs/archive/specs/2026-10-22-auto-updates-design.md
 ---
 
 # Automatic updates — build tasks
