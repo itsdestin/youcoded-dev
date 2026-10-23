@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped (merged 2026-10-22: youcoded#688, youcoded-dev#308; follow-ups on card #182)
 date: 2026-10-22
 scope: read-only audit — every path a phone uses to reach the computer, and everything the phone shows about it
 code: youcoded @ origin/master 063ea7c7 (workspace), worktree sessions/remote-access-audit
