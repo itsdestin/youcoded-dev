@@ -1,0 +1,38 @@
+[bigfence] r1-a bigfence-code-2000
+[perf-lab 02:35:30] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 02:36:41] interference r1-a:bigfence-code-2000: disturbed — other programs used 3.5 cores on average over 70 s (limit 1): git ×12 (pids 3902152, 3902744, 3903083, 3903216, +8 more) used 0.9 cores; tst_nextwordint (pid 3903842) used 0.7 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.6 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[bigfence]   -> slow
+[bigfence] r1-a bigfence-code-20000
+[perf-lab 02:40:22] interference r1-a:bigfence-code-20000: disturbed — other programs used 3 cores on average over 219 s (limit 1): git ×36 (pids 3906080, 3906791, 3907055, 3907352, +32 more) used 0.9 cores; youcoded ×14 (pids 1342321, 1342393, 1342460, 1342549, +10 more) used 0.6 cores; tst_nextwordint ×2 (pids 3906589, 3908593) used 0.4 cores
+[bigfence]   -> failed:timeout (External case deadline 218998 ms)
+[bigfence] r1-a bigfence-json-700
+[perf-lab 02:44:05] interference r1-a:bigfence-json-700: disturbed — other programs used 21.6 cores on average over 222 s (limit 1): python ×3 (pids 3915767, 3918181, 3921394) used 17.6 cores; chrome ×24 (pids 1851157, 2551831, 2551855, 1851077, +20 more) used 1.1 cores; git ×27 (pids 3914486, 3914577, 3914820, 3914964, +23 more) used 0.7 cores; chrome (pid 1851157) held the graphics chip 12% of the time
+[bigfence]   -> failed:timeout (External case deadline 218988 ms)
+[bigfence] r1-b bigfence-code-2000
+[perf-lab 02:45:51] interference r1-b:bigfence-code-2000: disturbed — other programs used 30.3 cores on average over 103 s (limit 1): python ×48 (pids 3915767, 3918181, 3840382, 3840383, +44 more) used 25.2 cores; chrome ×20 (pids 1851077, 1851157, 2551855, 3917368, +16 more) used 1.8 cores; youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 0.6 cores; chrome (pid 1851157) held the graphics chip 16% of the time
+[bigfence]   -> slow
+[bigfence] r1-b bigfence-code-20000
+[perf-lab 02:49:12] interference r1-b:bigfence-code-20000: disturbed — other programs used 24.7 cores on average over 191 s (limit 1): python ×41 (pids 3918181, 3925382, 3925417, 3925418, +37 more) used 11.8 cores; chrome ×550 (pids 1851077, 1851157, 2551855, 3917368, +546 more) used 5.4 cores; node-MainThread ×343 (pids 3928168, 3928271, 4074650, 4074652, +339 more) used 3.2 cores
+[bigfence]   -> slow
+[bigfence] r1-b bigfence-json-700
+[perf-lab 02:50:39] interference r1-b:bigfence-json-700: disturbed — other programs used 19.4 cores on average over 85 s (limit 1): python ×5 (pids 3935017, 3954032, 3954033, 3954034, +1 more) used 9.4 cores; chrome ×309 (pids 1851077, 1851157, 1851164, 2551831, +305 more) used 6.2 cores; tst_nextwordint ×2 (pids 3949493, 3953576) used 0.9 cores; youcoded (pid 1342393) held the graphics chip 5% of the time
+[bigfence]   -> slow
+[bigfence] r2-b bigfence-code-2000
+[perf-lab 02:51:51] interference r2-b:bigfence-code-2000: disturbed — other programs used 19.1 cores on average over 70 s (limit 1): python ×14 (pids 3935017, 3954032, 3954033, 3954034, +10 more) used 9.7 cores; chrome ×154 (pids 1851157, 2551831, 2551855, 3917368, +150 more) used 4 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 1 core; youcoded (pid 1342393) held the graphics chip 5% of the time
+[bigfence]   -> slow
+[bigfence] r2-b bigfence-code-20000
+[perf-lab 02:55:32] interference r2-b:bigfence-code-20000: disturbed — other programs used 24.6 cores on average over 219 s (limit 1): node-MainThread ×1338 (pids 4074650, 4074652, 3959206, 1745086, +1334 more) used 8.5 cores; python ×34 (pids 3935017, 4009993, 4010027, 4010028, +30 more) used 5.4 cores; chrome ×754 (pids 1851157, 3917368, 2551855, 2551831, +750 more) used 5.2 cores
+[bigfence]   -> failed:timeout (External case deadline 218998 ms)
+[bigfence] r2-b bigfence-json-700
+[perf-lab 02:57:33] interference r2-b:bigfence-json-700: disturbed — other programs used 28.7 cores on average over 117 s (limit 1): python ×34 (pids 3935017, 4009993, 4010027, 4010028, +30 more) used 20.5 cores; chrome ×302 (pids 2551855, 2553630, 3969804, 3969837, +298 more) used 4.1 cores; tst_nextwordint ×3 (pids 4002059, 4011980, 4014503) used 1 core; youcoded (pid 1342393) held the graphics chip 6% of the time
+[bigfence]   -> slow
+[bigfence] r2-a bigfence-code-2000
+[perf-lab 02:58:47] interference r2-a:bigfence-code-2000: disturbed — other programs used 19.3 cores on average over 72 s (limit 1): python ×35 (pids 3935017, 4009993, 4021669, 4021714, +31 more) used 10.5 cores; chrome ×182 (pids 1851157, 1851164, 2551831, 2551855, +178 more) used 3.7 cores; tst_nextwordint ×3 (pids 4011980, 4014503, 4017666) used 0.9 cores
+[bigfence]   -> slow
+[bigfence] r2-a bigfence-code-20000
+[perf-lab 03:02:28] interference r2-a:bigfence-code-20000: disturbed — other programs used 22.1 cores on average over 219 s (limit 1): python ×36 (pids 3935017, 4021669, 4021729, 4021731, +32 more) used 14.3 cores; node-MainThread ×193 (pids 3959206, 4020892, 4074650, 4074652, +189 more) used 1.9 cores; chrome ×218 (pids 1851157, 2551855, 3917368, 2551831, +214 more) used 1.4 cores; youcoded (pid 1342393) held the graphics chip 5% of the time
+[bigfence]   -> failed:timeout (External case deadline 218998 ms)
+[bigfence] r2-a bigfence-json-700
+[perf-lab 03:04:33] interference r2-a:bigfence-json-700: disturbed — other programs used 13.3 cores on average over 124 s (limit 1): python ×5 (pids 3935017, 4043294, 4044675, 4045883, +1 more) used 8.9 cores; chrome ×13 (pids 1851157, 2551855, 2553630, 3917368, +9 more) used 0.9 cores; tst_nextwordint ×2 (pids 4044365, 4046627) used 0.8 cores
+[bigfence]   -> slow
+[bigfence] report: /home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/freeze-batch-3/bigfence-stream-202610230235-freeze-batch-3-bigfence.json / .md

@@ -301,6 +301,9 @@ export function summariseTyping({ train, receipts, overflow = 0, clocks, windows
     saturated: train.skippedSlots > 0 && train.maxInflight >= train.maxOutstanding,
     idleMaxMs: max(by('idle')), streamMaxMs: max(by('stream')), settleMaxMs: max(by('settle')),
     keysStream: by('stream').length, keysSettle: by('settle').length,
+    // WHY 'after' too: the big-fence and long-conversation scenarios keep typing during a post-paint scroll / after the open; the path-list one
+    // ignores these two additive fields.
+    afterMaxMs: max(by('after')), keysAfter: by('after').length,
     clockErrorMs: round1(clocks.errorMs),
   };
 }

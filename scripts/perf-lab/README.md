@@ -1471,6 +1471,28 @@ ownership proofs call `readProc` directly and still fail closed (pinned by proc-
 cleanup is polling-based and fails closed (see the 2026-10-21 `Malformed proc status` race in the report).
 Historical method/readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`.
 
+## Standalone freeze-hunt scenarios (busy-machine, exploratory)
+
+Three standalone entries share one contract: cached builds only (never builds, never downloads, no model), a run lock, one app boot per rung,
+A/B interleaved (A,B then B,A), every window's interference verdict kept, labelled exploratory. `--check` prints the plan and launches nothing.
+
+| Entry | What it measures | Rungs |
+|---|---|---|
+| `pathlist-stream-run.mjs` | an assistant reply listing N file paths, streaming in | 100 - 5,000 paths |
+| `bigfence-stream-run.mjs` | ONE huge fenced code block, streaming in AND on the finished page (a scroll pass through it with typing still running) | `code-2000`, `code-20000`, `json-700` (700 KB in ~30 long lines); `jsonone-700` (one line) is opt-in |
+| `longconv-open-run.mjs` | opening a long saved conversation with no model: time to the newest message, freezes during the open, typing right after, scroll-up blank frames and jumps | `--turns 40,200,1000` |
+
+```
+node scripts/perf-lab/bigfence-stream-run.mjs --a <checkout A> --b <checkout B> --rounds 2 --label x [--only code-2000,json-700] [--check]
+node scripts/perf-lab/longconv-open-run.mjs   --a <checkout A> --b <checkout B> --rounds 2 --label x [--turns 40,200] [--check]
+```
+
+Notes: both build their fixture from this workspace's approved `youcoded/` path (the A/B candidates may be anywhere the cached build lives);
+the candidate under test is always the build passed in. `longconv` writes a generated NATIVE-session transcript (prose, code, diffs, long
+output and tool cards) and resumes it through the app's own `youcoded:resume-session` event - a stand-in, not a Claude Code conversation.
+`coloured` in the big-fence table: 1 = the block was drawn with syntax colour, 0 = drawn plain (candidate B plain over 1,500 lines / 100 KB is intended).
+Tests: `scenario-bigfence-stream.test.mjs`, `scenario-longconv-open.test.mjs`.
+
 ## Lane F — workload breadth and the original JPEG (`--only workloads`)
 
 Opt-in, alone, never in the default or `full` selection. `node scripts/perf-lab/run.mjs --only workloads --checkout <stamped checkout> --cached-only`

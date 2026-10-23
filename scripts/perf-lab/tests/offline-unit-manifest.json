@@ -5,6 +5,8 @@
   "files": [
     "asset-gate-quiet-wait.test.mjs",
     "scenario-pathlist-stream.test.mjs",
+    "scenario-bigfence-stream.test.mjs",
+    "scenario-longconv-open.test.mjs",
     "interference-watch.test.mjs",
     "cached-build.test.mjs",
     "stream-completion-runner.test.mjs",
@@ -95,7 +97,7 @@
   ],
   "notes": {
     "interference-watch.test.mjs": "Offline: scripted fake /proc, sysfs and clock readers only (injected); proves the mid-window interference verdicts, report incomplete mapping and comparability refusals. No app, no real /proc or sensor reads.",
-    "scenario-pathlist-stream.test.mjs": "Offline: reply planning, fake-DOM page sources in VM, window/typing maths, row classification, aggregation and CLI parsing; no app, server, build or boot.", "asset-gate-quiet-wait.test.mjs": "Offline: injected fs/network stubs and fake clock/load only; proves asset-download refusal and the separate quiet-wait bound. No app, network or sensor.",
+    "scenario-bigfence-stream.test.mjs": "Offline: big-fence reply planning, fake-DOM page sources in VM, row classification, aggregation, CLI; no app, server, build or boot.", "scenario-longconv-open.test.mjs": "Offline: saved-conversation generator, page sources, row classification, seeding into a temp file, CLI; no app, server, build or boot.", "scenario-pathlist-stream.test.mjs": "Offline: reply planning, fake-DOM page sources in VM, window/typing maths, row classification, aggregation and CLI parsing; no app, server, build or boot.", "asset-gate-quiet-wait.test.mjs": "Offline: injected fs/network stubs and fake clock/load only; proves asset-download refusal and the separate quiet-wait bound. No app, network or sensor.",
     "scenario-native-stream.test.mjs": "Pure summaries, deterministic delta splitting and VM/parse-only emitted sources; no server/app.",
     "legacy-evidence.test.mjs": "Synthetic legacy execution/report fixtures and validators only.",
     "legacy-gates.test.mjs": "Synthetic missing/tail mutations against pure run/comparison validators.",
