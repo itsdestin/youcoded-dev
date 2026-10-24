@@ -1,7 +1,7 @@
 ---
 id: 200
 title: Swipe Keyboard: test builds in under 10 minutes, releases in under 15
-stage: planning
+stage: merged
 tags: swipe-keyboard, release, performance, housekeeping
 related: 165
 branch: 200-swipe-keyboard-test-builds-in

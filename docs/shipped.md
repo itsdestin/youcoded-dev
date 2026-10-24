@@ -888,3 +888,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-24 #179 Remove FUTO from Swipe Keyboard and relicense it as Apache/MIT (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
 - [x] 2026-10-24 #170 Add offline next-word prediction to Swipe Keyboard (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
 - [x] 2026-10-24 #187 Tap a word to see and swap alternatives in Swipe Keyboard (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
+- [x] 2026-10-24 #200 Swipe Keyboard: test builds in under 10 minutes, releases in under 15 (itsdestin/swipe-keyboard#13 (a9ed380), follow-up #15)
