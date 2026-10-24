@@ -6,8 +6,37 @@ related: docs/active/investigations/2026-10-24-pages-finish-audit.md (what exist
 
 # Finishing Pages — the architecture proposal
 
-**Not approved.** A proposal written after the first questions deck; the second deck
-(`pages-finish-2.questions.json`) asks the open parts. Nothing here is built.
+**Direction approved in two question decks; screens not yet designed; nothing built.**
+
+## Decisions from round 2 (`pages-finish-2.questions.answers.json`, 2026-10-24)
+
+- **Build missing systems once, for the whole app;** Pages is their first user. Card #61
+  (Agents & Automations) joins this effort.
+- **An autonomous assistant is one job:** a prompt, a model, a start condition (a timer, an
+  event such as "an email arrived", or a button), and a fixed set of permissions. Destin: the
+  permissions should be "more granular than the ask/edit/full auto offered for real chat
+  sessions": a limited toolset, possibly tools chats never use (e.g. only `email_read` and
+  `email_write`), and **each tool its own "Always allow" / "Ask first" per assistant**. Reuse
+  where possible, but more modular. "Assistants that own duties" maybe later, not now.
+  *Design consequence:* a recipe's allowed operations can become an assistant's tools: an email
+  recipe yields `email_read`/`email_write`, each with its own allow/ask switch.
+- **Still open — needs more thought before step 4:** how unattended asks behave ("need to
+  think more through various autonomous assistant types and use cases"). Next: a catalogue of
+  assistant types and use cases, each with its permission pattern, before deciding.
+- **Claude subscription for background runs: yes, now** (Claude Code headless), alongside
+  provider models.
+- **Still open — needs pictures:** where a page's chat lives (Destin "unsure" on the side
+  panel). Show layouts on a choice deck before step 3.
+- **Spending limits:** one system; on by default for pages and automations, optional for chats.
+- **One Settings window per page** replaces the connections window; opened from the card and
+  the top band.
+- **Accounts:** build the shared "Sign in with…" system here (step 5), evaluating and pulling in
+  card #155's unfinished Google work. That work exists only as uncommitted files in
+  `worktrees/sessions/155-google-files` (34 files, never committed or pushed as of 2026-10-24).
+- **Hosting: GitHub stays the store;** no self-hosting now.
+- **Publishing needs a GitHub account for now.** Publishing without GitHub, versions/forks/
+  "update my version", the AI reviewer and programs in shared pages move to a **separate
+  follow-up item** after this foundation is done.
 
 ## The idea in one paragraph
 
@@ -109,8 +138,10 @@ per-page settings window, which replaces today's "N connections" dialog.
 3. Chat in a page.
 4. Assistants and automations runner + spending limits + background (card #61 joins here).
 5. Accounts ("Sign in with…") — with or after card #155.
-6. Sharing: registry, publish, install, versions, lineage, update-my-version.
-7. Later: AI reviewer in the sharing pipeline; programs in shared pages once it exists.
+6. Sharing, basic: registry on GitHub, publish with a GitHub account, install, updates
+   (marketplace pages re-ask on code change), "Not reviewed" label with clear risks.
+7. Separate follow-up item: publishing without GitHub, versions/forks and "update my version",
+   the AI reviewer, programs in shared pages.
 
 Each step: screens on a review deck first, then a technical design with one review round,
 then build, then Destin tries it in a dev window.

@@ -1,0 +1,92 @@
+{
+ "deck": "pages-finish-2-questions",
+ "started": "2026-10-24T21:08:41.930Z",
+ "submitted": "2026-10-24T21:15:56Z",
+ "cur": 1,
+ "answers": {
+  "Q-wholeapp": {
+   "v": "pick",
+   "pick": "once",
+   "t": 1792876476901,
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-assistantshape": {
+   "v": "pick",
+   "pick": "job",
+   "t": 1792876476901,
+   "note": "yes its a set of a prompt, model, start condition (timer or some other thing like an email was recieved or a button is pressed), and a fixed set of permissions. the permissions for autonmous assistants will probably be the most complicated element, as i want this to be a bit more granular than the ask/edit/full auto offered for real chat sessions. limited tools, possibly unique toolsets not used in chat (an autonmous assistant might JUST have a custom email_read and email_write tool, for example, whereas a real session might just use bash or something to accomplish the same goal. and each tool should independently have its own \"always allow\" vs \"ask first\" setting for each assistant, if that makes sense. i still want to reuse where possible, but we might need to make this a bit more granular/modular. may still want to pursue B, the \"assistants that own duties\" thing later, but not now.",
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-unattended": {
+   "v": "other",
+   "t": 1792876476901,
+   "note": "eh, maybe? need to think more through various autonomous assistant types and use cases given my other feedback.",
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-subscription": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1792876476901,
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-chatpanel": {
+   "v": "other",
+   "t": 1792876476901,
+   "note": "unsure",
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-spendscope": {
+   "v": "pick",
+   "t": 1792876476901,
+   "pick": "pages-automations",
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-settingswindow": {
+   "v": "yes",
+   "t": 1792876476901,
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-accounts": {
+   "v": "pick",
+   "pick": "build-here",
+   "t": 1792876476901,
+   "note": "this might've been partly finished in a different branch or something somewhere, but we should evaluate and pull it in",
+   "seconds": 44,
+   "theme": "golden-sunbreak"
+  },
+  "Q-hosting": {
+   "v": "yes",
+   "t": 1792876555879,
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  },
+  "Q-nogithub": {
+   "v": "pick",
+   "pick": "github-only",
+   "t": 1792876555879,
+   "note": "want to look into other marketplace/publication stuff as a separate item after the foundation of this is completed.",
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  },
+  "Q-versions": {
+   "v": "yes",
+   "t": 1792876555879,
+   "note": "maybe include this in the second-phase/follow-up marketplace and publication work?",
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  },
+  "Q-order2": {
+   "v": "yes",
+   "t": 1792876555879,
+   "seconds": 20,
+   "theme": "golden-sunbreak"
+  }
+ }
+}
