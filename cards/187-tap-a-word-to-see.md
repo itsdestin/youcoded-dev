@@ -1,7 +1,7 @@
 ---
 id: 187
 title: Tap a word to see and swap alternatives in Swipe Keyboard
-stage: explore
+stage: merged
 tags: swipe-keyboard, feature
 related: 170, 181
 branch: 187-tap-a-word-to-see
