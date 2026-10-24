@@ -1,7 +1,7 @@
 ---
 id: 93
 title: Background freezes, memory growth and whole-file reads
-stage: planning
+stage: merged
 priority: P1
 tags: perf, chat, desktop, performance, needs-repro, bug
 report: docs/active/plans/2026-09-16-simplification-phases.md

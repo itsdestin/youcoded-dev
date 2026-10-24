@@ -884,3 +884,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-23 #180 Slide on the spacebar to move the cursor in Swipe Keyboard (itsdestin/swipe-keyboard PR #6 (08e4aad))
 - [x] 2026-10-23 #191 Model switches show as a divider, not a bubble, and native chats keep their switch history (youcoded#689 (d1a204a7), youcoded-dev#311)
 - [x] 2026-10-23 #193 Message queue: stuck chip messages, attachment wording, recovery, instant bubble, terminal-view stall, emoji terminal widths (youcoded#691 (b3665d98), youcoded-dev#314 (48aff39c))
+- [x] 2026-10-24 #93 Background freezes, memory growth and whole-file reads (itsdestin/youcoded#695 + itsdestin/youcoded-dev#318)
