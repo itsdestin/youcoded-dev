@@ -16,9 +16,9 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: YouCoded 1.3.1 released with Pages chats/program/startSession abilities. Held connections, start-session and chats/program skill updates published in wecoded-marketplace#110 (Page Builder 0.2.0), with corrected permission examples and source-reviewed home-device/socket/video reference. Work board tests passed 9/9; current app master CI passed Linux, macOS, Windows and Android.
-Next: Work board installation is queued after natural YouCoded exit via user unit youcoded-work-board-postrelease-131; receipt: /home/destin/.cache/youcoded-postrelease-131/install-result.json. After reopening, approve its chat/program/session permissions and check the board and status-bar repo chip visually. Broader Pages phases/follow-ups remain open.
-Blocked: No merge blocker. Work board runtime verification awaits after-exit installation and user approval; no live app mutation performed.
+Done: 2026-10-24 consolidation: audited every Pages chat and doc (all chats already closed except the Work board planning chat, now closed); generality audit and architecture proposal approved in direction on two question decks (docs/active/specs/2026-10-24-pages-finish-architecture.md). Work board installed 2026-10-18; held skill updates were published (Page Builder 0.3.0).
+Next: Step 1 screens: page Settings window, approval card with recipes and the combined-risk line, the 'Open this website?' ask. Before steps 3-4: a choice deck for where a page's chat lives, and a catalogue of autonomous-assistant use cases.
+Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
