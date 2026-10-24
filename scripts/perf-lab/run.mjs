@@ -31,7 +31,7 @@
 // Node built-ins only: the workspace root has no package.json and must not gain one.
 
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { cpus, release, totalmem } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,18 +39,237 @@ import { fileURLToPath } from 'node:url';
 import { buildApp, treeFingerprint } from './build.mjs';
 import { waitFor } from './cdp.mjs';
 import { PRIMARY, get, runsFor } from './compare.mjs';
-import { buildFixture } from './fixture.mjs';
+import { assetDownloadEnvAllowed, assetRefusalMessage, assetStatus, buildFixture as buildFixtureBase } from './fixture.mjs';
+
+// WHY a module-level switch + wrapper: ten phase blocks call buildFixture(SCRATCH, ...). The
+// owner's rule is no model/engine download without explicit authorization, so the opt-in
+// (--allow-asset-download) is threaded here once instead of at every call site. Default OFF;
+// main() sets it from the parsed flags (and resets it per run, so a second in-process run
+// such as ab.mjs's B never inherits A's choice by accident).
+let assetDownloadAllowed = false;
+function buildFixture(root, options = {}) {
+  return buildFixtureBase(root, { allowAssetDownload: assetDownloadAllowed, ...options });
+}
+
+/**
+ * Does this selection build a fixture that seeds the local model/engine? Only artifacts and the
+ * plain-completion native-stream diagnostic are model-free (seedEngine:false); every other
+ * phase calls the default seeding fixture.
+ */
+export function selectionNeedsAssets(cfg) {
+  // WHY energy is model-free: it streams from the fake endpoint with seedEngine:false (scenario-energy.mjs energyFixtureOptions).
+  return [...cfg.only].some((p) => !(p === 'artifacts' || p === 'energy' || p === 'workloads' || (p === 'native-stream' && cfg.streamCompletionDiagnostics)));
+}
+
+/**
+ * Asset preflight shared by --check and the real run. Never downloads.
+ * Returns { needed, state, detail } where state is present | missing | authorized | not-needed.
+ */
+export function assetPreflight(cfg, { statusFn = assetStatus } = {}) {
+  if (!selectionNeedsAssets(cfg)) return { needed: false, state: 'not-needed', detail: 'selected phases are model-free; no model or engine needed' };
+  return { needed: true, ...statusFn({ checkout: cfg.checkout, allow: cfg.allowAssetDownload }) };
+}
+
+/** Throws (before any build or app launch) when a needed asset is missing and no opt-in was given. */
+export function requireAssetsOrAuthorization(cfg, deps = {}) {
+  const st = assetPreflight(cfg, deps);
+  if (st.state === 'missing') {
+    throw Object.assign(new Error(assetRefusalMessage({ checkout: cfg.checkout, statusFn: deps.statusFn ?? assetStatus })), { exitCode: EXIT.ERROR });
+  }
+  return st;
+}
+import { requireDiskHeadroom } from './disk-budget.mjs';
+import { connectMainLoop, freeInspectorPort } from './main-loop-probe.mjs';
+import { buildStallFixtures } from './stall-fixtures.mjs';
+import { runDocumentStallCases } from './scenario-document-stalls.mjs';
+import { DOCUMENT_CONTROL_TYPES } from './document-input.mjs';
+import { DOCUMENT_CASE_IDS, DOCUMENT_OPTIONAL_COVERAGE, DOCUMENT_INSTRUMENT_FILES, documentProblems, documentBreaches, documentMarkdown, recordDocumentRepeat } from './document-report.mjs';
+import { publishReportJson, uniqueStem } from './atomic-report.mjs';
+import { LAB_DIR, buildIdentity, hashFiles, instrumentIdentity, packageIdentity } from './identity.mjs';
+import { controlFromEnv } from './control.mjs';
+import { acquireRunLock } from './run-lock.mjs';
+import { STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
+import { replayEvidenceProblems } from './replay-evidence.mjs';
+import { LEGACY_EXECUTION_REVISION, buildLegacyExecution, legacyEvidenceProblems } from './legacy-evidence.mjs';
+import { ENERGY_LANE, energyLaneProblems } from './energy-lane.mjs';
+import { WORKLOAD_LANE, WORKLOAD_MEASURES, WORKLOAD_THRESHOLDS, ladderGroups, probeCandidateSupport, runWorkloadsLane, workloadsMarkdown, workloadsProblems } from './workload-lane.mjs';
+import { MEASURES as ARTIFACT_DESCRIPTOR } from './scenario-artifacts.mjs';
+import { STREAM_DRAIN_DESCRIPTOR, assessStreamDrain, buildDrainFixture } from './stream-drain.mjs';
+
+/** The fake endpoint journey still opens huge/medium/small transcripts plus an
+ * empty control and two native sessions. Completion diagnostics need identities,
+ * not large history or any local engine/model. Standard native fixtures unchanged. */
+export function nativeStreamFixtureOptions(cfg) {
+  return cfg.streamCompletionDiagnostics
+    ? { fakeProvider: true, seedEngine: false, historySizes: { small: 4, medium: 8, huge: 12 }, decoyCount: 0 }
+    : { fakeProvider: true };
+}
+export function createNativeStreamFixture(root, cfg, { buildFixture: create = buildFixture, log } = {}) {
+  return create(root, { ...nativeStreamFixtureOptions(cfg), ...(log ? { log } : {}) });
+}
+export async function prepareRunnerBuild(cfg, { buildApp: build = buildApp } = {}) {
+  return build(cfg.checkout, { skipIfFresh: !cfg.forceBuild, cachedOnly: cfg.cachedOnly === true });
+}
+
+/** WHY an explicit executed profile: plain exact-output fixtures/listener overhead
+ * must never masquerade as the standard Markdown PRIMARY performance baseline.
+ * Manifest options intentionally differ, so existing comparison fails closed. */
+export function configureStreamCompletion(report, cfg) {
+  if (!cfg.streamCompletionDiagnostics) return;
+  const phase = report.legacyExecution.phases['native-stream'];
+  phase.options.completionDiagnostics = true;
+  phase.options.perSec = 150;
+  report.standardAcceptance = false;
+  report.diagnosticExecution = { revision: 1, profile: 'plain-completion-diagnostic', expectedRepeats: cfg.nativeStreamRepeats,
+    descriptor: STREAM_DRAIN_DESCRIPTOR, standardAcceptance: false,
+    fixture: nativeStreamFixtureOptions(cfg), buildPolicy: cfg.cachedOnly ? 'cached-only-no-build' : 'allow-build',
+    // WHY hashFiles (identity.mjs): one hashing implementation for this diagnostic and the
+    // every-report instrument identity, so the two cannot drift.
+    instrumentHashes: hashFiles(join(ROOT, 'scripts/perf-lab'), ['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs', 'os-hidden.mjs', 'background-window.mjs']),
+    provenancePolicy: 'Runner build/machine/lab-source provenance retained; this diagnostic is not a standard timing baseline' };
+  report.measures.nativeStream = { scenario: 'native-stream-completion-diagnostic', profile: 'plain-completion-diagnostic',
+    question: 'Did producer writes reach the owned renderer bridge and exact output after reveal?', configuration: [STREAM_DRAIN_DESCRIPTOR.fixture],
+    clocks: { receipt: STREAM_DRAIN_DESCRIPTOR.clocks }, blindTo: STREAM_DRAIN_DESCRIPTOR.limits };
+}
+
+/** Recheck raw producer/receipt/reveal evidence, not a stored measured status.
+ * No internal reducer queue claim, PRIMARY budget or injected-control scoring. */
+export function streamCompletionProblems(report) {
+  const problems = [], execution = report.diagnosticExecution, runs = report.nativeStream?.runs;
+  const need = (ok, why) => { if (!ok) problems.push(`stream-completion: ${why}`); };
+  need(execution?.revision === 1 && execution.profile === 'plain-completion-diagnostic' && execution.standardAcceptance === false
+    && report.standardAcceptance === false && execution.descriptor?.revision === STREAM_DRAIN_DESCRIPTOR.revision
+    && execution.descriptor?.lane === STREAM_DRAIN_DESCRIPTOR.lane, 'executed diagnostic profile/revision missing');
+  const options = report.legacyExecution?.phases?.['native-stream']?.options;
+  need(options?.completionDiagnostics === true && options?.deltas === 3000 && options?.switchCount === 8 && options?.perSec === 150, 'executed completionDiagnostics option/dimensions missing');
+  const fixturePolicy = execution?.fixture;
+  need(fixturePolicy?.seedEngine === false && fixturePolicy.fakeProvider === true && fixturePolicy.decoyCount === 0
+    && fixturePolicy.historySizes?.small === 4 && fixturePolicy.historySizes?.medium === 8 && fixturePolicy.historySizes?.huge === 12,
+    'model-free diagnostic fixture policy missing/mismatched');
+  need(['allow-build', 'cached-only-no-build'].includes(execution?.buildPolicy), 'build execution policy missing');
+  need(['run.mjs', 'stream-drain.mjs', 'scenario-native-stream.mjs', 'fake-provider.mjs', 'os-hidden.mjs', 'background-window.mjs'].every(name => /^[a-f0-9]{64}$/.test(execution?.instrumentHashes?.[name] ?? '')), 'instrument provenance hashes missing');
+  if (Array.isArray(report.incomplete) && report.incomplete.length) problems.push('stream-completion: report declares incomplete evidence');
+  need(Number.isInteger(execution?.expectedRepeats) && execution.expectedRepeats >= 1 && execution.expectedRepeats <= 3
+    && report.legacyExecution?.phases?.['native-stream']?.expectedRepeats === execution.expectedRepeats
+    && Array.isArray(runs) && runs.length === execution.expectedRepeats, 'expected repeats missing/mismatched');
+  if (report.aborted != null) problems.push(`stream-completion: aborted: ${report.aborted}`);
+  for (const [i, row] of (Array.isArray(runs) ? Array.from(runs) : []).entries()) {
+    const d = row?.completionDiagnostic;
+    need(row?.deltas?.planned === options?.deltas && row?.deltas?.perSecTarget === options?.perSec, `repeat ${i + 1} actual stream dimensions missing/mismatched`);
+    need(!row?.error && !row?.threw && !row?.receiptCleanupError && !row?.cleanupError && !d?.fatal, `repeat ${i + 1} scenario/cleanup failure`);
+    need(d?.descriptor?.revision === STREAM_DRAIN_DESCRIPTOR.revision && d?.descriptor?.lane === STREAM_DRAIN_DESCRIPTOR.lane
+      && d?.standardAcceptance === false && d?.status === 'measured', `repeat ${i + 1} descriptor/status incomplete`);
+    // WHY raw switching rows: eight planned switches and a finished reply can
+    // coexist with an unexecuted/failed/out-of-stream switch. Never filter them
+    // out or certify from the switching summary. These are the scenario's actual
+    // i/idx/name/intoStreaming/duringStream/ok/mode/timing fields.
+    const names = row?.sessions?.names, streaming = row?.sessions?.streaming, huge = row?.sessions?.huge;
+    const validNames = Array.isArray(names) && names.length === 6 && names.every(n => typeof n === 'string' && n.length > 0) && new Set(names).size === 6;
+    const nativeIndex = validNames ? names.indexOf(streaming) : -1, hugeIndex = validNames ? names.indexOf(huge) : -1;
+    need(validNames && nativeIndex >= 0 && hugeIndex >= 0 && nativeIndex !== hugeIndex, `repeat ${i + 1} switching session identities missing/ambiguous`);
+    const switches = row?.switching?.switches;
+    need(Array.isArray(switches) && switches.length === 8, `repeat ${i + 1} expected all 8 executed switches`);
+    if (Array.isArray(switches)) Array.from(switches).forEach((s, j) => {
+      const into = j % 2 === 1, target = into ? nativeIndex : hugeIndex;
+      need(s?.i === j && s?.idx === target && target >= 0 && s?.name === names?.[target]
+        && s?.intoStreaming === into && s?.duringStream === true && s?.ok === true && ['pill', 'menu'].includes(s?.mode)
+        && typeof s?.ms === 'number' && Number.isFinite(s.ms) && s.ms >= 0
+        && typeof s?.paintedMs === 'number' && Number.isFinite(s.paintedMs) && s.paintedMs >= 0
+        && s?.settled === true && typeof s?.entries === 'number' && Number.isFinite(s.entries) && s.entries > 0
+        && s?.reason == null, `repeat ${i + 1} switching row ${j} incomplete/wrong transition/outside stream`);
+    });
+    const requests = new Set();
+    for (const leg of ['visible', 'switching', 'hidden']) {
+      const evidence = d?.legs?.[leg], fixture = evidence?.fixture;
+      let expected = null;
+      try { expected = buildDrainFixture(leg, report.legacyExecution.phases['native-stream'].options.deltas); } catch { /* reported below */ }
+      need(expected && fixture?.text === expected.text && fixture?.marker === expected.marker, `${leg} fixture differs from executed plan`);
+      const assessed = assessStreamDrain({ expected: expected?.text, producer: evidence?.producer, receipt: evidence?.receipt });
+      need(assessed.status === 'measured', `${leg} producer/receipt invalid: ${assessed.reasons.join('; ')}`);
+      need(evidence?.status === 'measured' && evidence?.standardAcceptance === false && !evidence?.reasons?.length
+        && evidence?.bridgeDrain?.status === 'measured' && evidence.bridgeDrain.error === null && !evidence.error && !evidence.cleanupError, `${leg} drain/error/cleanup incomplete`);
+      need(evidence?.bridgeDrain?.receipt?.text === evidence?.receipt?.text && evidence?.bridgeDrain?.receipt?.complete === true, `${leg} final receipt differs`);
+      const sid = evidence?.receipt?.sessionId;
+      need(typeof sid === 'string' && sid.length > 0, `${leg} missing owned session`);
+      for (const view of [evidence?.visibility?.start, evidence?.visibility?.end]) need(view?.sessionId === sid && view.ownedCount === 1 && view.activeCount === 1 && view.documentVisibility === 'visible'
+        && (leg !== 'hidden' || view.hidden === true && typeof view.activeSessionId === 'string' && view.activeSessionId !== sid), `${leg} visibility proof incomplete`);
+      // WHY: counters present means the identity sent = received = enqueued = applied + dropped must hold; counters absent is
+      // 'unavailable' (never zero) and does not fail a candidate that simply lacks them.
+      need(evidence?.reducerQueue?.available === false || (evidence?.reducerQueue?.available === true && evidence.reducerQueue.conservation?.holds === true), `${leg} reducer queue neither unavailable nor conserved`);
+      need(!requests.has(evidence?.producer?.index), `${leg} duplicate producer request index`); requests.add(evidence?.producer?.index);
+    }
+    const final = d?.hiddenPostReveal;
+    need(final?.status === 'measured' && final.error === null && final.visible?.exact === true && final.visible?.marker === true
+      && final.visible.documentVisibility === 'visible' && !final.cleanupError && !d?.error && !d?.cleanupError, 'post-reveal exact output/error/cleanup incomplete');
+  }
+  return problems;
+}
+
+export function artifactMeasurementMetadata(disk) {
+  // WHY: free space and checked filesystem paths are observations, not workload
+  // identity. Keeping them in MEASURES would make identical A/B fixtures differ.
+  return {
+    descriptor: { ...ARTIFACT_DESCRIPTOR, fixture: { ...artifactFixtureOptions(), diskPolicy: {
+      reserveBytes: disk.reserveBytes, additionalBytes: disk.additionalBytes, requiredBytes: disk.requiredBytes,
+    } }, documentsRequired: true },
+    observations: { disk },
+  };
+}
+
+/** Fixture options each phase builds with, recorded in report.identity so a changed fixture
+ * recipe is incomparable rather than silently ranked (acceptance A3). The fixture's SOURCE
+ * is separately covered by the instrument hashes. */
+export function fixtureIdentity(cfg) {
+  return { options: {
+    default: {}, artifacts: artifactFixtureOptions(), nativeStream: nativeStreamFixtureOptions(cfg),
+    nativeResume: { fakeProvider: true, nativeSessions: true }, stallDocuments: { profile: 'smoke' },
+    // WHY conditional: existing reports' fixture identity must stay byte-identical so they remain comparable.
+    // WHY conditional: existing reports' fixture identity must stay byte-identical so they remain comparable. Lane F's rungs, thresholds and
+    // per-group fixture recipes decide WHAT it measures; a changed ladder or recipe must read as a different fixture, not as a regression.
+    ...(cfg.only?.has('workloads') ? { workloads: { profile: 'ladder', groups: ladderGroups().map((g) => ({ id: g.id, mode: g.mode, rungs: g.rungs.map((r) => r.id), fixture: workloadFixtureOptions(g) })), thresholds: WORKLOAD_THRESHOLDS } } : {}),
+    ...(cfg.only?.has('energy') ? { energy: { fakeProvider: true, seedEngine: false, historySizes: { small: 4, medium: 8, huge: 12 }, decoyCount: 0 } } : {}),
+  } };
+}
+
+/** The app-fixture recipe lane F builds per group: the model-free artifacts recipe, except the indexing group which needs the default large history. */
+export function workloadFixtureOptions(group) {
+  return group.id === 'background-indexing' ? { seedEngine: false, fakeProvider: false } : artifactFixtureOptions();
+}
+
+/** Boots a configuration will perform, by kind — shared by --check output and ab.mjs preflight. */
+export function bootPlan(cfg) {
+  const has = (p) => cfg.only.has(p);
+  const plan = {
+    startup: has('startup') ? cfg.runs : 0,
+    sharedScenario: ['history', 'shots'].some(has) ? 1 : 0,
+    workload: has('workload') ? cfg.workloadRepeats : 0,
+    stall: has('stall') ? 1 : 0, artifacts: has('artifacts') ? 1 : 0, projects: has('projects') ? 1 : 0,
+    terminal: has('terminal') ? cfg.terminalRepeats : 0,
+    nativeStream: has('native-stream') ? cfg.nativeStreamRepeats : 0,
+    nativeResume: has('native-resume') ? cfg.nativeResumeRepeats : 0,
+    scrollback: has('scrollback') ? 1 : 0,
+    energy: has('energy') ? 1 : 0,   // one boot holds every energy window (lane C)
+    workloads: has('workloads') ? ladderGroups().length * cfg.workloadsRepeats : 0,   // one boot per group per repeat (retries after a fatal rung add more)
+  };
+  return { ...plan, total: Object.values(plan).reduce((a, b) => a + b, 0) };
+}
+
+// WHY: viewer-only runs exhausted disk downloading an engine they never use.
+export function artifactFixtureOptions() {
+  return { seedEngine: false, historySizes: { small: 12 }, decoyCount: 0 };
+}
 import { FAKE_PROVIDER_PORT } from './fake-provider.mjs';
 import { formatRendererLine, readRendererInfo } from './gpu.mjs';
 import { formatLayoutCostLine, worstVerdict } from './layout-cost.mjs';
 import { launchApp, resolveXvfbBin, startXvfb } from './launch.mjs';
 import { collectStartup } from './metrics-startup.mjs';
 import { cpuPercent, cpuSnapshot, loadAvg1, machineBusyPct, pssMb } from './procs.mjs';
+import { createInterferenceWatch, describeOffenders, interferenceProblems, readEnvironment, topForeignProcesses, verdictLine } from './interference-watch.mjs';
 import { MEASURES as HISTORY_MEASURES, MESSAGE_COUNT_EXPR, runHistoryScenario } from './scenario-history.mjs';
 import { SCREEN_NAMES, capture } from './screenshots.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
+export const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
 const CDP_PORT = 9555;
 
 /**
@@ -234,6 +453,9 @@ export function buildArtifactsSection(aruns, medianRun) {
 export function emptyReport({ label = '', timestamp = new Date().toISOString() } = {}) {
   return {
     schemaVersion: 1,
+    // Filled once the package is built and hashed (identity.mjs); null in a run that never got that far.
+    identity: null,
+    stallMeasurementRevision: STALL_MEASUREMENT_REVISION,
     label,
     sha: null, branch: null, dirty: null,
     timestamp,
@@ -244,8 +466,10 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // unverified blind spot silently excuses every number it touches. Now each report
     // carries its own answer, and on this machine that answer is llvmpipe: software.
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
-    noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null,
+    noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0, loadAvgAfter: null, quietWaitMs: 0, neverQuiet: null },
+    // WHY: one verdict per measured window (interference-watch.mjs); a disturbed or unknown window makes the report INCOMPLETE.
+    interference: { windows: [] },
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null, energy: null, workloads: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -253,7 +477,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], nativeStreamBoots: [], nativeResumeBoots: [], scrollbackBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], nativeStreamBoots: [], nativeResumeBoots: [], scrollbackBoot: null, workloadsBoots: [] },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -338,7 +562,22 @@ export function primaryPathsFor(only) {
  * the verdict weaker, it switches the noise check off entirely.
  */
 export function validateReport(report, only) {
-  const problems = [];
+  // Diagnostic-only invocation has its own raw-evidence contract, not PRIMARY.
+  if (report.diagnosticExecution?.profile === 'plain-completion-diagnostic') {
+    return [...(only.size === 1 && only.has('native-stream') ? [] : ['stream-completion: only native-stream allowed']), ...streamCompletionProblems(report)];
+  }
+  const problems = legacyEvidenceProblems(report, { primary: PRIMARY, only });
+  // WHY: a run that stopped because the machine never went quiet took no valid measurement; never healthy.
+  if (report.noise?.neverQuiet) problems.push(`machine never became quiet: load ${report.noise.neverQuiet.load}, ${report.noise.neverQuiet.busyPct}% cpu after ${report.noise.neverQuiet.waitedS}s${report.noise.neverQuiet.blockedBy ? ` (blocked by: ${report.noise.neverQuiet.blockedBy})` : ''} — measurement not taken`);
+  problems.push(...interferenceProblems(report));
+  // WHY: a --busy-machine run is exploratory by design; it can show big effects but is never a clean result.
+  if (report.exploratory) problems.push(`exploratory: measured on a busy machine (${report.noise?.busyMachineReadings?.length ?? 0} busy reading(s) recorded) — not comparable`);
+  // WHY an early return: the energy lane has no PRIMARY paths or legacy phases; its own contract decides measured vs not.
+  if (report.energyExecution) return [...problems, ...energyLaneProblems(report)];
+  // WHY the same early return: lane F has no PRIMARY phases or legacy manifest; workload-lane.mjs's workloadsProblems owns its contract.
+  if (report.workloadsExecution) return [...problems, ...workloadsProblems(report)];
+  if (only.has('artifacts') && report.artifacts?.documents) problems.push(...documentProblems(report.artifacts.documents));
+  if (only.has('artifacts') && report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) problems.push('documents: required section missing');
   const need = (ok, msg) => { if (!ok) problems.push(msg); };
 
   if (only.has('startup')) {
@@ -353,17 +592,16 @@ export function validateReport(report, only) {
   }
   if (only.has('workload')) need(report.workload?.runs?.length > 0, 'workload: no runs were recorded');
   if (only.has('stall')) {
+    problems.push(...replayEvidenceProblems(report.replayStall));
     for (const size of STALL_SIZES) {
       need(report.replayStall?.[size]?.runs?.length > 0, `replayStall.${size}: no runs were recorded`);
     }
-    // Attribution is the entire point of this phase. `blame` null means the renderer
-    // long-task observer never attached, so every stall was charged to the main process
-    // by default — a fabricated indictment, and exactly the shape of finding that would
-    // send the next session optimizing the wrong thread.
+    // WHY unknown attribution is allowed: independent main-loop evidence is optional.
+    // A missing verdict is a reporting gap; an explicit unknown is not a failed run.
     for (const size of STALL_SIZES) {
       const s = report.replayStall?.[size];
       if (!s?.runs?.length) continue;
-      need(s.blame != null, `replayStall.${size}: no thread attribution — the renderer long-task observer never attached, so main-vs-renderer blame is unknown, NOT "main process"`);
+      need(s.blame != null, `replayStall.${size}: no thread attribution record — unknown is allowed, missing is not`);
     }
   }
   if (only.has('artifacts')) {
@@ -481,8 +719,9 @@ export function validateReport(report, only) {
     }
   }
   if (only.has('shots')) {
-    const got = new Set(report.screens?.names ?? []);
-    const missing = SCREEN_NAMES.filter((n) => !got.has(n));
+    const got = new Set(Array.isArray(report.screens?.names) ? report.screens.names : []);
+    const expected = report.legacyExecution?.phases?.shots?.names ?? SCREEN_NAMES;
+    const missing = expected.filter((n) => !got.has(n));
     need(missing.length === 0, `shots: never captured ${missing.join(', ')} — a screen that was not shot is UNREVIEWED, not "unchanged"`);
   }
 
@@ -551,8 +790,27 @@ export function renderMarkdown(report, stem) {
     `  ${formatRendererLine(report.machine?.renderer)}`,
     '',
   ];
+  if (report.diagnosticExecution) {
+    lines.push('## Diagnostic-only stream completion — not a standard timing baseline',
+      'Plain fixture and receipt observer overhead differ from Markdown PRIMARY measurements. Reducer queue is read only from candidates built with the perf counters (otherwise "unavailable"); post-reveal output is not hidden reducer drain.', '');
+    for (const [i, r] of (report.nativeStream?.runs ?? []).entries()) {
+      const d = r.completionDiagnostic;
+      lines.push(`- Repeat ${i + 1}: ${d?.status ?? 'missing'}; legs ${Object.entries(d?.legs ?? {}).map(([name, leg]) => `${name}: ${leg.status}; ${(leg.reasons ?? []).join('; ')}`).join(' | ')}; reveal ${d?.hiddenPostReveal?.status ?? 'missing'}${d?.hiddenPostReveal?.error ? `: ${d.hiddenPostReveal.error}` : ''}`);
+      for (const [name, leg] of Object.entries(d?.legs ?? {})) {
+        const q = leg.reducerQueue;
+        lines.push(`  - ${name} reducer queue: ${q?.available ? `${q.conservation.holds ? 'conserved' : 'NOT CONSERVED'} (sent ${q.conservation.producerSent}, received ${q.conservation.bridgeReceived}, enqueued ${q.conservation.enqueued}, applied ${q.conservation.applied}, dropped ${q.conservation.dropped}); max depth ${q.queue.maxPendingDepth} actions, oldest ${Math.round(q.queue.maxOldestPendingAgeMs)} ms` : `unavailable (${q?.reason ?? 'missing'})`}`);
+      }
+      if (d?.osHidden) lines.push(`  - OS-hidden window: ${d.osHidden.status}${d.osHidden.visibilityDuring ? ` (${d.osHidden.visibilityDuring.hidden}/${d.osHidden.visibilityDuring.samples} samples hidden)` : ''}${d.osHidden.reason ? ` — ${d.osHidden.reason}` : ''}`);
+      for (const [name, b] of Object.entries(d?.backgroundCost ?? {})) lines.push(`  - background ${name}: ${b.status === 'supported' ? `${b.delta.cpuSeconds.toFixed(2)} CPU-s over ${b.delta.elapsedSeconds.toFixed(1)} s (${b.delta.cpuPctOneCore.toFixed(1)}% of one core), ${b.delta.contextSwitches} context switches (leader threads only) — work, not energy` : `${b.status}${b.reason ? `: ${b.reason}` : ''}`}`);
+    }
+    lines.push('');
+  }
   if (report.aborted) lines.push(`> **ABORTED:** ${report.aborted}`, '> The rows below are whatever had been measured when the run stopped.', '');
 
+  if (report.legacyExecution) {
+    lines.push(`Legacy execution contract revision ${report.legacyExecution.revision}: ${Object.entries(report.legacyExecution.phases ?? {}).map(([phase, spec]) => `${phase}: ${spec.expectedRepeats} expected repeat(s)${spec.groups.length > 1 ? ' per group' : ''}`).join('; ')}.`,
+      'All declared raw repeats and required steps must be present and valid. A median cannot clear missing evidence. Comparison also checks each PRIMARY raw-repeat maximum (including the target), beyond the baseline maximum plus its full raw range and the configured regression margin, with a one-unit rounding floor. Context and document controls are not legacy tail budgets.', '');
+  }
   lines.push('| metric | median |', '|---|---|');
   for (const k of STARTUP_KEYS) {
     lines.push(`| startup.${k}${isNetwork(`startup.median.${k}`) ? ' (network)' : ''} | ${n(m[k], 'ms')} |`);
@@ -614,10 +872,10 @@ export function renderMarkdown(report, stem) {
     const sm = s?.median ?? {};
     lines.push(
       `| stall.${size} (median of ${s?.runs?.length ?? 0}, ${s?.stabilizedRuns ?? 0} stabilized) | ` +
-      `worst freeze ${n(sm.ipcMaxMs, 'ms')} · total ${n(sm.ipcTotalStallMs, 'ms')} · ` +
+      `raw response max ${n(sm.ipcMaxMs, 'ms')} · summed response excess ${n(sm.ipcTotalStallMs, 'ms')} · ` +
       // The blame string, never a silent default: null attribution is printed as
       // "attribution unavailable" so it can never be read as "main process".
-      `main ${n(sm.mainProcessStallMs, 'ms')} / renderer ${n(sm.rendererStallMs, 'ms')} — ${s?.blame ?? '**attribution unavailable**'} |`,
+      `union excess ${n(sm.ipcBlockedWindowMs, 'ms')} / renderer overlap ${n(sm.rendererStallMs, 'ms')} / unknown residual ${n(sm.unknownStallMs, 'ms')} — ${s?.blame?.verdict ?? '**attribution unavailable**'}: ${s?.blame?.why ?? ''} |`,
     );
   }
 
@@ -705,12 +963,32 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  lines.push(...workloadsMarkdown(report.workloads));
+
+  if (report.energy) {
+    const e = report.energy;
+    lines.push('', '## Energy lane (C) — ESTIMATE of whole-chip power difference, not application watts', '',
+      `status: **${e.status}**${e.reason ? ` — ${e.reason}` : ''}`,
+      `meter responds to a CPU-only load: **${String(e.meterRespondsToCpu)}** (${e.cpuCoverage?.reason ?? 'not checked'})`,
+      `repeats: ${e.counts?.clean ?? 0} clean of ${e.counts?.attempted ?? 0} attempted (need ${e.counts?.minClean ?? '?'}); excluded: ${(e.excluded ?? []).map((x) => `#${x.repeat} (${x.reasons[0]})`).join('; ') || 'none'}`);
+    if (e.median) lines.push(`workload minus idle: **${e.median.deltaWatts} W** (median; range ${e.spread?.deltaWattsRange} W) — idle ${e.median.baselineWatts} W, workload ${e.median.workloadWatts} W`);
+    lines.push(`battery: ${e.battery?.status ?? 'n/a'}${e.battery?.median ? ` — ${e.battery.median.deltaWatts} W` : e.battery?.reason ? ` — ${e.battery.reason}` : ''}`,
+      `environment: power profile ${e.environment?.start?.platformProfile ?? '—'}, charger ${e.environment?.start?.acOnline ?? '—'}${e.environment?.changed?.length ? `; CHANGED: ${e.environment.changed.join(', ')}` : ''}`);
+  }
   lines.push('');
   lines.push(
     `noise: load ${report.noise?.loadAvgBefore ?? '—'}, busy ${report.noise?.machineBusyPctBefore ?? '—'}%, ` +
     `worst accepted load ${report.noise?.maxLoadAvgAccepted ?? '—'} / busy ${report.noise?.maxBusyPctAccepted ?? '—'}%, ` +
     `discarded ${report.noise?.discardedRuns ?? 0}`,
   );
+  {
+    const w = report.interference?.windows;
+    if (!Array.isArray(w)) lines.push('interference: NOT RECORDED (this report predates the watch)');
+    else {
+      const bad = w.filter((x) => x.verdict !== 'clean');
+      lines.push(`interference: ${w.length} window(s) watched, ${w.length - bad.length} clean${bad.length ? `, ${bad.length} NOT CLEAN — ${bad.map(verdictLine).join(' | ')}` : ''}`);
+    }
+  }
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
     `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
@@ -758,7 +1036,7 @@ export function renderMarkdown(report, stem) {
           + `(${n(s.lateContent.spacersSeenAnywhere)} spacers existed off-screen)`
           + `${s.lateContent.lateAfterStop ? ' — ⚠ still blank after the scroll stopped' : ''}`
           + `${s.lateContent.settledAtRest === false ? ` — ⚠ ${s.lateContent.lateAtRest} still blank while STANDING STILL` : ''}`
-          + `${s.lateContent.jumpedFrames ? ` · ${s.lateContent.jumpedFrames} frame(s) skipped where the app scrolled itself` : ''}`
+          + `${s.lateContent.jumpedFrames ? ` · ${s.lateContent.jumpedFrames} frame(s) skipped where the app visibly moved the viewport` : ''}`
           + `${s.lateContent.verdict === 'clean' ? '' : ' — ⚠ NOT a pass'}`
           + `${s.lateContent.firstLate ? ` · first at scrollTop ${s.lateContent.firstLate.atScrollTop}, key ${s.lateContent.firstLate.key ?? '?'}` : ''}`
         : '— (not measured)'} |`,
@@ -793,6 +1071,7 @@ export function renderMarkdown(report, stem) {
       lines.push('');
     }
   }
+  lines.push(...documentMarkdown(report.artifacts?.documents));
   if (report.incomplete?.length) lines.push('', '## Incomplete — do NOT rank anything from this report', '', ...report.incomplete.map((p) => `- ${p}`));
 
   lines.push('');
@@ -801,30 +1080,45 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
-const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
+const VALUE_FLAGS = ['document-cases', 'checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'energy-repeats', 'workloads-repeats', 'only', 'label', 'out', 'max-minutes', 'max-quiet-wait-minutes'];
+const BOOL_FLAGS = ['force-build', 'cached-only', 'dry-run', 'check', 'help', 'stream-completion-diagnostics', 'allow-asset-download', 'busy-machine'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
 
   node scripts/perf-lab/run.mjs [options]
 
   --scrollback-repeats <n>  scroll-back ceiling passes   (default 3, own boot)
+  --workloads-repeats <n>   lane F: full passes over every rung (default ${WORKLOAD_LANE.repeats}; >= 2 is needed for a spread); used by --only workloads
+  --energy-repeats <n>      energy lane: baseline/workload/baseline repeats (default ${ENERGY_LANE.repeats}, min ${ENERGY_LANE.minCleanRepeats}); used by --only energy
   --checkout <dir>          youcoded checkout to build   (default worktrees/perf-lab)
   --runs <n>                cold-start runs              (default 5)
   --history-repeats <n>     resume measurements per size (default 5)
   --workload-repeats <n>    workload passes              (default 3)
   --stall-repeats <n>       replay-stall passes per size (default 3)
-  --artifact-repeats <n>    artifact-panel passes        (default 3)
+  --artifact-repeats <n>    artifact-panel + document passes (default 3, shared owned boot)
+  --document-cases <ids>    bounded smoke subset (default ${DOCUMENT_CASE_IDS.join(',')})
   --projects-repeats <n>    Projects-view passes         (default 3)
   --terminal-repeats <n>    terminal-view switch passes  (default 3, one boot each)
   --native-stream-repeats <n>  native reply at cloud speed (default 3, one boot each)
+  --stream-completion-diagnostics  opt-in plain fixture/receipt/reveal diagnostic; requires --only native-stream; NOT a standard timing baseline
   --native-resume-repeats <n>  Resume list / resume / tear-off (default 3, one boot each)
   --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
+                           or --only workloads ALONE: lane F, file-size ladders (CSV/XLSX/DOCX/HTML/images incl. 4096x3072 + the owner's original JPEG),
+                           CSV full read, long path list, large diff, background index refresh; one boot per family; opt-in, own report contract
+                           or --only energy ALONE: lane C, an ESTIMATE of whole-chip power difference (amdgpu PPT), one boot,
+                           CPU-coverage self-check first; opt-in, never part of the default selection
   --force-build             rebuild even if the tree fingerprint is unchanged
+  --cached-only             execution refuses missing/stale/non-regular package or stamp before ANY build command; conflicts with --force-build
   --label <text>            appended to the output filename stem
   --out <dir>               report directory             (default perf-reports/)
   --max-minutes <n>         abort (exit ${EXIT.TIMEOUT}) past this budget  (default 90)
-  --dry-run                 print the resolved plan and exit 0, launching nothing
+  --max-quiet-wait-minutes <n>  longest the machine may stay busy before the run stops, BEFORE launching the app (default 20).
+                            This wait is NOT counted against --max-minutes (the measurement budget).
+  --busy-machine            measure NOW without waiting for quiet: busy readings and their causes are recorded, every window keeps
+                            its interference verdict, and the report is marked exploratory — never comparable, never clean.
+  --allow-asset-download    explicitly authorize downloading the ~490 MB model + engine archive when missing (default: refuse;
+                            PERF_LAB_ALLOW_ASSET_DOWNLOAD=1 is the same opt-in). Present, verified assets never need it.
+  --check, --dry-run        print the resolved plan and exit 0, launching nothing
   --help                    this text
 
 Exit codes: 0 clean · ${EXIT.ERROR} error · ${EXIT.TIMEOUT} over --max-minutes · ${EXIT.INCOMPLETE} report missing numbers a requested phase owed · ${EXIT.INTERRUPTED} interrupted`;
@@ -855,12 +1149,24 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     return v;
   };
 
+  if (raw['cached-only'] && raw['force-build']) throw Error('--cached-only conflicts with --force-build');
   const onlyTokens = (raw.only ?? PHASES.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
-  const unknown = onlyTokens.filter((p) => !PHASES.includes(p));
-  if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}`);
+  // WHY energy is not in PHASES: it has its own report contract (energy-lane.mjs), runs only on a quiet machine with a
+  // differential schedule, and must never join the default/full selection or the legacy PRIMARY contract.
+  const unknown = onlyTokens.filter((p) => !PHASES.includes(p) && p !== 'energy' && p !== 'workloads');
+  if (unknown.length) throw new Error(`perf-lab: --only got unknown phase(s) ${unknown.join(', ')}. Valid: ${PHASES.join(', ')}, energy (alone), workloads (alone)`);
+  if (onlyTokens.includes('energy') && onlyTokens.length !== 1) throw new Error('perf-lab: --only energy must be used alone (its windows need a quiet, undisturbed machine and its own report contract)');
+  if (onlyTokens.includes('workloads') && onlyTokens.length !== 1) throw new Error('perf-lab: --only workloads must be used alone (its rungs need a quiet machine and its own report contract)');
   if (!onlyTokens.length) throw new Error('perf-lab: --only selected no phases.');
+  if (raw['stream-completion-diagnostics'] && (onlyTokens.length !== 1 || onlyTokens[0] !== 'native-stream')) throw Error('Completion diagnostic requires --only native-stream (only native-stream, no other phases)');
+  if (raw['stream-completion-diagnostics'] && posInt('native-stream-repeats', 3) > 3) throw Error('Completion diagnostic supports at most 3 repeats');
+  const documentCaseIds = raw['document-cases'] === undefined ? [...DOCUMENT_CASE_IDS] : raw['document-cases'].split(',').map(s => s.trim());
+  if (!documentCaseIds.length || new Set(documentCaseIds).size !== documentCaseIds.length || documentCaseIds.some(id => !DOCUMENT_CASE_IDS.includes(id))) throw new Error('perf-lab: --document-cases must select a nonempty unique subset of the bounded smoke case IDs in --help.');
 
   return {
+    cachedOnly: raw['cached-only'] === true,
+    streamCompletionDiagnostics: raw['stream-completion-diagnostics'] === true,
+    documentCaseIds,
     checkout: resolve(raw.checkout ?? join(root, 'worktrees', 'perf-lab')),
     out: resolve(raw.out ?? join(root, 'perf-reports')),
     runs: posInt('runs', 5),
@@ -881,15 +1187,25 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     // conversations, so this is the most expensive phase per repeat — raise it
     // only when a delta is close to the noise.
     scrollbackRepeats: posInt('scrollback-repeats', 3),
+    // Q-3: at least 5 repeats; the lane attempts a few extra when some are disturbed.
+    energyRepeats: (() => { const v = posInt('energy-repeats', ENERGY_LANE.repeats); if (v < ENERGY_LANE.minCleanRepeats) throw new Error(`perf-lab: --energy-repeats must be at least ${ENERGY_LANE.minCleanRepeats} (owner decision Q-3)`); return v; })(),
     // 45 -> 90 on 2026-08-27: the default selection went from 6 boots to 8 (stall and
     // artifacts each take one of their own), and the stall phase alone is 9 transcript
     // resumes. A deadline that fires mid-phase throws away every minute already spent,
     // so the default is deliberately generous — narrow it with --only, not with this.
     maxMinutes: posInt('max-minutes', 90),
+    // WHY separate: waiting for a quiet machine used to be charged to --max-minutes (15 of 20
+    // minutes once), so the measurement was aborted mid-phase. The wait now has its own bound.
+    maxQuietWaitMinutes: posInt('max-quiet-wait-minutes', 20),
+    allowAssetDownload: raw['allow-asset-download'] === true || assetDownloadEnvAllowed(),
+    busyMachine: raw['busy-machine'] === true,
     only: new Set(onlyTokens),
+    energyLane: onlyTokens.length === 1 && onlyTokens[0] === 'energy',
+    workloadsRepeats: posInt('workloads-repeats', WORKLOAD_LANE.repeats),
+    workloadsLane: onlyTokens.length === 1 && onlyTokens[0] === 'workloads',
     label: raw.label ?? '',
     forceBuild: raw['force-build'] === true,
-    dryRun: raw['dry-run'] === true,
+    dryRun: raw['dry-run'] === true || raw.check === true,
     help: raw.help === true,
   };
 }
@@ -947,22 +1263,62 @@ async function captureRenderer(app) {
   log(formatRendererLine(capturedRenderer));
 }
 
+// Where withBoot appends each window's verdict (report.interference.windows) and the label it uses.
+// WHY module state: withBoot has ten call sites and a signature tests rely on; main() sets these once
+// and each phase names its window right before its boot (see `gate` in main).
+let interferenceSink = null;
+let windowLabel = 'boot';
+export function setInterferenceSink(sink) { interferenceSink = sink; }
+export function setWindowLabel(label) { windowLabel = label; }
+
 /** Boot, run `fn`, and always tear down — with the error-masking rule above. */
-async function withBoot(build, fixture, fn) {
-  const app = await launchApp({ binary: build.binary, appDir: build.appDir, fixture, cdpPort: CDP_PORT });
+export async function withBoot(build, fixture, fn, { mainLoop = false, _deps = {} } = {}) {
+  const deps = { launchApp, freeInspectorPort, connectMainLoop, waitFor, captureRenderer, ..._deps };
+  // WHY: only the owned artifacts boot exposes an independent main inspector.
+  // connectMainLoop proves PID, executable, private HOME and socket ownership
+  // before contacting it; a free-port race fails closed rather than attaching.
+  const port = mainLoop ? await deps.freeInspectorPort() : null;
+  const app = await deps.launchApp({ binary: build.binary, appDir: build.appDir, fixture, cdpPort: CDP_PORT,
+    extraArgs: mainLoop ? [`--inspect=127.0.0.1:${port}`] : [] });
   liveApp = app;
   let bodyFailed = false;
+  let watch = null;
   try {
     // The app is up when the renderer has listed sessions — that is the first moment
     // every startup mark this report reads has actually fired.
-    await waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 90_000 });
-    await captureRenderer(app);
+    await deps.waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 90_000 });
+    await deps.captureRenderer(app);
+    if (mainLoop) app.mainLoop = await deps.connectMainLoop(app, { binary: build.binary, home: fixture.home, port });
+    // WHY the watch starts here: noiseGate only looks BEFORE the boot; from here to the end of `fn`
+    // is the measured window, and another app starting inside it must be noticed, not accepted.
+    // Owned = this app's family (re-read every sample, it changes as windows open); the lab's own
+    // process tree is excluded inside the watch. The watch is also exposed as app.interference so
+    // background / native-stream sub-windows can take their own verdict from the same samples.
+    if (interferenceSink) {
+      watch = (deps.createWatch ?? createInterferenceWatch)();
+      watch.start(() => { try { return app.family(); } catch { return []; } });
+      app.interference = watch;
+    }
     return await fn(app);
   } catch (e) {
     bodyFailed = true;
     throw e;
   } finally {
-    await teardown({ rethrow: !bodyFailed });
+    // WHY before teardown and in `finally`: an aborted boot still has a window worth reporting, and
+    // teardown's own process churn must not be counted as interference.
+    if (watch) {
+      try {
+        const v = watch.stop(windowLabel);
+        interferenceSink.push(v);
+        log(`interference ${verdictLine(v)}`);
+      } catch (error) { console.error(`[perf-lab] interference watch failed to stop: ${error.message}`); }
+    }
+    // Disconnect must never prevent the externally owned process teardown.
+    try { app.mainLoop?.close(); }
+    catch (error) {
+      if (!bodyFailed) throw error;
+      console.error(`[perf-lab] Main inspector cleanup failed: ${error.message}`);
+    } finally { await teardown({ rethrow: !bodyFailed }); }
   }
 }
 
@@ -1002,31 +1358,58 @@ export const NOISE_GATE_MAX_WAIT_MS = 20 * 60_000;
  * Every busy poll is counted into the report so a reader can see the run happened
  * on a noisy machine.
  *
- * `deadline` is the run's absolute --max-minutes deadline, when there is one.
+ * WHY its own bound (changed 2026-10-21): the wait used to be capped by the run's
+ * --max-minutes deadline AND consumed it, so 15 minutes of waiting left a 20-minute
+ * budget unable to finish a phase and the run died mid-measurement. Now `maxWaitMs`
+ * bounds the wait alone, `onWaited(ms)` lets the caller credit the waited time back to
+ * the measurement deadline, and exceeding the bound stops the run BEFORE the next boot
+ * with noise.neverQuiet recorded (the report is then INCOMPLETE, never healthy).
+ * All clocks/sensors are injectable so tests are deterministic.
  */
-async function noiseGate(noise, deadline = Infinity) {
-  const startedAt = Date.now();
-  const giveUpAt = Math.min(startedAt + NOISE_GATE_MAX_WAIT_MS, deadline);
+export async function noiseGate(noise, {
+  maxWaitMs = NOISE_GATE_MAX_WAIT_MS, onWaited = () => {}, pollMs = NOISE_GATE_POLL_MS,
+  now = Date.now, sleep: nap = sleep, loadAvg = loadAvg1, busyPct = machineBusyPct, say = log,
+  // WHY the default depends on busyPct: a test that injects a fake busyPct has no real /proc to scan
+  // (and must not wait real seconds); only the real sensor path also looks up WHO is busy.
+  whoIsBusy = busyPct === machineBusyPct ? (s) => topForeignProcesses({ seconds: s }) : async () => [],
+  busyMachine = false,
+} = {}) {
+  const startedAt = now();
+  const credit = () => { const ms = now() - startedAt; noise.quietWaitMs += ms; onWaited(ms); };
   for (;;) {
-    const la = loadAvg1();
-    const busy = round1(await machineBusyPct(3));
-    if (la < 4 && busy < 10) {
+    const la = loadAvg();
+    // Both readings span the same 3 s; the offender scan is free here and only used when the machine is busy.
+    const [busyRaw, offenders] = await Promise.all([busyPct(3), whoIsBusy(3).catch(() => [])]);
+    const busy = round1(busyRaw);
+    // WHY --busy-machine (owner, 2026-10-22: "real concrete measurements now" while other work runs): proceed
+    // without waiting, but write down every busy reading and who caused it. The report is marked exploratory
+    // (validateReport + assessComparability refuse it), so big effects such as multi-second freezes can be
+    // seen now while small A/B differences still need a quiet machine.
+    if (busyMachine && !(la < 4 && busy < 10)) {
+      (noise.busyMachineReadings ??= []).push({ at: new Date(now()).toISOString(), load: la, busyPct: busy, busyWith: describeOffenders(offenders) || null });
+      say(`machine busy (load ${la}, ${busy}% cpu${offenders.length ? `; ${describeOffenders(offenders)}` : ''}) — measuring anyway (--busy-machine: exploratory, not comparable)`);
+    }
+    if (busyMachine || (la < 4 && busy < 10)) {
       // loadAvgBefore/machineBusyPctBefore are the FIRST accepted reading (the state
       // the report started from); the max fields say how bad it got across all gates.
       if (noise.loadAvgBefore === null) { noise.loadAvgBefore = la; noise.machineBusyPctBefore = busy; }
       noise.maxLoadAvgAccepted = Math.max(noise.maxLoadAvgAccepted ?? 0, la);
       noise.maxBusyPctAccepted = Math.max(noise.maxBusyPctAccepted ?? 0, busy);
+      credit();
       return;
     }
-    const waitedS = Math.round((Date.now() - startedAt) / 1000);
-    if (Date.now() + NOISE_GATE_POLL_MS > giveUpAt) {
-      throw new Error(`perf-lab: the machine never went idle (load < 4 and CPU < 10% over 3s) in ${waitedS}s of waiting — last reading load ${la}, ${busy}% cpu; refusing to take official numbers on a busy machine.`);
+    const waitedMs = now() - startedAt;
+    const waitedS = Math.round(waitedMs / 1000);
+    if (waitedMs + pollMs > maxWaitMs) {
+      credit();
+      noise.neverQuiet = { waitedS, load: la, busyPct: busy, boundMin: Math.round(maxWaitMs / 60000), blockedBy: describeOffenders(offenders) };
+      throw Object.assign(new Error(`machine never became quiet: load ${la}, ${busy}% cpu after ${waitedS}s of waiting${offenders.length ? ` (blocked by: ${describeOffenders(offenders)})` : ''} (bound ${Math.round(maxWaitMs / 60000)} min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.`), { exitCode: EXIT.INCOMPLETE });
     }
     // Says WAITING, and how long it has been, so a queued run is never mistaken
     // for a hung one.
-    log(`machine busy (load ${la}, ${busy}% cpu) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round((giveUpAt - startedAt) / 60000)} min)`);
+    say(`machine busy (load ${la}, ${busy}% cpu${offenders.length ? `; waiting: ${describeOffenders(offenders)}` : ''}) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round(maxWaitMs / 60000)} min; does not use the --max-minutes budget)`);
     noise.discardedRuns++;
-    await sleep(NOISE_GATE_POLL_MS);
+    await nap(pollMs);
   }
 }
 
@@ -1160,6 +1543,22 @@ async function loadNativeResume() {
   }
 }
 
+async function loadWorkloads() {
+  try {
+    return await import('./scenario-workloads.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the workloads lane needs scripts/perf-lab/scenario-workloads.mjs, which could not be loaded: ${e.message}`);
+  }
+}
+
+async function loadEnergy() {
+  try {
+    return await import('./scenario-energy.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the energy lane needs scripts/perf-lab/scenario-energy.mjs, which could not be loaded: ${e.message}`);
+  }
+}
+
 async function loadScrollback() {
   try {
     return await import('./scenario-scrollback.mjs');
@@ -1169,10 +1568,14 @@ async function loadScrollback() {
 }
 
 /** Read the build stamp WITHOUT building — so --dry-run can report freshness honestly. */
-async function buildFreshness(checkout) {
+export async function buildFreshness(checkout, { cachedOnly = false, build = buildApp } = {}) {
   const desktop = join(checkout, 'desktop');
   const binary = join(desktop, 'release', 'linux-unpacked', 'youcoded');
   const stamp = join(desktop, 'release', '.perf-lab-build.json');
+  if (cachedOnly) {
+    try { return { ...await build(checkout, { cachedOnly: true, skipIfFresh: true }), haveBinary: true, fresh: true, cachedOnly: true }; }
+    catch (error) { return { error: error.message, binary, haveBinary: false, fresh: false, cachedOnly: true }; }
+  }
   try {
     const fp = await treeFingerprint(checkout);
     let prev = null;
@@ -1186,26 +1589,61 @@ async function buildFreshness(checkout) {
 
 // ── The run ──────────────────────────────────────────────────────────────────
 
-async function main(argv) {
-  let cfg;
+/** Is a report stem already used by archived boot logs? (uniqueStem checks out-dir files itself.) */
+const logsTaken = (stemCandidate) => {
+  try { return readdirSync(join(SCRATCH, 'logs')).some((name) => name.startsWith(`${stemCandidate}-`)); } catch { return false; }
+};
+
+/**
+ * One lab run. Exported so ab.mjs can run A then B in-process with identical options
+ * (no second runner). `ctx` is an optional out-parameter: on a finished run it receives
+ * { jsonPath, stem, report, build } so a caller never has to scrape stdout.
+ * WHY the wrapper: main registers a SIGINT handler and a watchdog timer; when called twice
+ * in one process the first run's watchdog would otherwise still be armed and could kill
+ * the second run, so everything it registers is undone when it returns.
+ */
+export async function main(argv, ctx = {}) {
+  const cleanup = [];
+  try { return await mainRun(argv, ctx, cleanup); }
+  finally { for (const undo of cleanup.reverse()) { try { undo(); } catch { /* best effort */ } } }
+}
+
+async function mainRun(argv, ctx, cleanup) {
+  let cfg, control;
   try {
     cfg = parseArgs(argv);
+    control = controlFromEnv();
   } catch (e) {
     console.error(e.message);
     return EXIT.ERROR;
   }
   if (cfg.help) { console.log(USAGE); return EXIT.OK; }
+  // WHY the label: a known-change control must never be mistaken for a normal run, so the
+  // file name itself says so (identity.control records the details).
+  if (control) cfg.label = [cfg.label, `CONTROL-terminal-delay-${control.delayMs}ms`].filter(Boolean).join('-');
 
-  const deadline = Date.now() + cfg.maxMinutes * 60_000;
+  assetDownloadAllowed = cfg.allowAssetDownload === true;
+  // WHY `let`: time spent waiting for a quiet machine is credited back (see noiseGate), so the
+  // measurement budget is --max-minutes of actual work, not of work plus waiting.
+  let deadline = Date.now() + cfg.maxMinutes * 60_000;
+  let rearmWatchdog = () => {};
+  const quiet = {
+    maxWaitMs: cfg.maxQuietWaitMinutes * 60_000,
+    onWaited: (ms) => { deadline += ms; rearmWatchdog(); },
+    busyMachine: cfg.busyMachine === true,
+  };
+  // WHY gate(label): the quiet check before a boot also names the measured window that boot opens, so
+  // the interference verdicts in the report say which phase they belong to.
+  const gate = (label) => { setWindowLabel(label); return noiseGate(report.noise, quiet); };
   const checkDeadline = () => {
     if (Date.now() > deadline) throw Object.assign(new Error(`--max-minutes ${cfg.maxMinutes} exceeded`), { exitCode: EXIT.TIMEOUT });
   };
 
   // ---- --dry-run: resolve everything, launch nothing ------------------------
   if (cfg.dryRun) {
-    const fresh = await buildFreshness(cfg.checkout);
+    const fresh = await buildFreshness(cfg.checkout, { cachedOnly: cfg.cachedOnly });
     const timestamp = new Date().toISOString();
-    const stem = stemFor({ timestamp, sha: fresh.sha, label: cfg.label });
+    const stem = uniqueStem(cfg.out, stemFor({ timestamp, sha: fresh.sha, label: cfg.label }), { extraTaken: logsTaken });
     const scenarioBoot = ['history', 'shots'].some((p) => cfg.only.has(p));
     let xvfb;
     try { xvfb = resolveXvfbBin(); } catch (e) { xvfb = `(resolution failed: ${e.message})`; }
@@ -1214,8 +1652,10 @@ async function main(argv) {
       '',
       `  checkout          ${cfg.checkout}`,
       `  build             ${fresh.error ? `cannot fingerprint: ${fresh.error}` : `sha ${fresh.sha?.slice(0, 7)} (${fresh.branch}${dirtyNote(fresh.dirty)})`}`,
-      `  binary            ${fresh.binary} ${fresh.haveBinary ? '(present)' : '(MISSING — will be built)'}`,
-      `  build freshness   ${cfg.forceBuild ? 'FORCED rebuild (--force-build)' : fresh.fresh ? `fresh, reused (built ${fresh.builtAt})` : 'stale or absent — will rebuild (1-3 min)'}`,
+      `  binary            ${fresh.binary} ${fresh.haveBinary ? '(present)' : cfg.cachedOnly ? '(UNAVAILABLE/INVALID — cached-only refuses, no build)' : '(MISSING — will be built)'}`,
+      `  build freshness   ${cfg.cachedOnly ? fresh.fresh ? `cached-only: reusable now (built ${fresh.builtAt}); revalidated at execution` : 'cached-only REFUSED: no build fallback' : cfg.forceBuild ? 'FORCED rebuild (--force-build)' : fresh.fresh ? `fresh, reused (built ${fresh.builtAt})` : 'stale or absent — will rebuild (1-3 min)'}`,
+      `  build policy      ${cfg.cachedOnly ? 'CACHED ONLY — execution rechecks exact fingerprint and regular package/stamp paths; never builds' : 'allow build on missing/stale package'}`,
+      `  stream fixture    ${cfg.streamCompletionDiagnostics ? JSON.stringify(nativeStreamFixtureOptions(cfg)) + '; local engine assets not required or provisioned' : 'standard native fixture policy unchanged'}`,
       `  Xvfb binary       ${xvfb}`,
       `  workload module   ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-workload.mjs')) ? 'present' : 'ABSENT — the workload phase would fail'}`,
       `  stall module      ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-replay-stall.mjs')) ? 'present' : 'ABSENT — the stall phase would fail'}`,
@@ -1238,10 +1678,16 @@ async function main(argv) {
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
       `  stall passes      ${cfg.only.has('stall') ? `${cfg.stallRepeats} per size (${STALL_SIZES.join(', ')}), own boot` : '—'}`,
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
+      `  document profile  smoke (bounded subset); ${cfg.documentCaseIds.join(', ')}`,
+      `  document controls ${DOCUMENT_CONTROL_TYPES.join(', ')}; renderer-block includes async wait then sync block; 15000ms / 1536MiB conservative family RSS safety cap per case`,
+      `  document coverage selected viewers only; hardware and watchers unmeasured; path-list, CSV full-read and the larger ladders are lane F (--only workloads), not these smoke documents`,
       `  projects passes   ${cfg.only.has('projects') ? `${cfg.projectsRepeats}, own boot` : '—'}`,
       `  terminal passes   ${cfg.only.has('terminal') ? `${cfg.terminalRepeats}, one boot each` : '—'}`,
       `  native-stream     ${cfg.only.has('native-stream') ? `${cfg.nativeStreamRepeats}, one boot each (fake endpoint on :${FAKE_PROVIDER_PORT})` : '—'}`,
+      `  stream profile    ${cfg.streamCompletionDiagnostics ? 'PLAIN COMPLETION DIAGNOSTIC revision 2; NOT standard Markdown timing baseline; 3000 deltas at 150/s; 10s bounded bridge/reveal waits' : 'standard Markdown timing profile'}`,
       `  native-resume     ${cfg.only.has('native-resume') ? `${cfg.nativeResumeRepeats}, one boot each (100 seeded native sessions)` : '—'}`,
+      `  energy lane       ${cfg.only.has('energy') ? `${cfg.energyRepeats} baseline/workload/baseline repeats (>= ${ENERGY_LANE.minCleanRepeats} clean needed) after a CPU-coverage self-check, one boot; ESTIMATE of whole-chip power difference` : '—'}`,
+      `  workloads lane    ${cfg.only.has('workloads') ? `${cfg.workloadsRepeats} pass(es) over ${ladderGroups().length} groups (${ladderGroups().reduce((n, g) => n + g.rungs.length, 0)} rungs, one boot per group per pass, extra boots only after a fatal rung); thresholds ${Object.entries(WORKLOAD_THRESHOLDS).map(([k, v]) => `${k} ${v}`).join(', ')}; generation memory-bounded outside the child` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
@@ -1251,18 +1697,25 @@ async function main(argv) {
       `  logs archived to  ${join(SCRATCH, 'logs')}/${stem}-<boot>.log`,
       `  fixture HOME      ${join(SCRATCH, 'home')} (wiped and rebuilt per boot)`,
       '',
-      `  deadline          ${cfg.maxMinutes} min — ${new Date(deadline).toISOString()} (exit ${EXIT.TIMEOUT} past it)`,
+      `  run lock          ${join(SCRATCH, 'run.lock')} (a second concurrent run is refused)`,
+      `  control           ${control ? `INJECTED DELAY ${control.delayMs} ms in the terminal scenario (${control.affects}) — NOT a normal run` : 'none (normal run)'}`,
+      `  boots             ${bootPlan(cfg).total} total`,
       '',
-      `  compare.mjs PRIMARY paths this selection MUST produce (${primaryPathsFor(cfg.only).length}/${PRIMARY.length}):`,
-      ...primaryPathsFor(cfg.only).map((p) => `    ${p}`),
-      ...(primaryPathsFor(cfg.only).length < PRIMARY.length
+      `  deadline          ${cfg.maxMinutes} min of measurement — ${new Date(deadline).toISOString()} (exit ${EXIT.TIMEOUT} past it; quiet-machine waiting is NOT counted)`,
+      `  quiet-wait bound  ${cfg.maxQuietWaitMinutes} min waiting for load < 4 and CPU < 10% (separate from the deadline); past it the run stops before launching, exit ${EXIT.INCOMPLETE}, report INCOMPLETE ("machine never became quiet")`,
+      `  model assets      ${(() => { const a = assetPreflight(cfg); return a.state === 'present' ? `present+verified (${a.detail})` : a.state === 'missing' ? `MISSING — would REFUSE before any launch: ${a.detail}. Pass --allow-asset-download or select model-free phases` : a.state === 'authorized' ? `download AUTHORIZED (--allow-asset-download): ${a.detail}` : a.detail; })()}`,
+      '',
+      cfg.streamCompletionDiagnostics ? '  PRIMARY acceptance  unavailable — plain completion diagnostic; raw per-leg validity only'
+        : `  compare.mjs PRIMARY paths this selection MUST produce (${primaryPathsFor(cfg.only).length}/${PRIMARY.length}):`,
+      ...(cfg.streamCompletionDiagnostics ? [] : primaryPathsFor(cfg.only).map((p) => `    ${p}`)),
+      ...(!cfg.streamCompletionDiagnostics && primaryPathsFor(cfg.only).length < PRIMARY.length
         ? ['', `  not produced by this selection (compare.mjs cannot judge them from this report):`,
            ...PRIMARY.filter((p) => !cfg.only.has(phaseOfPath(p))).map((p) => `    ${p}`)]
         : []),
       '',
     ];
     console.log(lines.join('\n'));
-    return EXIT.OK;
+    return cfg.cachedOnly && !fresh.fresh ? EXIT.ERROR : EXIT.OK;
   }
 
   // ---- SIGINT + watchdog ---------------------------------------------------
@@ -1271,40 +1724,96 @@ async function main(argv) {
   // proved it owns and then exits 130. Exiting here first would pre-empt it and have the
   // two racing over the same pids. So when a boot is live we stand back and let it work,
   // with an unref'd 5 s backstop in case its handlers were somehow already detached.
-  process.on('SIGINT', () => {
+  const onSigint = () => {
     console.error('\n[perf-lab] SIGINT — tearing down.');
     if (!liveApp) process.exit(EXIT.INTERRUPTED);
     setTimeout(() => process.exit(EXIT.INTERRUPTED), 5_000).unref();
-  });
+  };
+  process.on('SIGINT', onSigint);
+  cleanup.push(() => process.off('SIGINT', onSigint));
   // checkDeadline() only fires at phase boundaries; this catches a boot that HANGS
   // mid-phase. process.exit runs launchApp's own 'exit' handler, which SIGKILLs the
   // family — so "abort after killing the app family" holds on this path too.
-  setTimeout(() => {
-    console.error(`[perf-lab] --max-minutes ${cfg.maxMinutes} exceeded mid-phase; killing the app family and aborting.`);
-    process.exit(EXIT.TIMEOUT);
-  }, cfg.maxMinutes * 60_000).unref();
+  // WHY re-armed: quiet-wait time moves `deadline` later, so the timer re-checks it when it fires.
+  let watchdog;
+  const armWatchdog = () => {
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => {
+      if (Date.now() < deadline) { armWatchdog(); return; }
+      console.error(`[perf-lab] --max-minutes ${cfg.maxMinutes} exceeded mid-phase; killing the app family and aborting.`);
+      process.exit(EXIT.TIMEOUT);
+    }, Math.max(1, deadline - Date.now()));
+    watchdog.unref();
+  };
+  rearmWatchdog = armWatchdog;
+  armWatchdog();
+  cleanup.push(() => clearTimeout(watchdog));   // WHY: a finished run must not leave a timer that kills the next run in the same process
+
+  // WHY (acceptance A5): refuse a concurrent run instead of corrupting both. Taken AFTER the
+  // dry-run branch (a plan is always printable) and before anything is built or launched.
+  // ab.mjs holds the lock across A then B (ctx.lockHeld) so nothing can slip in between them.
+  if (!ctx.lockHeld) {
+    let lock;
+    try { lock = acquireRunLock(join(SCRATCH, 'run.lock'), { label: cfg.label }); }
+    catch (e) { console.error(`[perf-lab] ${e.message}`); return EXIT.ERROR; }
+    cleanup.push(() => lock.release());
+  }
+  // The renderer reading is module state; a second run in this process must not inherit the first's.
+  resetCapturedRenderer();
 
   const report = emptyReport({ label: cfg.label });
+  // WHY recorded on the report itself: the label must travel with the numbers so no reader or comparison mistakes them for quiet-machine results.
+  if (cfg.busyMachine) report.exploratory = { mode: 'busy-machine', note: 'measured without waiting for a quiet machine; every busy reading and its cause is in noise.busyMachineReadings, every window keeps its interference verdict; not comparable' };
+  setInterferenceSink(report.interference.windows);
+  // WHY before execution: an exception on repeat 3 cannot redefine 2 as complete.
+  // WHY an empty manifest for energy: buildLegacyExecution knows only the legacy phases; energyExecution carries the lane's contract.
+  report.legacyExecution = cfg.energyLane || cfg.workloadsLane ? { revision: LEGACY_EXECUTION_REVISION, phases: {} } : buildLegacyExecution(cfg);
+  if (cfg.energyLane) report.energyExecution = { revision: ENERGY_LANE.revision, repeats: cfg.energyRepeats, minCleanRepeats: ENERGY_LANE.minCleanRepeats, workload: 'native-stream-visible', meter: 'amdgpu-hwmon-power1-PPT' };
+  if (cfg.workloadsLane) report.workloadsExecution = { revision: WORKLOAD_LANE.revision, repeats: cfg.workloadsRepeats, groups: ladderGroups().map((g) => g.id) };
+  configureStreamCompletion(report, cfg);
   let exitCode = EXIT.OK;
-  let stem = stemFor({ timestamp: report.timestamp, sha: 'nosha', label: cfg.label });
+  let stem = uniqueStem(cfg.out, stemFor({ timestamp: report.timestamp, sha: 'nosha', label: cfg.label }), { extraTaken: logsTaken });
+  const checkpoint = () => {
+    // WHY: a later watchdog/process failure must not erase earlier raw cases.
+    const documents = report.artifacts?.documents;
+    if (documents) {
+      const problems = documentProblems(documents), breaches = documentBreaches(documents);
+      documents.validity = { valid: problems.length === 0, problems };
+      documents.performance = { verdict: problems.length ? 'incomplete' : breaches.length ? 'breached' : 'within-budgets', breaches };
+    }
+    mkdirSync(cfg.out, { recursive: true });
+    publishReportJson(cfg.out, stem, report);
+    writeFileSync(join(cfg.out, `${stem}.md`), renderMarkdown(report, stem));
+  };
 
   try {
-    log('building', cfg.checkout);
-    const build = await buildApp(cfg.checkout, { skipIfFresh: !cfg.forceBuild });
+    // WHY first: a missing model/engine without the explicit opt-in must fail before the build
+    // and before any app launch, with zero network calls.
+    requireAssetsOrAuthorization(cfg);
+    log(cfg.cachedOnly ? 'validating cached-only package (no build fallback)' : 'building', cfg.checkout);
+    const build = await prepareRunnerBuild(cfg);
     Object.assign(report, { sha: build.sha, branch: build.branch, dirty: build.dirty });
-    stem = stemFor({ timestamp: report.timestamp, sha: build.sha, label: cfg.label });
+    // WHY uniqueStem: same commit + label inside one minute used to overwrite the earlier report.
+    stem = uniqueStem(cfg.out, stemFor({ timestamp: report.timestamp, sha: build.sha, label: cfg.label }), { extraTaken: logsTaken });
+    // WHY here: the package is only known after the build/cached validation, and hashing it
+    // before any boot proves WHICH bytes are about to be measured (acceptance A3).
+    report.identity = buildIdentity({ cfg, fixture: fixtureIdentity(cfg), instrument: instrumentIdentity(LAB_DIR),
+      pkg: await packageIdentity(build.appDir), control, environment: readEnvironment() });
     log(`built ${build.sha.slice(0, 7)} (${build.branch}${dirtyNote(build.dirty)}) → ${build.binary}`);
 
     // Let startXvfb's own error through untouched — it names the exact install command.
     const x = await startXvfb();
     log(`display ${x.display} ${x.reused ? 'reused' : 'started'}`);
+    // WHY a gate before the first phase: a never-quiet machine now stops the run here, before
+    // any app boot, instead of inside a phase after minutes of measurement.
+    await noiseGate(report.noise, quiet);
 
     // ---- Cold starts ------------------------------------------------------
     if (cfg.only.has('startup')) {
       const runs = [];
       for (let i = 0; i < cfg.runs; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await gate(`startup-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log });
         const run = await withBoot(build, fixture, async (app) => {
           const startup = await collectStartup(app, fixture);
@@ -1348,10 +1857,10 @@ async function main(argv) {
       const wruns = [];
       for (let i = 0; i < cfg.workloadRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await gate(`workload-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
-          const r = await runWorkloadScenario(app, fixture);
+          const r = await runWorkloadScenario(app, fixture, report.legacyExecution.phases.workload.options);
           wruns.push(r);
           log(`workload ${i + 1}/${cfg.workloadRepeats}: switch p95 ${r.switchP95Ms}ms, long tasks ${r.probe?.longtaskTotalMs}ms, ${r.cpuDuringPct}% cpu, ${r.pssAfterMb}MB`);
           report.errors.workloadBoots.push(readErrorLines(fixture, stem, `workload-${i + 1}`));
@@ -1363,7 +1872,7 @@ async function main(argv) {
     // ---- One scenario boot for history + screenshots -----------------------
     if (['history', 'shots'].some((p) => cfg.only.has(p))) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await gate('history+shots');
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
         const shotDir = join(cfg.out, 'shots', stem);
@@ -1471,7 +1980,7 @@ async function main(argv) {
     // last. A clean boot is the only state in which the blame means anything.
     if (cfg.only.has('stall')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await gate('stall');
       const { runReplayStallScenario, MEASURES: STALL_MEASURES } = await loadReplayStall();
       report.measures.stall = STALL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1484,7 +1993,7 @@ async function main(argv) {
               : `TIMED OUT after ${run.timedOutAfterMs ?? '?'}ms with ${run.renderedEntries ?? 0} entries on screen`}`),
         });
         for (const [size, s] of Object.entries(report.replayStall)) {
-          log(`stall.${size}: ipc max ${s.median.ipcMaxMs}ms (main ${s.median.mainProcessStallMs}ms / renderer ${s.median.rendererStallMs}ms) — ${s.blame ?? 'attribution UNAVAILABLE'}, ${s.stabilizedRuns}/${s.runs.length} stabilized`);
+          log(`stall.${size}: raw IPC max ${s.median.ipcMaxMs}ms (union excess ${s.median.ipcBlockedWindowMs}ms / renderer overlap ${s.median.rendererStallMs}ms / unknown ${s.median.unknownStallMs}ms) — ${s.blame?.verdict ?? 'attribution UNAVAILABLE'}, ${s.stabilizedRuns}/${s.runs.length} stabilized`);
           for (const w of s.warnings) log(`stall.${size} warning: ${w}`);
         }
         report.errors.stallBoot = readErrorLines(fixture, stem, 'stall');
@@ -1499,22 +2008,54 @@ async function main(argv) {
     // keeps a failure in this phase from silently corrupting a different one.
     if (cfg.only.has('artifacts')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await gate('artifacts');
       const { runArtifactScenario, medianRun: artifactMedian, MEASURES: ARTIFACT_MEASURES } = await loadArtifacts();
       report.measures.artifacts = ARTIFACT_MEASURES;
-      const fixture = buildFixture(SCRATCH, { log });
+      const fixtureOptions = artifactFixtureOptions();
+      const disk = requireDiskHeadroom(SCRATCH);
+      const fixture = buildFixture(SCRATCH, { log, ...fixtureOptions });
+      fixture.checkout = cfg.checkout;
+      const metadata = artifactMeasurementMetadata(disk);
+      report.measures.artifacts = metadata.descriptor;
+      report.observations = { ...report.observations, artifacts: metadata.observations };
+      const manifest = await buildStallFixtures(join(fixture.home, 'stall-documents'), { checkout: cfg.checkout, profile: 'smoke' });
+      const documents = { schema: 1, scope: 'app-viewer', expectedRepeats: cfg.artifactRepeats,
+        requiredCaseIds: cfg.documentCaseIds, optionalCoverage: DOCUMENT_OPTIONAL_COVERAGE,
+        manifest, runs: [], provenance: { profile: manifest.profile, caseIds: cfg.documentCaseIds,
+          checkout: cfg.checkout, build, labSource: await treeFingerprint(ROOT),
+          node: process.version, platform: process.platform, arch: process.arch,
+          memoryPolicy: 'Conservative summed owned-family RSS safety cap; not unique memory or leak evidence',
+          renderingPolicy: 'Existing GPU helper is context only, not hardware acceleration certification',
+          instrumentHashes: Object.fromEntries(DOCUMENT_INSTRUMENT_FILES.map(name => [name,
+            createHash('sha256').update(readFileSync(join(ROOT, 'scripts/perf-lab', name))).digest('hex')])),
+          sourceHashes: [
+            ...['run.mjs', 'document-report.mjs', 'scenario-document-stalls.mjs', 'main-loop-probe.mjs', 'probe-loop.mjs', 'probe-ipc.mjs', 'stall-fixtures.mjs'].map(f => join(ROOT, 'scripts/perf-lab', f)),
+            ...['XlsxView.tsx', 'CsvView.tsx', 'DocxView.tsx', 'HtmlView.tsx'].map(f => join(cfg.checkout, 'desktop/src/renderer/components/artifact-views', f)),
+          ].map(file => ({ file, sha256: createHash('sha256').update(readFileSync(file)).digest('hex') })) } };
+      report.artifacts = { ...buildArtifactsSection([], artifactMedian), documents };
+      checkpoint();
       await withBoot(build, fixture, async (app) => {
         const runs = [];
         for (let i = 0; i < cfg.artifactRepeats; i++) {
           checkDeadline();
-          const r = await runArtifactScenario(app, fixture);
+          const r = await runArtifactScenario(app, fixture, report.legacyExecution.phases.artifacts.options);
           runs.push(r);
           log(`artifacts ${i + 1}/${cfg.artifactRepeats}: open md large ${r.open?.mdLarge?.openMs}ms, keystroke p95 ${r.typing?.codeLarge?.keystroke?.p95Ms}ms, html swap ${r.htmlNav?.swap?.medianMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms`);
           for (const w of r.warnings ?? []) log(`artifacts warning: ${w}`);
+          report.artifacts = { ...buildArtifactsSection(runs, artifactMedian), documents };
+          checkpoint();
+          const result = await recordDocumentRepeat(documents, onCase => runDocumentStallCases(app, fixture, manifest, {
+            checkout: cfg.checkout, build, caseIds: cfg.documentCaseIds, timeoutMs: 15000, maxRssMb: 1536, onCase,
+          }), row => {
+            checkpoint();
+            if (row) log(`document repeat ${i + 1}: ${row.id}: ${row.status}`);
+          });
+          // A fatal case has already killed the owned family. Do not launch or
+          // measure another repeat on its dead renderer, even if cleanup succeeded.
+          if (result.fatal || result.descriptor?.cleanupError) throw new Error('Document adapter stopped the owned boot; remaining repeats incomplete');
         }
-        report.artifacts = buildArtifactsSection(runs, artifactMedian);
         report.errors.artifactsBoot = readErrorLines(fixture, stem, 'artifacts');
-      });
+      }, { mainLoop: true });
     }
 
     // ---- Projects view: its OWN boot ---------------------------------------
@@ -1525,7 +2066,7 @@ async function main(argv) {
     // rebuild contract still holds and nothing else ever sees the extra project.
     if (cfg.only.has('projects')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await gate('projects');
       const { runProjectsScenario, seedProjectsFixture, medianRun: projectsMedian, MEASURES: PROJECTS_MEASURES } = await loadProjects();
       report.measures.projects = PROJECTS_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1535,7 +2076,7 @@ async function main(argv) {
         const runs = [];
         for (let i = 0; i < cfg.projectsRepeats; i++) {
           checkDeadline();
-          const r = await runProjectsScenario(app, fixture, seeded);
+          const r = await runProjectsScenario(app, fixture, seeded, report.legacyExecution.phases.projects.options);
           runs.push(r);
           log(`projects ${i + 1}/${cfg.projectsRepeats}: open ${r.open?.openMs}ms (counts ${r.open?.countsMs}ms, ${r.open?.fileCards}+${r.open?.folderCards} cards), first key ${r.search?.firstKeyMs}ms, key p95 ${r.search?.keystroke?.p95Ms}ms, filter ${r.filter?.codeMs}ms for ${r.filter?.fileCards} cards, scroll long tasks ${r.scrollFlat?.longtaskTotalMs}ms, thrash to-Files p95/max ${r.thrash?.toFiles?.p95Ms}/${r.thrash?.toFiles?.maxMs}ms (ipc max ${r.thrash?.ipcMaxMs}ms), switch ${r.switch?.smallMs}/${r.switch?.bigMs}ms, reopen ${r.reopen?.openMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms max ${r.ipcSumOfSteps?.maxMs}ms`);
           for (const w of r.warnings ?? []) log(`projects warning: ${w}`);
@@ -1557,10 +2098,10 @@ async function main(argv) {
       const truns = [];
       for (let i = 0; i < cfg.terminalRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await gate(`terminal-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
-          const r = await runTerminalScenario(app, fixture);
+          const r = await runTerminalScenario(app, fixture, report.legacyExecution.phases.terminal.options);
           truns.push(r);
           log(`terminal ${i + 1}/${cfg.terminalRepeats}: switch painted median ${r.switchPaintedMedianMs}ms (p95 ${r.switchPaintedP95Ms}ms, ${r.verifiedSwitches}/${r.switchCount} verified, renderer ${r.renderer}), atlas clears/switch ${r.atlasClearsPerSwitch} (${r.clearsOutsideSlots} outside the slots), long task max ${r.longtaskMaxMs}ms, ipc stall ${r.ipc?.totalStallMs}ms from ${r.ipc?.pings} pings (${r.ipc?.readErrors} slots lost their reading)`);
           for (const w of r.warnings ?? []) log(`terminal warning: ${w}`);
@@ -1577,15 +2118,20 @@ async function main(argv) {
     // phase's fixture has, so nothing else can share this boot.
     if (cfg.only.has('native-stream')) {
       const { runNativeStreamScenario, medianRun: streamMedian, MEASURES: STREAM_MEASURES } = await loadNativeStream();
-      report.measures.nativeStream = STREAM_MEASURES;
+      if (!cfg.streamCompletionDiagnostics) report.measures.nativeStream = STREAM_MEASURES;
       const sruns = [];
       for (let i = 0; i < cfg.nativeStreamRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
-        const fixture = buildFixture(SCRATCH, { log, fakeProvider: true });
+        await gate(`native-stream-${i + 1}`);
+        const fixture = createNativeStreamFixture(SCRATCH, cfg, { log });
         await withBoot(build, fixture, async (app) => {
-          const r = await runNativeStreamScenario(app, fixture);
+          const r = await runNativeStreamScenario(app, fixture, report.legacyExecution.phases['native-stream'].options);
           sruns.push(r);
+          if (cfg.streamCompletionDiagnostics) {
+            // Preserve raw legs even if subsequent owned-boot teardown fails.
+            report.nativeStream = buildRepeatedSection(sruns, streamMedian);
+            log(`stream-completion ${i + 1}/${cfg.nativeStreamRepeats}: ${r.completionDiagnostic?.status ?? 'missing'}; not a standard timing baseline`);
+          }
           log(`native-stream ${i + 1}/${cfg.nativeStreamRepeats}: visible ${r.visible?.deltasSent} deltas at ${r.visible?.perSecAchieved}/s -> long tasks ${r.visible?.longtaskTotalMs}ms total / max ${r.visible?.longtaskMaxMs}ms, ${r.visible?.commits} commits, ${r.visible?.framesPerSec} fps, ipc stall ${r.visible?.ipc?.totalStallMs}ms; switching median ${r.switching?.switchPaintedMedianMs}ms (${r.switching?.verifiedSwitches}/${r.switching?.duringStream} verified during the stream); hidden long tasks ${r.hidden?.longtaskTotalMs}ms`);
           for (const w of r.warnings ?? []) log(`native-stream warning: ${w}`);
           report.errors.nativeStreamBoots.push(readErrorLines(fixture, stem, `native-stream-${i + 1}`));
@@ -1601,7 +2147,7 @@ async function main(argv) {
       const rruns = [];
       for (let i = 0; i < cfg.nativeResumeRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise, deadline);
+        await gate(`native-resume-${i + 1}`);
         const fixture = buildFixture(SCRATCH, { log, fakeProvider: true, nativeSessions: true });
         await withBoot(build, fixture, async (app) => {
           const r = await runNativeResumeScenario(app, fixture);
@@ -1621,7 +2167,7 @@ async function main(argv) {
     // look like a regression it did not cause. It runs LAST for the same reason.
     if (cfg.only.has('scrollback')) {
       checkDeadline();
-      await noiseGate(report.noise, deadline);
+      await gate('scrollback');
       const { runScrollbackScenario, medianRun: scrollMedian, MEASURES: SCROLL_MEASURES } = await loadScrollback();
       report.measures.scrollback = SCROLL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1649,6 +2195,69 @@ async function main(argv) {
         report.errors.scrollbackBoot = readErrorLines(fixture, stem, 'scrollback');
       });
     }
+
+    // ---- Energy lane (C): ONE boot holds every window; opt-in via `--only energy` alone -----
+    if (cfg.only.has('energy')) {
+      const { runEnergyScenario, ENERGY_MEASURES, energyFixtureOptions } = await loadEnergy();
+      report.measures.energy = ENERGY_MEASURES;
+      checkDeadline();
+      await gate('energy');
+      const fixture = buildFixture(SCRATCH, { ...energyFixtureOptions(), log });
+      // WHY a private sink: withBoot's boot-wide verdict spans the CPU self-check too, and a disturbed boot must not
+      // void windows that were individually clean. Per-window verdicts decide; the boot-wide one is kept for reference.
+      const bootVerdicts = [];
+      setInterferenceSink(bootVerdicts);
+      try {
+        await withBoot(build, fixture, async (app) => {
+          report.energy = await runEnergyScenario(app, fixture, {
+            repeats: cfg.energyRepeats, log, checkDeadline,
+            onProgress: (section) => { report.energy = section; checkpoint(); },
+          });
+          report.errors.energyBoot = readErrorLines(fixture, stem, 'energy');
+        });
+      } finally { setInterferenceSink(report.interference.windows); }
+      if (report.energy) {
+        report.energy.bootInterference = bootVerdicts;
+        // Only the windows that fed the median become the report's interference record; excluded ones are counted in
+        // report.energy.excluded (a disturbed window never silently disappears, it is listed with its reasons).
+        for (const t of report.energy.repeats ?? []) if (t.clean) report.interference.windows.push(...t.verdicts);
+      }
+    }
+
+    // ---- Workloads lane (F): opt-in via `--only workloads` alone ------------------------------------------------------------
+    // One boot per family per pass. WHY a private sink for withBoot's boot-wide verdict (same reason as energy): each group's own
+    // window decides; the boot-wide one is kept for reference only. Group windows are pushed to report.interference.windows by
+    // recordInterference below, so a disturbed group makes the report INCOMPLETE (owner decision Q-6).
+    if (cfg.only.has('workloads')) {
+      const { createWorkloadDeps, memoryBoundRecord } = await loadWorkloads();
+      report.measures.workloads = WORKLOAD_MEASURES;
+      checkDeadline();
+      const bootVerdicts = [];
+      const deps = createWorkloadDeps({
+        checkout: cfg.checkout, build,
+        makeFixtureBase: (group) => { const f = buildFixture(SCRATCH, { ...workloadFixtureOptions(group), log }); f.checkout = cfg.checkout; return f; },
+        withBoot: async (fixture, fn, group) => {
+          await gate(`workloads-${group?.id ?? 'group'}`);
+          setInterferenceSink(bootVerdicts);
+          try { return await withBoot(build, fixture, fn, { mainLoop: true }); }
+          finally { setInterferenceSink(report.interference.windows); report.errors.workloadsBoots.push(readErrorLines(fixture, stem, `workloads-${group?.id ?? 'group'}`)); }
+        },
+        getRenderer: getCapturedRenderer,
+        recordInterference: (verdict) => { report.interference.windows.push(verdict); log(`interference ${verdictLine(verdict)}`); },
+      });
+      const support = probeCandidateSupport(cfg.checkout);
+      report.workloads = { revision: WORKLOAD_LANE.revision, expectedRepeats: cfg.workloadsRepeats, plan: { rungIds: [] }, runs: [] };
+      try {
+        report.workloads = await runWorkloadsLane({
+          support, repeats: cfg.workloadsRepeats, memoryBound: memoryBoundRecord(deps.state.bound), original: null, deps, log, checkDeadline,
+          onProgress: (section) => { report.workloads = section; checkpoint(); },
+        });
+      } finally {
+        // the original-JPEG copy record (path + hash + proof it matched the source) is known once its rung generated
+        if (report.workloads?.plan?.groups) report.workloads.original = deps.state.original;
+        report.workloads.bootInterference = bootVerdicts;
+      }
+    }
   } catch (e) {
     // The numbers already collected cost real minutes, so the report is still written —
     // clearly stamped `aborted` so nobody mistakes a partial run for a clean one.
@@ -1663,12 +2272,15 @@ async function main(argv) {
   // Set AFTER the try/finally so an aborted run still records which renderer it had —
   // a partial run's numbers are exactly the ones most likely to be argued about later.
   report.machine.renderer = capturedRenderer;
+  // WHY: load was only sampled before boots; one end-of-run reading shows whether it climbed.
+  try { report.noise.loadAvgAfter = loadAvg1(); } catch { /* sensor unavailable: leave null */ }
+  setInterferenceSink(null);
   report.incomplete = validateReport(report, cfg.only);
   mkdirSync(cfg.out, { recursive: true });
   const jsonPath = join(cfg.out, `${stem}.json`);
-  writeFileSync(jsonPath, JSON.stringify(report, null, 2));
-  writeFileSync(join(cfg.out, `${stem}.md`), renderMarkdown(report, stem));
+  checkpoint();
   console.log(jsonPath);
+  Object.assign(ctx, { jsonPath, stem, report });
 
   if (report.incomplete.length) {
     console.error(`\n[perf-lab] REPORT IS INCOMPLETE — ${report.incomplete.length} problem(s). Do not rank anything from it:`);

@@ -4,8 +4,10 @@
 //
 // WHY THIS EXISTS (render-cost plan, docs/archive/investigations/2026-09-18-list-render-cost-sweep.md):
 // the Conversations-tab freeze came from drawing every row of a long list at once.
-// The node count of an open surface is the behaviour that proves a list is bounded —
-// a source-text scanner was tried and missed 6 of 11 offenders (plan §"Revised" #2).
+// The initial-open count proves initial mount cost, not cumulative virtualization:
+// useChunkedReveal retains revealed rows. A source-text scanner was tried and missed
+// 6 of 11 offenders (plan §"Revised" #2). Scroll/reopen is opt-in for one list
+// only (--growth); other surfaces remain an explicit cumulative-cost gap.
 //
 // A surface that could not be PROVEN open is a FAIL, never skipped — the same stance
 // as coverage.md ("a surface not proven open is unreviewed, not fine"). Proof the guard
@@ -40,7 +42,11 @@
 //   node scripts/ui-review/dom-size-sweep.mjs [--worktree <name|branch|path>] [--rows 2000]
 //     [--only settings/*,projects/conversations] [--budget 8000] [--width 1440] [--height 900] [--dump]
 // Exit: 0 all PASS · 1 any FAIL (over budget or not proven open) · 2 setup error.
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
+import { settleAndCount } from './dom-settle.mjs';
+import { parseDomOptions, stressQuery } from './dom-options.mjs';
+import { makeDomGrowthDriver, makeGrowthBound, runDomGrowth, GROWTH_DESCRIPTOR } from './dom-growth.mjs';
+import { boundedJson } from '../perf-lab/resource-checkpoint.mjs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve } from '../shoot/engine.mjs';
@@ -54,29 +60,25 @@ const WORKSPACE = resolve(HERE, '..', '..');
 // anchors on `NODE_BUDGET = 8000` in this file.
 const NODE_BUDGET = 8000;
 
-const argv = process.argv.slice(2);
-const opt = { worktree: null, rows: 2000, only: null, budget: NODE_BUDGET, width: 1440, height: 900, theme: 'light', dump: false };
-for (let i = 0; i < argv.length; i++) {
-  const a = argv[i]; const next = () => { const v = argv[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
-  if (a === '--worktree') opt.worktree = next();
-  else if (a === '--rows') opt.rows = Number(next());
-  else if (a === '--only') opt.only = next();
-  else if (a === '--budget') opt.budget = Number(next());
-  else if (a === '--width') opt.width = Number(next());
-  else if (a === '--height') opt.height = Number(next());
-  else if (a === '--theme') opt.theme = next();
-  else if (a === '--dump') opt.dump = true;
-  else if (a === '-h' || a === '--help') { printHelp(); process.exit(0); }
-  else die(`unknown option ${a} (see --help)`);
-}
+let opt;
+try { opt = parseDomOptions(process.argv.slice(2), NODE_BUDGET); }
+catch (error) { die(error.message); }
+if (opt.help) { printHelp(); process.exit(0); }
 function die(msg) { console.error(`dom-size-sweep: ${msg}`); process.exit(2); }
 function printHelp() {
   console.log(`node scripts/ui-review/dom-size-sweep.mjs [--worktree <name|branch|path>] [--rows 2000]
   [--only settings/*,projects/conversations] [--budget 8000] [--width 1440] [--height 900] [--dump]
+  Diagnostic only: --growth --only projects/conversations (exactly 2000 rows,
+  desktop width, up to 60 bounded scroll checkpoints (the whole 2000 rows) then tab close/reopen/reset).
+  Growth emits revisioned JSON; cap exhaustion is incomplete, not saturation.
+  Optional --growth-screenshot /absolute/fresh.png captures the final owned tab.
 
 Sweeps every screen whose OWN scenario is 'default', opened by name under a forced
-'stress' scenario with ?stressRows=<rows>. A screen that needs its own scenario is
-skipped and reported with why. Exit: 0 all PASS, 1 any FAIL, 2 setup error.`);
+'stress' scenario with ?stressRows=<rows>. Rows: integer 1..20000 (no fallback or
+clamping). Initial-open budget: 1..1000000; viewport dimensions: 1..16384.
+The default 8000-element gate is not a cumulative scrolling cap.
+A screen that needs its own scenario is skipped and reported with why.
+Exit: 0 all PASS, 1 any FAIL, 2 setup error.`);
 }
 const log = (m) => console.error(`[dom-size-sweep] ${m}`);
 
@@ -140,29 +142,26 @@ const MARK_CHECK = (name) => `(() => {
   return results.find((x) => x && x.shown) || results[0];
 })()`;
 
-const COUNT_EXPR = `document.querySelectorAll('*').length`;
+// WHY: an unsettled last count (or -1 after a failed read) must never pass the
+// initial 8000-node gate. Cumulative retained-row cost needs a separate diagnostic;
+// this initial-open budget is not a universal cumulative scrolling cap.
 
-// Poll until the node count has stopped changing for 1.5s — a list still mounting
-// (fixture fetch, image decode) would otherwise be read half-built and look cheap.
-async function settleAndCount(tab, capMs = 20000) {
-  const t0 = Date.now();
-  await tab.still(3000);
-  let last = -1; let stableSince = Date.now();
-  while (Date.now() - t0 < capMs) {
-    const n = await tab.evaluate(COUNT_EXPR, 5000).catch(() => -1);
-    if (n !== last) { last = n; stableSince = Date.now(); } else if (Date.now() - stableSince >= 1500) break;
-    await new Promise((r) => setTimeout(r, 250));
+async function sweepOne(tab, base, screen, rows, width, height, provenance) {
+  const growthBound = opt.growth ? makeGrowthBound() : null;
+  if (growthBound) {
+    // Bound every existing engine operation, including setup/proof. No new
+    // browser or parallel rig: the caller still owns and closes the same pool.
+    const original = tab;
+    tab = Object.fromEntries(Object.entries(original).map(([key, value]) => [key, typeof value === 'function'
+      ? (...args) => growthBound(() => value(...args), `engine ${key}`, key === 'evaluate' ? 25000 : 30000) : value]));
   }
-  return last;
-}
-
-async function sweepOne(tab, base, screen, rows, width, height) {
   const t0 = Date.now();
   const w = screen.viewport?.width ?? width, h = screen.viewport?.height ?? height;
   const row = { surface: screen.name, nodes: null, why: '', ms: 0 };
   try {
     await tab.prepare({ theme: opt.theme, width: w, height: h });
-    const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: 'stress', ...(screen.params ?? {}), stressRows: String(rows) });
+    const q = stressQuery(screen, rows);
+    row.workload = { scenario: q.get('scenario'), requestedRows: rows, effectiveRows: Number(q.get('stressRows')) };
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
@@ -177,10 +176,27 @@ async function sweepOne(tab, base, screen, rows, width, height) {
       }
     }
     if (!why?.shown) throw new Error(`not showing: ${why}`);
-    row.nodes = await settleAndCount(tab);
+    row.settle = await settleAndCount(tab);
+    if (row.settle.status !== 'measured') throw new Error(`DOM count incomplete: ${row.settle.reason}; last observed ${row.settle.lastCount ?? 'unavailable'}`);
+    row.nodes = row.settle.nodes;
+    if (opt.growth) {
+      await tab.send('Performance.enable', {}, 5000).catch(() => {}); // Optional counters remain explicitly unavailable on failure.
+      const driver = makeDomGrowthDriver(tab, { ...provenance, markCheck: MARK_CHECK });
+      row.growth = await runDomGrowth(driver, { bound: growthBound });
+      if (row.growth.status !== 'measured') row.why = row.growth.reason;
+      if (opt.growthScreenshot) {
+        // WHY: capture only after the measured diagnostic, using this same owned
+        // tab. Exclusive create protects prior evidence; failed proof is labelled.
+        const proof = await tab.evaluate(MARK_CHECK(screen.name), 5000);
+        const png = await tab.png();
+        if (png.length > 10 * 1024 * 1024) throw Error('growth screenshot byte cap exceeded');
+        writeFileSync(opt.growthScreenshot, png, { flag: 'wx' });
+        row.screenshot = { path: opt.growthScreenshot, phase: 'after-diagnostic', targetShown: proof?.shown === true, bytes: png.length };
+      }
+    }
     if (opt.dump) console.error(`[${screen.name}] ` + await tab.evaluate(`[...document.querySelectorAll('button,input,[role=dialog]')].filter(e=>e.offsetParent!==null).slice(0,60).map(e=>e.tagName+'|'+(e.getAttribute('aria-label')||e.getAttribute('placeholder')||'')+'|'+e.textContent.trim().slice(0,30)).join('\\n')`, 10_000).catch(() => '(dump failed)'));
   } catch (e) { row.why = e.message; }
-  row.pass = row.nodes !== null && row.nodes <= opt.budget;
+  row.pass = !row.why && row.nodes !== null && row.nodes <= opt.budget && (!opt.growth || row.growth?.status === 'measured');
   row.ms = Date.now() - t0;
   console.error(`  ${row.pass ? 'PASS' : 'FAIL'}  ${row.surface}  ${row.nodes ?? '—'}${row.why ? '  (' + row.why + ')' : ''}  (${(row.ms / 1000).toFixed(1)}s)`);
   return row;
@@ -216,6 +232,7 @@ try {
       for (const s of screens.filter((s) => !DEFAULT_SCENARIO(s))) skipped.push({ name: s.name, why: `needs its own scenario '${s.scenario}'` });
     }
     if (!chosen.length) die('nothing matched (nothing has scenario "default" — check --only)');
+    if (opt.growth && (chosen.length !== 1 || chosen[0].name !== 'projects/conversations')) throw Error('growth requires exactly the registered projects/conversations screen');
 
     log(`${chosen.length} screen(s), stress scenario, ?stressRows=${opt.rows}`);
     const size = poolSize(chosen.length);
@@ -223,10 +240,14 @@ try {
     const pool = await openPool({ ...size, width: opt.width, height: opt.height });
     const t0 = Date.now();
     let rows;
-    try { rows = await runQueue(pool, chosen, (tab, job) => sweepOne(tab, base, job, opt.rows, opt.width, opt.height)); }
+    try { rows = await runQueue(pool, chosen, (tab, job) => sweepOne(tab, base, job, opt.rows, opt.width, opt.height, { checkout, build: dist })); }
     finally { pool.close(); }
     const elapsed = (Date.now() - t0) / 1000;
 
+    if (opt.growth) {
+      console.log(boundedJson({ revision: 1, descriptor: GROWTH_DESCRIPTOR, status: rows.every(r => r.pass) ? 'measured' : 'incomplete', rows }).trimEnd());
+      process.exitCode = rows.every(r => r.pass) ? 0 : 1;
+    } else {
     console.log(`\nDOM-size sweep — scenario=stress, stressRows=${opt.rows}, budget ${opt.budget} elements\n`);
     console.log('| surface | nodes | budget | result |');
     console.log('|---|---:|---:|---|');
@@ -238,7 +259,8 @@ try {
       console.log(`\n${skipped.length} screen(s) skipped (need their own scenario, not swept under stress):`);
       for (const s of skipped) console.log(`  - ${s.name} — ${s.why}`);
     }
-    process.exit(failed.length ? 1 : 0);
+    process.exitCode = failed.length ? 1 : 0;
+    }
   } finally { server.close(); }
 } catch (e) {
   console.error(`dom-size-sweep: ${e.message}`);

@@ -1,0 +1,38 @@
+[longconv] r1-a longconv-40
+[perf-lab 03:04:48] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 03:05:06] interference r1-a:longconv-40: disturbed — other programs used 12.3 cores on average over 18 s (limit 1): python (pid 3935017) used 8 cores; chrome ×11 (pids 1851157, 2551855, 3917368, 2551831, +7 more) used 0.9 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.7 cores
+[longconv]   -> slow
+[longconv] r1-a longconv-200
+[perf-lab 03:05:24] interference r1-a:longconv-200: disturbed — other programs used 12.4 cores on average over 17 s (limit 1): python (pid 3935017) used 8 cores; tst_nextwordint (pid 4049745) used 1 core; chrome ×9 (pids 1851157, 3917368, 2551855, 2551831, +5 more) used 0.9 cores
+[longconv]   -> slow
+[longconv] r1-a longconv-1000
+[perf-lab 03:05:46] interference r1-a:longconv-1000: disturbed — other programs used 12.3 cores on average over 20 s (limit 1): python (pid 3935017) used 8 cores; tst_nextwordint (pid 4049745) used 1 core; chrome ×8 (pids 1851157, 2551855, 3917368, 3683590, +4 more) used 0.9 cores
+[longconv]   -> slow
+[longconv] r1-b longconv-40
+[perf-lab 03:06:05] interference r1-b:longconv-40: disturbed — other programs used 12.6 cores on average over 18 s (limit 1): python (pid 3935017) used 8 cores; git ×3 (pids 4052076, 4052448, 4052886) used 0.9 cores; chrome ×6 (pids 1851077, 1851157, 2551855, 3917368, +2 more) used 0.9 cores
+[longconv]   -> slow
+[longconv] r1-b longconv-200
+[perf-lab 03:06:25] interference r1-b:longconv-200: disturbed — other programs used 23.2 cores on average over 17 s (limit 1): python ×35 (pids 3935017, 4053669, 4053736, 4053739, +31 more) used 18 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 1.2 cores; chrome ×10 (pids 1851157, 3917368, 2551855, 2551831, +6 more) used 0.9 cores; youcoded (pid 1342393) held the graphics chip 13% of the time
+[longconv]   -> slow
+[longconv] r1-b longconv-1000
+[perf-lab 03:06:47] interference r1-b:longconv-1000: disturbed — other programs used 21.4 cores on average over 20 s (limit 1): python ×36 (pids 3935017, 4053669, 4053739, 4053743, +32 more) used 17 cores; tst_nextwordint (pid 4053015) used 1 core; chrome ×11 (pids 1851157, 2551855, 3917368, 1851077, +7 more) used 1 core
+[longconv]   -> slow
+[longconv] r2-b longconv-40
+[perf-lab 03:07:07] interference r2-b:longconv-40: disturbed — other programs used 18.5 cores on average over 18 s (limit 1): python ×34 (pids 3935017, 4053669, 4053736, 4053747, +30 more) used 13.9 cores; chrome ×13 (pids 1851157, 2551855, 3917368, 1851077, +9 more) used 1 core; tst_nextwordint (pid 4053015) used 1 core
+[longconv]   -> slow
+[longconv] r2-b longconv-200
+[perf-lab 03:07:26] interference r2-b:longconv-200: disturbed — other programs used 18.3 cores on average over 17 s (limit 1): python ×34 (pids 3935017, 4053669, 4053739, 4053743, +30 more) used 14.2 cores; chrome ×9 (pids 1851157, 2551855, 3917368, 2551831, +5 more) used 1 core; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.8 cores
+[longconv]   -> slow
+[longconv] r2-b longconv-1000
+[perf-lab 03:07:48] interference r2-b:longconv-1000: disturbed — other programs used 18.5 cores on average over 20 s (limit 1): python ×34 (pids 3935017, 4053669, 4053739, 4053757, +30 more) used 14.2 cores; chrome ×8 (pids 1851157, 2551855, 3917368, 1851077, +4 more) used 1 core; git ×3 (pids 4057295, 4057967, 4058248) used 0.8 cores
+[longconv]   -> slow
+[longconv] r2-a longconv-40
+[perf-lab 03:08:07] interference r2-a:longconv-40: disturbed — other programs used 19.1 cores on average over 18 s (limit 1): python ×34 (pids 3935017, 4053669, 4053736, 4053762, +30 more) used 14.6 cores; tst_nextwordint (pid 4058270) used 1 core; chrome ×8 (pids 1851077, 1851157, 2551855, 3917368, +4 more) used 1 core
+[longconv]   -> slow
+[longconv] r2-a longconv-200
+[perf-lab 03:08:26] interference r2-a:longconv-200: disturbed — other programs used 19.5 cores on average over 17 s (limit 1): python ×34 (pids 3935017, 4053669, 4053739, 4053743, +30 more) used 15 cores; tst_nextwordint (pid 4058270) used 1 core; chrome ×7 (pids 1851077, 1851157, 1851164, 2551855, +3 more) used 1 core
+[longconv]   -> slow
+[longconv] r2-a longconv-1000
+[perf-lab 03:08:48] interference r2-a:longconv-1000: disturbed — other programs used 19.5 cores on average over 20 s (limit 1): python ×34 (pids 3935017, 4053669, 4053736, 4053763, +30 more) used 14.8 cores; chrome ×9 (pids 1851157, 2551831, 2551855, 3917368, +5 more) used 1 core; tst_nextwordint (pid 4058270) used 1 core; youcoded (pid 1342393) held the graphics chip 6% of the time
+[longconv]   -> slow
+[longconv] report: /home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/freeze-batch-3/longconv-open-202610230304-freeze-batch-3-longconv.json / .md

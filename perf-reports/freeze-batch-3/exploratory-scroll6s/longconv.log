@@ -1,0 +1,38 @@
+[longconv] r1-a longconv-40
+[perf-lab 02:32:44] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 02:32:56] interference r1-a:longconv-40: disturbed — other programs used 3 cores on average over 12 s (limit 1): tst_nextwordint (pid 3890958) used 1 core; git ×3 (pids 3891564, 3892237, 3892359) used 0.9 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.4 cores
+[longconv]   -> slow
+[longconv] r1-a longconv-200
+[perf-lab 02:33:10] interference r1-a:longconv-200: disturbed — other programs used 3.3 cores on average over 12 s (limit 1): tst_nextwordint (pid 3890958) used 1 core; git ×2 (pids 3892458, 3892975) used 1 core; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.4 cores
+[longconv]   -> slow
+[longconv] r1-a longconv-1000
+[perf-lab 02:33:24] interference r1-a:longconv-1000: disturbed — other programs used 5.9 cores on average over 12 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 1.6 cores; python (pid 3893173) used 1 core; cc1plus ×6 (pids 3893721, 3893722, 3893723, 3893924, +2 more) used 1 core
+[longconv]   -> slow
+[longconv] r1-b longconv-40
+[perf-lab 02:33:38] interference r1-b:longconv-40: disturbed — other programs used 6.1 cores on average over 12 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1343137, +2 more) used 3.6 cores; tst_nextwordint (pid 3894338) used 0.8 cores; git ×3 (pids 3893800, 3894565, 3894795) used 0.6 cores; youcoded (pid 1342393) held the graphics chip 7% of the time
+[longconv]   -> slow
+[longconv] r1-b longconv-200
+[perf-lab 02:33:52] interference r1-b:longconv-200: disturbed — other programs used 3.9 cores on average over 12 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1343137, +3 more) used 1.1 cores; tst_nextwordint (pid 3894338) used 1 core; git ×2 (pids 3894875, 3895186) used 1 core; youcoded (pid 1342393) held the graphics chip 5% of the time
+[longconv]   -> slow
+[longconv] r1-b longconv-1000
+[perf-lab 02:34:06] interference r1-b:longconv-1000: disturbed — other programs used 3.5 cores on average over 12 s (limit 1): tst_nextwordint (pid 3894338) used 1 core; git ×3 (pids 3895627, 3896194, 3896260) used 0.9 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[longconv]   -> slow
+[longconv] r2-b longconv-40
+[perf-lab 02:34:20] interference r2-b:longconv-40: disturbed — other programs used 4 cores on average over 12 s (limit 1): python (pid 3896471) used 1 core; git ×4 (pids 3896260, 3896810, 3896999, 3897116) used 0.8 cores; tst_nextwordint (pid 3894338) used 0.6 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[longconv]   -> slow
+[longconv] r2-b longconv-200
+[perf-lab 02:34:33] interference r2-b:longconv-200: disturbed — other programs used 2.6 cores on average over 12 s (limit 1): git ×2 (pids 3897116, 3897793) used 0.9 cores; youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.6 cores; electron ×6 (pids 3788776, 3788851, 3788947, 3789370, +2 more) used 0.3 cores
+[longconv]   -> slow
+[longconv] r2-b longconv-1000
+[perf-lab 02:34:48] interference r2-b:longconv-1000: disturbed — other programs used 4.2 cores on average over 12 s (limit 1): git ×3 (pids 3898016, 3898465, 3898839) used 1 core; claude ×8 (pids 1343193, 1497018, 1540338, 1658190, +4 more) used 0.8 cores; electron ×8 (pids 3788776, 3788851, 3788947, 3789370, +4 more) used 0.6 cores
+[longconv]   -> slow
+[longconv] r2-a longconv-40
+[perf-lab 02:35:01] interference r2-a:longconv-40: disturbed — other programs used 3.5 cores on average over 12 s (limit 1): tst_nextwordint (pid 3898600) used 1 core; git ×4 (pids 3900135, 3900555, 3900635, 3900768) used 0.8 cores; youcoded ×4 (pids 1342321, 1342393, 1342460, 1342549) used 0.6 cores
+[longconv]   -> slow
+[longconv] r2-a longconv-200
+[perf-lab 02:35:15] interference r2-a:longconv-200: disturbed — other programs used 3.1 cores on average over 12 s (limit 1): tst_nextwordint (pid 3898600) used 1 core; git ×3 (pids 3900768, 3901430, 3901609) used 0.8 cores; youcoded ×4 (pids 1342321, 1342393, 1342460, 1342549) used 0.5 cores
+[longconv]   -> slow
+[longconv] r2-a longconv-1000
+[perf-lab 02:35:29] interference r2-a:longconv-1000: disturbed — other programs used 2.8 cores on average over 12 s (limit 1): tst_nextwordint (pid 3898600) used 1 core; git ×2 (pids 3901833, 3902152) used 0.8 cores; youcoded ×4 (pids 1342321, 1342393, 1342460, 1342549) used 0.4 cores
+[longconv]   -> slow
+[longconv] report: /home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/freeze-batch-3/longconv-open-202610230232-freeze-batch-3-longconv.json / .md

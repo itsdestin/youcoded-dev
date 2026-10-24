@@ -8,6 +8,25 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { assessComparability } from './comparability.mjs';
+import { legacyTailRegressions } from './legacy-evidence.mjs';
+import { workloadPaths } from './workload-lane.mjs';
+import { DOCUMENT_BUDGETS, compareDocuments, documentComparabilityProblems } from './document-report.mjs';
+
+// Energy-lane metrics (lane C). Kept OUT of PRIMARY on purpose: PRIMARY feeds validateReport's per-phase contract and the
+// keep/reject gate, and a missing PRIMARY path fails that gate closed, which would retire every existing baseline.
+// ab.mjs passes these explicitly (instead of PRIMARY) when the selection is `--only energy`. Lower is better for all.
+// energy.median.* has its raw samples at energy.runs[] (runsFor), so spread is computed exactly like every other metric.
+export const ENERGY_PATHS = [
+  'energy.median.deltaWatts',          // ESTIMATE of whole-chip power difference, workload minus surrounding idle (W)
+  'energy.median.baselineWatts',       // idle level the difference was taken from (W): a context row, shows drift between sides
+  'energy.battery.median.deltaWatts',  // only when the battery was discharging in every window; absent otherwise
+];
+
+// Workload-lane metrics (lane F): per rung, time to render + worst renderer long task + worst main-process stall. Built from the lane's own
+// plan so a new rung appears automatically. Kept OUT of PRIMARY for the same reason as ENERGY_PATHS; ab.mjs passes them for `--mode workloads`.
+// Raw samples sit at workloads.runs[].rungs.<id>.<metric> (runsFor), so spread is computed like every other metric. A rung that failed or is
+// unsupported has no number: the row reads "absent", never zero.
+export const WORKLOAD_PATHS = workloadPaths();
 
 // The metrics every experiment is judged against. All are lower-is-better,
 // and every one has a `runs` array behind its median so spreadPct can be computed.
@@ -65,11 +84,11 @@ export const PRIMARY = [
   // is chasing as a regression. It is reported in the summary table instead.
 
   // ── The app-wide freeze (stall phase) ──────────────────────────────────────
-  // `medium` is the headline: 5,000 messages is ORDINARY usage and it stalls the
-  // whole app ~3.3 s. mainProcessStallMaxMs is the single worst moment — what a user
-  // actually feels as "I can't click anything" — and ipcTotalStallMs is how much of
-  // the replay was spent unresponsive in total.
-  'replayStall.medium.median.mainProcessStallMaxMs',
+  // WHY raw response tail, not inferred main occupancy: IPC includes renderer
+  // scheduling/transport. Its maximum is observed; subtracting long tasks cannot
+  // produce an independent main metric. Raw sums below are diagnostic excess,
+  // not elapsed union blocked time. Revision gating rejects old semantics.
+  'replayStall.medium.median.ipcMaxMs',
   'replayStall.medium.median.ipcTotalStallMs',
   // Deliberately a HUGE-size RENDERER metric, and the reason it is in PRIMARY at all:
   // the obvious fix for a blocked main process is to move the work off it. If that
@@ -345,10 +364,16 @@ const errorTotal = (r) =>
 export function verdict(baseline, candidate, { target, improveMinPct = 5, regressMaxPct = 3, screens = {}, uxBugfix = false }) {
   // Keep the invalid input visible to the pure provenance check before giving
   // the pre-existing numeric gates empty records to inspect without throwing.
-  const comparability = assessComparability(baseline, candidate);
+  const comparability = assessComparability(baseline, candidate, { primary: PRIMARY });
   baseline = baseline && typeof baseline === 'object' ? baseline : {};
   candidate = candidate && typeof candidate === 'object' ? candidate : {};
-  const reasons = [];
+  const documentIdentityProblems = documentComparabilityProblems(baseline.artifacts?.documents, candidate.artifacts?.documents);
+  comparability.reasons.push(...documentIdentityProblems);
+  comparability.comparable = comparability.reasons.length === 0;
+  const reasons = compareDocuments(baseline.artifacts?.documents, candidate.artifacts?.documents, regressMaxPct);
+  for (const [label, report] of [['baseline', baseline], ['candidate', candidate]]) {
+    if (report.measures?.artifacts?.documentsRequired && !report.artifacts?.documents) reasons.push(`${label} documents: required section missing`);
+  }
 
   const errors = { base: errorTotal(baseline), cand: errorTotal(candidate) };
   if (errors.cand > errors.base) reasons.push(`candidate logged ${errors.cand} ERROR lines (baseline ${errors.base})`);
@@ -368,6 +393,10 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
   } else if (td > -improveMinPct) reasons.push(`target improved only ${-td}% (< ${improveMinPct}%)`);
   else if (!beyondSpread) reasons.push(`target delta ${td}% is inside baseline spread ${ts.toFixed(1)}%`);
 
+  // WHY a separate raw-repeat gate: medians can improve while one repeat freezes.
+  // Validity remains in comparability; this is performance only, PRIMARY only.
+  const tailRegressions = legacyTailRegressions(baseline, candidate, PRIMARY, { regressMaxPct, zeroFloor: ZERO_BASELINE_FLOOR });
+  if (tailRegressions.length) reasons.push(`severe raw-repeat tail regressions: ${tailRegressions.map(r => `${r.path} repeat ${r.repeat + 1}: ${r.cand} > baseline worst ${r.base} + noise guard ${r.noiseGuard}`).join(', ')}`);
   const regressions = [];
   for (const p of PRIMARY) {
     if (p === target) continue; // the target's own movement is judged above, not as a regression
@@ -463,6 +492,7 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
     comparability,
     target: { path: target, base: tb, cand: tc, deltaPct: td, beyondSpread },
     regressions,
+    tailRegressions,
     missing,
     notRun,
     newMetric,
@@ -470,6 +500,126 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
     errors,
     reasons,
   };
+}
+
+// ── compareAll: one readable A-vs-B table (acceptance A4) ────────────────────
+// WHY a second entry beside verdict(): verdict() answers "may this ONE change be kept?" for
+// a single --target. A candidate comparison needs every PRIMARY path and every document case
+// shown side by side, with variability and worst cases, and NO single score: a failed lane
+// must stay visible instead of being averaged into a pass. It reuses get/runsFor/spreadPct,
+// legacyTailRegressions and assessComparability — it is not a parallel comparison system.
+const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+const round2 = (n) => Math.round(n * 100) / 100;
+const rangeOf = (xs) => (xs.length < 2 ? null : Math.max(...xs) - Math.min(...xs));
+
+/** One metric row from the two sides' median-ish values and raw samples. */
+export function metricRow({ path, a, b, aSamples = [], bSamples = [], evidence = {}, comparable = true, notRun = false }) {
+  const row = { path, a: isNum(a) ? a : null, b: isNum(b) ? b : null, absDelta: null, deltaPct: null,
+    aSpread: rangeOf(aSamples), bSpread: rangeOf(bSamples), aSpreadPct: null, bSpreadPct: null,
+    aWorst: aSamples.length ? Math.max(...aSamples) : null, bWorst: bSamples.length ? Math.max(...bSamples) : null,
+    worstDelta: null, aSamples: aSamples.length, bSamples: bSamples.length, status: 'missing', note: '', evidence };
+  // WHY null, never 0: a metric one side could not produce says nothing about the other side.
+  if (!isNum(a) || !isNum(b)) {
+    row.note = `${!isNum(a) && !isNum(b) ? 'absent on both sides' : !isNum(a) ? 'absent in A' : 'absent in B'}${notRun ? ' (phase not run)' : ''}`;
+    return row;
+  }
+  row.absDelta = round2(b - a);
+  row.deltaPct = delta(a, b);
+  if (a === 0 && b !== 0) row.note = 'A was zero; percentage undefined';
+  row.aSpreadPct = a && row.aSpread !== null ? round2((row.aSpread / Math.abs(a)) * 100) : null;
+  row.bSpreadPct = b && row.bSpread !== null ? round2((row.bSpread / Math.abs(b)) * 100) : null;
+  if (row.aWorst !== null && row.bWorst !== null) row.worstDelta = round2(row.bWorst - row.aWorst);
+  if (!comparable) { row.status = 'incomparable'; row.note = 'runs are incomparable; values shown but NOT ranked'; return row; }
+  // Combined noise = both sides' own run-to-run ranges added, floored at the report's
+  // one-unit rounding (ZERO_BASELINE_FLOOR). Unknown spread (a single sample) can never
+  // support a claim, so it is inconclusive rather than a win or loss.
+  if (row.aSpread === null || row.bSpread === null) { row.status = 'inconclusive'; row.note = 'fewer than 2 samples on a side: no spread, cannot rank'; return row; }
+  const noise = Math.max(row.aSpread + row.bSpread, ZERO_BASELINE_FLOOR);
+  row.combinedNoise = round2(noise);
+  row.status = Math.abs(row.absDelta) <= noise ? 'inconclusive' : row.absDelta > 0 ? 'regressed' : 'improved';
+  return row;
+}
+
+/**
+ * Compare every PRIMARY path and every document case, A (baseline) vs B (candidate).
+ * Lower is better for every path. Returns rows + counts, never a combined score.
+ * @param opts.evidence { a, b } report file paths to link from each row
+ */
+export function compareAll(baseline, candidate, { paths = PRIMARY, evidence = {}, regressMaxPct = 3 } = {}) {
+  const comparability = assessComparability(baseline, candidate, { primary: paths });
+  const A = baseline && typeof baseline === 'object' ? baseline : {};
+  const B = candidate && typeof candidate === 'object' ? candidate : {};
+  const documentProblemsFound = documentComparabilityProblems(A.artifacts?.documents, B.artifacts?.documents);
+  comparability.reasons.push(...documentProblemsFound);
+  comparability.comparable = comparability.reasons.length === 0;
+  const comparable = comparability.comparable;
+  const phaseRan = (r, p) => rawGet(r, p.split('.')[0]) != null;
+  const tails = new Map(legacyTailRegressions(A, B, paths, { regressMaxPct, zeroFloor: ZERO_BASELINE_FLOOR }).map((t) => [t.path, t]));
+  const rows = paths.map((path) => {
+    const row = metricRow({ path, a: get(A, path), b: get(B, path), aSamples: runsFor(A, path).filter(isNum), bSamples: runsFor(B, path).filter(isNum),
+      evidence, comparable, notRun: !phaseRan(A, path) && !phaseRan(B, path) });
+    row.kind = 'primary';
+    // WHY separate from status: a median can hold still while one repeat froze. The tail is
+    // reported beside the median verdict, never folded into it or averaged away.
+    const tail = tails.get(path);
+    if (tail && comparable) row.tailRegression = { base: tail.base, cand: tail.cand, repeat: tail.repeat + 1, noiseGuard: tail.noiseGuard };
+    return row;
+  });
+  const documents = [];
+  const bd = A.artifacts?.documents, cd = B.artifacts?.documents;
+  if (bd || cd) {
+    const ids = [...new Set([...(bd?.requiredCaseIds ?? []), ...(cd?.requiredCaseIds ?? [])])];
+    const samples = (s, id, metric) => (s?.runs ?? []).flatMap((r) => (r.cases ?? []).filter((c) => c.id === id)).map((c) => get(c, metric)).filter(isNum);
+    for (const id of ids) for (const metric of ['operationMs', ...Object.keys(DOCUMENT_BUDGETS), 'memory.peakRssMb']) {
+      const as = samples(bd, id, metric), bs = samples(cd, id, metric);
+      const med = (xs) => (xs.length ? [...xs].sort((x, y) => x - y)[Math.floor(xs.length / 2)] : null);
+      const row = metricRow({ path: `documents.${id}.${metric}`, a: med(as), b: med(bs), aSamples: as, bSamples: bs, evidence, comparable });
+      row.kind = 'document';
+      documents.push(row);
+    }
+  }
+  // Required-lane failures are listed verbatim: incomplete reports, document budget breaches
+  // and (below) comparability reasons. They are never counted into a pass.
+  const laneFailures = [];
+  for (const [label, r] of [['A', A], ['B', B]]) {
+    for (const p of Array.isArray(r.incomplete) ? r.incomplete : []) laneFailures.push(`${label}: ${p}`);
+    if (r.aborted) laneFailures.push(`${label}: aborted: ${r.aborted}`);
+  }
+  for (const reason of compareDocuments(bd, cd, regressMaxPct)) laneFailures.push(`documents: ${reason}`);
+  const all = [...rows, ...documents];
+  const counts = {};
+  for (const r of all) counts[r.status] = (counts[r.status] ?? 0) + 1;
+  const controls = [['A', A.identity?.control], ['B', B.identity?.control]].filter(([, c]) => c);
+  return { comparability, rows, documents, counts, laneFailures, controls, evidence,
+    tailRegressions: rows.filter((r) => r.tailRegression).map((r) => r.path),
+    identity: { a: A.identity ?? null, b: B.identity ?? null } };
+}
+
+const cell = (v) => (v === null || v === undefined ? '—' : String(v));
+const pct = (v) => (v === null || v === undefined ? '—' : `${v > 0 ? '+' : ''}${v}%`);
+
+/** Readable Markdown for a compareAll() result. No aggregate score, by design. */
+export function renderComparisonMarkdown(result, { title = 'A/B comparison', aLabel = 'A', bLabel = 'B' } = {}) {
+  const out = [`# ${title}`, ''];
+  for (const [label, control] of result.controls) {
+    out.push(`> **CONTROL RUN (${label}):** injected ${control.delayMs} ms delay in the ${control.scenario} scenario (${control.affects}). This is a detection check, not a real candidate.`, '');
+  }
+  const idLine = (label, name, id) => `- ${label} (${name}): executable \`${(id?.package?.executableSha256 ?? 'unknown').slice(0, 12)}\`, app.asar \`${(id?.package?.asarSha256 ?? 'unknown').slice(0, 12)}\`, instrument \`${(id?.instrument?.combined ?? 'unknown').slice(0, 12)}\``;
+  out.push(idLine('A', aLabel, result.identity.a), idLine('B', bLabel, result.identity.b), '');
+  out.push(result.comparability.comparable ? '**Comparable:** yes (same instrument, fixture, execution options; same machine and renderer lane).'
+    : `**Comparable: NO — values are shown but not ranked.**\n${result.comparability.reasons.map((r) => `- ${r}`).join('\n')}`, '');
+  for (const w of result.comparability.warnings) out.push(`- Note: ${w}`);
+  out.push('', `Counts: ${Object.entries(result.counts).map(([k, v]) => `${v} ${k}`).join(', ') || 'none'}. Lower is better everywhere. "inconclusive" = the change is within the two sides' combined run-to-run range. No aggregate score is computed.`, '');
+  if (result.laneFailures.length) out.push('## Required-lane failures (not averaged away)', '', ...result.laneFailures.map((f) => `- ${f}`), '');
+  if (result.tailRegressions.length) out.push('## Worst-case (tail) regressions', '', ...result.tailRegressions.map((p) => {
+    const t = result.rows.find((r) => r.path === p).tailRegression; return `- ${p}: B repeat ${t.repeat} reached ${t.cand} vs A worst ${t.base} (noise guard ${round2(t.noiseGuard)})`;
+  }), '');
+  const table = (rows) => ['| Metric | A | B | Δ | Δ% | A spread | B spread | A worst | B worst | Status |', '|---|---|---|---|---|---|---|---|---|---|',
+    ...rows.map((r) => `| ${r.path} | ${cell(r.a)} | ${cell(r.b)} | ${cell(r.absDelta)} | ${pct(r.deltaPct)} | ${cell(r.aSpread)} | ${cell(r.bSpread)} | ${cell(r.aWorst)} | ${cell(r.bWorst)} | **${r.status}**${r.note ? ` — ${r.note}` : ''}${r.tailRegression ? ' — TAIL REGRESSION' : ''} |`)];
+  out.push('## Primary metrics', '', ...table(result.rows), '');
+  if (result.documents.length) out.push('## Document cases', '', ...table(result.documents), '');
+  out.push('## Evidence', '', `- A report: ${result.evidence.a ?? '—'}`, `- B report: ${result.evidence.b ?? '—'}`, '');
+  return out.join('\n');
 }
 
 // CLI entry point — only runs when this file is executed directly (not when imported by tests).

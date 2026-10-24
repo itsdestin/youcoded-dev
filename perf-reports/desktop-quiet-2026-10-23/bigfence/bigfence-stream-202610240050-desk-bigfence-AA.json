@@ -1,0 +1,2098 @@
+{
+  "scenario": {
+    "revision": 1,
+    "lane": "bigfence-stream",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-24T00:50:33.691Z",
+  "label": "desk-bigfence-AA",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+      "sha": "d0a7211ad3a8d150400c47d54c57fc556a10613a",
+      "branch": "perf/93-baseline-master",
+      "dirty": "3c937cd909bc"
+    },
+    "new": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+      "sha": "d0a7211ad3a8d150400c47d54c57fc556a10613a",
+      "branch": "perf/93-baseline-master",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "bigfence-code-2000",
+      "variant": "code",
+      "n": 2000,
+      "deltas": 36706,
+      "perSec": 612,
+      "streamMs": 59977,
+      "atCloudSpeed": false,
+      "lineCount": 2000,
+      "fenceChars": 136459,
+      "overLimit": true,
+      "lastTail": "nst value1999: number = compute(1999, \"key59\"); // line 1999",
+      "outro": "That is the whole file.",
+      "chars": 136532
+    },
+    {
+      "id": "bigfence-code-20000",
+      "variant": "code",
+      "n": 20000,
+      "deltas": 376846,
+      "perSec": 6281,
+      "streamMs": 59998,
+      "atCloudSpeed": false,
+      "lineCount": 20000,
+      "fenceChars": 1424599,
+      "overLimit": true,
+      "lastTail": " value19999: number = compute(19999, \"key17\"); // line 19999",
+      "outro": "That is the whole file.",
+      "chars": 1424672
+    },
+    {
+      "id": "bigfence-json-700",
+      "variant": "json",
+      "n": 700,
+      "deltas": 175044,
+      "perSec": 2918,
+      "streamMs": 59988,
+      "atCloudSpeed": false,
+      "lineCount": 32,
+      "fenceChars": 700089,
+      "overLimit": true,
+      "lastTail": "]",
+      "outro": "That is the whole file.",
+      "chars": 700164
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 1524,
+        "streamLongtaskTotalMs": 1524,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.7,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1510.1,
+        "mainMaxDelayMs": 992.9,
+        "mainTotalStallMs": 992.9,
+        "typingIdleMaxMs": 3.1,
+        "typingStreamMaxMs": 12.4,
+        "typingSettleMaxMs": 1336.4,
+        "typingScrollMaxMs": 4.1,
+        "typingSaturated": false,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 4,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 1591.8,
+        "peakPssMb": 957.2,
+        "heapMb": 73.1,
+        "domNodes": 16326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1524,
+        "worstTypingMs": 1336.4,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1524,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1336.4,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1591.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 192,
+        "streamLongtaskTotalMs": 739,
+        "streamLongtaskCount": 7,
+        "settleLongtaskMaxMs": 123045,
+        "settleLongtaskTotalMs": 123184,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 22,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 179.8,
+        "settleTimerStallMaxMs": 123032.9,
+        "mainMaxDelayMs": 50548.1,
+        "mainTotalStallMs": 50839.4,
+        "typingIdleMaxMs": 2.9,
+        "typingStreamMaxMs": 187.9,
+        "typingSettleMaxMs": 122896.5,
+        "typingScrollMaxMs": 8.8,
+        "typingSaturated": true,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 16,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 123263.3,
+        "peakPssMb": 2148.6,
+        "heapMb": 256.5,
+        "domNodes": 160326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 123045,
+        "worstTypingMs": 122896.5,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 123045,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 122896.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 123263.3,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": null,
+        "streamLongtaskTotalMs": null,
+        "streamLongtaskCount": null,
+        "settleLongtaskMaxMs": null,
+        "settleLongtaskTotalMs": null,
+        "scrollLongtaskMaxMs": null,
+        "scrollFrameGapMaxMs": null,
+        "scrollFramesOver50": null,
+        "streamTimerStallMaxMs": null,
+        "settleTimerStallMaxMs": null,
+        "mainMaxDelayMs": null,
+        "mainTotalStallMs": null,
+        "typingIdleMaxMs": null,
+        "typingStreamMaxMs": null,
+        "typingSettleMaxMs": null,
+        "typingScrollMaxMs": null,
+        "typingSaturated": null,
+        "typingKeysStream": null,
+        "typingKeysSettle": null,
+        "typingKeysScroll": null,
+        "typingExhausted": null,
+        "endToPaintMs": null,
+        "peakPssMb": 3089.6,
+        "heapMb": null,
+        "domNodes": null,
+        "coloured": null,
+        "interference": null,
+        "worstLongtaskMs": null,
+        "worstTypingMs": null,
+        "status": "failed:memory-limit",
+        "reason": "Lab safety cap: owned app family PSS 3090 MiB exceeded the 3072 MiB cap (summed RSS 3546 MiB double-counts shared pages)"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 1559,
+        "streamLongtaskTotalMs": 1559,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.7,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1543.5,
+        "mainMaxDelayMs": 1033.7,
+        "mainTotalStallMs": 1033.7,
+        "typingIdleMaxMs": 2.9,
+        "typingStreamMaxMs": 11.4,
+        "typingSettleMaxMs": 1339.3,
+        "typingScrollMaxMs": 2.6,
+        "typingSaturated": false,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 5,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 1645.6,
+        "peakPssMb": 956,
+        "heapMb": 35.6,
+        "domNodes": 16326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1559,
+        "worstTypingMs": 1339.3,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1559,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1339.3,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1645.6,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 200,
+        "streamLongtaskTotalMs": 931,
+        "streamLongtaskCount": 10,
+        "settleLongtaskMaxMs": 133998,
+        "settleLongtaskTotalMs": 134121,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 18.5,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 205,
+        "settleTimerStallMaxMs": 134038,
+        "mainMaxDelayMs": 49732.2,
+        "mainTotalStallMs": 50036.7,
+        "typingIdleMaxMs": 2.9,
+        "typingStreamMaxMs": 140.2,
+        "typingSettleMaxMs": 133910.7,
+        "typingScrollMaxMs": 8.9,
+        "typingSaturated": true,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 17,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 134287.6,
+        "peakPssMb": 2309.9,
+        "heapMb": 202.2,
+        "domNodes": 160326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 133998,
+        "worstTypingMs": 133910.7,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 133998,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 133910.7,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 134287.6,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": null,
+        "streamLongtaskTotalMs": null,
+        "streamLongtaskCount": null,
+        "settleLongtaskMaxMs": null,
+        "settleLongtaskTotalMs": null,
+        "scrollLongtaskMaxMs": null,
+        "scrollFrameGapMaxMs": null,
+        "scrollFramesOver50": null,
+        "streamTimerStallMaxMs": null,
+        "settleTimerStallMaxMs": null,
+        "mainMaxDelayMs": null,
+        "mainTotalStallMs": null,
+        "typingIdleMaxMs": null,
+        "typingStreamMaxMs": null,
+        "typingSettleMaxMs": null,
+        "typingScrollMaxMs": null,
+        "typingSaturated": null,
+        "typingKeysStream": null,
+        "typingKeysSettle": null,
+        "typingKeysScroll": null,
+        "typingExhausted": null,
+        "endToPaintMs": null,
+        "peakPssMb": 3078.3,
+        "heapMb": null,
+        "domNodes": null,
+        "coloured": null,
+        "interference": null,
+        "worstLongtaskMs": null,
+        "worstTypingMs": null,
+        "status": "failed:memory-limit",
+        "reason": "Lab safety cap: owned app family PSS 3078 MiB exceeded the 3072 MiB cap (summed RSS 3549 MiB double-counts shared pages)"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 0,
+        "streamLongtaskTotalMs": 0,
+        "streamLongtaskCount": 0,
+        "settleLongtaskMaxMs": 1541,
+        "settleLongtaskTotalMs": 1541,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.6,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 0,
+        "settleTimerStallMaxMs": 1533.5,
+        "mainMaxDelayMs": 1022.1,
+        "mainTotalStallMs": 1022.1,
+        "typingIdleMaxMs": 3,
+        "typingStreamMaxMs": 11.9,
+        "typingSettleMaxMs": 1357.6,
+        "typingScrollMaxMs": 2.7,
+        "typingSaturated": false,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 4,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 1576.5,
+        "peakPssMb": 938.5,
+        "heapMb": 57.5,
+        "domNodes": 16326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1541,
+        "worstTypingMs": 1357.6,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1541,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1357.6,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1576.5,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 221,
+        "streamLongtaskTotalMs": 921,
+        "streamLongtaskCount": 9,
+        "settleLongtaskMaxMs": 122592,
+        "settleLongtaskTotalMs": 122733,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 25.3,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 210.8,
+        "settleTimerStallMaxMs": 122591.5,
+        "mainMaxDelayMs": 49781.9,
+        "mainTotalStallMs": 50112.4,
+        "typingIdleMaxMs": 2.9,
+        "typingStreamMaxMs": 182.8,
+        "typingSettleMaxMs": 122403.6,
+        "typingScrollMaxMs": 9,
+        "typingSaturated": true,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 17,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 122859.6,
+        "peakPssMb": 2188.2,
+        "heapMb": 256.5,
+        "domNodes": 160326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 122592,
+        "worstTypingMs": 122403.6,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 122592,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 122403.6,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 122859.6,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": null,
+        "streamLongtaskTotalMs": null,
+        "streamLongtaskCount": null,
+        "settleLongtaskMaxMs": null,
+        "settleLongtaskTotalMs": null,
+        "scrollLongtaskMaxMs": null,
+        "scrollFrameGapMaxMs": null,
+        "scrollFramesOver50": null,
+        "streamTimerStallMaxMs": null,
+        "settleTimerStallMaxMs": null,
+        "mainMaxDelayMs": null,
+        "mainTotalStallMs": null,
+        "typingIdleMaxMs": null,
+        "typingStreamMaxMs": null,
+        "typingSettleMaxMs": null,
+        "typingScrollMaxMs": null,
+        "typingSaturated": null,
+        "typingKeysStream": null,
+        "typingKeysSettle": null,
+        "typingKeysScroll": null,
+        "typingExhausted": null,
+        "endToPaintMs": null,
+        "peakPssMb": 3073.7,
+        "heapMb": null,
+        "domNodes": null,
+        "coloured": null,
+        "interference": null,
+        "worstLongtaskMs": null,
+        "worstTypingMs": null,
+        "status": "failed:memory-limit",
+        "reason": "Lab safety cap: owned app family PSS 3074 MiB exceeded the 3072 MiB cap (summed RSS 3546 MiB double-counts shared pages)"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 1524,
+        "streamLongtaskTotalMs": 1524,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 17.6,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 1516.6,
+        "settleTimerStallMaxMs": 0,
+        "mainMaxDelayMs": 1011.9,
+        "mainTotalStallMs": 1011.9,
+        "typingIdleMaxMs": 4,
+        "typingStreamMaxMs": 11.6,
+        "typingSettleMaxMs": 1289.8,
+        "typingScrollMaxMs": 2.6,
+        "typingSaturated": false,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 4,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 1592.6,
+        "peakPssMb": 947.4,
+        "heapMb": 61,
+        "domNodes": 16326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 1524,
+        "worstTypingMs": 1289.8,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 1524,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 1289.8,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1592.6,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "bigfence-code-20000",
+        "variant": "code",
+        "n": 20000,
+        "lineCount": 20000,
+        "fenceChars": 1424599,
+        "overLimit": true,
+        "deltas": 376846,
+        "perSec": 6281,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 221,
+        "streamLongtaskTotalMs": 793,
+        "streamLongtaskCount": 6,
+        "settleLongtaskMaxMs": 123748,
+        "settleLongtaskTotalMs": 123900,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 21.6,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 236.7,
+        "settleTimerStallMaxMs": 123748.2,
+        "mainMaxDelayMs": 50140.8,
+        "mainTotalStallMs": 50503.4,
+        "typingIdleMaxMs": 2.9,
+        "typingStreamMaxMs": 219.1,
+        "typingSettleMaxMs": 123632.5,
+        "typingScrollMaxMs": 10.5,
+        "typingSaturated": true,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 16,
+        "typingKeysScroll": 15,
+        "typingExhausted": false,
+        "endToPaintMs": 124051.1,
+        "peakPssMb": 2108.9,
+        "heapMb": 214.6,
+        "domNodes": 160326,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 123748,
+        "worstTypingMs": 123632.5,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 123748,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 123632.5,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 124051.1,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "bigfence-json-700",
+        "variant": "json",
+        "n": 700,
+        "lineCount": 32,
+        "fenceChars": 700089,
+        "overLimit": true,
+        "deltas": 175044,
+        "perSec": 2918,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 3645,
+        "streamLongtaskTotalMs": 60045,
+        "streamLongtaskCount": 81,
+        "settleLongtaskMaxMs": 5322,
+        "settleLongtaskTotalMs": 38078,
+        "scrollLongtaskMaxMs": 676,
+        "scrollFrameGapMaxMs": 348.7,
+        "scrollFramesOver50": 2,
+        "streamTimerStallMaxMs": 18483.8,
+        "settleTimerStallMaxMs": 29220.6,
+        "mainMaxDelayMs": 12452.5,
+        "mainTotalStallMs": 12452.5,
+        "typingIdleMaxMs": 3,
+        "typingStreamMaxMs": 3452.4,
+        "typingSettleMaxMs": 16581.1,
+        "typingScrollMaxMs": null,
+        "typingSaturated": true,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 64,
+        "typingKeysScroll": 0,
+        "typingExhausted": true,
+        "endToPaintMs": 42306.8,
+        "peakPssMb": 3054.3,
+        "heapMb": 712.4,
+        "domNodes": 245977,
+        "coloured": 1,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 5322,
+        "worstTypingMs": 16581.1,
+        "breaches": [
+          {
+            "metric": "worstLongtaskMs",
+            "value": 5322,
+            "limit": 250
+          },
+          {
+            "metric": "worstTypingMs",
+            "value": 16581.1,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 42306.8,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:bigfence-code-2000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 69.9,
+      "samples": 140,
+      "overflow": false,
+      "foreignAvgCores": 0.67,
+      "foreignPeak2sCores": 0.75,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            2598
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12.6,
+        "max": 20
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-a:bigfence-code-20000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 191.7,
+      "samples": 383,
+      "overflow": false,
+      "foreignAvgCores": 0.7,
+      "foreignPeak2sCores": 1.1,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 18.3,
+        "max": 33.7
+      },
+      "pressure": {
+        "cpuMax": 0.18,
+        "ioMax": 0.18,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-a:bigfence-json-700",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 91.5,
+      "samples": 183,
+      "overflow": false,
+      "foreignAvgCores": 0.69,
+      "foreignPeak2sCores": 0.93,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            159370
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 17.4,
+        "max": 27.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-b:bigfence-code-2000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 69.9,
+      "samples": 140,
+      "overflow": false,
+      "foreignAvgCores": 0.67,
+      "foreignPeak2sCores": 0.73,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            2598
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12.6,
+        "max": 19.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-b:bigfence-code-20000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 202.6,
+      "samples": 405,
+      "overflow": false,
+      "foreignAvgCores": 0.7,
+      "foreignPeak2sCores": 1.3,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 17.9,
+        "max": 28.5
+      },
+      "pressure": {
+        "cpuMax": 0.18,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-b:bigfence-json-700",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 83.4,
+      "samples": 167,
+      "overflow": false,
+      "foreignAvgCores": 0.69,
+      "foreignPeak2sCores": 1.02,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            162886
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 17.6,
+        "max": 26.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-b:bigfence-code-2000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 69.8,
+      "samples": 140,
+      "overflow": false,
+      "foreignAvgCores": 0.67,
+      "foreignPeak2sCores": 0.83,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            2598
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12.7,
+        "max": 19.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0.54,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-b:bigfence-code-20000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 191.2,
+      "samples": 382,
+      "overflow": false,
+      "foreignAvgCores": 0.71,
+      "foreignPeak2sCores": 1.53,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2594,
+            2643,
+            2117,
+            4266
+          ],
+          "cores": 0.51
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 18.4,
+        "max": 33.3
+      },
+      "pressure": {
+        "cpuMax": 0.26,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-b:bigfence-json-700",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 94.8,
+      "samples": 190,
+      "overflow": false,
+      "foreignAvgCores": 0.69,
+      "foreignPeak2sCores": 1.02,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            166646
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 17.3,
+        "max": 32.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-a:bigfence-code-2000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 69.9,
+      "samples": 140,
+      "overflow": false,
+      "foreignAvgCores": 0.67,
+      "foreignPeak2sCores": 0.72,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2594,
+            2643,
+            2117,
+            4266
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 12.5,
+        "max": 20.2
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-a:bigfence-code-20000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 192.4,
+      "samples": 384,
+      "overflow": false,
+      "foreignAvgCores": 0.69,
+      "foreignPeak2sCores": 1.24,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.5
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 17.9,
+        "max": 33.1
+      },
+      "pressure": {
+        "cpuMax": 0.18,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-a:bigfence-json-700",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 107.3,
+      "samples": 215,
+      "overflow": false,
+      "foreignAvgCores": 0.68,
+      "foreignPeak2sCores": 1.16,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 16.9,
+        "max": 28.8
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0.36,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    }
+  ],
+  "aggregate": {
+    "bigfence-code-2000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 1524,
+            "min": 1524,
+            "max": 1524,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 1524,
+            "min": 1524,
+            "max": 1524,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 17.65,
+            "min": 17.6,
+            "max": 17.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 12,
+            "min": 11.6,
+            "max": 12.4,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 1313.1,
+            "min": 1289.8,
+            "max": 1336.4,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 3.3499999999999996,
+            "min": 2.6,
+            "max": 4.1,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 1592.1999999999998,
+            "min": 1591.8,
+            "max": 1592.6,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 952.3,
+            "min": 947.4,
+            "max": 957.2,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 67.05,
+            "min": 61,
+            "max": 73.1,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 16326,
+            "min": 16326,
+            "max": 16326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 2,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 779.5,
+            "min": 0,
+            "max": 1559,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 779.5,
+            "min": 0,
+            "max": 1559,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 770.5,
+            "min": 0,
+            "max": 1541,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 17.65,
+            "min": 17.6,
+            "max": 17.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 11.65,
+            "min": 11.4,
+            "max": 11.9,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 1348.4499999999998,
+            "min": 1339.3,
+            "max": 1357.6,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 2.6500000000000004,
+            "min": 2.6,
+            "max": 2.7,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 1611.05,
+            "min": 1576.5,
+            "max": 1645.6,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 947.25,
+            "min": 938.5,
+            "max": 956,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 46.55,
+            "min": 35.6,
+            "max": 57.5,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 16326,
+            "min": 16326,
+            "max": 16326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    },
+    "bigfence-code-20000": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 206.5,
+            "min": 192,
+            "max": 221,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 766,
+            "min": 739,
+            "max": 793,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 123396.5,
+            "min": 123045,
+            "max": 123748,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 21.8,
+            "min": 21.6,
+            "max": 22,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 203.5,
+            "min": 187.9,
+            "max": 219.1,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 123264.5,
+            "min": 122896.5,
+            "max": 123632.5,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 9.65,
+            "min": 8.8,
+            "max": 10.5,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 123657.20000000001,
+            "min": 123263.3,
+            "max": 124051.1,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 2128.75,
+            "min": 2108.9,
+            "max": 2148.6,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 235.55,
+            "min": 214.6,
+            "max": 256.5,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 160326,
+            "min": 160326,
+            "max": 160326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 2,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 210.5,
+            "min": 200,
+            "max": 221,
+            "n": 2,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 926,
+            "min": 921,
+            "max": 931,
+            "n": 2,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 128295,
+            "min": 122592,
+            "max": 133998,
+            "n": 2,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 21.9,
+            "min": 18.5,
+            "max": 25.3,
+            "n": 2,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 161.5,
+            "min": 140.2,
+            "max": 182.8,
+            "n": 2,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 128157.15000000001,
+            "min": 122403.6,
+            "max": 133910.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 8.95,
+            "min": 8.9,
+            "max": 9,
+            "n": 2,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 128573.6,
+            "min": 122859.6,
+            "max": 134287.6,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 2249.05,
+            "min": 2188.2,
+            "max": 2309.9,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 229.35,
+            "min": 202.2,
+            "max": 256.5,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 160326,
+            "min": 160326,
+            "max": 160326,
+            "n": 2,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    },
+    "bigfence-json-700": {
+      "old": {
+        "statuses": [
+          "failed:memory-limit",
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 3645,
+            "min": 3645,
+            "max": 3645,
+            "n": 1,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": 60045,
+            "min": 60045,
+            "max": 60045,
+            "n": 1,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": 5322,
+            "min": 5322,
+            "max": 5322,
+            "n": 1,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 676,
+            "min": 676,
+            "max": 676,
+            "n": 1,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 348.7,
+            "min": 348.7,
+            "max": 348.7,
+            "n": 1,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": 3452.4,
+            "min": 3452.4,
+            "max": 3452.4,
+            "n": 1,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": 16581.1,
+            "min": 16581.1,
+            "max": 16581.1,
+            "n": 1,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": 42306.8,
+            "min": 42306.8,
+            "max": 42306.8,
+            "n": 1,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 3071.95,
+            "min": 3054.3,
+            "max": 3089.6,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 712.4,
+            "min": 712.4,
+            "max": 712.4,
+            "n": 1,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 245977,
+            "min": 245977,
+            "max": 245977,
+            "n": 1,
+            "of": 2
+          },
+          "coloured": {
+            "median": 1,
+            "min": 1,
+            "max": 1,
+            "n": 1,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "failed:memory-limit",
+          "failed:memory-limit"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "streamLongtaskTotalMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "settleLongtaskMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "scrollLongtaskMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "scrollFrameGapMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "typingStreamMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "typingSettleMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "endToPaintMs": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 3076,
+            "min": 3073.7,
+            "max": 3078.3,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "domNodes": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          },
+          "coloured": {
+            "median": null,
+            "min": null,
+            "max": null,
+            "n": 0,
+            "of": 2
+          }
+        }
+      }
+    }
+  }
+}

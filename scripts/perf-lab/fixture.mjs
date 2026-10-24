@@ -22,13 +22,15 @@ import { fileURLToPath } from 'node:url';
 // construction (seeded PRNG, no clock, no entropy pool) — see its header.
 import { assistantContentBlocks, realisticTranscriptLines, messagesPerTurn } from './content.mjs';
 import { FAKE_MODEL_ID, FAKE_PROVIDER_ID, FAKE_PROVIDER_PORT } from './fake-provider.mjs';
+import { downloadAsset as download, completedAsset } from './download.mjs';
+import { assertApprovedCheckoutPath } from './supervised-package.mjs';
 
 const HERE = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const WORKSPACE = resolve(HERE, '..', '..');
 // scratch/ is gitignored, so the ~40 MB of downloaded engine + model assets
 // never enter git history. They are cached here and reused across runs.
 export const ASSETS_DIR = join(WORKSPACE, 'scratch', 'perf-lab', 'assets');
-const ENGINE_PIN_TS = join(WORKSPACE, 'youcoded', 'desktop', 'src', 'main', 'engine', 'engine-pin.ts');
+const DEFAULT_CHECKOUT = join(WORKSPACE, 'youcoded');
 
 // The smallest model that can actually hold a native conversation in THIS app.
 //
@@ -318,36 +320,29 @@ function writeJsonl(path, lines, chunkLines = 2000) {
  * Parsing keeps the version/sha/layout in ONE place — bump the pin and the perf
  * lab downloads the new engine with no edit here.
  */
-export function readEnginePin({ platform = 'linux', arch = 'x64', backend = 'cpu' } = {}) {
-  const src = readFileSync(ENGINE_PIN_TS, 'utf8');
+export function readEnginePin({ platform = 'linux', arch = 'x64', backend = 'cpu', checkout = DEFAULT_CHECKOUT } = {}) {
+  // WHY: selected packages must never inherit the historical checkout's pin.
+  const sourcePath = join(assertApprovedCheckoutPath(checkout), 'desktop/src/main/engine/engine-pin.ts');
+  const src = readFileSync(sourcePath, 'utf8');
   const version = /ENGINE_VERSION\s*=\s*'([^']+)'/.exec(src)?.[1];
-  if (!version) throw new Error(`Could not read ENGINE_VERSION from ${ENGINE_PIN_TS}`);
+  if (!version) throw new Error(`Could not read ENGINE_VERSION from ${sourcePath}`);
   // Each asset is one object literal on one line in ENGINE_ASSETS.
   const row = src.split('\n').find((l) =>
     l.includes(`platform: '${platform}'`) && l.includes(`arch: '${arch}'`) && l.includes(`backend: '${backend}'`));
-  if (!row) throw new Error(`No ${platform}/${arch}/${backend} asset in ${ENGINE_PIN_TS}`);
+  if (!row) throw new Error(`No ${platform}/${arch}/${backend} asset in ${sourcePath}`);
   const field = (name) => {
     const m = new RegExp(`${name}:\\s*'([^']+)'`).exec(row);
     if (!m) throw new Error(`Asset row for ${platform}/${arch}/${backend} has no ${name}`);
     return m[1];
   };
   return {
-    version, backend,
+    version, backend, sourcePath, sourceSha256: createHash('sha256').update(src).digest('hex'),
     assetName: field('assetName'),
     sha256: field('sha256'),
     binaryRelPath: field('binaryRelPath'),
     // Mirrors assetUrl() in engine-pin.ts.
     url: `https://github.com/ggml-org/llama.cpp/releases/download/${version}/${field('assetName')}`,
   };
-}
-
-async function download(url, dest) {
-  const res = await fetch(url, { redirect: 'follow' });
-  if (!res.ok) throw new Error(`Download failed (${res.status} ${res.statusText}): ${url}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  mkdirSync(resolve(dest, '..'), { recursive: true });
-  writeFileSync(dest, buf);
-  return buf.length;
 }
 
 function sha256File(p) {
@@ -360,17 +355,52 @@ function sha256File(p) {
  * EngineAcquisition.installed() means (engine-acquisition.ts:52-64): a readable
  * `.complete` marker for the pinned version whose binaryRelPath actually exists.
  */
-export function assetsReady() {
+export function assetsReady({ checkout = DEFAULT_CHECKOUT } = {}) {
   let pin;
-  try { pin = readEnginePin(); } catch { return null; }
+  try { pin = readEnginePin({ checkout }); } catch { return null; }
   const ggufSrc = join(ASSETS_DIR, GGUF_NAME);
   const engineSrc = join(ASSETS_DIR, `engine-${pin.version}-${pin.backend}`);
-  try { if (statSync(ggufSrc).size === 0) return null; } catch { return null; }
+  // WHY: a nonzero file may be the interrupted prefix of a failed download.
+  if (!completedAsset(ggufSrc)) return null;
   try {
     const m = JSON.parse(readFileSync(join(engineSrc, '.complete'), 'utf8'));
     if (m.version !== pin.version || !existsSync(join(engineSrc, m.binaryRelPath))) return null;
   } catch { return null; }
   return { ggufSrc, engineSrc, pin };
+}
+
+/** True only when the owner explicitly opted in via the environment (the flag path is `--allow-asset-download`). */
+export function assetDownloadEnvAllowed(env = process.env) {
+  return env.PERF_LAB_ALLOW_ASSET_DOWNLOAD === '1';
+}
+
+// The one place that actually spawns the downloader. buildFixture is synchronous, so
+// provisioning (async fetch) re-enters this file in a child process.
+function defaultProvision({ checkout }) {
+  execFileSync(process.execPath, [fileURLToPath(import.meta.url), '--ensure-assets', '--checkout', checkout], { stdio: 'inherit' });
+}
+
+/**
+ * Describes asset state WITHOUT any network or write.
+ * state: 'present' (verified, no download), 'missing' (would be refused), 'authorized' (missing but opted in).
+ */
+export function assetStatus({ checkout = DEFAULT_CHECKOUT, allow = false, assetsReadyFn = assetsReady, pinFn = readEnginePin } = {}) {
+  const ready = assetsReadyFn({ checkout });
+  if (ready) return { state: 'present', detail: `model ${GGUF_NAME} + engine ${ready.pin?.version ?? ''} verified in ${ASSETS_DIR}; no network` };
+  let engineName = 'the pinned llama.cpp engine archive';
+  try { engineName = pinFn({ checkout }).assetName; } catch { /* checkout without engine-pin.ts: keep the generic name */ }
+  const need = `${GGUF_NAME} (about 490 MB, from huggingface.co) and ${engineName} (llama.cpp engine archive, from github.com)`;
+  return allow
+    ? { state: 'authorized', detail: `missing; download AUTHORIZED: ${need}` }
+    : { state: 'missing', detail: `missing; would REFUSE to run model phases: ${need}` };
+}
+
+export function assetRefusalMessage({ checkout = DEFAULT_CHECKOUT, statusFn = assetStatus } = {}) {
+  const st = statusFn({ checkout, allow: false });
+  return `perf-lab: refusing to download model assets without explicit authorization. ${st.detail}.\n`
+    + '  Choice 1: opt in with --allow-asset-download (or PERF_LAB_ALLOW_ASSET_DOWNLOAD=1) to download them once into scratch/perf-lab/assets.\n'
+    + '  Choice 2: select only model-free phases (for example --only artifacts,native-stream) that need no model or engine.\n'
+    + '  Nothing was downloaded and no app was launched.';
 }
 
 /**
@@ -381,16 +411,17 @@ export function assetsReady() {
  *     mid-measurement (which would make every number meaningless).
  * Async because it uses fetch. Fast no-op when both are already there.
  */
-export async function ensureAssets({ log = () => {} } = {}) {
-  const ready = assetsReady();
+export async function ensureAssets({ log = () => {}, checkout = DEFAULT_CHECKOUT } = {}) {
+  assertApprovedCheckoutPath(checkout);
+  const ready = assetsReady({ checkout });
   if (ready) return ready;
 
   mkdirSync(ASSETS_DIR, { recursive: true });
-  const pin = readEnginePin();
+  const pin = readEnginePin({ checkout });
   const ggufSrc = join(ASSETS_DIR, GGUF_NAME);
   const engineSrc = join(ASSETS_DIR, `engine-${pin.version}-${pin.backend}`);
 
-  if (!existsSync(ggufSrc) || statSync(ggufSrc).size === 0) {
+  if (!completedAsset(ggufSrc)) {
     log(`[fixture] downloading ${GGUF_NAME}\u2026`);
     await download(GGUF_URL, ggufSrc);
   }
@@ -427,7 +458,7 @@ export async function ensureAssets({ log = () => {} } = {}) {
     }));
     log(`[fixture] engine ${pin.version}-${pin.backend} unpacked`);
   }
-  const ok = assetsReady();
+  const ok = assetsReady({ checkout });
   if (!ok) throw new Error('ensureAssets ran but the assets still look incomplete');
   return ok;
 }
@@ -461,21 +492,37 @@ export async function ensureAssets({ log = () => {} } = {}) {
  *   rows). OPT-IN for the same reason: 100 extra files on disk are a different
  *   configuration, and only the native-resume phase measures at that scale.
  */
-export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', fakeProvider = false, nativeSessions = false, log = () => {} } = {}) {
+export function buildFixture(root, { checkout = DEFAULT_CHECKOUT, engineSrc, ggufSrc, seedEngine = true, historySizes = SIZES, decoyCount = DECOY_TRANSCRIPTS, content = 'realistic', fakeProvider = false, nativeSessions = false, log = () => {},
+  // Explicit opt-in for any network download (run.mjs/ab.mjs --allow-asset-download). Default OFF.
+  allowAssetDownload = false,
+  // Injection points so tests can prove zero network/spawn without touching the disk or network.
+  assetsReadyFn = assetsReady,
+  provision = defaultProvision } = {}) {
+  if (typeof seedEngine !== 'boolean' || !historySizes || typeof historySizes !== 'object'
+      || !Object.entries(historySizes).every(([name, count]) => /^[a-z][a-z0-9_-]*$/.test(name) && Number.isSafeInteger(count) && count >= 0)
+      || !Number.isSafeInteger(decoyCount) || decoyCount < 0) throw new Error('Invalid fixture workload options.');
+  if (!seedEngine && (engineSrc || ggufSrc || (nativeSessions && !fakeProvider))) throw new Error('Model-free fixtures cannot seed a local engine or local-model sessions.');
   // Synchronous on purpose (the plan's interface) — but provisioning needs
   // `await fetch`. So: fast sync check first, and only when an asset is genuinely
   // missing do we shell out to ourselves to run the async download once. On a
   // provisioned machine this never spawns anything.
-  let assets = assetsReady();
-  if (!assets) {
-    log('[fixture] assets missing \u2014 provisioning (one-time download)\u2026');
-    execFileSync(process.execPath, [fileURLToPath(import.meta.url), '--ensure-assets'], { stdio: 'inherit' });
-    assets = assetsReady();
+  // WHY opt-out: a file-viewer test does not need hundreds of MB of model data.
+  // Unconditional provisioning exhausted disk before the first measurement.
+  assertApprovedCheckoutPath(checkout);
+  let assets = seedEngine ? assetsReadyFn({ checkout }) : null;
+  if (seedEngine && !assets) {
+    // WHY refuse: provisioning downloads ~490 MB of model plus the engine archive. The owner's
+    // rule is no model/engine download without explicit authorization, and an A/B run once
+    // fetched them unannounced. Missing assets now fail HERE, before any app launch.
+    if (!allowAssetDownload) throw new Error(assetRefusalMessage({ checkout, statusFn: (o) => assetStatus({ ...o, assetsReadyFn }) }));
+    log('[fixture] assets missing \u2014 provisioning (download explicitly authorized)\u2026');
+    provision({ checkout });
+    assets = assetsReadyFn({ checkout });
     if (!assets) throw new Error('Asset provisioning failed \u2014 see the output above');
   }
-  const engine = engineSrc ?? assets.engineSrc;
-  const gguf = ggufSrc ?? assets.ggufSrc;
-  const pin = assets.pin;
+  const engine = seedEngine ? engineSrc ?? assets.engineSrc : null;
+  const gguf = seedEngine ? ggufSrc ?? assets.ggufSrc : null;
+  const pin = assets?.pin ?? null;
 
   const home = join(root, 'home');
   rmSync(home, { recursive: true, force: true });
@@ -506,7 +553,7 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
   mk('.claude', 'projects', slug);
   const transcripts = {};
   const now = Date.now();
-  for (const [name, turns] of Object.entries(SIZES)) {
+  for (const [name, turns] of Object.entries(historySizes)) {
     // Derived, not random — see stableUuid. Two rebuilds of the same size now
     // produce the same filename AND the same bytes inside it.
     const sessionId = stableUuid(`${CONTENT_SEED}:${content}:${name}`);
@@ -549,13 +596,13 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
   // how many files get walked, and making them large would confound that with
   // read cost, which the size-based transcripts above already cover.
   const decoys = [];
-  if (DECOY_TRANSCRIPTS > 0) {
+  if (decoyCount > 0) {
     for (let d = 0; d < DECOY_PROJECT_DIRS; d++) {
       const decoyCwd = mk('projects', `decoy-${d}`);
       const decoySlug = ccProjectSlug(decoyCwd);
       mk('.claude', 'projects', decoySlug);
-      const perDir = Math.ceil(DECOY_TRANSCRIPTS / DECOY_PROJECT_DIRS);
-      for (let i = 0; i < perDir && decoys.length < DECOY_TRANSCRIPTS; i++) {
+      const perDir = Math.ceil(decoyCount / DECOY_PROJECT_DIRS);
+      for (let i = 0; i < perDir && decoys.length < decoyCount; i++) {
         // stableUuid again: same fixture bytes on every rebuild, so a baseline
         // and a candidate walk an identical directory tree.
         const id = stableUuid(`${CONTENT_SEED}:decoy:${d}:${i}`);
@@ -580,7 +627,7 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
     // "context size (4096 tokens), try increasing it (provider error 400)".
     // Qwen2.5-0.5B trains to 32768, so 16384 leaves real headroom while keeping
     // the KV cache small enough to load fast.
-    v: 1, engine: { backend: pin.backend, contextSize: 16384, cacheDir: models },
+    v: 1, engine: { backend: pin?.backend ?? 'cpu', contextSize: 16384, cacheDir: models },
   }));
   // Exactly ProvidersFile (provider-registry.ts:34) seeded with BUILT_INS
   // (provider-registry.ts:21-26). No secretRef — the fixture holds no API keys,
@@ -594,7 +641,7 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
   w('.youcoded/providers.json', JSON.stringify({
     v: 1,
     providers: [
-      { id: 'local', type: 'local-engine', label: 'Local models (llama.cpp)', enabled: true },
+      { id: 'local', type: 'local-engine', label: 'Local models (llama.cpp)', enabled: seedEngine },
       { id: 'openrouter', type: 'openrouter', label: 'OpenRouter', enabled: true },
       ...(fake ? [fake] : []),
     ],
@@ -639,10 +686,9 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
   // fixture is rebuilt once per cold start, so `--runs 5` was copying ~2.3 GB per
   // report for no benefit — it was most of the measured 545 ms rebuild cost, and
   // that cost lands immediately before the rig starts timing a boot.
-  try {
-    execFileSync('cp', ['-al', gguf, join(models, GGUF_NAME)]);
-  } catch {
-    copyFileSync(gguf, join(models, GGUF_NAME));
+  if (seedEngine) {
+    try { execFileSync('cp', ['-al', gguf, join(models, GGUF_NAME)]); }
+    catch { copyFileSync(gguf, join(models, GGUF_NAME)); }
   }
 
   // Electron's userData for app name "youcoded" (desktop/package.json:2) is
@@ -652,15 +698,14 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
   const userData = mk('.config', 'youcoded');
   const engineRoot = join(userData, 'engine');   // EngineManager: <userData>/engine (engine-manager.ts:111)
   mkdirSync(engineRoot, { recursive: true });
-  const engineDir = join(engineRoot, `${pin.version}-${pin.backend}`); // installDir() naming, engine-acquisition.ts:41
+  const engineDir = seedEngine ? join(engineRoot, `${pin.version}-${pin.backend}`) : null; // installDir() naming, engine-acquisition.ts:41
   // Hardlink copy: 39 MB of engine in milliseconds, near-zero disk. Safe here
   // because the app only ever READS an installed engine dir (a version bump
   // unpacks into a fresh `.unpacking` sibling), so it can't write through the
   // links into the cached asset. cpSync fallback for a filesystem without `cp -al`.
-  try {
-    execFileSync('cp', ['-al', engine, engineDir]);
-  } catch {
-    cpSync(engine, engineDir, { recursive: true });
+  if (seedEngine) {
+    try { execFileSync('cp', ['-al', engine, engineDir]); }
+    catch { cpSync(engine, engineDir, { recursive: true }); }
   }
 
   // Pre-create the XDG dirs the env below points at, so nothing the app (or a
@@ -679,13 +724,16 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
 
   return {
     home, bin, projects, transcripts, perfLog, userData,
+    source: { checkout, enginePin: seedEngine ? { path: pin.sourcePath, sha256: pin.sourceSha256 } : null },
     // How many transcript files the app will actually find. Reported so a reader
     // can see the scale a number was taken at, instead of assuming a realistic
     // library: costs that scale with file COUNT were invisible while this was 3.
     transcriptFileCount: Object.keys(transcripts).length + decoys.length,
     decoyTranscripts: decoys.length,
-    modelId: GGUF_NAME.replace(/\.gguf$/i, ''),   // ggufIdFromFileName (cache-scan.ts:22)
-    engine: { dir: engineDir, version: pin.version, backend: pin.backend, binaryRelPath: pin.binaryRelPath },
+    seedEngine,
+    historySizes: { ...historySizes },
+    modelId: seedEngine ? GGUF_NAME.replace(/\.gguf$/i, '') : null,   // ggufIdFromFileName (cache-scan.ts:22)
+    engine: seedEngine ? { dir: engineDir, version: pin.version, backend: pin.backend, binaryRelPath: pin.binaryRelPath } : null,
     // null unless opted in — a scenario that needs either must check and throw,
     // never fall back to the real engine or an empty Resume list.
     fakeProvider: fake ? { id: fake.id, port: FAKE_PROVIDER_PORT, baseUrl: fake.baseUrl, modelId: FAKE_MODEL_ID } : null,
@@ -708,7 +756,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const log = (m) => console.error(m);
   if (process.argv.includes('--ensure-assets')) {
     // The one-time provisioning path buildFixture re-enters this file for.
-    await ensureAssets({ log });
+    const index = process.argv.indexOf('--checkout');
+    await ensureAssets({ log, ...(index < 0 ? {} : { checkout: process.argv[index + 1] }) });
   } else {
     // `--plain` swaps in the old prose filler; the default is realistic content.
     const content = process.argv.includes('--plain') ? 'plain' : 'realistic';

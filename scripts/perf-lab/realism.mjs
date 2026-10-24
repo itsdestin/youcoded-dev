@@ -33,9 +33,10 @@ import { bounded } from './suspects.mjs';
 import { findFamily, cpuSnapshot, cpuPercent } from './procs.mjs';
 import { otherRigRuns } from './switch-pingpong.mjs';
 import {
-  findAmdgpu, readClients, readGpuSysfs, startVirtualCompositor, installTheme, parseCell, sanitizeProcessEnv, assertPortsFree, DEFAULT_THEME_SOURCE,
+  findAmdgpu, readClients, readGpuSysfs, installTheme, parseCell, sanitizeProcessEnv, assertPortsFree, DEFAULT_THEME_SOURCE, GPU_RUNTIME_BLOCK,
 } from './gpu-cost.mjs';
 import { engineDelta, rendererVerdict } from './gpu-cost-parse.mjs';
+import { acquireGpuBinding, verifyBindingCleanup, gpuEvidence, gpuLifetimeFor } from './gpu-bind.mjs';
 import { eventRecorder } from './realism-page.mjs';
 import { startBusyDesktop } from './realism-load.mjs';
 import { cpus } from 'node:os';
@@ -367,7 +368,25 @@ function waitForQuiet(maxMs) {
   })();
 }
 
+// WHY (2026-10-21): GPU display is allowed ONLY through the supervised private compositor (gpu-bind.mjs) and still
+// needs a hardware renderer verdict per boot (runBoot refuses software below). Three cases stay refused, each
+// before any preparation: the dev build (launched unsupervised), a busy-desktop browser (an unsupervised process
+// on the private socket) and a run budget longer than the compositor's fixed lifetime (it would die mid-boot).
+// WHY: the compositor lifetime is now an explicit bounded parameter chosen from the run budget (gpuLifetimeFor), so a long
+// budget is no longer refused outright; only a budget that cannot fit the maximum lifetime (or the app's 600 s cap) is.
+function lifetimeRefusal(maxMinutes){
+ try{gpuLifetimeFor(maxMinutes*60000);return null;}
+ catch(error){return `--max-minutes ${maxMinutes} cannot fit a bounded private compositor lifetime: ${error.message}`;}
+}
+export function realismRuntimeRefusal(opts){
+ if(opts?.factors?.display!=='gpu')return null;
+ const why=opts.factors.build!=='packaged'?'the dev build is launched without the app supervisor'
+  :opts.factors.busy!=='off'?'the busy-desktop browser would be an unsupervised process on the private compositor'
+  :lifetimeRefusal(opts.maxMinutes);
+ return why?{...GPU_RUNTIME_BLOCK,tool:'realism.mjs',display:'gpu',reason:'Realism GPU display refused before preparation: '+why}:null;
+}
 export async function runBoot(opts, bootNo, outFile) {
+  const refusal=realismRuntimeRefusal(opts);if(refusal)return refusal;
   const f = opts.factors, bound = bounded(opts.maxMinutes);
   const report = { status: 'incomplete', pick: opts.pick, deep: opts.deep, factors: f, preset: opts.preset, boot: bootNo, tag: opts.tag, startedAt: new Date().toISOString(), loadAvgStart: readFileSync('/proc/loadavg', 'utf8').trim(), sessions: [], runs: {}, controls: {}, errors: {}, notes: [] };
   report.unusable = Number(report.loadAvgStart.split(' ')[0]) > 8;
@@ -392,14 +411,16 @@ export async function runBoot(opts, bootNo, outFile) {
     let launchOpts = {}, busyDisplay;
     if (f.display === 'gpu') {
       sanitizeProcessEnv(); await assertPortsFree([10000, 10020]);
-      comp = await bound(startVirtualCompositor({ scale: 1.5, hz: 180 }), 'virtual compositor', 40000);
-      report.compositor = { pid: comp.pid, ...comp.info, modeError: comp.modeError ?? null };
-      launchOpts = { waylandSocket: comp.socketPath };
-      busyDisplay = { kind: 'wayland', socketName: 'perf-0', runtimeDir: comp.rt };
+      // Supervised, SO_PEERCRED-proven private compositor; fixed 2560x1600@60 Hz virtual output (owner decision).
+      comp = await bound(acquireGpuBinding({ checkout: opts.checkout, appDir: built.appDir, evidenceDir: root + '-compositor', wallMs: gpuLifetimeFor(opts.maxMinutes * 60000).compositorWallMs }), 'virtual compositor', 40000);
+      report.compositor = { socket: comp.socketPath, output: comp.inspection.observed, physicalScanoutVerified: false };
+      launchOpts = { supervisedBinding: comp };
       ctxGpu = findAmdgpu();
     } else { xvfb = await bound(startXvfb(':99'), 'Xvfb'); launchOpts = { display: xvfb.display }; busyDisplay = { kind: 'x11', display: xvfb.display }; }
     if (f.build === 'packaged') {
-      app = await bound(launchApp({ binary: built.binary, appDir: built.appDir, fixture, cdpPort: CDP_PORT, refuseExisting: true, protocolLog: comp ? join(root, 'wayland.log') : undefined, protocolDebug: false, ...launchOpts }), 'launch', 90000);
+      app = launchOpts.supervisedBinding
+        ? await bound(launchOpts.supervisedBinding.launchApp({ fixture, cdpPort: CDP_PORT, wallMs: gpuLifetimeFor(opts.maxMinutes * 60000).appWallMs }), 'supervised launch', 90000)
+        : await bound(launchApp({ binary: built.binary, appDir: built.appDir, fixture, cdpPort: CDP_PORT, refuseExisting: true, protocolDebug: false, ...launchOpts }), 'launch', 90000);
     } else app = await bound(launchDev({ dev: built, fixture, cdpPort: CDP_PORT, display: launchOpts.display, waylandSocket: launchOpts.waylandSocket }), 'dev launch', 150000);
     const cdp = app.cdp;
     // The window is the whole output, as a person uses it. WHY the browser-level endpoint: Browser.* is not available on a page connection
@@ -414,7 +435,7 @@ export async function runBoot(opts, bootNo, outFile) {
     } catch (e) { report.notes.push('window size failed: ' + e.message); }
     await sleep(f.build === 'dev' ? 8000 : 1500);
     report.renderer = await bound(readRendererInfo(app.cdpPort, cdp), 'GPU info');
-    if (f.display === 'gpu') { const v = rendererVerdict(report.renderer); report.rendererVerdict = v; if (!v.ok) throw Object.assign(Error(`REFUSED: ${v.reason}`), { refused: true }); }
+    if (f.display === 'gpu') { const v = rendererVerdict(report.renderer); report.rendererVerdict = v; report.gpuEvidence = gpuEvidence(report.renderer); if (!v.ok) throw Object.assign(Error(`REFUSED: ${v.reason}`), { refused: true }); }
     report.viewport = await cdp.evaluate('({ w: innerWidth, h: innerHeight, dpr: devicePixelRatio })');
     report.userAgent = await cdp.evaluate('navigator.userAgent');
     report.refreshHz = await cdp.evaluate(`new Promise(r => { const a = []; const g = t => { a.push(t); a.length < 60 ? requestAnimationFrame(g) : r(1000 / ((a.at(-1) - a[0]) / (a.length - 1))); }; requestAnimationFrame(g); })`).then(n => r1(n));
@@ -470,7 +491,7 @@ export async function runBoot(opts, bootNo, outFile) {
     try { for (const id of [...(ctx?.ids ?? [])].reverse()) await ctx.cdp.evaluate(`window.claude.session.destroy(${JSON.stringify(id)})`).catch(() => {}); } catch { /* app gone */ }
     if (app) await Promise.race([app.kill(), sleep(15000)]).catch(e => { report.cleanupError = e.message; });
     if (xvfb?.proc) xvfb.proc.kill('SIGTERM');
-    if (comp) await comp.stop().catch(() => {});
+    if (comp) { try { report.compositorCleanup = await verifyBindingCleanup(comp, { appPackageDir: opts.appDir }); if (!report.compositorCleanup.ok) { report.status = 'incomplete'; report.cleanupError = 'compositor/app cleanup not proven'; } } catch (e) { report.status = 'incomplete'; report.cleanupError = String(e?.message ?? e); } }
     if (fake) await Promise.race([fake.close(), sleep(3000)]).catch(() => {});
     // The fixture HOME holds copies of real conversations when --history real: delete it (a directory THIS run created, under scratch/).
     if (root && root.startsWith(join(WORK, 'realism-fixture-'))) { try { rmSync(root, { recursive: true, force: true }); report.fixtureDeleted = !existsSync(root); } catch (e) { report.cleanupError = e.message; } }
@@ -490,6 +511,9 @@ export function loadTarget(path = HIS_FILE) {
 
 export async function main(argv = process.argv.slice(2)) {
   const opts = parseOptions(argv);
+  // Must precede assets/history/package copies, mkdir, fake provider, env and
+  // port probing. Imported compositor refusal is too late after those effects.
+  const refusal=realismRuntimeRefusal(opts);if(refusal)return refusal;
   if (!assetsReady()) throw Error('perf-lab assets not cached');
   mkdirSync(opts.out, { recursive: true });
   const target = loadTarget();
@@ -511,4 +535,4 @@ export async function main(argv = process.argv.slice(2)) {
   return reports;
 }
 void SLOW_MS; void selfChain; void cpSync; void waitFor;
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(e => { console.error(e); process.exitCode = 2; });
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().then(r=>{if(r?.status==='unsupported'){console.log(JSON.stringify(r));process.exitCode=2;}}).catch(e => { console.error(e); process.exitCode = 2; });

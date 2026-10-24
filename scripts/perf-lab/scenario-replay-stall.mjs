@@ -42,6 +42,7 @@ import { installProbe, stopProbe, readProbe, renderedEntries } from './scenario-
 // ChatView MOUNTED for every open session (ChatView.tsx:695-707, content-visibility:
 // hidden, deliberately not display:none) so a bare query sums every open conversation.
 import { median, MESSAGE_COUNT_EXPR } from './scenario-history.mjs';
+import { attributeStall, STALL_MEASUREMENT_REVISION } from './stall-attribution.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -92,6 +93,7 @@ export const NUMERIC_KEYS = [
   'ipcMedianMs', 'ipcP95Ms', 'ipcMaxMs',
   'ipcOver250ms', 'ipcOver1000ms', 'ipcTotalStallMs',
   'ipcPings', 'ipcMissedTicks', 'ipcMaxPingGapMs',
+  'ipcBlockedWindowMs', 'unknownStallMs',
   // The attribution — the actual point of this scenario.
   'mainProcessStallMs', 'mainProcessStallMaxMs',
   'rendererStallMs', 'rendererStallMaxMs',
@@ -113,32 +115,12 @@ export function medianRun(runs) {
 // Attribution: which thread was blocked?
 // ---------------------------------------------------------------------------
 //
-// THE RULE, in one sentence: a stalled ping that overlaps a renderer long task is
-// blamed on the RENDERER; a stalled ping with no long task under it can only be the
-// MAIN PROCESS, and that is the app-wide freeze.
-//
-// WHY this rule and not something simpler:
-//  * The IPC probe measures END-TO-END unresponsiveness — it pings
-//    `window.claude.getPlatform()`, whose handler is literally `() => process.platform`
-//    (main/ipc/ui.ts, the platform:get entry), so every millisecond it reports is queueing and
-//    thread availability, never handler cost. But a blocked RENDERER also delays that
-//    ping (it cannot dispatch the call, and it cannot run the promise resolution), so
-//    a big number on its own does not say which thread was at fault.
-//  * The renderer long-task observer says exactly when the renderer's main thread was
-//    busy. Subtracting it is what leaves the main process behind.
-//  * "Both were busy at once" is real, so this apportions by OVERLAP rather than
-//    picking one winner: the part of a stall covered by a long task is charged to the
-//    renderer, the remainder to the main process. The two therefore SUM EXACTLY to
-//    ipcTotalStallMs — there is no unattributed remainder to wonder about.
-//
-// Known bias, stated rather than hidden: PerformanceObserver only reports tasks of
-// 50ms or more, so renderer blocking below that is invisible and gets charged to the
-// main process. It is a small bias here by construction — only stalls beyond the
-// 100ms ping interval are attributed at all, and a renderer block big enough to cause
-// one of those is itself well over 50ms — but it is the reason a handful of
-// milliseconds of `mainProcessStallMs` is noise, and seconds of it is the bug.
-// If the long-task observer failed to attach at all, attribution is reported as null
-// (never as "100% main process", which would be a fabricated indictment).
+// WHY residual time is unknown: renderer long-task observation has blind spots.
+// IPC round trips measure both threads and transport, not main occupancy. We keep
+// their raw sum distinct from union elapsed windows and renderer overlap; subtracting
+// the latter never establishes main blocking. Both probe t0s below must be finite
+// timestamps on the same page performance clock. Independent main is peak-only in
+// attributeStall: no independent clock is silently intersected with page timestamps.
 
 /** Merge [start, end] intervals into a sorted, non-overlapping set. */
 export function mergeIntervals(intervals) {
@@ -168,22 +150,14 @@ export function overlapMs(from, to, merged) {
   return sum;
 }
 
-// A stall is blamed on the renderer once most of it sat under a long task, and on the
-// main process only when almost none of it did. The band between is honestly "mixed"
-// rather than forced into one bucket.
-export const RENDERER_BLAME_RATIO = 0.5;
-export const MAIN_BLAME_RATIO = 0.1;
-
-function blameFor(roundTripMs, overlap) {
-  if (overlap === null) return 'unknown'; // no long-task data — say so, don't guess
-  const ratio = roundTripMs > 0 ? overlap / roundTripMs : 0;
-  if (ratio >= RENDERER_BLAME_RATIO) return 'renderer';
-  if (ratio <= MAIN_BLAME_RATIO) return 'main-process';
-  return 'mixed';
+function blameFor({ roundTripMs, overlap }) {
+  if (overlap === null || overlap === 0) return 'unknown';
+  return overlap >= roundTripMs / 2 ? 'renderer' : 'unclear';
 }
 
 /**
- * Split measured IPC stall time between the renderer and the main process.
+ * Intersect union IPC excess windows with observed renderer tasks; retain the
+ * remainder as unknown. Never infer main occupancy from absent renderer entries.
  *
  * @param {object} a
  * @param {[number, number][]} a.samples   `[startMsRelToIpcT0, roundTripMs]`, from `window.__ipcStall.samples`
@@ -196,12 +170,13 @@ function blameFor(roundTripMs, overlap) {
  * two probes' timestamps be put on one timeline at all — neither probe's own `atMs`
  * is comparable to the other's without this offset.
  */
-export function attributeStalls({ samples, everyMs, longtasks, ipcT0 = 0, probeT0 = 0, worstCount = 5 }) {
+export function attributeStalls({ samples, everyMs, longtasks, ipcT0, probeT0, samePageClock = false, worstCount = 5 }) {
   if (!Array.isArray(samples)) {
     throw new Error(`attributeStalls: samples must be an array of [startMs, roundTripMs] pairs, got ${typeof samples}`);
   }
   const period = Number.isFinite(everyMs) && everyMs > 0 ? everyMs : 0;
-  const haveLongtasks = Array.isArray(longtasks);
+  const haveLongtasks = Array.isArray(longtasks) && samePageClock === true
+    && Number.isFinite(ipcT0) && Number.isFinite(probeT0);
   const merged = haveLongtasks
     ? mergeIntervals(longtasks.map(([start, dur]) => [probeT0 + start, probeT0 + start + dur]))
     : null;
@@ -210,6 +185,7 @@ export function attributeStalls({ samples, everyMs, longtasks, ipcT0 = 0, probeT
     ipcPings: 0, ipcTotalStallMs: null, longtaskOverlapMs: null, ipcMaxPingGapMs: null,
     mainProcessStallMs: null, mainProcessStallMaxMs: null,
     rendererStallMs: null, rendererStallMaxMs: null,
+    ipcBlockedWindowMs: null, unknownStallMs: null,
     worst: [], attributable: haveLongtasks,
   };
   // Zero pings means the probe never completed a round trip — we measured NOTHING.
@@ -217,37 +193,37 @@ export function attributeStalls({ samples, everyMs, longtasks, ipcT0 = 0, probeT
   // inversion of the truth.
   if (samples.length === 0) return empty;
 
-  let stallTotal = 0, overlapTotal = 0, mainTotal = 0, rendTotal = 0, mainMax = 0, rendMax = 0;
+  let stallTotal = 0, rendMax = 0;
+  const windows = [];
   let maxGap = null, prevStart = null;
   const detailed = [];
 
   for (const [startRel, roundTripMs] of samples) {
-    // The ping interval itself is not a stall — only the part of the round trip
-    // beyond it is. This matches probe-ipc's own totalStallMs definition exactly, so
-    // mainProcessStallMs + rendererStallMs === ipcTotalStallMs by construction.
-    const stallMs = Math.max(0, roundTripMs - period);
-    const from = ipcT0 + startRel;
-    const overlap = merged ? overlapMs(from, from + roundTripMs, merged) : null;
-    const rendererMs = merged ? Math.min(stallMs, overlap) : null;
-    const mainMs = merged ? stallMs - rendererMs : null;
-
-    stallTotal += stallMs;
-    if (merged) {
-      overlapTotal += overlap;
-      rendTotal += rendererMs; mainTotal += mainMs;
-      if (mainMs > mainMax) mainMax = mainMs;
-      if (rendererMs > rendMax) rendMax = rendererMs;
+    if (!Number.isFinite(startRel) || startRel < 0 || !Number.isFinite(roundTripMs) || roundTripMs < 0) {
+      throw new Error('attributeStalls: sample timestamps and durations must be finite and nonnegative');
     }
+    const stallMs = Math.max(0, roundTripMs - period);
+    // WHY use the excess window rather than cap whole-roundtrip overlap: a task
+    // confined to the allowed ping interval must not be charged to the excess.
+    const from = ipcT0 + startRel + Math.min(period, roundTripMs);
+    const to = ipcT0 + startRel + roundTripMs;
+    const overlap = merged ? overlapMs(from, to, merged) : null;
+    windows.push([from, to]);
+    stallTotal += stallMs;
+    if (overlap !== null) rendMax = Math.max(rendMax, overlap);
     if (prevStart !== null) maxGap = Math.max(maxGap ?? 0, startRel - prevStart);
     prevStart = startRel;
 
     detailed.push({
       atMs: startRel, roundTripMs, stallMs,
       longtaskOverlapMs: overlap === null ? null : Math.round(overlap),
-      blame: blameFor(roundTripMs, overlap),
+      blame: blameFor({ roundTripMs: stallMs, overlap }),
     });
   }
 
+  const union = mergeIntervals(windows);
+  const blockedMs = union.reduce((sum, [a, b]) => sum + b - a, 0);
+  const rendererMs = merged ? union.reduce((sum, [a, b]) => sum + overlapMs(a, b, merged), 0) : null;
   return {
     ipcPings: samples.length,
     ipcTotalStallMs: Math.round(stallTotal),
@@ -256,10 +232,12 @@ export function attributeStalls({ samples, everyMs, longtasks, ipcT0 = 0, probeT
     // It is here because it catches the case the round-trip numbers miss entirely —
     // a renderer so blocked that setInterval never fired, so no slow sample exists.
     ipcMaxPingGapMs: maxGap === null ? null : Math.round(maxGap),
-    longtaskOverlapMs: merged ? Math.round(overlapTotal) : null,
-    mainProcessStallMs: merged ? Math.round(mainTotal) : null,
-    mainProcessStallMaxMs: merged ? Math.round(mainMax) : null,
-    rendererStallMs: merged ? Math.round(rendTotal) : null,
+    longtaskOverlapMs: rendererMs === null ? null : Math.round(rendererMs),
+    mainProcessStallMs: null,
+    mainProcessStallMaxMs: null,
+    ipcBlockedWindowMs: Number.isFinite(ipcT0) ? Math.round(blockedMs) : null,
+    unknownStallMs: Number.isFinite(ipcT0) ? Math.round(blockedMs - (rendererMs ?? 0)) : null,
+    rendererStallMs: rendererMs === null ? null : Math.round(rendererMs),
     rendererStallMaxMs: merged ? Math.round(rendMax) : null,
     // The worst few, each already blamed, so a reader can check the verdict by hand.
     worst: [...detailed].sort((a, b) => b.roundTripMs - a.roundTripMs).slice(0, worstCount),
@@ -272,13 +250,8 @@ export function attributeStalls({ samples, everyMs, longtasks, ipcT0 = 0, probeT
  * which a stall is not worth a verdict at all — a few milliseconds of jitter should
  * read as 'none', not as a main-process indictment.
  */
-export function summarizeBlame(mainMs, rendererMs, { floorMs = PROBE_EVERY_MS } = {}) {
-  if (typeof mainMs !== 'number' || typeof rendererMs !== 'number') return null;
-  if (mainMs + rendererMs < floorMs) return 'none';
-  // 2× is the margin at which one side is clearly dominant rather than merely ahead.
-  if (mainMs >= rendererMs * 2) return 'main-process';
-  if (rendererMs >= mainMs * 2) return 'renderer';
-  return 'mixed';
+export function summarizeBlame({ ipc, probe, independentMain = null, floorMs = PROBE_EVERY_MS } = {}) {
+  return attributeStall(ipc, probe, { stallMs: floorMs, independentMain });
 }
 
 // ---------------------------------------------------------------------------
@@ -320,27 +293,19 @@ export const MEASURES = {
   ],
   clocks: {
     ipcTotalStallMs: 'sum of IPC round trips beyond the ping interval — RAW unresponsiveness, says nothing about which thread',
-    mainProcessStallMs: 'the part of that with NO renderer long task under it',
-    rendererStallMs: 'the part overlapped by a renderer long task',
+    ipcBlockedWindowMs: 'union elapsed time of completed round-trip excess windows, not raw summed durations or main occupancy',
+    unknownStallMs: 'union excess window time without observed renderer overlap; cause unknown',
+    mainProcessStallMs: 'unavailable: no independent main-loop samples in this scenario',
+    rendererStallMs: 'union excess window time overlapped by observed renderer long tasks on the same page clock',
   },
   blindTo: [
     // The big one, found by review on 2026-08-27 and previously unstated.
     'MOST renderer blocks entirely. The IPC probe is a setInterval running INSIDE the renderer, so a blocked renderer stops it from firing at all. Only a block that begins while a ping is already outstanding produces a sample — and with a trivial handler the probe is in flight roughly 1% of the time. ipcTotalStallMs is therefore a FLOOR on unresponsiveness, not a total.',
-    'main-process blocking that happens WHILE the renderer is also blocked — overlap is charged to the renderer',
-    'renderer blocking under 50ms (PerformanceObserver does not report it), which is charged to the main process instead',
+    'main-loop occupancy: renderer IPC cannot independently establish it',
+    'renderer blocking under 50ms (PerformanceObserver does not report it); residual time remains unknown',
     'any cost that needs more than one session open to appear',
   ],
-  // WHICH WAY THE BIAS RUNS, because it decides how to read the headline.
-  // A blocked MAIN process leaves the renderer free to keep pinging, so every
-  // main-process stall is caught. A blocked RENDERER silences the probe, so most
-  // renderer stalls are missed. The sample pool is therefore enriched in
-  // main-process stalls: the attribution OVERSTATES the main process.
-  //
-  // That is why the 2026-08-27 result survives it. Main measured 0.2-1.3% of the
-  // stall despite a bias that favours main, so the renderer's true share is at
-  // least as large as reported. A main-heavy blame, by contrast, would need this
-  // bias ruled out before it could be trusted.
-  biasDirection: 'overstates the main process; understates the renderer',
+  biasDirection: 'completed IPC samples miss renderer scheduling delays; no inferred main attribution',
 };
 
 export async function runReplayStallScenario(app, fixture, {
@@ -369,9 +334,10 @@ export async function runReplayStallScenario(app, fixture, {
     out[size] = {
       runs,
       median: med,
-      // The headline, in one word, taken from the MEDIAN run rather than the worst —
-      // a single unlucky sample must not be able to rename the culprit.
-      blame: summarizeBlame(med.mainProcessStallMs, med.rendererStallMs),
+      measurementRevision: STALL_MEASUREMENT_REVISION,
+      // WHY preserve all verdicts: medians must not erase an observed stall.
+      blame: runs.find(r => !['none', 'unknown'].includes(r.blame.verdict))?.blame
+        ?? runs.find(r => r.blame.verdict === 'unknown')?.blame ?? runs[0]?.blame,
       // Surfaced at the size level so a partly-failed size is visible in the report
       // without digging through every run object.
       stabilizedRuns: runs.filter((r) => r.stability === 'stable').length,
@@ -490,6 +456,7 @@ async function measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs
       longtasks: raw.longtaskSupported ? raw.longtasks : null,
       ipcT0: raw.ipcT0,
       probeT0: raw.probeT0,
+      samePageClock: true, // both read in the single page evaluate above
     });
 
     const elapsed = Date.now() - t0;
@@ -524,7 +491,7 @@ async function measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs
         `${size}#${rep}: the stall probe was itself blocked for up to ${attr.ipcMaxPingGapMs}ms `
         + `(it pings every ${everyMs}ms), so it could not sample during that time. `
         + `ipcTotalStallMs is a FLOOR, not a total, and the attribution is drawn from a pool `
-        + `that systematically misses renderer blocking — it OVERSTATES the main process.`,
+        + `that systematically misses renderer blocking; unobserved time remains unknown.`,
       );
     }
     // Expected pings over the observed window, against what actually arrived.
@@ -547,12 +514,18 @@ async function measureOnce(app, fixture, size, rep, { everyMs, timeoutMs, pollMs
       mainProcessStallMaxMs: attr.mainProcessStallMaxMs,
       rendererStallMs: attr.rendererStallMs,
       rendererStallMaxMs: attr.rendererStallMaxMs,
-      blame: summarizeBlame(attr.mainProcessStallMs, attr.rendererStallMs),
+      measurementRevision: STALL_MEASUREMENT_REVISION,
+      ipcEvidence: ipc,
+      blame: summarizeBlame({ ipc, probe: rend }),
+      ipcBlockedWindowMs: attr.ipcBlockedWindowMs,
+      unknownStallMs: attr.unknownStallMs,
       worstStalls: attr.worst,
       // --- renderer detail, directly comparable to the workload scenario's ---
-      rendererLongtaskCount: rend.longtaskCount,
-      rendererLongtaskTotalMs: rend.longtaskTotalMs,
-      rendererLongtaskMaxMs: rend.longtaskMaxMs,
+      // WHY null unsupported observations: zero would be a fabricated fast
+      // PRIMARY renderer guard, even when the observer never attached.
+      rendererLongtaskCount: rend.longtaskSupported === true ? rend.longtaskCount : null,
+      rendererLongtaskTotalMs: rend.longtaskSupported === true ? rend.longtaskTotalMs : null,
+      rendererLongtaskMaxMs: rend.longtaskSupported === true ? rend.longtaskMaxMs : null,
       longtaskSupported: rend.longtaskSupported,
       // --- context ---
       renderedEntries: entries,

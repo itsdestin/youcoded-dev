@@ -1,0 +1,19 @@
+{
+  "name": "overnight 1: lane F (workload breadth + original JPEG) on the merged candidate",
+  "notes": "Lane F = file-size ladders (CSV/XLSX/DOCX/HTML, PNG and JPEG up to 4096x3072), CSV full read, long path list, large diff, background index refresh, and the owner's original JPEG (byte copy in the lab fixture area, source never opened by the app). 13 families x 3 passes = about 39 app boots; at roughly 1-2 minutes each plus fixture generation that is 1-2 hours, so measureMinutes 180 leaves room for the boots that a fatal rung forces, and timeoutMinutes 390 leaves room for waiting out a busy machine (the queue gives the quiet wait whatever the hard cap leaves after the measurement budget). The merged checkout needs a cached build (--cached-only never builds). Results: perf-reports/<stamp>.json/.md, the queue summary beside it. Compare against another candidate afterwards with: node scripts/perf-lab/ab.mjs --a <checkout> --b <checkout> --mode workloads. Add the energy item from overnight.example.json below this one if both lanes should run in the same night.",
+  "items": [
+    {
+      "label": "workloads-lane-F-merged-candidate",
+      "tool": "run",
+      "argv": [
+        "--only", "workloads",
+        "--checkout", "/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded",
+        "--cached-only",
+        "--label", "workloads-merged"
+      ],
+      "timeoutMinutes": 390,
+      "measureMinutes": 180,
+      "notes": "Every group window carries an interference verdict; a disturbed or unknown window makes the report INCOMPLETE (kept, not ranked). Rung failures that are findings (timeout, memory-limit, memory-bound) are rows, not errors."
+    }
+  ]
+}
