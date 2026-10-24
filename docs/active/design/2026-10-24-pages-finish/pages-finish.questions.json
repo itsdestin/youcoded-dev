@@ -1,0 +1,721 @@
+{
+  "title": "Finishing Pages — one general framework, then files, assistant tasks and sharing",
+  "key": "pages-finish-questions",
+  "out": "pages-finish.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-recipes",
+      "words": true,
+      "surface": "Pages",
+      "path": "What a page is allowed to connect to",
+      "headline": "Should every outside service a page uses be described by one general 'service recipe' instead of a connection built into the app?",
+      "today": "A page can reach a website with a pasted key, a public website, or any website at all. On top of that, five services were built into the app one by one: your bank (Plaid), Home Assistant, cameras, GitHub and YouCoded's own server. Each one took about ten files of app changes.",
+      "problem": "Anyone who wants a page for a service we did not build in — their email, a CRM, a different bank, a different smart-home system — hits a wall, or has to use the 'run a program' escape hatch, which gets full access to the computer. Every new service means more work for us.",
+      "proposal": "One general mechanism: a short written recipe says where the service lives, how you sign in (pasted key, username and password, or a 'Sign in with…' button), and exactly what the page may do there. The assistant writes the recipe while building the page; you approve it in plain words. Bank, home, GitHub and YouCoded become ready-made recipes instead of special code. Your Money and Home pages keep working.",
+      "options": [
+        {
+          "id": "yes-general",
+          "label": "One general recipe system",
+          "pros": [
+            "A page can connect to almost any service without us adding anything to the app.",
+            "Every connection reads the same way on the approval card, so you learn it once.",
+            "Your bank and home pages keep working; they just use ready-made recipes."
+          ],
+          "cons": [
+            "The biggest piece of this work: the five built-in connections get rebuilt underneath (you should notice no difference).",
+            "A recipe written by the assistant has not been checked by anyone else, so the approval card has to say so."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-builtins",
+          "label": "Keep adding them one by one",
+          "pros": [
+            "No rebuild of what works today.",
+            "Each built-in service is hand-checked by us."
+          ],
+          "cons": [
+            "Every new service needs us, so 'build almost any app' never comes true.",
+            "Pages that need an unsupported service fall back to programs with full computer access."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-signin",
+      "words": true,
+      "surface": "Pages",
+      "path": "Approving a page that signs in to a service",
+      "headline": "For 'Sign in with Google / Microsoft' style buttons in pages, who should own the sign-in?",
+      "today": "Pages cannot use 'Sign in with…' buttons at all. They can only use a key you paste, or YouCoded's and GitHub's existing sign-ins.",
+      "problem": "Many services (Google, Microsoft, Dropbox, Spotify) only offer 'Sign in with…'. To use it, someone has to register an app with that company. Google also requires a yearly paid security review before an app can read Gmail for people other than its owner.",
+      "proposal": "Three ways to own the sign-in. This decides how much setup a regular person faces.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Ours for big ones, yours for the rest",
+          "pros": [
+            "Regular people get one-click sign-in for the few services everyone uses.",
+            "Anything else still works if the person registers their own app, with steps the page shows them."
+          ],
+          "cons": [
+            "We register and maintain YouCoded apps with Google and Microsoft; Gmail-level access needs Google's yearly paid review.",
+            "If a company ever pulls our app, every page using it stops signing in until fixed."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "bring-own",
+          "label": "Always bring your own",
+          "pros": [
+            "No accounts, reviews or costs for us.",
+            "Nothing we run can break everyone's sign-in at once."
+          ],
+          "cons": [
+            "Registering an app with Google is a developer task most people will not finish.",
+            "Big-name sign-ins would be practically unusable for regular people."
+          ]
+        },
+        {
+          "id": "ours-only",
+          "label": "Only services we register",
+          "pros": [
+            "Always one click for the person.",
+            "We know every service that can be signed in to."
+          ],
+          "cons": [
+            "Back to 'ask us to add it' for every service — the thing Q-recipes removes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-combined",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval card when a page first opens",
+      "headline": "When a page can both see private things and send things out, should the approval card say that plainly in one extra line?",
+      "today": "The approval card lists each thing a page can reach, one sentence each. It never says what those things mean together.",
+      "problem": "A page that can read your chats or files AND reach a website could send what it reads to that website. Each line looks harmless alone; together they are a real risk you are not told about.",
+      "proposal": "Add one extra line whenever a page holds both halves, e.g. 'Together: this page could send what it reads from your files to example.com.' If a later change adds the second half, it asks again even if the first half was approved long ago. Yes adds the line; No keeps today's card."
+    },
+    {
+      "id": "Q-popups",
+      "words": true,
+      "surface": "Pages",
+      "path": "A link or button inside a page that opens a website",
+      "headline": "When a page opens a website in your browser, should YouCoded show you the address and ask first?",
+      "today": "Any page can open any web address in your normal web browser, with no approval and no question.",
+      "problem": "The address itself can carry information. A page that reads your chats or uses a saved key could quietly open an address containing that information. This is a hole we found in this review.",
+      "proposal": "Three ways to close it.",
+      "options": [
+        {
+          "id": "ask-unless-approved",
+          "label": "Ask, unless the site is already approved",
+          "pros": [
+            "Links to a site the page is already allowed to reach open straight away.",
+            "Anything else shows 'Open example.com in your browser?' with the address, so nothing leaves unseen."
+          ],
+          "cons": [
+            "One extra click for links to new sites."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-ask",
+          "label": "Always ask",
+          "pros": [
+            "Simplest rule; you see every address."
+          ],
+          "cons": [
+            "Pages full of links (news, bookmarks) get tiring fast."
+          ]
+        },
+        {
+          "id": "click-only",
+          "label": "Only after a real click, no question",
+          "pros": [
+            "No extra clicks at all."
+          ],
+          "cons": [
+            "A page can still put information into the address of a link you click; it only stops pages doing it on their own."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-codechange",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page whose code changed after you approved it",
+      "headline": "When a page's code changes but it asks for nothing new, should it need your approval again?",
+      "today": "If a page's code changes but its list of connections does not, it keeps working and shows a quiet note you can dismiss. This was your call in September, for pages you build yourself.",
+      "problem": "For pages from other people (the marketplace), a new version could start using an already-approved key in new ways without asking. For your own pages, re-asking on every edit would be constant nagging.",
+      "proposal": "Pick where re-approval applies.",
+      "options": [
+        {
+          "id": "marketplace-only",
+          "label": "Re-ask for other people's pages only",
+          "pros": [
+            "Your own pages stay as easy to edit as today.",
+            "A shared page can never change behind your back."
+          ],
+          "cons": [
+            "Each update of an installed page shows the approval card once."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "never",
+          "label": "Keep today's quiet note for all",
+          "pros": [
+            "No extra approvals anywhere."
+          ],
+          "cons": [
+            "An updated marketplace page could misuse an approved key with only a dismissible note."
+          ]
+        },
+        {
+          "id": "always",
+          "label": "Re-ask for every page",
+          "pros": [
+            "The strictest option."
+          ],
+          "cons": [
+            "Every assistant edit to your own page asks again — many times a session while building."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-files",
+      "page": "Files",
+      "intro": "A page today cannot open or save a single file. These decide how files reach a page."
+    },
+    {
+      "id": "Q-filepick",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page asking for a file",
+      "headline": "Which ways should a page be able to get at your files? Pick all that should exist.",
+      "pick": "several",
+      "today": "Pages cannot open, read or save files. The only file a page has is its own saved data.",
+      "problem": "Spreadsheet tools, photo editors, note boards and report pages all need your files. Without this, most 'real' apps cannot be built as pages.",
+      "proposal": "Three levels, from least to most access. Each is approved separately and listed on the page's card in Manage pages.",
+      "options": [
+        {
+          "id": "pick-each-time",
+          "label": "Pick a file each time",
+          "pros": [
+            "Nothing to approve up front: the page only sees the file you just picked in the normal Open window.",
+            "The page never learns where on your computer it lives."
+          ],
+          "cons": [
+            "After a restart the page cannot reopen that file; you pick again."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remember-file",
+          "label": "Remember a picked file",
+          "pros": [
+            "A page can reopen 'your budget spreadsheet' every day without asking."
+          ],
+          "cons": [
+            "One more approval line per remembered file."
+          ]
+        },
+        {
+          "id": "folder",
+          "label": "Standing access to one folder",
+          "pros": [
+            "A photo gallery or notes page can show and save everything in one folder you choose.",
+            "Password and key files inside it are always hidden from the page."
+          ],
+          "cons": [
+            "The page can read and change anything in that folder until you remove it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-filesave",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page saving a file",
+      "headline": "A page saves a new file only where you choose in the normal Save window, or inside a folder you gave it.",
+      "changed": "Stated, not asked: a page can never write anywhere you did not pick or grant. Saving over an existing file always asks 'Replace it?' first, like every other app.",
+      "notice": "Export buttons in pages (save as spreadsheet, save picture) open the normal Save window.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-filesphone",
+      "words": true,
+      "surface": "Pages",
+      "path": "Using a page from your phone",
+      "headline": "When you use a page from your phone, which files should it work with?",
+      "today": "From the phone, pages already show and run (they run on your computer). The computer's Open and Save windows cannot appear on a phone.",
+      "problem": "A phone user pressing 'Open file' in a page needs something to happen.",
+      "proposal": "Two choices.",
+      "options": [
+        {
+          "id": "phone-files",
+          "label": "Files from the phone",
+          "pros": [
+            "Pick a photo or document on the phone and the page uses it, as the chat's attach button already does.",
+            "Folders you already granted on the computer keep working from the phone."
+          ],
+          "cons": [
+            "Saving from a phone downloads to the phone rather than a chosen computer folder."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "computer-only",
+          "label": "Computer only for now",
+          "pros": [
+            "Less to build now."
+          ],
+          "cons": [
+            "File buttons in pages say 'Open this on your computer' on a phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-tasks",
+      "page": "Assistant tasks",
+      "intro": "A page today can only open a new chat with a message typed in. These decide how a page asks the assistant to do work itself."
+    },
+    {
+      "id": "Q-tasktype",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page asking the assistant for something",
+      "headline": "What kind of assistant work should a page be able to ask for? Pick all that should exist.",
+      "pick": "several",
+      "today": "A page can open the new-chat window with a message ready, and you press Start. The page never gets an answer back.",
+      "problem": "A report page cannot say 'summarise this spreadsheet' and show the summary; a writing page cannot offer 'improve this paragraph'. The page and the assistant cannot work together.",
+      "proposal": "Two levels. Both show which model, roughly what it costs, and a Stop button in the page's top band.",
+      "options": [
+        {
+          "id": "quick",
+          "label": "Quick answers",
+          "summary": "The page sends text (and files you gave it); a model answers; the page shows the answer. No tools, nothing done on the computer.",
+          "pros": [
+            "Fast and cheap; covers summarise, translate, sort, extract, rewrite.",
+            "Cannot touch anything: the model only sees what the page sent."
+          ],
+          "cons": [
+            "Cannot look things up or act on its own."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "full",
+          "label": "Full assistant tasks",
+          "summary": "A real hidden conversation the page owns: the assistant can use its tools, limited to what the page itself was allowed.",
+          "pros": [
+            "A page can be a specialised assistant: research, organise a folder, build a report.",
+            "'Show conversation' opens the full chat to see what it did."
+          ],
+          "cons": [
+            "Slower and costs more; needs permission asks to show up somewhere (next questions)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-taskmodel",
+      "words": true,
+      "surface": "Pages",
+      "path": "Choosing the model a page uses",
+      "headline": "Which models should page tasks be able to use?",
+      "today": "Chats can use your Claude subscription (through Claude Code) or models from providers set up in Settings (OpenRouter, ChatGPT, local models and others).",
+      "problem": "Claude Code chats run as a separate program the app types into; there is no clean way for a page to quietly ask it for an answer. Provider models can be called directly.",
+      "proposal": "Pick which models pages may use.",
+      "options": [
+        {
+          "id": "providers-first",
+          "label": "Set-up providers now, Claude subscription later",
+          "pros": [
+            "Works cleanly with stop, cost and permission controls.",
+            "Includes free local models."
+          ],
+          "cons": [
+            "Someone with only a Claude subscription and no other provider cannot use page tasks until the later step."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "both-now",
+          "label": "Both now",
+          "pros": [
+            "Claude subscribers can use page tasks immediately."
+          ],
+          "cons": [
+            "The Claude route would run a hidden Claude Code chat per task: slower to start, heavier, and harder to stop cleanly. Roughly doubles this part of the work."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-spend",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval card for a page that uses the assistant",
+      "headline": "How should a page's spending on the assistant be limited?",
+      "today": "Nothing in the app limits spending — not in chats, not anywhere. The plan assumed a spending limit already existed; it does not.",
+      "problem": "A page with a bug could ask for answers in a loop and spend real money while you are not looking.",
+      "proposal": "Every page that uses the assistant gets a monthly limit, shown on the approval card and changeable from the page's card. Pick the default.",
+      "options": [
+        {
+          "id": "default-1",
+          "label": "$1 a month to start",
+          "pros": [
+            "Hundreds of quick answers for most models; a loop stops quickly.",
+            "Raising it is one control on the page's card."
+          ],
+          "cons": [
+            "Heavy research pages hit it and stop until you raise it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "default-5",
+          "label": "$5 a month to start",
+          "pros": [
+            "Fewer interruptions for heavier pages."
+          ],
+          "cons": [
+            "A runaway page wastes more before stopping."
+          ]
+        },
+        {
+          "id": "ask-each",
+          "label": "You set it on every approval",
+          "pros": [
+            "You decide every time."
+          ],
+          "cons": [
+            "One more decision on every approval card."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-taskasks",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page's assistant task that needs permission",
+      "headline": "A page's assistant task that needs your permission shows the request over the page, drawn by the app, not by the page.",
+      "changed": "Stated, not asked: the permission card is the same one chats use, laid over the page so you see it without leaving. The page cannot draw, hide or answer it. Unanswered, the task waits; Stop cancels it.",
+      "notice": "Page tasks never get more access than the page itself was given. A page without folder access cannot have its assistant read that folder.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-tasklist",
+      "words": true,
+      "surface": "Pages",
+      "path": "Finding a page's assistant conversations later",
+      "headline": "Where should a page's full assistant conversations be listed?",
+      "today": "There are no page-owned conversations. Helpers the assistant starts inside a chat are already hidden from your chat list.",
+      "problem": "Pages that run many tasks would flood your chat list; but hiding them completely makes it hard to check what a page did.",
+      "proposal": "Pick where they live.",
+      "options": [
+        {
+          "id": "with-page",
+          "label": "With the page",
+          "pros": [
+            "Your chat list stays yours.",
+            "'Show conversation' in the page and a 'Conversations' line on its card in Manage pages lead to them."
+          ],
+          "cons": [
+            "Not in the main chat search."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "in-list",
+          "label": "In the chat list, marked",
+          "pros": [
+            "Everything is in one searchable place."
+          ],
+          "cons": [
+            "A busy page can bury your own chats."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-background",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages that are not open",
+      "headline": "Should a page be able to keep working while it is closed (with YouCoded still open), as part of this work?",
+      "today": "A page only works while it is on screen. A pinned page refreshes when you open it.",
+      "problem": "A mail page cannot check for new mail, a price tracker cannot watch prices, and a task cannot finish if you switch away.",
+      "proposal": "Background work would be its own approval line ('Can keep working while closed'), with a visible list of what is running and a Stop for each. It stops when YouCoded closes or the computer sleeps.",
+      "options": [
+        {
+          "id": "now",
+          "label": "Include it now",
+          "pros": [
+            "Closes the last gap in 'any app': watchers, reminders, long tasks."
+          ],
+          "cons": [
+            "Adds a sizeable piece; overlaps the planned Agents & Automations work, which has to be designed together with it."
+          ]
+        },
+        {
+          "id": "tasks-finish",
+          "label": "Only let tasks finish",
+          "pros": [
+            "A started assistant task keeps going if you switch away; nothing new starts on its own.",
+            "Leaves scheduling to Agents & Automations."
+          ],
+          "cons": [
+            "No watchers or reminders yet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Later",
+          "pros": [
+            "Smallest."
+          ],
+          "cons": [
+            "Switching away from a page mid-task stops it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-market",
+      "page": "Sharing pages",
+      "intro": "Today every page is made or hand-copied by you. These decide how pages are shared, found, installed and kept safe."
+    },
+    {
+      "id": "Q-publish",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Sharing a page you made",
+      "headline": "How should someone share a page they made?",
+      "today": "Themes are shared through a GitHub account: YouCoded sends the theme as a request the maintainers accept. Skills work the same way. There is no other way to upload anything.",
+      "problem": "Most people using YouCoded do not have a GitHub account, so most page makers could not share.",
+      "proposal": "Two routes.",
+      "options": [
+        {
+          "id": "account-upload",
+          "label": "Share with your YouCoded account",
+          "pros": [
+            "One button in Manage pages; no GitHub needed.",
+            "We can check every upload automatically before it appears."
+          ],
+          "cons": [
+            "We build and run file storage and an upload service; we carry the storage cost and the moderation job."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "github",
+          "label": "Through GitHub, like themes",
+          "pros": [
+            "Reuses what themes do; very little new to run.",
+            "Every page's history is public and reviewable."
+          ],
+          "cons": [
+            "Only people with a GitHub account can share."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-review",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "A shared page's listing",
+      "headline": "What checking should a shared page get before others can install it?",
+      "today": "Skills get an automatic scan labelled 'Likely safe'. Nobody personally reviews them.",
+      "problem": "A shared page may ask for keys, files or programs. People need to know whether anyone checked it, and a check must never carry over to a changed version.",
+      "proposal": "Pick the bar.",
+      "options": [
+        {
+          "id": "auto-plus-badge",
+          "label": "Automatic check, plus a 'Reviewed' badge",
+          "pros": [
+            "Pages appear quickly, marked 'Not reviewed' with what they ask for.",
+            "A person (you, at first) can review a version to give it the badge; a new version loses it until reviewed."
+          ],
+          "cons": [
+            "Unreviewed pages are installable; the install card must make that clear."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "human-first",
+          "label": "Nothing listed until reviewed",
+          "pros": [
+            "Everything listed has been looked at by a person."
+          ],
+          "cons": [
+            "Every page and every update waits for you."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-programs",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "A shared page that includes a program",
+      "headline": "Should shared pages be allowed to include programs that run on the computer?",
+      "today": "A page can include a program (the Work board does) after you approve it. A program gets the same access to your computer as you have.",
+      "problem": "A program from a stranger is the most dangerous thing a page can carry. But some useful pages need one.",
+      "proposal": "Installing never runs anything; a program only runs after its own loud approval. Pick the rule for sharing.",
+      "options": [
+        {
+          "id": "reviewed-only",
+          "label": "Only in reviewed pages",
+          "pros": [
+            "A program from the marketplace has always been looked at by a person first."
+          ],
+          "cons": [
+            "Pages with programs wait for review before anyone can install them."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "allowed",
+          "label": "Allowed, with the loud approval",
+          "pros": [
+            "No waiting."
+          ],
+          "cons": [
+            "A stranger's program is one approval away from full computer access."
+          ]
+        },
+        {
+          "id": "never",
+          "label": "Never in shared pages",
+          "pros": [
+            "Simplest and safest."
+          ],
+          "cons": [
+            "Shared pages cannot do anything a program would be needed for."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-edits",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Changing a page you installed from the marketplace",
+      "headline": "What happens when you ask the assistant to change a page you installed?",
+      "today": "Installed themes cannot be edited and re-shared; editing makes them yours.",
+      "problem": "Your changes and the maker's next update would collide.",
+      "proposal": "Pick the rule.",
+      "options": [
+        {
+          "id": "becomes-yours",
+          "label": "It becomes your own copy",
+          "pros": [
+            "Your edits are never overwritten.",
+            "The card says 'Your copy of <name>'; you can go back to the maker's version anytime."
+          ],
+          "cons": [
+            "Your copy stops getting the maker's updates."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "merge",
+          "label": "Keep updates and your edits",
+          "pros": [
+            "Both your changes and the maker's fixes."
+          ],
+          "cons": [
+            "Sometimes they collide and the assistant has to sort it out with you."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-scope",
+      "page": "What else goes in, and in what order",
+      "intro": "Loose ends found in the review, and the order of work."
+    },
+    {
+      "id": "Q-extras",
+      "words": true,
+      "surface": "Pages",
+      "path": "Leftover items from earlier Pages work",
+      "headline": "Which leftover items should be part of finishing Pages? Pick all that should be.",
+      "pick": "several",
+      "today": "These were noted during earlier Pages work and never done.",
+      "problem": "Leaving them makes 'Pages is finished' untrue; including them all makes the finish later.",
+      "proposal": "The security and phone items are already included regardless (they are holes or tests, not features).",
+      "options": [
+        {
+          "id": "charts",
+          "label": "Charts in the kit",
+          "pros": [
+            "Shared chart styles that follow the theme, so dashboards stop inventing their own."
+          ],
+          "cons": [
+            "Moderate work."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "browser-page",
+          "label": "A web browser inside a page",
+          "pros": [
+            "Pages could show real websites that refuse to be embedded."
+          ],
+          "cons": [
+            "Needs its own design; the assistant's browser panel already exists."
+          ]
+        },
+        {
+          "id": "home-extras",
+          "label": "Home page extras",
+          "summary": "Search across devices, select several devices in Edit, scenes for one-light rooms, see-through background on framed themes.",
+          "pros": [
+            "Improves your own Home page."
+          ],
+          "cons": [
+            "About your page, not the framework; could be its own card."
+          ]
+        },
+        {
+          "id": "frame-glass",
+          "label": "See-through pages on framed themes",
+          "pros": [
+            "Golden Sunbreak-style themes show their background behind pages, like floating themes do."
+          ],
+          "cons": [
+            "Small, but touches how every themed page looks."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-order",
+      "words": true,
+      "surface": "Pages",
+      "path": "The order this work is built in",
+      "headline": "Build order: general framework and security fixes first, then files, then assistant tasks, then sharing; each step usable on its own.",
+      "changed": "Stated, not asked: each step gets its screens shown to you on a review deck before it is built, and you try it in a dev window before it merges. Your Home, Money and Work board pages are moved onto the general framework in step one and must keep working.",
+      "notice": "The first thing you will see after this deck is screens: the new approval card for recipes, sign-ins and combined warnings.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}
