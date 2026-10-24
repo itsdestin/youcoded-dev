@@ -1637,6 +1637,21 @@ systemd-inhibit --what=idle:sleep --mode=block --who="perf-lab" \
 No root needed. The inhibitor is released when the command exits, so nothing is
 left holding the machine awake. Confirm with `systemd-inhibit --list`.
 
+### Running on a quiet second machine (the freeze hunt, 2026-10-23)
+
+The laptop is always busy, so the trustworthy A/B numbers came from Destin's desktop over SSH. How to reach and wake
+it lives in the brain (`~/system/tools/wake-desktop.md`, `~/system/machines/desktop/`), not here. What the lab needs there:
+
+- **Per-job `systemd-inhibit` did not hold over SSH** (the desktop still entered deep sleep mid-run, journal-confirmed).
+  Hold one session-long lock instead: `systemd-run --user --unit yc-keepawake systemd-inhibit --what=sleep:idle --who=perf sleep 7200`,
+  run the jobs, then `systemctl --user stop yc-keepawake`.
+- **Approved checkouts only:** `supervised-package.mjs` refuses a checkout whose git common dir is not
+  `<workspace>/../../../youcoded/.git`, so lay out the remote clone the same way (`~/youcoded-dev/worktrees/sessions/<key>/youcoded`).
+- **Prove build identity** on both machines with `git rev-parse HEAD` plus a hash of the built `app.asar`; the stamp fingerprint
+  reflects only uncommitted changes, not the commit.
+- **Do not full-fetch a stale remote workspace** (2 GB, hung for many minutes); fetch the one branch you need, or copy `scripts/perf-lab/`.
+- Results from that run: `perf-reports/desktop-quiet-2026-10-23/` (its README names the scripts and options used).
+
 ---
 
 ## Known limits — read before ranking anything
