@@ -1,0 +1,4269 @@
+{
+  "scenario": {
+    "revision": 2,
+    "lane": "longconv-open",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-24T01:32:50.498Z",
+  "label": "desk-longconv-AA",
+  "scrollInput": "wheel",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000,
+    "openToNewestPaintMs": 3000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "standIn": "a generated native-session transcript resumed through the app's own resume event (no model); not a Claude Code conversation",
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+      "sha": "d0a7211ad3a8d150400c47d54c57fc556a10613a",
+      "branch": "perf/93-baseline-master",
+      "dirty": "3c937cd909bc"
+    },
+    "new": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A",
+      "sha": "d0a7211ad3a8d150400c47d54c57fc556a10613a",
+      "branch": "perf/93-baseline-master",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "longconv-40",
+      "turns": 40,
+      "marker": "NEWEST-TURN-MARKER-7c1f",
+      "toolTurns": 11
+    },
+    {
+      "id": "longconv-200",
+      "turns": 200,
+      "marker": "NEWEST-TURN-MARKER-7c1f",
+      "toolTurns": 57
+    },
+    {
+      "id": "longconv-1000",
+      "turns": 1000,
+      "marker": "NEWEST-TURN-MARKER-7c1f",
+      "toolTurns": 285
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "longconv-40",
+        "turns": 40,
+        "toolTurns": 11,
+        "openToPaneMs": 61.7,
+        "openToFirstEntryMs": 647,
+        "openToNewestPaintMs": 660.5,
+        "openToSettledMs": 960.6,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 164,
+        "openLongtaskTotalMs": 219,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 156.5,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 169,
+        "mainMaxDelayMs": 9.6,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 67.5,
+        "typingAfterOpenMaxMs": 2.8,
+        "typingScrollMaxMs": 4.5,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 224,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 17,
+        "scrollMaxShiftPx": 1,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 4200,
+        "scrollHistoryLoads": 1,
+        "scrollHeightEvents": [
+          {
+            "t": 2063,
+            "from": 17943,
+            "to": 21087,
+            "top": 17201
+          },
+          {
+            "t": 4413,
+            "from": 21088,
+            "to": 22164,
+            "top": 14758
+          },
+          {
+            "t": 5947,
+            "from": 22165,
+            "to": 23529,
+            "top": 13822
+          },
+          {
+            "t": 8446,
+            "from": 23529,
+            "to": 24673,
+            "top": 11225
+          },
+          {
+            "t": 9512,
+            "from": 24673,
+            "to": 25569,
+            "top": 10525
+          },
+          {
+            "t": 10829,
+            "from": 25568,
+            "to": 26144,
+            "top": 9128
+          },
+          {
+            "t": 12663,
+            "from": 26145,
+            "to": 27041,
+            "top": 7279
+          },
+          {
+            "t": 13496,
+            "from": 27040,
+            "to": 27996,
+            "top": 6985
+          },
+          {
+            "t": 14929,
+            "from": 27997,
+            "to": 28833,
+            "top": 5677
+          },
+          {
+            "t": 17212,
+            "from": 28834,
+            "to": 29710,
+            "top": 3136
+          },
+          {
+            "t": 18079,
+            "from": 29710,
+            "to": 30926,
+            "top": 3052
+          },
+          {
+            "t": 19796,
+            "from": 30926,
+            "to": 36918,
+            "top": 6480
+          },
+          {
+            "t": 19912,
+            "from": 36918,
+            "to": 37202,
+            "top": 6590
+          },
+          {
+            "t": 21396,
+            "from": 37204,
+            "to": 38180,
+            "top": 5350
+          },
+          {
+            "t": 22296,
+            "from": 38180,
+            "to": 38676,
+            "top": 4500
+          },
+          {
+            "t": 23563,
+            "from": 38675,
+            "to": 39371,
+            "top": 3306
+          },
+          {
+            "t": 24162,
+            "from": 39371,
+            "to": 39887,
+            "top": 2926
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 80,
+        "scrollInput": "wheel",
+        "scrollFrames": 4201,
+        "scrollPx": 39178,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 632.1,
+        "heapMb": 26.3,
+        "domNodes": 649,
+        "toolCardTextHits": 1,
+        "scrollHeightPx": 17945,
+        "entryKinds": {
+          "msg-bmo#q#-#": 30,
+          "turn-bmo#q#-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 164,
+        "worstTypingMs": 67.5,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "longconv-200",
+        "turns": 200,
+        "toolTurns": 57,
+        "openToPaneMs": 66,
+        "openToFirstEntryMs": 656,
+        "openToNewestPaintMs": 664.2,
+        "openToSettledMs": 980.2,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 169,
+        "openLongtaskTotalMs": 228,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 162.7,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 175,
+        "mainMaxDelayMs": 4.6,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 36.9,
+        "typingAfterOpenMaxMs": 2.7,
+        "typingScrollMaxMs": 107.4,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 168,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 2,
+        "scrollTopDeltaFramesInfo": 32,
+        "scrollMaxShiftPx": 1256.2,
+        "scrollLastJumpTo": 11231,
+        "scrollWheelEvents": 2521,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 927,
+            "from": 16632,
+            "to": 17048,
+            "top": 14859
+          },
+          {
+            "t": 1460,
+            "from": 17049,
+            "to": 17985,
+            "top": 15000
+          },
+          {
+            "t": 3010,
+            "from": 17984,
+            "to": 18640,
+            "top": 13336
+          },
+          {
+            "t": 5043,
+            "from": 18640,
+            "to": 20644,
+            "top": 12291
+          },
+          {
+            "t": 6643,
+            "from": 20644,
+            "to": 21840,
+            "top": 11097
+          },
+          {
+            "t": 8359,
+            "from": 21840,
+            "to": 23156,
+            "top": 9839
+          },
+          {
+            "t": 10826,
+            "from": 23156,
+            "to": 23852,
+            "top": 6847
+          },
+          {
+            "t": 11576,
+            "from": 23852,
+            "to": 25088,
+            "top": 6963
+          },
+          {
+            "t": 13176,
+            "from": 25089,
+            "to": 26385,
+            "top": 5864
+          },
+          {
+            "t": 15326,
+            "from": 26385,
+            "to": 28649,
+            "top": 4913
+          },
+          {
+            "t": 17109,
+            "from": 28650,
+            "to": 29186,
+            "top": 2779
+          },
+          {
+            "t": 18643,
+            "from": 29185,
+            "to": 46604,
+            "top": 17901
+          },
+          {
+            "t": 18793,
+            "from": 46604,
+            "to": 47240,
+            "top": 18311
+          },
+          {
+            "t": 20076,
+            "from": 47240,
+            "to": 48456,
+            "top": 17611
+          },
+          {
+            "t": 21176,
+            "from": 48456,
+            "to": 49012,
+            "top": 16523
+          },
+          {
+            "t": 22409,
+            "from": 49013,
+            "to": 50469,
+            "top": 16135
+          },
+          {
+            "t": 23526,
+            "from": 50470,
+            "to": 51726,
+            "top": 15723
+          },
+          {
+            "t": 25759,
+            "from": 51727,
+            "to": 53003,
+            "top": 13670
+          },
+          {
+            "t": 26893,
+            "from": 53003,
+            "to": 53499,
+            "top": 12476
+          },
+          {
+            "t": 28042,
+            "from": 53499,
+            "to": 54495,
+            "top": 11753
+          },
+          {
+            "t": 28859,
+            "from": 54495,
+            "to": 55191,
+            "top": 11231
+          },
+          {
+            "t": 30842,
+            "from": 55191,
+            "to": 56147,
+            "top": 9228
+          },
+          {
+            "t": 31775,
+            "from": 56147,
+            "to": 57323,
+            "top": 9013
+          },
+          {
+            "t": 33259,
+            "from": 57323,
+            "to": 57919,
+            "top": 7397
+          },
+          {
+            "t": 33809,
+            "from": 57919,
+            "to": 58035,
+            "top": 6694
+          },
+          {
+            "t": 35692,
+            "from": 58034,
+            "to": 58790,
+            "top": 4640
+          },
+          {
+            "t": 36459,
+            "from": 58790,
+            "to": 58966,
+            "top": 3672
+          },
+          {
+            "t": 37326,
+            "from": 58966,
+            "to": 59462,
+            "top": 2872
+          },
+          {
+            "t": 37825,
+            "from": 59462,
+            "to": 60598,
+            "top": 3261
+          },
+          {
+            "t": 39692,
+            "from": 60597,
+            "to": 77812,
+            "top": 17698
+          },
+          {
+            "t": 39811,
+            "from": 77812,
+            "to": 79616,
+            "top": 19324
+          },
+          {
+            "t": 41276,
+            "from": 79621,
+            "to": 79757,
+            "top": 17278
+          }
+        ],
+        "scrollJumpLog": [
+          {
+            "t": 23526,
+            "top": 15723,
+            "before": 14492,
+            "intended": -25,
+            "shift": 1256,
+            "entries": 120
+          },
+          {
+            "t": 28859,
+            "top": 11231,
+            "before": 10560,
+            "intended": -25,
+            "shift": 696,
+            "entries": 120
+          }
+        ],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2520,
+        "scrollPx": 63288,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 645,
+        "heapMb": 26.3,
+        "domNodes": 598,
+        "toolCardTextHits": 2,
+        "scrollHeightPx": 16633,
+        "entryKinds": {
+          "msg-d#dlrw-#": 30,
+          "turn-d#dlrw-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 169,
+        "worstTypingMs": 107.4,
+        "breaches": [
+          {
+            "metric": "scrollJumpedFrames",
+            "value": 2,
+            "limit": 0
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "longconv-1000",
+        "turns": 1000,
+        "toolTurns": 285,
+        "openToPaneMs": 67.2,
+        "openToFirstEntryMs": 663.8,
+        "openToNewestPaintMs": 675.6,
+        "openToSettledMs": 992.2,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 155,
+        "openLongtaskTotalMs": 215,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 154.4,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 172,
+        "mainMaxDelayMs": 20.7,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 79,
+        "typingAfterOpenMaxMs": 2.5,
+        "typingScrollMaxMs": 23.9,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 183,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 36,
+        "scrollMaxShiftPx": 1.3,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 2735,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 647,
+            "from": 20479,
+            "to": 19503,
+            "top": 17731
+          },
+          {
+            "t": 881,
+            "from": 19503,
+            "to": 20479,
+            "top": 18354
+          },
+          {
+            "t": 2097,
+            "from": 20479,
+            "to": 19563,
+            "top": 15612
+          },
+          {
+            "t": 2331,
+            "from": 19563,
+            "to": 20479,
+            "top": 16178
+          },
+          {
+            "t": 4415,
+            "from": 20479,
+            "to": 21515,
+            "top": 14102
+          },
+          {
+            "t": 5381,
+            "from": 21514,
+            "to": 22670,
+            "top": 13807
+          },
+          {
+            "t": 6997,
+            "from": 22670,
+            "to": 23046,
+            "top": 11767
+          },
+          {
+            "t": 8747,
+            "from": 23047,
+            "to": 23903,
+            "top": 10007
+          },
+          {
+            "t": 9580,
+            "from": 23903,
+            "to": 24639,
+            "top": 9501
+          },
+          {
+            "t": 10980,
+            "from": 24639,
+            "to": 25415,
+            "top": 8182
+          },
+          {
+            "t": 12830,
+            "from": 25416,
+            "to": 26552,
+            "top": 6555
+          },
+          {
+            "t": 13864,
+            "from": 26552,
+            "to": 26788,
+            "top": 5243
+          },
+          {
+            "t": 14881,
+            "from": 26788,
+            "to": 27204,
+            "top": 4136
+          },
+          {
+            "t": 15297,
+            "from": 27204,
+            "to": 28320,
+            "top": 4630
+          },
+          {
+            "t": 17364,
+            "from": 28320,
+            "to": 30424,
+            "top": 3643
+          },
+          {
+            "t": 19497,
+            "from": 30423,
+            "to": 48771,
+            "top": 18796
+          },
+          {
+            "t": 19650,
+            "from": 48771,
+            "to": 49347,
+            "top": 19142
+          },
+          {
+            "t": 20231,
+            "from": 49347,
+            "to": 49643,
+            "top": 18570
+          },
+          {
+            "t": 20564,
+            "from": 49648,
+            "to": 50204,
+            "top": 18633
+          },
+          {
+            "t": 22346,
+            "from": 50204,
+            "to": 51420,
+            "top": 17189
+          },
+          {
+            "t": 23415,
+            "from": 51420,
+            "to": 52576,
+            "top": 16745
+          },
+          {
+            "t": 25080,
+            "from": 52576,
+            "to": 53332,
+            "top": 15016
+          },
+          {
+            "t": 25714,
+            "from": 53333,
+            "to": 54689,
+            "top": 15423
+          },
+          {
+            "t": 28431,
+            "from": 54689,
+            "to": 58073,
+            "top": 14754
+          },
+          {
+            "t": 30980,
+            "from": 58072,
+            "to": 58928,
+            "top": 11802
+          },
+          {
+            "t": 32280,
+            "from": 58929,
+            "to": 59705,
+            "top": 10636
+          },
+          {
+            "t": 34646,
+            "from": 59704,
+            "to": 61948,
+            "top": 9339
+          },
+          {
+            "t": 36396,
+            "from": 61948,
+            "to": 62804,
+            "top": 7580
+          },
+          {
+            "t": 37780,
+            "from": 62804,
+            "to": 63640,
+            "top": 6352
+          },
+          {
+            "t": 39946,
+            "from": 63640,
+            "to": 64844,
+            "top": 4311
+          },
+          {
+            "t": 41046,
+            "from": 64844,
+            "to": 65880,
+            "top": 3706
+          },
+          {
+            "t": 43246,
+            "from": 65881,
+            "to": 82911,
+            "top": 17454
+          },
+          {
+            "t": 43356,
+            "from": 82911,
+            "to": 83707,
+            "top": 18086
+          },
+          {
+            "t": 44846,
+            "from": 83713,
+            "to": 84969,
+            "top": 17124
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2736,
+        "scrollPx": 68644,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 646.7,
+        "heapMb": 23.4,
+        "domNodes": 392,
+        "toolCardTextHits": 0,
+        "scrollHeightPx": 20479,
+        "entryKinds": {
+          "msg-#f#tat-#": 30,
+          "turn-#f#tat-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 155,
+        "worstTypingMs": 79,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "longconv-40",
+        "turns": 40,
+        "toolTurns": 11,
+        "openToPaneMs": 62.4,
+        "openToFirstEntryMs": 665,
+        "openToNewestPaintMs": 679.2,
+        "openToSettledMs": 995.6,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 179,
+        "openLongtaskTotalMs": 234,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 172.3,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 187,
+        "mainMaxDelayMs": 3.9,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 84.8,
+        "typingAfterOpenMaxMs": 2.5,
+        "typingScrollMaxMs": 3.6,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 224,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 17,
+        "scrollMaxShiftPx": 1,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 4200,
+        "scrollHistoryLoads": 1,
+        "scrollHeightEvents": [
+          {
+            "t": 2059,
+            "from": 17943,
+            "to": 21087,
+            "top": 17211
+          },
+          {
+            "t": 4409,
+            "from": 21088,
+            "to": 22164,
+            "top": 14766
+          },
+          {
+            "t": 5959,
+            "from": 22165,
+            "to": 23529,
+            "top": 13804
+          },
+          {
+            "t": 8442,
+            "from": 23529,
+            "to": 24673,
+            "top": 11225
+          },
+          {
+            "t": 9492,
+            "from": 24673,
+            "to": 25569,
+            "top": 10548
+          },
+          {
+            "t": 10825,
+            "from": 25568,
+            "to": 26144,
+            "top": 9126
+          },
+          {
+            "t": 12658,
+            "from": 26145,
+            "to": 27041,
+            "top": 7276
+          },
+          {
+            "t": 13492,
+            "from": 27040,
+            "to": 27996,
+            "top": 6979
+          },
+          {
+            "t": 14909,
+            "from": 27997,
+            "to": 28833,
+            "top": 5691
+          },
+          {
+            "t": 17192,
+            "from": 28834,
+            "to": 29710,
+            "top": 3149
+          },
+          {
+            "t": 18075,
+            "from": 29710,
+            "to": 30926,
+            "top": 3041
+          },
+          {
+            "t": 19792,
+            "from": 30926,
+            "to": 36918,
+            "top": 6464
+          },
+          {
+            "t": 19892,
+            "from": 36918,
+            "to": 37202,
+            "top": 6598
+          },
+          {
+            "t": 21375,
+            "from": 37204,
+            "to": 38180,
+            "top": 5360
+          },
+          {
+            "t": 22292,
+            "from": 38180,
+            "to": 38676,
+            "top": 4488
+          },
+          {
+            "t": 23542,
+            "from": 38675,
+            "to": 39371,
+            "top": 3317
+          },
+          {
+            "t": 24158,
+            "from": 39371,
+            "to": 39887,
+            "top": 2915
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 80,
+        "scrollInput": "wheel",
+        "scrollFrames": 4201,
+        "scrollPx": 39158,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 676.7,
+        "heapMb": 26.3,
+        "domNodes": 649,
+        "toolCardTextHits": 1,
+        "scrollHeightPx": 17945,
+        "entryKinds": {
+          "msg-tyjxdu-#": 30,
+          "turn-tyjxdu-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 179,
+        "worstTypingMs": 84.8,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "longconv-200",
+        "turns": 200,
+        "toolTurns": 57,
+        "openToPaneMs": 64.9,
+        "openToFirstEntryMs": 653.3,
+        "openToNewestPaintMs": 666,
+        "openToSettledMs": 983,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 165,
+        "openLongtaskTotalMs": 223,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 160.1,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 171,
+        "mainMaxDelayMs": 5.1,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 66,
+        "typingAfterOpenMaxMs": 2.5,
+        "typingScrollMaxMs": 106.2,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 169,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 2,
+        "scrollTopDeltaFramesInfo": 32,
+        "scrollMaxShiftPx": 1256.4,
+        "scrollLastJumpTo": 11251,
+        "scrollWheelEvents": 2522,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 929,
+            "from": 16632,
+            "to": 17048,
+            "top": 14862
+          },
+          {
+            "t": 1462,
+            "from": 17049,
+            "to": 17985,
+            "top": 14998
+          },
+          {
+            "t": 3029,
+            "from": 17984,
+            "to": 18640,
+            "top": 13313
+          },
+          {
+            "t": 5045,
+            "from": 18640,
+            "to": 20644,
+            "top": 12298
+          },
+          {
+            "t": 6645,
+            "from": 20644,
+            "to": 21840,
+            "top": 11099
+          },
+          {
+            "t": 8363,
+            "from": 21840,
+            "to": 23156,
+            "top": 9841
+          },
+          {
+            "t": 10845,
+            "from": 23156,
+            "to": 23852,
+            "top": 6831
+          },
+          {
+            "t": 11579,
+            "from": 23852,
+            "to": 25088,
+            "top": 6968
+          },
+          {
+            "t": 13179,
+            "from": 25089,
+            "to": 26385,
+            "top": 5865
+          },
+          {
+            "t": 15345,
+            "from": 26385,
+            "to": 28649,
+            "top": 4891
+          },
+          {
+            "t": 17112,
+            "from": 28650,
+            "to": 29186,
+            "top": 2782
+          },
+          {
+            "t": 18662,
+            "from": 29185,
+            "to": 46604,
+            "top": 17887
+          },
+          {
+            "t": 18814,
+            "from": 46604,
+            "to": 47240,
+            "top": 18296
+          },
+          {
+            "t": 20079,
+            "from": 47240,
+            "to": 48456,
+            "top": 17624
+          },
+          {
+            "t": 21178,
+            "from": 48456,
+            "to": 49012,
+            "top": 16539
+          },
+          {
+            "t": 22428,
+            "from": 49013,
+            "to": 50469,
+            "top": 16132
+          },
+          {
+            "t": 23545,
+            "from": 50470,
+            "to": 51726,
+            "top": 15722
+          },
+          {
+            "t": 25778,
+            "from": 51727,
+            "to": 53003,
+            "top": 13665
+          },
+          {
+            "t": 26912,
+            "from": 53003,
+            "to": 53499,
+            "top": 12468
+          },
+          {
+            "t": 28062,
+            "from": 53499,
+            "to": 54495,
+            "top": 11747
+          },
+          {
+            "t": 28862,
+            "from": 54495,
+            "to": 55191,
+            "top": 11251
+          },
+          {
+            "t": 30861,
+            "from": 55191,
+            "to": 56147,
+            "top": 9222
+          },
+          {
+            "t": 31795,
+            "from": 56147,
+            "to": 57323,
+            "top": 9007
+          },
+          {
+            "t": 33278,
+            "from": 57323,
+            "to": 57919,
+            "top": 7391
+          },
+          {
+            "t": 33811,
+            "from": 57919,
+            "to": 58035,
+            "top": 6709
+          },
+          {
+            "t": 35694,
+            "from": 58034,
+            "to": 58790,
+            "top": 4653
+          },
+          {
+            "t": 36461,
+            "from": 58790,
+            "to": 58966,
+            "top": 3686
+          },
+          {
+            "t": 37345,
+            "from": 58966,
+            "to": 59462,
+            "top": 2863
+          },
+          {
+            "t": 37844,
+            "from": 59462,
+            "to": 60598,
+            "top": 3255
+          },
+          {
+            "t": 39711,
+            "from": 60597,
+            "to": 77812,
+            "top": 17686
+          },
+          {
+            "t": 39825,
+            "from": 77812,
+            "to": 79616,
+            "top": 19320
+          },
+          {
+            "t": 41294,
+            "from": 79621,
+            "to": 79757,
+            "top": 17268
+          }
+        ],
+        "scrollJumpLog": [
+          {
+            "t": 23545,
+            "top": 15722,
+            "before": 14491,
+            "intended": -25,
+            "shift": 1256,
+            "entries": 120
+          },
+          {
+            "t": 28862,
+            "top": 11251,
+            "before": 10580,
+            "intended": -25,
+            "shift": 696,
+            "entries": 120
+          }
+        ],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2521,
+        "scrollPx": 63317,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 644.7,
+        "heapMb": 26.3,
+        "domNodes": 598,
+        "toolCardTextHits": 2,
+        "scrollHeightPx": 16633,
+        "entryKinds": {
+          "msg-ath#wb-#": 30,
+          "turn-ath#wb-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 165,
+        "worstTypingMs": 106.2,
+        "breaches": [
+          {
+            "metric": "scrollJumpedFrames",
+            "value": 2,
+            "limit": 0
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 1,
+      "position": 2,
+      "row": {
+        "id": "longconv-1000",
+        "turns": 1000,
+        "toolTurns": 285,
+        "openToPaneMs": 61.7,
+        "openToFirstEntryMs": 665.9,
+        "openToNewestPaintMs": 687.1,
+        "openToSettledMs": 1002.2,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 153,
+        "openLongtaskTotalMs": 208,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 156.4,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 164,
+        "mainMaxDelayMs": 22.6,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 85.1,
+        "typingAfterOpenMaxMs": 2.6,
+        "typingScrollMaxMs": 117.4,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 183,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 36,
+        "scrollMaxShiftPx": 1.1,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 2734,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 647,
+            "from": 20479,
+            "to": 19503,
+            "top": 17733
+          },
+          {
+            "t": 897,
+            "from": 19503,
+            "to": 20479,
+            "top": 18335
+          },
+          {
+            "t": 2080,
+            "from": 20479,
+            "to": 19563,
+            "top": 15644
+          },
+          {
+            "t": 2330,
+            "from": 19563,
+            "to": 20479,
+            "top": 16185
+          },
+          {
+            "t": 4413,
+            "from": 20479,
+            "to": 21515,
+            "top": 14110
+          },
+          {
+            "t": 5380,
+            "from": 21514,
+            "to": 22670,
+            "top": 13817
+          },
+          {
+            "t": 6997,
+            "from": 22670,
+            "to": 23046,
+            "top": 11771
+          },
+          {
+            "t": 8747,
+            "from": 23047,
+            "to": 23903,
+            "top": 10008
+          },
+          {
+            "t": 9580,
+            "from": 23903,
+            "to": 24639,
+            "top": 9497
+          },
+          {
+            "t": 10980,
+            "from": 24639,
+            "to": 25415,
+            "top": 8180
+          },
+          {
+            "t": 12830,
+            "from": 25416,
+            "to": 26552,
+            "top": 6543
+          },
+          {
+            "t": 13846,
+            "from": 26552,
+            "to": 26788,
+            "top": 5256
+          },
+          {
+            "t": 14880,
+            "from": 26788,
+            "to": 27204,
+            "top": 4124
+          },
+          {
+            "t": 15279,
+            "from": 27204,
+            "to": 28320,
+            "top": 4642
+          },
+          {
+            "t": 17346,
+            "from": 28320,
+            "to": 30424,
+            "top": 3651
+          },
+          {
+            "t": 19480,
+            "from": 30423,
+            "to": 48771,
+            "top": 18806
+          },
+          {
+            "t": 19637,
+            "from": 48771,
+            "to": 49347,
+            "top": 19146
+          },
+          {
+            "t": 20229,
+            "from": 49347,
+            "to": 49643,
+            "top": 18555
+          },
+          {
+            "t": 20563,
+            "from": 49648,
+            "to": 50204,
+            "top": 18619
+          },
+          {
+            "t": 22330,
+            "from": 50204,
+            "to": 51420,
+            "top": 17194
+          },
+          {
+            "t": 23414,
+            "from": 51420,
+            "to": 52576,
+            "top": 16730
+          },
+          {
+            "t": 25063,
+            "from": 52576,
+            "to": 53332,
+            "top": 15026
+          },
+          {
+            "t": 25713,
+            "from": 53333,
+            "to": 54689,
+            "top": 15410
+          },
+          {
+            "t": 28429,
+            "from": 54689,
+            "to": 58073,
+            "top": 14743
+          },
+          {
+            "t": 30980,
+            "from": 58072,
+            "to": 58928,
+            "top": 11788
+          },
+          {
+            "t": 32279,
+            "from": 58929,
+            "to": 59705,
+            "top": 10628
+          },
+          {
+            "t": 34646,
+            "from": 59704,
+            "to": 61948,
+            "top": 9332
+          },
+          {
+            "t": 36396,
+            "from": 61948,
+            "to": 62804,
+            "top": 7567
+          },
+          {
+            "t": 37779,
+            "from": 62804,
+            "to": 63640,
+            "top": 6340
+          },
+          {
+            "t": 39945,
+            "from": 63640,
+            "to": 64844,
+            "top": 4305
+          },
+          {
+            "t": 41046,
+            "from": 64844,
+            "to": 65880,
+            "top": 3695
+          },
+          {
+            "t": 43229,
+            "from": 65881,
+            "to": 82911,
+            "top": 17463
+          },
+          {
+            "t": 43346,
+            "from": 82911,
+            "to": 83707,
+            "top": 18084
+          },
+          {
+            "t": 44829,
+            "from": 83713,
+            "to": 84969,
+            "top": 17127
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2735,
+        "scrollPx": 68618,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 665.3,
+        "heapMb": 26.3,
+        "domNodes": 392,
+        "toolCardTextHits": 0,
+        "scrollHeightPx": 20479,
+        "entryKinds": {
+          "msg-lqh#vf-#": 30,
+          "turn-lqh#vf-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 153,
+        "worstTypingMs": 117.4,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "longconv-40",
+        "turns": 40,
+        "toolTurns": 11,
+        "openToPaneMs": 66.2,
+        "openToFirstEntryMs": 651.2,
+        "openToNewestPaintMs": 659.2,
+        "openToSettledMs": 975.2,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 167,
+        "openLongtaskTotalMs": 227,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 160.5,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 176,
+        "mainMaxDelayMs": 2.5,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 67.2,
+        "typingAfterOpenMaxMs": 2.6,
+        "typingScrollMaxMs": 4.9,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 224,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 17,
+        "scrollMaxShiftPx": 1.1,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 4200,
+        "scrollHistoryLoads": 1,
+        "scrollHeightEvents": [
+          {
+            "t": 2054,
+            "from": 17943,
+            "to": 21087,
+            "top": 17217
+          },
+          {
+            "t": 4421,
+            "from": 21088,
+            "to": 22164,
+            "top": 14755
+          },
+          {
+            "t": 5953,
+            "from": 22165,
+            "to": 23529,
+            "top": 13821
+          },
+          {
+            "t": 8454,
+            "from": 23529,
+            "to": 24673,
+            "top": 11223
+          },
+          {
+            "t": 9504,
+            "from": 24673,
+            "to": 25569,
+            "top": 10543
+          },
+          {
+            "t": 10837,
+            "from": 25568,
+            "to": 26144,
+            "top": 9120
+          },
+          {
+            "t": 12670,
+            "from": 26145,
+            "to": 27041,
+            "top": 7279
+          },
+          {
+            "t": 13503,
+            "from": 27040,
+            "to": 27996,
+            "top": 6989
+          },
+          {
+            "t": 14937,
+            "from": 27997,
+            "to": 28833,
+            "top": 5683
+          },
+          {
+            "t": 17221,
+            "from": 28834,
+            "to": 29710,
+            "top": 3149
+          },
+          {
+            "t": 18103,
+            "from": 29710,
+            "to": 30926,
+            "top": 3043
+          },
+          {
+            "t": 19820,
+            "from": 30926,
+            "to": 36918,
+            "top": 6466
+          },
+          {
+            "t": 19937,
+            "from": 36918,
+            "to": 37202,
+            "top": 6575
+          },
+          {
+            "t": 21403,
+            "from": 37204,
+            "to": 38180,
+            "top": 5357
+          },
+          {
+            "t": 22320,
+            "from": 38180,
+            "to": 38676,
+            "top": 4484
+          },
+          {
+            "t": 23570,
+            "from": 38675,
+            "to": 39371,
+            "top": 3312
+          },
+          {
+            "t": 24186,
+            "from": 39371,
+            "to": 39887,
+            "top": 2907
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 80,
+        "scrollInput": "wheel",
+        "scrollFrames": 4201,
+        "scrollPx": 39197,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 701.4,
+        "heapMb": 28,
+        "domNodes": 649,
+        "toolCardTextHits": 1,
+        "scrollHeightPx": 17945,
+        "entryKinds": {
+          "msg-c#i#-#": 30,
+          "turn-c#i#-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 167,
+        "worstTypingMs": 67.2,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "longconv-200",
+        "turns": 200,
+        "toolTurns": 57,
+        "openToPaneMs": 64.9,
+        "openToFirstEntryMs": 652.6,
+        "openToNewestPaintMs": 664.2,
+        "openToSettledMs": 981.4,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 164,
+        "openLongtaskTotalMs": 222,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 159.5,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 172,
+        "mainMaxDelayMs": 6.9,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 49.5,
+        "typingAfterOpenMaxMs": 2.7,
+        "typingScrollMaxMs": 103,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 168,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 2,
+        "scrollTopDeltaFramesInfo": 32,
+        "scrollMaxShiftPx": 1255.6,
+        "scrollLastJumpTo": 11236,
+        "scrollWheelEvents": 2520,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 925,
+            "from": 16632,
+            "to": 17048,
+            "top": 14865
+          },
+          {
+            "t": 1458,
+            "from": 17049,
+            "to": 17985,
+            "top": 15003
+          },
+          {
+            "t": 3025,
+            "from": 17984,
+            "to": 18640,
+            "top": 13315
+          },
+          {
+            "t": 5042,
+            "from": 18640,
+            "to": 20644,
+            "top": 12297
+          },
+          {
+            "t": 6642,
+            "from": 20644,
+            "to": 21840,
+            "top": 11099
+          },
+          {
+            "t": 8358,
+            "from": 21840,
+            "to": 23156,
+            "top": 9839
+          },
+          {
+            "t": 10825,
+            "from": 23156,
+            "to": 23852,
+            "top": 6843
+          },
+          {
+            "t": 11575,
+            "from": 23852,
+            "to": 25088,
+            "top": 6956
+          },
+          {
+            "t": 13175,
+            "from": 25089,
+            "to": 26385,
+            "top": 5851
+          },
+          {
+            "t": 15325,
+            "from": 26385,
+            "to": 28649,
+            "top": 4903
+          },
+          {
+            "t": 17092,
+            "from": 28650,
+            "to": 29186,
+            "top": 2792
+          },
+          {
+            "t": 18641,
+            "from": 29185,
+            "to": 46604,
+            "top": 17893
+          },
+          {
+            "t": 18793,
+            "from": 46604,
+            "to": 47240,
+            "top": 18302
+          },
+          {
+            "t": 20058,
+            "from": 47240,
+            "to": 48456,
+            "top": 17627
+          },
+          {
+            "t": 21158,
+            "from": 48456,
+            "to": 49012,
+            "top": 16542
+          },
+          {
+            "t": 22408,
+            "from": 49013,
+            "to": 50469,
+            "top": 16133
+          },
+          {
+            "t": 23525,
+            "from": 50470,
+            "to": 51726,
+            "top": 15718
+          },
+          {
+            "t": 25758,
+            "from": 51727,
+            "to": 53003,
+            "top": 13662
+          },
+          {
+            "t": 26892,
+            "from": 53003,
+            "to": 53499,
+            "top": 12462
+          },
+          {
+            "t": 28041,
+            "from": 53499,
+            "to": 54495,
+            "top": 11737
+          },
+          {
+            "t": 28841,
+            "from": 54495,
+            "to": 55191,
+            "top": 11236
+          },
+          {
+            "t": 30824,
+            "from": 55191,
+            "to": 56147,
+            "top": 9236
+          },
+          {
+            "t": 31757,
+            "from": 56147,
+            "to": 57323,
+            "top": 9017
+          },
+          {
+            "t": 33241,
+            "from": 57323,
+            "to": 57919,
+            "top": 7400
+          },
+          {
+            "t": 33791,
+            "from": 57919,
+            "to": 58035,
+            "top": 6694
+          },
+          {
+            "t": 35674,
+            "from": 58034,
+            "to": 58790,
+            "top": 4639
+          },
+          {
+            "t": 36440,
+            "from": 58790,
+            "to": 58966,
+            "top": 3671
+          },
+          {
+            "t": 37307,
+            "from": 58966,
+            "to": 59462,
+            "top": 2871
+          },
+          {
+            "t": 37808,
+            "from": 59462,
+            "to": 60598,
+            "top": 3257
+          },
+          {
+            "t": 39674,
+            "from": 60597,
+            "to": 77812,
+            "top": 17683
+          },
+          {
+            "t": 39790,
+            "from": 77812,
+            "to": 79616,
+            "top": 19313
+          },
+          {
+            "t": 41258,
+            "from": 79621,
+            "to": 79757,
+            "top": 17262
+          }
+        ],
+        "scrollJumpLog": [
+          {
+            "t": 23525,
+            "top": 15718,
+            "before": 14488,
+            "intended": -26,
+            "shift": 1256,
+            "entries": 120
+          },
+          {
+            "t": 28841,
+            "top": 11236,
+            "before": 10565,
+            "intended": -25,
+            "shift": 697,
+            "entries": 120
+          }
+        ],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2519,
+        "scrollPx": 63262,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 668,
+        "heapMb": 26.3,
+        "domNodes": 598,
+        "toolCardTextHits": 2,
+        "scrollHeightPx": 16633,
+        "entryKinds": {
+          "msg-mdg#-#": 30,
+          "turn-mdg#-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 164,
+        "worstTypingMs": 103,
+        "breaches": [
+          {
+            "metric": "scrollJumpedFrames",
+            "value": 2,
+            "limit": 0
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "new",
+      "round": 2,
+      "position": 1,
+      "row": {
+        "id": "longconv-1000",
+        "turns": 1000,
+        "toolTurns": 285,
+        "openToPaneMs": 69.2,
+        "openToFirstEntryMs": 669.7,
+        "openToNewestPaintMs": 690.8,
+        "openToSettledMs": 1006.7,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 156,
+        "openLongtaskTotalMs": 217,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 161,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 164,
+        "mainMaxDelayMs": 24.1,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 22.3,
+        "typingAfterOpenMaxMs": 2.6,
+        "typingScrollMaxMs": 71.9,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 182,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 36,
+        "scrollMaxShiftPx": 1.2,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 2734,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 645,
+            "from": 20479,
+            "to": 19503,
+            "top": 17737
+          },
+          {
+            "t": 895,
+            "from": 19503,
+            "to": 20479,
+            "top": 18337
+          },
+          {
+            "t": 2079,
+            "from": 20479,
+            "to": 19563,
+            "top": 15646
+          },
+          {
+            "t": 2346,
+            "from": 19563,
+            "to": 20479,
+            "top": 16162
+          },
+          {
+            "t": 4412,
+            "from": 20479,
+            "to": 21515,
+            "top": 14101
+          },
+          {
+            "t": 5362,
+            "from": 21514,
+            "to": 22670,
+            "top": 13832
+          },
+          {
+            "t": 6979,
+            "from": 22670,
+            "to": 23046,
+            "top": 11783
+          },
+          {
+            "t": 8745,
+            "from": 23047,
+            "to": 23903,
+            "top": 10000
+          },
+          {
+            "t": 9562,
+            "from": 23903,
+            "to": 24639,
+            "top": 9512
+          },
+          {
+            "t": 10978,
+            "from": 24639,
+            "to": 25415,
+            "top": 8165
+          },
+          {
+            "t": 12811,
+            "from": 25416,
+            "to": 26552,
+            "top": 6561
+          },
+          {
+            "t": 13845,
+            "from": 26552,
+            "to": 26788,
+            "top": 5250
+          },
+          {
+            "t": 14862,
+            "from": 26788,
+            "to": 27204,
+            "top": 4140
+          },
+          {
+            "t": 15279,
+            "from": 27204,
+            "to": 28320,
+            "top": 4634
+          },
+          {
+            "t": 17345,
+            "from": 28320,
+            "to": 30424,
+            "top": 3651
+          },
+          {
+            "t": 19479,
+            "from": 30423,
+            "to": 48771,
+            "top": 18809
+          },
+          {
+            "t": 19637,
+            "from": 48771,
+            "to": 49347,
+            "top": 19147
+          },
+          {
+            "t": 20228,
+            "from": 49347,
+            "to": 49643,
+            "top": 18564
+          },
+          {
+            "t": 20562,
+            "from": 49648,
+            "to": 50204,
+            "top": 18628
+          },
+          {
+            "t": 22345,
+            "from": 50204,
+            "to": 51420,
+            "top": 17178
+          },
+          {
+            "t": 23414,
+            "from": 51420,
+            "to": 52576,
+            "top": 16736
+          },
+          {
+            "t": 25061,
+            "from": 52576,
+            "to": 53332,
+            "top": 15027
+          },
+          {
+            "t": 25711,
+            "from": 53333,
+            "to": 54689,
+            "top": 15411
+          },
+          {
+            "t": 28412,
+            "from": 54689,
+            "to": 58073,
+            "top": 14759
+          },
+          {
+            "t": 30978,
+            "from": 58072,
+            "to": 58928,
+            "top": 11784
+          },
+          {
+            "t": 32261,
+            "from": 58929,
+            "to": 59705,
+            "top": 10648
+          },
+          {
+            "t": 34627,
+            "from": 59704,
+            "to": 61948,
+            "top": 9355
+          },
+          {
+            "t": 36394,
+            "from": 61948,
+            "to": 62804,
+            "top": 7577
+          },
+          {
+            "t": 37777,
+            "from": 62804,
+            "to": 63640,
+            "top": 6343
+          },
+          {
+            "t": 39945,
+            "from": 63640,
+            "to": 64844,
+            "top": 4308
+          },
+          {
+            "t": 41044,
+            "from": 64844,
+            "to": 65880,
+            "top": 3699
+          },
+          {
+            "t": 43244,
+            "from": 65881,
+            "to": 82911,
+            "top": 17447
+          },
+          {
+            "t": 43364,
+            "from": 82911,
+            "to": 83707,
+            "top": 18064
+          },
+          {
+            "t": 44827,
+            "from": 83713,
+            "to": 84969,
+            "top": 17144
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2735,
+        "scrollPx": 68617,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 660.5,
+        "heapMb": 24.8,
+        "domNodes": 392,
+        "toolCardTextHits": 0,
+        "scrollHeightPx": 20479,
+        "entryKinds": {
+          "msg-t#u#j-#": 30,
+          "turn-t#u#j-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 156,
+        "worstTypingMs": 71.9,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "longconv-40",
+        "turns": 40,
+        "toolTurns": 11,
+        "openToPaneMs": 61.1,
+        "openToFirstEntryMs": 643.9,
+        "openToNewestPaintMs": 661.6,
+        "openToSettledMs": 962.5,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 162,
+        "openLongtaskTotalMs": 216,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 154.1,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 165,
+        "mainMaxDelayMs": 5.7,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 66.6,
+        "typingAfterOpenMaxMs": 2.6,
+        "typingScrollMaxMs": 4.6,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 224,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 17,
+        "scrollMaxShiftPx": 1.1,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 4200,
+        "scrollHistoryLoads": 1,
+        "scrollHeightEvents": [
+          {
+            "t": 2063,
+            "from": 17943,
+            "to": 21087,
+            "top": 17199
+          },
+          {
+            "t": 4413,
+            "from": 21088,
+            "to": 22164,
+            "top": 14751
+          },
+          {
+            "t": 5963,
+            "from": 22165,
+            "to": 23529,
+            "top": 13799
+          },
+          {
+            "t": 8463,
+            "from": 23529,
+            "to": 24673,
+            "top": 11210
+          },
+          {
+            "t": 9512,
+            "from": 24673,
+            "to": 25569,
+            "top": 10538
+          },
+          {
+            "t": 10846,
+            "from": 25568,
+            "to": 26144,
+            "top": 9115
+          },
+          {
+            "t": 12663,
+            "from": 26145,
+            "to": 27041,
+            "top": 7296
+          },
+          {
+            "t": 13512,
+            "from": 27040,
+            "to": 27996,
+            "top": 6979
+          },
+          {
+            "t": 14946,
+            "from": 27997,
+            "to": 28833,
+            "top": 5671
+          },
+          {
+            "t": 17229,
+            "from": 28834,
+            "to": 29710,
+            "top": 3133
+          },
+          {
+            "t": 18095,
+            "from": 29710,
+            "to": 30926,
+            "top": 3052
+          },
+          {
+            "t": 19813,
+            "from": 30926,
+            "to": 36918,
+            "top": 6474
+          },
+          {
+            "t": 19929,
+            "from": 36918,
+            "to": 37202,
+            "top": 6584
+          },
+          {
+            "t": 21412,
+            "from": 37204,
+            "to": 38180,
+            "top": 5347
+          },
+          {
+            "t": 22329,
+            "from": 38180,
+            "to": 38676,
+            "top": 4477
+          },
+          {
+            "t": 23579,
+            "from": 38675,
+            "to": 39371,
+            "top": 3307
+          },
+          {
+            "t": 24196,
+            "from": 39371,
+            "to": 39887,
+            "top": 2903
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 80,
+        "scrollInput": "wheel",
+        "scrollFrames": 4201,
+        "scrollPx": 39210,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 614.5,
+        "heapMb": 26.3,
+        "domNodes": 649,
+        "toolCardTextHits": 1,
+        "scrollHeightPx": 17945,
+        "entryKinds": {
+          "msg-i#j#ld-#": 30,
+          "turn-i#j#ld-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 162,
+        "worstTypingMs": 66.6,
+        "breaches": [],
+        "status": "measured"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "longconv-200",
+        "turns": 200,
+        "toolTurns": 57,
+        "openToPaneMs": 64.3,
+        "openToFirstEntryMs": 658.9,
+        "openToNewestPaintMs": 665.4,
+        "openToSettledMs": 965.6,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 172,
+        "openLongtaskTotalMs": 230,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 165.1,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 177,
+        "mainMaxDelayMs": 11.8,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 54.4,
+        "typingAfterOpenMaxMs": 2.6,
+        "typingScrollMaxMs": 60.6,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 168,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 2,
+        "scrollTopDeltaFramesInfo": 32,
+        "scrollMaxShiftPx": 1256.2,
+        "scrollLastJumpTo": 11251,
+        "scrollWheelEvents": 2521,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 930,
+            "from": 16632,
+            "to": 17048,
+            "top": 14854
+          },
+          {
+            "t": 1463,
+            "from": 17049,
+            "to": 17985,
+            "top": 14997
+          },
+          {
+            "t": 3014,
+            "from": 17984,
+            "to": 18640,
+            "top": 13332
+          },
+          {
+            "t": 5046,
+            "from": 18640,
+            "to": 20644,
+            "top": 12294
+          },
+          {
+            "t": 6646,
+            "from": 20644,
+            "to": 21840,
+            "top": 11093
+          },
+          {
+            "t": 8363,
+            "from": 21840,
+            "to": 23156,
+            "top": 9838
+          },
+          {
+            "t": 10830,
+            "from": 23156,
+            "to": 23852,
+            "top": 6847
+          },
+          {
+            "t": 11579,
+            "from": 23852,
+            "to": 25088,
+            "top": 6964
+          },
+          {
+            "t": 13180,
+            "from": 25089,
+            "to": 26385,
+            "top": 5862
+          },
+          {
+            "t": 15329,
+            "from": 26385,
+            "to": 28649,
+            "top": 4912
+          },
+          {
+            "t": 17113,
+            "from": 28650,
+            "to": 29186,
+            "top": 2780
+          },
+          {
+            "t": 18646,
+            "from": 29185,
+            "to": 46604,
+            "top": 17901
+          },
+          {
+            "t": 18789,
+            "from": 46604,
+            "to": 47240,
+            "top": 18323
+          },
+          {
+            "t": 20062,
+            "from": 47240,
+            "to": 48456,
+            "top": 17633
+          },
+          {
+            "t": 21163,
+            "from": 48456,
+            "to": 49012,
+            "top": 16542
+          },
+          {
+            "t": 22413,
+            "from": 49013,
+            "to": 50469,
+            "top": 16133
+          },
+          {
+            "t": 23546,
+            "from": 50470,
+            "to": 51726,
+            "top": 15699
+          },
+          {
+            "t": 25762,
+            "from": 51727,
+            "to": 53003,
+            "top": 13667
+          },
+          {
+            "t": 26896,
+            "from": 53003,
+            "to": 53499,
+            "top": 12469
+          },
+          {
+            "t": 28045,
+            "from": 53499,
+            "to": 54495,
+            "top": 11750
+          },
+          {
+            "t": 28845,
+            "from": 54495,
+            "to": 55191,
+            "top": 11251
+          },
+          {
+            "t": 30846,
+            "from": 55191,
+            "to": 56147,
+            "top": 9219
+          },
+          {
+            "t": 31762,
+            "from": 56147,
+            "to": 57323,
+            "top": 9024
+          },
+          {
+            "t": 33245,
+            "from": 57323,
+            "to": 57919,
+            "top": 7401
+          },
+          {
+            "t": 33796,
+            "from": 57919,
+            "to": 58035,
+            "top": 6696
+          },
+          {
+            "t": 35662,
+            "from": 58034,
+            "to": 58790,
+            "top": 4659
+          },
+          {
+            "t": 36428,
+            "from": 58790,
+            "to": 58966,
+            "top": 3690
+          },
+          {
+            "t": 37312,
+            "from": 58965,
+            "to": 59461,
+            "top": 2864
+          },
+          {
+            "t": 37812,
+            "from": 59461,
+            "to": 60597,
+            "top": 3248
+          },
+          {
+            "t": 39662,
+            "from": 60597,
+            "to": 77811,
+            "top": 17697
+          },
+          {
+            "t": 39777,
+            "from": 77811,
+            "to": 79615,
+            "top": 19329
+          },
+          {
+            "t": 41246,
+            "from": 79621,
+            "to": 79757,
+            "top": 17274
+          }
+        ],
+        "scrollJumpLog": [
+          {
+            "t": 23546,
+            "top": 15699,
+            "before": 14468,
+            "intended": -25,
+            "shift": 1256,
+            "entries": 120
+          },
+          {
+            "t": 28845,
+            "top": 11251,
+            "before": 10579,
+            "intended": -24,
+            "shift": 696,
+            "entries": 120
+          }
+        ],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2520,
+        "scrollPx": 63268,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 658,
+        "heapMb": 23.4,
+        "domNodes": 598,
+        "toolCardTextHits": 2,
+        "scrollHeightPx": 16633,
+        "entryKinds": {
+          "msg-yiisn#-#": 30,
+          "turn-yiisn#-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 172,
+        "worstTypingMs": 60.6,
+        "breaches": [
+          {
+            "metric": "scrollJumpedFrames",
+            "value": 2,
+            "limit": 0
+          }
+        ],
+        "status": "slow"
+      }
+    },
+    {
+      "side": "old",
+      "round": 2,
+      "position": 2,
+      "row": {
+        "id": "longconv-1000",
+        "turns": 1000,
+        "toolTurns": 285,
+        "openToPaneMs": 66.1,
+        "openToFirstEntryMs": 663.6,
+        "openToNewestPaintMs": 685,
+        "openToSettledMs": 1001,
+        "entriesAtPaint": 60,
+        "entriesAtSettle": 60,
+        "openLongtaskMaxMs": 157,
+        "openLongtaskTotalMs": 216,
+        "openLongtaskCount": 2,
+        "afterLongtaskMaxMs": 0,
+        "afterLongtaskTotalMs": 0,
+        "openTimerStallMaxMs": 155.2,
+        "afterTimerStallMaxMs": 0,
+        "openFrameGapMaxMs": 162,
+        "mainMaxDelayMs": 20.4,
+        "mainTotalStallMs": 0,
+        "typingOpenMaxMs": 71.5,
+        "typingAfterOpenMaxMs": 2.7,
+        "typingScrollMaxMs": 73.3,
+        "typingSaturated": false,
+        "typingKeysOpen": 3,
+        "typingKeysAfterOpen": 13,
+        "typingKeysScroll": 182,
+        "scrollVerdict": "clean",
+        "scrollBlankFrames": 0,
+        "scrollMaxBlankInView": 0,
+        "scrollJumpedFrames": 0,
+        "scrollTopDeltaFramesInfo": 36,
+        "scrollMaxShiftPx": 1.2,
+        "scrollLastJumpTo": null,
+        "scrollWheelEvents": 2732,
+        "scrollHistoryLoads": 2,
+        "scrollHeightEvents": [
+          {
+            "t": 646,
+            "from": 20479,
+            "to": 19503,
+            "top": 17732
+          },
+          {
+            "t": 880,
+            "from": 19503,
+            "to": 20479,
+            "top": 18358
+          },
+          {
+            "t": 2079,
+            "from": 20479,
+            "to": 19563,
+            "top": 15643
+          },
+          {
+            "t": 2329,
+            "from": 19563,
+            "to": 20479,
+            "top": 16184
+          },
+          {
+            "t": 4413,
+            "from": 20479,
+            "to": 21515,
+            "top": 14101
+          },
+          {
+            "t": 5363,
+            "from": 21514,
+            "to": 22670,
+            "top": 13831
+          },
+          {
+            "t": 6995,
+            "from": 22670,
+            "to": 23046,
+            "top": 11767
+          },
+          {
+            "t": 8746,
+            "from": 23047,
+            "to": 23903,
+            "top": 10007
+          },
+          {
+            "t": 9579,
+            "from": 23903,
+            "to": 24639,
+            "top": 9493
+          },
+          {
+            "t": 10980,
+            "from": 24639,
+            "to": 25415,
+            "top": 8170
+          },
+          {
+            "t": 12812,
+            "from": 25416,
+            "to": 26552,
+            "top": 6564
+          },
+          {
+            "t": 13846,
+            "from": 26552,
+            "to": 26788,
+            "top": 5254
+          },
+          {
+            "t": 14879,
+            "from": 26788,
+            "to": 27204,
+            "top": 4124
+          },
+          {
+            "t": 15279,
+            "from": 27204,
+            "to": 28320,
+            "top": 4643
+          },
+          {
+            "t": 17345,
+            "from": 28320,
+            "to": 30424,
+            "top": 3650
+          },
+          {
+            "t": 19479,
+            "from": 30423,
+            "to": 48771,
+            "top": 18803
+          },
+          {
+            "t": 19640,
+            "from": 48771,
+            "to": 49347,
+            "top": 19138
+          },
+          {
+            "t": 20228,
+            "from": 49347,
+            "to": 49643,
+            "top": 18555
+          },
+          {
+            "t": 20562,
+            "from": 49648,
+            "to": 50204,
+            "top": 18616
+          },
+          {
+            "t": 22329,
+            "from": 50204,
+            "to": 51420,
+            "top": 17190
+          },
+          {
+            "t": 23414,
+            "from": 51420,
+            "to": 52576,
+            "top": 16725
+          },
+          {
+            "t": 25062,
+            "from": 52576,
+            "to": 53332,
+            "top": 15018
+          },
+          {
+            "t": 25695,
+            "from": 53333,
+            "to": 54689,
+            "top": 15426
+          },
+          {
+            "t": 28412,
+            "from": 54689,
+            "to": 58073,
+            "top": 14753
+          },
+          {
+            "t": 30962,
+            "from": 58072,
+            "to": 58928,
+            "top": 11800
+          },
+          {
+            "t": 32262,
+            "from": 58929,
+            "to": 59705,
+            "top": 10637
+          },
+          {
+            "t": 34628,
+            "from": 59704,
+            "to": 61948,
+            "top": 9346
+          },
+          {
+            "t": 36395,
+            "from": 61948,
+            "to": 62804,
+            "top": 7561
+          },
+          {
+            "t": 37761,
+            "from": 62804,
+            "to": 63640,
+            "top": 6354
+          },
+          {
+            "t": 39945,
+            "from": 63640,
+            "to": 64844,
+            "top": 4300
+          },
+          {
+            "t": 41029,
+            "from": 64844,
+            "to": 65880,
+            "top": 3714
+          },
+          {
+            "t": 43228,
+            "from": 65881,
+            "to": 82911,
+            "top": 17462
+          },
+          {
+            "t": 43340,
+            "from": 82911,
+            "to": 83707,
+            "top": 18091
+          },
+          {
+            "t": 44828,
+            "from": 83713,
+            "to": 84969,
+            "top": 17125
+          }
+        ],
+        "scrollJumpLog": [],
+        "scrollEntriesStart": 60,
+        "scrollEntriesEnd": 180,
+        "scrollInput": "wheel",
+        "scrollFrames": 2733,
+        "scrollPx": 68592,
+        "scrollBlankAtRest": 0,
+        "peakPssMb": 638.1,
+        "heapMb": 26.3,
+        "domNodes": 392,
+        "toolCardTextHits": 0,
+        "scrollHeightPx": 20479,
+        "entryKinds": {
+          "msg-qkpddn-#": 30,
+          "turn-qkpddn-#": 30
+        },
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 157,
+        "worstTypingMs": 73.3,
+        "breaches": [],
+        "status": "measured"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:longconv-40",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 76.1,
+      "samples": 152,
+      "overflow": false,
+      "foreignAvgCores": 0.65,
+      "foreignPeak2sCores": 1.27,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7.7,
+        "max": 16.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0.36,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-a:longconv-200",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 48.3,
+      "samples": 97,
+      "overflow": false,
+      "foreignAvgCores": 0.64,
+      "foreignPeak2sCores": 0.71,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.45
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.1,
+        "max": 14.7
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-a:longconv-1000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 51.9,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 0.64,
+      "foreignPeak2sCores": 0.69,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.45
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.2,
+        "max": 14.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-b:longconv-40",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 76.1,
+      "samples": 152,
+      "overflow": false,
+      "foreignAvgCores": 0.66,
+      "foreignPeak2sCores": 1.15,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2594,
+            2643,
+            2117,
+            4266
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7.9,
+        "max": 25.4
+      },
+      "pressure": {
+        "cpuMax": 0.18,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-b:longconv-200",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 48.3,
+      "samples": 97,
+      "overflow": false,
+      "foreignAvgCores": 0.66,
+      "foreignPeak2sCores": 0.88,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.3,
+        "max": 18
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r1-b:longconv-1000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 51.9,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 0.65,
+      "foreignPeak2sCores": 0.84,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.46
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.4,
+        "max": 17.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-b:longconv-40",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 76.1,
+      "samples": 152,
+      "overflow": false,
+      "foreignAvgCores": 0.64,
+      "foreignPeak2sCores": 0.89,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.46
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7.5,
+        "max": 15.8
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-b:longconv-200",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 48.3,
+      "samples": 97,
+      "overflow": false,
+      "foreignAvgCores": 0.66,
+      "foreignPeak2sCores": 0.89,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.3,
+        "max": 15.9
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-b:longconv-1000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 51.9,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 0.65,
+      "foreignPeak2sCores": 0.85,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.46
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.3,
+        "max": 18.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-a:longconv-40",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 76.1,
+      "samples": 152,
+      "overflow": false,
+      "foreignAvgCores": 0.65,
+      "foreignPeak2sCores": 0.91,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266,
+            2598
+          ],
+          "cores": 0.47
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 7.6,
+        "max": 18.3
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0.9,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-a:longconv-200",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 48.2,
+      "samples": 97,
+      "overflow": false,
+      "foreignAvgCores": 0.64,
+      "foreignPeak2sCores": 0.84,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.46
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.2,
+        "max": 16.1
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0.4,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    },
+    {
+      "label": "r2-a:longconv-1000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 51.8,
+      "samples": 104,
+      "overflow": false,
+      "foreignAvgCores": 0.66,
+      "foreignPeak2sCores": 0.9,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2117,
+            2594,
+            2643,
+            4266
+          ],
+          "cores": 0.48
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.06
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 9.4,
+        "max": 16.4
+      },
+      "pressure": {
+        "cpuMax": 0,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    }
+  ],
+  "aggregate": {
+    "longconv-40": {
+      "old": {
+        "statuses": [
+          "measured",
+          "measured"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 661.05,
+            "min": 660.5,
+            "max": 661.6,
+            "n": 2,
+            "of": 2
+          },
+          "openToSettledMs": {
+            "median": 961.55,
+            "min": 960.6,
+            "max": 962.5,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskMaxMs": {
+            "median": 163,
+            "min": 162,
+            "max": 164,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskTotalMs": {
+            "median": 217.5,
+            "min": 216,
+            "max": 219,
+            "n": 2,
+            "of": 2
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "typingOpenMaxMs": {
+            "median": 67.05,
+            "min": 66.6,
+            "max": 67.5,
+            "n": 2,
+            "of": 2
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 2.7,
+            "min": 2.6,
+            "max": 2.8,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 4.55,
+            "min": 4.5,
+            "max": 4.6,
+            "n": 2,
+            "of": 2
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollJumpedFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 623.3,
+            "min": 614.5,
+            "max": 632.1,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 26.3,
+            "min": 26.3,
+            "max": 26.3,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 649,
+            "min": 649,
+            "max": 649,
+            "n": 2,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "measured",
+          "measured"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 669.2,
+            "min": 659.2,
+            "max": 679.2,
+            "n": 2,
+            "of": 2
+          },
+          "openToSettledMs": {
+            "median": 985.4000000000001,
+            "min": 975.2,
+            "max": 995.6,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskMaxMs": {
+            "median": 173,
+            "min": 167,
+            "max": 179,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskTotalMs": {
+            "median": 230.5,
+            "min": 227,
+            "max": 234,
+            "n": 2,
+            "of": 2
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "typingOpenMaxMs": {
+            "median": 76,
+            "min": 67.2,
+            "max": 84.8,
+            "n": 2,
+            "of": 2
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 2.55,
+            "min": 2.5,
+            "max": 2.6,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 4.25,
+            "min": 3.6,
+            "max": 4.9,
+            "n": 2,
+            "of": 2
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollJumpedFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 689.05,
+            "min": 676.7,
+            "max": 701.4,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 27.15,
+            "min": 26.3,
+            "max": 28,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 649,
+            "min": 649,
+            "max": 649,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    },
+    "longconv-200": {
+      "old": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 664.8,
+            "min": 664.2,
+            "max": 665.4,
+            "n": 2,
+            "of": 2
+          },
+          "openToSettledMs": {
+            "median": 972.9000000000001,
+            "min": 965.6,
+            "max": 980.2,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskMaxMs": {
+            "median": 170.5,
+            "min": 169,
+            "max": 172,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskTotalMs": {
+            "median": 229,
+            "min": 228,
+            "max": 230,
+            "n": 2,
+            "of": 2
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "typingOpenMaxMs": {
+            "median": 45.65,
+            "min": 36.9,
+            "max": 54.4,
+            "n": 2,
+            "of": 2
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 2.6500000000000004,
+            "min": 2.6,
+            "max": 2.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 84,
+            "min": 60.6,
+            "max": 107.4,
+            "n": 2,
+            "of": 2
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollJumpedFrames": {
+            "median": 2,
+            "min": 2,
+            "max": 2,
+            "n": 2,
+            "of": 2
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 651.5,
+            "min": 645,
+            "max": 658,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 24.85,
+            "min": 23.4,
+            "max": 26.3,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 598,
+            "min": 598,
+            "max": 598,
+            "n": 2,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "slow",
+          "slow"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 665.1,
+            "min": 664.2,
+            "max": 666,
+            "n": 2,
+            "of": 2
+          },
+          "openToSettledMs": {
+            "median": 982.2,
+            "min": 981.4,
+            "max": 983,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskMaxMs": {
+            "median": 164.5,
+            "min": 164,
+            "max": 165,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskTotalMs": {
+            "median": 222.5,
+            "min": 222,
+            "max": 223,
+            "n": 2,
+            "of": 2
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "typingOpenMaxMs": {
+            "median": 57.75,
+            "min": 49.5,
+            "max": 66,
+            "n": 2,
+            "of": 2
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 2.6,
+            "min": 2.5,
+            "max": 2.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 104.6,
+            "min": 103,
+            "max": 106.2,
+            "n": 2,
+            "of": 2
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollJumpedFrames": {
+            "median": 2,
+            "min": 2,
+            "max": 2,
+            "n": 2,
+            "of": 2
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 656.35,
+            "min": 644.7,
+            "max": 668,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 26.3,
+            "min": 26.3,
+            "max": 26.3,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 598,
+            "min": 598,
+            "max": 598,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    },
+    "longconv-1000": {
+      "old": {
+        "statuses": [
+          "measured",
+          "measured"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 680.3,
+            "min": 675.6,
+            "max": 685,
+            "n": 2,
+            "of": 2
+          },
+          "openToSettledMs": {
+            "median": 996.6,
+            "min": 992.2,
+            "max": 1001,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskMaxMs": {
+            "median": 156,
+            "min": 155,
+            "max": 157,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskTotalMs": {
+            "median": 215.5,
+            "min": 215,
+            "max": 216,
+            "n": 2,
+            "of": 2
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "typingOpenMaxMs": {
+            "median": 75.25,
+            "min": 71.5,
+            "max": 79,
+            "n": 2,
+            "of": 2
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 2.6,
+            "min": 2.5,
+            "max": 2.7,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 48.599999999999994,
+            "min": 23.9,
+            "max": 73.3,
+            "n": 2,
+            "of": 2
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollJumpedFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 642.4000000000001,
+            "min": 638.1,
+            "max": 646.7,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 24.85,
+            "min": 23.4,
+            "max": 26.3,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 392,
+            "min": 392,
+            "max": 392,
+            "n": 2,
+            "of": 2
+          }
+        }
+      },
+      "new": {
+        "statuses": [
+          "measured",
+          "measured"
+        ],
+        "metrics": {
+          "openToNewestPaintMs": {
+            "median": 688.95,
+            "min": 687.1,
+            "max": 690.8,
+            "n": 2,
+            "of": 2
+          },
+          "openToSettledMs": {
+            "median": 1004.45,
+            "min": 1002.2,
+            "max": 1006.7,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskMaxMs": {
+            "median": 154.5,
+            "min": 153,
+            "max": 156,
+            "n": 2,
+            "of": 2
+          },
+          "openLongtaskTotalMs": {
+            "median": 212.5,
+            "min": 208,
+            "max": 217,
+            "n": 2,
+            "of": 2
+          },
+          "afterLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "typingOpenMaxMs": {
+            "median": 53.699999999999996,
+            "min": 22.3,
+            "max": 85.1,
+            "n": 2,
+            "of": 2
+          },
+          "typingAfterOpenMaxMs": {
+            "median": 2.6,
+            "min": 2.6,
+            "max": 2.6,
+            "n": 2,
+            "of": 2
+          },
+          "typingScrollMaxMs": {
+            "median": 94.65,
+            "min": 71.9,
+            "max": 117.4,
+            "n": 2,
+            "of": 2
+          },
+          "scrollBlankFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "scrollJumpedFrames": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 2,
+            "of": 2
+          },
+          "entriesAtPaint": {
+            "median": 60,
+            "min": 60,
+            "max": 60,
+            "n": 2,
+            "of": 2
+          },
+          "peakPssMb": {
+            "median": 662.9,
+            "min": 660.5,
+            "max": 665.3,
+            "n": 2,
+            "of": 2
+          },
+          "heapMb": {
+            "median": 25.55,
+            "min": 24.8,
+            "max": 26.3,
+            "n": 2,
+            "of": 2
+          },
+          "domNodes": {
+            "median": 392,
+            "min": 392,
+            "max": 392,
+            "n": 2,
+            "of": 2
+          }
+        }
+      }
+    }
+  }
+}

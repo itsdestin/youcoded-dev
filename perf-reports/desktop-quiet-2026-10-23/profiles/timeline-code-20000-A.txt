@@ -1,0 +1,106 @@
+/tmp/deskrep/profiles/bigfence-code-20000-A.cpuprofile
+  187836 ms wall, 711751 samples
+
+bucket(2000ms)  busy%  top functions (self ms)
+       0    41%  71ms s [index-BZ_dIfJX.js:264] | 66ms (anonymous) | 64ms handler
+    2000    42%  83ms s [index-BZ_dIfJX.js:264] | 81ms (anonymous) | 74ms u [index-BZ_dIfJX.js:264]
+    4000    42%  88ms s [index-BZ_dIfJX.js:264] | 78ms (anonymous) | 77ms u [index-BZ_dIfJX.js:264]
+    6000    41%  76ms s [index-BZ_dIfJX.js:264] | 73ms (anonymous) | 68ms u [index-BZ_dIfJX.js:264]
+    8000    38%  81ms (anonymous) | 67ms handler | 60ms s [index-BZ_dIfJX.js:264]
+   10000    47%  119ms pSe [index-BZ_dIfJX.js:295] | 79ms s [index-BZ_dIfJX.js:264] | 76ms (anonymous)
+   12000    49%  142ms pSe [index-BZ_dIfJX.js:295] | 76ms s [index-BZ_dIfJX.js:264] | 71ms (anonymous)
+   14000    50%  159ms pSe [index-BZ_dIfJX.js:295] | 83ms s [index-BZ_dIfJX.js:264] | 65ms (anonymous)
+   16000    50%  160ms pSe [index-BZ_dIfJX.js:295] | 75ms (anonymous) | 71ms s [index-BZ_dIfJX.js:264]
+   18000    48%  172ms pSe [index-BZ_dIfJX.js:295] | 69ms (anonymous) | 63ms handler
+   20000    51%  190ms pSe [index-BZ_dIfJX.js:295] | 75ms (anonymous) | 68ms s [index-BZ_dIfJX.js:264]
+   22000    56%  186ms pSe [index-BZ_dIfJX.js:295] | 91ms (garbage collector) | 75ms (anonymous)
+   24000    52%  214ms pSe [index-BZ_dIfJX.js:295] | 70ms s [index-BZ_dIfJX.js:264] | 64ms (anonymous)
+   26000    53%  209ms pSe [index-BZ_dIfJX.js:295] | 70ms Ui [index-BZ_dIfJX.js:9] | 67ms (anonymous)
+   28000    56%  216ms pSe [index-BZ_dIfJX.js:295] | 73ms Ui [index-BZ_dIfJX.js:9] | 73ms (garbage collector)
+   30000    48%  185ms pSe [index-BZ_dIfJX.js:295] | 72ms Ui [index-BZ_dIfJX.js:9] | 65ms (anonymous)
+   32000    54%  215ms pSe [index-BZ_dIfJX.js:295] | 84ms Ui [index-BZ_dIfJX.js:9] | 68ms (anonymous)
+   34000    55%  233ms pSe [index-BZ_dIfJX.js:295] | 88ms Ui [index-BZ_dIfJX.js:9] | 71ms (garbage collector)
+   36000    54%  238ms pSe [index-BZ_dIfJX.js:295] | 90ms Ui [index-BZ_dIfJX.js:9] | 63ms handler
+   38000    52%  218ms pSe [index-BZ_dIfJX.js:295] | 101ms Ui [index-BZ_dIfJX.js:9] | 61ms (anonymous)
+   40000    54%  233ms pSe [index-BZ_dIfJX.js:295] | 101ms Ui [index-BZ_dIfJX.js:9] | 66ms (garbage collector)
+   42000    52%  230ms pSe [index-BZ_dIfJX.js:295] | 113ms Ui [index-BZ_dIfJX.js:9] | 67ms (anonymous)
+   44000    52%  225ms pSe [index-BZ_dIfJX.js:295] | 113ms Ui [index-BZ_dIfJX.js:9] | 67ms (anonymous)
+   46000    53%  214ms pSe [index-BZ_dIfJX.js:295] | 121ms Ui [index-BZ_dIfJX.js:9] | 99ms (garbage collector)
+   48000    51%  228ms pSe [index-BZ_dIfJX.js:295] | 130ms Ui [index-BZ_dIfJX.js:9] | 63ms (anonymous)
+   50000    51%  224ms pSe [index-BZ_dIfJX.js:295] | 135ms Ui [index-BZ_dIfJX.js:9] | 57ms handler
+   52000    49%  200ms pSe [index-BZ_dIfJX.js:295] | 139ms Ui [index-BZ_dIfJX.js:9] | 66ms (anonymous)
+   54000    53%  201ms pSe [index-BZ_dIfJX.js:295] | 141ms Ui [index-BZ_dIfJX.js:9] | 126ms (garbage collector)
+   56000    50%  236ms pSe [index-BZ_dIfJX.js:295] | 142ms Ui [index-BZ_dIfJX.js:9] | 66ms (anonymous)
+   58000    50%  216ms pSe [index-BZ_dIfJX.js:295] | 165ms Ui [index-BZ_dIfJX.js:9] | 56ms (anonymous)
+   60000    93%  752ms s [index-BZ_dIfJX.js:264] | 156ms exec [index-BZ_dIfJX.js:272] | 91ms u [index-BZ_dIfJX.js:264]
+   62000   100%  825ms (anonymous) [index-BZ_dIfJX.js:302] | 767ms s [index-BZ_dIfJX.js:264] | 196ms u [index-BZ_dIfJX.js:264]
+   64000   100%  1396ms s [index-BZ_dIfJX.js:264] | 363ms (anonymous) [index-BZ_dIfJX.js:302] | 115ms u [index-BZ_dIfJX.js:264]
+   66000   100%  1107ms s [index-BZ_dIfJX.js:264] | 175ms removeChild | 98ms qc [index-BZ_dIfJX.js:9]
+   68000   100%  1998ms qc [index-BZ_dIfJX.js:9] | 1ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+   70000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 2ms appendChild | 0ms gl [index-BZ_dIfJX.js:9]
+   72000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 2ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+   74000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 2ms appendChild | 0ms pl [index-BZ_dIfJX.js:9]
+   76000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+   78000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 0ms hl [index-BZ_dIfJX.js:9]
+   80000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 2ms appendChild | 0ms Kc [index-BZ_dIfJX.js:9]
+   82000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 0ms gl [index-BZ_dIfJX.js:9]
+   84000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 0ms gl [index-BZ_dIfJX.js:9]
+   86000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms hl [index-BZ_dIfJX.js:9]
+   88000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+   90000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+   92000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 0ms pl [index-BZ_dIfJX.js:9]
+   94000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 2ms appendChild | 0ms hl [index-BZ_dIfJX.js:9]
+   96000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms hl [index-BZ_dIfJX.js:9]
+   98000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 0ms Yc [index-BZ_dIfJX.js:9]
+  100000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 0ms hl [index-BZ_dIfJX.js:9]
+  102000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  104000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 0ms hl [index-BZ_dIfJX.js:9]
+  106000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms hl [index-BZ_dIfJX.js:9]
+  108000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 2ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  110000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms pl [index-BZ_dIfJX.js:9]
+  112000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 0ms Yc [index-BZ_dIfJX.js:9]
+  114000   100%  1997ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 0ms pl [index-BZ_dIfJX.js:9]
+  116000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  118000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  120000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+  122000   100%  1993ms qc [index-BZ_dIfJX.js:9] | 6ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+  124000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild | 0ms Yc [index-BZ_dIfJX.js:9]
+  126000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 0ms pl [index-BZ_dIfJX.js:9]
+  128000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  130000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild
+  132000   100%  1992ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  134000   100%  1993ms qc [index-BZ_dIfJX.js:9] | 6ms appendChild | 1ms hl [index-BZ_dIfJX.js:9]
+  136000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 0ms hl [index-BZ_dIfJX.js:9]
+  138000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  140000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  142000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  144000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild | 1ms pl [index-BZ_dIfJX.js:9]
+  146000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 3ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  148000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild | 0ms Yc [index-BZ_dIfJX.js:9]
+  150000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild | 0ms Kc [index-BZ_dIfJX.js:9]
+  152000   100%  1995ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  154000   100%  1994ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  156000   100%  1993ms qc [index-BZ_dIfJX.js:9] | 6ms appendChild | 1ms pl [index-BZ_dIfJX.js:9]
+  158000   100%  1996ms qc [index-BZ_dIfJX.js:9] | 5ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  160000   100%  1989ms qc [index-BZ_dIfJX.js:9] | 6ms appendChild | 1ms hl [index-BZ_dIfJX.js:9]
+  162000   100%  1993ms qc [index-BZ_dIfJX.js:9] | 4ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  164000   100%  1993ms qc [index-BZ_dIfJX.js:9] | 6ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  166000   100%  1990ms qc [index-BZ_dIfJX.js:9] | 8ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+  168000   100%  1992ms qc [index-BZ_dIfJX.js:9] | 7ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  170000   100%  1988ms qc [index-BZ_dIfJX.js:9] | 9ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+  172000   100%  1990ms qc [index-BZ_dIfJX.js:9] | 7ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+  174000   100%  1988ms qc [index-BZ_dIfJX.js:9] | 10ms appendChild | 1ms Yc [index-BZ_dIfJX.js:9]
+  176000   100%  1990ms qc [index-BZ_dIfJX.js:9] | 7ms appendChild | 2ms Kc [index-BZ_dIfJX.js:9]
+  178000   100%  1984ms qc [index-BZ_dIfJX.js:9] | 11ms appendChild | 2ms Yc [index-BZ_dIfJX.js:9]
+  180000   100%  1989ms qc [index-BZ_dIfJX.js:9] | 8ms appendChild | 1ms gl [index-BZ_dIfJX.js:9]
+  182000   100%  1987ms qc [index-BZ_dIfJX.js:9] | 11ms appendChild | 1ms Kc [index-BZ_dIfJX.js:9]
+  184000    86%  1537ms qc [index-BZ_dIfJX.js:9] | 102ms (garbage collector) | 45ms ot [index-BZ_dIfJX.js:9]
+  186000    10%  130ms (anonymous) [index-BZ_dIfJX.js:361] | 28ms querySelector | 13ms ctx
+
+unbroken busy blocks longer than 150 ms:
+  @   2183 ms     193 ms  9ms s [index-BZ_dIfJX.js:264] | 8ms (anonymous) | 7ms u [index-BZ_dIfJX.js:264]
+                          asked for by: 19ms under u [index-BZ_dIfJX.js:264] | 10ms under exec [index-BZ_dIfJX.js:272]
+  @  60284 ms  125443 ms  117292ms qc [index-BZ_dIfJX.js:9] | 4018ms s [index-BZ_dIfJX.js:264] | 1188ms (anonymous) [index-BZ_dIfJX.js:302]
+                          asked for by: 117312ms under gl [index-BZ_dIfJX.js:9] | 5686ms under u [index-BZ_dIfJX.js:264]
+  @ 187619 ms     158 ms  127ms (anonymous) [index-BZ_dIfJX.js:361] | 6ms (anonymous) | 6ms qN [index-BZ_dIfJX.js:321]
+                          asked for by: 127ms under Rc [index-BZ_dIfJX.js:9] | 6ms under QN [index-BZ_dIfJX.js:321]

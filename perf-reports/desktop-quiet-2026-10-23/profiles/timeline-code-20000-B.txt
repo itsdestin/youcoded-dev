@@ -1,0 +1,66 @@
+/tmp/deskrep/profiles/bigfence-code-20000-B.cpuprofile
+  111069 ms wall, 417018 samples
+
+bucket(2000ms)  busy%  top functions (self ms)
+       0    31%  62ms (anonymous) | 53ms handler | 43ms s [index-DcIkRP39.js:264]
+    2000    20%  66ms (anonymous) | 58ms handler | 25ms s [index-DcIkRP39.js:264]
+    4000    21%  78ms (anonymous) | 65ms handler | 25ms removeChild
+    6000    31%  80ms (anonymous) | 73ms handler | 33ms k_ [index-DcIkRP39.js:159]
+    8000    32%  85ms (anonymous) | 72ms handler | 41ms kSe [index-DcIkRP39.js:295]
+   10000    29%  80ms (anonymous) | 69ms handler | 54ms jSe [index-DcIkRP39.js:295]
+   12000    31%  154ms jSe [index-DcIkRP39.js:295] | 81ms (anonymous) | 76ms handler
+   14000    32%  170ms jSe [index-DcIkRP39.js:295] | 75ms (anonymous) | 67ms handler
+   16000    33%  194ms jSe [index-DcIkRP39.js:295] | 76ms handler | 72ms (anonymous)
+   18000    30%  157ms jSe [index-DcIkRP39.js:295] | 75ms handler | 75ms (anonymous)
+   20000    33%  174ms jSe [index-DcIkRP39.js:295] | 77ms (anonymous) | 67ms handler
+   22000    48%  272ms jSe [index-DcIkRP39.js:295] | 93ms kSe [index-DcIkRP39.js:295] | 69ms handler
+   24000    50%  278ms jSe [index-DcIkRP39.js:295] | 100ms kSe [index-DcIkRP39.js:295] | 65ms (anonymous)
+   26000    45%  298ms jSe [index-DcIkRP39.js:295] | 72ms (anonymous) | 57ms handler
+   28000    36%  242ms jSe [index-DcIkRP39.js:295] | 78ms (anonymous) | 65ms handler
+   30000    36%  229ms jSe [index-DcIkRP39.js:295] | 79ms (anonymous) | 71ms handler
+   32000    42%  280ms jSe [index-DcIkRP39.js:295] | 72ms (anonymous) | 67ms handler
+   34000    55%  369ms jSe [index-DcIkRP39.js:295] | 77ms kSe [index-DcIkRP39.js:295] | 69ms (anonymous)
+   36000    56%  367ms jSe [index-DcIkRP39.js:295] | 99ms kSe [index-DcIkRP39.js:295] | 75ms (anonymous)
+   38000    49%  341ms jSe [index-DcIkRP39.js:295] | 72ms (anonymous) | 61ms handler
+   40000    48%  343ms jSe [index-DcIkRP39.js:295] | 75ms handler | 68ms (anonymous)
+   42000    49%  351ms jSe [index-DcIkRP39.js:295] | 72ms (anonymous) | 63ms handler
+   44000    54%  382ms jSe [index-DcIkRP39.js:295] | 67ms (anonymous) | 66ms handler
+   46000    48%  332ms jSe [index-DcIkRP39.js:295] | 68ms kSe [index-DcIkRP39.js:295] | 63ms (anonymous)
+   48000    60%  452ms jSe [index-DcIkRP39.js:295] | 98ms kSe [index-DcIkRP39.js:295] | 71ms tCe [index-DcIkRP39.js:309]
+   50000    58%  421ms jSe [index-DcIkRP39.js:295] | 80ms kSe [index-DcIkRP39.js:295] | 71ms (anonymous)
+   52000    59%  417ms jSe [index-DcIkRP39.js:295] | 85ms kSe [index-DcIkRP39.js:295] | 67ms tCe [index-DcIkRP39.js:309]
+   54000    59%  412ms jSe [index-DcIkRP39.js:295] | 87ms kSe [index-DcIkRP39.js:295] | 66ms tCe [index-DcIkRP39.js:309]
+   56000    59%  419ms jSe [index-DcIkRP39.js:295] | 78ms kSe [index-DcIkRP39.js:295] | 71ms (garbage collector)
+   58000    58%  405ms jSe [index-DcIkRP39.js:295] | 83ms kSe [index-DcIkRP39.js:295] | 72ms (anonymous)
+   60000    30%  66ms jSe [index-DcIkRP39.js:295] | 59ms (garbage collector) | 56ms v [index-DcIkRP39.js:256]
+   62000     0%  1ms requestAnimationFrame | 0ms now
+   64000     0%  1ms requestAnimationFrame | 0ms tick
+   66000     3%  68ms (garbage collector) | 1ms requestAnimationFrame | 0ms now
+   68000     1%  21ms (garbage collector) | 2ms requestAnimationFrame | 1ms tick
+   70000     0%  1ms requestAnimationFrame | 1ms tick
+   72000     0%  1ms requestAnimationFrame | 0ms tick | 0ms now
+   74000     0%  1ms requestAnimationFrame | 1ms tick
+   76000     0%  1ms requestAnimationFrame | 1ms tick
+   78000     0%  1ms requestAnimationFrame | 0ms tick | 0ms get nodeName
+   80000     0%  1ms requestAnimationFrame | 0ms now
+   82000     0%  2ms requestAnimationFrame | 0ms (anonymous) [index-DcIkRP39.js:9] | 0ms now
+   84000     0%  1ms requestAnimationFrame | 0ms now
+   86000     0%  1ms requestAnimationFrame | 1ms tick | 0ms now
+   88000     0%  1ms requestAnimationFrame
+   90000     0%  1ms requestAnimationFrame
+   92000     0%  1ms requestAnimationFrame | 0ms now
+   94000     0%  2ms requestAnimationFrame | 0ms tick
+   96000     0%  2ms requestAnimationFrame | 1ms now | 0ms tick
+   98000     0%  3ms requestAnimationFrame
+  100000     0%  1ms requestAnimationFrame
+  102000     0%  2ms requestAnimationFrame
+  104000     0%  2ms requestAnimationFrame | 1ms now | 0ms tick
+  106000     0%  2ms requestAnimationFrame | 0ms tick
+  108000     0%  2ms requestAnimationFrame | 1ms tick
+  110000     0%  4ms (anonymous) | 1ms requestAnimationFrame | 1ms tr [ui-C92E7kYN.js:2]
+
+unbroken busy blocks longer than 150 ms:
+  @  21553 ms     264 ms  33ms jSe [index-DcIkRP39.js:295] | 20ms (anonymous) | 14ms handler
+                          asked for by: 40ms under vo [index-DcIkRP39.js:9] | 13ms under O_ [index-DcIkRP39.js:159]
+  @  60274 ms     308 ms  43ms (garbage collector) | 34ms v [index-DcIkRP39.js:256] | 23ms r [index-DcIkRP39.js:258]
+                          asked for by: 34ms under _ [index-DcIkRP39.js:256] | 31ms under Bde [index-DcIkRP39.js:258]

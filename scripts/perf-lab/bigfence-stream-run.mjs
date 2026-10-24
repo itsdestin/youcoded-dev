@@ -87,7 +87,27 @@ export async function measureRung(app, fixture, plan, { _deps = {} } = {}) {
     const sendMs = await cdp.evaluate('performance.now()');
     const send = await cdp.evaluate(`window.claude.native.send(${JSON.stringify(sessionId)}, 'bigfence-stream')`);
     if (!send || send.status === 'failed') throw Object.assign(new Error(`native.send failed: ${JSON.stringify(send)}`), { status: 'instrument' });
+    // WHY opt-in browser trace windows (2026-10-23, item 4): the CPU profile showed the extra time is NOT JavaScript but "(program)" (native
+    // style/layout/paint). PERF_LAB_BIGFENCE_TRACE_AT=<ms after send>,<ms>... records a 6 s Chrome trace at each point (trace-main.mjs) and writes
+    // the self time per browser activity (Layout, UpdateLayoutTree, Paint ...) so the native cost can be named. Off by default.
+    const traceAt = (process.env.PERF_LAB_BIGFENCE_TRACE_AT || '').split(',').map(Number).filter((n) => n > 0);
+    const traces = [];
+    const tracing = traceAt.length ? (async () => {
+      const { traceMain, summariseTrace } = await import('./trace-main.mjs');
+      for (const at of traceAt) {
+        const wait = at - ((await cdp.evaluate('performance.now()')) - sendMs);
+        if (wait > 0) await sleep(wait);
+        const events = await traceMain(cdp, 6000);
+        traces.push({ atMsAfterSend: at, summary: summariseTrace(events) });
+      }
+    })().catch((e) => { traces.push({ error: String(e && e.message || e) }); }) : null;
     const rec = await completion;
+    if (tracing) {
+      await tracing;
+      const dir = process.env.PERF_LAB_BIGFENCE_TRACE_DIR || '.';
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, `${plan.id}-${process.env.PERF_LAB_BIGFENCE_PROFILE_TAG || 'run'}.trace-summary.json`), JSON.stringify(traces, null, 1));
+    }
     const timeOrigin = await cdp.evaluate('performance.timeOrigin');
     const streamEndMs = rec.endedAt - timeOrigin;
     const final = await cdp.evaluate(awaitFinalPaintSource(plan, SETTLE_TIMEOUT_MS));
