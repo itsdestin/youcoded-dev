@@ -6,7 +6,7 @@ related: docs/active/specs/2026-09-15-youcoded-pages-scope.md (the approved scop
 
 # YouCoded Pages — the phasing plan
 
-> **Status 2026-10-16:** phases 1 and 2 are built and on master; the home-network connection (the old "next build") merged as youcoded#611. Phases 3 and 4 remain; live work is cards #90 (next phases and follow-ups) and #91. The "Where to pick up (2026-09-23)" block near the end is out of date.
+> **Status 2026-10-24:** phases 1 and 2 are built and on master. Phases 3 and 4 below are SUPERSEDED by `docs/active/specs/2026-10-24-pages-finish-architecture.md` (direction approved on two question decks, 2026-10-24): one general framework built from the app's own systems, then files, chat in a page, assistants and automations (card #61 joins), sign-ins, and basic sharing. Live work: card #90 (card #91 was merged into it).
 
 **What this is.** The approved scope (2026-09-15) says everything Pages should eventually
 include. This plan puts it in build order. Each phase ends with something a person can use.
