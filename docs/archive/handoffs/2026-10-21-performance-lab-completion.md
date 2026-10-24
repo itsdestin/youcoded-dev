@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Performance lab: completion handoff
@@ -28,7 +28,7 @@ Workspace (`W` below):
 
 Primary task plan:
 
-`W/docs/active/plans/2026-10-18-stall-lab.md`
+`docs/archive/plans/2026-10-18-stall-lab.md`
 
 Its final section, **Owner-confirmed completion contract and checkpoints**, records the latest agreement. This handoff expands the task facts, not workspace rules.
 

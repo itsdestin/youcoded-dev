@@ -1,11 +1,15 @@
 ---
-status: active
+status: shipped
 ---
 # File viewer freezes — unresolved incident and merged repairs
 
+## Closed 2026-10-24
+
+Card #93 closed after the freeze hunt merged in [youcoded#695](https://github.com/itsdestin/youcoded/pull/695) (numbers: `perf-reports/desktop-quiet-2026-10-23/`). Still open, and judged by the app's own freeze log once a build with the fixes ships (freezes of 1 s or more per hour, before vs after): the original JPEG freeze was never reproduced; a cold-wallet launch was never observed; Windows, macOS and Android devices were not measured; whole-desktop freezes on the Z13 correlate with USB-C notices (`~/system/machines/z13/issues.md`). The text below is the record as it stood before the hunt.
+
 ## Current boundary
 
-The viewer lifecycle, comparison and indexing repairs merged in [youcoded#665](https://github.com/itsdestin/youcoded/pull/665) as `254ff9983aa3657a937dfd65011beb3c6e6508c9`, including final reviewed candidate `c020d4f49248434ecccfa1ccaaae7e73a574e499`. Source integration is complete; no release, installation or production-effectiveness claim follows. The original JPEG freeze remains **unreproduced and causally unresolved**, so this investigation and broader card #93 remain active. Comparison/indexing completion is recorded [separately](../../archive/plans/2026-10-18-nonblocking-work.md); evaluation coverage remains on #96.
+The viewer lifecycle, comparison and indexing repairs merged in [youcoded#665](https://github.com/itsdestin/youcoded/pull/665) as `254ff9983aa3657a937dfd65011beb3c6e6508c9`, including final reviewed candidate `c020d4f49248434ecccfa1ccaaae7e73a574e499`. Source integration is complete; no release, installation or production-effectiveness claim follows. The original JPEG freeze remains **unreproduced and causally unresolved**, so this investigation and broader card #93 remain active. Comparison/indexing completion is recorded [separately](2026-10-18-nonblocking-work.md); evaluation coverage remains on #96.
 
 ## Original incident evidence
 

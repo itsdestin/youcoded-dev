@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 ---
 # YouCoded vs Claude desktop + Cowork vs Codex desktop (quick look, 2026-10-23)
 
