@@ -1,13 +1,15 @@
 ---
 date: 2026-09-04
-status: active
+status: superseded
 type: handoff
 topic: specialists — stage one shipped, stage two (plans) not started; the reading list and the three probes that gate the design
 ---
 
 # Specialists / plans — start here
 
-> **Status 2026-10-16:** stage two (plans) still has no code on master; card #74 ("Helper plans: approve a multi-step job up front") is the live item and owns the decisions still owed by Destin. This file stays as the reading list. References to the roadmap below mean the cards.
+> **Superseded 2026-10-24** by `docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md`: stage two WAS built on the unmerged branch `feat/specialists-plans-ui` and the decisions below were answered 2026-09-05. Kept as history only.
+>
+> **Status 2026-10-16 (outdated):** stage two (plans) still has no code on master; card #74 ("Helper plans: approve a multi-step job up front") is the live item and owns the decisions still owed by Destin. This file stays as the reading list. References to the roadmap below mean the cards.
 
 Hand this file to a new session. It is a map, not a plan: it says what is built,
 what is not, what to read in what order, and what the next real action is.

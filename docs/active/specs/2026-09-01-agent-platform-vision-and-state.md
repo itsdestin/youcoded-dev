@@ -11,6 +11,8 @@ tags: [native-runtime, specialists, agents, automations, vision]
 
 # Native sessions, specialists, and assistants — the vision and where it stands
 
+> **Correction 2026-10-24 (specialists and plans):** stage two (plans) WAS designed and built on the unmerged app branch `feat/specialists-plans-ui` (2026-09-05 → 09-26) and has not been merged; §9 items 1–2 were ruled 2026-09-05 (recorded in §8). The current state and the one remaining-work list are in `docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md` (card #74). Where §2, §5.3 and §7 below say plans are unbuilt or gated, that file wins.
+>
 > **Status 2026-10-16:** open items are now work cards, not a roadmap (retired 2026-10-15): run `node scripts/cards.mjs index`. Mapping: native engine matches Claude Code and tool-connections screen = #59; Agents & Automations = #61; ideas for assistants and tools = #63; Mesh and Cloud = #64; helper plans = #74; per-project skills and tools = #75; skills home = #77; Android = #1. Statements below about Android code (`SessionService.kt`, the Kotlin runtime) describe code deleted in the 2026-10-14/15 Android rebuild, which now runs the desktop backend; the state claims were last verified 2026-09-04 and need re-checking before use.
 
 **What this is.** One document for the whole "YouCoded runs its own agents" family: native
@@ -212,7 +214,7 @@ ceiling and the shipped launch shape shares one context pool across them; prefix
 partly survives the first simultaneous fan-out, so the card must charge a full prefill per
 child; plan authoring through the tool grammar is reliable from the 9B model class up and
 absent below it, so `propose_plan` is a model-class gate, not cloud-only. Design can proceed
-once §9 items 1–3 are ruled (`docs/active/handoffs/2026-09-04-stage-two-decisions-prompt.md`). The Claude Code bridge (`youcoded agent run` CLI + bundled skill) is also unbuilt and
+once §9 items 1–3 are ruled (`docs/archive/handoffs/2026-09-04-stage-two-decisions-prompt.md`). The Claude Code bridge (`youcoded agent run` CLI + bundled skill) is also unbuilt and
 needs a `bin` entry the app has never shipped.
 
 **Verification debt:** the 1c hands-on checklist
@@ -380,16 +382,17 @@ stage two's journal. The custom harness builder has no dependency and no owner.
 | 2026-08-11 | Specialists: orchestrator-worker with one-shot reports; **declarative plans over model-authored code, permanently**; no orchestrator persona; `Task` gated on the parent model's class; definitions are files now, marketplace later; Claude Code bridge is a CLI over Bash, not MCP. User-facing word is *specialist*. |
 | 2026-08-13 | Bash grants are exact by default; widening is named, never inferred; a moving target (`git push` with no branch) gets no Always-allow button. |
 | 2026-08-16 | Cost = `(input − cacheRead) × prompt + cacheRead × input_cache_read + output × completion`; the naive formula is ~10× high. |
+| 2026-09-05 | **Unit of organization:** assistant made of duties, **coordinator shape first**. **Words:** "assistant" stays where it is (not worth a rename); the third view is named **Autonomous Assistants**; the user-facing word for a child session is **specialist**. **Plans and duties stay separate**; a plan may later be the structure a duty uses; duties are not yet conceptualized. **Order:** model information built concurrently with plans so plan cards show dollars. Deck answers: `docs/active/design/2026-09-05-specialists-plans/specialists-plans.decisions.answers.json`. |
 | 2026-08-26 | Third-party CLIs, `/goal`, CC-style agent view, sandboxing-vs-scratch: filed as ideas with no design; the skip-permissions investigation's argument *against* OS sandboxing is not to be re-derived. |
 
 ---
 
 ## 9. Decisions owed by Destin
 
-1. **The unit of organization for Agents & Automations** — the 2026-07-09 "agent = one
+1. ~~**The unit of organization for Agents & Automations**~~ — ruled 2026-09-05 (§8). Still owed: the duty design itself. — the 2026-07-09 "agent = one
    automation" or the 2026-09-01 assistant/duty split, and which of the three assistant
    shapes is v1. Everything in §6.1 waits on this.
-2. **The word "assistant"** — it now means a preset, a settings panel, and the proposed
+2. ~~**The word "assistant"**~~ — ruled 2026-09-05 (§8). — it now means a preset, a settings panel, and the proposed
    container. Pick which survives; rename the others.
 3. **Interleaving the two tracks** — parity (§5.1) versus capability (§5.4). Both are ordered
    internally; nobody has said which goes first or how they alternate.
