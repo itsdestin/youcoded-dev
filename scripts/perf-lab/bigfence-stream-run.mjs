@@ -84,6 +84,13 @@ export async function measureRung(app, fixture, plan, { _deps = {} } = {}) {
     // until the final paint, so the highlight-limit crossing and the periodic gaps can be read function by function. Off by default.
     const profileDir = process.env.PERF_LAB_BIGFENCE_PROFILE_DIR || null;
     if (profileDir) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start'); }
+    // WHY opt-in experiment (2026-10-23): the browser trace named style recalculation as B's extra cost, and --yc-lines (set on every
+    // .yc-code-block as the fence grows) is an INHERITED custom property, so each change restyles every descendant. Registering it as
+    // non-inherited from outside the app (no app code edited) shows whether that alone removes the cost. Off by default.
+    if (process.env.PERF_LAB_BIGFENCE_EXPERIMENT === 'register-lines') {
+      const reg = await cdp.evaluate(`(() => { try { CSS.registerProperty({ name: '--yc-lines', syntax: '<number>', inherits: false, initialValue: '5' }); return 'registered'; } catch (e) { return 'failed: ' + e.message; } })()`);
+      say('experiment register-lines:', reg);
+    }
     const sendMs = await cdp.evaluate('performance.now()');
     const send = await cdp.evaluate(`window.claude.native.send(${JSON.stringify(sessionId)}, 'bigfence-stream')`);
     if (!send || send.status === 'failed') throw Object.assign(new Error(`native.send failed: ${JSON.stringify(send)}`), { status: 'instrument' });
@@ -121,7 +128,17 @@ export async function measureRung(app, fixture, plan, { _deps = {} } = {}) {
     if (final.ok) {
       await d.sleep(500);
       finished = await cdp.evaluate(finishedReadingSource);
+      // WHY opt-in scroll-pass capture (2026-10-23): PERF_LAB_BIGFENCE_SCROLL_CAPTURE=profile|trace records the 4 s scroll through the finished
+      // block (typing keeps running) as a CPU profile or a Chrome trace summary, to explain slow typing while scrolling.
+      const scrollCap = process.env.PERF_LAB_BIGFENCE_SCROLL_CAPTURE || '';
+      const capDir = process.env.PERF_LAB_BIGFENCE_TRACE_DIR || '.';
+      const capTag = `${plan.id}-${process.env.PERF_LAB_BIGFENCE_PROFILE_TAG || 'run'}`;
+      let capture = null;
+      if (scrollCap === 'profile') { await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start'); }
+      if (scrollCap === 'trace') { const { traceMain } = await import('./trace-main.mjs'); capture = traceMain(cdp, SCROLL_PASS.durationMs + 600); }
       scroll = await cdp.evaluate(scrollPassSource(SCROLL_PASS));
+      if (scrollCap === 'profile') { const { profile } = await cdp.send('Profiler.stop'); await cdp.send('Profiler.disable'); mkdirSync(capDir, { recursive: true }); writeFileSync(join(capDir, `${capTag}.scroll.cpuprofile`), JSON.stringify(profile)); }
+      if (capture) { const { summariseTrace } = await import('./trace-main.mjs'); const ev = await capture; mkdirSync(capDir, { recursive: true }); writeFileSync(join(capDir, `${capTag}.scroll-trace-summary.json`), JSON.stringify(summariseTrace(ev), null, 1)); }
       await d.sleep(500);
     }
     await train.stop();

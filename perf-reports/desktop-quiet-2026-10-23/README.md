@@ -86,9 +86,51 @@ Profiles are in `profiles/cpuprofiles.tar.xz` (A and B for the 2,000 and 20,000 
 
 **Fix:** none attempted. The 2,000-line cause is not yet pinned to a specific piece of code, so a change would be a guess. Suggested next step: rerun `bigfence-stream-run.mjs` for `code-2000` with `PERF_LAB_BIGFENCE_TRACE_AT=10000,30000,50000` (I added it) to name the drawing work, and look at what B does per frame below the limit that A does not.
 
+## 5. Follow-up (desktop back online): the exact cause of B's 61 ms typing delay, proven
+
+Files: `trace-and-fix/`. The earlier "trace did not finish" note above was wrong: the trace jobs had actually finished before the desktop dropped; I only found their files afterwards. (Please read this section over the section 4 text for the 2,000-line case.)
+
+**What the browser trace says** (2,000-line block streaming in; three 6-second windows at 10 s, 30 s and 50 s into the stream; the trace itself slows the page, so these are for comparing kinds of work, not for absolute timing):
+
+| Browser work (busy part of each 6 s) | A at 10 s | B at 10 s | B at 30 s | B at 50 s (after the 1,500-line limit) |
+|---|---|---|---|---|
+| Style recalculation ("Document::recalcStyle") | 60 ms | **3,285 ms** | **4,544 ms** | 201 ms |
+| The app's own JavaScript | 1,590 ms | 1,164 ms | 637 ms | 652 ms |
+| Layout | 184 ms | 145 ms | 58 ms | 67 ms |
+| Painting | 72 ms | 65 ms | 39 ms | 49 ms |
+
+So B's extra time is almost entirely the browser re-working out the CSS styles of the page (about 430 times in a 6-second window at 10 s, about 7.6 ms each), not layout, not painting and not the app's JavaScript.
+
+**Why (read from the source, `MarkdownContent.tsx` and `globals.css` on the combined branch).** B's change "code-block placeholder height" gives every code box a style value named `--yc-lines` (its line count), set on the box itself (`CodeBlockFrame`, `style={{ '--yc-lines': codeLineCount(text) }}`) and used by `.yc-code-block { contain-intrinsic-height: auto calc(var(--yc-lines, 5) * 1.25rem + 1.5rem) }`. A custom CSS value like this is passed down to everything inside the box. While a block streams in, its line count changes every few frames, and each change makes the browser re-check the style of every colour-span inside the block (thousands of them at 1,000 to 1,500 lines). Build A has no such value, so it never pays this. Once the block passes the 1,500-line limit B draws it as plain text (one text piece instead of thousands), which is why the cost disappears at that moment.
+
+**Proven by an experiment, without changing any app code.** The lab told the browser (from outside the app, in the throwaway test copy only) that `--yc-lines` is NOT passed down. Same session, same machine, 3 rounds each, 2,000-line block:
+
+| 2,000-line block | Typing delay while streaming (slowest key, median of 3, range) | Total time the page was frozen in 100+ ms pieces | Style recalculation in trace at 10 s / 30 s |
+|---|---|---|---|
+| A (today) | 12.6 ms (12.2 to 22.1) | 0 (one round had 1.5 s) | 60 ms at 10 s |
+| B as built | 61.5 ms (59.6 to 65.3) | 13.7 s | 3,285 ms / 4,544 ms |
+| B with `--yc-lines` not passed down | **11.6 ms (10.7 to 21.6)** | **0.06 s** | **125 ms / 129 ms** |
+
+The control is A, plus B as built, run in the same session. With the one change, B matches A on typing and loses none of its other gains (done-to-drawn 1.06 s vs 1.07 s for B as built; A 1.58 s). Earlier A-vs-A noise for this measure: 12.0 vs 11.7 ms.
+
+**Concrete proposed fix (NOT applied; waiting for Destin's go-ahead).** Either of these, each a few lines in the app repo:
+1. In `desktop/src/renderer/styles/globals.css`, register the value as not inherited:
+   `@property --yc-lines { syntax: '<number>'; inherits: false; initial-value: 5; }` (this is exactly what the experiment did).
+2. Or, more robust (no browser-feature dependence, which matters for the Android web view): in `CodeBlockFrame` drop the custom value and set the height directly on the box, `style={{ containIntrinsicHeight: 'auto ' + (lines * 1.25 + 1.5) + 'rem' }}`, and remove the `var(--yc-lines)` use in the CSS. Only the box itself is re-styled when this changes, not its contents.
+Recommended: option 2 (the same exact pixels, no new browser feature). Needed with it: a WHY comment, a small test that the code-block frame does not set an inherited custom value (or that the stylesheet registers it), and a rerun of `bigfence-stream-run.mjs --only code-2000` (expect about 12 ms, as above). Side effect to expect: none visible; the reserved height of off-screen blocks stays identical.
+
+## 6. Typing while scrolling a finished 20,000-line block (B 78 ms vs A 9 ms)
+
+Files: `scroll-typing/`. One run per side and kind of capture (so these are single samples, and the capture itself changes the timing): CPU profile of the 4-second scroll, and a browser trace of the same 4 seconds.
+
+- The first measurement (3 rounds each, with A/A control) was A 8.8 ms (8.4 to 30.9), B 77.9 ms (19 to 95); A against A 9.7 vs 9.0 ms.
+- In this follow-up, slowest key during the scroll: A 12.7 ms (trace run) and 75.6 ms (profile run); B 22.3 ms (trace run) and 159 ms (profile run). So A can also reach 75 ms, and B is sometimes only 22 ms. The gap between A and B is therefore much less certain than the first table suggested. B's repeats are consistently higher, but I only have 5 B samples and 5 A samples.
+- What the capture shows: for the whole 4 seconds B's page is almost idle (main thread busy 0.44 s of 4.6 s; in the profile only 44 ms of JavaScript, 302 ms of non-JavaScript work, 3.8 s idle). A is much busier (2.19 s busy, mostly painting and scroll-layer work). The only stall in B is one native block of about 86 ms at the very start of the scroll (A: 289 ms at the start), before anything else; this is the slow key. The profile lumps it as "(program)" and the trace does not isolate it, so I cannot say which browser step it is.
+- Conclusion: scrolling a finished 20,000-line block is lighter on B than on A overall. The slow key is a one-time hiccup when the scroll starts, in the same range A shows. I would not treat it as a confirmed regression. Not determined: what the start-of-scroll block is. No fix proposed.
+
 ## What could not be done
 
-- Browser trace for item 4 (desktop went offline at about 19:00 desktop time while it was queued).
+- (Done afterwards, see section 5.) Browser trace for item 4.
 - The two HTML document checks (lab attach step crashes the test app).
 - A 700 KB profile for A (A's run did not finish).
 - Anything about the real graphics card: these runs use software drawing.

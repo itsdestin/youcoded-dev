@@ -1,0 +1,482 @@
+[
+ {
+  "atMsAfterSend": 10000,
+  "summary": {
+   "thread": "223760:223760",
+   "busyMs": 2510,
+   "spanMs": 6001,
+   "rows": [
+    {
+     "name": "FunctionCall",
+     "selfMs": 1358,
+     "count": 8546
+    },
+    {
+     "name": "LocalFrameView::performLayout",
+     "selfMs": 155,
+     "count": 345
+    },
+    {
+     "name": "Document::recalcStyle",
+     "selfMs": 125,
+     "count": 556
+    },
+    {
+     "name": "PaintArtifactCompositor::Update",
+     "selfMs": 105,
+     "count": 238
+    },
+    {
+     "name": "RunTask",
+     "selfMs": 93,
+     "count": 6589
+    },
+    {
+     "name": "Paint",
+     "selfMs": 70,
+     "count": 1048
+    },
+    {
+     "name": "Layerize",
+     "selfMs": 41,
+     "count": 360
+    },
+    {
+     "name": "Blink.Paint.UpdateTime",
+     "selfMs": 36,
+     "count": 360
+    },
+    {
+     "name": "Blink.PrePaint.UpdateTime",
+     "selfMs": 33,
+     "count": 916
+    },
+    {
+     "name": "LocalFrameView::performPostLayoutTasks",
+     "selfMs": 32,
+     "count": 345
+    },
+    {
+     "name": "Layout",
+     "selfMs": 29,
+     "count": 345
+    },
+    {
+     "name": "EventDispatch",
+     "selfMs": 24,
+     "count": 1225
+    },
+    {
+     "name": "WebFrameWidgetImpl::UpdateLifecycle",
+     "selfMs": 22,
+     "count": 360
+    },
+    {
+     "name": "Document::updateStyleInvalidationIfNeeded",
+     "selfMs": 20,
+     "count": 345
+    },
+    {
+     "name": "HitTest",
+     "selfMs": 19,
+     "count": 366
+    },
+    {
+     "name": "ScrollLayer",
+     "selfMs": 18,
+     "count": 202
+    },
+    {
+     "name": "Blink.CompositingInputs.UpdateTime",
+     "selfMs": 17,
+     "count": 916
+    },
+    {
+     "name": "ScrollAnchor::FindAnchor",
+     "selfMs": 16,
+     "count": 202
+    },
+    {
+     "name": "InlineNode::ShapeTextIncludingFirstLine",
+     "selfMs": 16,
+     "count": 355
+    },
+    {
+     "name": "EventHandler::handleMouseMoveEvent",
+     "selfMs": 15,
+     "count": 346
+    },
+    {
+     "name": "PageAnimator::serviceScriptedAnimations",
+     "selfMs": 15,
+     "count": 360
+    },
+    {
+     "name": "AnimationTimeline::serviceAnimations",
+     "selfMs": 13,
+     "count": 6120
+    },
+    {
+     "name": "LocalFrameView::ScheduleAnimation",
+     "selfMs": 13,
+     "count": 1853
+    },
+    {
+     "name": "AsyncTask Run",
+     "selfMs": 12,
+     "count": 1437
+    },
+    {
+     "name": "LocalFrameView::UpdateStyleAndLayout",
+     "selfMs": 10,
+     "count": 2352
+    },
+    {
+     "name": "LocalFrameView::RunPaintLifecyclePhase",
+     "selfMs": 10,
+     "count": 360
+    },
+    {
+     "name": "Document::updateStyle",
+     "selfMs": 9,
+     "count": 556
+    },
+    {
+     "name": "V8.GC_SCAVENGER_SCAVENGE_PARALLEL_PHASE",
+     "selfMs": 9,
+     "count": 22
+    },
+    {
+     "name": "LayoutView::HitTest",
+     "selfMs": 8,
+     "count": 354
+    },
+    {
+     "name": "Document::rebuildLayoutTree",
+     "selfMs": 8,
+     "count": 345
+    }
+   ]
+  }
+ },
+ {
+  "atMsAfterSend": 30000,
+  "summary": {
+   "thread": "223760:223760",
+   "busyMs": 2568,
+   "spanMs": 5999,
+   "rows": [
+    {
+     "name": "FunctionCall",
+     "selfMs": 1330,
+     "count": 8215
+    },
+    {
+     "name": "LocalFrameView::performLayout",
+     "selfMs": 141,
+     "count": 315
+    },
+    {
+     "name": "Document::recalcStyle",
+     "selfMs": 129,
+     "count": 525
+    },
+    {
+     "name": "PaintArtifactCompositor::Update",
+     "selfMs": 101,
+     "count": 230
+    },
+    {
+     "name": "RunTask",
+     "selfMs": 87,
+     "count": 6643
+    },
+    {
+     "name": "Paint",
+     "selfMs": 69,
+     "count": 977
+    },
+    {
+     "name": "Layout",
+     "selfMs": 64,
+     "count": 315
+    },
+    {
+     "name": "Blink.Paint.UpdateTime",
+     "selfMs": 60,
+     "count": 360
+    },
+    {
+     "name": "LocalFrameView::performPostLayoutTasks",
+     "selfMs": 56,
+     "count": 315
+    },
+    {
+     "name": "Document::updateStyleInvalidationIfNeeded",
+     "selfMs": 45,
+     "count": 308
+    },
+    {
+     "name": "WebFrameWidgetImpl::UpdateLifecycle",
+     "selfMs": 36,
+     "count": 360
+    },
+    {
+     "name": "Layerize",
+     "selfMs": 33,
+     "count": 360
+    },
+    {
+     "name": "Blink.PrePaint.UpdateTime",
+     "selfMs": 32,
+     "count": 870
+    },
+    {
+     "name": "ScrollLayer",
+     "selfMs": 31,
+     "count": 185
+    },
+    {
+     "name": "HitTest",
+     "selfMs": 25,
+     "count": 337
+    },
+    {
+     "name": "EventDispatch",
+     "selfMs": 22,
+     "count": 1117
+    },
+    {
+     "name": "Blink.CompositingInputs.UpdateTime",
+     "selfMs": 18,
+     "count": 870
+    },
+    {
+     "name": "ScrollAnchor::FindAnchor",
+     "selfMs": 17,
+     "count": 185
+    },
+    {
+     "name": "EventHandler::handleMouseMoveEvent",
+     "selfMs": 16,
+     "count": 315
+    },
+    {
+     "name": "PageAnimator::serviceScriptedAnimations",
+     "selfMs": 16,
+     "count": 360
+    },
+    {
+     "name": "InlineNode::ShapeTextIncludingFirstLine",
+     "selfMs": 15,
+     "count": 326
+    },
+    {
+     "name": "AnimationTimeline::serviceAnimations",
+     "selfMs": 14,
+     "count": 6120
+    },
+    {
+     "name": "LocalFrameView::ScheduleAnimation",
+     "selfMs": 12,
+     "count": 1820
+    },
+    {
+     "name": "AsyncTask Run",
+     "selfMs": 12,
+     "count": 1401
+    },
+    {
+     "name": "LocalFrameView::RunPaintLifecyclePhase",
+     "selfMs": 10,
+     "count": 360
+    },
+    {
+     "name": "Document::rebuildLayoutTree",
+     "selfMs": 9,
+     "count": 311
+    },
+    {
+     "name": "LocalFrameView::UpdateStyleAndLayout",
+     "selfMs": 9,
+     "count": 2183
+    },
+    {
+     "name": "Document::updateStyle",
+     "selfMs": 8,
+     "count": 525
+    },
+    {
+     "name": "V8.GC_SCAVENGER_SCAVENGE_PARALLEL_PHASE",
+     "selfMs": 8,
+     "count": 22
+    },
+    {
+     "name": "IntersectionObserverController::computeIntersections",
+     "selfMs": 7,
+     "count": 905
+    }
+   ]
+  }
+ },
+ {
+  "atMsAfterSend": 50000,
+  "summary": {
+   "thread": "223760:223760",
+   "busyMs": 1543,
+   "spanMs": 6002,
+   "rows": [
+    {
+     "name": "FunctionCall",
+     "selfMs": 668,
+     "count": 6869
+    },
+    {
+     "name": "Document::recalcStyle",
+     "selfMs": 108,
+     "count": 400
+    },
+    {
+     "name": "RunTask",
+     "selfMs": 92,
+     "count": 7109
+    },
+    {
+     "name": "LocalFrameView::performLayout",
+     "selfMs": 73,
+     "count": 345
+    },
+    {
+     "name": "InlineNode::ShapeTextIncludingFirstLine",
+     "selfMs": 60,
+     "count": 356
+    },
+    {
+     "name": "Paint",
+     "selfMs": 53,
+     "count": 1022
+    },
+    {
+     "name": "PaintArtifactCompositor::Update",
+     "selfMs": 41,
+     "count": 229
+    },
+    {
+     "name": "HitTest",
+     "selfMs": 32,
+     "count": 357
+    },
+    {
+     "name": "Blink.CompositingInputs.UpdateTime",
+     "selfMs": 27,
+     "count": 891
+    },
+    {
+     "name": "Blink.PrePaint.UpdateTime",
+     "selfMs": 25,
+     "count": 891
+    },
+    {
+     "name": "Blink.Paint.UpdateTime",
+     "selfMs": 20,
+     "count": 360
+    },
+    {
+     "name": "LocalFrameView::performPostLayoutTasks",
+     "selfMs": 17,
+     "count": 345
+    },
+    {
+     "name": "PageAnimator::serviceScriptedAnimations",
+     "selfMs": 15,
+     "count": 360
+    },
+    {
+     "name": "AnimationTimeline::serviceAnimations",
+     "selfMs": 14,
+     "count": 6120
+    },
+    {
+     "name": "WebFrameWidgetImpl::UpdateLifecycle",
+     "selfMs": 14,
+     "count": 360
+    },
+    {
+     "name": "LocalFrameView::ScheduleAnimation",
+     "selfMs": 13,
+     "count": 1821
+    },
+    {
+     "name": "AsyncTask Run",
+     "selfMs": 13,
+     "count": 1403
+    },
+    {
+     "name": "V8.GC_MC_INCREMENTAL",
+     "selfMs": 12,
+     "count": 338
+    },
+    {
+     "name": "EventHandler::handleMouseMoveEvent",
+     "selfMs": 10,
+     "count": 345
+    },
+    {
+     "name": "EventDispatch",
+     "selfMs": 10,
+     "count": 398
+    },
+    {
+     "name": "Layerize",
+     "selfMs": 10,
+     "count": 360
+    },
+    {
+     "name": "ScrollAnchor::FindAnchor",
+     "selfMs": 10,
+     "count": 186
+    },
+    {
+     "name": "LocalFrameView::UpdateStyleAndLayout",
+     "selfMs": 9,
+     "count": 2210
+    },
+    {
+     "name": "ScrollLayer",
+     "selfMs": 9,
+     "count": 186
+    },
+    {
+     "name": "LayoutView::HitTest",
+     "selfMs": 8,
+     "count": 345
+    },
+    {
+     "name": "LocalFrameView::RunPaintLifecyclePhase",
+     "selfMs": 8,
+     "count": 360
+    },
+    {
+     "name": "LocalFrameView::RunStyleAndLayoutLifecyclePhases",
+     "selfMs": 7,
+     "count": 891
+    },
+    {
+     "name": "IntersectionObserverController::computeIntersections",
+     "selfMs": 7,
+     "count": 906
+    },
+    {
+     "name": "Commit",
+     "selfMs": 7,
+     "count": 360
+    },
+    {
+     "name": "RunMicrotasks",
+     "selfMs": 6,
+     "count": 348
+    }
+   ]
+  }
+ }
+]

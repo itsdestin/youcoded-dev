@@ -1,0 +1,266 @@
+{
+  "scenario": {
+    "revision": 1,
+    "lane": "bigfence-stream",
+    "exploratory": true
+  },
+  "timestamp": "2026-10-24T05:54:01.803Z",
+  "label": "desk-trace-Breg",
+  "thresholds": {
+    "rendererMaxDelayMs": 250,
+    "inputLatencyMs": 250,
+    "endToPaintMs": 1000
+  },
+  "exploratory": {
+    "mode": "busy-machine",
+    "note": "measured without waiting for a quiet machine; every window keeps its interference verdict; not comparable to quiet-machine numbers"
+  },
+  "sides": {
+    "old": {
+      "checkout": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded",
+      "sha": "6183168e6de44123ee866e9744c27b7cb0f1e29c",
+      "branch": "session/93-freeze-combined",
+      "dirty": "3c937cd909bc"
+    }
+  },
+  "plans": [
+    {
+      "id": "bigfence-code-2000",
+      "variant": "code",
+      "n": 2000,
+      "deltas": 36706,
+      "perSec": 612,
+      "streamMs": 59977,
+      "atCloudSpeed": false,
+      "lineCount": 2000,
+      "fenceChars": 136459,
+      "overLimit": true,
+      "lastTail": "nst value1999: number = compute(1999, \"key59\"); // line 1999",
+      "outro": "That is the whole file.",
+      "chars": 136532
+    }
+  ],
+  "rows": [
+    {
+      "side": "old",
+      "round": 1,
+      "position": 1,
+      "row": {
+        "id": "bigfence-code-2000",
+        "variant": "code",
+        "n": 2000,
+        "lineCount": 2000,
+        "fenceChars": 136459,
+        "overLimit": true,
+        "deltas": 36706,
+        "perSec": 612,
+        "atCloudSpeed": false,
+        "streamLongtaskMaxMs": 73,
+        "streamLongtaskTotalMs": 73,
+        "streamLongtaskCount": 1,
+        "settleLongtaskMaxMs": 0,
+        "settleLongtaskTotalMs": 0,
+        "scrollLongtaskMaxMs": 0,
+        "scrollFrameGapMaxMs": 18.8,
+        "scrollFramesOver50": 0,
+        "streamTimerStallMaxMs": 61.7,
+        "settleTimerStallMaxMs": 0,
+        "mainMaxDelayMs": 1065.6,
+        "mainTotalStallMs": 1347.3,
+        "typingIdleMaxMs": 3,
+        "typingStreamMaxMs": 12.1,
+        "typingSettleMaxMs": 768.7,
+        "typingScrollMaxMs": 3.3,
+        "typingSaturated": false,
+        "typingKeysStream": 171,
+        "typingKeysSettle": 3,
+        "typingKeysScroll": 14,
+        "typingExhausted": false,
+        "endToPaintMs": 1106,
+        "peakPssMb": 946.8,
+        "heapMb": 40.1,
+        "domNodes": 326,
+        "coloured": 0,
+        "interference": {
+          "verdict": "clean",
+          "reasons": []
+        },
+        "worstLongtaskMs": 73,
+        "worstTypingMs": 768.7,
+        "breaches": [
+          {
+            "metric": "worstTypingMs",
+            "value": 768.7,
+            "limit": 250
+          },
+          {
+            "metric": "endToPaintMs",
+            "value": 1106,
+            "limit": 1000
+          }
+        ],
+        "status": "slow"
+      }
+    }
+  ],
+  "interference": [
+    {
+      "label": "r1-a:bigfence-code-2000",
+      "verdict": "clean",
+      "reasons": [],
+      "durationS": 69.4,
+      "samples": 139,
+      "overflow": false,
+      "foreignAvgCores": 0.74,
+      "foreignPeak2sCores": 0.86,
+      "offenders": [
+        {
+          "name": "youcoded",
+          "pids": [
+            2594,
+            2643,
+            2117,
+            4266
+          ],
+          "cores": 0.49
+        },
+        {
+          "name": "kwin_wayland",
+          "pids": [
+            1437
+          ],
+          "cores": 0.07
+        },
+        {
+          "name": "coolercontrold",
+          "pids": [
+            1203
+          ],
+          "cores": 0.05
+        }
+      ],
+      "machineBusyPct": {
+        "avg": 15.5,
+        "max": 35.6
+      },
+      "pressure": {
+        "cpuMax": 0.67,
+        "ioMax": 0,
+        "memoryMax": 0
+      },
+      "gpu": {
+        "busyMin": null,
+        "busyMedian": null,
+        "busyMax": null,
+        "pptWattsMin": null,
+        "pptWattsMax": null,
+        "attribution": "partial",
+        "foreignHolders": []
+      },
+      "platformProfiles": [],
+      "acStates": []
+    }
+  ],
+  "aggregate": {
+    "bigfence-code-2000": {
+      "old": {
+        "statuses": [
+          "slow"
+        ],
+        "metrics": {
+          "streamLongtaskMaxMs": {
+            "median": 73,
+            "min": 73,
+            "max": 73,
+            "n": 1,
+            "of": 1
+          },
+          "streamLongtaskTotalMs": {
+            "median": 73,
+            "min": 73,
+            "max": 73,
+            "n": 1,
+            "of": 1
+          },
+          "settleLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "scrollLongtaskMaxMs": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          },
+          "scrollFrameGapMaxMs": {
+            "median": 18.8,
+            "min": 18.8,
+            "max": 18.8,
+            "n": 1,
+            "of": 1
+          },
+          "typingStreamMaxMs": {
+            "median": 12.1,
+            "min": 12.1,
+            "max": 12.1,
+            "n": 1,
+            "of": 1
+          },
+          "typingSettleMaxMs": {
+            "median": 768.7,
+            "min": 768.7,
+            "max": 768.7,
+            "n": 1,
+            "of": 1
+          },
+          "typingScrollMaxMs": {
+            "median": 3.3,
+            "min": 3.3,
+            "max": 3.3,
+            "n": 1,
+            "of": 1
+          },
+          "endToPaintMs": {
+            "median": 1106,
+            "min": 1106,
+            "max": 1106,
+            "n": 1,
+            "of": 1
+          },
+          "peakPssMb": {
+            "median": 946.8,
+            "min": 946.8,
+            "max": 946.8,
+            "n": 1,
+            "of": 1
+          },
+          "heapMb": {
+            "median": 40.1,
+            "min": 40.1,
+            "max": 40.1,
+            "n": 1,
+            "of": 1
+          },
+          "domNodes": {
+            "median": 326,
+            "min": 326,
+            "max": 326,
+            "n": 1,
+            "of": 1
+          },
+          "coloured": {
+            "median": 0,
+            "min": 0,
+            "max": 0,
+            "n": 1,
+            "of": 1
+          }
+        }
+      }
+    }
+  }
+}
