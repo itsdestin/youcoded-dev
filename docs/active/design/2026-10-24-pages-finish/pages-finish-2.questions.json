@@ -1,0 +1,285 @@
+{
+  "title": "Finishing Pages, round 2 — built from the app's own parts",
+  "key": "pages-finish-2-questions",
+  "out": "pages-finish-2.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-wholeapp",
+      "words": true,
+      "surface": "Pages",
+      "path": "How Pages gets the things it is missing",
+      "headline": "Should missing systems (scheduler, spending limits, sign-ins) be built once for the whole app, with Pages as their first user?",
+      "today": "Pages grew its own private pieces: its own key store, its own bank sign-in, its own program runner. Meanwhile the app has no scheduler, no spending limit and no 'Sign in with Google' at all, and two separate work items (Agents & Automations, Connect Google) plan to build them.",
+      "problem": "If Pages builds its own scheduler and sign-ins, the app ends up with two of each that behave differently, and every fix has to be made twice.",
+      "proposal": "Build each missing system once for the whole app. Pages uses it first; chats, automations and Google files use the same one. The Agents & Automations work item joins this effort.",
+      "options": [
+        {
+          "id": "once",
+          "label": "Once, for the whole app",
+          "pros": [
+            "One scheduler, one spending limit, one account list — the same everywhere.",
+            "Agents & Automations gets built as part of finishing Pages, not later."
+          ],
+          "cons": [
+            "Bigger: the scheduler has to suit more than pages, so it takes longer than a page-only one."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "pages-only",
+          "label": "Pages-only first",
+          "pros": [
+            "Pages finishes sooner."
+          ],
+          "cons": [
+            "Duplicate systems that later have to be merged or replaced."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-assistantshape",
+      "words": true,
+      "surface": "Assistants and automations",
+      "path": "What an 'assistant' is",
+      "headline": "What should one autonomous assistant be?",
+      "today": "Nothing runs on its own today. In September you left open whether an assistant is one job, or a bigger 'assistant' that owns several jobs and can coordinate them.",
+      "problem": "Pages (overnight pulls, workflows) need an answer to build on, and whatever we pick becomes the shape of automations everywhere in the app.",
+      "proposal": "Pick the starting shape. Either can grow into the other later.",
+      "options": [
+        {
+          "id": "job",
+          "label": "One assistant = one job",
+          "summary": "Each has instructions, what it may touch, a model, and when it runs. Several can be grouped (in a page, or a folder) and run in order.",
+          "pros": [
+            "Simple to understand and to build first; a workflow is just a group run in order.",
+            "Fits overnight pulls and hand-run workflows directly."
+          ],
+          "cons": [
+            "No single 'manager' assistant you can talk to about all its jobs — yet."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "assistant-with-duties",
+          "label": "Assistants that own duties",
+          "summary": "An assistant has a personality and a conversation you can talk to, and several duties it carries out or hands out.",
+          "pros": [
+            "Closer to 'a team of assistants'."
+          ],
+          "cons": [
+            "Much more to design before anything runs."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-unattended",
+      "words": true,
+      "surface": "Assistants and automations",
+      "path": "An assistant running while nobody is watching",
+      "headline": "An unattended assistant only does what its list allows; anything else pauses it as 'Waiting for you', with a notification.",
+      "changed": "Stated, not asked: when you create an assistant you see what it may do (which tools, folders, websites, model, spending limit). Outside that list it never waits forever and never silently says yes — the run pauses, you get a notification, and the request shows in the page and the automations list.",
+      "notice": "An overnight assistant that hits something new is waiting for you in the morning rather than stuck or acting unchecked.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-subscription",
+      "words": true,
+      "surface": "Assistants and automations",
+      "path": "Using a Claude subscription for background work",
+      "headline": "Should hidden, unattended assistants be able to use your Claude subscription in this work?",
+      "today": "A chat panel in a page works with every model a normal chat can use, including your Claude subscription. Hidden background runs are different: the app can run provider models quietly, but the Claude subscription only works through Claude Code, which the app drives like a terminal.",
+      "problem": "Claude Code has a quiet mode for exactly this, but using it means a second way of running Claude Code in the app, with its own stop and permission handling.",
+      "proposal": "Pick whether subscription users get background assistants now.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Yes, both now",
+          "pros": [
+            "Claude subscription users get everything, matching 'identical to main chats'."
+          ],
+          "cons": [
+            "More work in the assistants step; Claude Code's own limits (usage caps) apply to overnight runs."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "providers-first",
+          "label": "Provider models first",
+          "pros": [
+            "Less to build in this step."
+          ],
+          "cons": [
+            "Subscription-only users can chat in pages but cannot run background assistants until later."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-chatpanel",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page that has its own chat",
+      "headline": "A page's chat is a panel the app draws beside the page, not something drawn inside the page itself.",
+      "changed": "Stated, not asked: the chat panel is the real chat (messages, composer, permission cards, model chip), docked at the page's side like the files and browser panels. The page can open it, send it a message, and redraw itself when the assistant changes the page — but cannot read or alter what it shows.",
+      "notice": "On a phone the panel opens over the page instead of beside it.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-spendscope",
+      "words": true,
+      "surface": "Settings",
+      "path": "Spending limits",
+      "headline": "Where should spending limits apply?",
+      "today": "No part of the app limits spending.",
+      "problem": "Pages and automations need limits that stop work. Ordinary chats have never had one; adding one there changes everyday chatting.",
+      "proposal": "One limit system for the whole app. Pick where it is turned on.",
+      "options": [
+        {
+          "id": "pages-automations",
+          "label": "Pages and automations on, chats optional",
+          "pros": [
+            "Unattended work always has a limit.",
+            "Chats behave as today unless you set one in Settings."
+          ],
+          "cons": [
+            "A long chat can still spend freely by default."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "everywhere",
+          "label": "On everywhere",
+          "pros": [
+            "Every kind of work has a limit."
+          ],
+          "cons": [
+            "Chats stop mid-conversation when the limit is hit until you raise it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-settingswindow",
+      "words": true,
+      "surface": "Pages",
+      "path": "Manage pages → a page's card, and the page's top band",
+      "headline": "Each page gets one Settings window that replaces today's 'connections' window, opened from its card and its top band.",
+      "changed": "Stated, not asked: sections for What it can reach, Files, Assistants and runs, Spending, Background, and Version and sharing. Removing anything there stops future use.",
+      "notice": "The screens are the next deck; this only fixes that there is one window, and where you open it.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-accounts",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings → Account → Connected services",
+      "headline": "Should the shared 'Sign in with…' system be built in this work, even while the Google files work item is paused?",
+      "today": "'Connect Google' is paused while you compare a YouCoded Google sign-in with a tool called rclone for Drive files. Its sign-in work sits unfinished on its own branch.",
+      "problem": "Pages need 'Sign in with…' whatever Drive ends up using, and building it twice would be the duplication Q-wholeapp avoids.",
+      "proposal": "Build one account system (list of signed-in accounts, sign-in, refresh) in step 5 of this work, reusing the paused branch. Drive's rclone-or-not decision stays separate.",
+      "options": [
+        {
+          "id": "build-here",
+          "label": "Build it here",
+          "pros": [
+            "Pages can use Google, Microsoft and others when this work finishes.",
+            "Connect Google later reuses it instead of building its own."
+          ],
+          "cons": [
+            "Registering YouCoded with Google/Microsoft starts here, with their review steps."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "wait",
+          "label": "Wait for Connect Google",
+          "pros": [
+            "Nothing decided ahead of the Drive comparison."
+          ],
+          "cons": [
+            "Pages finishes without 'Sign in with…'; pasted keys only."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-sharing",
+      "page": "Sharing, versions and order",
+      "intro": "The research came back on hosting, forks and publishing. These settle the sharing design and the build order."
+    },
+    {
+      "id": "Q-hosting",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Where shared pages are kept",
+      "headline": "Keep shared pages on GitHub, like themes, and not host them ourselves for now?",
+      "today": "Themes and skills live on GitHub; our own server only keeps the catalog, installs and ratings.",
+      "problem": "You asked for the real costs. Hosting files ourselves is almost free (about $5–30 a month even at 100,000 pages). The real costs are people and law: answering copyright takedowns (registering a legal agent), reporting illegal material when we learn of it, and pages used for phishing harming our web address's reputation.",
+      "proposal": "GitHub keeps the files: free hosting, a public history of every change, the review process themes already use, and takedown handled by GitHub. Self-hosting comes back only if you want private or unlisted sharing, which public GitHub cannot do. Yes keeps GitHub; No starts a self-hosting design."
+    },
+    {
+      "id": "Q-nogithub",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Sharing a page without a GitHub account",
+      "headline": "How should people without a GitHub account share a page?",
+      "today": "Sharing a theme needs a GitHub account; YouCoded opens the request with it.",
+      "problem": "Most regular people have no GitHub account and will not make one to share a page.",
+      "proposal": "Two routes.",
+      "options": [
+        {
+          "id": "bot",
+          "label": "YouCoded submits it for them",
+          "summary": "Signed in to YouCoded, you press Share; our server checks it and opens the request on GitHub under a YouCoded account, crediting you.",
+          "pros": [
+            "Anyone can share; the files still end up on GitHub with full history.",
+            "People with GitHub can keep using their own account."
+          ],
+          "cons": [
+            "We run and guard a server key that can submit to the registry, with daily limits per person; about 50 shares an hour before GitHub's limits bite."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "github-only",
+          "label": "GitHub account required, for now",
+          "pros": [
+            "Nothing new to run."
+          ],
+          "cons": [
+            "Most people cannot share."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-versions",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "Changing a page you installed",
+      "headline": "Editing an installed page makes your own version that remembers where it came from; updates are offered, and the assistant carries your changes over.",
+      "changed": "Stated, not asked: your version keeps a note of the original and the exact version you started from. When the original updates, the page offers 'Update my version'; the assistant merges their changes with yours, explains it in plain words ('their update changed the chart colours; yours changed the title — kept both'), shows before and after, and you approve. Undo is always one step. The marketplace lists every shared version of a page and what it came from.",
+      "notice": "An update that changes a program inside the page always needs review first, even in your own version.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-order2",
+      "words": true,
+      "surface": "Pages",
+      "path": "The order this work is built in",
+      "headline": "Build order: foundation and security fixes, files, chat in a page, assistants and limits, sign-ins, then sharing.",
+      "changed": "Stated, not asked: 1) one general way to describe connections, your Home, Money and Work board pages moved onto it unchanged, the security holes closed, the page Settings window; 2) files; 3) chat in a page; 4) assistants, schedules, spending limits; 5) 'Sign in with…'; 6) sharing, versions and updates. The AI reviewer, and programs in shared pages, come after. Each step: screens on a deck first, then you try it in a dev window.",
+      "notice": "Step 1 changes nothing you can see except the security fixes and the new Settings window; it is what makes every later step small.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}
