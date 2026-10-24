@@ -13,7 +13,7 @@ area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse
-work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge, session/93-batcher-counters, session/93-startup-stall
+work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge, session/93-batcher-counters, session/93-startup-stall, session/93-freeze-combined
 ---
 Progress
 Done: 2026-10-22 phone reliability: passive main-thread sampler ran ~4 h overnight — no freeze of 1 s or more caught (longest 0.53 s); git children near-constant, weak as a clue. Laptop measured 39 freezes ≥10 s in 2 days (longest 51 s) at ~0.5% CPU, i.e. waiting not working (docs/active/investigations/2026-10-22-phone-app-reliability-deep-dive.md §B)
@@ -21,6 +21,7 @@ Next: Dev build that logs every synchronous child-process call and long main-thr
 Blocked: No blocker for merged app subtask. Original incident, broader blocking/memory issues and production effectiveness remain unresolved. Local full Android payload was blocked by apk-version tooling; remote APK CI subsequently passed, not device runtime.
 
 Chats
+- 2026-10-24 session/93-freeze-combined: freeze hunt: code-block/scroll, chime, compaction, KDE-wallet launch freeze, xlsx/docx off the page; lab + quiet-desktop A/B (workspace session/93-file-viewer-freezes)
 - 2026-10-24 session/93-startup-stall: chat started
 - 2026-10-22 session/93-batcher-counters: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
