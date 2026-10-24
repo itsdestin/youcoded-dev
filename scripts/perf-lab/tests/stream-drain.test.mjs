@@ -1,9 +1,13 @@
-import test from 'node:test';
+import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
-// Existing desktop test dependency; no browser, app launch or new install.
-const { JSDOM } = createRequire(new URL('../../../youcoded/desktop/package.json', import.meta.url))('jsdom');
+import { missingAppDeps } from './app-deps.mjs';
+// Existing desktop test dependency; no browser, app launch or new install. Skipped, with the reason, where the app's
+// dependencies are not installed (tests/app-deps.mjs).
+const skip = missingAppDeps(['jsdom']);
+const test = (name, fn) => nodeTest(name, { skip }, fn);
+const { JSDOM } = skip ? {} : createRequire(new URL('../../../youcoded/desktop/package.json', import.meta.url))('jsdom');
 import { splitDeltas } from '../fake-provider.mjs';
 import { receiptSource, readReceiptSource, stopReceiptSource, assessStreamDrain, buildDrainFixture, visibleDrainSource, waitForStreamDrain, waitForVisibleDrain, sessionVisibilitySource, finishStreamDiagnostic, beginStreamDiagnostic, revealStreamOutput, revealSelectionSource } from '../stream-drain.mjs';
 

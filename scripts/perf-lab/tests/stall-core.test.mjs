@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import { missingAppDeps } from './app-deps.mjs';
 import assert from 'node:assert/strict';
 import { mkdtemp, rm, readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
@@ -15,6 +16,8 @@ const good = () => ({ proof: { attempted: true, correctTarget: true, correctResu
   runtime: { node: process.version, sourceHashes: [{ file: 'actual.ts', sha256: 'a'.repeat(64) }] } });
 const observed = () => ({ ready: true, memorySamples: 1, peakRssMb: 51, missingMemory: false, exitCode: 0, signal: null, cleanupConfirmed: true });
 
+// The office fixtures need jszip from the app checkout; skipped, with the reason, where it is not installed.
+const officeSkip = missingAppDeps(['jszip']);
 test('success requires verified result, heartbeat, memory, runtime and clean exit', () => {
   assert.equal(assessCoreResult(good(), observed()).status, 'measured');
   for (const mutate of [
@@ -42,7 +45,7 @@ test('heartbeat catches a block before its first tick and drains after completio
   assert.equal(result.samples, 2); assert.equal(result.maxLoopDelayMs, 269);
 });
 
-test('small actual parsers prove markers/counts with source identities and private child HOME', async () => {
+test('small actual parsers prove markers/counts with source identities and private child HOME', { skip: officeSkip }, async () => {
   const temp = await mkdtemp(join(tmpdir(), 'stall-core-real-'));
   try {
     const manifest = await buildStallFixtures(join(temp, 'fixtures'), { checkout });
@@ -62,7 +65,7 @@ test('small actual parsers prove markers/counts with source identities and priva
   } finally { await rm(temp, { recursive: true, force: true, maxRetries: 5 }); }
 });
 
-test('hash mismatch fails before parsing, HTML is explicitly browser-only, invalid bounds refuse', async () => {
+test('hash mismatch fails before parsing, HTML is explicitly browser-only, invalid bounds refuse', { skip: officeSkip }, async () => {
   const temp = await mkdtemp(join(tmpdir(), 'stall-core-safety-'));
   try {
     const m = await buildStallFixtures(join(temp, 'fixtures'), { checkout });
@@ -98,7 +101,7 @@ test('owned real subprocess deadlines, RSS limit, malformed/empty output and exi
   } finally { await rm(temp, { recursive: true, force: true, maxRetries: 5 }); }
 });
 
-test('actual synthetic watcher cold/warm paths prove external events and close their handles', async () => {
+test('actual synthetic watcher cold/warm paths prove external events and close their handles', { skip: officeSkip }, async () => {
   const temp = await mkdtemp(join(tmpdir(), 'stall-core-watch-'));
   try {
     const fixture = { id: 'watcher-32', kind: 'watcher', shape: { directories: 32, files: 32 }, bytes: 0, sha256: 'a'.repeat(64) };

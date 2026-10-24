@@ -1,5 +1,5 @@
 // Offline only: no build, launch, sensor, provider, model or lab-slot acquisition.
-import test from 'node:test';
+import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { syncBuiltinESMExports } from 'node:module';
@@ -12,6 +12,10 @@ import { treeFingerprint } from '../build.mjs';
 import { prepareLifecycleFixture, loadLifecyclePackageStamp, parseOptions } from '../short-lifecycle.mjs';
 
 const appDir = join(checkout, 'desktop/release/linux-unpacked');
+// WHY skip (2026-10-24): every test here reads the one approved session checkout itself; where it does not exist (CI,
+// or after that session's worktree was removed) they report skipped with the reason instead of failing on ENOENT.
+const skip = fs.existsSync(checkout) ? false : `approved evaluation checkout not present: ${checkout}`;
+const test = (name, fn) => nodeTest(name, { skip }, fn);
 test('explicit session mapping selects only canonical approved checkout, never neighboring or production paths', () => {
   assert.equal(checkout, '/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded');
   assert.equal(assertApprovedCheckoutPath(checkout), checkout);

@@ -1,4 +1,4 @@
-import { test, before, after } from 'node:test';
+import { test as nodeTest, before as nodeBefore, after as nodeAfter } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, writeFile, mkdir, symlink, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -8,14 +8,21 @@ import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
 import { buildStallFixtures } from '../stall-fixtures.mjs';
+import { missingAppDeps } from './app-deps.mjs';
 
 const checkout = resolve(fileURLToPath(new URL('../../../youcoded', import.meta.url)));
 const require = createRequire(join(checkout, 'desktop/package.json'));
-const JSZip = require('jszip');
-const { PNG } = require('pngjs');
-const ExcelJS = require('exceljs');
-const mammoth = require('mammoth');
-const { parseFile } = require('fast-csv');
+// Skipped, with the reason, where the app's dependencies are not installed (tests/app-deps.mjs).
+const skip = missingAppDeps(['jszip', 'pngjs', 'exceljs', 'mammoth', 'fast-csv']);
+const test = (name, fn) => nodeTest(name, { skip }, fn);
+const before = (fn) => { if (!skip) nodeBefore(fn); };
+const after = (fn) => { if (!skip) nodeAfter(fn); };
+const appDep = (name) => (skip ? {} : require(name));
+const JSZip = appDep('jszip');
+const { PNG } = appDep('pngjs');
+const ExcelJS = appDep('exceljs');
+const mammoth = appDep('mammoth');
+const { parseFile } = appDep('fast-csv');
 const hash = (b) => createHash('sha256').update(b).digest('hex');
 let temp, smoke, repeat, stress, stressRepeat;
 before(async () => {
