@@ -12,6 +12,8 @@ The app serves students, professionals and everyday AI users—not just develope
 
 **The app is the product.** Registries and plugins support it. Use accessible language ("files," not "artifacts" in user-facing menus), minimal useful copy and explainers for complex systems. Prefer showing an interface to describing it.
 
+**Only YouCoded work lives in this workspace** (Destin, 2026-10-24). Anything not clearly part of YouCoded — his desktop/Plasma customizations (`~/system/plasma`), Swipe Keyboard (`~/swipe-keyboard-dev`, moved out 2026-10-24), other standalone apps, tools or projects — gets its own project folder and repo: no cards, plans, worktrees, ledger or shipped entries here. When such work comes up in a youcoded-dev session, say where it belongs and continue it there (propose a new project folder if none exists). Work that ships in or for the app (registries, plugins, themes, the landing page) stays here; when unclear, ask.
+
 ## Workspace Layout
 
 | Directory | Repo | Role |
