@@ -1,7 +1,7 @@
 ---
 id: 179
 title: Remove FUTO from Swipe Keyboard and relicense it as Apache/MIT
-stage: explore
+stage: merged
 tags: swipe-keyboard, housekeeping
 related: 170, 165
 branch: 179-remove-futo-from-swipe-keyboard
