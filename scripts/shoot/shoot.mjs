@@ -196,6 +196,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const w = screen.viewport?.width ?? width, h = screen.viewport?.height ?? height;
     await tab.prepare({ theme, width: w, height: h });
     const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(officePort ? { officePort: String(officePort) } : {}), ...(screen.params ?? {}) });
+    // WHY: use the renderer's explicit workbench theme route as well as the storage mirror;
+    // a capture must not be labelled Dark/Halftone while actually showing Light.
+    q.set('theme', theme);
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
@@ -285,6 +288,20 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       // so the strip rightly goes with it — that is the page closing, not a second layer.
       const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip' && l.kind !== 'status');
       const label = (ls) => ls.map((l) => `${l.kind} "${l.name}"`);
+      // WHY wait (2026-10-21): a Page's demo menu (`pagesMenu`) opens on the frame's own `load`, after the screen's
+      // mark shows; on a busy machine Escape landed first and closed the panel instead of the menu. Opening it
+      // focuses the frame (page-kit.ts sel.focus), so focus inside the iframe is the signal it is open.
+      // WHY 30 s and a refusal (2026-10-22): at a load average near 28 this screen took 18.9 s where it
+      // takes ~1 s alone, the old 10 s wait ran out SILENTLY, Escape was pressed anyway and closed the
+      // panel — reported as a wrong Escape rather than as a menu that never opened. Passes 3/3 alone.
+      if (screen.params?.pagesMenu) {
+        const deadline = Date.now() + 30_000;
+        let focused = false;
+        while (Date.now() < deadline && !(focused = await tab.evaluate(`document.activeElement?.tagName === 'IFRAME'`, 5000).catch(() => false))) {
+          await new Promise((r) => setTimeout(r, 100));
+        }
+        if (!focused) throw new Error(`the page's demo menu (pagesMenu=${screen.params.pagesMenu}) never opened within 30 s — focus never reached the page frame, so the Escape check could not run`);
+      }
       const beforeLs = await layersNow();
       const before = label(beforeLs);
       if (before.length) {

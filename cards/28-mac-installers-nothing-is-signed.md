@@ -1,33 +1,40 @@
 ---
 id: 28
 title: Sign the Mac app so it opens without warnings
-stage: planning
+stage: merged
 priority: P1
-summary: Mac downloads aren't signed by Apple, so they can open as "broken"; Apple refused the company account and signing waits on that.
+summary: Developer ID signing and notarization are merged and verified for both Mac architectures; public 1.3.1 downloads stay unchanged until the next approved release.
 area: Leaving & updating
 side: behind
 platform: Mac only
-paused: Deferred to 1.3.2 by Destin; not a 1.3.1 release blocker.
 tags: dev-workspace, release, regression, bug
-work: session/auto-update-roadmap-20261014, session/release-1-3-2
+work: session/auto-update-roadmap-20261014, session/release-1-3-2, session/28-apple-signing, session/28-signing-doc-cleanup
 vision: everywhere.added.macsign
 release: 1.3.2
-report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+report: docs/archive/plans/2026-10-19-apple-signing.md
 branch: 28-mac-installers-nothing-is-signed
 roadmap: dev-workspace: Mac installers: nothing is signed or notarized, and a Mac do
 created: 2026-10-15
 ---
 Progress
-Done: Destin paid for Apple enrollment, then explicitly deferred Developer ID signing/notarization to 1.3.2 so 1.3.1 can ship with existing ad-hoc Mac signing.
-Next: Complete membership activation and implement/verify Developer ID signing and notarization for 1.3.2.
-Blocked: No longer blocks 1.3.1; Apple credentials/signing setup remain future work.
+Done: Complete: appPR655 signing/copy merged7c0a46e1c; deterministic post-merge Node22CI reporter repairPR656 merged1f7629142 after126semantic cases/realV8regression and native PR/fullplatformchecks passed. WorkspacePR282 merged, plan archived, MAP/build/VM guidance updated. Both architectures notarized/issuesnull; quarantined Intel VM normalOpen/onboarding verified/restored. Approved downloadcopy deployed and matched live modal script. Temporary signing access removed; evidence/installers preserved outside worktrees. Docs-only carryovers closed in app #659/#660 and workspace #285; #31/#45 report links corrected without closing their work.
+Next: Public installer release intentionally deferred; current public version1.3.1 remains unchanged. Future release tagging/publication requires separate owner instruction. No further work for this implementation card.
+Blocked: None for this implementation. No release tag, production install, live-app mutation or paid harness evaluation. The original signing session branches/worktrees were removed after remote ancestry verification.
 
 Chats
+- 2026-10-20 session/28-signing-doc-cleanup: Docs-only cleanup landed in app #659/#660 and workspace #285; #31/#45 report links corrected with planning stages preserved. No runtime/test behavior or release change. Post-merge Windows Markdown CPU check failed at 30156 ms against 30000 ms; no budget increase or code fix attempted under this docs-only scope, and no deferred test-failure card filed.
+- 2026-10-20 session/28-signing-doc-cleanup: chat started
+- 2026-10-20 session/28-apple-signing: chat started
+- 2026-10-20 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
+- 2026-10-19 session/28-apple-signing: chat started
 - 2026-10-18 session/release-1-3-2: Destin completed paid enrollment; payment processing up to 24h. Wants 1.3.1 to be the first Developer ID-signed/notarized Mac release. No Apple secrets or signing config changed yet.
 
-From the old roadmap (dev-workspace › release, status blocked, seen on n/a, last checked 2026-09-04)
-Mac installers: nothing is signed or notarized, and a Mac download may open as "broken". Since 2026-07-23 a dependency update stopped the Mac build being stamped, so macOS rejects it and the "Open Anyway" button vanished (terminal command only; in-app updates hit it too). Fix merged 2026-09-04 (build checks its own seal, fails if it cannot sign); still open: a Mac confirming "Open Anyway" is back on a build cut after it (test run 33921417200). Signing is blocked: Apple refused the LLC's account on 2026-10-01; retry from an Apple device or via Apple Support, then it is CI wiring. Windows is done (signed "Destin Moss"). (report: docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md)
+Historical roadmap import — state last checked 2026-09-04, superseded by the completion notes above
+Mac installers: nothing is signed or notarized, and a Mac download may open as "broken". Since 2026-07-23 a dependency update stopped the Mac build being stamped, so macOS rejects it and the "Open Anyway" button vanished (terminal command only; in-app updates hit it too). Fix merged 2026-09-04 (build checks its own seal, fails if it cannot sign); still open: a Mac confirming "Open Anyway" is back on a build cut after it (test run 33921417200). Signing is blocked: Apple refused the LLC's account on 2026-10-01; retry from an Apple device or via Apple Support, then it is CI wiring. Windows is done (signed "Destin Moss"). (report: docs/archive/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md)
 
-From the 2026-10-16 document sweep
-- The announcement banner is downloaded unsigned and with no size limit. Source: docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-- The updater should check the download's SHA-256 the way the engine download does. Source: docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+Historical 2026-10-16 sweep notes — announcement work remains in #86(c); updater integrity verification is implemented in update-service.ts/update-manifest-verify.ts. These are not open signing blockers.
+- The announcement banner is downloaded unsigned and with no size limit. Source: docs/archive/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+- The updater should check the download's SHA-256 the way the engine download does. Source: docs/archive/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md

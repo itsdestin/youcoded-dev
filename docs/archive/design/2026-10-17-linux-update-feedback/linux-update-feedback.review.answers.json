@@ -1,0 +1,45 @@
+{
+ "deck": "linux-update-feedback",
+ "started": "2026-10-18T05:27:45.161Z",
+ "submitted": "2026-10-18T05:29:05Z",
+ "cur": 4,
+ "answers": {
+  "LU-1": {
+   "v": "no",
+   "t": 1792301291604,
+   "note": "no. i dont like bare text like this . keep the button styling",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LU-2": {
+   "v": "no",
+   "t": 1792301295660,
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LU-3": {
+   "v": "yes",
+   "t": 1792301318539,
+   "seconds": 23,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LU-4": {
+   "v": "yes",
+   "t": 1792301323754,
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LU-5": {
+   "v": "no",
+   "t": 1792301343984,
+   "note": "this just doesnt matcch our ui design guide at all",
+   "seconds": 20,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "deck": "linux-update-feedback-3",
+ "started": "2026-10-18T18:55:22.887Z",
+ "submitted": "2026-10-18T18:55:39Z",
+ "cur": 0,
+ "answers": {
+  "LU-2": {
+   "v": "yes",
+   "t": 1792349735679,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

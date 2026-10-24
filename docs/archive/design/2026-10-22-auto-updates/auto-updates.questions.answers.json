@@ -1,0 +1,58 @@
+{
+ "deck": "auto-updates-questions",
+ "started": "2026-10-22T18:58:05.759Z",
+ "submitted": "2026-10-22T19:00:41Z",
+ "cur": 1,
+ "answers": {
+  "Q-switch": {
+   "v": "pick",
+   "pick": "both-places",
+   "t": 1792695601245,
+   "seconds": 23,
+   "theme": "youcoded"
+  },
+  "Q-chip": {
+   "v": "pick",
+   "pick": "keep-pulse",
+   "t": 1792695601245,
+   "seconds": 23,
+   "theme": "youcoded"
+  },
+  "Q-busy": {
+   "note": "just show the standard closeout prompt that offers to resume sessions and stuff. if a user chooses not to exit by closing the prompt, cancel the restart.",
+   "t": 1792695601245,
+   "v": "other",
+   "seconds": 23,
+   "theme": "youcoded"
+  },
+  "Q-linux": {
+   "v": "pick",
+   "pick": "on-restart-only",
+   "t": 1792695601245,
+   "seconds": 23,
+   "theme": "youcoded"
+  },
+  "Q-mac": {
+   "v": "other",
+   "dk": true,
+   "t": 1792695601245,
+   "note": "confused. explain further. ",
+   "seconds": 23,
+   "theme": "youcoded"
+  },
+  "Q-brake-how": {
+   "v": "pick",
+   "pick": "pull-signed-list",
+   "t": 1792695639766,
+   "seconds": 20,
+   "theme": "youcoded"
+  },
+  "Q-brake-notice": {
+   "v": "pick",
+   "pick": "announcement-when-needed",
+   "t": 1792695639766,
+   "seconds": 20,
+   "theme": "youcoded"
+  }
+ }
+}

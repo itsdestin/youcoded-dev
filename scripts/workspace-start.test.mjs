@@ -447,3 +447,33 @@ test('errors creating session directories after reorientation include the report
   assert.notEqual(failed.status, 0);
   assert.match(failed.stderr, /Workspace reorientation report: .*report\.json/);
 });
+
+test('a fresh install replaces a hardlinked node_modules without touching the shared copy; a failed one changes nothing', async t => {
+  // WHY (card #19(h), 4th hit 2026-10-21): a far-behind farm used to get the advice "delete it and run
+  // npm ci", which glob-guard refuses in a worktree. freshInstall installs beside it and swaps it in.
+  const { freshInstall } = await import('./workspace-start.mjs');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fresh install '));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const shared = path.join(dir, 'shared', 'node_modules', 'old');
+  fs.mkdirSync(shared, { recursive: true });
+  fs.writeFileSync(path.join(shared, 'index.js'), 'shared\n');
+  const component = path.join(dir, 'wt', 'desktop');
+  fs.mkdirSync(path.join(component, 'scripts'), { recursive: true });
+  fs.writeFileSync(path.join(component, 'package.json'), '{"name":"app"}\n');
+  fs.writeFileSync(path.join(component, 'package-lock.json'), '{}\n');
+  fs.writeFileSync(path.join(component, 'scripts', 'postinstall.js'), '\n');
+  execFileSync('cp', ['-al', path.join(dir, 'shared', 'node_modules'), path.join(component, 'node_modules')]);
+  // A fake npm: `ci` builds node_modules where it runs, and proves the install hooks' scripts came along.
+  const npm = path.join(dir, 'npm');
+  fs.writeFileSync(npm, '#!/bin/sh\n[ -f scripts/postinstall.js ] || exit 3\nmkdir -p node_modules/fresh && echo fresh > node_modules/fresh/index.js\n', { mode: 0o755 });
+  freshInstall(component, { npm });
+  assert.equal(fs.readFileSync(path.join(component, 'node_modules', 'fresh', 'index.js'), 'utf8'), 'fresh\n');
+  assert.equal(fs.existsSync(path.join(component, 'node_modules', 'old')), false);
+  assert.equal(fs.readFileSync(path.join(shared, 'index.js'), 'utf8'), 'shared\n'); // the shared copy is untouched
+  assert.deepEqual(fs.readdirSync(path.join(dir, 'wt')), ['desktop']); // no staging folder left behind
+  const failing = path.join(dir, 'npm-fail');
+  fs.writeFileSync(failing, '#!/bin/sh\nexit 1\n', { mode: 0o755 });
+  assert.throws(() => freshInstall(component, { npm: failing }));
+  assert.equal(fs.existsSync(path.join(component, 'node_modules', 'fresh', 'index.js')), true);
+  assert.deepEqual(fs.readdirSync(path.join(dir, 'wt')), ['desktop']);
+});

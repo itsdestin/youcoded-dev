@@ -1,0 +1,39 @@
+{
+  "title": "Website demo — what visitors see first",
+  "key": "website-demo-light-questions",
+  "out": "website-demo-light.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Website demo",
+      "path": "youcoded.ai → interactive app preview",
+      "headline": "What should the demo open on?",
+      "today": "The website preview opens on a conversation. You have asked for the latest 1.3.1 interface, pinned Home and Finance pages with fictional data, and YouCoded Light as the website’s default look.",
+      "problem": "Opening on chat preserves the assistant introduction, but visitors may miss the new pages. Opening on Home immediately shows the broader everything-app idea, but puts the conversation one click away.",
+      "proposal": "Keep both Home and Finance pinned at the top. Choose which view visitors see when they start the demo. The following visual review will show the website in YouCoded Light and both working sample pages before anything goes live.",
+      "options": [
+        {
+          "id": "chat-first",
+          "label": "Chat first",
+          "pros": ["Introduces the AI assistant immediately.", "Keeps the website’s current starting point; Home and Finance are available from the top bar."],
+          "cons": ["Visitors must open a page to discover the smart-home and finance examples."],
+          "recommended": true
+        },
+        {
+          "id": "home-first",
+          "label": "Home first",
+          "pros": ["Shows the smart-home example as soon as visitors start the demo.", "Makes the everything-app idea visible without another click."],
+          "cons": ["The assistant conversation is not the first view visitors see."]
+        },
+        {
+          "id": "finance-first",
+          "label": "Finance first",
+          "pros": ["Shows a useful everyday dashboard immediately.", "Makes the finance example hard to miss."],
+          "cons": ["Visitors initially see a finance dashboard rather than the AI assistant or smart-home example."]
+        }
+      ]
+    }
+  ]
+}

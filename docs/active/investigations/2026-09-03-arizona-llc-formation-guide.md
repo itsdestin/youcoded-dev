@@ -123,9 +123,11 @@ on that card and every dollar in (donations, later subscriptions) lands in that 
 
 ### Then the rest of the launch list
 
-D-U-N-S number, Apple, Google, Azure signing, DMCA agent, trademark: those are in the plan doc's
-checklist, `docs/active/investigations/2026-09-03-formalization-costs-and-risks.md`, and each
-one now gets filled in with the company's name and EIN.
+For the current launch status and remaining company/store work, read
+`docs/active/handoffs/2026-10-20-product-formalization-status.md` and cards #31/#45.
+Apple and Windows signing are already complete; do not restart enrollment from this
+September guide. The original checklist/research is preserved in
+`docs/archive/investigations/2026-09-03-formalization-costs-and-risks.md`.
 
 ## Part 3. Rules of the road
 

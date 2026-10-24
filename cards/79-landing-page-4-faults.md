@@ -1,7 +1,7 @@
 ---
 id: 79
 title: Website: landing page fixes, visitor stats and how it leads
-stage: planning
+stage: merged
 priority: P3
 tags: operations, polish
 branch: 79-landing-page-4-faults
@@ -9,13 +9,16 @@ roadmap: operations: Landing page: 4 faults.
 created: 2026-10-15
 summary: The landing page: tiny demo videos on phones, long text, two visitor-stats checks, and not leading with unique extras.
 area: Website
+work: session/79-hero-copy-preview, session/79-website-everything-app
 ---
 Progress
-Done: nothing recorded.
-Next: not decided.
-Blocked: nothing recorded.
+Done: Review deck answered; fixes applied: FAQ/story fold animation and hover, story copy rewritten by Destin (two passes), device card redrawn with dark mode, OpenAI account card, workbench echo fix (typed message above reply) and all 40 clips re-filmed. All pushed on session/79-website-everything-app in both repos.
+Next: verify.sh on the app worktree; Destin's merge call; then archive design docs, close card, remove the nine old clip files.
+Blocked: Nothing for the shipped hero-copy task.
 
 Chats
+- 2026-10-21 session/79-website-everything-app: chat started
+- 2026-10-19 session/79-hero-copy-preview: chat started
 
 From the old roadmap (operations, status confirmed, seen on n/a, last checked 2026-09-03)
 Landing page: 4 faults. (a) The demo videos are the desktop app shrunk to phone width, so on a phone the app's writing is a few pixels tall; re-film them for a phone. (b) On a phone "More than a chatbot" and "How we got here" run about three and two screens of unbroken text, and the third About paragraph ("outpace development of competing closed agents") reads as strategy talk. (c) The asterisk on the iOS download button has no footnote nearby; the explanation is about ten screens down. (d) The promo film's opening still shows Cotton Candy holding the wand removed from the hero button; Destin's call whether to re-film.

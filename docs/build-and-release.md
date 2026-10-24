@@ -12,10 +12,10 @@ If skipped (manual `-x bundleWebUi`, build break in `npm run build`, etc.), the 
 The Android release workflow (`android-release.yml`) still invokes the script as an explicit pre-step. With the Gradle task in place that's redundant on cold-cache CI runs (Gradle re-runs the work) but harmless, and acts as a safety net if anyone disables the Gradle task.
 
 ### Desktop version comes from git tag, not package.json
-CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml:40-46`). Local `package.json` version is not the source of truth.
+CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml`, step "Sync version from tag"). Local `package.json` version is not the source of truth.
 
 ### Android version is stamped in CI
-Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
+`android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or the release-scoped beta version for a manual dispatch; see **Betas number themselves** below) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. Only the visible beta number resets; never reset `versionCode`. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
 ### Office add-on is fetched per platform at build time
 `npm run build` starts with `node scripts/fetch-office.mjs --release --required`, which downloads every bundle `desktop/office-pin.json` pins for the build machine's OS into `desktop/office-build/<platform>-<arch>/` (the Mac runner gets both `darwin-x64` and `darwin-arm64`); `electron-builder.yml` packs `office-build/${platform}-${arch}` as the installer's `resources/office`. A platform with no pin (ARM Linux: upstream ships no converter) builds without Office and the app opens Office files with the default app. Bumping the add-on means: bump `version` in the add-on's own `PIN.json`, push a `vX.Y.Z` tag to `itsdestin/youcoded-office` (its CI builds all four platforms and smoke-tests each converter on its own OS before publishing the release with a `SHA256SUMS`), then set `version` and every platform's `url` and `sha256` in `desktop/office-pin.json` (all four: `linux-x64`, `darwin-x64`, `darwin-arm64`, `win32-x64`) and run `node scripts/fetch-office.mjs`. As of 2026-10-02 the pin is **v0.1.41**. The Windows bundle ships the Visual C++ runtime DLLs beside `x2t.exe` (a clean Windows PC lacks them; add-on v0.1.40) and its CI fails if any DLL is unshipped. On Mac, `electron-builder.yml` re-signs only the converter (`x2t` and its dylibs) and `scripts/office-packaged-smoke.mjs` runs the packaged x2t in the Mac CI jobs. `desktop/office-addon/` is only the dev copy for this machine. Depth: `youcoded/docs/office.md`.
@@ -29,11 +29,50 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 
 The release procedure is `youcoded-admin/skills/release/SKILL.md`: review the app diff and readiness, prepare an isolated candidate, review its PR and candidate-specific checks where authorized, then obtain Destin's explicit go/no-go **to merge, push master and tag**. Tag the verified result on remote master. A candidate branch push solely for CI requires its own permission and is not release approval; when candidate CI cannot run, disclose that at go/no-go. Never commit or tag in a shared checkout to stage a release. `youcoded-core` is archived; it has no release steps.
 
-1. Regenerate the landing-page demos with `bash scripts/ui-review/site-assets.sh <app-worktree>`; inspect the gallery and media output and include approved files in the candidate. The site's loops and embed come from the renderer and otherwise go stale.
+1. Regenerate the landing-page demos with `bash scripts/ui-review/site-assets.sh <app-worktree>`; inspect the gallery and media output and include approved files in the candidate. The site's loops come from the renderer and otherwise go stale. The live demo and its stills (`docs/site`, `docs/media/embed-*`) now rebuild themselves from the newest official release (`.github/workflows/site-deploy.yml`, "Website"; runs after a successful Desktop Release, on master pushes touching `docs/**`, and on dispatch; needs Pages source = GitHub Actions).
 2. Review one app CHANGELOG entry and check the candidate on desktop and Android. The **tag**, not locally edited version files, sets the shipped version: desktop CI patches `package.json`; Android CI stamps `versionName` and a monotonic `versionCode`. Local Gradle values are not Play release values.
 3. After candidate review, explicit release go/no-go, and the authorized merge/push, tag `vX.Y.Z` on the verified app commit on remote master. Its two workflows must both pass: desktop waits for every OS before upload; Android uploads APK/AAB. They contribute to one GitHub Release, but the tag push alone does not prove the release finished.
 4. Check the actual release assets, including `youcoded-release.json` and `youcoded-release.json.sig` — without both the in-app Update button refuses the release even if installers uploaded. **Verify contents, not just names:** download all release installers and the manifest/signature into an empty temporary directory, confirm the manifest version and every installer's SHA-256/byte size match the downloaded files, and verify the signature against `desktop/src/main/update-signing-key.ts` (helpers exported by `desktop/scripts/generate-release-manifest.mjs`). If `Sign release manifest` warned, diagnose it and get approval for manual signing: use a NEW EMPTY folder containing ONLY installers downloaded from that exact release, then from `youcoded/` run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with desktop/src/main/update-signing-key.ts`. Inspect the newly generated manifest before upload. If the release already has either manifest file, check what is there first; use `gh release upload vX.Y.Z <folder>/youcoded-release.json <folder>/youcoded-release.json.sig --clobber` only after confirming an intentional replacement of the pair. Never mix installers from another release into the signing folder.
 5. PartyKit deploys on a master push touching `desktop/partykit/**` (or explicit dispatch), not because a later release tag was pushed. Verify the actual relevant deployment run if game-server changes are part of the release.
+6. Arch Linux: `youcoded/packaging/aur/PKGBUILD` (AUR package `youcoded-bin`) hard-codes `pkgver` and checksums of the release's `.pacman` file. After a release, bump `pkgver`, run `updpkgsums`, regenerate `.SRCINFO` and publish it (never done by the tag workflows).
+
+### Bug-fix releases (hotfixes)
+
+**A major or breaking bug fix can ship on its own, without the unreleased work on master** —
+only with Destin's express consent; minor bugs ship with the next feature release (Destin,
+2026-10-22, card #29). **Numbering (Destin, 2026-10-23):** the middle number is for BIG feature
+releases from master (`1.4.0` → `1.5.0`). The last number is NOT reserved for hotfixes: it also
+serves small releases from master (mostly fixes, speedups and very small features; `1.3.2` →
+`1.3.3`), and urgent fixes shipped alone from the line's lane, the app branch `release/X.Y.x`,
+bump it too (`1.4.0` → `1.4.1`). Beta builds still lead to the next middle-number release
+(`1.4.0-beta`), which stays above every last-number release. The procedure is `youcoded-admin/skills/hotfix/SKILL.md`: decide it is
+a hotfix (no feature, setting or visible design change), fix master first where possible, copy the
+fix onto the lane with `git cherry-pick -x`, put the changelog entry on BOTH branches (the in-app
+"What's new" reads master's CHANGELOG), give it a short review, get Destin's go/no-go, then tag
+`vX.Y.(Z+1)` on the lane. Same tag workflows, signing, manifest and asset verification as a
+feature release.
+
+- **Why the version scheme (option A over a fourth number):** the updater, website and build tools
+  compare three whole numbers, so `1.3.21` would sort ABOVE `1.3.3` and strand everyone on it, and a
+  four-part `1.3.2.1` is not a version npm/electron-builder accept. A for the middle number costs
+  nothing; it is how VS Code (1.95.0 → 1.95.1), Firefox and Electron number theirs.
+- **Why a lane:** compared 2026-10-22 against per-fix Git Flow hotfix branches (concurrent fixes
+  collide), an always-shippable master behind feature switches (Chrome/GitHub style; every unfinished
+  feature would need a switch first) and scheduled channels (Chrome/Firefox; overkill — the beta
+  channel already covers it). The lane is the VS Code/Electron/Kubernetes model.
+- **The lane is created lazily** at the line's newest release tag the first time a fix is needed
+  (for 1.3 that is `v1.3.2`: 1.3.1 and 1.3.2 came from master before lanes existed).
+- **Only the newest line gets fixes; the old lane freezes when `X.(Y+1).0` ships.** The website
+  takes the newest-published official release, and GitHub's "latest" (what the in-app checker reads)
+  follows publication too, so a later `1.3.4` would be offered over `1.4.0`.
+- **Nothing in CI is master-only for this path:** `desktop-ci.yml` runs for PRs into any branch;
+  both release workflows trigger on any `v*` tag; signing admits `v*` tags; Android's `versionCode`
+  comes from the one release workflow's run number and keeps rising.
+- **Auto-install shipped (card #183, youcoded#685):** `updates.autoInstall` defaults on; an update installs
+  when a person quits, "Restart to update" does it at once, and a release without its signed manifest
+  is not offered (the brake). Gradual rollout of new versions is still card #184.
+<!-- verify: {"path": "youcoded/scripts/beta-version.mjs", "contains": "WHY next MINOR, not next patch"} -->
+<!-- verify: {"path": "youcoded-admin/skills/hotfix/SKILL.md", "contains": "release/X.Y.x"} -->
 
 ### Worker (wecoded-marketplace)
 **The Cloudflare Worker auto-deploys on push to master — never tell Destin to run `wrangler deploy` manually.** `.github/workflows/worker-deploy.yml` runs on `push` to `master` (filtered to `worker/**` and the workflow file itself) plus `workflow_dispatch`. The job runs `npm ci` → `npm run typecheck` → `npm test` → `wrangler d1 migrations apply --remote` → `wrangler deploy` → `wrangler secret put` for every required secret. Cloudflare credentials live in repo secrets (`CF_API_TOKEN`, `CF_ACCOUNT_ID`); no local `wrangler login` needed.
@@ -82,9 +121,9 @@ AppImage was testable pre-v1.3.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "\\*\\.pacman"} -->
 
 ```bash
-# No number to type: the build stamps <base>.<run number> itself, e.g. 1.3.1-beta.87.
-# `base` defaults to 1.3.1-beta and only needs passing when the release line moves —
-# and it MUST still sort above the latest release (see the trap below).
+# No version to type: blank `base` automatically selects the next FEATURE release's beta line.
+# After 1.3.x: 1.4.0-beta.1, .2, ... (a 1.3.3 bug fix does not reset it); after 1.4.0: 1.5.0-beta.1.
+# An explicit `base` must match the automatically selected prefix.
 gh workflow run desktop-test-build.yml --repo itsdestin/youcoded --ref <branch>
 
 gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
@@ -127,8 +166,8 @@ if the result does not verify against the public key built into the app, and upl
 the proof the release key works before a release depends on it. Attach both files to the
 pre-release so its downloads can be checked; the website ignores them, since it picks files by
 extension. Branch dispatches skip the job and produce three artifacts, not four. The manifest
-covers **desktop installers only** — the Android APK is not in it. Android betas are numbered from
-their own run counter (beta.80 desktop shipped beside APK `1.3.0-beta.26`); say so in the notes.
+covers **desktop installers only** — the Android APK is not in it. Each workflow has its own
+release-scoped beta counter, so desktop and Android numbers can differ; say so in the notes.
 The beta.78 and beta.80 Windows installers were built with `skip_windows_tests=true`, so their
 tests never ran on Windows.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "youcoded-release-manifest"} -->
@@ -136,8 +175,8 @@ tests never ran on Windows.
 **A pre-release does not touch anyone's installed app.** The in-app update checker reads
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
-website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` now reads
-the `/releases` list; revert when 1.3.1 ships — tracked as a card, `node scripts/cards.mjs index`).
+website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` reads
+the `/releases` list but, since 2026-10-21, filters out pre-releases and drafts, so a public pre-release is NOT served by the website; see `youcoded-admin/skills/release/SKILL.md`).
 
 **Only an official release reaches an install that is not ON the beta channel, and no
 published build had that channel until `1.3.0-beta.86` (2026-09-19).** The channel shipped
@@ -145,9 +184,10 @@ on 2026-09-13, after `1.3.0-beta.80` was built, so every published build before 
 `/releases/latest` and can never be offered a beta — the beta testers on .72–.80 have to
 reinstall from youcoded.ai once, and a pre-release cannot deliver a fix to them. **That is
 what an official release is for, and 1.3.0 (2026-09-20) is the one that moves v1.2.4 users
-and those testers forward.** Betas run on the `1.3.1-beta` line from here: the beta line is
-always one patch AHEAD of the last release, so a beta is never offered a downgrade and the
-next release ends the run.
+and those testers forward.** Blank `base` now advances the beta line automatically to the next
+FEATURE release (`1.3.x` → `1.4.0-beta`), so a beta is never offered a downgrade, a bug-fix
+release never "updates" a beta tester onto a build without the beta's features, and the next
+feature release ends the run.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
@@ -163,16 +203,17 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
 `.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
-Give it the `base` input (default `1.3.1-beta`) and it stamps `<base>.<run_number>` into the APK,
-the way `desktop-test-build.yml` does; the outputs are named after the version.
+Leave `base` blank to select the next feature release automatically; an explicit prefix must match
+that `X.(Y+1).0-beta` line. It uses the same release-scoped policy as `desktop-test-build.yml`; the outputs are
+named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
 
 **`android-test-build.yml` stamps too, since 2026-09-13 — it was the last build path that did
 not.** Its APKs used to inherit the hand-set `versionName` in `app/build.gradle.kts` (`1.2.4`, the
 May release), so every dogfood build reported itself to analytics as a 1.2.4 build — a 1.3 beta
 landing in your own version breakdown as last spring's release. It now takes the same `base` input
-and stamps `<base>.<run_number>`; the build type adds `-dev` / `-releasetest` on top, so the APKs
-read `1.3.0-beta.12-dev`. **`versionCode` is deliberately left alone**: these install as separate
+and uses the shared release-scoped beta resolver; the build type adds `-dev` / `-releasetest`
+on top, e.g. `1.4.0-beta.1-dev` after official release 1.3.1. **`versionCode` is deliberately left alone**: these install as separate
 apps, so Play never sees the number, and raising it would block installing a LOCAL build (still the
 hand-set `20`) over a CI one, because Android refuses a lower `versionCode`.
 <!-- verify: {"path": "youcoded/.github/workflows/android-test-build.yml", "contains": "Stamp dogfood version"} -->
@@ -197,10 +238,28 @@ state doesn't. Quit the running app before launching a beta: two instances on on
 over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
-**Betas number themselves (2026-08-15).** The workflow appends its own GitHub run counter to the
-`base` prefix (`1.3.1-beta` → `1.3.1-beta.87`, `.88`, …), so every beta sorts above the previous one
-and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
-share a name — or a hand-typed number sort *below* the installed one — is gone.
+**Betas number themselves, resetting after each FEATURE release.** All three beta build paths
+use `youcoded/scripts/beta-version.mjs` through `.github/actions/beta-version`. Blank `base`
+selects the next feature release after the highest published official release: `1.3.x` →
+`1.4.0-beta.1`, `.2`, …; release `1.4.0` → `1.5.0-beta.1`. The last number is for small
+releases from master and lane fixes (see **Bug-fix releases** below; Destin, 2026-10-23), so a
+`1.3.3` or `1.4.1` release does not change or reset the beta line.
+Explicit prefixes must match that line: reusing a future-version prefix across releases could
+otherwise duplicate a beta version when its counter resets.
+
+The number is the workflow's lifetime run number minus its last run number from before the
+publication of the **first** official release of the latest line (`X.Y.0`, or that line's earliest
+release). Counting from the latest release instead would let a bug fix restart the count and
+build a second, different `1.4.0-beta.1`. The 1.3 line's first release is 1.3.0, so the first
+1.4.0 betas carry numbers in the tens rather than 1 — unique, just not small. Each workflow counts separately; failed/cancelled attempts
+reserve numbers, while reruns keep the original version because resolution uses the original
+run's creation time. Drafts and prereleases do not reset it. A workflow introduced after a
+release counts from its first run. **Preserve workflow run records:** every resolution checks
+that the retained run count matches the lifetime counter and fails if records were deleted.
+Otherwise a shifted baseline could reuse another build's version, even for queued first
+attempts. Expiring logs/artifacts is fine. Desktop resolves once for all installers and their
+signed manifest. Android's internal `versionCode` remains monotonic.
+<!-- verify: {"path": "youcoded/scripts/beta-version.mjs", "contains": "resolveBetaVersion"} -->
 
 **How the app orders versions (2026-09-11).** One `compareVersions` (`update-manifest-verify.ts`)
 serves both the update check (`update-release-status.ts`) and the install gate, and it orders the
@@ -237,16 +296,15 @@ running betas, who are the ones the channel exists for. An explicit choice wins 
 and turning it off while on a beta is safe: the next stable release still sorts above every beta of
 its line. Settings → Help & feedback → **Get beta builds** (under "Help build YouCoded"), and the same switch under the release
 notes in the version pill's update popup (Destin moved it out of About on 2026-09-13: the rows it now
-sits with are the ones for people helping with the app rather than only using it). Desktop only,
+sits with are the ones for people helping with the app rather than only using it). The settings screen is desktop only (the get/set channel and auto-install calls are also allowed over the phone door, `main/ipc/update.ts`),
 because Android has no in-app updater. Changing it re-checks immediately rather than leaving the 30-minute cache showing an
 answer computed against the other channel.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->
 
 **The `base` prefix is still load-bearing — read this before changing it.** A beta must sort above
-the release it is ahead of. `1.3.1-beta` does (and sorts above every `1.3.0-beta.N` already
-published); `1.2.4-beta.N` sorts *below* a released `1.2.4`, so it
-would show "update available" and offer to downgrade itself to the release it is meant to be ahead
-of. **Bump the minor and suffix**, never patch-suffix the current version.
+the release it is ahead of, so `scripts/beta-version.mjs` accepts only the next feature release after the
+latest official release (`1.4.0-beta` after 1.3.x) and throws on anything else: `1.3.1-beta` sorts *below* the
+released `1.3.1`, so it would show "update available" and offer to downgrade itself. Leave `base` blank.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
 
 **Why the version step exists at all:** only `desktop-release.yml` patches `package.json` (from the
@@ -278,6 +336,11 @@ macOS) and the Android `mipmap-*` layers (needs Chrome, `rsvg-convert`, `magick`
 Pillow). `--themes <wecoded-themes checkout>` also writes each marketplace theme's icon set into
 `themes/<slug>/assets/app-icon/`; `--site docs/brand` writes only the website's per-theme icons
 (header, footer, browser tab; `youcoded/docs/brand/`). Sizes up to 48px come from a separate drawing with bigger eyes.
+Linux packaging reads the generated `desktop/assets/icons/` set (16, 24, 32, 48, 64, 96, 128,
+256 and 512px, plus the existing 1024px path for compatibility) through `linux.icon: icons`;
+a lone 1024px PNG installs into a directory absent from the standard hicolor index. `node scripts/build-icons.mjs --linux-only` regenerates just
+this set without changing Windows, macOS or Android assets. Personal icon-theme overrides
+still take precedence; installers do not delete them.
 **The Mac build needs Xcode 26+**: electron-builder compiles `icon.icon` with `actool`
 (`mac.icon` in `electron-builder.yml`). `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
@@ -309,8 +372,8 @@ To check a dmg before handing it to a tester, extract it and confirm the arch **
 signature**:
 
 ```bash
-7z x -y YouCoded-<version>.dmg -o/tmp/dmgcheck >/dev/null
-find /tmp/dmgcheck -type d -name '*-darwin-*'        # expect darwin-x64 in the unsuffixed dmg
+7z x -y YouCoded-Installer-<version>-x64.dmg -o/tmp/dmgcheck >/dev/null
+find /tmp/dmgcheck -type d -name '*-darwin-*'        # expect darwin-x64 in the -x64 dmg (the Apple Silicon one is -arm64)
 file "$(find /tmp/dmgcheck -path '*MacOS/YouCoded')" # expect Mach-O 64-bit x86_64
 ls -d /tmp/dmgcheck/*/YouCoded.app/Contents/_CodeSignature   # MUST exist — see below
 ```
@@ -326,13 +389,75 @@ a verdict and compares the signing identifier to the bundle's own `CFBundleIdent
 `mac.forceCodeSigning` makes electron-builder itself fail when it cannot sign — so CI
 catches it first; this recipe is the manual counterpart for a dmg already in hand (on a Mac,
 run the same `codesign --verify --deep --strict` on the extracted `.app`).
-Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md`.
+Historical postmortem: `docs/archive/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md` (superseded; current signing guidance below).
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "identity: '-'"} -->
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "forceCodeSigning: true"} -->
 <!-- verify: {"path": "youcoded/desktop/scripts/verify-mac-signature.sh", "contains": "--verify --deep --strict --verbose=2"} -->
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-release.yml", "contains": "verify-mac-signature.sh"} -->
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "verify-mac-signature.sh"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/verify-mac-signature.test.ts"} -->
+
+### macOS Developer ID signing and notarization
+
+**Enabled on master by app PR #655 (`7c0a46e1c`); release intentionally deferred.**
+The protected `macos-signing` environment supplies future trusted Mac builds. Candidate
+run `39292665007` produced **1.3.2-beta.3** Intel and Apple Silicon installers: both
+apps and both final DMGs were accepted by Apple with no reported issues. Staples,
+expected-team signatures, Gatekeeper and apps mounted from the final DMGs passed.
+Final integration included current master and passed PR/full-platform CI before merge.
+Temporary branch access and source exceptions are removed. Public **1.3.1** installers
+remain unchanged until a separately approved release.
+
+- Publisher: **Destin's Adventures, LLC**, Team ID `C2PSZTNNA4`. The initial Developer ID
+  Application certificate expires **2027-11-18 14:26:15 UTC**; renew before that date.
+- Protected environment deployment rules admit **branch `master` and tags `v*` only**.
+  Secrets are `MAC_CSC_LINK` (base64 PKCS#12 signing identity), `MAC_CSC_KEY_PASSWORD`,
+  and `APPLE_API_KEY_BASE64` (base64 API private key). Nonsecret environment variables
+  are `APPLE_TEAM_ID`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER`. Never print private
+  material or place it in checkout/artifact folders. The first Linux/OpenSSL 3
+  export (PBES2/AES-256, SHA-256 MAC) decrypted on Linux but macOS `security import`
+  rejected it. The retry container uses explicit `-keypbe PBE-SHA1-3DES
+  -certpbe PBE-SHA1-3DES -macalg sha1` for importer compatibility; native import
+  succeeded in the retry. These options wrap the transport file, not app signatures.
+- **electron-builder 26.15.3 keychain compatibility:** `patch-mac-signing-keychain.mjs`
+  applies upstream #10066/#10101's three-line correction: partition-list access uses
+  the generated keychain password, not the certificate password. Source-shape checks
+  fail on drift, and temp+rename avoids changing shared dependency inodes. Both signed
+  workflows run it, followed by `check-mac-signing-keychain.mjs`, before the full tests.
+  The preflight finds the expected team, signs a disposable copy of `/usr/bin/true`,
+  verifies it, and removes complete/partial keychains and temporary files. It never
+  signs the system executable itself. API credentials remain build-step-only.
+  `temp-file` is declared at its already-locked 3.4.0 version as a direct build dependency;
+  electron-builder is not upgraded. Regression tests exercise its actual module with
+  native commands replaced and include the real temporary-directory implementation.
+- The base `desktop/electron-builder.yml` intentionally stays ad-hoc for ordinary CI,
+  development and untrusted branches. The `electron-builder.mac-sign.yml` overlay
+  replaces `identity: '-'` with the Developer ID identity, requires signing, enables
+  hardened runtime and notarization, and signs the DMG. Both packaging workflows select
+  it only on the trusted Mac leg (release: master/v*; beta: master).
+- Only the native preflight and signed-build steps receive certificate credentials;
+  the API private key is signed-build-only. The build step decodes that API key into
+  a mode-0600 runner-temp file, exports **APPLE_API_KEY as a file path**, builds,
+  then runs `node scripts/notarize-mac-installers.mjs release` to submit, staple and
+  validate final DMGs. Exit trapping and an always-run cleanup remove the API file.
+  The app is notarized/stapled by electron-builder before the DMG is made; the final
+  DMG receives its own ticket before artifact upload or release-manifest hashing.
+  The helper mounts each final image read-only and runs the strict app verifier
+  against the contained app, then detaches it even when app verification fails.
+- `SIGN_MACOS=true APPLE_TEAM_ID=C2PSZTNNA4 bash scripts/verify-mac-signature.sh`
+  (from `desktop/`, on macOS) additionally requires Developer ID authority, the expected
+  team, hardened runtime, timestamp, a valid staple and Gatekeeper acceptance. Office
+  converter signatures are inspected independently because they live under Resources.
+  Credential-free builds retain the existing seal/identifier/Office verification.
+
+Linux tests use stand-ins for Apple tools and prove failure handling/configuration only.
+Real Mac CI passed 20,609 tests (90 skipped), both architectures' packaged Office open/save/
+PDF export, and the arm64 app launch smoke test. Existing Intel Tahoe VM also passed
+quarantined installation/normal Open confirmation and visibly reached fresh onboarding
+with Gatekeeper enabled; old guest app/profiles were backed up and restored. Download
+used private HTTP plus an explicit quarantine mark, not Safari. Pristine-OS/browser
+journey, Apple Silicon GUI installation and authenticated chat remain unverified. Signing/notarization are not Mac App Store submission and do not
+publish a release. Task history and submission IDs: `docs/archive/plans/2026-10-19-apple-signing.md`.
 
 ### Windows signing
 
@@ -367,8 +492,7 @@ certificate with downloads, so the blue warning fades over weeks rather than van
 
 **What users see is checked in a clean guest, not here.** CI proves the signature is valid; only
 a real first launch shows the SmartScreen / Gatekeeper wall. After any signing change:
-`scripts/vm/vm.sh win start && scripts/vm/vm.sh win load beta` (and `mac` once Apple signing
-lands) puts the newest beta in the guest's Downloads with the internet mark — see
+`scripts/vm/vm.sh win start && scripts/vm/vm.sh win load beta` (`mac` too; a signed beta needs a master dispatch) puts the newest beta in the guest's Downloads with the internet mark — see
 `docs/vm-testing.md` → Quick loop.
 
 ## Local verification (typecheck + CI-style build)
@@ -401,4 +525,4 @@ adb install -r app/build/outputs/apk/releaseTest/*.apk
 # Same data isolation as the regular debug app — no risk to your real install.
 ```
 
-Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` builds `assembleReleaseTest` on **every PR** and on pushes to `master`, so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.
+Use this before tagging if you've touched code that involves reflection, annotation processing, or other R8-sensitive patterns. `android-ci.yml` is a reusable workflow called from `desktop-ci.yml` (the PR/master/nightly entry point); it builds `assembleReleaseTest` for every non-docs-only PR and master push (a diff entirely under `docs/` skips it), so most regressions get caught at PR time. (`android-test-build.yml` is `workflow_dispatch` only — a manual beta build, not a push trigger.) Both youcoded CI workflows moved from a branch-name allowlist to `pull_request` on 2026-07-23; see `docs/archive/specs/2026-07-23-dependabot-design.md` §4.1 for why.

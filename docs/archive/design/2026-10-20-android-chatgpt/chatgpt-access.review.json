@@ -1,0 +1,43 @@
+{
+  "title": "ChatGPT on Android and remote access",
+  "key": "android-chatgpt-access",
+  "stage": "review",
+  "out": "chatgpt-access.review.html",
+  "images": "images/chatgpt-access.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light", "midnight", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "CG-1",
+      "surface": "Android",
+      "path": "Settings → Assistant settings → Cloud providers",
+      "crop": "settings/assistant/cloud#android-chatgpt",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Android can connect a ChatGPT account alongside the other providers.",
+      "changed": "ChatGPT now appears with a Sign in with ChatGPT button when the app is using the phone's own backend. The same entry is available during first-time setup. At phone width, provider buttons sit below the account text instead of overlapping the names.",
+      "notice": "No need to disconnect Claude Code or OpenRouter. This reuses the existing desktop ChatGPT card, Claude Code account card and OpenRouter provider card.",
+      "risk": "The picture uses a fake account in the shared renderer. A real browser login on your phone is not verified, and this review does not install or update your phone app."
+    },
+    {
+      "id": "CG-2",
+      "surface": "Remote access",
+      "path": "Settings → Assistant settings → Cloud providers, with the host signed out of ChatGPT",
+      "crop": "settings/assistant/cloud#remote-chatgpt",
+      "headline": "Remote clients see ChatGPT and where to connect it.",
+      "changed": "The hidden card is now visible. Instead of an unusable sign-in button, it says: To connect ChatGPT, sign in on the host device.",
+      "notice": "Account visibility no longer depends on whether this screen can receive the browser sign-in callback. Existing desktop sign-in behavior stays unchanged.",
+      "risk": "Before reproduces the baseline source, not your installed build; its fake backend uses the old bridge's actual unsupported flag rather than the old mock's incorrect default."
+    },
+    {
+      "id": "CG-3",
+      "surface": "Remote access",
+      "path": "Settings → Assistant settings → Cloud providers, with the host already signed in",
+      "crop": "settings/assistant/cloud#remote-chatgpt-account",
+      "headline": "A connected host account shows its plan and usage remotely.",
+      "changed": "The ChatGPT card shows the host account, plan and usage bars instead of disappearing on remote clients. Its existing My account and Sign out controls remain available.",
+      "notice": "The connection belongs to the backend you are controlling. Switching between the phone's own backend and another device uses that backend's account support.",
+      "risk": "Usage and account details in these pictures are fixtures, not your real account. The same baseline reproduction caveat applies as on the previous step."
+    }
+  ]
+}

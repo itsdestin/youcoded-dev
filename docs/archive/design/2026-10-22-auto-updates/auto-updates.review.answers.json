@@ -1,0 +1,59 @@
+{
+ "deck": "auto-updates-review",
+ "started": "2026-10-22T21:15:12.461Z",
+ "submitted": "2026-10-22T21:16:50Z",
+ "cur": 6,
+ "answers": {
+  "R-1": {
+   "note": "just do 'Ready - Restart Needed\"",
+   "t": 1792703747405,
+   "v": "other",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "t": 1792703757491,
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "t": 1792703762447,
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "t": 1792703766413,
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "yes",
+   "t": 1792703778094,
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "yes",
+   "t": 1792703801636,
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-group": {
+   "v": "pick",
+   "pick": "own-group",
+   "t": 1792703808399,
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

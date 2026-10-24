@@ -1,0 +1,15 @@
+{
+ "deck": "website-demo-light-questions",
+ "started": "2026-10-19T00:24:09.641Z",
+ "submitted": "2026-10-19T00:24:16Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "chat-first",
+   "t": 1792369455007,
+   "seconds": 5,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

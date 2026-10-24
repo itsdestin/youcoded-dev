@@ -38,7 +38,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
 const [scenePath, outBase] = process.argv.slice(2);
 if (!scenePath || !outBase) { console.error('usage: node record.mjs <scene.json> <outBase>'); process.exit(2); }
-const scene = JSON.parse(readFileSync(scenePath, 'utf8'));
+const scene = JSON.parse(readFileSync(scenePath, 'utf8').replaceAll('{{END_THEME}}', process.env.END_THEME || 'golden-sunbreak'));
 const W = scene.width ?? 1440, H = scene.height ?? 900;
 // `zoom` (default 1): film the page ZOOMED IN, the way Ctrl+= does in the app —
 // the layout runs at W/zoom × H/zoom CSS px and Chrome paints it at `zoom`
@@ -129,7 +129,28 @@ tab.on((m) => {
 });
 
 // ---- selectors (shared with shot.mjs) ----
-const rectOf = async (expr) => evaluate(rectOfExpr(expr));
+const rectOf = async (expr, inFrame) => inFrame ? frameRectOf(expr) : evaluate(rectOfExpr(expr));
+// WHY: Pages (Home, Finance) run in a sandboxed srcdoc iframe the outer document cannot read, so
+// selectors never reach their buttons. An action with `"in": "page"` is evaluated inside that
+// iframe through a CDP isolated world (which may read any frame's DOM), and its rect is shifted
+// by the iframe's own position so the humanised cursor still lands on the right pixel.
+async function frameRectOf(expr) {
+  // The page iframe is a separate Chrome target (opaque origin): find its session once per take.
+  // Auto-attach events arrive through the tab's listener; the child's commands go via the browser connection.
+  if (!frameSession) {
+    tab.on((m) => { if (m.method === 'Target.attachedToTarget' && m.params.targetInfo.type === 'iframe') frameSession = m.params.sessionId; });
+    await send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+    for (let i = 0; i < 20 && !frameSession; i++) await sleep(100);
+  }
+  if (!frameSession) return null;
+  const r = await tab.browser.send('Runtime.evaluate', { expression: rectOfExpr(expr), returnByValue: true }, frameSession).catch(() => null);
+  const inner = r?.result?.value;
+  if (!inner) return null;
+  const off = await evaluate(`(() => { const f = document.querySelector('iframe[srcdoc]'); if (!f) return null; const b = f.getBoundingClientRect(); return {x:b.left,y:b.top}; })()`);
+  if (!off) return null;
+  return { ...inner, x: inner.x + off.x, y: inner.y + off.y };
+}
+let frameSession = null;
 
 // ---- humanised input ----
 let cur = { x: CW / 2, y: CH / 2 };
@@ -143,8 +164,8 @@ async function moveTo(p, ms = 400) {
   }
   cur = p;
 }
-async function click(expr) {
-  const p = await rectOf(expr);
+async function click(expr, inFrame) {
+  const p = await rectOf(expr, inFrame);
   if (!p) throw new Error(`MISSING ${expr}`);
   await moveTo(p, 300);
   await send('Input.dispatchMouseEvent', { type: 'mousePressed', x: p.x, y: p.y, button: 'left', clickCount: 1 });
@@ -221,12 +242,22 @@ await send('Emulation.setDeviceMetricsOverride', { width: CW, height: CH, device
 // is a sandboxed cross-origin iframe, and Chromium's screencast does not
 // repaint one of those after a resize. Setting the width up front means it is
 // laid out correctly from the first frame.
-const seeded = { 'youcoded-theme': scene.theme ?? 'midnight', ...(scene.storage ?? {}) };
+// WHY THEME: the landing page plays the clip matching the theme its visitor picked, so every
+// scene is filmed once per site theme (Destin, 2026-10-21). THEME=<slug> overrides scene.theme so one
+// scene file serves all four takes; END_THEME=<slug> fills the {{END_THEME}} token in action
+// strings (the "yours" clip swaps to a different theme than it starts in). Both unset = old behaviour.
+const START_THEME = process.env.THEME || scene.theme || 'midnight';
+const seeded = { 'youcoded-theme': START_THEME, ...(scene.storage ?? {}) };
 await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{const s=${JSON.stringify(seeded)};for(const k in s)localStorage.setItem(k,String(s[k]));}catch{}` });
 await send('Page.navigate', { url });
 const READY = scene.ready ?? "document.readyState === 'complete' && document.body.innerText.trim().length > 20";
 for (let i = 0; i < 120; i++) { if (await evaluate(READY)) break; await sleep(250); }
 await sleep(scene.boot ?? 3500);
+// WHY pauseBackground (2026-10-21): a theme's moving background makes every pointer move wait on a
+// frame, so takes in golden-sunbreak / halftone-dimension ran 25-40 s against ~15 s in a still theme.
+// This is the same window-hidden pause row7-play and the film's scenes already use: the pattern stays
+// on screen, it just stops drifting. Opt-in per scene; unset keeps the old behaviour.
+if (scene.pauseBackground) await evaluate("(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()");
 await moveTo({ x: CW * 0.6, y: CH * 0.55 }, 1);
 
 // ---- record ----
@@ -239,14 +270,14 @@ const t0 = Date.now();
 // are the marks a beat trims to most often.
 const stamps = [];   // one per action: wall-clock start/end, for the marks file
 for (const [i, a] of scene.actions.entries()) {
-  const kind = Object.keys(a).find((k) => !['settle', 'mark', 'tag', 'ms', 'cps', 'to', 'timeout', 'modifiers'].includes(k)) ?? 'noop';
+  const kind = Object.keys(a).find((k) => !['settle', 'mark', 'tag', 'ms', 'cps', 'to', 'timeout', 'modifiers', 'in'].includes(k)) ?? 'noop';
   const start = Date.now();
   if (a.hold != null) await sleep(a.hold);
   else if (a.wait != null) await sleep(a.wait);
-  else if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo)); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
-  else if (a.click) await click(selExpr(a.click));
+  else if (a.moveTo) { const p = await rectOf(selExpr(a.moveTo), a.in === 'page'); if (!p) throw new Error(`MISSING ${a.moveTo}`); await moveTo(p, a.ms ?? 400); }
+  else if (a.click) await click(selExpr(a.click), a.in === 'page');
   else if (a.drag) await drag(selExpr(a.drag), selExpr(a.to), a.ms);
-  else if (a.clickText) await click(textExpr(a.clickText, a.tag));
+  else if (a.clickText) await click(textExpr(a.clickText, a.tag), a.in === 'page');
   else if (a.typeSlow != null) await typeSlow(a.typeSlow, a.cps);
   else if (a.key) await key(a.key, a.modifiers ?? 0);
   // waitFor / waitForText: poll until the element is on screen (default 20 s),
@@ -260,7 +291,7 @@ for (const [i, a] of scene.actions.entries()) {
     const containsExpr = (text, tag) => `[...document.querySelectorAll(${JSON.stringify(tag ?? '*')})].filter(e => e.offsetParent !== null && e.textContent.includes(${JSON.stringify(text)})).sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]`;
     const expr = a.waitFor ? selExpr(a.waitFor) : containsExpr(a.waitForText, a.tag);
     const deadline = Date.now() + (a.timeout ?? 20000);
-    while (!(await rectOf(expr))) { if (Date.now() > deadline) throw new Error(`TIMEOUT waiting for ${expr}`); await sleep(150); }
+    while (!(await rectOf(expr, a.in === 'page'))) { if (Date.now() > deadline) throw new Error(`TIMEOUT waiting for ${expr}`); await sleep(150); }
   }
   // autopilot: poll a JS predicate in the page and press a key when it says so —
   // the recorder "plays" a game (Flappy) by reading its DOM instead of a fixed rhythm.

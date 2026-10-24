@@ -1,0 +1,97 @@
+{
+  "title": "Background chip, round 2 — the Subagents chip's look, and a Stop button to pick",
+  "key": "background-status-review-2",
+  "out": "background-status-2.review.html",
+  "images": "images/background-status-2.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs/round2",
+    "stop": "runs/stop"
+  },
+  "labels": {
+    "before": "First version",
+    "after": "Now"
+  },
+  "crops": {
+    "stop-filled": ["stop", "filled", "700x720+0+0"],
+    "stop-outline": ["stop", "outline", "700x720+0+0"],
+    "stop-beside": ["stop", "beside", "700x720+0+0"],
+    "stop-icon": ["stop", "icon", "700x720+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Status bar",
+      "path": "A Claude Code conversation with commands left running → the bottom bar",
+      "crop": "chat#background-cc",
+      "runs": ["before", "after"],
+      "headline": "The Background chip now looks like the Subagents chip: an icon first, then one count in words.",
+      "changed": "\"Background ● 2 ● 1 ✓ 1\" is now \"⠋ 2 commands\" — the same moving icon and wording the Subagents chip uses. While anything is running, that is the only number. Once everything has ended it reads \"1 failed · 3 finished\" with a red or check icon first, the way the Subagents chip does.",
+      "notice": "Every number has its word beside it, so there is nothing to decode. The full breakdown is in the popup's title line and the chip's hover text.",
+      "risk": "While commands are running, a failed one is not counted on the chip until everything has ended; you see it in the popup. When nothing is running, \"3 finished\" doesn't say \"commands\", same as the Subagents chip — side by side, they are told apart by position and hover text.",
+      "highlight": { "box": [0, 94, 50, 6] }
+    },
+    {
+      "id": "R-2",
+      "surface": "Status bar",
+      "path": "The app at phone width",
+      "crop": "chat#background-native-phone",
+      "runs": ["before", "after"],
+      "headline": "At phone width the chip keeps its words, exactly like the Subagents chip beside it.",
+      "changed": "The first version dropped the word and showed just dots and numbers. Now it says \"⠋ 1 command\" at every width.",
+      "notice": "The two chips read the same way on a phone.",
+      "risk": "Slightly wider than the dot-only version, so on a very crowded bar it may move to the second line sooner.",
+      "highlight": { "box": [0, 90, 100, 10] }
+    },
+    {
+      "id": "R-3",
+      "surface": "Status bar",
+      "path": "Claude Code conversation → click the Background chip",
+      "crop": "chat/background#cc",
+      "runs": ["before", "after"],
+      "headline": "Each row's status label now sits at the top right, level with the command's name.",
+      "changed": "The Running / Watching / Failed / Finished label was centred on the row's height; it now lines up with the first line, as on the Subagents popup's cards.",
+      "notice": "The name and its state read as one line, top to bottom.",
+      "risk": "None expected — only the label's height in the row moved."
+    },
+    {
+      "id": "C-1",
+      "surface": "Status bar",
+      "path": "Native conversation → click the Background chip → a running command",
+      "themes": ["midnight"],
+      "headline": "Which Stop button should a running command's row have?",
+      "notice": "Whichever you pick, it does the same thing: ends the command and everything it started, without asking first, exactly like the Stop on its card. Only native conversations get it.",
+      "variants": [
+        {
+          "id": "filled",
+          "label": "Filled, in the label's place",
+          "crop": "stop-filled",
+          "summary": "The first version: a solid accent-coloured Stop where the Running label would be.",
+          "risk": "The loudest thing in the popup, and there is no Running label beside it."
+        },
+        {
+          "id": "outline",
+          "label": "Outlined, in the label's place",
+          "crop": "stop-outline",
+          "summary": "The same spot, drawn as an outlined button — the look of the Stop on the Subagents popup's cards.",
+          "risk": "No Running label; the row's section heading is what says it is running."
+        },
+        {
+          "id": "beside",
+          "label": "Running label + outlined Stop",
+          "crop": "stop-beside",
+          "summary": "Keeps the green Running label every other row has, with an outlined Stop to its right.",
+          "risk": "Takes the most room; a long command name wraps a little sooner."
+        },
+        {
+          "id": "icon",
+          "label": "Running label + stop icon",
+          "crop": "stop-icon",
+          "summary": "The Running label, then a small round stop symbol. Hovering shows \"Stop this command\".",
+          "risk": "The smallest target, and on a phone there is no hover text, so the symbol has to speak for itself. It is the same symbol the Stopped label uses."
+        }
+      ]
+    }
+  ]
+}

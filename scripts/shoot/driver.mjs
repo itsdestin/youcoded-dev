@@ -105,9 +105,59 @@ export function pointerRestsOnClick(steps) {
 
 /** One step, in words — for step lines and failure reports. */
 export function stepText(s) {
+  if (s.do === 'wait-scroll-idle') return `wait for ${s.area} scrolling to settle`;
   if (s.do === 'expect') return `expect${s.not ? ' NOT' : ''} ${s.control ? describe(s.control) : s.screen ? `screen ${s.screen}` : `"${s.text}"`}`;
   if (s.target) return `${s.do}${s.dir ? ` ${s.dir}${s.times > 1 ? ` ×${s.times}` : ''} over` : ''} ${describe(s.target)}${s.to ? ` to ${describe(s.to)}` : ''}${s.text ? ` "${s.text}"` : ''}`;
   return `${s.do} ${s.key ?? (s.text !== undefined ? `"${s.text}"` : null) ?? s.screen ?? `${s.dir}${s.times > 1 ? ` ×${s.times}` : ''}`}`;
+}
+
+// The readiness observer is intentionally self-contained because CDP evaluates it in-page.
+// Stability is scoped to the visible chat scroller and resets on its scroll or geometry changes.
+function waitForChatScrollStability({ quietMs = 500, timeoutMs = 8_000 } = {}) {
+  return new Promise((resolve, reject) => {
+    let target; let resize; let mutations; let quietTimer; let deadlineTimer; let finished = false; let previous;
+    const cleanup = () => {
+      clearTimeout(quietTimer); clearTimeout(deadlineTimer);
+      if (target) target.removeEventListener('scroll', changed);
+      resize?.disconnect(); mutations?.disconnect();
+    };
+    const finish = (error) => { if (finished) return; finished = true; cleanup(); error ? reject(error) : resolve(); };
+    const visible = () => {
+      if (!target.isConnected) return false;
+      const r = target.getBoundingClientRect(); const s = getComputedStyle(target);
+      return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+    };
+    const signature = () => { const r = target.getBoundingClientRect(); return [target.scrollTop, target.scrollHeight, target.clientHeight, r.x, r.y, r.width, r.height].join(':'); };
+    const check = (forceReset = false) => {
+      if (finished) return;
+      try {
+        if (!visible()) { finish(new Error('visible chat scroller became hidden or disconnected')); return; }
+        const next = signature();
+        const relevantChange = next !== previous;
+        if (relevantChange) previous = next;
+        if (forceReset || relevantChange) {
+          clearTimeout(quietTimer);
+          quietTimer = setTimeout(() => { try { if (!visible()) finish(new Error('visible chat scroller became hidden or disconnected')); else if (signature() !== previous) { previous = signature(); check(true); } else finish(); } catch (error) { finish(error); } }, quietMs);
+        }
+      } catch (error) { finish(error); }
+    };
+    const changed = () => check(true);
+    // WHY: cosmetic/hidden descendant mutations must not postpone a stable scroller.
+    const observedChange = () => check();
+    try {
+      target = [...document.querySelectorAll('.chat-scroll')].find((el) => {
+        const r = el.getBoundingClientRect(); const s = getComputedStyle(el);
+        return el.isConnected && r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+      });
+      if (!target) { finish(new Error('visible chat scroller not found')); return; }
+      previous = signature();
+      target.addEventListener('scroll', changed, { passive: true });
+      resize = new ResizeObserver(observedChange); resize.observe(target);
+      mutations = new MutationObserver(observedChange); mutations.observe(target, { subtree: true, childList: true, attributes: true });
+      deadlineTimer = setTimeout(() => finish(new Error('visible chat scroller did not stabilize before 8 s')), timeoutMs);
+      check(true);
+    } catch (error) { finish(error); }
+  });
 }
 
 export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
@@ -265,6 +315,11 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
   // ─── Doing one step ──────────────────────────────────────────────────────
   async function perform(step, n) {
     switch (step.do) {
+      case 'wait-scroll-idle':
+        if (step.area !== 'chat') throw new Error('wait-scroll-idle supports only area "chat"');
+        // WHY: startup chat scrolling dismissed the correctly opened comment menu in the photo renderer.
+        await tab.evaluate(`(${waitForChatScrollStability.toString()})()`, 10_000);
+        return;
       case 'click': case 'double-click': case 'right-click': case 'hover': {
         let p = await where(step.target, n);
         await moveTo(p.x, p.y);

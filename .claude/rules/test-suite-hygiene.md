@@ -35,9 +35,8 @@ verify:
 
 # Writing tests that stay green under load — and on Windows
 
-**A test that fails only sometimes is worse than one that fails always** — it teaches
-sessions to disbelieve the suite. Depth: `docs/testing-under-load.md`. **CI runs this suite on
-Windows and macOS too.**
+**A test that fails only sometimes is worse than one that fails always.** Depth:
+`docs/testing-under-load.md`. **CI runs this suite on Windows and macOS on master pushes and nightly; PRs run Linux only, so a Windows-only break shows after merge.**
 
 ## Windows runs this suite too
 **Invariant:** a path from `import.meta.url` is `fileURLToPath(new URL(…))`, never
@@ -87,7 +86,7 @@ filesystem side effect** (`knip` imports it). **Guard:** `tests/home-isolation.t
 ## A guard you did not break is a guard you did not test
 **Invariant:** invert what a test guards, watch it go red, restore it — and paste that run.
 Run only the test you are proving (`-t "<name>"`); break the real site, not a lookalike.
-**Why:** three green guards proved nothing (2026-09-04). **Guard:**
+**Why:** three green guards proved nothing. **Guard:**
 `tests/helpers/guard-scope.ts`; `scripts/ast-grep/check.sh` fails a rule firing on no fixture.
 **A new source-text guard needs a reason a rule cannot express** (cross-language parity,
 CSS↔TSX coupling).
@@ -95,10 +94,11 @@ CSS↔TSX coupling).
 ## A test lives with its feature and is named for its behaviour
 **Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), named for
 what it renders or calls — never a new file per task. Titles state behaviour: no dates, `§`,
-task ids or review rounds. Shared setup lives in `tests/helpers/`. **Why:** 826 files, 62% in name clusters (2026-09-16).
+task ids or review rounds; shared setup in `tests/helpers/`. **Why:** name clusters (826 files when written; now over 1,000).
 **Guard:** `scripts/ast-grep/rules/test-name-describes-behaviour.yml`.
 
 ## Before calling a failure "flake"
 Run it alone (passes → load-sensitive) **and** in a pristine `origin/master` worktree (still
-fails → pre-existing). **Then fix it now, pre-existing or not — never file it as a
-work item (Destin, 2026-09-17): a filed flake nobody owns is how master stayed red for a week.**
+fails → pre-existing). **Never manufacture load to reproduce it** (`yes`, busy loops): the
+machine is shared (2026-10-21) — make its failure message explain the next. **Then fix it
+now, never file it (Destin, 2026-09-17): a filed flake nobody owns kept master red a week.**

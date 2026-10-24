@@ -624,7 +624,7 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
   never smoothness. Spec + the rejected design:
   `docs/archive/specs/2026-08-28-cycle-3-bounding-the-conversation-window.md`. What remains:
   `docs/archive/handoffs/2026-09-03-perf-next-steps-handoff.md`
-- [x] 2026-09-03 dev-workspace — The Android build labels the vendored terminal emulator GPLv3 while its own VENDORED.md says Apache 2.0 (VENDORED.md was right: Termux's LICENSE.md at v0.118.1 carves terminal-emulator out as Apache 2.0, and Destin is the sole author of app/, so the whole repo is now MIT — youcoded#400; the wider formalization plan is docs/active/investigations/2026-09-03-formalization-costs-and-risks.md)
+- [x] 2026-09-03 dev-workspace — The Android build labels the vendored terminal emulator GPLv3 while its own VENDORED.md says Apache 2.0 (VENDORED.md was right: Termux's LICENSE.md at v0.118.1 carves terminal-emulator out as Apache 2.0, and Destin is the sole author of app/, so the whole repo is now MIT — youcoded#400; the dated formalization research is archived at docs/archive/investigations/2026-09-03-formalization-costs-and-risks.md)
 - [x] 2026-09-03 dev-workspace — File-watching tests went red on the macOS CI leg every week or two, always with zero watcher events, on branches touching nothing related (youcoded#399) — cause is that macOS `fs.watch()` RETURNS BEFORE THE OS WATCH IS ARMED, so a change in that window is never reported at all; Linux and Windows arm inside the call. Measured with a dependency-free probe on a 3-core runner: 4 missed of 200 immediate writes under CPU load, 0 of 200 at a 25ms gap, 0 of 200 on Linux at any gap. Both watchers now reconcile once on subscribe, since there is no "armed" signal to wait for. Real app defect too, not just CI: a commit made just after a project opened went unnoticed. 4/15 red before, 0/15 after, same runner and load. Three more watcher sites share the cause and are filed unfixed
 - [x] 2026-09-03 marketplace — Put the Worker on a custom domain (api.youcoded.ai attached 2026-09-03; wecoded-marketplace#84 declares the route, #85 keeps env.test off it; the app switches hosts in youcoded#406; workers.dev stays up for older installs)
 - [x] 2026-09-03 marketplace — The Worker's rate limit has never fired in production (fixed by the custom domain: 70 sequential GET /ratings/:id on api.youcoded.ai → 23×200 then 47×429; the same probe on workers.dev is still 70×200. Report: docs/archive/investigations/2026-09-01-marketplace-worker-workers-dev-no-cache.md)
@@ -869,3 +869,18 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-08 perf — Zero-hitch program shipped: long-code-block and sheet-grid fixes, passive wheel, terminal flow control, streaming cadence, always-on hitch recorder, cheaper session switches (youcoded#616 `cc3bd0de0`, youcoded-dev#250 `4842ebea`); open items stay in docs/roadmap/perf.md
 - [x] 2026-10-16 #21 Redo the review of the session-switch animation (workspace 0eee2ed6 (session motion shipped 2026-09-03, youcoded#404))
 - [x] 2026-10-17 #153 Work items, the Work board, and pages that see chats and run programs (youcoded-dev#266 7ef1b5af6, youcoded#627 c6a18be4e)
+- [x] 2026-10-18 #162 Linux updates: show installer progress and outcome (https://github.com/itsdestin/youcoded/pull/630)
+- [x] 2026-10-19 #166 Refresh website demo: 1.3.1, Home and Finance, YouCoded Light (https://github.com/itsdestin/youcoded/pull/640)
+- [x] 2026-10-19 #167 Ship discoverable Linux launcher icons (https://github.com/itsdestin/youcoded/pull/639)
+- [x] 2026-10-20 #28 Sign the Mac app so it opens without warnings (https://github.com/itsdestin/youcoded/pull/655 (7c0a46e1c; release deferred))
+- [x] 2026-10-20 #169 Claude message queues on par with native sessions (itsdestin/youcoded#657 (a00cb691604c4013d50f1b15f96011bb1d37a27c))
+- [x] 2026-10-20 #170 Add offline next-word prediction to Swipe Keyboard (https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.2.0)
+- [x] 2026-10-20 #171 Add language and regional profiles to Swipe Keyboard (https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.2.0)
+- [x] 2026-10-20 #163 Restore Welcome back sessions quickly and safely (itsdestin/youcoded#662 (a6c47f79ae4120aea48e0e5c514a420ce81d5de7))
+- [x] 2026-10-21 #110 Comparing two big, different files freezes the app (https://github.com/itsdestin/youcoded/pull/665)
+- [x] 2026-10-21 #79 Website: landing page fixes, visitor stats and how it leads (youcoded#671 74c11f117, youcoded-dev#294 f3078e46)
+- [x] 2026-10-22 #2 Reopened chats: wrong labels and wrong times (youcoded#675 4562b61f, youcoded-dev#297 c42b9c2f)
+- [x] 2026-10-23 #183 Automatic app updates with an emergency brake (youcoded#685 (c3b48bc3d), youcoded-admin#18, youcoded-dev#306)
+- [x] 2026-10-23 #180 Slide on the spacebar to move the cursor in Swipe Keyboard (itsdestin/swipe-keyboard PR #6 (08e4aad))
+- [x] 2026-10-23 #191 Model switches show as a divider, not a bubble, and native chats keep their switch history (youcoded#689 (d1a204a7), youcoded-dev#311)
+- [x] 2026-10-23 #193 Message queue: stuck chip messages, attachment wording, recovery, instant bubble, terminal-view stall, emoji terminal widths (youcoded#691 (b3665d98), youcoded-dev#314 (48aff39c))

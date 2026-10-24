@@ -279,7 +279,7 @@ YouCoded is not just a front-end for Claude Code. It ships a **first-party "nati
 - **A harness evaluator** — runs real cases across a matrix of code-version × instruction-file × model with dual grading (mechanical checks + an LLM judge that must quote evidence). It found **9 real defects** that thousands of passing unit tests missed.
 - **Self-verifying documentation** — `/audit` mechanically verifies doc claims against code and fixes what it finds in the same run.
 - A documented **live-app safety discipline** — all runtime verification happens in an isolated dev instance, never in the running product.
-- **E2E-verified platform claims** — VM-testing flows on Windows / Ubuntu / macOS guests for first-run, installers, and sign-in.
+- **VM testing** — Windows / Ubuntu / macOS guests are used for first-run, installer and sign-in flows. A preserved Fedora 44 KDE guest is also available for rpm/KDE/touchscreen testing; see [the current VM inventory](docs/vm-testing.md). Availability does not establish every app flow as verified on that guest.
 
 ---
 

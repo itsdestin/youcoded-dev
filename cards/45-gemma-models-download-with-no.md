@@ -4,7 +4,7 @@ title: Downloads: one shared downloader, with Gemma's licence shown
 stage: planning
 priority: P1
 tags: local-models, local-models-screen, desktop, bug
-report: docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+report: docs/active/handoffs/2026-10-20-product-formalization-status.md
 branch: 45-gemma-models-download-with-no
 roadmap: local-models: Gemma models download with no licence notice, and Google's G
 created: 2026-10-15

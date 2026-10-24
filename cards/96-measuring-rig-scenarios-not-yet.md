@@ -12,13 +12,18 @@ summary: Speed testing misses some situations, some of its tools can mislead, an
 area: Developer tools
 side: behind
 vision: together.workflow.perf
+work: session/93-file-viewer-freezes, session/96-merged-evaluation
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: App-only viewer/comparison/indexing repairs merged in youcoded#665 (254ff9983aa3657a937dfd65011beb3c6e6508c9); this does not complete measurement-rig coverage or cross-platform runtime criteria. No evaluation code was included in that merge or its app closeout.
+Next: Continue separate performance-lab/evaluation work in preserved session/93-file-viewer-freezes. Retain coverage gaps and Windows/macOS/phone runtime checks; keep this card open.
+Blocked: No new evaluation blocker established by app closeout. Original workspace and nested app worktree contain uncommitted work and must be preserved.
 
 Chats
+- 2026-10-21 session/96-merged-evaluation: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-21 session/93-file-viewer-freezes: chat started
+- 2026-10-18 session/93-file-viewer-freezes: Investigate hardware/document/HTML/path-list/watcher stall impact and extend the performance lab with representative workloads, independent thread signals, bounded execution and fail-closed results.
 
 From the old roadmap (perf, status needs-verify, seen on all, last checked 2026-09-10)
 Measuring rig: scenarios not yet measured (5 things). (a) Terminal session switching on a real graphics card, and a busy six-terminal feel check; (b) sustained terminal output together with typing; (c) file-pane edits to another file while streaming; (d) long-history chats as a recurring lane, plus the ~137 vs ~580 ms terminal-switch comparison; (e) long soak and memory slopes, giant bodies, tool churn, sync interference, effects-heavy and drag/resize cases. These are coverage gaps, not proven bugs. Update 2026-10-04: on the software-drawn rig terminal-view switching was near 0.55 s with 8 sessions open (chat view ~31 ms), a software-drawing figure, not a prediction for a real card; every open terminal re-draws its letters on a switch. A 200 MB flood lost output after ~50 MB and delayed Ctrl+C 5 s or more; flow control shipped 2026-10-08 (youcoded#616; 200 MB shows whole in 6-7 s, Ctrl+C 0.1 s); typing under a flood on a real card is still unmeasured. The 2026-10-05 session-switch lab and recorder are in the session-switching entry below.

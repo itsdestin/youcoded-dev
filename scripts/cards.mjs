@@ -117,8 +117,9 @@ export function check(cards) {
   for (const c of cards) for (const r of c.related) {
     const o = byId.get(Number(r));
     if (!o) { errs.push(`${c.file}: related to ${r}, but no card has that id`); continue; }
-    // WHY: overlap is allowed only while exploring; a Planning-or-later card that overlaps another must be merged first
-    if (c.stage !== 'explore' && o.stage !== 'explore') errs.push(`${c.file}: overlaps ${o.file}, but neither is in exploration — consolidate them into one card`);
+    // WHY: concurrent planned work must not overlap, but a shipped card is history.
+    // Keeping its related links must not block closing it or validating the remaining work.
+    if (![c.stage, o.stage].some(stage => stage === 'explore' || stage === 'merged')) errs.push(`${c.file}: overlaps ${o.file}, but neither is in exploration — consolidate them into one card`);
   }
   return errs;
 }

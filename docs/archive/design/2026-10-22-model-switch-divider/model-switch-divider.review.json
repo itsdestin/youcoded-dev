@@ -1,0 +1,31 @@
+{
+  "title": "Model switches in the chat — a divider instead of a bubble",
+  "key": "model-switch-divider-review",
+  "out": "model-switch-divider.review.html",
+  "images": "images/model-switch-divider.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "A Claude Code chat, after switching model from the model picker",
+      "crop": "chat#model-switch-cc@1440x300+0+40",
+      "labels": { "before": "Today", "after": "Now" },
+      "headline": "Switching model now shows a thin \"Model switched to Opus\" line, not a \"/model opus[1m]\" message from you.",
+      "changed": "The switch used to appear as a chat bubble, as if you had typed a command to Claude. It is now the same thin divider the chat already uses for \"Conversation cleared\", with the time it happened.",
+      "notice": "It appears however you switch: the model picker, Shift+Space or typing /model. It stays when you reopen the chat, and on your phone. Pressing Shift+Space three times in a row leaves one line naming where you landed.",
+      "risk": "If a Claude Code update rewords its \"Set model to\" reply, the line stops appearing until the app is updated (the status bar label still changes)."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "A chat with any other provider (OpenRouter, ChatGPT, a local model), after picking a different model",
+      "crop": "chat#model-switch-native@1440x300+0+40",
+      "labels": { "before": "Today", "after": "Now" },
+      "headline": "Chats with other providers now record each model switch too, with the same line.",
+      "changed": "These chats used to leave no trace of a switch: only the status bar label changed. They now save a \"Model switched to …\" line in the conversation itself, named the way the status bar names the model.",
+      "notice": "You can scroll back and see which model wrote which replies, in both kinds of chat, and the history survives closing and reopening.",
+      "risk": "Switches made before this update were never saved, so older chats show no line for them."
+    }
+  ]
+}

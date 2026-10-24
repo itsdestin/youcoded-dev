@@ -8,7 +8,7 @@ paths:
   - "**/desktop/src/shared/attention-classifier.ts"
   - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
   - "**/shared-fixtures/**"
-last_verified: 2026-10-01
+last_verified: 2026-10-23
 verify:
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
   - path: youcoded/desktop/src/renderer/state/chat-reducer.ts
@@ -49,13 +49,13 @@ verify:
 
 ## Reducer state (`chat-reducer.ts`)
 - **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map never clears.
-- **Always use the `endTurn()` helper** on turn-ending paths — fails orphaned tools, resets turn state. Only `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR` spread-then-override.
-- **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'|'stalled'` — five reachable states, each with a writer.** `stalled` = a PARKED native turn; a stall WARNING is `'stuck'`, the ONLY amber state. **`stalledSince` is stamped once and held, ONLY while already `'stalled'`** — nine `'ok'` writers never clear it; the guard sits at the WRITE site.
+- **Always use the `endTurn()` helper** on turn-ending paths — fails orphaned tools (except ones that launched background work on an interrupt), resets turn state. Only `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR` (and `TRANSCRIPT_REPLAY_COMPLETE`) spread-then-override.
+- **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'|'stalled'` — five reachable states, each with a writer.** `stalled` = a PARKED native turn; a stall WARNING is `'stuck'`, the ONLY amber state. **`stalledSince` is stamped once and held, ONLY while already `'stalled'`** — twelve `'ok'` writers never clear it; the guard sits at the WRITE site.
 - **`NATIVE_PARTS_DROPPED` removes only the TRAILING run of matching segments**, stopping at the first non-match: part ids repeat across steps, so a whole-turn `.filter()` deleted finished paragraphs.
-- **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends. **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design.
+- **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends; a `sendRefused` timeline row never matches an echo, a queue bubble is matched by its bound identity first, and `sendEpoch` is matched on `queuedMessages` rows only (`chat-reducer.ts:1478-1509`). **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design.
 - **A permission ask binds ONLY to a running tool with a MATCHING NAME** — else a CONSENT bug.
 - **`TRANSCRIPT_REPLAY_COMPLETE` reaps replay-orphaned `running` tools ONLY when `sessionIdle`, failed not complete** — also fires on a live re-dock.
-- **`attentionState` is classifier-driven, not timer-driven** — transcript events and `PERMISSION_REQUEST` reset it to `'ok'`. **Both `'ok'` sites are gated on `hasBuffer`: never reset a state you never set.**
+- **Claude Code PTY attention is classifier-driven** — its renderer fallback gates transcript/permission resets to `'ok'` on `hasBuffer`: never reset a state you never set. Native heartbeat events separately write `'ok'`, `'stuck'` warnings and parked `'stalled'` turns.
 
 ## Paged history (perf cycle 2)
 - **History arrives one PAGE at a time** (`transcript-page.ts`; 30 turns / 2 MB). `HISTORY_LOADED` and "See previous messages" are RETIRED.

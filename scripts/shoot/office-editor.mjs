@@ -10,8 +10,8 @@
 // may stop it at any moment — and this run gets its own server on a free port (see
 // ensureOfficeEditor for why even this checkout's own is not reused).
 import { spawn, execFileSync } from 'node:child_process';
-import { existsSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { cpSync, existsSync, readFileSync, statSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 // WHY a port of its own when 4717 is taken (marketplace-detail friction, proposal 4): the editor
 // listened only on 4717, so while ANOTHER session's editor held it, every `shoot --check` (and so
@@ -77,21 +77,56 @@ export async function ensureOfficeEditor(checkout, log = () => {}) {
     port = await freePort();
     log(`office editor: port ${DEFAULT_PORT} is held by ${there.desktop === desktop ? 'another run of this checkout (it stops it when it ends)' : there.desktop ? `the office editor of ${there.desktop}` : there.other} — starting this run's own on ${port}`);
   }
-  if (!existsSync(join(desktop, 'office-addon', 'manifest.json'))) {
-    // WHY fetch here (2026-10-03): office-addon/ is downloaded, not in git, so every fresh
-    // worktree lacked it once Office merged, and `verify.sh`'s screens check failed in every new
-    // session until someone fetched it by hand. The pinned, checksum-verified download is the
-    // same one `npm run dev` does; offline it still ends in the error below.
-    log('office editor: no add-on in this checkout yet — fetching the pinned one');
-    try {
-      execFileSync(process.execPath, ['scripts/fetch-office.mjs'], { cwd: desktop, stdio: ['ignore', 'ignore', 'pipe'] });
-    } catch { /* reported just below */ }
-    if (!existsSync(join(desktop, 'office-addon', 'manifest.json'))) {
-      throw new Error(`no Office add-on in ${desktop}/office-addon, and fetching it failed — run \`node scripts/fetch-office.mjs\` in desktop/ to see why`);
-    }
-  }
+  ensureOfficeAddon(desktop, { log });
   ensureMainBuild(desktop, log);
   return startEditorServer({ desktop, port, log });
+}
+
+// The shared checkout's desktop/ for a worktree checkout (null when it IS the shared one, or git
+// cannot say).
+function sharedDesktopOf(desktop) {
+  try {
+    const common = execFileSync('git', ['-C', desktop, 'rev-parse', '--path-format=absolute', '--git-common-dir'], { encoding: 'utf8' }).trim();
+    const shared = join(dirname(common), 'desktop');
+    return shared === desktop ? null : shared;
+  } catch { return null; }
+}
+
+const readVersion = (file) => { try { return JSON.parse(readFileSync(file, 'utf8')).version; } catch { return null; } };
+
+/** Make sure `desktop/office-addon/` holds the pinned Office add-on. */
+export function ensureOfficeAddon(desktop, { log = () => {}, sharedDesktop = sharedDesktopOf(desktop), fetchCmd = [process.execPath, ['scripts/fetch-office.mjs']], fetchTimeoutMs = 180_000 } = {}) {
+  const manifest = join(desktop, 'office-addon', 'manifest.json');
+  if (existsSync(manifest)) return 'present';
+  // WHY copy the shared checkout's add-on first (2026-10-22): office-addon/ is downloaded, not in
+  // git, and workspace-start does not provision it, so every fresh worktree downloaded ~200 MB
+  // again — and one such download froze with no answer for 25 minutes, holding verify.sh's
+  // screens check the whole time. The same pinned version for the same platform is the same files.
+  const pin = readVersion(join(desktop, 'office-pin.json'));
+  if (sharedDesktop && pin) {
+    const theirs = join(sharedDesktop, 'office-addon', 'manifest.json');
+    let platform = null;
+    try { platform = JSON.parse(readFileSync(theirs, 'utf8')).platform; } catch { /* no copy there */ }
+    if (readVersion(theirs) === pin && platform === `${process.platform}-${process.arch}`) {
+      cpSync(join(sharedDesktop, 'office-addon'), join(desktop, 'office-addon'), { recursive: true });
+      log(`office editor: copied the pinned add-on (${pin}) from ${sharedDesktop}`);
+      return 'copied';
+    }
+  }
+  // WHY fetch here (2026-10-03): with no copy to take, the pinned, checksum-verified download is
+  // the same one `npm run dev` does. WHY a time limit (2026-10-22): fetch-office.mjs's download
+  // has none, so a stalled connection hung the whole shoot run silently instead of failing.
+  log('office editor: no add-on in this checkout yet — fetching the pinned one');
+  let timedOut = false;
+  try {
+    execFileSync(fetchCmd[0], fetchCmd[1], { cwd: desktop, stdio: ['ignore', 'ignore', 'pipe'], timeout: fetchTimeoutMs });
+  } catch (e) { timedOut = e?.code === 'ETIMEDOUT' || e?.signal === 'SIGTERM'; }
+  if (!existsSync(manifest)) {
+    throw new Error(timedOut
+      ? `no Office add-on in ${desktop}/office-addon: the download did not finish within ${Math.round(fetchTimeoutMs / 1000)} s (a stalled connection) — run \`node scripts/fetch-office.mjs\` in desktop/ to retry`
+      : `no Office add-on in ${desktop}/office-addon, and fetching it failed — run \`node scripts/fetch-office.mjs\` in desktop/ to see why`);
+  }
+  return 'fetched';
 }
 
 // ─── Starting our own server, and only ever using our own ───────────────────

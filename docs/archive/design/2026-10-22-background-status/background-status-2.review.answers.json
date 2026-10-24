@@ -1,0 +1,39 @@
+{
+ "deck": "background-status-review-2",
+ "started": "2026-10-22T15:47:30.576Z",
+ "submitted": "2026-10-22T15:48:41Z",
+ "cur": 3,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "t": 1792684056644,
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "capitalize specilaist/command",
+   "t": 1792684082628,
+   "v": "yes",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "t": 1792684107144,
+   "note": "is this alignement consistent with the subagent/specialists popup and cards?",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "pick",
+   "pick": "icon",
+   "t": 1792684119608,
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

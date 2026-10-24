@@ -1,0 +1,29 @@
+id: codemirror-only-in-lazy-editor
+language: typescript
+severity: error
+message: >-
+  A renderer file loads CodeMirror (a value import from @codemirror/*) outside the
+  code editor's own lazy files. Anything the app imports at startup then carries
+  ~380 KB of editor into every first page load — on a phone over mobile data that
+  is about half a second. Import only types here (`import type`), or move the code
+  into the editor's files (CodeEditorView.tsx, cm/cm-theme.ts, cm/ref-line-highlight.ts),
+  which load only when a file is opened.
+note: |
+  2026-10-22 phone speed: the comments rail imported one DOM lookup from
+  ref-line-highlight.ts, which put the whole editor in the startup bundle. The
+  lookup moved to cm/editor-registry.ts (type-only import). Dynamic import()
+  is fine anywhere; this matches static value imports only.
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/codemirror-only-in-lazy-editor.ts"
+ignores:
+  - "**/artifact-views/cm/cm-theme.ts"
+  - "**/artifact-views/cm/ref-line-highlight.ts"
+  - "**/*.test.ts"
+rule:
+  kind: import_statement
+  has:
+    kind: string
+    regex: "^['\"]@codemirror/"
+  not:
+    regex: "^import type"

@@ -1,0 +1,127 @@
+{
+  "title": "Helpers and background commands — clearer cards, honest chips, and a new Background chip",
+  "key": "background-status-review",
+  "out": "background-status.review.html",
+  "images": "images/background-status.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "After this change"
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Chat",
+      "path": "A native conversation, the cards under the assistant's messages",
+      "crop": "chat#manage-native",
+      "headline": "Cards that check on, message or stop a specialist or a command now say exactly that.",
+      "changed": "Checking on specialists said \"Hiring a specialist\"; a note said \"Note to Ellis\"; checking or stopping a command showed the raw names BashOutput and KillShell. Each now names the action and what it acts on, in past tense once done.",
+      "notice": "A status check no longer looks like a new helper being hired, and you can see which command was checked or stopped by its own description.",
+      "risk": "The words are longer, so a card with a long command description is cut off a little sooner.",
+      "highlight": {
+        "box": [
+          1,
+          12,
+          42,
+          56
+        ]
+      }
+    },
+    {
+      "id": "M-2",
+      "surface": "Chat",
+      "path": "A Claude Code conversation, the cards under the assistant's messages",
+      "crop": "chat#manage-cc",
+      "headline": "Claude Code's helper and background calls read in plain words instead of raw tool names.",
+      "changed": "SendMessage, TaskOutput, TaskStop, Monitor and ScheduleWakeup showed as those raw names. They now read \"Sent a note to …\", \"Checked on …\", \"Stopped …\", \"Watching\" and \"Checking back in 5 min\", naming the helper or command they act on.",
+      "notice": "You can follow what Claude did with its helpers and background jobs without knowing the tool names.",
+      "risk": "When the helper or command is not known to the app (an old conversation), the card says \"a helper\" or \"a background task\" instead of its name.",
+      "highlight": {
+        "box": [
+          1,
+          12,
+          40,
+          65
+        ]
+      }
+    },
+    {
+      "id": "S-1",
+      "surface": "Status bar",
+      "path": "Claude Code conversation → the Subagents chip → its popup",
+      "crop": "chat/specialists#cc",
+      "headline": "The Subagents popup now says Working while a helper is still working, instead of Finished.",
+      "changed": "It read the moment the helper was launched as the moment it finished. It now reads the helper's real state, so it can also say Failed or Stopped.",
+      "notice": "The chip and popup agree with the card in chat; a helper no longer reads finished a second after it starts.",
+      "risk": "None expected — the card already showed this state; only the chip and popup were wrong."
+    },
+    {
+      "id": "B-1",
+      "surface": "Status bar",
+      "path": "Any conversation that left commands running → the bottom bar",
+      "crop": "chat#background-cc",
+      "headline": "A new Background chip counts commands and watchers still running, failed and finished.",
+      "changed": "A Background chip sits beside the Subagents chip: a green dot with the number still running, a red dot with the number failed, a check with the number finished. It shows only once something has run in the background.",
+      "notice": "You can see at a glance that the dev server and a watcher are still running and that one test run failed, without scrolling back through the chat.",
+      "risk": "The status bar gets one more chip, so on a crowded bar it moves to a second line a little sooner.",
+      "highlight": {
+        "box": [
+          0,
+          94,
+          44,
+          6
+        ]
+      }
+    },
+    {
+      "id": "B-2",
+      "surface": "Status bar",
+      "path": "Claude Code conversation → click the Background chip",
+      "crop": "chat/background#cc",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "Clicking the chip lists every background command and watcher, running first, with how each ended.",
+      "changed": "A popup in the Open tasks popup's style: Running, then Finished (newest first). Each row is named after the command's description and links to its card; the line under it says how long it ran or its exit code; the pill says Running, Watching, Failed, Stopped or Finished.",
+      "notice": "Claude Code runs these commands itself, so its rows have no Stop button — the app has no way to stop them for you.",
+      "risk": "A conversation with hundreds of finished commands shows the first 50 and loads more as you scroll."
+    },
+    {
+      "id": "B-3",
+      "surface": "Status bar",
+      "path": "Native conversation → click the Background chip",
+      "crop": "chat/background#native",
+      "runs": [
+        "after"
+      ],
+      "new": true,
+      "headline": "In a native conversation each running command has a Stop button, and finished ones say who stopped them.",
+      "changed": "The same popup; a running native command gets a filled Stop at the right of its row (the same stop its card's Stop button uses, so it also works from your phone). Finished rows say \"Stopped by you after 3m 20s\" or \"Exit code 1 · ran 1m 35s\".",
+      "notice": "You can end a forgotten dev server from the status bar without finding its card.",
+      "risk": "Stop ends the command and everything it started; it does not ask first, same as the card's Stop."
+    },
+    {
+      "id": "B-4",
+      "surface": "Status bar",
+      "path": "The app at phone width",
+      "crop": "chat#background-native-phone",
+      "headline": "At phone width the chip drops its word and keeps just the dotted counts.",
+      "changed": "\"Background\" is hidden below 640px, as the Tasks chip already does; the dots and numbers stay.",
+      "notice": "The phone's status bar stays readable, but with this chip it now takes two lines in this conversation.",
+      "risk": "Without the word, the counts alone are less obvious on a phone — tapping the chip opens the same popup with its title.",
+      "highlight": {
+        "box": [
+          0,
+          93,
+          100,
+          7
+        ]
+      }
+    }
+  ]
+}

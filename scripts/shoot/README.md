@@ -184,7 +184,10 @@ node scripts/shoot/journeys.mjs switch-model    one
 
 A journey is a saved `explore` session: clicks and keys found by role and label, then
 `expect` checks on the result (`explore expect "Got it."`, `--not`, `--screen <name>`,
-`--control N`). They live in the app repo, `desktop/tests/journeys/*.json`, so a change that
+`--control N`). A `wait-scroll-idle` step with `area: "chat"` waits for the visible chat scroller's
+scroll and geometry to stay unchanged for 500 ms (bounded to 8 s); it is test-runner synchronization,
+not a guarantee that no later asynchronous activity will occur. They live in the app repo,
+`desktop/tests/journeys/*.json`, so a change that
 renames a button fixes the journey in the same commit. A failure names the step, what it looked
 for, what WAS on screen, and a picture.
 

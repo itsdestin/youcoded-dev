@@ -1,0 +1,16 @@
+{
+ "deck": "battery-power-restyle",
+ "started": "2026-10-21T01:16:58.857Z",
+ "submitted": "2026-10-21T01:17:42Z",
+ "cur": 0,
+ "answers": {
+  "C-1": {
+   "note": "neither, make this feel more premium/polished with distinct cards for each major power inpput/output item",
+   "t": 1792545461497,
+   "v": "other",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

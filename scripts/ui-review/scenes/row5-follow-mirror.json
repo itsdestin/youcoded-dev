@@ -1,8 +1,9 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=week&replySpeed=2",
   "theme": "meadow-mist",
-  "zoom": 1.15,
+  "zoom": 1.3,
   "boot": 3000,
+  "pauseBackground": true,
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },
@@ -11,5 +12,5 @@
     { "hold": 3800 },
     { "hold": 1500 }
   ],
-  "_note": "Matched pair for the landing page: the same script at two viewports (row5-phone-mirror is the phone), so the desktop clip and the phone overlay show the same conversation at the same moment. Fixed holds instead of waitForText -- nothing is clicked after the reply, and a fixed wait takes the same time in both takes; KEEP THE TWO FILES' ACTIONS IDENTICAL. 2026-09-11 (Destin, review-2 R-4): replies at 2x, the 3.8 s hold covers the ~2.9 s reply, 1.5 s end hold like every loop; the desktop take is zoomed 1.15, the phone take stays at 1 (a zoomed 390 px phone would reflow to 339 px)."
+  "_note": "Matched pair for the landing page: the same script at two viewports (row5-phone-mirror is the phone), so the desktop clip and the phone overlay show the same conversation at the same moment. Fixed holds instead of waitForText -- nothing is clicked after the reply, and a fixed wait takes the same time in both takes; KEEP THE TWO FILES' ACTIONS IDENTICAL. 2026-09-11 (Destin, review-2 R-4): replies at 2x, the 3.8 s hold covers the ~2.9 s reply, 1.5 s end hold like every loop; the desktop take is zoomed 1.15, the phone take stays at 1 (a zoomed 390 px phone would reflow to 339 px). 2026-10-21 (Destin, website-everything-app #79): re-filmed at zoom 1.3 and once per site theme (THEME env overrides this scene's `theme`), so the page plays the visitor's theme."
 }

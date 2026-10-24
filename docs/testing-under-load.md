@@ -66,7 +66,7 @@ artificial delay, so there was nothing to optimise away.
 ### 3. `vi.waitFor`'s separate 1s budget (#363)
 **The gap #362 missed.** vitest hardcodes `timeout = 1e3` for `waitFor`/`waitUntil` and
 offers **no config option**, so raising `testTimeout` did nothing for ~60 bare calls across
-13 files (98 `vi.waitFor`/`vi.waitUntil` calls in 14 files today, all covered by the shim). Windows CI then failed `specialist-run.test.ts` with `expected 'running' to be
+13 files (then 98 `vi.waitFor`/`vi.waitUntil` calls in 14 files; hundreds across 100+ files by 2026-10-21, all covered by the shim). Windows CI then failed `specialist-run.test.ts` with `expected 'running' to be
 'completed'` — a background specialist streaming ~69,000 characters had not finished inside
 one second. Defaulted centrally in `tests/setup-waitfor.ts`; an explicit per-call timeout
 still wins in both the options and numeric-shorthand forms.

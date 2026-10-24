@@ -1,0 +1,30 @@
+{
+ "deck": "linux-update-feedback-2",
+ "started": "2026-10-18T15:49:34.966Z",
+ "submitted": "2026-10-18T15:50:30Z",
+ "cur": 2,
+ "answers": {
+  "LU-1": {
+   "v": "yes",
+   "t": 1792338585133,
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LU-2": {
+   "note": "i dont like this separate details card, it doesnt seem related to the installation at all",
+   "t": 1792338625740,
+   "v": "other",
+   "seconds": 31,
+   "theme": "light",
+   "zoom": 1
+  },
+  "LU-5": {
+   "v": "yes",
+   "t": 1792338628625,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

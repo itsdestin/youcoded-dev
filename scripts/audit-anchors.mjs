@@ -409,6 +409,13 @@ export function checkAnchor(root, anchor) {
   }
   const rel = anchor.path ?? anchor.test;
   if (!rel) return { ok: false, reason: `anchor has neither path nor test: ${JSON.stringify(anchor)}` };
+  // WHY skip an absent repo (2026-10-22, #29): MAP paths already do (see check 3). A doc anchor
+  // into youcoded-admin — the private repo workspace CI never clones — failed CI as "missing"
+  // although the file exists upstream. Unverifiable is not drift; it is reported as skipped.
+  const repo = rel.split('/')[0];
+  if (REPOS.includes(repo) && !fs.existsSync(path.join(subRepoRoot(root), repo, '.git'))) {
+    return { ok: true, skipped: `${rel} (repo ${repo} not on disk)` };
+  }
   const abs = path.join(baseFor(root, rel), rel);
   if (!fs.existsSync(abs)) return { ok: false, reason: `missing: ${rel}` };
   if (anchor.contains !== undefined) {
@@ -701,17 +708,32 @@ export function shadowedActiveDocs(root) {
 // A WARNING, not a failure: a switch added mid-build is legitimately undocumented for an
 // hour, and a permanently red audit is one everybody learns to ignore (ledger, 2026-09-09).
 export function undocumentedWorkbenchSwitches(root) {
-  const shim = path.join(subRepoRoot(root), 'youcoded', 'desktop', 'src', 'renderer',
-    'dev', 'workbench', 'mock-shim.ts');
+  const workbench = path.join(subRepoRoot(root), 'youcoded', 'desktop', 'src', 'renderer',
+    'dev', 'workbench');
+  const shim = path.join(workbench, 'mock-shim.ts');
   const readme = path.join(root, 'scripts', 'ui-review', 'README.md');
   // Either side absent (a checkout without the app, or without the rig) is not drift.
   if (!fs.existsSync(shim) || !fs.existsSync(readme)) return [];
-  const src = fs.readFileSync(shim, 'utf8');
+  // WHY every workbench source file, not only mock-shim.ts (2026-10-21): switches are also
+  // read in seed-chat.ts and the fixtures (?providerError=, ?anthropicError=), and a check
+  // that read one file said nothing about them. Tests excluded — they read no URL.
+  const sources = [];
+  const walk = (dir) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.(ts|tsx)$/.test(e.name) && !/\.test\.tsx?$/.test(e.name)) sources.push(p);
+    }
+  };
+  walk(workbench);
+  const src = sources.map((p) => fs.readFileSync(p, 'utf8')).join('\n');
   const docs = fs.readFileSync(readme, 'utf8');
   const found = new Set();
   // Both spellings in the file: `new URLSearchParams(location.search).get('x')` and a
   // hoisted `searchParams.get('x')`.
-  for (const m of src.matchAll(/(?:location\.search\)|searchParams)\s*\)?\.get\(\s*'([A-Za-z0-9_]+)'/g)) {
+  // `(?<!\.)searchParams`: a bare hoisted `searchParams`, never `url.searchParams` — a fake
+  // server's own request parameters (fixtures/fake-home-assistant.ts) are not page switches.
+  for (const m of src.matchAll(/(?:location\.search\)|(?<!\.)searchParams)\s*\)?\.get\(\s*'([A-Za-z0-9_]+)'/g)) {
     found.add(m[1]);
   }
   return [...found].filter(s => !docs.includes('?' + s)).sort();
@@ -824,6 +846,7 @@ function main() {
       result.anchors.total++;
       const r = checkAnchor(root, anchor);
       if (!r.ok) result.anchors.failed.push({ source: `.claude/rules/${f}`, anchor, reason: r.reason });
+      if (r.skipped) (result.anchors.skipped ??= []).push(r.skipped);
     }
     const words = countBodyWords(text);
     if (words > BUDGETS.ruleBodyWords) {
@@ -840,6 +863,7 @@ function main() {
         result.anchors.total++;
         const r = checkAnchor(root, anchor);
         if (!r.ok) result.anchors.failed.push({ source: relFile, anchor, reason: r.reason });
+        if (r.skipped) (result.anchors.skipped ??= []).push(r.skipped);
       }
     }
   }
@@ -999,6 +1023,7 @@ function printHuman(r, root = process.cwd()) {
   dump('MAP paths missing', r.mapPaths.missing);
   dump('scripts named in skills/commands/CLAUDE.md that do not exist', r.scriptPaths?.missing ?? []);
   warn('MAP paths in a repo that is not on disk (unverifiable here, not drift)', r.mapPaths.skipped || []);
+  warn('anchors in a repo that is not on disk (unverifiable here, not drift)', r.anchors.skipped || []);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
   // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.

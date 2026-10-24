@@ -94,7 +94,7 @@ set nothing.
 
 ## One shared bucket for "every project" grants (D2)
 **Invariant:** `CROSS_PROJECT_SLUG` (`shared/permission-types.ts`) is the only non-project key
-in `permissions.json`; `isCrossProjectRule` (Task + `^charter:file:`) alone routes into it.
+in `permissions.json`; `isCrossProjectRule` (Task + `^(read-only|read-write):file:`, plus the install-wide saved Full Auto `AdminFullAuto`) alone routes into it.
 `rulesFor(cwd)` always unions it; `revokeRule`/`revokeProject` on it clear EVERY live session.
 **Why:** a user's own specialist grant must fire in every project; the key holds a space,
 which `nativeStoreSlug` never emits.

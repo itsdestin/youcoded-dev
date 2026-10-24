@@ -1,0 +1,130 @@
+{
+ "deck": "website-everything-app-questions",
+ "started": "2026-10-21T17:08:34.367Z",
+ "submitted": "2026-10-21T17:20:35Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "deck-cards",
+   "t": 1792602842905,
+   "note": "i dont think it should be its own section. should be intertwined with other features as core to the app identity.",
+   "seconds": 82,
+   "theme": "youcoded"
+  },
+  "Q-2": {
+   "v": "pick",
+   "t": 1792602842905,
+   "note": "i think we should have a bunch of different labelled chips that point to a bunch of buttons (command drawer compass, games/files panels, pages, settings, etc) when the user is on the main chat page. they should expand with a description on hover and have an x to dismiss so they don't get in the way of the demo. maybe more chips on some of the specific pages, like explaining some of the settings panel options when the settings panel is open?",
+   "pick": "hint-chips",
+   "seconds": 82,
+   "theme": "youcoded"
+  },
+  "Q-3": {
+   "v": "no",
+   "t": 1792602842905,
+   "note": "i don't want these to be treated as separate things. the app is one unified thing with one core: an assistant that does whatever YOU want, in the ways YOU want, with the UI and app features YOU desire. build anything you desire and manage it through your ai assistant or with your own custom ui. these are one-in-the same and the core spirit of the app.",
+   "seconds": 82,
+   "theme": "youcoded"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "yours-first",
+   "t": 1792602842905,
+   "note": "want to see a few different/interesting ways of ordering/displaying these",
+   "seconds": 82,
+   "theme": "youcoded"
+  },
+  "Q-5": {
+   "v": "picks",
+   "picks": [
+    "merge-organize",
+    "add-device-card",
+    "rename-headers"
+   ],
+   "t": 1792602939206,
+   "note": "i also like option B, but i think the term \"page\" in the marketing materials may be a bit too abtract without description",
+   "seconds": 32,
+   "theme": "youcoded"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "relabel",
+   "t": 1792602939206,
+   "seconds": 32,
+   "theme": "youcoded"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "ideas-wall",
+   "t": 1792602939206,
+   "seconds": 32,
+   "theme": "youcoded"
+  },
+  "Q-8": {
+   "v": "picks",
+   "picks": [
+    "swipe-card",
+    "desktop-card"
+   ],
+   "t": 1792603032291,
+   "note": "b WITH my quick settings menu open",
+   "seconds": 31,
+   "theme": "youcoded"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "everyone-labelled",
+   "t": 1792603032291,
+   "seconds": 31,
+   "theme": "youcoded"
+  },
+  "Q-10": {
+   "v": "other",
+   "t": 1792603032291,
+   "note": "i think we can fake this. dont need to show the realy keyboard, make a prettier fake version that looks like a youcoded native element over a fake chrome tab or something",
+   "seconds": 31,
+   "theme": "youcoded"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "zoom-130",
+   "t": 1792603130226,
+   "seconds": 33,
+   "theme": "youcoded"
+  },
+  "Q-12": {
+   "v": "other",
+   "t": 1792603130226,
+   "note": "all of them should be redone. the app has been updated significantly and these are currently outdated. i also want to make all of the clips match the selected page them (the user can swap between 4 options at the top of the website) instead of being a random hodgepodge. only exception should be the \"customize\" card which can still show theme changing to something else after user prompt",
+   "seconds": 33,
+   "theme": "youcoded"
+  },
+  "Q-13": {
+   "v": "pick",
+   "pick": "phone-none",
+   "t": 1792603130226,
+   "seconds": 33,
+   "theme": "youcoded"
+  },
+  "Q-14": {
+   "v": "picks",
+   "t": 1792603234392,
+   "note": "remove the integrations grid for now. i think dont delete (we may bring back later) but hide/remove from the live/deployed website.",
+   "picks": [
+    "one-name",
+    "story-fold",
+    "section-headers"
+   ],
+   "seconds": 52,
+   "theme": "youcoded"
+  },
+  "Q-15": {
+   "v": "yes",
+   "t": 1792603234392,
+   "note": "",
+   "seconds": 52,
+   "theme": "youcoded"
+  }
+ }
+}

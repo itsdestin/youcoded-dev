@@ -2,7 +2,7 @@ id: main-uses-shared-mount-probe
 language: typescript
 severity: error
 message: >-
-  main.ts's dev-load watchdog must evaluate the shared probe —
+  The dev-load watchdog must evaluate the shared probe —
   `….executeJavaScript(MOUNT_PROBE_JS)` with MOUNT_PROBE_JS imported from
   './dev-mount-probe' — never an inlined copy. Only the shared module is tested
   against the real index.html; an inlined probe once read "mounted" for every
@@ -11,7 +11,8 @@ note: |
   Invariant source: tests/dev-load-recovery.test.tsx › "main.ts uses the shared
   probe rather than an inlined copy" (retired by Plan B, 2026-09-16). The retired
   case required /executeJavaScript\(MOUNT_PROBE_JS\)/ and
-  /from '\.\/dev-mount-probe'/ in main.ts.
+  /from '\.\/dev-mount-probe'/ in main.ts. The watchdog moved unchanged to
+  dev-load-recovery.ts when production renderer recovery was added.
   WHY a rule and not "tsc already sees the import": main.ts compiles just as
   well with the import replaced by a local `const MOUNT_PROBE_JS = '…'` — the
   inlined copy the case exists to forbid — or with the call switched to an
@@ -25,7 +26,7 @@ note: |
   Branch 2 (whole file): no import/export statement whose source is
   './dev-mount-probe' (the old regex matched either).
 files:
-  - "**/src/main/main.ts"
+  - "**/src/main/dev-load-recovery.ts"
   - "**/fixtures/main-uses-shared-mount-probe.ts"
   - "**/fixtures/main-uses-shared-mount-probe-inline-call.ts"
 rule:

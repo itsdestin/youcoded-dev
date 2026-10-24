@@ -1,0 +1,21 @@
+{
+  "title": "Claude queues — attachment timing in the first test build",
+  "key": "169-claude-queues-input-scope",
+  "out": "claude-queues.input-scope.html",
+  "stage": "ask",
+  "themes": ["light", "midnight"],
+  "steps": [{
+    "id": "Q-5",
+    "words": true,
+    "surface": "The existing queued-message strip",
+    "path": "Claude chat, while a reply is running",
+    "headline": "Can file-bearing messages wait for the reply to finish in the first test build?",
+    "today": "You chose native-style delivery between action batches. Short text passed that test; longer text also worked after exact composer verification. The native queue UI will be reused.",
+    "problem": "Attachment-path messages did not pass the same held-boundary test. One reached Claude only after the original turn ended. Mid-task @file text arrived without the file contents.",
+    "proposal": "For the first test build, deliver plain text between actions; keep attachments and @file messages in the app-owned queue until Claude is idle. Preserve their files and edit/remove controls. Stop, Clear and paused restore keep your approved behavior. This changes only file-bearing delivery timing, not the UI layout.",
+    "options": [
+      {"id": "text-first", "label": "Test text queues first", "pros": ["Gets a useful test build without pretending file delivery is equivalent."], "cons": ["Files wait for the reply to finish; a file at the front also holds later queued messages."], "recommended": true},
+      {"id": "full-parity-first", "label": "Prove all input types first", "pros": ["Keeps the original timing target for both text and files."], "cons": ["Delays the test build; Claude may not expose the needed behavior safely."]}
+    ]
+  }]
+}

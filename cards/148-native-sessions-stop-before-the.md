@@ -13,11 +13,42 @@ side: behind
 work: session/148-harness-performance-lab
 ---
 Progress
-Done: Added offline evidence scoring for follow-through/recovery/safety, success within named time/token/cost budgets, coherent edit chains and per-input request counts, progress versus final messages, configuration comparability, grader disagreement/order bias/human calibration, and unified concise report. Fresh review fixes applied. 101 Node tests, 28 Python tests and desktop verify pass. OpenRouter key saved privately; metadata check valid with USD20 non-resetting cap, zero usage. No new paid evaluation calls.
-Next: Finish shared OpenRouter cumulative-budget transport and stateful competitor evidence collection before full multi-model run; retain incomplete background/stale-race/threshold-context/human-calibration coverage as explicit gates.
-Blocked: No credential blocker. Comprehensive readiness remains false; account key limit does not enlarge approved pilot spend. Source local/uncommitted; newer master changes require integration review before shipping.
+Done: Gemini text transport retry passed within original USD10 cap using refreshed endpoint-specific pricing and USD0.47 reservation; no old hold reclaimed. Actual native Qwen two-turn client check failed upstream before any tool/verifier result, retained USD0.50. Fixed gateway budget denials to non-retryable402 and now retain upstream HTTP status. 21 focused tests pass. All five text canaries validated; actual OpenRouter usage USD0.000041446.
+Next: Obtain sufficient approved reservation headroom, then diagnose native tool/continuity request failure with improved diagnostics and validate Pi/OpenCode conversations before full suite.
+Blocked: Conservative ledger USD9.734296196, remaining USD0.265703804 under unchanged USD10 cap; this is not actual spending. Unknown failure holds retained. Gateway/container network stopped. Comprehensive readiness false; no full evaluation.
 
 Chats
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-21 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-20 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
+- 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started
 - 2026-10-18 session/148-harness-performance-lab: chat started

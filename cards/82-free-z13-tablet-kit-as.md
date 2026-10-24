@@ -12,11 +12,21 @@ area: Release & business
 work: session/82-z13-keyboard-release
 ---
 Progress
-Done: Approved v1 direction recorded: fullZ13agent-guidedreplicationrepo deferred; standaloneKDEkeyboard prioritized; Firefox physicalCtrl+A/Delete spacingquirk acceptednonblocking. Latestaddition implementsfirstunmodifiedBackspaceafter swipe/candidate to undoexactknownword plusonlyitsauto-insertedseparator, consumessessiononce. Furthertyping/reportedcursormove, selections, hidden/changed/sensitivecontext preserveordinarybackspace. Freshreview caughtsamewordcursorroundtrip; exactprefixtrackingfixandred/greenregressioncloseit, finalreviewnoblockers. ActualQtInputPanel/inputenginefieldtestpasses; newnativebinaries/VMbackspacecase notyetclaimed. Prior fullFedoraVMverifiedrealtyping/correction/symbol/privacy/reboot/reinstall/restoration; VMstopped. Allsource localstageduncommitted; docs/standalone-verification.md distinguishoriginalcandidateevidencefromnewadditions.
-Next: Rebuild Arch/Fedora candidates with launcher wait and one-shot safe word backspace, then separate public history/license audit and release approval. Backspace source passes full15CTest plus27integration/24packaging/6VMfixturetests; stockInputPanel integration verifies actualQt key consumption, candidateundo, normaltyping/cursorfallback. Source remains staged locally on standalone-packaging; userdesktopuntouched.
-Blocked: No longer blocked on Firefox spacing: Destin accepted it as minor v1 limitation; document it and stop upstream investigation. Native candidates must be rebuilt for the tested launcher-lock and approved word-backspace source additions before publication. No implementation commit/push or public release authorized.
+Done: Published Swipe Keyboard v0.1.0-r3 at https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.1.0-r3 from source commit 0f458bb. All seven uploaded asset digests verified. Exact Arch package tested across Qt6.11/KF6.27 and Qt6.12/KF6.31; installed/activated on Destin CachyOS without OS update. All 96 installed payload files match; live KWin process loads system plugin; recording off; legacy files/settings/recordings preserved in private migration backup. Final Fedora RPM real KDE touchscreen/KWrite checks pass. Dedicated test VM stopped. Old release marked superseded, not overwritten.
+Next: Destin can try swipe/candidate/backspace on the device and use the public release/setup links for the first Reddit post. Draft supplied separately; no Reddit post submitted. Maintenance/update automation is follow-up #165; broader tablet kit/video remain deferred.
+Blocked: No release or installation blocker. Human touchscreen feedback on the device remains a user check.
 
 Chats
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
+- 2026-10-18 session/82-z13-keyboard-release: chat started
 - 2026-10-18 session/82-z13-keyboard-release: chat started
 - 2026-10-18 session/82-z13-keyboard-release: chat started
 - 2026-10-17 session/82-z13-keyboard-release: chat started

@@ -21,7 +21,7 @@
           "settle": 1500
         }
       ],
-      "expect": "[aria-label='Open Your Library'], [title='Your Library']"
+      "expect": "[aria-label='Open your library' i], [title='Your library' i]"
     },
     {
       "name": "projects",

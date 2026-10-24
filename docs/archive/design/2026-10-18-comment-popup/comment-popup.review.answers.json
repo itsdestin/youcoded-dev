@@ -1,0 +1,23 @@
+{
+ "deck": "comment-popup-review",
+ "started": "2026-10-18T20:06:05.088Z",
+ "submitted": "2026-10-18T20:09:15Z",
+ "cur": 1,
+ "answers": {
+  "1": {
+   "v": "yes",
+   "t": 1792353993351,
+   "seconds": 28,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "2": {
+   "v": "yes",
+   "t": 1792354152040,
+   "note": "i think i want to get rid of the \"slim\" rail entirely. i think we should just keep visible hoverable comments with no rail, and then the full-size rail when expanded.",
+   "seconds": 159,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

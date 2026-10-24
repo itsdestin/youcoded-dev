@@ -12,13 +12,20 @@ area: Chat
 side: both
 platform: Desktop only
 vision: chat.converse
+work: session/7-compaction-boundaries
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
-Blocked: nothing recorded.
+Done: Compaction-boundary repair shipped in app PR #661, merge 2cbea256388667b304b8704b8bf47fe09b5ae48c. Exact tested-tree match; local desktop gates passed; hosted Linux shards/all four packages and Android JVM/debug/releaseTest APKs passed (run39437693807). Approved reviews and scoped plan archived under docs/archive/*/2026-10-19-compaction-boundaries*.
+Next: Other existing chat-view glitch requests on this broad card remain open; compaction-boundary scope is complete.
+Blocked: No blocker for the shipped compaction scope. No release/installed-app/device-runtime or Windows/macOS validation claim.
 
 Chats
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
+- 2026-10-20 session/7-compaction-boundaries: chat started
 
 From the old roadmap (chat-data, status needs-verify, seen on desktop, last checked 2026-08-12)
 Rare chat oddities, not yet reproduced (three things). (a) A streamed reply split mid-sentence across two bubbles once in ~30 loaded practice-app runs while the computer was busy (2026-09-27); not seen in the real app. (b) The first Resume open after launch "can seemingly load indefinitely" (Destin, 2026-09-25); it now says "Still loading" with Try again after 6 s, never reproduced; next time note the time and check `~/.claude/desktop.log` (report: docs/active/investigations/2026-09-26-startup-resume-real-scale.md). (c) Leftovers from the 2026-08-12 session-file repair work, all safe-direction: a repair record can keep a dead key forever.

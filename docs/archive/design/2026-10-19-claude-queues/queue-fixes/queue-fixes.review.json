@@ -1,0 +1,44 @@
+{
+  "title": "Two queue fixes — preview before implementation",
+  "key": "claude-queue-fixes-preview",
+  "out": "queue-fixes.review.html",
+  "images": "images/queue-fixes.review",
+  "runs": { "before": "runs/before", "after": "runs/after", "proposal": "runs/screens" },
+  "themes": ["light", "dark", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "1", "surface": "Chat", "path": "Send a message when Claude is ready",
+      "crop": "chat#queue-idle@1440x260+0+640", "runs": ["before", "after"],
+      "labels": {"before": "Today — immediate delivery", "after": "Proposed — immediate delivery"},
+      "headline": "1. Immediate sends no longer flash a queue row.",
+      "changed": "Keep internal delivery tracking, but show the existing queue strip only for genuinely waiting or unconfirmed messages. No delay or debounce hides real waiting.",
+      "notice": "A ready-to-send message goes straight to the conversation without a temporary Sending row. Real waiting messages keep their existing controls.",
+      "risk": "This is a posed delivery snapshot, not a timing test; delivery classification and backend behavior are not implemented yet."
+    },
+    {
+      "id": "2", "surface": "Chat", "path": "An old Unconfirmed message above the message box",
+      "crop": "chat#queue-uncertain@1440x260+0+640", "runs": ["before", "after"],
+      "labels": {"before": "Today — check only", "after": "Proposed — check or dismiss"},
+      "headline": "2. An unconfirmed message can be dismissed without sending it again.",
+      "changed": "Add Dismiss… beside the existing delivery-check control. It opens a confirmation instead of canceling, editing or resending an unknown delivery.",
+      "notice": "Only the saved queue message is removed after confirmation. The conversation is unchanged, and sending stays blocked when safe cleanup has not been confirmed.",
+      "risk": "UI-only fixture: no journal, lease or native message box is changed by this preview."
+    },
+    {
+      "id": "2a", "surface": "Dismiss confirmation", "path": "Unconfirmed message → Dismiss…",
+      "crop": "chat/queue-dismiss@panel", "runs": ["proposal"], "labels": {"proposal": "Proposed confirmation"},
+      "headline": "2a. The confirmation warns that the message may already have been delivered.",
+      "changed": "Reuse Rename session's one-job card and the app's destructive confirmation buttons: Dismiss without resending, then Keep message. Escape and the × leave it alone.",
+      "notice": "The warning separates removing the queue record from proving the message box is safe. Dismiss never replays the message and does not resume the queue.",
+      "risk": "The preview removes only a fixture row; real dismissal needs a durable non-replay resolution after approval."
+    },
+    {
+      "id": "2b", "surface": "Chat after dismissing", "path": "Confirm Dismiss without resending while cleanup is unproven",
+      "crop": "chat#queue-blocked-after@1440x260+0+640", "runs": ["proposal"], "labels": {"proposal": "Proposed — dismissed, still blocked"},
+      "headline": "2b. Dismissal does not unlock an unsafe message box.",
+      "changed": "Replace the removed Unconfirmed row with the existing error notice. The message box stays disabled until classified cleanup proves it safe.",
+      "notice": "The notice says sending is still blocked and offers Diagnose, not Resume or Resend. Other waiting messages stay saved and cannot drain while unsafe.",
+      "risk": "Diagnose and cleanup are not wired in this UI preview; it makes no promise that dismissing an old message can restore sending."
+    }
+  ]
+}

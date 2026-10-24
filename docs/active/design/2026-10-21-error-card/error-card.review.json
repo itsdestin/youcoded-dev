@@ -1,0 +1,126 @@
+{
+  "title": "When a reply fails — the new error card",
+  "key": "error-card-review",
+  "out": "error-card.review.html",
+  "images": "images/error-card.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "youcoded",
+    "light",
+    "midnight"
+  ],
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "A reply that failed because Anthropic was busy",
+      "crop": "chat#anthropic-overloaded",
+      "headline": "A busy provider now says so in plain words and offers Try again, which re-runs the reply without a new message.",
+      "changed": "\"Overloaded (provider error 529)\" becomes \"Anthropic is overloaded right now. The app tried again for about a minute.\" The provider's words fold under Details; Switch model and Try again sit below.",
+      "notice": "One press carries on. Nothing new appears in the conversation, and anything the assistant already did stays done.",
+      "risk": "Try again runs the reply again, so it costs another request if the provider is still busy.",
+      "highlight": {
+        "box": [
+          1.0,
+          38.9,
+          35.7,
+          15.5
+        ]
+      }
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat",
+      "path": "A reply that failed on Anthropic's monthly spending cap",
+      "crop": "chat#anthropic-spend-limit",
+      "headline": "An account problem names the fix: Open billing goes to Anthropic's billing page, and Switch model lets you carry on now.",
+      "changed": "The raw sentence becomes \"Anthropic stopped this reply: your spending limit has been reached.\" There is no Try again, because it could only fail the same way.",
+      "notice": "Open billing goes straight to the place that fixes it, instead of leaving you to find it.",
+      "risk": "Open billing opens Anthropic's site in your browser; if you are signed out there you sign in first.",
+      "highlight": {
+        "box": [
+          1.0,
+          38.9,
+          32.6,
+          15.5
+        ]
+      }
+    },
+    {
+      "id": "R-3",
+      "surface": "Chat",
+      "path": "A reply that failed because the Anthropic key was rejected",
+      "crop": "chat#anthropic-key-rejected",
+      "headline": "A rejected key says so and offers Open settings, the screen where the key is changed.",
+      "changed": "\"invalid x-api-key (provider error 401)\" becomes \"Anthropic didn't accept your API key.\" with Open settings.",
+      "notice": "One press to the key, the same as OpenRouter's rejected-key card already does.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          1.0,
+          38.9,
+          19.7,
+          15.5
+        ]
+      }
+    },
+    {
+      "id": "R-4",
+      "surface": "Chat",
+      "path": "A reply that failed because the conversation outgrew the model",
+      "crop": "chat#anthropic-too-long",
+      "headline": "A conversation too long for the model offers Summarise and continue.",
+      "changed": "\"prompt is too long: 1048213 tokens > 1000000 maximum\" becomes \"This conversation is too long for this model.\" Summarise and continue condenses older messages, then tries the reply again.",
+      "notice": "The conversation recovers in one press instead of looking broken.",
+      "risk": "Summarising loses detail from older messages (the summary itself stays visible in the chat).",
+      "highlight": {
+        "box": [
+          1.0,
+          38.9,
+          37.0,
+          15.5
+        ]
+      }
+    },
+    {
+      "id": "R-5",
+      "surface": "Chat",
+      "path": "A reply that failed for a reason the app does not recognise",
+      "crop": "chat#anthropic-unknown",
+      "headline": "An error the app can't explain keeps the provider's exact words and now offers Report bug and Try again.",
+      "changed": "The words are unchanged — the app never guesses a cause it doesn't know. Report bug opens the bug report with the error attached; Try again re-runs the reply.",
+      "notice": "There is always a way forward, even for an error nobody has seen before.",
+      "risk": "The sentence can be long and technical, as today.",
+      "highlight": {
+        "box": [
+          1.0,
+          38.9,
+          58.6,
+          7.7
+        ]
+      }
+    },
+    {
+      "id": "R-6",
+      "surface": "Chat",
+      "path": "The end of a reply that ran out of steps",
+      "crop": "chat#step-limit",
+      "headline": "A reply that hit its step limit says so plainly and offers Keep going.",
+      "changed": "\"Response ended: max_steps.\" becomes \"Stopped after reaching the step limit for one reply.\" A line under it — \"The task isn't finished.\" — carries Keep going, which continues the same task.",
+      "notice": "No message to type to carry on; the button only appears under the newest reply.",
+      "risk": "Easy to keep pressing on a task that is going in circles — the step limit in Settings still applies to each round.",
+      "highlight": {
+        "box": [
+          2.4,
+          36.1,
+          20.4,
+          11.5
+        ]
+      }
+    }
+  ]
+}

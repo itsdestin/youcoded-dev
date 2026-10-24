@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Swipe typing demo</title>
+<style>
+/* Standalone-preview fallbacks only; the landing page defines these itself. */
+:root{--accent:#7c3aed;--fg-rgb:34,24,48;--canvas-rgb:246,240,252;--glass:rgba(255,255,255,.55);--hair:rgba(34,24,48,.12);--radius:18px;--font-ui:'DM Sans',system-ui,sans-serif}
+body{margin:0;padding:24px;background:#fff;display:flex;justify-content:center}
+.wrap{width:100%;max-width:900px}
+
+/* ---- paste from here ---- */
+.kbdemo{position:relative;width:100%;aspect-ratio:16/10;container-type:inline-size;overflow:hidden;box-sizing:border-box;
+  font-family:var(--font-ui);color:rgba(var(--fg-rgb),.85);background:rgb(var(--canvas-rgb));
+  border:1px solid var(--hair);border-radius:var(--radius)}
+.kbdemo *{box-sizing:border-box}
+.kbdemo .abs{position:absolute}
+/* WHY: all sizes are cqw (share of the demo's own width) so it scales 300-900px without breakpoints */
+.kbdemo .tabs{left:0;right:0;top:0;height:9%;background:rgba(var(--fg-rgb),.06);padding:1.6% 2% 0;display:flex}
+.kbdemo .tab{width:24%;height:100%;background:var(--glass);border:1px solid var(--hair);border-bottom:0;border-radius:1.2cqw 1.2cqw 0 0;
+  font-size:1.9cqw;line-height:1;padding:1.2cqw 2cqw;display:flex;align-items:center;gap:1.2cqw}
+.kbdemo .tab i{width:1.8cqw;height:1.8cqw;border-radius:50%;background:rgba(var(--fg-rgb),.25)}
+.kbdemo .bar{left:0;right:0;top:9%;height:10%;background:var(--glass);border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:2cqw;padding:0 3%}
+.kbdemo .bar b{width:2.2cqw;height:2.2cqw;border:.4cqw solid rgba(var(--fg-rgb),.3);border-radius:50%}
+.kbdemo .url{flex:1;height:62%;border-radius:99px;background:rgba(var(--fg-rgb),.07);padding:0 2.4cqw;font-size:1.9cqw;display:flex;align-items:center;color:rgba(var(--fg-rgb),.45)}
+.kbdemo .field{left:12%;right:12%;top:22%;height:11%;background:var(--glass);border:1px solid var(--hair);border-radius:99px;
+  padding:0 3cqw;display:flex;align-items:center;font-size:3cqw;white-space:pre;overflow:hidden;box-shadow:0 .3cqw 1.6cqw rgba(var(--fg-rgb),.08)}
+.kbdemo .typed{opacity:0;animation:kbType 7s infinite}
+.kbdemo .caret{display:inline-block;vertical-align:middle;width:.35cqw;height:3.4cqw;margin-left:.3cqw;background:var(--accent);animation:kbBlink 1s steps(2) infinite}
+.kbdemo .guess{left:12%;right:12%;top:35%;height:5.4%;display:flex;border-bottom:1px solid var(--hair);font-size:2.4cqw;opacity:0;animation:kbGuess 7s infinite}
+.kbdemo .guess span{flex:1;display:flex;align-items:center;justify-content:center;border-radius:99px 99px 0 0;position:relative}
+.kbdemo .guess span+span:before{content:"";position:absolute;left:0;top:25%;bottom:25%;border-left:1px solid var(--hair)}
+.kbdemo .guess .on{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-weight:700}
+.kbdemo .kb{left:3%;width:94%;top:41%;height:56%}
+.kbdemo .r{height:25%;display:flex}
+.kbdemo .r:nth-child(2){margin-left:5%}.kbdemo .r:nth-child(3){margin-left:15%}.kbdemo .r:nth-child(4){margin-left:25%}
+.kbdemo .s{width:10%;padding:.55cqw}
+.kbdemo .s.sp{width:50%}
+.kbdemo .k{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.7cqw;
+  background:var(--glass);border:1px solid var(--hair);border-radius:min(calc(var(--radius)*.45),1.7cqw);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 .25cqw .6cqw rgba(var(--fg-rgb),.07)}
+.kbdemo .l{animation:kbLit 7s var(--d) infinite}
+.kbdemo svg{left:3%;width:94%;top:41%;height:56%;overflow:visible;pointer-events:none;filter:drop-shadow(0 0 1.1cqw var(--accent))}
+.kbdemo path{fill:none;stroke:var(--accent);stroke-linecap:round;stroke-linejoin:round}
+.kbdemo .trail{stroke-width:13;stroke-dasharray:100 100;stroke-dashoffset:100;opacity:0;animation:kbTrail 7s linear infinite}
+.kbdemo .dot{stroke-width:34;stroke-dasharray:.01 300;opacity:0;animation:kbDot 7s linear infinite}
+@keyframes kbTrail{0%,4.3%{stroke-dashoffset:100;opacity:0}4.4%{stroke-dashoffset:100;opacity:.85}27.1%,58.6%{stroke-dashoffset:0;opacity:.85}65.7%{stroke-dashoffset:0;opacity:0}65.8%,100%{stroke-dashoffset:100;opacity:0}}
+@keyframes kbDot{0%,4.3%{stroke-dashoffset:0;opacity:0}4.4%{stroke-dashoffset:0;opacity:1}27.1%{stroke-dashoffset:-100;opacity:1}29.5%{stroke-dashoffset:-100;opacity:0}29.6%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes kbLit{0%{background:var(--glass);border-color:var(--hair);color:inherit}3%{background:color-mix(in srgb,var(--accent) 45%,transparent);border-color:var(--accent);color:rgb(var(--fg-rgb))}14%,100%{background:var(--glass);border-color:var(--hair);color:inherit}}
+@keyframes kbType{0%,26.9%{opacity:0;transform:translateY(.5cqw)}29%,64%{opacity:1;transform:none}66%,100%{opacity:0}}
+@keyframes kbGuess{0%,26.9%{opacity:0}29%,64%{opacity:1}66%,100%{opacity:0}}
+@keyframes kbBlink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+ .kbdemo *{animation:none!important}
+ .kbdemo .trail{stroke-dashoffset:0;opacity:.85}
+ .kbdemo .dot{opacity:0}
+ .kbdemo .typed,.kbdemo .guess{opacity:1}
+ .kbdemo .l{background:color-mix(in srgb,var(--accent) 45%,transparent);border-color:var(--accent)}
+}
+/* ---- to here (also paste the kbdemo div and the script block) ---- */
+</style></head>
+<body><div class="wrap">
+<div class="kbdemo" aria-hidden="true">
+ <div class="abs tabs"><div class="tab"><i></i>New tab</div></div>
+ <div class="abs bar"><b></b><div class="url">Search or type a web address</div></div>
+ <div class="abs field"><span>make your technology </span><span class="typed">yours<i class="caret"></i></span></div>
+ <div class="abs guess"><span class="on">yours</span><span>your</span><span>yolks</span></div>
+ <div class="abs kb"></div>
+ <svg class="abs" viewBox="0 0 940 350" preserveAspectRatio="none">
+  <path class="trail" pathLength="100" d="M517 50Q660 8 799 44Q700 78 611 44Q470 8 329 44Q235 120 188 131"/>
+  <path class="dot" pathLength="100" d="M517 50Q660 8 799 44Q700 78 611 44Q470 8 329 44Q235 120 188 131"/>
+ </svg>
+</div>
+</div>
+<script>
+/* Builds the keys. Lit keys get a delay matching when the trail reaches them. */
+(function(){var kb=document.querySelector('.kbdemo .kb'),lit={y:.3,o:.8,u:1.1,r:1.6,s:1.9};
+['qwertyuiop','asdfghjkl','zxcvbnm',' '].forEach(function(row){var r=document.createElement('div');r.className='r';
+ row.split('').forEach(function(c){var s=document.createElement('div'),k=document.createElement('div');
+  s.className='s'+(c==' '?' sp':'');k.className='k'+(lit[c]!=null?' l':'');
+  if(lit[c]!=null)k.style.setProperty('--d',lit[c]+'s');
+  k.textContent=c==' '?'':c;s.appendChild(k);r.appendChild(s)});kb.appendChild(r)})})();
+</script>
+</body></html>

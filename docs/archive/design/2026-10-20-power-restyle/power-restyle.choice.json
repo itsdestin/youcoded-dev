@@ -1,0 +1,40 @@
+{
+  "title": "Power reporting — replace the rainbow diagram",
+  "key": "battery-power-restyle",
+  "out": "power-restyle.choice.html",
+  "images": "images/power-restyle.choice",
+  "runs": {"candidates": "runs/candidates"},
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "stage": "design",
+  "crops": {
+    "power-lines": ["power", "lines", "1440x900+0+0"],
+    "power-balance": ["power", "balance", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "System Dashboard",
+      "path": "Power → Right now; also shown on Overview",
+      "headline": "Which layout should replace the rainbow power diagram?",
+      "notice": "Both remove gradients and animation, separate adapter output from net battery flow, and make the battery's contribution large and red while draining.",
+      "risk": "These are actual dashboard renders with fixed example readings, not live power measurements. Nothing is installed. Quick settings is not restyled here.",
+      "variants": [
+        {
+          "id": "lines",
+          "label": "Clean connections",
+          "crop": "power-lines",
+          "summary": "Adapter and battery are separate sources feeding one machine. Thin lines show the relationship; CPU, GPU and Other remain grouped below.",
+          "risk": "Taller than the compact version. Negative battery watts mean loss from the battery, while the adapter shows power supplied."
+        },
+        {
+          "id": "balance",
+          "label": "Power breakdown",
+          "crop": "power-balance",
+          "summary": "A compact total with adapter contribution and a prominent red battery-drain row. My recommendation for the quickest reading; no connector diagram.",
+          "risk": "The two-source relationship is explained by labels and a flat split bar rather than wires."
+        }
+      ]
+    }
+  ]
+}

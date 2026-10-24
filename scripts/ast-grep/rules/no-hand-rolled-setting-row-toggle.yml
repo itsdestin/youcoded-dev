@@ -52,6 +52,7 @@ ignores:
   # tests/setting-row-authority.test.tsx; check.sh fails if this block and that table differ.
   - "**/components/SessionStrip.tsx"
   - "**/components/SettingsPanel.tsx"
+  - "**/components/settings-toggle.tsx"
   - "**/components/SyncPanel.tsx"
   - "**/components/ProvidersSection.tsx"
   - "**/components/ResumeBrowser.tsx"

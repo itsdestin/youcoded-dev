@@ -59,7 +59,7 @@
      "settle": 1500
     }
    ],
-   "expect": "[aria-label='Open Your Library'], [title='Your Library']",
+   "expect": "[aria-label='Open your library' i], [title='Your library' i]",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
   },
   {
@@ -74,7 +74,7 @@
      "settle": 1500
     },
     {
-     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "click": "[aria-label='Open your library' i],[title='Your library' i]",
      "settle": 1200
     }
    ],

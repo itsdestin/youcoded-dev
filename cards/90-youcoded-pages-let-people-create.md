@@ -12,17 +12,24 @@ created: 2026-10-15
 summary: Pages work today; next comes letting pages run assistant tasks, use files and be shared, plus seven follow-ups and decisions.
 area: Pages
 side: both
-work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning
+work: session/page-start-session, session/ha-pages-connection, session/google-connections-planning, session/90-pages-post-release, session/page-custom-icons, session/90-work-board-loading, session/90-pages-finish
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Pages can now ask to see and change chats and to run a program from their own folder (youcoded, merged 2026-10-16)
-Next: a release carrying them; then merge wecoded-marketplace session/page-skill-chats-programs (the skill update) and install the Work board
-Blocked: nothing recorded.
+Done: YouCoded 1.3.1 released with Pages chats/program/startSession abilities. Held connections, start-session and chats/program skill updates published in wecoded-marketplace#110 (Page Builder 0.2.0), with corrected permission examples and source-reviewed home-device/socket/video reference. Work board tests passed 9/9; current app master CI passed Linux, macOS, Windows and Android.
+Next: Work board installation is queued after natural YouCoded exit via user unit youcoded-work-board-postrelease-131; receipt: /home/destin/.cache/youcoded-postrelease-131/install-result.json. After reopening, approve its chat/program/session permissions and check the board and status-bar repo chip visually. Broader Pages phases/follow-ups remain open.
+Blocked: No merge blocker. Work board runtime verification awaits after-exit installation and user approval; no live app mutation performed.
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
+- 2026-10-24 session/90-pages-finish: chat started
+- 2026-10-19 session/90-work-board-loading: chat started
+- 2026-10-19 session/90-work-board-loading: chat started
+- 2026-10-19 session/page-custom-icons: Shipped purpose-designed Page icons: app/source and live embed in youcoded#645 (f1d11a4c9), Page Builder 0.3.0 in wecoded-marketplace#111 with successful registry rebuild. Public browser verified the pinned Home house; public skill source requires new custom artwork. Approved I-1/I-2; final local verifier passed 4,462 related tests, all 403 screens, types/lints/knip/invariants/journeys; required app Linux/Android and plugin CI passed. Real Home manifest already has the approved artwork with a private backup; installed older app keeps its fallback until updated. No app release or installed-plugin mutation. This icon subtask is complete; leave other #90 follow-ups open.
+- 2026-10-19 session/page-custom-icons: Custom Page icons implemented locally and visually approved (I-1/I-2). Page metadata now supports validated per-page vector artwork with legacy fallback; Home has the approved house in source/demo and icon-only metadata in its real manifest (older installed app displays fallback until updated). Page Builder 0.3.0 source requires a new purpose-designed icon for every new Page. Integrated verification passed 4,461 related tests plus all other gates; plugin reference/example checks passed. Repo changes are uncommitted and not published; no app release or installed-plugin update.
+- 2026-10-19 session/page-custom-icons: Working on the existing Page-icons follow-up: Destin clarified that agents must design a new purpose-specific icon for every Page in the app’s iconography style, not choose from a fixed stock list. Include Home house icons in the actual app and website embed, plus page-builder guidance. No installed-app update or release is authorized by this note.
+- 2026-10-18 session/90-pages-post-release: chat started
 - 2026-10-18 session/google-connections-planning: Recovered later idea, not implemented scope: unified calendar/to-do Pages across providers, with a local holding space that can show an action waiting for another device (for example Apple Reminders waiting for the Mac). User requested this as a later follow-up; exact queue/sync design is unapproved. Depends on relevant connection capabilities (#156/#158/#159), NOT on syncing credentials. Source: 109a2161:docs/active/design/2026-09-26-everyday-actions/questions.answers.json Q-actions; proposal.md section 6. Preservation only; this session is not building Pages.
 
 From the old roadmap (other-features › misc, status in-flight, seen on all, last checked 2026-09-23)

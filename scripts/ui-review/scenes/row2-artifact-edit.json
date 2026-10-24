@@ -1,9 +1,10 @@
 {
   "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=chart&seed=none&title=Q3+sales&model=qwen3-coder-30b-a3b-instruct&replySpeed=2",
   "theme": "meadow-mist",
-  "zoom": 1.15,
+  "zoom": 1.3,
   "boot": 3000,
-  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, 1.5 s end hold, typing 32 a second). The drawer is 760 wide, not 860: at 1.15 zoom the window is 1252 CSS px, and 860 left the chat a 390 px sliver.",
+  "pauseBackground": true,
+  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, 1.5 s end hold, typing 32 a second). The drawer is 760 wide, not 860: at 1.15 zoom the window is 1252 CSS px, and 860 left the chat a 390 px sliver. 2026-10-21 (Destin, website-everything-app #79): re-filmed at zoom 1.3 and once per site theme (THEME env overrides this scene's `theme`), so the page plays the visitor's theme. The header button is now named Session files (lowercase f), so the selector tries that first.",
   "actions": [
     { "hold": 300 },
     { "eval": "dispatchEvent(new CustomEvent('buddy:attach-file',{detail:{filePath:'/home/you/Documents/Q3-sales.xlsx'}}))", "settle": 500 },
@@ -11,7 +12,7 @@
     { "typeSlow": "chart this for me so i can actually read it", "cps": 32 },
     { "key": "Enter", "settle": 300 },
     { "waitForText": "you can edit it right here", "timeout": 25000, "settle": 500 },
-    { "click": "button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']", "settle": 600 },
+    { "click": "button[aria-label='Session files'], button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']", "settle": 600 },
     { "clickText": "Q3-sales.html", "settle": 1100 },
     { "click": "button[title='Hide list'], button[data-hint='Hide list']", "settle": 600 },
     { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Edit')", "settle": 700 },

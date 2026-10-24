@@ -1,0 +1,23 @@
+{
+ "deck": "custom-providers-review-3",
+ "started": "2026-10-21T05:13:11.338Z",
+ "submitted": "2026-10-21T05:13:37Z",
+ "cur": 1,
+ "answers": {
+  "R3-1": {
+   "note": "the spacing of the provider header is all messed up",
+   "t": 1792559614685,
+   "v": "other",
+   "seconds": 23,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-2": {
+   "v": "yes",
+   "t": 1792559617031,
+   "seconds": 2,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,61 @@
+{
+  "title": "Linux updates — feedback after Launch installer",
+  "key": "linux-update-feedback",
+  "out": "linux-update-feedback.review.html",
+  "images": "images/linux-update-feedback.review",
+  "stage": "review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light", "midnight", "halftone-dimension", "meadow-mist"],
+  "steps": [
+    {
+      "id": "LU-1",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → password prompt",
+      "crop": "chat/update#authorizing@640x240+400+460",
+      "headline": "The panel tells you it is waiting for administrator approval.",
+      "changed": "Launching becomes Waiting for administrator approval, with an activity indicator.",
+      "notice": "The panel explains the password prompt and automatic restart.",
+      "risk": "Preview uses scripted output; no privileged installation was run."
+    },
+    {
+      "id": "LU-2",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → activity",
+      "crop": "chat/update#installing@640x240+400+460",
+      "headline": "You can see what the installer is doing after entering your password.",
+      "changed": "Recent installer output replaces Launching. Reopening keeps the active installation.",
+      "notice": "Package checks and post-install hooks appear as the installer reports them.",
+      "risk": "Only the latest 8 KB is shown; no estimated percentage."
+    },
+    {
+      "id": "LU-3",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → failure",
+      "crop": "chat/update#failed@640x350+400+400",
+      "headline": "An installation failure keeps the actual explanation under Details.",
+      "changed": "Errors stay inside Details, alongside report and manual-finish options.",
+      "notice": "The real error stays available instead of disappearing.",
+      "risk": "This database-lock error is a scripted example, not your diagnosis."
+    },
+    {
+      "id": "LU-4",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → unconfirmed result",
+      "crop": "chat/update#timeout@640x240+400+460",
+      "headline": "An uncertain result warns you instead of inviting a second installation.",
+      "changed": "An unconfirmed result shows a warning, not another install button.",
+      "notice": "Report or diagnose it without starting a second installer.",
+      "risk": "The installer keeps running; its eventual result updates the panel."
+    },
+    {
+      "id": "LU-5",
+      "surface": "Update available",
+      "path": "Version chip → Launch installer → success",
+      "crop": "chat/update#restarting@640x240+400+460",
+      "headline": "A successful installation says Restarting YouCoded before the app closes.",
+      "changed": "A confirmed Linux installation shows Restarting YouCoded before closing.",
+      "notice": "The app closing is an expected restart.",
+      "risk": "Preview pauses here; the app normally closes shortly afterward."
+    }
+  ]
+}

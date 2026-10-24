@@ -51,20 +51,31 @@ node "$WS/scripts/shoot/build.mjs" "$TDIR" >/dev/null
 # --emptyOutDir and wipes docs/site wholesale (it deleted nine freshly recorded
 # loops on 2026-08-27). docs/media is never touched by the embed build.
 mkdir -p "$OUT/media"
-# <file the page plays>:<scene that records it>. WHY a map: the 2026-09-03 redesign renamed five
-# of the page's clips to landing-* and recorded the sync pair from the -mirror scenes (one take at
-# two sizes), but this loop kept writing the old names — a release run refreshed four files the page
-# no longer shows and left those four cards stale. Keep it in step with docs/index.html #stage.
-for pair in landing-row1-any-ai:row1-any-ai landing-row2-artifact-edit:row2-artifact-edit \
-            row2-does-things:row2-does-things row3-projects:row3-projects row4-organized:row4-organized \
-            landing-row5-follow:row5-follow-mirror landing-row5-phone:row5-phone-mirror \
-            row6-yours:row6-yours landing-row7-play:row7-play; do
-  # (row8-builders left the map on 2026-09-11: the "For builders" slide was removed from the page, youcoded c11db7f0)
-  name="${pair%%:*}"; scene="${pair##*:}"
-  WORKTREE="$TDIR" node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$name"
+# One clip per name PER SITE THEME, written <name>--<theme>.webm/.webp. WHY (Destin, 2026-10-21): the
+# page plays the clip matching the theme its visitor picked, so every clip exists in all four site
+# themes (record.mjs's THEME env overrides each scene's own theme), and desktop takes are filmed at
+# zoom 1.3 (set in the scenes; the phone take stays 1). "yours" is the one clip whose end differs:
+# it starts in the visitor's theme and swaps to a different one (END_THEME fills the scene's
+# {{END_THEME}} token). The sync pair is follow (desktop) + phone, one script at two sizes.
+# row3-projects is no longer recorded: projects and tags are one card on the page now, so
+# `organized` is row4-organized alone. Keep the name list in step with docs/index.html #stage.
+# 10 names x 4 themes = 40 recordings.
+declare -A END_THEME_FOR=( [youcoded]=golden-sunbreak [meadow-mist]=halftone-dimension \
+                           [halftone-dimension]=meadow-mist [golden-sunbreak]=youcoded )
+for theme in youcoded meadow-mist halftone-dimension golden-sunbreak; do
+  for pair in yours:row6-yours home:home money:money any-ai:row1-any-ai \
+              artifact-edit:row2-artifact-edit does-things:row2-does-things organized:row4-organized \
+              follow:row5-follow-mirror phone:row5-phone-mirror play:row7-play; do
+    name="${pair%%:*}"; scene="${pair##*:}"
+    THEME="$theme" END_THEME="${END_THEME_FOR[$theme]}" WORKTREE="$TDIR" \
+      node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$name--$theme"
+  done
 done
 
-# 3. gallery
+# 3. gallery — the 48 stills are no longer shown: the page's bottom strip became the ideas wall
+# (docs/gallery/idea-*.webp, captured by hand from the demo's Home and Finance pages and the
+# workbench's paint and trip-board pages, 2026-10-21). This step still refreshes the stills for
+# anything else that reads docs/gallery; regenerating the idea stills is card #175.
 for theme in midnight meadow-mist halftone-dimension creme light dark; do
   WORKTREE="$TDIR" node "$HERE/shot.mjs" "$HERE/plans/site-gallery.json" "$TMP" "$theme"
 done
@@ -77,7 +88,10 @@ fi
 NPNG=$(ls "$TMP"/*/*.png | wc -l)
 if [[ "$NPNG" -ne 48 ]]; then echo "[site-assets] expected 48 gallery shots (8 screens × 6 themes), got $NPNG" >&2; exit 1; fi
 mkdir -p "$OUT/gallery"
-rm -f "$OUT/gallery/"*.png "$OUT/gallery/"*.webp
+# WHY: the hand-captured idea-*.webp stills share this folder and the page shows them; a blanket
+# *.webp delete removed all four during the v1.3.3 release run (2026-10-23). Delete only the
+# generated <screen>-<theme> stills.
+find "$OUT/gallery" -maxdepth 1 \( -name '*.png' -o -name '*.webp' \) ! -name 'idea-*' -delete
 for f in "$TMP"/*/*.png; do
   theme="$(basename "$(dirname "$f")")"; name="$(basename "$f" .png)"
   magick "$f" -resize 1200x -quality 80 "$OUT/gallery/$name-$theme.webp"

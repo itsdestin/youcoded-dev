@@ -1,0 +1,32 @@
+{
+  "title": "Message times — real day and time, kept after reopening",
+  "key": "message-times-review",
+  "out": "message-times.review.html",
+  "images": "images/message-times.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Any conversation, the small time under each message",
+      "crop": "chat",
+      "headline": "Older messages now show their date instead of a time that looks like today.",
+      "changed": "The time under a message reads \"2:34 PM\" for today, \"Yesterday at 2:34 PM\" for yesterday, and just the date (\"Jul 29, 2025\") before that. This test chat is from July 2025, so it shows dates.",
+      "notice": "A reply's time is when it last changed, so a reply that worked for 40 minutes shows when it finished, not when it started. Reopened chats keep their real times instead of all showing the moment you reopened them.",
+      "risk": "A chat left open past midnight keeps showing only the time on yesterday's messages until they redraw."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat on a phone",
+      "path": "The same chat at phone width",
+      "crop": "chat#queue-uncertain-phone",
+      "headline": "The longer date label still fits inside the bubble on a phone.",
+      "changed": "Same change, at phone width.",
+      "notice": "Nothing wraps or overlaps; the label stays on one line in the bubble's corner.",
+      "risk": "\"Yesterday at 12:45 PM\" is the longest label, so a one-word message's bubble can grow slightly wider to hold it."
+    }
+  ]
+}
