@@ -145,6 +145,8 @@ export async function measureRung(app, fixture, plan, { _deps = {} } = {}) {
     exchanges.push(await d.exchangeDocumentClock(cdp), await d.exchangeDocumentClock(cdp));
 
     const windows = buildWindows({ sendMs, streamEndMs, paintedMs: final.paintedAtMs });
+    // WHY: the scroll pass's own page-clock stamps bound "typing while scrolling" (see summariseTyping's scroll window).
+    if (scroll?.ok) windows.scroll = [scroll.startMs, scroll.endMs];
     const probe = await cdp.evaluate(probeLogSource);
     const loop = await d.readLoopProbe(cdp, 'renderer', { token: loopToken, stop: true, waitForSample: true });
     const main = await app.mainLoop.read({ stop: true, waitForSample: true });

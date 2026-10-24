@@ -224,7 +224,7 @@ export function classifyRung(plan, raw, thresholds = PATHLIST_THRESHOLDS) {
     streamTimerStallMaxMs: round1(lp.stream?.maxDelayMs), settleTimerStallMaxMs: round1(lp.settle?.maxDelayMs),
     mainMaxDelayMs: round1(raw?.main?.maxDelayMs), mainTotalStallMs: round1(raw?.main?.totalStallMs),
     typingIdleMaxMs: ty?.complete ? ty.idleMaxMs : null, typingStreamMaxMs: ty?.complete ? ty.streamMaxMs : null,
-    typingSettleMaxMs: ty?.complete ? ty.settleMaxMs : null, typingScrollMaxMs: ty?.complete ? ty.afterMaxMs : null,
+    typingSettleMaxMs: ty?.complete ? ty.settleMaxMs : null, typingScrollMaxMs: ty?.complete ? (ty.scrollMaxMs ?? ty.afterMaxMs) : null, typingAfterPaintMaxMs: ty?.complete ? ty.afterMaxMs : null,
     typingSaturated: ty?.complete ? ty.saturated : null, typingKeysStream: ty?.complete ? ty.keysStream : null, typingKeysSettle: ty?.complete ? ty.keysSettle : null,
     typingKeysScroll: ty?.complete ? ty.keysAfter : null, typingExhausted: ty?.complete ? ty.exhausted : null,
     endToPaintMs: round1(end),

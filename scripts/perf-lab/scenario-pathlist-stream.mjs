@@ -291,9 +291,10 @@ export function summariseTyping({ train, receipts, overflow = 0, clocks, windows
     const upper = rc[i].atMs - clocks.lower - s.actualMs, lower = rc[i].atMs - clocks.upper - s.actualMs;
     const w = windows;
     const phase = sentR < w.stream[0] ? 'idle' : sentR <= w.stream[1] ? 'stream' : (w.settle && sentR <= w.settle[1]) ? 'settle' : 'after';
-    return { phase, upperMs: upper, lowerMs: lower };
+    return { phase, sentR, upperMs: upper, lowerMs: lower };
   });
   const by = (p) => keys.filter((k) => k.phase === p);
+  const w0 = windows;
   const max = (ks) => (ks.length ? round1(Math.max(...ks.map((k) => k.upperMs))) : null);
   return {
     complete: true, reasons: [], keysSent: raw.length, skippedSlots: train.skippedSlots, exhausted: train.exhausted,
@@ -304,6 +305,11 @@ export function summariseTyping({ train, receipts, overflow = 0, clocks, windows
     // WHY 'after' too: the big-fence and long-conversation scenarios keep typing during a post-paint scroll / after the open; the path-list one
     // ignores these two additive fields.
     afterMaxMs: max(by('after')), keysAfter: by('after').length,
+    // WHY a separate scroll window (2026-10-24): 'after' starts at "reply painted", so a key sent in the last moments of the post-stream tail
+    // (before the scroll began) was reported as "typing while scrolling" - 78-121 ms that was really the tail, not the scroll. Keys sent between
+    // the scroll pass's own start and end stamps (page clock, like sentR) are now counted on their own; null when no scroll window was recorded.
+    scrollMaxMs: w0?.scroll ? max(keys.filter((k) => k.sentR >= w0.scroll[0] && k.sentR <= w0.scroll[1])) : null,
+    keysScroll: w0?.scroll ? keys.filter((k) => k.sentR >= w0.scroll[0] && k.sentR <= w0.scroll[1]).length : 0,
     clockErrorMs: round1(clocks.errorMs),
   };
 }

@@ -125,6 +125,15 @@ test('typing delay is split into idle / stream / settle by send time and reports
   assert.ok(t.streamMaxMs >= 899 && t.streamMaxMs < 910);
   assert.ok(t.settleMaxMs < 10 && t.keysSettle >= 1);
 });
+test('"typing while scrolling" counts only keys sent inside the scroll pass, not the post-paint tail before it', () => {
+  // A slow key just after "painted" but before the scroll began used to be reported as scroll typing (2026-10-24).
+  const f = typingFixture([2, 3, 240, 4, 5], [0, 250, 500, 750, 1000]);
+  const t = summariseTyping({ ...f, windows: { stream: [900, 1100], settle: [1100, 1300], scroll: [1700, 2100] } });
+  assert.ok(t.afterMaxMs >= 239, 'the tail key still shows in the after-paint figure');
+  assert.equal(t.keysScroll, 2);
+  assert.ok(t.scrollMaxMs < 10, 'but not in the scroll figure');
+  assert.equal(summariseTyping({ ...f, windows: { stream: [900, 1100], settle: [1100, 1300] } }).scrollMaxMs, null);
+});
 test('typing evidence that cannot support a reading says why', () => {
   const f = typingFixture([1, 1, 1], [0, 250, 500]);
   const win = { stream: [1000, 1400], settle: [1400, 1600] };
