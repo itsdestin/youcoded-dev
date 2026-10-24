@@ -10,8 +10,8 @@ why: Reddit feedback identifies Steam Deck and Plasma Mobile as priority targets
 work: session/168-swipe-platform-support, session/168-swipe-release-integration
 ---
 Progress
-Done: v0.4.0-1 published 2026-10-23 (PR #8, main aac9b9b): Gaming Mode preview download (virtual Deck only), spacebar slide speed-up, no ?123 pause. ARM tag-byte test skipped by owner choice.
-Next: M11 real-Deck pass; 0.4.1 automatic updates on branch feat/auto-updates (plan docs/active/plans/2026-10-23-auto-updates.md).
+Done: v0.4.1-1 published 2026-10-23 (PRs #9, #10; main 6e71e22): automatic signed updates on Deck/Fedora/Arch (live site itsdestin.github.io/swipe-keyboard verified; bundle install updated from it), Gaming Mode on stable Steam (origin-checked keyboard page), SteamOS 3.9.5 tested in VM. Two independent security reviews.
+Next: M11 real-Deck pass; known limits in swipe-keyboard docs/active/plans/2026-10-23-auto-updates.md (index replay/freeze, key rotation, beta-Steam not re-run in VM).
 Blocked: 
 
 Chats
