@@ -24,6 +24,7 @@ See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
 
 Chats
 - 2026-10-24 session/90-pages-finish: chat started
+- 2026-10-24 session/90-pages-finish: chat started
 - 2026-10-19 session/90-work-board-loading: chat started
 - 2026-10-19 session/90-work-board-loading: chat started
 - 2026-10-19 session/page-custom-icons: Shipped purpose-designed Page icons: app/source and live embed in youcoded#645 (f1d11a4c9), Page Builder 0.3.0 in wecoded-marketplace#111 with successful registry rebuild. Public browser verified the pinned Home house; public skill source requires new custom artwork. Approved I-1/I-2; final local verifier passed 4,462 related tests, all 403 screens, types/lints/knip/invariants/journeys; required app Linux/Android and plugin CI passed. Real Home manifest already has the approved artwork with a private backup; installed older app keeps its fallback until updated. No app release or installed-plugin mutation. This icon subtask is complete; leave other #90 follow-ups open.
