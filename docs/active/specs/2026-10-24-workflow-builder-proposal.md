@@ -2,196 +2,88 @@
 date: 2026-10-24
 status: draft
 type: design-proposal
-topic: workflow builder — the full current proposal, before mockups
+topic: workflow builder — phased proposal, foundations first
 card: 74
 ---
 
-# Workflow builder — current proposal (2026-10-24)
+# Workflow builder — phased proposal (2026-10-24, rev 2)
 
-Draft for review before anything is drawn. Built from Destin's answers
-(`docs/active/design/2026-10-24-workflow-builder/decisions.md`, answers file beside it), the
-landscape study (`docs/active/investigations/2026-10-24-multi-agent-workflow-landscape.md`) and
-the unmerged plans engine (youcoded branch `feat/specialists-plans-ui`, see
-`docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md`).
+Rev 2 replaces the all-at-once proposal (rev 1, commit f558808c2) after the independent review
+(`docs/active/reviews/2026-10-24-workflow-builder-proposal-review.md`) and Destin's reply:
+*"we need clearer phasing/functionality checkpoints for this work instead of trying to build
+everything all at once. some of the details can be fleshed out as we build the foundations."*
+Answers it rests on: `docs/active/design/2026-10-24-workflow-builder/decisions.md`.
 
-## 1. What it is, in one paragraph
+## What it is
 
-A **workflow** is a saved recipe for a multi-agent job: rows of **cards**, each card one
-specialist with its own instructions, model and allowed actions. You (or the assistant) build
-it, press **Run**, and the app works through it by itself — cards in the same row at the same
-time, rows one after another — pausing at **checkpoints** to ask you, and showing live spending
-against one optional limit for the whole run. The same file can be run again with new inputs.
+A **workflow** is a saved file: rows of **cards**, each card one specialist with its own
+instructions and model. Cards in one row run at the same time; rows run one after another. You
+press **Run**; the app works through it, shows live spending against one optional limit for the
+whole run, and survives an app restart.
 
-## 2. Who it is for, first jobs (Q-1)
+## Settled (Destin, 2026-10-24)
 
-1. **Build** — "add a feature": explore the code → plan → build → three different reviewers in
-   parallel → combine their findings → fix → repeat until the reviewers pass.
-2. **Research** — "compare 6 laptop options": one researcher per option in parallel → combine
-   into a table → checker verifies sources → report.
-3. **Work on my files** — "summarise every PDF in this folder into one brief", "clean these 4
-   spreadsheets and merge them".
+- One file is the workflow; the assistant and you edit the same file.
+- **One editor**, in a Workflows screen (edit, run and finished states in one place). The Files
+  panel shows a summary with "Open in Workflows" — later phase.
+- Rows of cards, no wires. **Different cards side by side** is core.
+- No per-card dollar limits; one optional whole-run limit.
+- Built on the existing plans engine and its plan format (extended, not replaced).
+- Dropped for now: "one card per file in a folder", starter workflows.
 
-Recurring/scheduled jobs come later with Autonomous Assistants (Q-10).
+## How a run works without a chat (plumbing, invisible to you)
 
-## 3. Where it lives (Q-2, Q-7)
+Every specialist in the app gets its folder, its permissions and its approval prompts from the
+conversation it belongs to. A workflow run started from the Workflows screen has no conversation,
+so when you press Run the app quietly creates one just for that run, holding those settings. It
+is not shown in your chat list. Effect for you: the run behaves exactly like one started from a
+chat, and closing any chat never stops it.
 
-- **A workflow is a file** (`<name>.workflow`, JSON inside), saved in a project folder or in
-  `~/YouCoded/Personal/Workflows/`. One file is the only source of truth: the editor, the
-  assistant and the runner all read and write it, so the picture and the plan cannot drift.
-- **In the Files panel** it opens in its own viewer, registered like the existing ones
-  (`artifact-views/RendererRegistry.ts`: Markdown, CSV, DOCX, XLSX, PDF …). Opening a workflow
-  shows the editor; a **Run** button sits in the viewer's header.
-- **A built-in "Workflows" screen** lists every workflow the app knows about and every run
-  (running, paused, finished), with the same editor when you open one. (Destin asked for both
-  places; the screen is the home base, the Files panel is where you meet one next to your work.)
-- **A run does not need a chat.** It has its own owner in the app's main process and its own
-  run record. A chat may *start* one (the assistant hands it to you as a card), but closing the
-  chat does not stop it.
+## Phases — each ends with something Destin can try
 
-## 4. The editor (Q-3)
+Each phase: mockup → review deck (only for that phase's screens) → build → Destin tries it in a
+dev copy → go / change / stop before the next phase. Details of later phases are decided when we
+get there.
 
-**Rows of cards, top to bottom.** No free canvas, no wires.
+### Phase 1 — The engine on today's app (no new screens)
+Bring the plans engine from the unmerged branch onto the current app (~1,430 commits behind, 40
+conflicting files). Keep only the engine and its current chat card; nothing ships to users.
+**Checkpoint:** in a dev copy, the assistant proposes a plan in chat, it runs, pauses at a limit,
+continues, survives a restart and finishes. Go/no-go: if the catch-up costs more than rebuilding,
+we say so here.
 
-```
- ┌ Inputs ───────────────────────────────────────┐
- │ Feature to build: [__________]  Folder: [repo] │
- └────────────────────────────────────────────────┘
- Row 1   [ Explore the code ]
- Row 2   [ Write a plan ]
- Row 3   ◆ Checkpoint: "Approve the plan"
- Row 4   [ Build it ]
- Row 5   [ Review: bugs ] [ Review: UX ] [ Review: speed ]     ← side by side = at once
- Row 6   [ Combine findings ]  ← reads rows 5
- Row 7   ⟲ Repeat rows 4–6 until "no blocking findings" (max 3)
- Row 8   [ Final report ]
-```
+### Phase 2 — Build and run your own workflow
+- Workflows screen: list of workflows, the rows-of-cards editor, Run.
+- A card: name, instructions, model, and **"Starts from"** (explorer / researcher / reviewer /
+  worker / your own specialists) — which also decides what it may do, so no separate permissions
+  panel yet.
+- Rows: one after another, several at once (different cards side by side). Each row receives the
+  row above's results.
+- Run view = the same screen with live status per card, Spent $X (of $Y), Stop; restart → Continue.
+- The run's own hidden conversation (above).
+**Checkpoint:** you build a 3–4 row workflow yourself (e.g. three different reviewers side by
+side, then a combine card), run it, and watch it finish.
 
-- **Add a card**: a "+" at the end of a row (runs alongside) or between rows (runs after).
-- **Drag** to reorder rows or move a card to another row.
-- A card shows its name, model chip, and a one-line summary of its instructions.
-- Each later card automatically receives the results of the row right above it. A card can
-  additionally pick earlier rows to read ("← from rows 1 and 5"), the same "from steps" line
-  the plans card already shows.
-- **Repeat** is a bracket around a range of rows with a stop condition and a maximum (cap 5).
-- **Estimate** sits in the header: "Usually $0.80–$3 · about 6 minutes", from your own past
-  specialist runs (the plans estimate, already built).
+### Phase 3 — Checkpoints and loops
+- "Ask me first" row: pause, show results so far, optional choices, a note, Continue / Stop.
+- A card reads chosen earlier rows ("← from rows 1 and 3").
+- "Repeat until good" around a range of rows, with a maximum.
+**Checkpoint:** the build-feature example runs with a plan-approval checkpoint and a review loop.
 
-## 5. A card (Q-5)
+### Phase 4 — The assistant joins in
+- In chat: "make me a workflow that…" → the assistant writes the file → a card with Open / Run.
+- In the editor: "Ask the assistant to change this".
+- The assistant's existing "propose a plan" becomes "propose a workflow".
+**Checkpoint:** you describe a job in chat, open what it made, change one card, run it.
 
-Opening a card shows a side panel:
+### Later (decided when we get there)
+Inputs for reruns · per-card permission choices · Files-panel summary · phone watching and
+answering checkpoints · save result to a file · re-run a failed card / re-run from here ·
+per-card cost · "save this chat as a workflow" · folder-of-files splits · starter workflows ·
+sharing · schedules (with Autonomous Assistants).
 
-| Setting | What you see | Notes |
-|---|---|---|
-| Name | "Review: bugs" | |
-| Starts from | Explorer / Researcher / Reviewer / Worker / one of *your* specialists | Reuses the existing specialist definitions; picks sensible defaults for the rest |
-| Instructions | A text box. `{input name}` inserts a workflow input | |
-| Model | The existing model picker (`ModelPicker.tsx`) | Local and cloud models can mix in one workflow |
-| What it may do | Read only · Edit files · Run commands · Use the web (checkboxes) | Defaults from "Starts from"; never more than the app's permission mode allows |
+## Known limits carried in from the engine (revisit per phase)
 
-Not in v1 (Destin: maybe later): per-card folder, per-card fixed answer format, **per-card
-dollar limits** (they made earlier plans fail constantly; only the whole run has a limit).
-
-## 6. Connections (Q-6)
-
-| Kind | How it looks | Engine today |
-|---|---|---|
-| One after another | Next row | Steps run in order ✔ |
-| Several at once | Cards in one row | "Split" runs one brief over a list; **different cards side by side is new** |
-| Combine / check | A card that reads earlier rows | `combine` / `verify` with `of` ✔ |
-| Repeat until good | Bracket over rows | `repeat` (max 5, until) ✔ |
-| Ask me first | ◆ Checkpoint row | **New** |
-
-Not in v1: if/then branches, "split by a card's result".
-
-## 7. Checkpoints
-
-A checkpoint row pauses the run. The run's card (in the Workflows screen, and in a chat if it
-was started from one) shows:
-
-- the results so far (each finished card's report, collapsed),
-- **either** a few options to choose from — written by a card just before it ("Give me 3 plan
-  options") — **or** just Continue,
-- a note box ("Use option 2 but skip the database change"),
-- **Continue** · **Stop**.
-
-Your choice and note are handed to every card after the checkpoint. A paused run waits
-indefinitely; the app shows the red attention dot like specialist approval requests today.
-
-## 8. Running and watching
-
-- **Run** → if the workflow has inputs, a small form → the estimate again → Start.
-- The run view is the editor in read-only mode with live state on every card: waiting /
-  running (with a live activity line) / done / failed / paused. Open a card to read its live
-  transcript and report.
-- Header: **Spent $1.20 of $5** (or "Spent $1.20" with no limit), Stop.
-- **Limit reached** → pause: "Reached your $5 limit" with Stop · Continue (asks a new total) —
-  the plans engine's built behaviour.
-- **A card failed** → that card shows the real error; small hiccups retry once by themselves;
-  otherwise the run pauses with **Retry this card** · Skip · Stop.
-- **App restart** → the run waits with Continue (built).
-- Concurrency: 4 specialists at once, local models one at a time (built rule).
-- **Finish** → a final report (the last card's output) shown in the run, and in the starting
-  chat if there was one. Files the cards changed are listed with links.
-
-## 9. The assistant and you edit the same workflow (Q-4)
-
-- In chat, "build me a workflow that…" → the assistant writes a `.workflow` file and shows it
-  as a card with **Open** and **Run**.
-- In the editor, an **Ask the assistant** box ("add a security reviewer to row 5") sends the
-  request plus the file; the assistant edits the file; the editor reloads it, highlighting what
-  changed.
-- The assistant's current "propose a plan" ability becomes "propose a workflow": same card,
-  but the plan is now a file you can open, edit and save.
-
-## 10. Inputs and reuse (Q-9)
-
-- A workflow declares inputs (text, a file, a folder). Instructions use `{input name}`.
-- Run with different inputs any number of times. Each run keeps its own record next to the
-  workflow (`.youcoded/runs/`), listed in the Workflows screen.
-
-## 11. Spending (Q-5, Q-8)
-
-One optional limit per run (off by default), live spending, pre-run estimate, the same number
-as the cost chip. No per-card limits. Subscription and local models show tokens instead of
-dollars, as plans already do.
-
-## 12. What gets reused vs built
-
-**Reused from the plans branch:** the runner (waves, saved progress, restart survival, safe
-retries), spending tracker and limit pause, estimate from past runs, per-step model, the plan
-card's look, the "from steps" line, the brief preview.
-
-**Reused from master:** file viewers registry, model picker, specialist definitions and launch
-(`Task` tool), specialist status chip/popup, approval-at-bottom and red dot, ScreenBand (screen
-header), ErrorState.
-
-**New:**
-1. The `.workflow` file format (rows, cards, checkpoints, repeat, inputs) and its validator.
-2. A standalone run owner (today a plan must belong to a live chat).
-3. Different cards side by side in one row.
-4. Checkpoint rows with options and a note.
-5. Per-card allowed actions.
-6. The editor (Files-panel viewer + Workflows screen) and the run view.
-7. The assistant's write/edit path for `.workflow` files.
-
-**Catch-up needed:** the plans branch is ~1,430 commits behind master with 40 conflicting files;
-bringing its engine over is the first technical task.
-
-## 13. Proposed order of work
-
-1. Mockups in the workbench → UX tester → review deck (editor, card panel, checkpoint, run view,
-   chat card).
-2. Contract from the answered decks.
-3. Bring the plans engine onto master (engine only, no chat card yet).
-4. File format + standalone runner + rows + checkpoints.
-5. Editor and run view.
-6. Assistant authoring.
-7. Reviews, grader, acceptance.
-
-## 14. Known open questions
-
-- Is the Workflows screen a new top-level view, or a section of an existing one?
-- Do several cards that edit files in the same row collide? (v1 idea: only one "edit files"
-  card per row; parallel builders in separate copies of the project is plans stage 3.)
-- Phone: the phone runs the desktop engine now, so runs could be watched there; editing on a
-  phone is probably view-only in v1.
+6 top-level steps, 8 items per split, 4 specialists at once, local models one at a time, only one
+file-editing specialist at a time. Plan-run specialists do not count toward the 30-per-chat cap
+(checked 2026-10-24: only the assistant's own `Task` tool spends that budget).
