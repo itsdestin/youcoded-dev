@@ -128,6 +128,32 @@ Files: `scroll-typing/`. One run per side and kind of capture (so these are sing
 - What the capture shows: for the whole 4 seconds B's page is almost idle (main thread busy 0.44 s of 4.6 s; in the profile only 44 ms of JavaScript, 302 ms of non-JavaScript work, 3.8 s idle). A is much busier (2.19 s busy, mostly painting and scroll-layer work). The only stall in B is one native block of about 86 ms at the very start of the scroll (A: 289 ms at the start), before anything else; this is the slow key. The profile lumps it as "(program)" and the trace does not isolate it, so I cannot say which browser step it is.
 - Conclusion: scrolling a finished 20,000-line block is lighter on B than on A overall. The slow key is a one-time hiccup when the scroll starts, in the same range A shows. I would not treat it as a confirmed regression. Not determined: what the start-of-scroll block is. No fix proposed.
 
+## 7. After the fix was applied (Destin cleared Option A)
+
+Fix: `CodeBlockFrame` now sets `containIntrinsicHeight` inline from the line count and the stylesheet no longer reads `--yc-lines` (commit `76205d42f` on `session/93-freeze-renderer`, merged into `session/93-freeze-combined` as `d17ab012a`; both pushed; nothing merged to master, no PR). A new test fails on the old code and passes on the new one; `bash scripts/verify.sh` (types, related tests, knip, lint, design lint, ast-grep, screens open, journeys) passed on the renderer worktree and again on the combined one (logs in `after-fix/`). The desktop B build was rebuilt from `d17ab012a` (app file hash `817195f6d099`). Files: `after-fix/`.
+
+Same session, desktop, A = master as controls:
+
+| 2,000-line block streaming in | A (today) | B with the fix | A against A (noise) |
+|---|---|---|---|
+| Typing delay, slowest key (median of 3, range) | 12.9 ms (11.7 to 13.6) | **11.9 ms (10.4 to 127.9)** | 12.3 vs 11.8 ms |
+| Time the page was frozen in 100+ ms pieces | 1.55 s (A froze about 1.5 s once in every round this time) | 0.07 s | 0 to 1.5 s |
+| Done to fully drawn | 1.62 s | 1.07 s | 1.59 vs 1.57 s |
+| Peak memory | 945 MB | 869 MB | 937 vs 929 MB |
+
+The typing median is back to the A level (before the fix: 61.5 ms). One of the three fixed-B rounds showed 127.9 ms in the slowest key; the other two were 10.4 and 11.9 ms. I cannot explain that one round and did not repeat it (the A/A control never produced anything near it).
+
+Bigger blocks, 2 rounds (control: A; no A/A run for these):
+- 20,000 lines: typing while streaming A 167 ms, B 157 ms (88.7 to 224.9, noisy); page frozen after the stream ends A about 126 s vs B 51 s total to fully drawn (the 51 s is mostly CPU-idle waiting that I did not explain); memory 2.11 GB vs 1.33 GB.
+- 700 KB data block: typing while streaming 3.76 s vs 0.235 s; memory 3.0 GB vs 1.17 GB. (A finished only 1 of 2 runs.)
+- Typing while scrolling the finished 20,000-line block: A 10.5 ms, B 121 ms (83 to 159). This is the same unexplained start-of-scroll hiccup as section 6, and it is still worse in B than A in these two runs. Not caused by the fix (the number was 78 ms before it); not fixed.
+
+Scroll jumps and placeholder height (long saved conversation, scrolling up past the loaded part):
+- Main run (3 rounds each, 40/200/1,000 turns): blank frames 0 everywhere. Jumps: A has the old two jumps of about 1,256 px and 696 px at 200 turns in every round (A is unfixed). B: 0 jumps in 8 of 9 rows; one row (1,000 turns, round 1) flagged 1 frame of 26 px, which is exactly one wheel step: the view did not advance for a frame while an older page of history was loading. Not a displacement of the reader's text.
+- Because "jumps must stay 0", I repeated only the 1,000-turn case 8 more times for each side: **B 0 jumps in 8 of 8 rounds, A 0 in 8 of 8** (largest movement 1.0 to 1.3 px, which is measurement rounding). So the 26 px frame was a one-off in 17 B rounds with the fix (and 0 in the 9 B rounds before the fix).
+- The laptop's first-draw-stability journey passed inside verify.sh. I also ran its figures script on the combined build (workbench, 60-turn conversation): bottom edge moved 0 px, worst drift 0.5 px, 0 blank spacers while flicking or scrolling, `worstPlaceholderErrorPx: 0` over 2 code blocks checked. That last number says the held height equals the drawn height to the pixel, so nothing about the placeholder height changed.
+- Not done: the earlier 20x/40x slowdown drift method. I could not find how it was run (no CPU-throttle option in the probe tools), so I did not guess at it.
+
 ## What could not be done
 
 - (Done afterwards, see section 5.) Browser trace for item 4.

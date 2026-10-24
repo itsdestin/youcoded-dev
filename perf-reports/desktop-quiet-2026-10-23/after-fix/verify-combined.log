@@ -1,0 +1,28 @@
+NOTE  master has new commits touching files this branch changed — merge it in and check for duplicate work:
+        efddda3b1 fix(welcome-back): keep the Skip permissions change inside the size limits
+        3869b893e fix(welcome-back): reopen sessions with Skip permissions as they were
+        300304498 fix(chat): tighten the shared stack gap to 6px (deck chat-bottom-spacing#S-1)
+        9b199ecc6 fix(chat): one even gap above the input bar; re-pin when its padding grows
+        e61eccfea fix(chat): Jump-to-bottom fades out instead of vanishing
+        104249842 fix(chat): Jump-to-bottom button no longer sticks; fades in/out with glass styling
+        023636523 queue: plain unconfirmed note in the strip; tests for runtime notes, dismiss restore, instant bubble and watcher read-back
+        3ae1f1044 refactor(chat): move the back-to-back model-switch merge beside the other divider helpers; record the line-budget raises
+verify: /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded (base origin/master)
+  tests: related to 103 changed file(s) + 83 source-scanning guards + 26 naming a changed/deleted data file
+
+PASS  types (tsgo --noEmit)
+PASS  types in tests/ (tsgo --noEmit, 0 file(s) still excluded)
+PASS  tests (related)
+PASS  dead code (knip)
+PASS  lint (oxlint)
+PASS  design lint (oxlint --max-warnings ratchet)
+PASS  invariants (ast-grep)
+PASS  screens open (shoot --check)
+PASS  journeys (click paths)
+
+full logs (every check): /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/scratch/verify-20261023-231718-574004
+
+machine load: 15.74 at the start, 22.13 at the end, on 32 threads (1-minute load average)
+OK — all checks passed.
+   Not covered: Android (./gradlew test), marketplace worker.
+EXIT 0
