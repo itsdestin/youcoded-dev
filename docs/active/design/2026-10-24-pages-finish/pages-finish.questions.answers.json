@@ -1,0 +1,151 @@
+{
+ "deck": "pages-finish-questions",
+ "started": "2026-10-24T20:12:02.847Z",
+ "submitted": "2026-10-24T20:30:05Z",
+ "cur": 4,
+ "answers": {
+  "Q-recipes": {
+   "v": "pick",
+   "pick": "yes-general",
+   "t": 1792872853247,
+   "seconds": 26,
+   "theme": "golden-sunbreak"
+  },
+  "Q-signin": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1792872853247,
+   "seconds": 26,
+   "theme": "golden-sunbreak"
+  },
+  "Q-combined": {
+   "v": "yes",
+   "t": 1792872853247,
+   "seconds": 26,
+   "theme": "golden-sunbreak"
+  },
+  "Q-popups": {
+   "v": "pick",
+   "pick": "ask-unless-approved",
+   "t": 1792872853247,
+   "seconds": 26,
+   "theme": "golden-sunbreak"
+  },
+  "Q-codechange": {
+   "v": "pick",
+   "pick": "marketplace-only",
+   "t": 1792872853247,
+   "seconds": 26,
+   "theme": "golden-sunbreak"
+  },
+  "Q-filepick": {
+   "v": "picks",
+   "picks": [
+    "pick-each-time",
+    "folder",
+    "remember-file"
+   ],
+   "t": 1792873047238,
+   "note": "we should also have something akin to full-file access so a user could build their own custom file browser/project view alternative if they want. but the permissions/warnings for this need to be very clear, and the actual access should be intermediated by youcoded. read/write permissions should be distinct probably. and the page builder should always attempt to use the least-broad access that does what a user wants.",
+   "seconds": 65,
+   "theme": "golden-sunbreak"
+  },
+  "Q-filesave": {
+   "v": "yes",
+   "t": 1792873047238,
+   "seconds": 65,
+   "theme": "golden-sunbreak"
+  },
+  "Q-filesphone": {
+   "note": "if its the native android app, it should show phone. if its remote access to desktop, it should use desktop.",
+   "t": 1792873047238,
+   "v": "other",
+   "seconds": 65,
+   "theme": "golden-sunbreak"
+  },
+  "Q-tasktype": {
+   "t": 1792873418680,
+   "v": "other",
+   "note": "i think we need to be more thoughtful about this (and some of our other decisions here). i want to maximize re-use of existing architecture and seek maximum modularity. i think a page should be able to integrate with autonomous agents full in a few ways, or include its own full chat window so i could have a \"YouCoded-Dev\" page that always has a conversations ready with relevant context to that project where the assistant can live-interact or update the page in some way. or an autonomous assistant can just pull in information daily overnight in the background. or i can organize multiple autonomous assistants in a page as a workflow kinda thing and run them manually. there",
+   "seconds": 62,
+   "theme": "golden-sunbreak"
+  },
+  "Q-taskmodel": {
+   "v": "other",
+   "t": 1792873418680,
+   "note": "this should work identically to main chats and shouldnt be any more difficult to build/implement imo. all of this architecture should be mostly reusable",
+   "seconds": 62,
+   "theme": "golden-sunbreak"
+  },
+  "Q-spend": {
+   "v": "other",
+   "t": 1792873418680,
+   "note": "this should be a configurable page setting. we still need to thing through what the shared pages configuration surface should look like",
+   "seconds": 62,
+   "theme": "golden-sunbreak"
+  },
+  "Q-taskasks": {
+   "v": "other",
+   "t": 1792873418680,
+   "note": "we need to think through this more. ",
+   "seconds": 62,
+   "theme": "golden-sunbreak"
+  },
+  "Q-tasklist": {
+   "v": "other",
+   "t": 1792873418680,
+   "note": "need to think through this. pages that include a usable/manual chat window should probably show those as regular conversations in the chat list, but autonomous assistants should probably always be hidden from that list",
+   "seconds": 62,
+   "theme": "golden-sunbreak"
+  },
+  "Q-background": {
+   "v": "pick",
+   "pick": "now",
+   "t": 1792873418680,
+   "seconds": 62,
+   "theme": "golden-sunbreak"
+  },
+  "Q-publish": {
+   "v": "other",
+   "t": 1792873723349,
+   "note": "this needs much deeper consideration. the entire foundation of the marketplace, as it stands now, is github. if we were to consider hosting our own marketplace content, we really need to consider the costs/risks/etc and have a clear understanding of why that might actually be worthwhile",
+   "seconds": 76,
+   "theme": "golden-sunbreak"
+  },
+  "Q-review": {
+   "v": "other",
+   "t": 1792873723349,
+   "note": "we should eventually have an automated AI reviewer that checks each page for errors, clarity of setup, security omissions/breaches, etc before approving. for now we can just publish as not reviewed and make the risks clear",
+   "seconds": 76,
+   "theme": "golden-sunbreak"
+  },
+  "Q-programs": {
+   "v": "pick",
+   "pick": "reviewed-only",
+   "t": 1792873723349,
+   "seconds": 76,
+   "theme": "golden-sunbreak"
+  },
+  "Q-edits": {
+   "v": "other",
+   "t": 1792873723349,
+   "note": "we need to think through this more as well. the eventual goal of the marketplace and the youcoded app more broadly is really to make software customization and personalization maximally easy for everyone, normies included. we should have some sort of clear forking/reconciliation mechanism that allows users to modify and customize pages while still at least being informed of changes/updates to the original page with the ability to 1) trace all forks/variants of different pages in the marketplace 2) rebase your page agentically on an updated upstream version, etc.",
+   "seconds": 76,
+   "theme": "golden-sunbreak"
+  },
+  "Q-extras": {
+   "v": "other",
+   "t": 1792873804136,
+   "note": "need to think through this given my other feedback thus far. we shouldnt' be looking at single pages like the home page here. this work is about the broader architecture/framework, not random one-off builds.",
+   "seconds": 41,
+   "theme": "golden-sunbreak"
+  },
+  "Q-order": {
+   "v": "other",
+   "t": 1792873804136,
+   "note": "need to consider my feedback and think through this",
+   "seconds": 41,
+   "theme": "golden-sunbreak"
+  }
+ }
+}
