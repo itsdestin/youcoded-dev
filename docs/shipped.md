@@ -886,3 +886,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-23 #193 Message queue: stuck chip messages, attachment wording, recovery, instant bubble, terminal-view stall, emoji terminal widths (youcoded#691 (b3665d98), youcoded-dev#314 (48aff39c))
 - [x] 2026-10-24 #93 Background freezes, memory growth and whole-file reads (itsdestin/youcoded#695 + itsdestin/youcoded-dev#318)
 - [x] 2026-10-24 #179 Remove FUTO from Swipe Keyboard and relicense it as Apache/MIT (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
+- [x] 2026-10-24 #170 Add offline next-word prediction to Swipe Keyboard (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
