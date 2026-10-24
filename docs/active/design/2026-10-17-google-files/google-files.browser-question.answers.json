@@ -1,0 +1,15 @@
+{
+ "deck": "google-files-browser-question",
+ "started": "2026-10-18T01:06:04.095Z",
+ "submitted": "2026-10-18T01:06:16Z",
+ "cur": 0,
+ "answers": {
+  "Q-browser": {
+   "v": "pick",
+   "pick": "external-only",
+   "t": 1792285574945,
+   "seconds": 11,
+   "theme": "morning-rounds"
+  }
+ }
+}

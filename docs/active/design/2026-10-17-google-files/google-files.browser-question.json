@@ -1,0 +1,33 @@
+{
+  "title": "Opening Google inside YouCoded",
+  "key": "google-files-browser-question",
+  "out": "google-files.browser-question.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-browser",
+      "words": true,
+      "surface": "Open a Google file",
+      "path": "A selected Google file → Open",
+      "headline": "Offer an extra option to open Google in YouCoded’s browser?",
+      "today": "You chose Open in Google and suggested YouCoded’s browser. That browser can open websites on desktop and remembers website sign-ins across chats.",
+      "problem": "Connecting selected Drive files does not sign that browser into Google. A separate website sign-in could let the assistant browse other Google files—not just the ones attached to this chat.",
+      "proposal": "Keep normal browser opening as the default. Decide whether to also offer an optional desktop action with a warning. Google connection and file selection still use your normal browser. Google website sign-in in YouCoded has not been tested here.",
+      "options": [
+        {
+          "id": "external-only",
+          "label": "Normal browser for now",
+          "pros": ["Does not introduce a broader Google website sign-in into the assistant’s browser.", "Same opening behavior on desktop and phone."],
+          "cons": ["Switch away from YouCoded to view or manually edit the file."],
+          "recommended": true
+        },
+        {
+          "id": "optional-internal",
+          "label": "Add the desktop option",
+          "pros": ["View and use Google’s editor beside the chat when the website works there.", "Normal browser opening remains available."],
+          "cons": ["May need a separate Google website sign-in.", "That sign-in follows the browser’s permissions, not the selected-file restriction.", "Requires testing and is unavailable on phones today."]
+        }
+      ]
+    }
+  ]
+}

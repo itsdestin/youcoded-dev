@@ -1,0 +1,30 @@
+{
+ "deck": "google-files-questions",
+ "started": "2026-10-18T01:00:36.687Z",
+ "submitted": "2026-10-18T01:02:28Z",
+ "cur": 0,
+ "answers": {
+  "Q-reuse": {
+   "v": "pick",
+   "pick": "attach-per-chat",
+   "t": 1792285347412,
+   "seconds": 37,
+   "theme": "morning-rounds"
+  },
+  "Q-save-target": {
+   "v": "pick",
+   "pick": "original",
+   "t": 1792285347412,
+   "seconds": 37,
+   "theme": "morning-rounds"
+  },
+  "Q-view": {
+   "v": "pick",
+   "t": 1792285347412,
+   "note": "we could open in google in the youcoded/assistant browser possibly?",
+   "pick": "google",
+   "seconds": 37,
+   "theme": "morning-rounds"
+  }
+ }
+}

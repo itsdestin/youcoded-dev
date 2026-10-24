@@ -937,3 +937,10 @@ recurred — the repetition is the data.
 - Flaky tests met by builders under load (LocalModelsSection, prompt-assembly, switch-marks, ipc-handlers status + real GitHub calls, wheel-scroll scan, journeys on glass) → applied: each fixed with break-it proof; journeys run with Reduce effects; ipc-handlers fails on any network use
 - Destin said: Pages chart recipe "add to roadmap"; phone Pages squeeze "roadmap item" → roadmap: other-features.md Pages follow-ups (e), (h)
 - deleted/merged: the old painted scroll-fade band and 5 private fade copies (one CSS-only fade); Focus timer and Week planner samples; the PITFALLS pre-merge incognito note (checked at merge instead)
+
+## 2026-10-17/18 — Google files implementation paused (session/155-google-files)
+- Missed the Google Services plugin and unmerged September decisions in the initial status answer → applied: recovered source citations and decisions into #155–160 and existing related cards; next session starts at #155, not another broad search.
+- RECURRED: delegation/process consumed time before useful UI, despite the October 16 ledger lesson; a standalone first draft violated the existing real-renderer rule → dropped new general guidance (already explicit); rejected draft removed, actual attachment click pinned by a regression test. No claim this solved process enforcement.
+- OAuth company setup was checked too late; code passing did not prove live access or good UI → applied: build-status.md records actual setup, verified boundaries and unverified live flow; current UI is not accepted.
+- Destin paused the implementation over browser friction and wants rclone-first exploration instead of our own OAuth app → card #155 paused, direction and comparison questions recorded, no replacement approved. Signed-out UI cleanup remains unresolved.
+- deleted/merged: rejected standalone Google mockup removed earlier; preserved current uncommitted app/design work intentionally (no commit/push permission). Stopped only offset170 dev; company cloud setup and credentials retained.

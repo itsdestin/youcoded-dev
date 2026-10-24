@@ -1,0 +1,88 @@
+{
+  "title": "Google files: three choices",
+  "key": "google-files-questions",
+  "out": "google-files.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-start",
+      "page": "Google files: three choices",
+      "intro": "Already agreed: simple Google sign-in; selected Drive files; create, read, edit and save Docs, Sheets and Slides. Calendar and Gmail come separately. Google’s file chooser opens in your browser and returns the selected files to YouCoded. External changes ask for approval by default. These choices shape the app screens—not Google’s picker."
+    },
+    {
+      "id": "Q-reuse",
+      "words": true,
+      "surface": "Google files in chat",
+      "path": "Attach a Google file → start another conversation",
+      "headline": "Can a new chat use files you selected in an earlier chat?",
+      "today": "Google can keep granting YouCoded access to a selected file until that access is removed. That does not have to mean every chat can use it.",
+      "problem": "Reusing files saves effort, but automatically exposing earlier files could mix personal and work conversations.",
+      "proposal": "Choose how chats reuse selected files while access remains valid. Neither option opens the rest of your Drive.",
+      "options": [
+        {
+          "id": "attach-per-chat",
+          "label": "Choose for each chat",
+          "pros": ["Each chat only uses files you add to it.", "Pick earlier files from a saved list without browsing Google again."],
+          "cons": ["One selection step when starting another chat about the same file."],
+          "recommended": true
+        },
+        {
+          "id": "reuse-granted",
+          "label": "Reuse across chats",
+          "pros": ["Ask any chat about previously selected files without attaching them again."],
+          "cons": ["A chat could access a file you originally selected for unrelated work."]
+        }
+      ]
+    },
+    {
+      "id": "Q-save-target",
+      "words": true,
+      "surface": "Saving Google edits",
+      "path": "Ask for a change → approve the save",
+      "headline": "Should edits normally update the original file or make a copy?",
+      "today": "The agreed integration can save changes back to Drive. We have not chosen the default destination for edits.",
+      "problem": "Editing the original affects collaborators; always making copies can leave several competing versions.",
+      "proposal": "Show the file and Google account before saving. Keep both choices available; choose the default here. Read-only files cannot be edited in place.",
+      "options": [
+        {
+          "id": "original",
+          "label": "Update the original",
+          "pros": ["The same link and collaborators see the saved changes.", "No extra copy to organize."],
+          "cons": ["An approved mistake changes the shared file."],
+          "recommended": true
+        },
+        {
+          "id": "copy",
+          "label": "Make a copy",
+          "pros": ["The original stays untouched while you check the result."],
+          "cons": ["Extra files to organize, with new links and potentially different sharing."]
+        }
+      ]
+    },
+    {
+      "id": "Q-view",
+      "words": true,
+      "surface": "Viewing Google files",
+      "path": "Click an attached or saved Google file",
+      "headline": "Where should clicking a Google file open it?",
+      "today": "YouCoded has local file viewers, but this Google connection does not yet have a viewing experience.",
+      "problem": "Opening Google shows its full editor; an in-app preview keeps you beside the chat but may simplify the layout.",
+      "proposal": "Choose where you view files. Both options keep assistant editing through chat, with approval before saving by default. Neither adds a full Google editor inside YouCoded.",
+      "options": [
+        {
+          "id": "google",
+          "label": "Open in Google",
+          "pros": ["See the full document, sheet or presentation in Google’s own editor.", "Chat still shows the proposed changes and save result."],
+          "cons": ["Switch to your browser to inspect the file itself."],
+          "recommended": true
+        },
+        {
+          "id": "preview",
+          "label": "Preview in YouCoded",
+          "pros": ["Read a preview beside the conversation.", "Keep an Open in Google button for the full editor."],
+          "cons": ["Formatting or interactive spreadsheet features may differ from Google.", "Adds preview work before the first release is ready."]
+        }
+      ]
+    }
+  ]
+}
