@@ -148,13 +148,15 @@ per-page settings window, which replaces today's "N connections" dialog.
    the page settings window, the combined-risk line. **Built 2026-10-24** (step 1 technical
    design). A phone's own browser cannot stop a page navigating its frame; the Android app
    and the computer can — stated, not hidden.
-1b. Plaid and Home as bundled recipes: body-injected multi-part secrets, a host-held per-account
-   token store, a browser sign-in flow, and device protocol profiles — so the last two built-in
-   special cases become general mechanisms.
+1b. Home: device protocol profiles (message format and naming field; camera tracks and data
+   channel). **Built 2026-10-24.** The bank page (Plaid) moves onto the general system in step 5
+   instead, because it needs exactly what "Sign in with…" builds — a browser sign-in and the app
+   holding each bank's token — and building those twice is the duplication this work avoids.
 2. Files.
 3. Chat in a page.
 4. Assistants and automations runner + spending limits + background (card #61 joins here).
-5. Accounts ("Sign in with…") — with or after card #155.
+5. Accounts ("Sign in with…") — with or after card #155 — including Plaid rebuilt on it
+   (body-placed secrets, app-held per-bank tokens, browser sign-in) so no bank is special code.
 6. Sharing, basic: registry on GitHub, publish with a GitHub account, install, updates
    (marketplace pages re-ask on code change), "Not reviewed" label with clear risks.
 7. Separate follow-up item: publishing without GitHub, versions/forks and "update my version",
