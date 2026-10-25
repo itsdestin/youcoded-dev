@@ -1,0 +1,52 @@
+{
+  "title": "Finishing Pages, step 2 — the file chooser, round 2",
+  "key": "pages-finish-step2d-choice",
+  "out": "pages-finish-step2d.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step2d.choice",
+  "runs": { "after": "runs-step2d/after" },
+  "themes": ["golden-sunbreak", "midnight", "light"],
+  "steps": [
+    {
+      "id": "C-layout",
+      "surface": "Pages",
+      "path": "A page used from your phone's browser → Open a file",
+      "headline": "Both have a list / tiles switch, search, sortable columns and quick places. Where should the quick places sit?",
+      "notice": "List (left picture) shows when each file changed and its size, and the column names sort. Tiles (right picture) show small pictures, about six to a row. The switch is the two icons at the top right of the files.",
+      "variants": [
+        {
+          "id": "top",
+          "label": "Places in a row above",
+          "crop": [{ "crop": "pages/page/file-chooser@panel", "label": "List" }, { "crop": "pages/page/file-chooser#tiles@panel", "label": "Tiles" }],
+          "summary": "Home, Desktop, Documents, Downloads, Pictures as a row of buttons over the files. The files get the full width; the same on a computer and a phone."
+        },
+        {
+          "id": "side",
+          "label": "Places in a column beside",
+          "crop": [{ "crop": "pages/page/file-chooser#side@panel", "label": "List" }, { "crop": "pages/page/file-chooser#side-tiles@panel", "label": "Tiles" }],
+          "summary": "The places as a column on the left, like a computer's file window. Feels familiar on a computer; on a phone it falls back to the row above."
+        }
+      ]
+    },
+    {
+      "id": "C-phone",
+      "surface": "Pages",
+      "path": "The chooser on a phone",
+      "crop": [{ "crop": "pages/page/file-chooser#phone", "label": "List" }, { "crop": "pages/page/file-chooser#phone-tiles", "label": "Tiles" }],
+      "new": true,
+      "headline": "On a phone the places scroll sideways, the list drops the date column, and tiles fit three to a row.",
+      "changed": "Same chooser, full width, Open over Cancel at the bottom.",
+      "notice": "The places row scrolls sideways when it does not fit."
+    },
+    {
+      "id": "C-save",
+      "surface": "Pages",
+      "path": "A page saving a new file, from your phone's browser",
+      "crop": "pages/page/file-chooser#save@panel",
+      "new": true,
+      "headline": "Saving uses the same chooser, with the file name box under it.",
+      "changed": "'Save a file', the same files card, then 'Save as' with the page's suggested name.",
+      "notice": "Tapping an existing file puts its name in the box; saving over it will ask first."
+    }
+  ]
+}
