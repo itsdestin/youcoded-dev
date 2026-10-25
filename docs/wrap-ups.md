@@ -1300,3 +1300,11 @@ recurred — the repetition is the data.
 - RECURRED (card #195): ~10 more hand-rolled regex secrets scans, and a `knip | tail && git push` chain pushed past a failing check because the pipe hid the exit code → card #195 progress records the recurrence (a checked scan-then-push script would have stopped both).
 - Destin's machine facts went to the brain: USB-C "UBTC" notices vs whole-desktop freezes → `~/system/machines/z13/issues.md`; quiet-desktop lab steps → `scripts/perf-lab/README.md`. His roadmap ideas this session were filed as cards #197-199.
 - deleted/merged: the busy-laptop A/B summaries moved from a scratch workspace copy into `perf-reports/busy-laptop-2026-10-22/` (raw JSON dropped); performance rules 10-13 added to the existing `performance.md`, no new rule file.
+
+## 2026-10-25 — awesome-list submission, license detected as MIT, site Security/Changelog pages (session/site-legal-links, no card)
+- Changelog page would have gone stale after every release: `site-deploy.yml` ran only on `docs/**`, but releases edit root `CHANGELOG.md` → applied: workflow regenerates the Markdown-built pages on every publish and triggers on the four root files.
+- The landing-page rule never mentioned the generated Privacy/Terms pages; found `gen-legal-pages.mjs` by sweeping (~3 calls) → applied: new section + anchors in `.claude/rules/landing-page.md`; its guard now names the copy-editor test's real path (2 wasted calls finding it).
+- Told Destin AUR was a new visibility idea; `packaging/aur/PKGBUILD` already existed → dropped: my unchecked claim, corrected in chat; existing evidence-before-claims rule covers it.
+- zsh `nomatch` (`NOTICE*`, `test_site_copy_editor*`) and an unquoted `--include=*.json` (hook blocked) cost 3 calls → dropped: glob-guard already catches the worst case.
+- Destin's visibility ideas (Awesome Claude Code / Awesome Electron after 100 stars, Reddit, Show HN, AlternativeTo) → not filed: he chose only the license fix "for now"; offered as a card.
+- deleted/merged: the generator's hard-coded Privacy/Terms ternaries became one `pages` table serving four pages.
