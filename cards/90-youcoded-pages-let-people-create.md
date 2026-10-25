@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: 2026-10-24 consolidation: audited every Pages chat and doc (all chats already closed except the Work board planning chat, now closed); generality audit and architecture proposal approved in direction on two question decks (docs/active/specs/2026-10-24-pages-finish-architecture.md). Work board installed 2026-10-18; held skill updates were published (Page Builder 0.3.0).
-Next: Step 1 screens: page Settings window, approval card with recipes and the combined-risk line, the 'Open this website?' ask. Before steps 3-4: a choice deck for where a page's chat lives, and a catalogue of autonomous-assistant use cases.
+Done: 2026-10-24: step 1 built on session/90-pages-finish (youcoded + wecoded-marketplace page-builder 0.4.0): kind registry, service recipes (allow/parts), https-only credentials + per-hop re-checks, Open this website? with remembered sites (phone channels approved), frame guard desktop + Android, DNS pinning; verify.sh all green; dev window 'Pages step 1' (offset 90, profile pages90) open for Destin
+Next: Destin tries step 1 in the dev window; then step 1b (Plaid and Home as bundled recipes) before files
 Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
