@@ -1,0 +1,43 @@
+{
+  "title": "Finishing Pages, step 2 — the file chooser, round 3",
+  "key": "pages-finish-step2e-choice",
+  "out": "pages-finish-step2e.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step2e.choice",
+  "runs": { "after": "runs-step2e/after" },
+  "themes": ["golden-sunbreak", "midnight", "light"],
+  "steps": [
+    {
+      "id": "C-places",
+      "surface": "Pages",
+      "path": "A page used from your phone's browser → Open a file",
+      "headline": "Narrower column, or the places in a menu on a folder button at the start of the path?",
+      "notice": "Both now open on tiles for someone new (your note); the list is one tap away.",
+      "variants": [
+        {
+          "id": "side",
+          "label": "Narrower column",
+          "crop": "pages/page/file-chooser#side-tiles@panel",
+          "summary": "The column you picked, about a fifth narrower, so six tiles fit to a row. Every place is visible at once."
+        },
+        {
+          "id": "menu",
+          "label": "Folder menu in the path",
+          "crop": [{ "crop": "pages/page/file-chooser#menu-tiles@panel", "label": "Closed" }, { "crop": "pages/page/file-chooser#menu-open@panel", "label": "Open" }],
+          "summary": "A folder button starts the path (Home › Pictures); it drops a menu of Home, Desktop, Documents, Downloads, Pictures. No column or row at all, so seven tiles fit, and a phone shows the same thing.",
+          "risk": "The places are one tap further away, and someone new may not guess the folder button holds them."
+        }
+      ]
+    },
+    {
+      "id": "C-phone-menu",
+      "surface": "Pages",
+      "path": "The folder-menu version on a phone",
+      "crop": "pages/page/file-chooser#phone-menu",
+      "new": true,
+      "headline": "On a phone the folder button sits at the start of the path, the same as on a computer.",
+      "changed": "Folder button, Home › Pictures, the list / tiles switch, search, then tiles three to a row.",
+      "notice": "With the column picked above, a phone uses this same menu (a column does not fit a phone)."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+ "deck": "pages-finish-step2d-choice",
+ "started": "2026-10-25T03:08:43.866Z",
+ "submitted": "2026-10-25T03:12:13Z",
+ "cur": 2,
+ "answers": {
+  "C-layout": {
+   "note": "oo i think i like side. we should default to tiles for new users. we should try to make the sidebar take up a bit less space though",
+   "t": 1792897833512,
+   "v": "pick",
+   "pick": "side",
+   "seconds": 110,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-phone": {
+   "v": "yes",
+   "t": 1792897919487,
+   "note": "actually, instead of side, i also want to see a concept that adds a folder icon in front of the first folder in the breadcrumb with a dropdown to let me select between other top level folders. this would save some top bar/sidebar space i think? but idk for sure",
+   "seconds": 86,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-save": {
+   "v": "yes",
+   "t": 1792897932553,
+   "seconds": 13,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}
