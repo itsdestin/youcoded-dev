@@ -54,8 +54,12 @@ same popup — recorded as an exception in the design guide. Backend still to bu
 
 - **#202** — sharing phase 2: publishing without GitHub, versions/forks and "update my version",
   the AI reviewer, programs in shared pages.
-- **#203** — the Android app's files: remembered files, saving back, saving a new file to
-  Downloads, folder and all-files access.
+- **#203** — the Android app's files, ALL of them: picking and reading a file, remembered
+  files, saving back, saving a new file, folder and all-files access. Step 2 ships none of it on
+  the Android app (Destin, 2026-10-24: "we aren't finishing Android"); its cards say "Not
+  available on the Android app yet".
+- **Known limit, not a card:** YouCoded's own file chooser (a phone's browser) never saves over
+  an existing file; it asks for another name. The computer's Save window asks before replacing.
 - **#204** — real thumbnails for every picture in the file chooser.
 - **Step 5** — the bank page (Plaid) rebuilt on the "Sign in with…" system.
 - **Known limit, not a card:** a phone's own web browser cannot stop a page frame navigating
