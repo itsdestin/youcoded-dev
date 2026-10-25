@@ -1,0 +1,153 @@
+{
+  "title": "Finishing Pages, step 2 — pages that work with your files",
+  "key": "pages-finish-step2-review",
+  "out": "pages-finish-step2.review.html",
+  "stage": "review",
+  "images": "images/pages-finish-step2.review",
+  "runs": {
+    "before": "runs-step2/before",
+    "after": "runs-step2/after"
+  },
+  "labels": { "before": "Today", "after": "Proposed" },
+  "themes": ["golden-sunbreak", "midnight", "light"],
+  "steps": [
+    {
+      "id": "F-pick",
+      "surface": "Pages",
+      "path": "Opening a page that works with files you pick → its approval card",
+      "crop": "pages/page/page-budget@640x720+525+90",
+      "runs": ["after"],
+      "new": true,
+      "headline": "A page can ask to open a file you pick each time, and to remember files you picked before.",
+      "changed": "Two levels on the Budget practice page: 'Open a file you pick each time (.xlsx and .csv files), and save changes back to it' and 'Reopen files you picked before… without asking again'. Each says what stays out of reach.",
+      "notice": "Picking uses the computer's normal Open window. The page gets the file's contents, never where it is kept, and YouCoded does every save.",
+      "risk": "A page that only needs one file a week still asks for 'remember' if its builder chose it; the page builder is told to pick the narrowest level."
+    },
+    {
+      "id": "F-folder",
+      "surface": "Pages",
+      "path": "A page that wants one folder → its approval card",
+      "crop": "pages/page/page-photo-board@640x720+525+90",
+      "runs": ["after"],
+      "new": true,
+      "headline": "A page that wants a folder asks you to choose it on the card, and cannot open until you do.",
+      "changed": "'See, open, change, add and delete files in one folder you choose.' Under it, a box reads 'No folder chosen yet' with Choose folder…, which opens the computer's own folder window. Allow and open stays grey until a folder is chosen; pointing at it says why.",
+      "notice": "The page never names the folder and never learns its path; you decide which one, and it reaches nothing outside it. Password and key files inside are hidden from it.",
+      "risk": "On a phone the folder window cannot open, so the card says to choose the folder on your computer — the same as adding a key."
+    },
+    {
+      "id": "F-folder-chosen",
+      "surface": "Pages",
+      "path": "The same card after Choose folder…",
+      "crop": "pages/page/page-photo-board#chosen@640x720+525+90",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Once chosen, the folder shows the way you read it, with Change…, and Allow and open lights up.",
+      "changed": "The box shows ~/Pictures/Family and a Change… button.",
+      "notice": "You can change it again later from Page settings without the page asking again."
+    },
+    {
+      "id": "F-all",
+      "surface": "Pages",
+      "path": "A page that wants every file → its approval card",
+      "crop": "pages/page/page-file-browser@640x720+525+90",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Access to every file gets the blunt treatment, like the whole internet and running a program.",
+      "changed": "'See, open, change and delete any file your account on this computer can.' Three plain lines under it: what that includes, that YouCoded cannot undo a change or a deletion (keep backups), and to use it only for a page you trust to manage your files.",
+      "notice": "Seeing and changing are separate: a page that only needs to read asks for read, and the card then leaves out the backup line.",
+      "risk": "Password and key files stay hidden, but everything else your account can reach is in reach. A page holding this and a website gets the amber 'Together' line."
+    },
+    {
+      "id": "F-settings",
+      "surface": "Pages",
+      "path": "Page settings → Files",
+      "crop": "pages/library/settings#files@panel",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Page settings gets a Files section: change the folder, forget a remembered file, or remove either.",
+      "changed": "A 'Files' section between 'What it can reach' and the websites list, only on a page that asks for files. The folder line shows ~/Documents/Recipes with Change…; the remembered line lists each file with a trash button; each line has Remove.",
+      "notice": "Forgetting a file or changing the folder takes effect at once and never makes the page ask again; Remove stops the access entirely and the page asks next time it opens."
+    },
+    {
+      "id": "F-heading",
+      "surface": "Pages",
+      "path": "Any approval card for a page that asks only for files or app abilities",
+      "crop": "pages/page/page-work-board@640x720+525+90",
+      "headline": "A page that reaches nothing on the internet 'wants access' instead of 'wants to connect'.",
+      "changed": "The Work board (chats, a program, starting a conversation) and the file pages now say 'Work board wants access'. Pages that reach a website still say 'wants to connect'.",
+      "notice": "The heading no longer suggests a page is going online when it is not."
+    },
+    {
+      "id": "Q-remote-pick",
+      "words": true,
+      "surface": "Pages",
+      "path": "Using a page from your phone's web browser (remote access)",
+      "headline": "From your phone's browser, how should a page's 'Open a file' work?",
+      "today": "You said a page used from your phone's browser should work with your computer's files. Folders and remembered files already do: they live on the computer. Picking a new file is the gap — the computer's Open window cannot appear on a phone.",
+      "problem": "Pressing 'Open a file' on the phone needs to do something useful.",
+      "proposal": "Pick one for now; the other can follow.",
+      "options": [
+        {
+          "id": "app-browser",
+          "label": "YouCoded's own file chooser",
+          "summary": "A YouCoded window on the phone that browses the computer's folders (with the same hidden password and key files) and picks one.",
+          "pros": [
+            "Picking works the same from anywhere.",
+            "Saving a new file can choose a folder on the computer too."
+          ],
+          "cons": [
+            "A new screen to design and build in this step.",
+            "It shows the computer's folder names on the phone while you browse."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "computer-only",
+          "label": "Pick on the computer for now",
+          "summary": "On the phone, 'Open a file' says 'Pick this file on your computer'; folders and remembered files work as usual.",
+          "pros": [
+            "Nothing new to build now."
+          ],
+          "cons": [
+            "A page that only picks files does little from a phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-android-folders",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages in the YouCoded Android app",
+      "headline": "On the Android app, should folder and all-files access come now or later?",
+      "today": "On the Android app, pages work with the phone's files. Picking a file (and remembering it) uses the phone's own file picker, which the app already uses for attachments.",
+      "problem": "Standing access to a folder needs Android's own folder permission and a new bridge between the app and the part of YouCoded that runs on the phone — a separate piece of work.",
+      "proposal": "Pick when.",
+      "options": [
+        {
+          "id": "later",
+          "label": "Pick and remember now, folders later",
+          "pros": [
+            "Files work on the Android app with this step.",
+            "Folder access gets its own careful build."
+          ],
+          "cons": [
+            "A folder page (a photo board) shows 'Not available on the Android app yet' there."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "now",
+          "label": "Everything now",
+          "pros": [
+            "The Android app matches the computer from day one."
+          ],
+          "cons": [
+            "This step takes noticeably longer, and Android's folder permission has rules of its own to test on a real phone."
+          ]
+        }
+      ]
+    }
+  ]
+}
