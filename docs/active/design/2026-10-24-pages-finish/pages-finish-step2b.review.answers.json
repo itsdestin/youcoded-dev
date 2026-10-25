@@ -1,0 +1,38 @@
+{
+ "deck": "pages-finish-step2b-review",
+ "started": "2026-10-25T02:57:15.119Z",
+ "submitted": "2026-10-25T02:58:32Z",
+ "cur": 3,
+ "answers": {
+  "C-open": {
+   "note": "definitely not a fan of this file brower. its a bit too ssimple with not enough information/detail",
+   "t": 1792897068038,
+   "v": "other",
+   "seconds": 33,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-picked": {
+   "note": "yeah i think we can improve the file browser visually. its not terrible, but i dont love it",
+   "t": 1792897100642,
+   "v": "yes",
+   "seconds": 33,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-save": {
+   "v": "yes",
+   "t": 1792897108234,
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-phone": {
+   "v": "yes",
+   "t": 1792897110607,
+   "seconds": 2,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

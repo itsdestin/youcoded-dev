@@ -1,0 +1,155 @@
+[
+  {
+    "name": "projects/files",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/projects/files/light.png",
+    "ms": 1195,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 381,
+      "w": 1100,
+      "h": 509
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/files",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/projects/files/midnight.png",
+    "ms": 1214,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 381,
+      "w": 1100,
+      "h": 509
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/chat/files/light.png",
+    "ms": 1346,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 950,
+      "y": 40,
+      "w": 480,
+      "h": 748
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/chat/files/midnight.png",
+    "ms": 1412,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 950,
+      "y": 40,
+      "w": 480,
+      "h": 748
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/file-chooser#budgets",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/pages/page/file-chooser#budgets/midnight.png",
+    "ms": 2321,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 261,
+      "w": 600,
+      "h": 378
+    },
+    "parts": []
+  },
+  {
+    "name": "projects/files",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/projects/files/golden-sunbreak.png",
+    "ms": 2356,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 170,
+      "y": 381,
+      "w": 1100,
+      "h": 509
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/file-chooser#budgets",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/pages/page/file-chooser#budgets/light.png",
+    "ms": 3278,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 261,
+      "w": 600,
+      "h": 378
+    },
+    "parts": []
+  },
+  {
+    "name": "chat/files",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/chat/files/golden-sunbreak.png",
+    "ms": 3398,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 953,
+      "y": 47,
+      "w": 480,
+      "h": 711
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/file-chooser#budgets",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step2c/today/pages/page/file-chooser#budgets/golden-sunbreak.png",
+    "ms": 4886,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 261,
+      "w": 600,
+      "h": 378
+    },
+    "parts": []
+  }
+]

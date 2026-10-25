@@ -1,0 +1,56 @@
+{
+  "title": "Finishing Pages, step 2 — what the file chooser should be like",
+  "key": "pages-finish-step2c-choice",
+  "out": "pages-finish-step2c.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step2c.choice",
+  "runs": { "today": "runs-step2c/today" },
+  "themes": ["golden-sunbreak", "midnight", "light"],
+  "steps": [
+    {
+      "id": "C-model",
+      "surface": "Pages",
+      "path": "A page used from your phone's browser → Open a file",
+      "headline": "Which existing YouCoded file view should the chooser be modelled on?",
+      "notice": "Whichever you pick, the chooser keeps what the deck already approved: it starts at your computer's home, hides password and key files, lists only the page's kinds of file, and saving works the same way.",
+      "variants": [
+        {
+          "id": "projects-files",
+          "label": "Like Projects → Files",
+          "crop": "projects/files@1240x560+180+360",
+          "summary": "Folder cards that peek at what is inside, file cards with a picture of the file, a search box, and a switch between cards and a list. The richest; the chooser would open as a large window."
+        },
+        {
+          "id": "session-files",
+          "label": "Like the Session files panel",
+          "crop": "chat/files@460x860+910+40",
+          "summary": "One column of rows, each with a picture of the file, its name, and when it changed, under a search box. Fits a phone well; less to take in at once."
+        },
+        {
+          "id": "simple-list",
+          "label": "Today's simple list, with more detail",
+          "crop": "pages/page/file-chooser#budgets@panel",
+          "summary": "Keep the plain list, add the date each file changed, its kind, a search box and quick places (Desktop, Documents, Downloads, Pictures). The least change from the deck you saw."
+        }
+      ]
+    },
+    {
+      "id": "Q-details",
+      "words": true,
+      "surface": "Pages",
+      "path": "The file chooser",
+      "headline": "Which details should it show? Pick all you want.",
+      "pick": "several",
+      "today": "The chooser shows each file's name, an icon for its kind and its size.",
+      "problem": "You said it is too simple, with not enough information.",
+      "proposal": "Pick everything you would want to see or use while choosing a file.",
+      "options": [
+        { "id": "previews", "label": "A picture of each file", "pros": ["You recognise a photo or a document at a glance."], "cons": ["Slower to fill a big folder from a phone, since each picture travels from the computer."] },
+        { "id": "dates", "label": "When each file changed", "pros": ["Find the latest version quickly."], "cons": ["One more thing on each row."] },
+        { "id": "search", "label": "Search inside the folder", "pros": ["Find a file by name without scrolling."], "cons": ["Searches only where you are, not the whole computer."] },
+        { "id": "places", "label": "Quick places (Desktop, Documents, Downloads, Pictures, Recent)", "pros": ["One tap to the usual folders."], "cons": ["A row of buttons above the list."] },
+        { "id": "sort", "label": "Sort by name, date or size", "pros": ["The order you want for each job."], "cons": ["Another control."] }
+      ]
+    }
+  ]
+}
