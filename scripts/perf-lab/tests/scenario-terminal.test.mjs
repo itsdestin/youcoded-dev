@@ -199,14 +199,23 @@ test('MEASURES says what the scenario cannot see, and where the IPC clock starts
 
 // ── Post-shakedown fixes (2026-09-11) ───────────────────────────────────────
 
+test('IPC rows preserve scheduling, visibility, pending and count evidence for verdicts', () => {
+  const read = { maxMs: 2, openStallMs: 1, maxTickDelayMs: 900, observedMs: 1000, tickSamples: 2, pings: 2, sawHidden: false, rejectedPings: 1 };
+  const row = ipcRow(read, 50);
+  for (const key of Object.keys(read)) assert.equal(row[key], read[key], key);
+  assert.equal(attributeStall(stallReading(row), { longtaskMaxMs: 0 }).verdict, 'renderer');
+  const hidden = ipcRow({ ...read, sawHidden: true, maxTickDelayMs: 0 }, 50);
+  assert.notEqual(attributeStall(stallReading(hidden), { longtaskMaxMs: 0 }).verdict, 'none');
+});
+
 test('the per-slot stall verdict sees a ping still pending at the slot close', () => {
-  // Main process blocked across the close: finished pings topped out at 20 ms, one
-  // has been waiting 900 ms, and the renderer was quiet. attributeStall reads only
-  // maxMs, so without stallReading this slot's verdict was 'none'.
+  // One ping remains pending. Both raw and legacy-normalized readings must
+  // retain it, but low long-task time alone cannot identify the blocking thread.
   const read = probeRead({ maxMs: 20, openStallMs: 900 });
   const quietRenderer = { longtaskMaxMs: 10, longtaskSupported: true };
-  assert.equal(attributeStall(read, quietRenderer).verdict, 'none', 'the premise: the raw reading hides the stall');
-  assert.equal(attributeStall(stallReading(read), quietRenderer).verdict, 'main');
+  assert.equal(attributeStall(read, quietRenderer).verdict, 'unclear');
+  assert.equal(attributeStall(stallReading(read), quietRenderer).verdict, 'unclear');
+  assert.equal(attributeStall(read, quietRenderer, { independentMain: { available: true, stopped: true, invalidClock: false, sampleCount: 4, observedMs: 1400, everyMs: 50, maxDelayMs: 900 } }).verdict, 'main');
   assert.equal(stallReading(read).openStallMs, 900, 'the rest of the reading is untouched');
   // Nothing pending leaves the finished max as it was.
   assert.equal(stallReading(probeRead({ maxMs: 20, openStallMs: null })).maxMs, 20);

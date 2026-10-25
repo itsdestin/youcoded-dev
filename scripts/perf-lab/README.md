@@ -1,7 +1,7 @@
 # perf-lab
 
 **What this is for:** a repeatable stress suite that catches performance regressions
-**per app surface** — you run one command, it drives the real packaged app through a
+**per app surface** — you run one command per app version (`run.mjs`; `ab.mjs` runs it for two versions and compares), it drives the real packaged app through a
 fixed set of journeys, and it writes numbers you can put next to last week's numbers.
 It started life as a one-off optimization rig; it is now the permanent measurement
 that stops each freeze, stall or memory jump we have already found from quietly coming
@@ -12,12 +12,12 @@ running a command* instead of being re-investigated from scratch. What is not a
 scenario is not measured — see the coverage table, and read it as the honest list it
 is.
 
-> **Nothing here appears on Destin's desktop.** Every rig entry point — `run.mjs`,
-> `profile-open.mjs`, the screenshot sweep — launches the app on an **Xvfb virtual
-> display**, not the real one. The standing "warn before opening a window" rule is
-> about `run-dev.sh` and the workbench; it does not apply to the rig, and a session
-> that assumes it does will either warn for nothing or avoid the right instrument.
-> (Stated here because a session did exactly that on 2026-09-10.)
+> **Read coverage without launching anything:** `node scripts/perf-lab/coverage.mjs`.
+> Runtime lanes have different display and ownership requirements: the standard
+> runner uses an isolated virtual display; hardware-virtual and explicitly enabled
+> real-display diagnostics are separate. Their existence is not permission to run
+> them or attach to the working app. Follow the lane's safety review and ownership
+> requirements; never experiment on the production app.
 
 > **Terms, once.** *Main process* — the single background process that owns the app's
 > files, IPC and windows; there is exactly one, shared by every open session.
@@ -30,33 +30,185 @@ is.
 
 ## Surface coverage — the honest list
 
-Taken from `docs/active/handoffs/2026-08-27-perf-lab-session-status.md` §2. **A surface
-that is not `covered` is *unreviewed*, never *fine*.** This rig has twice reported a
-clean pass while measuring nothing at all (a blank screenshot that compared equal to
-the next run's blank screenshot; a settings-open check that returned `true`
-unconditionally — corrections doc §15). Both were found by opening the artifact, not by
-reading the report. Do not let this table drift optimistic.
+**Use `coverage.mjs` as the source-backed inventory.** Its JSON and Markdown come
+from one contract: purpose, entry points, existing command/API, implementation,
+integration, review state, requested versus actual capability, bounds and gaps.
+Implemented is not integrated; integrated is not runtime-observed; observed is not
+accepted. No supplied report means **runtime evidence not imported**, not no issues.
 
-| surface | scenario | status |
+```bash
+# Read-only: these commands do not build, launch, attach, read sensors or scan reports.
+node scripts/perf-lab/coverage.mjs
+node scripts/perf-lab/coverage.mjs --format markdown
+# Import only an explicit existing workspace-local JSON file (replace the placeholder path;
+# no perf-reports/example.json exists).
+node scripts/perf-lab/coverage.mjs --format markdown --report documents=<path-to-an-existing-report.json>
+```
+
+The last command is a format template: substitute a real report path.
+Repeated `--report lane=path` imports at most 32 selected files, each at most 5 MiB.
+Paths must remain inside this workspace; symlinks and non-regular files are refused.
+The importer follows no nested paths, screenshots, traces or source references in a
+report. SHA-256 identifies only the bytes actually read, **not** an independently
+attested build. Missing/unreadable/oversized files are unavailable. Unsupported or
+stale schemas are not silently treated as current measurements. Exit status describes
+import/CLI execution, never performance acceptance; inspect each evidence status.
+
+The standard and document validators are reused for contract-level observations;
+valid document budget breaches remain **measured-slow**. Most diagnostic formats
+remain **unreviewed**, even if their own status says measured. Revision-5 renderer-only
+settling is the narrow exception: raw checkpoints, identities, deltas, control roles,
+requested counts and workload steps are revalidated as **measured-renderer-only**;
+whole-app memory remains not collected and standard acceptance stays false. Source profiles listed
+in the inventory are instructions for an independently authorized runtime run, not
+commands executed by coverage. Image and background-cost APIs have no runner command.
+
+### Quick source-only checks and explicit diagnostic profile
+
+These three existing-runner plan commands **do not launch, build or calibrate**:
+
+```bash
+node scripts/perf-lab/run.mjs --checkout youcoded --only native-stream --check
+node scripts/perf-lab/run.mjs --checkout youcoded --only native-stream --stream-completion-diagnostics --native-stream-repeats 1 --cached-only --check
+node scripts/perf-lab/run.mjs --checkout youcoded --only artifacts --document-cases csv-rows-64kib --check
+```
+
+After separate runtime approval, remove `--check`, choose an isolated `--checkout`,
+label and output folder. `--stream-completion-diagnostics` is accepted only with
+`--only native-stream` (at most three repeats). It invokes the existing reviewed
+`completionDiagnostics` API, retains every repeat/leg, and uses a **plain fixture**,
+not the standard Markdown performance workload. Its executed manifest option,
+measurement descriptor and instrument hashes distinguish it from standard baselines.
+Even a valid diagnostic report cannot earn KEEP through PRIMARY comparison: its
+manifest/descriptor differs. Standard defaults remain unchanged.
+
+For no-rebuild approval, keep **`--cached-only` on the actual runtime command**, not
+just its `--check` preflight. It conflicts with `--force-build`. At execution the
+build API re-reads the current checkout fingerprint and rejects stale/missing/invalid
+stamps, non-regular paths and symlink ancestors before disk-allocation checks or any
+build command. It never fixes a stamp or falls back to building. Cached-only `--check`
+uses the same validator and exits nonzero if reuse is refused, but cannot certify a
+later execution. This verifies source/stamp identity, not packaged-byte attestation.
+Without `--cached-only`, the runner's ordinary build-on-stale behavior is unchanged.
+
+The completion-diagnostic fixture is explicitly model-free (`seedEngine: false`),
+with all three required journey transcripts (4/8/12 turns for small/medium/huge),
+no decoys, and the fake provider. Missing local model/engine assets are not provisioned.
+Those three histories are required by the six-session journey even though this is
+not a history-size stress profile. Standard native-stream fixtures remain unchanged.
+
+The diagnostic checks producer writes, exact owned-session bridge receipt and
+terminal event, then full output after revealing the hidden session. Reducer queue
+is unavailable; post-reveal timing is not hidden reducer drain. Existing fixed settle
+fields retain their legacy meaning and are not completion proof. Validation also
+requires all eight actual alternating switch rows, with exact index/name/target
+identity, successful finite paint timings and `duringStream: true`; planned counts
+or filtered summary statistics cannot substitute for an executed transition.
+Calibration controls
+for documents run through the existing artifacts path; image diagnostics remain an
+opt-in owned-harness API, not a new CLI/launcher or standard image phase.
+
+### Whole-app memory by process role (role accounting revision 1; offline-tested, runtime pending)
+
+Full-domain lifecycle checkpoints now add `roles` beside the existing PSS fields (checkpoint and
+descriptor revisions are unchanged on purpose: comparability gates key on them; the new block
+carries its own `revision: 1`, also in `descriptor.roleAccounting`). Renderer-only checkpoints
+read no processes and have no `roles`. Reports without `roles` are **legacy**: roles unknown,
+never inferred.
+
+- **Identity** is `(pid, starttime)`, written `pid:starttime`; a reused pid is churn, not continuity.
+- **Role** comes from `/proc/<pid>/cmdline` only as an allowlisted label: `main`, `renderer`, `gpu`,
+  `utility` or `utility:<sub-type>`, `zygote`, other `--type=` words, `node-helper`, `llama-server`,
+  `crashpad`, `unknown`. No argv, paths, URLs or environment are stored.
+- **Per member**: PSS, RSS and private kB from `smaps_rollup`. Read order is stat, cmdline, smaps,
+  stat again. A member that vanishes is `exited-during-read` (never zero); unreadable, missing
+  Pss and starttime change are separate incomplete statuses. Snapshot `valid` means every
+  enumerated member was measured. An unmeasured member voids its own role total and the whole
+  total; one that vanished before its role was read voids every role total (cannot be placed).
+- **Comparison** (`compareRoleSnapshots`): members present in both are matched per role; added and
+  removed members are listed with roles; the whole-family delta exists only when membership is
+  identical and both snapshots are valid, otherwise only matched-member totals plus churn are
+  reported. Natural and forced-GC trajectories are never mixed. Summed PSS/RSS is over an
+  incompletely discovered family: not unique memory, no leak verdict.
+
+`summariseCycles(...).roleAccounting` holds the per-cycle block. The comparison layer
+(`compare.mjs`, not yet changed) can adopt these arrays, one entry per cycle, `null` = no valid
+role data (`lifecycleRolePaths(cycles, {policy})` in `process-roles.mjs`; `<key>` = role label with
+non-alphanumerics turned to `-`):
+
+| Path | Meaning |
+|---|---|
+| `lifecycle.role.<key>.pssMiB` / `.count` | role PSS total (only when the role is complete) / member count |
+| `lifecycle.role.all.pssMiB` / `.count` | whole-family total (only when every member measured) / members |
+| `lifecycle.roleSnapshotValid` | every enumerated member measured |
+| `lifecycle.roleChurn.added` / `.removed` | identities that appeared / left vs the previous cycle |
+| `lifecycle.roleMatched.<key>.deltaPssMiB`, `.all.deltaPssMiB` | change over members present in both cycles |
+| `lifecycle.roleFamilyComparable` | whole-family delta allowed (identical membership, all valid) |
+| `lifecycle.forcedGc.*` | the same, from forced-GC samples; kept separate |
+
+Offline re-analysis of an existing report (read-only, prints, writes nothing):
+`node scripts/perf-lab/role-reanalysis.mjs <report.json>`. On
+`scratch/perf-lab/lifecycle-merged-once-grhuby4a/report.json` it shows identity-exact churn and
+matched-member change but cannot name roles (cmdline was never recorded). Acceptance needs one
+future merged-baseline three-cycle runtime run with every snapshot valid and per-role tables.
+
+### Model downloads and the quiet-machine wait (offline-tested)
+
+- **No download without opt-in.** Phases that seed the local model/engine (everything except
+  `artifacts` and the plain `native-stream` diagnostic) refuse to run when the ~490 MB
+  `qwen2.5-0.5b-instruct-q4_k_m.gguf` or the llama.cpp engine archive is missing, before the build
+  and before any app launch. Choices: `--allow-asset-download` (or `PERF_LAB_ALLOW_ASSET_DOWNLOAD=1`)
+  on `run.mjs` / `ab.mjs`, or select model-free phases. Already-present, verified assets are used with
+  no network. `--check` prints `model assets` as present+verified, MISSING (would refuse) or download AUTHORIZED.
+- **Separate quiet-wait bound.** `--max-quiet-wait-minutes <n>` (default 20) bounds the wait for load < 4
+  and CPU < 10%. That waiting is credited back to `--max-minutes`, which now means measurement time only.
+  A first gate runs before the first boot; past the bound the run stops with exit 4, the report records
+  `noise.neverQuiet` ("machine never became quiet: load X") and is INCOMPLETE. The report also carries
+  `noise.quietWaitMs` and `noise.loadAvgAfter` (one reading at the end of the run).
+
+### Consolidated source-only unit selection
+
+`tests/offline-unit-manifest.json` is the explicitly audited selection for this
+package. Do **not** replace it with `tests/*.test.mjs`: the folder contains automatic
+headless Chrome, local HTTP/socket, process-supervisor and temporary-git-commit tests.
+Revision 2 classifies all 65 changed/new lab test entrypoints at this checkpoint:
+52 perf-lab units, 3 DOM units, 1 separate read-only-Git test, 1 injected Python gate
+test, 1 separate local fake-HTTP test and 7 effectful exclusions. Each included test
+has a source-boundary audit note; the saved verification below binds actual test bytes.
+This is **not the complete lab suite**. No runtime or hardware pass is implied by green.
+
+```bash
+# Explicit manifest selection, including the separately identified read-only-Git test.
+# No glob expansion; no Git commits, app/browser launch, model or sensor execution.
+node --input-type=module -e 'import {readFileSync} from "node:fs"; import {spawnSync} from "node:child_process"; const m=JSON.parse(readFileSync("scripts/perf-lab/tests/offline-unit-manifest.json","utf8")); const files=[...m.files.map(f=>"scripts/perf-lab/tests/"+f),...m.uiFiles,...m.readOnlyGitFiles.map(f=>"scripts/perf-lab/tests/"+f)]; const r=spawnSync(process.execPath,["--test","--test-concurrency=2",...files],{stdio:"inherit"}); process.exitCode=r.status??1;'
+python3 -B scripts/perf-lab/tests/supervised-exec-gate.test.py
+python3 -B scripts/perf-lab/tests/supervised-compositor-proofs.test.py
+# Separate offline-local suite: fake server bound to 127.0.0.1, no outside connections.
+node --test scripts/perf-lab/tests/fake-provider.test.mjs
+```
+
+Real Chrome, hardware, process/exec-gate synthetic integrations and temporary-Git-commit
+`build.test.mjs` are deliberately excluded, not counted as skipped successes. The
+selected-checkout source test inspects real registered Git metadata without writing it;
+it is machine-specific. Fixture tests now use `seedEngine:false`; the old blanket claim
+that `fixture.test.mjs` necessarily downloads a model no longer describes this source.
+
+### Standard integration (not a runtime pass)
+
+The eleven phases below are integrated in `run.mjs`; the inventory records their
+specific limits. Historic claims that individual metrics currently equal zero or
+that the machine always uses one renderer are deliberately not coverage evidence.
+
+| family | existing integration | scope limit |
 |---|---|---|
-| startup / boot chores | in `run.mjs` | **covered** |
-| history reload by size | `scenario-history.mjs` | **covered** |
-| chat under load (6 sessions, streaming, switching) | `scenario-workload.mjs` | **covered** |
-| memory ceiling once conversations are read back | `scenario-scrollback.mjs` | **covered** |
-| app-wide freeze on replay | `scenario-replay-stall.mjs` | **covered** (both its metrics currently read 0) |
-| artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **covered** |
-| Projects view (open, file search, type filter, flat-grid scroll, list view, project switch, Conversations tab, reopen) | `scenario-projects.mjs` | **covered** since 2026-09-09 — stock theme only, so the per-card wallpaper blur is NOT measured |
-| layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
-| blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
-| which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
-| terminal (six sessions, 40 switches in terminal view, atlas clears per switch) | `scenario-terminal.mjs` | **covered** since 2026-09-10 — software GL only, GPU upload cost NOT measured |
-| a native reply streaming at cloud-model speed (150 deltas/s, six sessions open): on screen, while switching, and hidden | `scenario-native-stream.mjs` + `fake-provider.mjs` | **covered** since 2026-09-16 — text deltas only; no tool calls, no thinking, no buddy window |
-| Resume list over 100 native sessions, resuming a 400-turn native session, a history page, a reply, tear-off into a new window, a reply into the other window | `scenario-native-resume.mjs` | **covered** since 2026-09-16 — the detached window's own rendering is NOT measured |
-| a phone over a slow network (cold open, reopen, reconnect; 300-turn conversation + full terminal) | `scenario-phone.mjs` + `net-shape.mjs` | **covered** since 2026-10-22 — standalone, NOT in `run.mjs`'s phase list (needs Tailscale and Chrome; its own report). Link speed beyond the 470 ms round trip is an assumption; no loss or jitter |
-| marketplace | — | **NOT covered** |
-| sync | — | **NOT covered** |
-| themes / theme switching | — | **NOT covered** |
-| buddy / multi-window | — | **NOT covered** |
+| startup/history/workload/shots | `run.mjs` and scenario modules | Fixed packaged journeys, repeats and named captures; not all product screens |
+| stall | `scenario-replay-stall.mjs` | Raw response tails and renderer evidence, not inferred main occupancy |
+| artifacts/documents | Legacy files panel plus nine selectable revision-3 document smoke cases | Selected cases only; not all viewers, full reads or larger ladders |
+| projects/terminal/native-stream/native-resume | Existing surface scenarios | Fixed steps; hidden session is not hidden window; detached IPC is not full multi-window presentation |
+| scrollback | `scenario-scrollback.mjs`, `late-content.mjs` | History ceiling/blank-content evidence only when every required size completes |
+| optional diagnostics | See `coverage.mjs`: lifecycle, DOM growth, sensors, images, GPU cost, realism, presentation, idle overhead | Separate command/API and review boundaries; no standard acceptance by presence |
+| a phone over a slow network (cold open, reopen, reconnect; 300-turn conversation + full terminal) | `scenario-phone.mjs` + `net-shape.mjs` | covered since 2026-10-22 — standalone, NOT in `run.mjs`'s phase list (needs Tailscale and Chrome; its own report). Link speed beyond the 470 ms round trip is an assumption; no loss or jitter |
+| missing broad coverage | Queue/drain, OS-hidden windows, mobile, physical display, app energy; marketplace/sync/buddy journeys | Unmeasured/unsupported, not healthy |
 
 **All eleven phases are reachable from the CLI.** `run.mjs`'s phase list is
 `PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'native-stream', 'native-resume', 'scrollback']`
@@ -65,6 +217,155 @@ reading the report. Do not let this table drift optimistic.
 phases and that `stall` and `artifacts` were unreachable; that stopped being true when
 they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
 
+### Opt-in natural settle + no-work controls (offline-tested; runtime pending review)
+
+`short-lifecycle.mjs --settle-checkpoints` uses descriptor revision 5 only for this
+option; default runs and older reports retain their existing meanings. Requires
+`--model-free --supervised`, an explicit cached `--app-dir`, fresh `--out`, and
+explicit `--max-minutes` (1..5), `--max-rss-mb`, `--cleanup-reserve-ms` caps. At most
+three **workload cycles including the first warmup**; incompatible with `--post-gc`
+and `--resource-checkpoints`. No build, provisioning or sensor path is added.
+
+Optional `--settle-domain renderer` collects only renderer checkpoints; omitted or
+`--settle-domain full` preserves the existing process-inclusive behavior. The domain
+flag requires `--settle-checkpoints`. Renderer-only checkpoint revision 3 uses one
+CDP metrics response bracketed by document epoch/URL reads, the same source/run/target
+identity and finite counters. It does **not** invoke family discovery, process start
+or PSS readers. Checkpoints separately expose `renderer` validity/read brackets and
+`process` availability/gaps; renderer-only process/PSS status is `not-collected`, not
+missing or zero. Full checkpoints retain revision 2 and existing comparison rules.
+Independent supervisor ownership, RSS caps, historical memory gaps and cleanup
+requirements are unchanged; RSS safety is not a PSS measurement.
+
+A complete renderer-only settle summary is `measured-renderer-only`, with process
+status `not-collected`. Overall lifecycle status remains `incomplete` (CLI exit 2),
+standard acceptance remains false, and no aggregate PSS trend is emitted. Coverage
+imports retain these separate observations without declaring measured whole-app
+memory or health. Observer overhead still needs actual runtime measurement; a
+shorter measurement path is not evidence of a measured overhead reduction.
+
+One boot and one anchor, explicitly: **control 1 → workload 1 → restore anchor /
+settle 1 → control 2 → workload 2 → restore / settle 2 → control 3 → workload 3 →
+restore / settle 3** (truncate to requested cycles). Each control and each restored
+workload gets the same four reads at planned **0, 250, 1000, 3000 ms** from its
+verified anchor boundary: maximum 24 settle/control points. Controls never create,
+send, destroy or switch sessions, and are not cycles or warmup. A later control also
+observes the period after the previous workload, not a fresh-process baseline.
+The anchor setup/teardown remains outside these phases.
+
+No forced GC. These Chromium instance counts are not connected-DOM counts and do
+not guarantee collection occurred. Boundary state/visibility checks use the existing
+pane/pill mapping; no listeners or polling instrument is installed. `actualMs`,
+`latenessMs`, checkpoint `observerMs` and `readWallMs` record measured timing.
+Absolute monotonic scheduling includes read overhead; lateness over 100 ms, missing
+reads, failed restoration, renderer epoch/source/run/target changes or counter
+resets stop continuation. Full-domain checkpoints also stop for shared PID reuse. The schedule must fit before the existing
+run deadline minus the explicit cleanup reserve (at least 12 s); no late catch-up
+burst. Family churn can retain renderer observations but cannot produce aggregate
+PSS retention: scope remains enumerated marker processes, not proven whole-app PSS.
+
+`sampleSettlePhase` and `summariseSettle` in `natural-settle.mjs` expose raw phases,
+within-phase changes and same-planned-offset raw workload-minus-control differences
+with actual timestamps. Sequential windows are not causal subtraction or calibrated
+observer overhead. Missing points are incomplete, never healthy. The existing
+immediate `natural` slot remains the first released read; delayed trajectories use
+their own samples rather than copying global cumulative totals. Existing preserved
+failed/current-merged evidence is not rewritten or made comparable by this option.
+Reports still use the existing 10,000-record / 5 MiB bounded serializer; cap overflow
+is explicitly incomplete, not truncated into successful evidence. No runtime was
+performed for this instrument revision.
+
+Offline check:
+`node --test scripts/perf-lab/tests/natural-settle.test.mjs scripts/perf-lab/tests/resource-checkpoint.test.mjs scripts/perf-lab/tests/short-lifecycle.test.mjs scripts/perf-lab/tests/coverage.test.mjs scripts/perf-lab/tests/proc-forensics.test.mjs`
+
+### Runtime observations versus source inventory
+
+Session coordination reported a partial DOM-growth run (cap reached after revealing
+550 of 2000 rows, with tab-reset proof) and a sensor-only run with EACCES/truncated
+discovery. These were initially requester-provided observations; the explicit current
+snapshot below now imports and hashes those reports. The first does not establish
+saturation, and the second does not establish app energy. Import exact local reports
+to retain identities and raw reasons; do not turn these notes into machine defaults.
+Lifecycle checkpoint implementation is reviewed but runtime acceptance remains
+pending. One small PNG image diagnostic was reported by coordination and its saved
+report is available below, but coverage imports it conservatively as **unreviewed**:
+producer-declared revisions/step statuses are not independent revalidation of current
+revision-3 input, image policy, seven-step proof or visual acceptance. Images remain
+API-only, not standard-runner image integration. GPU cost runtime and realism `display=gpu` run ONLY on the
+supervised private compositor (see "Supervised GPU binding" below) and are refused unless the renderer is hardware; software realism and native presentation remain separate
+existing lanes, not executed by this inventory work. Background-cost
+is an API, not a workload lane. The broad diagnostic goal is therefore **not done**.
+
+Saved session examples (read-only imports, no discovery or nested file following):
+
+```bash
+node scripts/perf-lab/coverage.mjs --format markdown \
+  --report documents=scratch/document-stalls-runtime-jNljbL/runtime-report.json \
+  --report images=scratch/image-stalls-runtime-wSQUqA/runtime-report.json \
+  --report dom-growth=scratch/dom-growth-runtime-jidlo1wg/report.json \
+  --report sensors=scratch/sensor-runs/preflight-20261020T221551Z-16573/report.json
+```
+
+These are optional explicit paths from this session, not portable fixtures or default
+healthy claims. Missing files remain unavailable. Native completion reports use
+`--report stream-completion=<saved-run.json>`; importing them as `native-stream`
+does not turn the plain diagnostic into standard Markdown timing evidence.
+
+### Integrated current evidence checkpoint (read-only)
+
+`scratch/perf-lab/integrated-coverage-current-i7kgIdgv/reports-manifest.json` selects
+seven exact reports; `coverage.json` and `coverage.md` are generated from that manifest,
+with actual byte lengths/SHA-256 and reported source identities. No automatic scratch
+discovery, nested-file following, rerun or packaged-byte attestation is performed.
+
+- **Current reported app source:** renderer-only report
+  `scratch/perf-lab/renderer-settle-4zJItHUf/report.json` names
+  `254ff9983aa3657a937dfd65011beb3c6e6508c9`, dirty fingerprint `3c937cd909bc`.
+  Coverage revalidates 24/24 points, three completed workloads/six exact replies and
+  alternating control/workload roles in one source/run/target/document epoch.
+  Result: **measured-renderer-only**; process/PSS **not-collected**, outer lifecycle
+  **incomplete**, original CLI exit **2** is intentional, standard acceptance **false**.
+  Control listener levels were 331/639/1395; workload within-window listener changes
+  +19/+40/+19. Cycle-3 workload began at Nodes 455/listeners 294/heap 16125456 bytes,
+  versus its control's 656/1395/18157548. This counter drop is **not GC proof**.
+- **Same current reported app source, different diagnostic:**
+  `scratch/perf-lab/lifecycle-merged-once-grhuby4a/report.json` completed three cycles
+  but remains incomplete because family composition changed in cycles 1/3. No aggregate
+  PSS retention trend follows. It is not interchangeable with renderer-only settling.
+- **Historical app source:** the selected CSV and PNG reports name
+  `bc9e43752d0c9d2bb49eeff1e50ee70800668f27`, dirty `331dbfcbbf58`, not current 254ff.
+  They stay separately labeled owned-attempt/unreviewed diagnostics. The explicitly
+  imported plain-stream report at `scratch/stream-completion-runtime-BPiBTZ/2026-10-21-0034-bc9e437-stream-completion.json`
+  also reports old bc9 source. Its completion evidence revalidates, but remains
+  unreviewed diagnostic evidence, not current-source or standard Markdown acceptance.
+- **Separate domains:** DOM growth: the historical run was incomplete at its old 10-checkpoint cap (550/2000 rows; the cap is now 60 so a run reaches all 2000 rows,
+  reset proven); sensor preflight retains EACCES/truncated discovery, not app energy.
+
+App fixes were merged in app PR **665**, supporting sources/docs in workspace PR
+**289** (coordination references). This unfinished lab is **not merged**. Imported
+source/stamp fields are reported identities, not independently attested builds.
+
+Verification logs in that same fresh evidence folder preserve the initial manifest
+revision-guard failure and its repair, then the consolidated final selection:
+**690/690 Node tests** (51 files), **8/8 separate offline-local tests**, and **4/4 Python
+gate tests**. Zero skips in the Node selections; no complete-suite/runtime claim.
+
+For an independently authorized future renderer-only run, the existing cached/model-free
+entrypoint is below. This is an argv template, **not permission or a command run here**;
+all paths must be absolute and the output fresh. There is no build fallback.
+
+```bash
+node scripts/perf-lab/short-lifecycle.mjs --checkout <isolated-app-worktree> \
+  --app-dir <cached-linux-unpacked> --model-free --supervised \
+  --settle-checkpoints --settle-domain renderer --cycles 3 --max-minutes 5 \
+  --max-rss-mb 2048 --cleanup-reserve-ms 20000 --out <fresh-report.json>
+```
+
+GPU-cost runtime and realism GPU display are enabled only through the supervised private compositor
+(see "Supervised GPU binding"); app-attributable energy remains **unsupported**. Full-surface graphics implementation,
+queue conservation/drain and OS-hidden-window coverage are still missing. These reports
+do not establish a generally complete or accepted diagnostic lab.
+
 ---
 
 ## Running it
@@ -72,7 +373,7 @@ they were wired in, and the doc did not follow. Corrected 2026-09-03 against the
 ```bash
 node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--history-repeats 5] \
   [--workload-repeats 3] [--terminal-repeats 3] [--only startup,history,workload,shots] [--force-build] \
-  [--label <text>] [--out perf-reports/] [--max-minutes 45] [--dry-run]
+  [--label <text>] [--out perf-reports/] [--max-minutes 90] [--dry-run]
 ```
 
 (`--help` lists every `--*-repeats` flag.) **A default-run baseline taken before the
@@ -88,6 +389,49 @@ The point is not "get a number". It is to get a number you can *defend* — meas
 a quiet machine, repeated enough times to know its own noise band, taken against a
 build that is byte-identical to what ships, with every boot's error log counted.
 
+### Comparing two app versions
+
+`ab.mjs` runs the SAME selected work against candidate A and then candidate B (one at a
+time, in one process, through `run.mjs`'s own `main()`), and writes one comparison. Each
+candidate is a **stamped checkout** (a build in `desktop/release/` plus its
+`.perf-lab-build.json`); a bare package directory is not accepted because it has no
+verifiable source identity. By default only cached builds are used — a stale or missing
+build is refused, not silently rebuilt (`--build` allows a rebuild).
+
+```bash
+# 1. Preflight: both candidates' identities, cached-build validity, work, boots, bounds. Launches nothing.
+node scripts/perf-lab/ab.mjs --a <checkoutA> --b <checkoutB> --check
+# 2. Quick targeted run (default mode: startup + history, 3 samples each)
+node scripts/perf-lab/ab.mjs --a <checkoutA> --b <checkoutB>
+#    ... or choose the phases:   --only terminal,native-stream      ... or everything: --mode full
+# 3. Expose the lab's own noise: A, B, then A again, plus an A1-vs-A2 table
+node scripts/perf-lab/ab.mjs --a <checkoutA> --b <checkoutB> --repeat-a
+# 4. Known-change control: inject a 400 ms delay into B's terminal scenario; it must show as regressed
+node scripts/perf-lab/ab.mjs --a <checkoutA> --b <checkoutA> --only terminal --control-b-delay-ms 400
+```
+
+Output: `perf-reports/ab/<date>-<time>-<shaA>-vs-<shaB>[-CONTROL][-label][-N]/` holding both
+run reports (`a`, `b`, `a2`), `comparison.md` / `comparison.json`, and
+`noise-a1-vs-a2.md` with `--repeat-a`. A new comparison never overwrites an old one, and
+neither does a rerun of `run.mjs` in the same minute (it gets a `-2`, `-3` suffix). Only
+one run may measure at a time: `scratch/perf-lab/run.lock` records the holder's pid and
+start time and a second run is refused (a lock is reclaimed only when that process is
+provably gone; nothing is ever killed).
+
+Reading `comparison.md`: every PRIMARY path (and document case) shows A, B, absolute and
+percent change, each side's run-to-run spread, each side's worst repeat, and a status —
+`improved` / `regressed` (change larger than both sides' spreads added together),
+`inconclusive` (inside that noise, or fewer than 2 samples), `missing` (absent on a side;
+never read as zero) or `incomparable`. There is no overall score; a failed lane is listed
+under "Required-lane failures". Reports now carry `identity` (hashes of the lab source,
+fixture options, the executable and `app.asar`, and every repeat count); two reports
+whose instrument source, fixture or execution options differ — or that predate `identity`
+— are marked incomparable and must be re-measured with the current lab. The
+`--control-b-delay-ms` control (env `PERF_LAB_CONTROL_TERMINAL_DELAY_MS`, off by default)
+is recorded in `identity.control` and in the file name. Durations of real A/B runs have
+not been measured yet; do not rely on a time estimate. Unit tests only — no A/B has been
+run end to end against real builds.
+
 ### Launch it with `bg-run.sh`, not by hand
 
 ```bash
@@ -95,8 +439,9 @@ bash scripts/perf-lab/bg-run.sh --label cycle3-eviction        # a full run
 bash scripts/perf-lab/bg-run.sh --only history --history-repeats 1 --label probe
 ```
 
-A full run is ~26 minutes, which is longer than an agent turn, and there are three
-ways to lose one that have all actually happened:
+A full default run has more boots than the ~26-minute run this section was first written
+for, and its current duration has not been re-measured; it is longer than an agent turn,
+and there are three ways to lose one that have all actually happened:
 
 - a `run_in_background` Bash task running the rig is **killed ~15–25 s after launch**
   with no user action — `setsid nohup` survives, a plain `&` does not;
@@ -106,7 +451,8 @@ ways to lose one that have all actually happened:
 - a watcher that greps only for *progress* lines is **silent through a hang**, and
   silence is indistinguishable from "still running".
 
-`bg-run.sh` handles all three: it cds to the workspace root, launches detached, and
+`bg-run.sh` wraps `run.mjs` only (it is not a wrapper for `ab.mjs`, and `run.mjs` is not the
+only measuring command any more — see the next section). It handles all three: it cds to the workspace root, launches detached, and
 prints the exact `Monitor` filter to watch it with — one that matches `TIMED OUT`,
 `aborted` and `EXIT` as well as progress.
 
@@ -619,8 +965,13 @@ the leg runs the PACKAGED build (React production mode) while owner hand tests r
 
 ### `realism.mjs` — the "real-use" lab: does the lab feel what Destin feels? *(added 2026-10-07; findings in `docs/archive/investigations/2026-10-05-lab-realism.md`)*
 
+**GPU display is currently BLOCKED**, including GPU-default presets and direct `runBoot` imports, before
+package copies, history/fixture preparation, fake providers, environment mutation or port probing. The new
+app-only supervisor does not enable KWin/D-Bus descendant containment. Software (`--display xvfb`) behavior
+is unchanged, not newly runtime accepted.
+
 ```
-# the standard configuration, one line (packaged build, his real conversations copied by size, his glass+particle theme, the real GPU at 2560x1600 / 1.5, 4 sessions, a machine-wide CPU storm):
+# historical GPU command — currently returns unsupported without preparation:
 node scripts/perf-lab/realism.mjs --preset real-use-storm --checkout <worktree>/youcoded --boots 3 --seqs fresh,warm,busy
 # the closest to his dev-build hand test: add  --build dev --pick newest --deep on
 node scripts/perf-lab/realism-table.mjs scratch/perf-lab/realism/out/<dir>        # one table from the result files
@@ -628,7 +979,7 @@ node scripts/perf-lab/realism-table.mjs scratch/perf-lab/realism/out/<dir>      
 
 Every realism factor is a flag, so a gap is explained by switching ONE factor at a time: `--build packaged|dev`, `--history fixture|real`
 (`--pick ladder|newest|biggest`, `--deep on` scrolls each chat back through its older pages first), `--theme stock|heavy`, `--display xvfb|gpu`
-(gpu = the private invisible KWin on the Radeon; refused if Chromium reports software GL; the renderer string is saved in every result),
+(gpu = historical private KWin lane, now refused BEFORE launch pending supervisor integration),
 `--sessions 2..20`, `--busy off|on|heavy|gpu|both` (on = light background load; heavy = every core saturated, machine load ~35; gpu = a browser page filling the graphics chip).
 Presets: `real-use`, `real-use-storm`, `cheap`. One boot runs `fresh` (right after opening the sessions), then a warm-up + census, `warm`, optionally `soak`, `busy`, and the controls `ctrl` and `noop`.
 
@@ -1051,17 +1402,118 @@ instrument can see the thing it was built for.
 
 ### Real-GPU cost without a visible window — `gpu-cost.mjs` (added 2026-10-05)
 
-The rig's Xvfb lane is software-drawn, so it cannot rank blur, particles or wallpapers. `gpu-cost.mjs` runs the
-packaged app on the **real Radeon** inside a private, invisible `kwin_wayland --virtual` (own socket, own
-D-Bus, own runtime dir, 2560x1600 at ~180 Hz, scale 1.5; nothing reaches the real screen or the live session)
-and reads the app's own GPU time from amdgpu `fdinfo`, which other processes (the owner's desktop, VMs) cannot
-contaminate. It REFUSES to report if Chromium is not on the Radeon with GPU compositing and rasterization on.
-Suites: `--suite control` (known-cost positive control + noise floor) and `--suite themes --cells
-'midnight,cotton-candy-sky+noparticles,...' --scene welcome|chat|stream`. Toggles: `+reduced +noparticles
-+smallwall +noblur`. Pure parsing is unit-tested in `tests/gpu-cost-parse.test.mjs`. Method, limits and first
-readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`. Run it with no other rig or dev app
-holding ports 10000/10020/9558 (it checks), and compare megacycles/second as well as percent because the GPU
-clock moves with load.
+**Runtime: supervised path only (2026-10-21; see "Supervised GPU binding" at the end of this section).** This
+optional diagnostic previously launched a private `kwin_wayland --virtual` and a packaged app unsupervised; that
+direct path stays removed. A returned D-Bus child handle, marker match or process-group
+signal does not establish containment of detached compositor descendants. The CLI and exported compositor
+entry now refuse runtime before environment mutation, port/sensor probes or app launch. Enabling it needs the
+separate supervisor-owned app exec gate/CDP ownership and compositor containment work; no physical-display
+or hardware claim is established by current offline checks. Existing AMDGPU `fdinfo` engine units are unchanged.
+
+`--check` is source/package/dependency readiness only: explicit canonical `--checkout`, `--app-dir` and
+scratch GPU `--out` are required. It uses `buildApp({cachedOnly:true})`, never builds/downloads, and validates
+the standard parent release stamp against the current worktree. Arbitrary preserved package copies or
+internal-only stamps are explicitly unsupported, not guessed fresh. Dependency checks search executable
+paths for `dbus-run-session`, `kwin_wayland`, `kscreen-doctor`, `wayland-info`; they execute none of them.
+No GPU sensor, process table, compositor, display, socket or browser is probed by this check. The cached-only
+source fingerprint may invoke git commands; it is not a no-subprocess or hard-I/O-deadline guarantee.
+
+Defaults describe one cheap cell: `--suite themes --cells midnight --scene welcome --repeats 1 --seconds 2`.
+Strict options allow only `control|themes`, `welcome|chat|stream`, <=4 cells, <=3 repeats and finite positive
+windows <=30s. Welcome fixtures disable engine seeding, use 12 history turns/zero decoys, and need no fake
+provider. Chat/stream require explicit local fake-provider binding and also disable engine seeding.
+`--keep-compositor` is rejected. Parsing creates no directories.
+
+Tracing has separate <=10s demand, <=10000 RETAINED events (only the three event names the parser reads; other events are scalar-validated and dropped under a separate 400000 raw-event cap so animated scenes fit) / 2MiB retained projection, and bounded connection
+acquisition/start/end/completion waits. A late acquired connection is closed through its retained handle;
+never-resolving acquisition is failed/unverified, not claimed cleaned. Data loss, missing completion and
+overflow fail closed; cleanup-end errors remain alongside the primary failure. Empty/irrelevant-only completed
+traces are incomplete, not measured frame windows: at least two usable draw events and an interval/FPS are
+required. Theme traces request `--trace-seconds` (default 8, 1-10) separately from `sampleWindowSeconds` (default 2 seconds); both
+window durations are recorded and must not be conflated. CDP listeners/connection are removed even on failure. Only the trace parser's required scalar/state/local-id fields are retained, not a full trace.
+Browser protocol deserialization and uninterruptible OS I/O are not bounded by these retention limits.
+Tests are offline with fake child/CDP/files.
+
+#### Supervised GPU binding (`gpu-bind.mjs`, `gpu-bind-run.mjs`; added 2026-10-21)
+
+`acquireGpuBinding()` starts the supervised private compositor, requires a verified fixed 2560x1600 **60 Hz** virtual
+output (owner decision; the laptop's 180 Hz is not measured) and a uniquely owned socket with the SO_PEERCRED proof,
+then `binding.launchApp({ fixture })` starts the app candidate through a fresh launch supervisor whose plan carries that
+socket and proof (`--ozone-platform=wayland`, `WAYLAND_DISPLAY` = the private path, no `DISPLAY`, no session bus; the
+launch worker re-checks inode, live peer and start time right before releasing the app). `gpu-cost.mjs` (non-`--check`)
+and `realism.mjs --display gpu` use only this path. `gpu-bind-run.mjs` is the one-launch CLI: compositor, app, renderer
+read, app stop, compositor stop, then a read-only cleanup proof (retirement receipts, recorded pids absent from /proc,
+nothing still naming the run's paths, `getcap /usr/bin/kwin_wayland` unchanged).
+
+**A binding is not GPU evidence by itself.** `gpuEvidence()` classifies the Chromium SystemInfo reading: only a
+Radeon/AMD renderer with GPU compositing and rasterization enabled counts (`countsAsGpuEvidence`); llvmpipe,
+SwiftShader, unknown or non-SystemInfo readings are refused (gpu-cost reports the renderer and no numbers). Still
+refused: the dev build, a busy-desktop browser on the private compositor, and a workload whose budget cannot fit the
+maximum compositor lifetime (20 min) or one app's 600 s launch-supervisor cap.
+
+**Compositor lifetime is an explicit bounded parameter** (`wallMs` in the fixed compositor plan; 60 s default, 1200 s
+maximum). `gpuLifetimeFor()` (gpu-bind.mjs) derives it from the requested workload: 25 s start-up + workload + 30 s margin +
+the core's 8 s cleanup reserve; each app gets its own `appWallMs` (workload + 62 s, i.e. margin, app cleanup reserve and 20 s to first window; 120-600 s). `gpu-cost.mjs`
+computes the workload in `gpuWorkloadBudget()` and records `report.lifetime`; `realism.mjs --display gpu` uses
+`--max-minutes`. An over-long request is refused before anything starts, never clamped.
+
+**Animated workload, no model:** `gpu-cost.mjs --suite control --only animated` runs `spin-cadence` (a compositor-only CSS
+animation) and `bubbles-canvas-n10` (animated canvas under glass boxes) from `gpu-control/control.html`. A trace window
+without at least two compositor frames is `incomplete` with `compositorFps: null`, never a measured 0 fps, and an
+incomplete variant makes the whole report `incomplete`. Frame metrics per variant: frame interval median/p95/max, draw-and-swap
+p95, long intervals, dropped pipeline frames.
+
+**Cleanup re-read rule (owner decision 2026-10-21):** during cleanup/retirement scans ONLY (`OwnedProcesses.cleanup`),
+a malformed/truncated `/proc/<pid>/stat|status` read is re-read within 4 x 5 ms (`readProcForCleanup`). A re-read that is
+ENOENT/ESRCH, or shows a different start time (pid reused), records the original identity as `exited-during-read`
+(in the cleanup receipt's `exitedDuringRead`) and counts it gone; the newcomer is reported absent from that read, so it is
+never adopted or signalled. A malformed read that persists for the same (pid, starttime) stays fatal. Forensics and
+ownership proofs call `readProc` directly and still fail closed (pinned by proc-forensics.test.mjs). Limits: virtual 60 Hz presentation, not physical scanout/vblank/VRR; compositor
+cleanup is polling-based and fails closed (see the 2026-10-21 `Malformed proc status` race in the report).
+Historical method/readings: `docs/archive/investigations/2026-10-05-theme-gpu-measurement.md`.
+
+## Standalone freeze-hunt scenarios (busy-machine, exploratory)
+
+Three standalone entries share one contract: cached builds only (never builds, never downloads, no model), a run lock, one app boot per rung,
+A/B interleaved (A,B then B,A), every window's interference verdict kept, labelled exploratory. `--check` prints the plan and launches nothing.
+
+| Entry | What it measures | Rungs |
+|---|---|---|
+| `pathlist-stream-run.mjs` | an assistant reply listing N file paths, streaming in | 100 - 5,000 paths |
+| `bigfence-stream-run.mjs` | ONE huge fenced code block, streaming in AND on the finished page (a scroll pass through it with typing still running) | `code-2000`, `code-20000`, `json-700` (700 KB in ~30 long lines); `jsonone-700` (one line) is opt-in |
+| `longconv-open-run.mjs` | opening a long saved conversation with no model: time to the newest message, freezes during the open, typing right after, scroll-up blank frames and jumps | `--turns 40,200,1000` |
+
+```
+node scripts/perf-lab/bigfence-stream-run.mjs --a <checkout A> --b <checkout B> --rounds 2 --label x [--only code-2000,json-700] [--check]
+node scripts/perf-lab/longconv-open-run.mjs   --a <checkout A> --b <checkout B> --rounds 2 --label x [--turns 40,200] [--check]
+```
+
+Notes: both build their fixture from this workspace's approved `youcoded/` path (the A/B candidates may be anywhere the cached build lives);
+the candidate under test is always the build passed in. `longconv` writes a generated NATIVE-session transcript (prose, code, diffs, long
+output and tool cards) and resumes it through the app's own `youcoded:resume-session` event - a stand-in, not a Claude Code conversation.
+`coloured` in the big-fence table: 1 = the block was drawn with syntax colour, 0 = drawn plain (candidate B plain over 1,500 lines / 100 KB is intended).
+Tests: `scenario-bigfence-stream.test.mjs`, `scenario-longconv-open.test.mjs`.
+
+## Lane F — workload breadth and the original JPEG (`--only workloads`)
+
+Opt-in, alone, never in the default or `full` selection. `node scripts/perf-lab/run.mjs --only workloads --checkout <stamped checkout> --cached-only`
+(overnight: `queues/overnight-1.json`; A/B: `ab.mjs --mode workloads`). One app boot per family per pass (13 families x `--workloads-repeats`,
+default 3); a rung that kills the app is recorded and the rungs it never reached run in a fresh boot (max 3 boots per family).
+
+- **Rungs**: CSV (64 KiB-3 MiB, three shapes), XLSX, DOCX, HTML, PNG and JPEG 1024x768 / 2048x1536 / 4096x3072, the owner's original JPEG
+  (`image-jpeg-original-wealth-game`, a byte copy made read-only in the fixture area, SHA-256 pinned in `workload-lane.mjs`; the source file is never opened by the
+  app), plus four workloads: `csv-fullread-5120kib` (open a 5 MiB CSV, click "Load the whole file"), `path-list-*` (a long path list shown in a chat message through
+  the transcript -> UserMessage -> FilepathToken path), `large-diff-*` (a big Edit shown in the tool card's diff view) and `background-index-large-history`
+  (the app's chat-history search-index refresh after a session ends; the app has no project-file-tree indexer).
+- **Status per rung**: `measured`, `slow` (a named threshold in `WORKLOAD_THRESHOLDS` was breached; the breach is kept), `failed:<reason>` or
+  `unsupported-by-candidate` (the candidate's source lacks the feature; evidence = files/patterns looked for; never a zero). Failures that are findings
+  (`failed:timeout`, `failed:memory-limit`, `failed:memory-bound`, `failed:viewer`) do not void the report; instrument failures (`INSTRUMENT_REASONS`) do.
+- **Memory bound**: fixture generation, image read-back and the original copy run in child processes under `systemd-run --user --scope -p MemoryMax=...`
+  (swap off), falling back to `prlimit --as` (looser: address-space cap); the report records which applied (`workloads.memoryBound`). A bound kill is a
+  `failed:memory-bound` row. Nothing is installed or reconfigured.
+- **Interference**: each family window carries a clean/disturbed/unknown verdict (owner decision Q-6); a disturbed one makes the report INCOMPLETE.
+- **Compare**: `workloads.median.rungs.<id>.{operationMs,rendererMaxDelayMs,mainMaxDelayMs}` (`WORKLOAD_PATHS` in `compare.mjs`); samples at `workloads.runs[].rungs`.
+- **Not measured**: GPU paint (software rendering), composer typing/paste of paths, the cold OS disk cache.
 
 ## Tests
 
@@ -1184,6 +1636,21 @@ systemd-inhibit --what=idle:sleep --mode=block --who="perf-lab" \
 
 No root needed. The inhibitor is released when the command exits, so nothing is
 left holding the machine awake. Confirm with `systemd-inhibit --list`.
+
+### Running on a quiet second machine (the freeze hunt, 2026-10-23)
+
+The laptop is always busy, so the trustworthy A/B numbers came from Destin's desktop over SSH. How to reach and wake
+it lives in the brain (`~/system/tools/wake-desktop.md`, `~/system/machines/desktop/`), not here. What the lab needs there:
+
+- **Per-job `systemd-inhibit` did not hold over SSH** (the desktop still entered deep sleep mid-run, journal-confirmed).
+  Hold one session-long lock instead: `systemd-run --user --unit yc-keepawake systemd-inhibit --what=sleep:idle --who=perf sleep 7200`,
+  run the jobs, then `systemctl --user stop yc-keepawake`.
+- **Approved checkouts only:** `supervised-package.mjs` refuses a checkout whose git common dir is not
+  `<workspace>/../../../youcoded/.git`, so lay out the remote clone the same way (`~/youcoded-dev/worktrees/sessions/<key>/youcoded`).
+- **Prove build identity** on both machines with `git rev-parse HEAD` plus a hash of the built `app.asar`; the stamp fingerprint
+  reflects only uncommitted changes, not the commit.
+- **Do not full-fetch a stale remote workspace** (2 GB, hung for many minutes); fetch the one branch you need, or copy `scripts/perf-lab/`.
+- Results from that run: `perf-reports/desktop-quiet-2026-10-23/` (its README names the scripts and options used).
 
 ---
 

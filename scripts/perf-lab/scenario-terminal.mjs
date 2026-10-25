@@ -63,8 +63,10 @@
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 import { waitFor } from './cdp.mjs';
-import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { installIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { ipcBoundary, finishLegacyIpc } from './legacy-ipc-boundary.mjs';
 import { attributeStall } from './scenario-artifacts.mjs';
+import { controlFromEnv } from './control.mjs';
 import {
   installPageHelpers, installProbe, median, openJourneySessions, p95, readProbe, readProbeWindow, stopProbe,
 } from './scenario-workload.mjs';
@@ -122,7 +124,8 @@ const mark = (cdp, label) =>
  *    which already handles the pill-vs-overflow-menu lookup; its `ok` is about CHAT
  *    panes and is meaningless in terminal view, so only its `mode` is used here.
  */
-export async function installTerminalHelpers(cdp) {
+export async function installTerminalHelpers(cdp, { controlDelayMs = controlFromEnv()?.delayMs ?? 0 } = {}) {
+  const CONTROL_DELAY_MS = Number.isInteger(controlDelayMs) && controlDelayMs > 0 ? controlDelayMs : 0;
   await cdp.evaluate(`(() => {
     const wrappers = () => Array.prototype.slice.call(document.querySelectorAll('.terminal-overlay-scroll'));
     const visibleIdx = () => wrappers().findIndex((w) => !w.classList.contains('terminal-hidden'));
@@ -157,6 +160,10 @@ export async function installTerminalHelpers(cdp) {
         const c = await window.__perfLab.switchTo(idx, name, sessionCount, false);
         if (c.mode === 'none') return { ok: false, mode: 'none', reason: c.reason, before, after: visibleIdx() };
         const shown = await until(() => visibleIdx() === termIdx, 20000);
+        // WHY (control.mjs, acceptance A6): the ONLY deliberate injected delay in the lab. The
+        // number is 0 (no-op) unless PERF_LAB_CONTROL_TERMINAL_DELAY_MS is set, in which case
+        // the run is labelled as a control in its identity and file name.
+        if (${CONTROL_DELAY_MS} > 0) await new Promise((r) => setTimeout(r, ${CONTROL_DELAY_MS}));
         await raf2();
         return {
           ok: shown && before !== termIdx,
@@ -215,16 +222,21 @@ async function settledClears(cdp, warnings, label) {
  * A failed read keeps its error so summariseSwitches can count it.
  */
 export function ipcRow(read, everyMs) {
-  if (!read || read.error) return { error: read?.error ?? 'no IPC probe reading' };
+  if (!read) return { error: 'no IPC probe reading' };
+  if (read.error) return { ...read }; // retain observed pending/delay evidence too
   return {
+    // WHY retain validity as well as timings: downstream verdicts must see pending,
+    // rejected, visibility, scheduler and sample-count evidence, not just maxMs.
+    ...read,
     everyMs,
     pings: read.pings,
     totalStallMs: read.totalStallMs,
     maxMs: read.maxMs,
     over250ms: read.over250ms,
     over1000ms: read.over1000ms,
-    openStallMs: typeof read.openStallMs === 'number' ? read.openStallMs : null,
-    rejectedPings: read.rejectedPings ?? 0,
+    // Missing validity fields must stay missing, never synthesized healthy.
+    openStallMs: read.openStallMs,
+    rejectedPings: read.rejectedPings,
     missedTicks: read.missedTicks ?? 0,
   };
 }
@@ -374,10 +386,12 @@ export const MEASURES = {
 async function openSlot(cdp, i, idx, name, sessionCount, pingMs, termIdx = idx) {
   const label = `terminal:switch-${i}`;
   const clearsPre = await call(cdp, 'h.atlasClears()');
-  await mark(cdp, `${label}:start`);
   await installIpcStallProbe(cdp, { everyMs: pingMs });
   let r;
   try {
+    const ready = await ipcBoundary(cdp);
+    if (!ready.ready) throw new Error('Terminal IPC probe never became ready');
+    await mark(cdp, `${label}:start`);
     r = await call(cdp, `h.switchTo(${idx}, ${JSON.stringify(name)}, ${sessionCount}, ${termIdx})`);
   } catch (err) {
     r = { ok: false, mode: 'none', reason: err.message };
@@ -385,12 +399,10 @@ async function openSlot(cdp, i, idx, name, sessionCount, pingMs, termIdx = idx) 
   return { i, idx, name, label, clearsPre, r };
 }
 
-/** Close a slot: read + stop the IPC probe FIRST (so no later work lands in it), then the renderer window and the atlas. */
+/** Close operation marks first; bounded IPC drain is separately scoped evidence. */
 async function closeSlot(cdp, slot, pingMs) {
-  let read;
-  try { read = await readIpcStallProbe(cdp); } catch (err) { read = { error: err.message }; }
-  try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
   await mark(cdp, `${slot.label}:end`);
+  const read = await finishLegacyIpc(cdp);
   let probe = null;
   try { probe = await readProbeWindow(cdp, `${slot.label}:start`, `${slot.label}:end`); } catch (err) { probe = { error: err.message }; }
   const clearsPost = await call(cdp, 'h.atlasClears()');

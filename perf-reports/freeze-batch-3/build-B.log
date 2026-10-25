@@ -1,0 +1,259 @@
+npm notice run youcoded@1.3.0 npx
+npm notice run 'tsc'
+npm notice run youcoded@1.3.0 npx
+npm notice run 'vite' build
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vite.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+vite v8.2.2 building client environment for production...
+transforming...
+Found 6 warnings while optimizing generated CSS:
+
+Issue #1:
+[2m│   border-radius: var(--frame-corner);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(artifact-find) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: var(--accent);[22m
+[2m│   @supports (color: color-mix(in lab, red, red)) {[22m
+
+Issue #2:
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m ::highlight(artifact-find-current) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: var(--accent);[22m
+[2m│   color: var(--on-accent);[22m
+
+Issue #3:
+[2m│   color: var(--on-accent);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(chat-find) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: var(--accent);[22m
+[2m│   @supports (color: color-mix(in lab, red, red)) {[22m
+
+Issue #4:
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m ::highlight(chat-find-current) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: var(--accent);[22m
+[2m│   color: var(--on-accent);[22m
+
+Issue #5:
+[2m│   left: calc(15rem + 16px);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(ref-source-hover) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: var(--accent);[22m
+[2m│   @supports (color: color-mix(in lab, red, red)) {[22m
+
+Issue #6:
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m ::highlight(ref-source-flash) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: var(--accent);[22m
+[2m│   @supports (color: color-mix(in lab, red, red)) {[22m
+
+✓ 1416 modules transformed.
+
+(!) outDir /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/dist/renderer is not inside project root and will not be emptied.
+Use --emptyOutDir to override.
+
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                                                  4.51 kB │ gzip:     2.06 kB
+dist/renderer/assets/youcoded-wallpaper-terminal-Bmhu7wdH.webp            4.79 kB
+dist/renderer/assets/youcoded-night-wallpaper-terminal-BcDG7Y2A.webp      6.01 kB
+dist/renderer/assets/diff.worker-eu4cDd-b.js                              8.67 kB
+dist/renderer/assets/outfit-latin-Bc-8i84L.woff2                         32.29 kB
+dist/renderer/assets/dark-Dlr7H2Ll.png                                   73.91 kB
+dist/renderer/assets/light-Dzqsb7or.png                                  75.66 kB
+dist/renderer/assets/midnight-CrsO1FD7.png                               81.78 kB
+dist/renderer/assets/creme-Be4_yVCJ.png                                  83.72 kB
+dist/renderer/assets/youcoded-wallpaper-Bd7jrX0-.jpg                    153.66 kB
+dist/renderer/assets/youcoded-night-wallpaper-7AFVyg8o.jpg              223.99 kB
+dist/renderer/assets/youcoded-DClA7zXm.png                              226.94 kB
+dist/renderer/assets/youcoded-night-BCiHqVaI.png                        266.21 kB
+dist/renderer/assets/pdf.worker.min-Dswkl-cV.mjs                      1,265.41 kB
+dist/renderer/assets/ui-CTFx8GPy.css                                      0.56 kB │ gzip:     0.29 kB
+dist/renderer/assets/index-BJ39C_U0.css                                 194.13 kB │ gzip:    31.29 kB
+dist/renderer/assets/diff-Bmpl1PAW.js                                     0.37 kB │ gzip:     0.28 kB
+dist/renderer/assets/jsx-runtime-DeHZSEgm.js                              0.43 kB │ gzip:     0.30 kB
+dist/renderer/assets/brainfuck-BDHNIrfO.js                                0.66 kB │ gzip:     0.36 kB
+dist/renderer/assets/properties-uC27HdT_.js                               0.73 kB │ gzip:     0.39 kB
+dist/renderer/assets/capabilities-D69NqvMj.js                             0.77 kB │ gzip:     0.48 kB
+dist/renderer/assets/cmake-BJhktxS4.js                                    0.82 kB │ gzip:     0.50 kB
+dist/renderer/assets/asciiarmor-iS-FciNC.js                               0.84 kB │ gzip:     0.44 kB
+dist/renderer/assets/protobuf-CeyUbM69.js                                 0.87 kB │ gzip:     0.56 kB
+dist/renderer/assets/http-Er7rpAAX.js                                     0.91 kB │ gzip:     0.46 kB
+dist/renderer/assets/solr-B8qgQE2q.js                                     0.93 kB │ gzip:     0.50 kB
+dist/renderer/assets/troff-iIIV5pft.js                                    1.02 kB │ gzip:     0.48 kB
+dist/renderer/assets/RunOverCard-DRp_GZnq.js                              1.04 kB │ gzip:     0.54 kB
+dist/renderer/assets/remote-unsupported-i6C9JDV_.js                       1.05 kB │ gzip:     0.56 kB
+dist/renderer/assets/toml-BczeSIJf.js                                     1.11 kB │ gzip:     0.58 kB
+dist/renderer/assets/github-06c7-tTC.js                                   1.15 kB │ gzip:     0.52 kB
+dist/renderer/assets/github-dark-B5w9wKKR.js                              1.16 kB │ gzip:     0.53 kB
+dist/renderer/assets/rolldown-runtime-DkW27tQK.js                         1.19 kB │ gzip:     0.67 kB
+dist/renderer/assets/spreadsheet-C43_ItJ7.js                              1.20 kB │ gzip:     0.58 kB
+dist/renderer/assets/preload-helper-Bjyeg7is.js                           1.29 kB │ gzip:     0.73 kB
+dist/renderer/assets/mbox-DRUC101X.js                                     1.47 kB │ gzip:     0.72 kB
+dist/renderer/assets/sieve-5mmqG1Fw.js                                    1.68 kB │ gzip:     0.81 kB
+dist/renderer/assets/rpm-BwfdUQWb.js                                      1.68 kB │ gzip:     0.87 kB
+dist/renderer/assets/factor-DWf5DvqO.js                                   1.74 kB │ gzip:     0.65 kB
+dist/renderer/assets/eiffel-58mennOv.js                                   1.75 kB │ gzip:     0.95 kB
+dist/renderer/assets/z80-BdIsk1-I.js                                      1.82 kB │ gzip:     0.84 kB
+dist/renderer/assets/mumps-D1oh2NYr.js                                    1.90 kB │ gzip:     1.01 kB
+dist/renderer/assets/elm-BeeTJdMJ.js                                      1.94 kB │ gzip:     0.87 kB
+dist/renderer/assets/mathematica-CSrXtvWT.js                              1.97 kB │ gzip:     0.87 kB
+dist/renderer/assets/dockerfile-BlRy5VGT.js                               2.00 kB │ gzip:     0.71 kB
+dist/renderer/assets/turtle-CVv2VtLY.js                                   2.01 kB │ gzip:     0.94 kB
+dist/renderer/assets/ebnf-C5VBEBIw.js                                     2.04 kB │ gzip:     0.85 kB
+dist/renderer/assets/smalltalk-DkEOX7RO.js                                2.07 kB │ gzip:     0.91 kB
+dist/renderer/assets/fcl-DwWwktuN.js                                      2.10 kB │ gzip:     1.00 kB
+dist/renderer/assets/dist-DRwBEIBI.js                                     2.12 kB │ gzip:     1.35 kB
+dist/renderer/assets/ntriples-Comv70-S.js                                 2.13 kB │ gzip:     0.76 kB
+dist/renderer/assets/dtd-BdVmJcYP.js                                      2.15 kB │ gzip:     0.91 kB
+dist/renderer/assets/octave-DkJWT0xv.js                                   2.18 kB │ gzip:     1.14 kB
+dist/renderer/assets/yacas-33LSN7OA.js                                    2.21 kB │ gzip:     1.14 kB
+dist/renderer/assets/pascal-DeorGU25.js                                   2.32 kB │ gzip:     1.22 kB
+dist/renderer/assets/simple-mode-DNTcixe8.js                              2.35 kB │ gzip:     1.15 kB
+dist/renderer/assets/apl-DvGTbJCc.js                                      2.37 kB │ gzip:     1.28 kB
+dist/renderer/assets/commonlisp-DZjxTQd4.js                               2.38 kB │ gzip:     1.15 kB
+dist/renderer/assets/tcl-BebH0Rkj.js                                      2.42 kB │ gzip:     1.27 kB
+dist/renderer/assets/look-overrides-BQzm8WFI.js                           2.42 kB │ gzip:     1.01 kB
+dist/renderer/assets/shell-D_LU0eTC.js                                    2.49 kB │ gzip:     1.25 kB
+dist/renderer/assets/webidl-VMqnPrq0.js                                   2.54 kB │ gzip:     1.32 kB
+dist/renderer/assets/puppet-CW7VG4dj.js                                   2.58 kB │ gzip:     1.24 kB
+dist/renderer/assets/pig-DicTeet4.js                                      2.58 kB │ gzip:     1.44 kB
+dist/renderer/assets/forth-D62a52xU.js                                    2.60 kB │ gzip:     1.37 kB
+dist/renderer/assets/dist-BjEqNet2.js                                     2.71 kB │ gzip:     1.57 kB
+dist/renderer/assets/velocity-dr6kXhkz.js                                 2.77 kB │ gzip:     1.16 kB
+dist/renderer/assets/tiddlywiki-sm2SSeEr.js                               2.85 kB │ gzip:     1.13 kB
+dist/renderer/assets/modelica-h6DeiR4D.js                                 2.87 kB │ gzip:     1.34 kB
+dist/renderer/assets/oz-QmBB9E7R.js                                       2.96 kB │ gzip:     1.33 kB
+dist/renderer/assets/r-8fILbdBT.js                                        3.00 kB │ gzip:     1.40 kB
+dist/renderer/assets/stex-c6oxgjNN.js                                     3.15 kB │ gzip:     1.22 kB
+dist/renderer/assets/lua-6CEuRZY8.js                                      3.20 kB │ gzip:     1.45 kB
+dist/renderer/assets/cypher--LHJhEQ8.js                                   3.26 kB │ gzip:     1.55 kB
+dist/renderer/assets/tiki-Dpfso2MJ.js                                     3.28 kB │ gzip:     1.30 kB
+dist/renderer/assets/OfficeInlineEditor-Z3RjYIJ2.js                       3.39 kB │ gzip:     1.59 kB
+dist/renderer/assets/sparql-ZV9OjmID.js                                   3.40 kB │ gzip:     1.65 kB
+dist/renderer/assets/vhdl-BssLT-iB.js                                     3.40 kB │ gzip:     1.56 kB
+dist/renderer/assets/dist-DxjgpINO.js                                     3.47 kB │ gzip:     1.79 kB
+dist/renderer/assets/mscgen-CS5GKAXA.js                                   3.56 kB │ gzip:     1.03 kB
+dist/renderer/assets/vb-B-12jBDv.js                                       3.75 kB │ gzip:     1.90 kB
+dist/renderer/assets/q-D9H3DbZh.js                                        3.75 kB │ gzip:     1.73 kB
+dist/renderer/assets/d-CpkjUkUr.js                                        3.77 kB │ gzip:     1.74 kB
+dist/renderer/assets/swift-C7xQtXz2.js                                    3.85 kB │ gzip:     1.89 kB
+dist/renderer/assets/coffeescript-MHbg_sCL.js                             3.92 kB │ gzip:     1.74 kB
+dist/renderer/assets/fortran-BneI8A9_.js                                  3.93 kB │ gzip:     1.98 kB
+dist/renderer/assets/asn1-DvFLlqGm.js                                     4.04 kB │ gzip:     2.01 kB
+dist/renderer/assets/dylan-DhIOdxWm.js                                    4.10 kB │ gzip:     1.68 kB
+dist/renderer/assets/asterisk-C72eUWUR.js                                 4.12 kB │ gzip:     1.79 kB
+dist/renderer/assets/livescript-CRlF-_T4.js                               4.14 kB │ gzip:     1.68 kB
+dist/renderer/assets/ttcn-cfg-Bsx-wvWQ.js                                 4.17 kB │ gzip:     1.79 kB
+dist/renderer/assets/groovy-CWS61PWE.js                                   4.19 kB │ gzip:     1.80 kB
+dist/renderer/assets/haskell-OgPyHQKf.js                                  4.24 kB │ gzip:     1.97 kB
+dist/renderer/assets/gas-f70qYlCs.js                                      4.61 kB │ gzip:     1.32 kB
+dist/renderer/assets/mllike-DvnHKav9.js                                   4.89 kB │ gzip:     1.62 kB
+dist/renderer/assets/ttcn-8YhQUTW3.js                                     4.93 kB │ gzip:     2.23 kB
+dist/renderer/assets/dist-ByuN4v57.js                                     5.09 kB │ gzip:     2.45 kB
+dist/renderer/assets/ruby-DCSTaKiG.js                                     5.10 kB │ gzip:     2.20 kB
+dist/renderer/assets/crystal-BlVKGRrS.js                                  5.11 kB │ gzip:     2.18 kB
+dist/renderer/assets/ecl-DzDbxsm6.js                                      5.19 kB │ gzip:     2.37 kB
+dist/renderer/assets/julia-BEZjM474.js                                    5.36 kB │ gzip:     2.25 kB
+dist/renderer/assets/vbscript-0sjPkMu7.js                                 5.49 kB │ gzip:     2.61 kB
+dist/renderer/assets/mirc-BtlmzNtQ.js                                     5.98 kB │ gzip:     2.77 kB
+dist/renderer/assets/xquery-CtRa8yqK.js                                   6.22 kB │ gzip:     2.60 kB
+dist/renderer/assets/cobol-BwZu0w6I.js                                    6.30 kB │ gzip:     3.10 kB
+dist/renderer/assets/python-CM-_v3Gx.js                                   6.33 kB │ gzip:     2.73 kB
+dist/renderer/assets/TwentyFortyEightGame-CWa62BHT.js                     6.43 kB │ gzip:     2.90 kB
+dist/renderer/assets/scheme-Dtt-YpDw.js                                   6.44 kB │ gzip:     2.46 kB
+dist/renderer/assets/pug-BkHXy7uO.js                                      6.71 kB │ gzip:     2.03 kB
+dist/renderer/assets/textile-CO_7yl17.js                                  6.80 kB │ gzip:     2.49 kB
+dist/renderer/assets/nsis-CDzEHXhJ.js                                     6.88 kB │ gzip:     3.04 kB
+dist/renderer/assets/nginx-tbz7PuHe.js                                    7.47 kB │ gzip:     2.79 kB
+dist/renderer/assets/powershell-B1aAUk0y.js                               7.76 kB │ gzip:     3.34 kB
+dist/renderer/assets/haxe-DC9Csg5h.js                                     7.93 kB │ gzip:     3.01 kB
+dist/renderer/assets/erlang-C6O2FJnU.js                                   7.93 kB │ gzip:     2.95 kB
+dist/renderer/assets/verilog-DG36QF1j.js                                  8.53 kB │ gzip:     3.59 kB
+dist/renderer/assets/dist-Bp8ZBI8a.js                                     8.61 kB │ gzip:     3.71 kB
+dist/renderer/assets/platform-BW3yUWYa.js                                 9.31 kB │ gzip:     3.59 kB
+dist/renderer/assets/sas-CPHmKslk.js                                      9.40 kB │ gzip:     4.16 kB
+dist/renderer/assets/clojure-CI4RYRBd.js                                  9.49 kB │ gzip:     4.11 kB
+dist/renderer/assets/perl-DC2OALGN.js                                     9.80 kB │ gzip:     3.55 kB
+dist/renderer/assets/idl-BcKAHYBs.js                                      9.90 kB │ gzip:     4.47 kB
+dist/renderer/assets/gherkin-BoCkSRi3.js                                 10.22 kB │ gzip:     5.15 kB
+dist/renderer/assets/dist-OMjWpTDt.js                                    11.77 kB │ gzip:     5.34 kB
+dist/renderer/assets/FlappyGame-BUTf32lf.js                              12.52 kB │ gzip:     4.90 kB
+dist/renderer/assets/dist-DuKSMCfT.js                                    14.51 kB │ gzip:     5.92 kB
+dist/renderer/assets/dist-CY6KJFQk.js                                    16.36 kB │ gzip:     7.56 kB
+dist/renderer/assets/javascript-PvYe0S6F.js                              17.04 kB │ gzip:     5.79 kB
+dist/renderer/assets/dist-D9fw7Dkv.js                                    18.57 kB │ gzip:     6.45 kB
+dist/renderer/assets/dist-CC6CODVt.js                                    20.87 kB │ gzip:     9.48 kB
+dist/renderer/assets/dist-DdjDDeDw.js                                    21.16 kB │ gzip:     9.81 kB
+dist/renderer/assets/clike-BQymLpVG.js                                   22.12 kB │ gzip:     7.79 kB
+dist/renderer/assets/dist-pc2Cf0oG.js                                    23.21 kB │ gzip:    10.60 kB
+dist/renderer/assets/stylus-DNzZOuvP.js                                  23.64 kB │ gzip:     8.72 kB
+dist/renderer/assets/css-BRtGhd9S.js                                     24.77 kB │ gzip:     8.33 kB
+dist/renderer/assets/dist-Y8KcQX3q.js                                    26.55 kB │ gzip:     8.78 kB
+dist/renderer/assets/dist-Ct5-IHp8.js                                    26.91 kB │ gzip:    12.81 kB
+dist/renderer/assets/dist-DYcexUs8.js                                    28.66 kB │ gzip:    11.77 kB
+dist/renderer/assets/dist-D0mPI17j.js                                    30.95 kB │ gzip:    12.88 kB
+dist/renderer/assets/dist-Fl4WLqv6.js                                    32.35 kB │ gzip:    13.12 kB
+dist/renderer/assets/sql-B7Ujpv3n.js                                     36.89 kB │ gzip:    10.95 kB
+dist/renderer/assets/dist-Cypgm8Xa.js                                    40.84 kB │ gzip:    17.03 kB
+dist/renderer/assets/dist-NjCVRMOx.js                                    44.10 kB │ gzip:    15.38 kB
+dist/renderer/assets/dist-XzzcpvAp.js                                    44.94 kB │ gzip:    19.53 kB
+dist/renderer/assets/remote-shim-DipsG0He.js                             55.41 kB │ gzip:    17.25 kB
+dist/renderer/assets/ui-C92E7kYN.js                                      65.34 kB │ gzip:    20.42 kB
+dist/renderer/assets/dist-BytuhtrB.js                                    70.95 kB │ gzip:    26.21 kB
+dist/renderer/assets/dist-mPm2Vnl3.js                                    84.92 kB │ gzip:    33.94 kB
+dist/renderer/assets/dist-DhAfaiWl.js                                    98.07 kB │ gzip:    28.89 kB
+dist/renderer/assets/dist-Bf877Oxj.js                                   104.07 kB │ gzip:    34.89 kB
+dist/renderer/assets/CodeEditorView-CWf22SJg.js                         121.37 kB │ gzip:    38.97 kB
+dist/renderer/assets/PdfView-Bf9zhsw2.js                                433.76 kB │ gzip:   130.67 kB
+dist/renderer/assets/DocxView-DEuVmjSY.js                               493.57 kB │ gzip:   119.50 kB
+dist/renderer/assets/XlsxView-DvwS8gBj.js                               943.82 kB │ gzip:   262.20 kB
+dist/renderer/assets/theme-context-BInVJZ73.js                        1,560.53 kB │ gzip: 1,120.31 kB
+dist/renderer/assets/index-D_Um_af1.js                                3,362.31 kB │ gzip: 1,015.31 kB
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/renderer/utils/announce.ts is dynamically imported by src/renderer/state/submit-outgoing.ts but also statically imported by src/renderer/App.tsx, src/renderer/components/artifact-views/download-file.ts, src/renderer/remote-shim.ts, src/renderer/state/claude-control.ts, src/renderer/state/phone-actions.ts, ..., dynamic import will not move module into another chunk.
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.92s
+npm notice run youcoded@1.3.0 npx
+npm notice run 'electron-builder' --linux dir
+  • electron-builder  version=26.15.3 os=7.2.9-1-cachyos
+  • loaded configuration  file=/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/electron-builder.yml
+  • skipped dependencies rebuild  reason=npmRebuild is set to false
+  • packaging       platform=linux arch=x64 electron=41.10.7 appOutDir=release/linux-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/release/linux-unpacked
+  • searching for node modules  pm=npm searchDir=/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop
+  • duplicate dependency references  dependencies=["@ai-sdk/provider@4.0.10","@ai-sdk/provider-utils@5.0.35","@ai-sdk/provider@4.0.10","@ai-sdk/provider-utils@5.0.35","@ai-sdk/provider@4.0.10","@ai-sdk/provider-utils@5.0.35","@ai-sdk/provider@4.0.10","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@codemirror/lang-html@6.4.11","@codemirror/lang-javascript@6.2.5","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/lang-css@6.3.1","@codemirror/lang-javascript@6.2.5","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/css@1.3.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/lang-html@6.4.11","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/lang-css@6.3.1","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/lang-html@6.4.11","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/lang-html@6.4.11","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/highlight@1.2.3","@codemirror/lang-html@6.4.11","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/lang-css@6.3.1","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/lang-html@6.4.11","@codemirror/lang-javascript@6.2.5","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/autocomplete@6.20.3","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@lezer/highlight@1.2.3","@lezer/lr@1.4.10","@codemirror/language@6.12.4","@codemirror/language@6.12.4","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@lezer/highlight@1.2.3","@codemirror/state@6.7.2","@codemirror/view@6.43.10","@codemirror/state@6.7.2","ajv@8.20.0","express@5.2.1","debug@4.4.3","http-errors@2.0.1","iconv-lite@0.7.3","on-finished@2.4.1","qs@6.15.3","raw-body@3.0.2","type-is@2.1.0","debug@4.4.3","debug@4.4.3","on-finished@2.4.1","get-intrinsic@1.3.0","call-bind-apply-helpers@1.0.2","call-bind-apply-helpers@1.0.2","es-object-atoms@1.1.1","call-bound@1.0.4","get-intrinsic@1.3.0","side-channel-map@1.0.1","debug@4.4.3","debug@4.4.3","http-errors@2.0.1","on-finished@2.4.1","send@1.2.1","http-errors@2.0.1","@ai-sdk/provider-utils@5.0.35","@ai-sdk/provider@4.0.10","@ai-sdk/provider-utils@5.0.35","@ai-sdk/provider@4.0.10","once@1.4.0","once@1.4.0","readable-stream@3.6.2","readable-stream@3.6.2","once@1.4.0","readable-stream@3.6.2","glob@7.2.3","lazystream@1.0.1","readable-stream@3.6.2","readable-stream@3.6.2","readable-stream@3.6.2","readable-stream@3.6.2","jszip@3.10.1","glob@7.2.3","domhandler@6.0.1","domhandler@6.0.1","domhandler@5.0.3","domhandler@5.0.3","jszip@3.10.1","@types/hast@3.0.5","devlop@1.1.0","@types/hast@3.0.5","@types/hast@3.0.5","@types/mdast@4.0.4","devlop@1.1.0","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","@types/estree-jsx@1.0.5","@types/hast@3.0.5","@types/mdast@4.0.4","devlop@1.1.0","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","decode-named-character-reference@1.3.0","unist-util-stringify-position@4.0.0","vfile-message@4.0.3","@types/estree-jsx@1.0.5","@types/hast@3.0.5","@types/mdast@4.0.4","devlop@1.1.0","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","unist-util-stringify-position@4.0.0","@types/hast@3.0.5","@types/mdast@4.0.4","devlop@1.1.0","unist-util-position@5.0.0","unist-util-visit@5.1.0","vfile@6.0.3","remark-parse@11.0.0","@types/hast@3.0.5","@types/mdast@4.0.4","mdast-util-to-hast@13.2.1","unified@11.0.5","vfile@6.0.3","devlop@1.1.0","vfile@6.0.3","unist-util-is@6.0.1","unist-util-visit-parents@6.0.2","vfile-message@4.0.3","@types/hast@3.0.5","@types/hast@3.0.5","@types/hast@3.0.5","unist-util-is@6.0.1","@types/hast@3.0.5","devlop@1.1.0","unist-util-visit@5.1.0","vfile@6.0.3","@types/mdast@4.0.4","mdast-util-from-markdown@2.0.3","@types/mdast@4.0.4","devlop@1.1.0","@types/mdast@4.0.4","unist-util-is@6.0.1","unist-util-visit-parents@6.0.2","micromark-util-character@2.1.1","@types/mdast@4.0.4","devlop@1.1.0","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","micromark-util-normalize-identifier@2.0.1","@types/mdast@4.0.4","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","@types/mdast@4.0.4","devlop@1.1.0","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","@types/mdast@4.0.4","devlop@1.1.0","mdast-util-from-markdown@2.0.3","mdast-util-to-markdown@2.1.2","@types/mdast@4.0.4","@types/mdast@4.0.4","unist-util-is@6.0.1","mdast-util-to-string@4.0.0","micromark-util-character@2.1.1","micromark-util-decode-string@2.0.1","unist-util-visit@5.1.0","micromark-util-character@2.1.1","micromark-util-sanitize-uri@2.0.1","devlop@1.1.0","decode-named-character-reference@1.3.0","devlop@1.1.0","micromark-util-character@2.1.1","devlop@1.1.0","micromark-util-character@2.1.1","micromark-factory-space@2.0.1","micromark-factory-space@2.0.1","micromark-util-character@2.1.1","micromark-factory-space@2.0.1","micromark-util-character@2.1.1","micromark-util-character@2.1.1","micromark-util-chunked@2.0.1","micromark-util-classify-character@2.0.1","micromark-util-normalize-identifier@2.0.1","micromark-util-resolve-all@2.0.1","micromark-util-subtokenize@2.1.0","micromark-util-character@2.1.1","micromark-util-character@2.1.1","micromark-util-normalize-identifier@2.0.1","micromark-util-sanitize-uri@2.0.1","devlop@1.1.0","micromark-util-classify-character@2.0.1","devlop@1.1.0","micromark-factory-space@2.0.1","micromark-util-character@2.1.1","devlop@1.1.0","micromark-factory-space@2.0.1","micromark-util-character@2.1.1","micromark-util-chunked@2.0.1","remark-parse@11.0.0","@types/mdast@4.0.4","mdast-util-to-markdown@2.1.2","unified@11.0.5","unified@11.0.5","@types/mdast@4.0.4","@types/mdast@4.0.4","devlop@1.1.0","@types/mdast@4.0.4","decode-named-character-reference@1.3.0","micromark-util-character@2.1.1","micromark-util-decode-numeric-character-reference@2.0.2","debug@4.4.3","decode-named-character-reference@1.3.0","devlop@1.1.0","micromark-core-commonmark@2.0.3","micromark-factory-space@2.0.1","micromark-util-character@2.1.1","micromark-util-chunked@2.0.1","micromark-util-combine-extensions@2.0.1","micromark-util-decode-numeric-character-reference@2.0.2","micromark-util-normalize-identifier@2.0.1","micromark-util-resolve-all@2.0.1","micromark-util-sanitize-uri@2.0.1","devlop@1.1.0","micromark-util-chunked@2.0.1","unified@11.0.5"]
+  • file source doesn't exist  from=/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/office-build/linux-x64
+  • file source doesn't exist  from=/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/office-build/linux-x64
+{
+  "binary": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/release/linux-unpacked/youcoded",
+  "appDir": "/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/release/linux-unpacked",
+  "sha": "4b9abcda48f7373c7950b813869ab357dfb60c96",
+  "branch": "session/93-freeze-combined",
+  "dirty": "3c937cd909bc",
+  "perfCounters": false,
+  "builtAt": "2026-10-23T02:22:47.075Z",
+  "buildMs": 121693
+}

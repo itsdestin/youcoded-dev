@@ -1,0 +1,185 @@
+{
+  "title": "Freeze hunt — six parked decisions",
+  "key": "freeze-hunt-parked-questions",
+  "out": "freeze-hunt-parked-questions.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Testing",
+      "intro": "These two decide what the next round of speed tests can cover."
+    },
+    {
+      "id": "Q-download",
+      "words": true,
+      "surface": "Speed tests (behind the scenes)",
+      "path": "The test lab that measures freezes on a separate copy of the app",
+      "headline": "May the speed tests download a 490 MB local AI model so they can time opening and switching conversations?",
+      "today": "The lab can already time typing, streaming replies, file lists and pictures. Its tests for opening a conversation, switching between conversations and scrolling back through history all need a small local AI model and its engine, which are not on this computer.",
+      "problem": "One of the fixes changes how long conversations first appear on screen, and without the model that change can only be checked with a rough stand-in, not timed the way you'd actually use it.",
+      "proposal": "Pick how the opening-a-conversation fix gets tested.",
+      "options": [
+        {
+          "id": "download",
+          "label": "Download it",
+          "pros": [
+            "The conversation-opening fix gets a real before/after number, like the others.",
+            "Free; the model runs on this computer and nothing is sent anywhere."
+          ],
+          "cons": [
+            "Uses 490 MB on a disk that has 32 GB left (97% full).",
+            "Kept in the test lab's own folder; your installed app does not use it unless you add it yourself."
+          ],
+          "measured": "490 MB",
+          "recommended": true
+        },
+        {
+          "id": "stand-in",
+          "label": "Use a stand-in",
+          "pros": [
+            "No download, no disk space."
+          ],
+          "cons": [
+            "The stand-in checks that nothing jumps or breaks, but gives no honest timing for opening a long conversation."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-quiet-hour",
+      "words": true,
+      "surface": "Speed tests (behind the scenes)",
+      "path": "The test lab",
+      "headline": "Can you leave the computer alone for about an hour so the last tests can run on a quiet machine?",
+      "today": "Every test so far ran while you were working, so small differences are hidden in the noise. One test (opening big documents) refuses to run at all until the computer has been quiet for a while.",
+      "problem": "Two possible small slowdowns (long code blocks scrolling, large change lists opening) can't be confirmed or ruled out, and big-document opening has no numbers.",
+      "proposal": "Yes: tell me when you're stepping away and I'll start then; your installed app can stay open but unused. No: those three stay marked 'probably fine, not proven'.",
+      "yes": "Yes, I'll say when",
+      "no": "No, skip it"
+    },
+    {
+      "id": "P-2",
+      "page": "The automatic tidy-up of the file list",
+      "intro": "The app keeps a list of every file the assistant has written. The approved tidy-up moves long-gone entries to an archive. These two are about its edges."
+    },
+    {
+      "id": "Q-held-folders",
+      "words": true,
+      "surface": "Project files list",
+      "path": "Behind the scenes — the list the Session Drawer and Project View read from",
+      "headline": "Should the tidy-up also clear entries from six folders that seem to have vanished?",
+      "today": "The tidy-up archives entries for files that have been gone for 30 days, checked twice a week apart. It deliberately skips any folder that has disappeared as a whole, in case it is a drive that's just unplugged. Six small folders are being skipped this way: youcoded.wt, .worktrees, wecoded-marketplace.wt, desktop, wt-tranche2 and atb-worktrees. They look like old copies of the code that were deleted.",
+      "problem": "Their entries stay in the list forever, so it never shrinks quite as far as it could. They are a small share of the list, so this costs very little speed.",
+      "proposal": "Pick whether those six folders are treated as gone.",
+      "options": [
+        {
+          "id": "leave",
+          "label": "Leave them alone",
+          "pros": [
+            "Safest: if any of those folders is ever plugged back in or restored, nothing about it was touched.",
+            "The speed gain from clearing them would be too small to notice."
+          ],
+          "cons": [
+            "A few hundred dead entries stay in the list."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "clear",
+          "label": "Clear them too",
+          "pros": [
+            "The list ends up as small as possible."
+          ],
+          "cons": [
+            "Means writing a special exception into a safety rule; entries are still archived, not deleted, so they can be brought back."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-restore-button",
+      "words": true,
+      "surface": "Project files list",
+      "path": "Behind the scenes today; a button would live somewhere in Settings or Project View",
+      "headline": "Do you want a button in the app to bring back tidied-up entries?",
+      "today": "Tidied-up entries go to an archive file, and a one-time backup of the whole list is kept. Bringing entries back is possible, but only by me running a small tool. There is no button.",
+      "problem": "If an old chat's 'files it wrote' list ever looks emptier than you expect, you'd have to ask me to restore it rather than doing it yourself.",
+      "proposal": "Pick whether to design a restore button now.",
+      "options": [
+        {
+          "id": "later",
+          "label": "Not now",
+          "pros": [
+            "Nothing new on screen; the tidy-up stays fully invisible.",
+            "Entries are only archived after 30+ days gone, so needing to restore should be rare."
+          ],
+          "cons": [
+            "Restoring means asking me."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "design",
+          "label": "Design one",
+          "pros": [
+            "You can undo the tidy-up yourself, any time."
+          ],
+          "cons": [
+            "A new control to find a home for; it goes through the usual picture-review first, which adds a round before this work is finished."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Odds and ends",
+      "intro": "Two small things noticed along the way."
+    },
+    {
+      "id": "Q-select-all",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any long conversation, right after opening it",
+      "headline": "Is it OK that select-all in a just-opened long chat only copies the recent part until you scroll up?",
+      "today": "With the approved 'draw the recent part first' change, a long conversation shows its newest messages right away and fills in older ones as you scroll up. Find-in-chat and jumping to an older message still work.",
+      "problem": "If you press Ctrl+A and copy straight after opening a long chat, you get only the newest screenful or so, not the whole conversation.",
+      "proposal": "Pick whether that's acceptable.",
+      "options": [
+        {
+          "id": "fine",
+          "label": "That's fine",
+          "pros": [
+            "Long chats keep opening fast.",
+            "Copying a whole long chat with Ctrl+A is unusual."
+          ],
+          "cons": [
+            "The rare time you do it, you get less than you expected."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "fix",
+          "label": "Make select-all get everything",
+          "pros": [
+            "Copy always gets the whole chat."
+          ],
+          "cons": [
+            "Pressing Ctrl+A in a long chat would cause a short freeze while the rest is drawn, the kind of freeze this work removes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-leftover-process",
+      "words": true,
+      "surface": "Your computer",
+      "path": "Running programs",
+      "headline": "May I stop a leftover YouCoded helper program that has been running alone since Tuesday?",
+      "today": "A small YouCoded helper process started on Oct 20 at 12:10 is still running on its own. It is not attached to your open YouCoded window (that one started later) and uses about 28 MB of memory.",
+      "problem": "It does nothing useful and takes a little memory. It is almost certainly left over from an earlier app window that closed uncleanly.",
+      "proposal": "Yes: I stop just that one process by its number, after re-checking it is still detached from your open app; your app is not touched. No: it stays until you next restart the computer, which is harmless.",
+      "yes": "Yes, stop it",
+      "no": "No, leave it"
+    }
+  ]
+}

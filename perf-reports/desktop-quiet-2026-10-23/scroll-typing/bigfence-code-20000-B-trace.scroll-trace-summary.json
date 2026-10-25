@@ -1,0 +1,157 @@
+{
+ "thread": "225787:225787",
+ "busyMs": 439,
+ "spanMs": 4629,
+ "rows": [
+  {
+   "name": "HitTest",
+   "selfMs": 60,
+   "count": 248
+  },
+  {
+   "name": "PaintArtifactCompositor::Update",
+   "selfMs": 47,
+   "count": 247
+  },
+  {
+   "name": "FunctionCall",
+   "selfMs": 34,
+   "count": 2528
+  },
+  {
+   "name": "Paint",
+   "selfMs": 30,
+   "count": 585
+  },
+  {
+   "name": "RunTask",
+   "selfMs": 18,
+   "count": 1959
+  },
+  {
+   "name": "EventDispatch",
+   "selfMs": 17,
+   "count": 825
+  },
+  {
+   "name": "Blink.Paint.UpdateTime",
+   "selfMs": 15,
+   "count": 277
+  },
+  {
+   "name": "V8.GC_MC_EVACUATE_UPDATE_POINTERS_TO_NEW_ROOTS",
+   "selfMs": 15,
+   "count": 1
+  },
+  {
+   "name": "ScrollLayer",
+   "selfMs": 13,
+   "count": 240
+  },
+  {
+   "name": "PageAnimator::serviceScriptedAnimations",
+   "selfMs": 12,
+   "count": 278
+  },
+  {
+   "name": "LocalFrameView::ScheduleAnimation",
+   "selfMs": 10,
+   "count": 1557
+  },
+  {
+   "name": "Blink.PrePaint.UpdateTime",
+   "selfMs": 10,
+   "count": 518
+  },
+  {
+   "name": "EventHandler::handleMouseMoveEvent",
+   "selfMs": 10,
+   "count": 240
+  },
+  {
+   "name": "AsyncTask Run",
+   "selfMs": 9,
+   "count": 1235
+  },
+  {
+   "name": "AnimationTimeline::serviceAnimations",
+   "selfMs": 9,
+   "count": 4726
+  },
+  {
+   "name": "Document::recalcStyle",
+   "selfMs": 7,
+   "count": 278
+  },
+  {
+   "name": "WebFrameWidgetImpl::UpdateLifecycle",
+   "selfMs": 7,
+   "count": 277
+  },
+  {
+   "name": "LocalFrameView::UpdateStyleAndLayout",
+   "selfMs": 6,
+   "count": 1974
+  },
+  {
+   "name": "RunMicrotasks",
+   "selfMs": 6,
+   "count": 242
+  },
+  {
+   "name": "LocalFrameView::RunPaintLifecyclePhase",
+   "selfMs": 6,
+   "count": 277
+  },
+  {
+   "name": "Commit",
+   "selfMs": 5,
+   "count": 277
+  },
+  {
+   "name": "LayoutView::HitTest",
+   "selfMs": 5,
+   "count": 240
+  },
+  {
+   "name": "Document::updateStyle",
+   "selfMs": 4,
+   "count": 278
+  },
+  {
+   "name": "Blink.ForcedStyleAndLayout.UpdateTime",
+   "selfMs": 4,
+   "count": 1456
+  },
+  {
+   "name": "Document::UpdateStyleAndLayout",
+   "selfMs": 4,
+   "count": 1456
+  },
+  {
+   "name": "IntersectionObserverController::computeIntersections",
+   "selfMs": 4,
+   "count": 555
+  },
+  {
+   "name": "ProxyMain::BeginMainFrame",
+   "selfMs": 4,
+   "count": 277
+  },
+  {
+   "name": "V8.GC_MC_INCREMENTAL_EMBEDDER_TRACING",
+   "selfMs": 4,
+   "count": 103
+  },
+  {
+   "name": "UpdateLayoutTree",
+   "selfMs": 3,
+   "count": 278
+  },
+  {
+   "name": "ScrollableArea::SetScrollOffset",
+   "selfMs": 3,
+   "count": 241
+  }
+ ]
+}

@@ -1,0 +1,145 @@
+perf-lab ab --check — nothing was launched
+
+  mode              quick
+  work              phases artifacts; runs 3, history 3, workload 3, terminal 3
+  sequence          A -> B (one at a time, identical options)
+  boots             1 per run x 2 runs = 2 boots
+  time bound        hard cap 90 min per run = 180 min total (actual duration not yet measured)
+  quiet-wait bound  20 min per run waiting for a quiet machine, separate from the time bound above; past it a run stops before launching and is INCOMPLETE
+  model assets      selected phases are model-free; no model or engine needed
+  disk              33 GiB free at /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab; reports are small (screenshots only with phase shots)
+  build policy      cached builds only — a stale/missing build is REFUSED, never silently rebuilt
+  instrument        062faff9bfc4 (sha256 of the lab source; must match for A and B, it is one process)
+
+  candidate A       /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A
+    source          d0a7211 (perf/93-baseline-master, dirty 3c937cd909bc)
+    cached build    usable (built 2026-10-22T16:42:16.869Z)
+    package         executable 09f76150ca15, app.asar 5042a421117a
+  candidate B       /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded
+    source          d1ab964 (session/93-freeze-combined, dirty 3c937cd909bc)
+    cached build    usable (built 2026-10-22T21:34:54.984Z)
+    package         executable 09f76150ca15, app.asar c8d8b0863a63
+
+comparison directory: /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-2311-d0a7211-vs-d1ab964-freeze-batch-2-artifacts
+--- run A: /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A
+[perf-lab 23:11:48] validating cached-only package (no build fallback) /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A
+[perf-lab 23:11:49] built d0a7211 (perf/93-baseline-master, dirty 3c937cd909bc) → /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded-A/desktop/release/linux-unpacked/youcoded
+[perf-lab 23:11:49] display :99 reused
+[perf-lab 23:11:52] machine busy (load 13.33, 57.5% cpu; waiting: swipekb-nextwor ×2 using 2 cores, youcoded ×4 using 1 core, claude ×8 using 0.6 cores) — waiting for a quiet machine (3s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:12:25] machine busy (load 11.15, 18.2% cpu; waiting: swipekb-nextwor ×2 using 2 cores, youcoded ×4 using 1 core, claude ×8 using 0.7 cores) — waiting for a quiet machine (36s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:12:58] machine busy (load 9.56, 72.2% cpu; waiting: node-MainThread ×11 using 4.2 cores, swipekb-nextwor ×2 using 1.9 cores, youcoded ×4 using 1.3 cores) — waiting for a quiet machine (69s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:13:31] machine busy (load 7.82, 17.9% cpu; waiting: youcoded ×4 using 1.4 cores, claude ×8 using 1 core, git using 1 core) — waiting for a quiet machine (102s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:14:04] machine busy (load 6.71, 17.8% cpu; waiting: claude ×8 using 1 core, brotli using 1 core, swipekb-bench using 1 core) — waiting for a quiet machine (135s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:14:37] machine busy (load 5.9, 35.9% cpu; waiting: qemu-system-x86 ×2 using 3.5 cores, node-MainThread ×6 using 2.2 cores, electron ×5 using 1.8 cores) — waiting for a quiet machine (168s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:15:10] machine busy (load 23.74, 89.6% cpu; waiting: qemu-system-x86 ×2 using 15.4 cores, claude ×8 using 2.4 cores, node-MainThread ×8 using 2 cores) — waiting for a quiet machine (201s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:15:43] machine busy (load 26.82, 48.5% cpu; waiting: qemu-system-x86 ×2 using 8.1 cores, electron ×8 using 3.1 cores, youcoded ×4 using 1 core) — waiting for a quiet machine (234s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:16:16] machine busy (load 21.47, 50% cpu; waiting: qemu-system-x86 ×2 using 10.2 cores, electron ×10 using 3.2 cores, youcoded ×4 using 1.1 cores) — waiting for a quiet machine (268s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:16:49] machine busy (load 15.06, 41.5% cpu; waiting: qemu-system-x86 ×2 using 6.9 cores, chrome ×8 using 1.5 cores, electron ×9 using 1.4 cores) — waiting for a quiet machine (301s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:17:22] machine busy (load 16.34, 35.1% cpu; waiting: qemu-system-x86 ×2 using 6.4 cores, electron ×9 using 1.4 cores, youcoded ×4 using 1.1 cores) — waiting for a quiet machine (334s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:17:56] machine busy (load 14.56, 49.8% cpu; waiting: qemu-system-x86 ×2 using 9.6 cores, electron ×10 using 1.7 cores, youcoded ×4 using 1.2 cores) — waiting for a quiet machine (367s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:18:29] machine busy (load 12.88, 36.7% cpu; waiting: qemu-system-x86 ×2 using 7.3 cores, electron ×10 using 1.1 cores, youcoded ×4 using 1 core) — waiting for a quiet machine (400s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:19:02] machine busy (load 11.34, 47.7% cpu; waiting: qemu-system-x86 ×2 using 8.3 cores, node-MainThread ×5 using 1.6 cores, youcoded ×4 using 1.4 cores) — waiting for a quiet machine (433s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:19:35] machine busy (load 10.71, 37.5% cpu; waiting: qemu-system-x86 ×2 using 5.4 cores, youcoded ×4 using 1.1 cores, electron ×10 using 1.1 cores) — waiting for a quiet machine (466s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:20:08] machine busy (load 25.3, 46% cpu; waiting: qemu-system-x86 ×2 using 8 cores, node-MainThread ×6 using 1.6 cores, electron ×9 using 1.1 cores) — waiting for a quiet machine (499s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:20:41] machine busy (load 46.52, 99.2% cpu; waiting: qemu-system-x86 ×2 using 6.8 cores, node-MainThread ×17 using 6.5 cores, electron ×11 using 2.6 cores) — waiting for a quiet machine (533s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:21:14] machine busy (load 41.57, 75.9% cpu; waiting: qemu-system-x86 ×2 using 7.5 cores, kwin_wayland using 5 cores, electron ×11 using 4.4 cores) — waiting for a quiet machine (566s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:21:48] machine busy (load 48.1, 99.9% cpu; waiting: chrome ×109 using 8 cores, qemu-system-x86 ×2 using 6.3 cores, node-MainThread ×42 using 4 cores) — waiting for a quiet machine (599s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:22:21] machine busy (load 94.77, 100% cpu; waiting: node-MainThread ×40 using 10.8 cores, chrome ×130 using 8.6 cores, qemu-system-x86 ×2 using 7.1 cores) — waiting for a quiet machine (632s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:22:54] machine busy (load 109.72, 100% cpu; waiting: node-MainThread ×38 using 13.2 cores, chrome ×95 using 8.1 cores, qemu-system-x86 ×2 using 5.3 cores) — waiting for a quiet machine (666s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:23:28] machine busy (load 119.15, 100% cpu; waiting: chrome ×85 using 10.4 cores, node-MainThread ×31 using 8.7 cores, qemu-system-x86 ×2 using 6.7 cores) — waiting for a quiet machine (699s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:24:01] machine busy (load 121.99, 100% cpu; waiting: node-MainThread ×28 using 8.9 cores, chrome ×86 using 8.5 cores, qemu-system-x86 ×2 using 5.6 cores) — waiting for a quiet machine (733s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:24:35] machine busy (load 118.53, 100% cpu; waiting: chrome ×79 using 8.6 cores, qemu-system-x86 ×2 using 6.1 cores, node-MainThread ×23 using 5.6 cores) — waiting for a quiet machine (766s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:25:08] machine busy (load 120.59, 100% cpu; waiting: chrome ×81 using 8.7 cores, qemu-system-x86 ×2 using 6.5 cores, node-MainThread ×16 using 3.3 cores) — waiting for a quiet machine (799s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:25:41] machine busy (load 101.26, 93.6% cpu; waiting: chrome ×68 using 8.9 cores, qemu-system-x86 ×2 using 6.4 cores, node-MainThread ×8 using 2 cores) — waiting for a quiet machine (833s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:26:14] machine busy (load 75.99, 68.7% cpu; waiting: chrome ×63 using 7.1 cores, qemu-system-x86 ×2 using 7 cores, youcoded ×9 using 1.7 cores) — waiting for a quiet machine (866s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:26:47] machine busy (load 58.04, 75.9% cpu; waiting: chrome ×76 using 9.2 cores, qemu-system-x86 ×2 using 7.5 cores, youcoded ×7 using 1.8 cores) — waiting for a quiet machine (899s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:27:21] machine busy (load 64.06, 77% cpu; waiting: chrome ×84 using 10.7 cores, qemu-system-x86 ×2 using 5.8 cores, youcoded ×8 using 2 cores) — waiting for a quiet machine (932s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:27:54] machine busy (load 53.96, 99.5% cpu; waiting: chrome ×91 using 15.9 cores, qemu-system-x86 ×3 using 8.4 cores, electron ×11 using 2 cores) — waiting for a quiet machine (965s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:28:27] machine busy (load 53.83, 61.5% cpu; waiting: qemu-system-x86 ×3 using 8.1 cores, chrome ×40 using 5.1 cores, electron ×10 using 1.6 cores) — waiting for a quiet machine (998s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:29:00] machine busy (load 42.27, 60.7% cpu; waiting: qemu-system-x86 ×3 using 8.4 cores, node-MainThread ×9 using 2.7 cores, electron ×9 using 1.9 cores) — waiting for a quiet machine (1032s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:29:33] machine busy (load 72.88, 99.9% cpu; waiting: chrome ×49 using 8.3 cores, qemu-system-x86 ×3 using 7.2 cores, node-MainThread ×25 using 5.2 cores) — waiting for a quiet machine (1065s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:30:07] machine busy (load 78.24, 99.9% cpu; waiting: node-MainThread ×32 using 8.5 cores, qemu-system-x86 ×3 using 8 cores, chrome ×52 using 5 cores) — waiting for a quiet machine (1098s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:30:40] machine busy (load 91.9, 99.9% cpu; waiting: qemu-system-x86 ×3 using 7.1 cores, node-MainThread ×25 using 5.8 cores, chrome ×47 using 5.4 cores) — waiting for a quiet machine (1131s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:31:13] machine busy (load 89.45, 66.7% cpu; waiting: qemu-system-x86 ×3 using 8.5 cores, chrome ×41 using 5.4 cores, electron ×9 using 1.7 cores) — waiting for a quiet machine (1164s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab] aborted: machine never became quiet: load 63.86, 53.2% cpu after 1197s of waiting (blocked by: qemu-system-x86 ×3 using 6.7 cores, chrome ×43 using 4.4 cores, electron ×9 using 1.5 cores) (bound 20 min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.
+/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-2311-d0a7211-vs-d1ab964-freeze-batch-2-artifacts/2026-10-22-2311-d0a7211-a.json
+
+[perf-lab] REPORT IS INCOMPLETE — 16 problem(s). Do not rank anything from it:
+  - artifacts: expected 3 repeats, got missing
+  - artifacts.median.open.mdLarge.openMs: median missing/nonfinite
+  - artifacts.median.open.mdLarge.openMs: every expected raw repeat must be finite
+  - artifacts.median.typing.codeLarge.keystroke.p95Ms: median missing/nonfinite
+  - artifacts.median.typing.codeLarge.keystroke.p95Ms: every expected raw repeat must be finite
+  - artifacts.median.htmlNav.swap.medianMs: median missing/nonfinite
+  - artifacts.median.htmlNav.swap.medianMs: every expected raw repeat must be finite
+  - artifacts.median.ipcSumOfSteps.totalStallMs: median missing/nonfinite
+  - artifacts.median.ipcSumOfSteps.totalStallMs: every expected raw repeat must be finite
+  - machine never became quiet: load 63.86, 53.2% cpu after 1197s (blocked by: qemu-system-x86 ×3 using 6.7 cores, chrome ×43 using 4.4 cores, electron ×9 using 1.5 cores) — measurement not taken
+  - artifacts: no runs were recorded
+  - artifacts: keystroke-to-paint was never measured on the large file — the meter did not arm, so typing cost is UNKNOWN, not zero
+  - compare.mjs PRIMARY path "artifacts.median.open.mdLarge.openMs" is undefined — the keep/reject gate would be BLIND to this metric
+  - compare.mjs PRIMARY path "artifacts.median.typing.codeLarge.keystroke.p95Ms" is undefined — the keep/reject gate would be BLIND to this metric
+  - compare.mjs PRIMARY path "artifacts.median.htmlNav.swap.medianMs" is undefined — the keep/reject gate would be BLIND to this metric
+  - compare.mjs PRIMARY path "artifacts.median.ipcSumOfSteps.totalStallMs" is undefined — the keep/reject gate would be BLIND to this metric
+--- run B: /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded
+[perf-lab 23:31:46] validating cached-only package (no build fallback) /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded
+[perf-lab 23:31:47] built d1ab964 (session/93-freeze-combined, dirty 3c937cd909bc) → /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/youcoded/desktop/release/linux-unpacked/youcoded
+[perf-lab 23:31:47] display :99 reused
+[perf-lab 23:31:50] machine busy (load 59.06, 48.5% cpu; waiting: qemu-system-x86 ×3 using 6.8 cores, chrome ×35 using 3 cores, electron ×10 using 1.3 cores) — waiting for a quiet machine (3s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:32:23] machine busy (load 43.76, 49.2% cpu; waiting: qemu-system-x86 ×3 using 8 cores, youcoded ×4 using 1.4 cores, electron ×10 using 1.3 cores) — waiting for a quiet machine (36s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:32:56] machine busy (load 36.47, 60.6% cpu; waiting: qemu-system-x86 ×3 using 8 cores, chrome ×35 using 4.3 cores, youcoded ×4 using 1.6 cores) — waiting for a quiet machine (69s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:33:29] machine busy (load 36.59, 69.3% cpu; waiting: qemu-system-x86 ×3 using 8.7 cores, chrome ×39 using 5.9 cores, electron ×11 using 1.8 cores) — waiting for a quiet machine (102s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:34:02] machine busy (load 34.2, 90.8% cpu; waiting: qemu-system-x86 ×3 using 9.2 cores, chrome ×41 using 5.9 cores, youcoded ×4 using 2.5 cores) — waiting for a quiet machine (135s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:34:35] machine busy (load 44.91, 92.9% cpu; waiting: qemu-system-x86 ×3 using 10.6 cores, chrome ×39 using 5.7 cores, electron ×10 using 2.2 cores) — waiting for a quiet machine (168s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:35:08] machine busy (load 49.97, 100% cpu; waiting: qemu-system-x86 ×3 using 8.4 cores, chrome ×53 using 8 cores, node-MainThread ×42 using 6.5 cores) — waiting for a quiet machine (202s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:35:42] machine busy (load 104.2, 100% cpu; waiting: chrome ×123 using 12 cores, qemu-system-x86 ×3 using 7.8 cores, node-MainThread ×42 using 6.6 cores) — waiting for a quiet machine (235s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:36:15] machine busy (load 113.06, 100% cpu; waiting: node-MainThread ×40 using 10.5 cores, qemu-system-x86 ×3 using 7.7 cores, chrome ×37 using 5.4 cores) — waiting for a quiet machine (269s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:36:49] machine busy (load 113.11, 100% cpu; waiting: node-MainThread ×32 using 8.6 cores, qemu-system-x86 ×3 using 8.3 cores, chrome ×43 using 5.4 cores) — waiting for a quiet machine (302s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:37:22] machine busy (load 113.17, 99.8% cpu; waiting: node-MainThread ×27 using 8.2 cores, qemu-system-x86 ×3 using 7.8 cores, chrome ×46 using 5.8 cores) — waiting for a quiet machine (335s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:37:55] machine busy (load 106.96, 100% cpu; waiting: qemu-system-x86 ×3 using 6.7 cores, chrome ×45 using 6.6 cores, node-MainThread ×21 using 6.5 cores) — waiting for a quiet machine (368s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:38:29] machine busy (load 113.82, 100% cpu; waiting: chrome ×104 using 5.9 cores, qemu-system-x86 ×2 using 5.7 cores, node-MainThread ×25 using 3.8 cores) — waiting for a quiet machine (402s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:39:02] machine busy (load 118.7, 99.9% cpu; waiting: chrome ×104 using 12.5 cores, qemu-system-x86 ×2 using 6 cores, node-MainThread ×17 using 2.7 cores) — waiting for a quiet machine (435s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:39:36] machine busy (load 102.53, 100% cpu; waiting: chrome ×91 using 10.1 cores, node-MainThread ×38 using 9.7 cores, qemu-system-x86 ×2 using 6.4 cores) — waiting for a quiet machine (469s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:40:09] machine busy (load 109.89, 100% cpu; waiting: chrome ×84 using 10.9 cores, node-MainThread ×33 using 7.2 cores, qemu-system-x86 ×2 using 6.4 cores) — waiting for a quiet machine (502s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:40:42] machine busy (load 106.59, 88% cpu; waiting: chrome ×80 using 9.9 cores, qemu-system-x86 ×2 using 6.2 cores, youcoded ×4 using 2 cores) — waiting for a quiet machine (535s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:41:15] machine busy (load 91.67, 74.1% cpu; waiting: chrome ×82 using 10.4 cores, qemu-system-x86 ×2 using 6.7 cores, youcoded ×4 using 1.7 cores) — waiting for a quiet machine (568s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:41:48] machine busy (load 66.72, 78.2% cpu; waiting: chrome ×89 using 11.4 cores, qemu-system-x86 ×2 using 4.4 cores, youcoded ×5 using 1.8 cores) — waiting for a quiet machine (601s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:42:21] machine busy (load 60.9, 65.5% cpu; waiting: qemu-system-x86 ×3 using 9.3 cores, chrome ×45 using 4.5 cores, youcoded ×5 using 1.8 cores) — waiting for a quiet machine (635s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:42:55] machine busy (load 48.24, 69.6% cpu; waiting: qemu-system-x86 ×3 using 10.2 cores, chrome ×43 using 5.3 cores, youcoded ×5 using 1.4 cores) — waiting for a quiet machine (668s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:43:28] machine busy (load 35.92, 74.4% cpu; waiting: qemu-system-x86 ×3 using 10.7 cores, chrome ×44 using 5.9 cores, youcoded ×4 using 1.5 cores) — waiting for a quiet machine (701s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:44:01] machine busy (load 28.27, 84.6% cpu; waiting: chrome ×57 using 11.9 cores, qemu-system-x86 ×3 using 6.8 cores, youcoded ×4 using 1.5 cores) — waiting for a quiet machine (734s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:44:34] machine busy (load 36.54, 61.5% cpu; waiting: qemu-system-x86 ×3 using 7.4 cores, chrome ×35 using 4.6 cores, youcoded ×4 using 1.3 cores) — waiting for a quiet machine (767s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:45:07] machine busy (load 30.09, 41.7% cpu; waiting: qemu-system-x86 ×3 using 7.3 cores, youcoded ×5 using 1.1 cores, ast-grep using 1.1 cores) — waiting for a quiet machine (800s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:45:40] machine busy (load 21.26, 48.8% cpu; waiting: qemu-system-x86 ×3 using 8.9 cores, youcoded ×5 using 1.1 cores, git using 1 core) — waiting for a quiet machine (833s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:46:13] machine busy (load 30.56, 47.1% cpu; waiting: qemu-system-x86 ×3 using 8.9 cores, ast-grep using 1.1 cores, youcoded ×4 using 1 core) — waiting for a quiet machine (866s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:46:46] machine busy (load 28.25, 65.1% cpu; waiting: qemu-system-x86 ×3 using 10.2 cores, youcoded ×5 using 1.4 cores, tst_nextwordint using 1 core) — waiting for a quiet machine (900s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:47:20] machine busy (load 27.02, 64.3% cpu; waiting: qemu-system-x86 ×3 using 9.5 cores, node-MainThread ×8 using 3.8 cores, claude ×7 using 1.5 cores) — waiting for a quiet machine (933s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:47:53] machine busy (load 40.61, 73.5% cpu; waiting: qemu-system-x86 ×3 using 8.7 cores, node-MainThread ×9 using 2.7 cores, ast-grep using 1.8 cores) — waiting for a quiet machine (966s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:48:26] machine busy (load 57.05, 99.8% cpu; waiting: node-MainThread ×34 using 11.1 cores, qemu-system-x86 ×3 using 8 cores, chrome ×46 using 5.1 cores) — waiting for a quiet machine (999s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:48:59] machine busy (load 76.45, 99.8% cpu; waiting: chrome ×74 using 8.1 cores, qemu-system-x86 ×3 using 7.8 cores, node-MainThread ×25 using 6.8 cores) — waiting for a quiet machine (1032s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:49:32] machine busy (load 66, 70.8% cpu; waiting: qemu-system-x86 ×3 using 10.7 cores, chrome ×47 using 5.9 cores, youcoded ×4 using 1.5 cores) — waiting for a quiet machine (1065s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:50:05] machine busy (load 46.75, 69.8% cpu; waiting: qemu-system-x86 ×3 using 9.3 cores, chrome ×45 using 6.9 cores, youcoded ×4 using 1.6 cores) — waiting for a quiet machine (1099s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:50:39] machine busy (load 44.11, 80.3% cpu; waiting: qemu-system-x86 ×3 using 9.2 cores, chrome ×46 using 7.1 cores, youcoded ×5 using 1.6 cores) — waiting for a quiet machine (1132s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab 23:51:12] machine busy (load 37.41, 43.5% cpu; waiting: qemu-system-x86 ×3 using 5.9 cores, chrome ×42 using 3.4 cores, youcoded ×5 using 1.1 cores) — waiting for a quiet machine (1165s so far, up to 20 min; does not use the --max-minutes budget)
+[perf-lab] aborted: machine never became quiet: load 35.26, 69.3% cpu after 1198s of waiting (blocked by: qemu-system-x86 ×3 using 11 cores, chrome ×39 using 5.8 cores, youcoded ×4 using 1.5 cores) (bound 20 min, load < 4 and CPU < 10% needed) — measurement NOT taken; nothing was launched for this boot.
+/home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-2311-d0a7211-vs-d1ab964-freeze-batch-2-artifacts/2026-10-22-2331-d1ab964-b.json
+
+[perf-lab] REPORT IS INCOMPLETE — 16 problem(s). Do not rank anything from it:
+  - artifacts: expected 3 repeats, got missing
+  - artifacts.median.open.mdLarge.openMs: median missing/nonfinite
+  - artifacts.median.open.mdLarge.openMs: every expected raw repeat must be finite
+  - artifacts.median.typing.codeLarge.keystroke.p95Ms: median missing/nonfinite
+  - artifacts.median.typing.codeLarge.keystroke.p95Ms: every expected raw repeat must be finite
+  - artifacts.median.htmlNav.swap.medianMs: median missing/nonfinite
+  - artifacts.median.htmlNav.swap.medianMs: every expected raw repeat must be finite
+  - artifacts.median.ipcSumOfSteps.totalStallMs: median missing/nonfinite
+  - artifacts.median.ipcSumOfSteps.totalStallMs: every expected raw repeat must be finite
+  - machine never became quiet: load 35.26, 69.3% cpu after 1198s (blocked by: qemu-system-x86 ×3 using 11 cores, chrome ×39 using 5.8 cores, youcoded ×4 using 1.5 cores) — measurement not taken
+  - artifacts: no runs were recorded
+  - artifacts: keystroke-to-paint was never measured on the large file — the meter did not arm, so typing cost is UNKNOWN, not zero
+  - compare.mjs PRIMARY path "artifacts.median.open.mdLarge.openMs" is undefined — the keep/reject gate would be BLIND to this metric
+  - compare.mjs PRIMARY path "artifacts.median.typing.codeLarge.keystroke.p95Ms" is undefined — the keep/reject gate would be BLIND to this metric
+  - compare.mjs PRIMARY path "artifacts.median.htmlNav.swap.medianMs" is undefined — the keep/reject gate would be BLIND to this metric
+  - compare.mjs PRIMARY path "artifacts.median.ipcSumOfSteps.totalStallMs" is undefined — the keep/reject gate would be BLIND to this metric
+comparison: /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/ab/2026-10-22-2311-d0a7211-vs-d1ab964-freeze-batch-2-artifacts/comparison.md
+counts: 34 missing  (INCOMPARABLE: not ranked)

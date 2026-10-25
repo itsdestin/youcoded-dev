@@ -1,0 +1,8 @@
+[longconv] r1-a longconv-200
+[perf-lab 07:43:31] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 07:44:20] interference r1-a:longconv-200: disturbed — other programs used 1.6 cores on average over 48 s (limit 1): youcoded ×8 (pids 1354978, 1355494, 1355602, 1356580, +4 more) used 0.8 cores; git ×4 (pids 1457325, 1457538, 1457796, 1457863) used 0.4 cores; claude ×6 (pids 1357313, 1357321, 1357322, 1357315, +2 more) used 0.1 cores; youcoded (pid 1355494) held the graphics chip 11% of the time
+[longconv]   -> slow
+[longconv] r1-b longconv-200
+[perf-lab 07:45:10] interference r1-b:longconv-200: disturbed — other programs used 1.9 cores on average over 48 s (limit 1): chrome ×28 (pids 1354976, 1355211, 1355314, 1355317, +24 more) used 0.6 cores; claude ×6 (pids 1357313, 1357315, 1357316, 1357321, +2 more) used 0.4 cores; youcoded ×4 (pids 1354978, 1355494, 1355602, 1356580) used 0.3 cores
+[longconv]   -> measured
+[longconv] report: /home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/freeze-batch-3/renderer-fixes/longconv-none/longconv-open-202610230743-renderer-fixes-none.json / .md

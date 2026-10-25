@@ -106,6 +106,7 @@ export function pointerRestsOnClick(steps) {
 /** One step, in words — for step lines and failure reports. */
 export function stepText(s) {
   if (s.do === 'wait-scroll-idle') return `wait for ${s.area} scrolling to settle`;
+  if (s.do === 'check') return `check ${s.file ?? 'a script'}`;
   if (s.do === 'expect') return `expect${s.not ? ' NOT' : ''} ${s.control ? describe(s.control) : s.screen ? `screen ${s.screen}` : `"${s.text}"`}`;
   if (s.target) return `${s.do}${s.dir ? ` ${s.dir}${s.times > 1 ? ` ×${s.times}` : ''} over` : ''} ${describe(s.target)}${s.to ? ` to ${describe(s.to)}` : ''}${s.text ? ` "${s.text}"` : ''}`;
   return `${s.do} ${s.key ?? (s.text !== undefined ? `"${s.text}"` : null) ?? s.screen ?? `${s.dir}${s.times > 1 ? ` ×${s.times}` : ''}`}`;
@@ -347,6 +348,14 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
         break;
       }
       case 'open': await openScreen(tab, step.screen); break;
+      // A MEASUREMENT the other steps cannot express (scroll stability needs layout numbers, frame by frame).
+      // `expression` (journeys.mjs fills it from `file`) is an async JS expression run in the page; it answers
+      // { ok, why, report }. A failure says why and shows the numbers. Used by first-draw-stability.
+      case 'check': {
+        const r = await tab.evaluate(step.expression, step.timeoutMs ?? 120_000);
+        if (!r || r.ok !== true) throw new Error(`${r?.why ?? 'the check gave no answer'}${r?.report ? `\n  numbers: ${JSON.stringify(r.report)}` : ''}`);
+        return;
+      }
       case 'expect': await expect(step); return;
       default: throw new Error(`unknown step "${step.do}"`);
     }

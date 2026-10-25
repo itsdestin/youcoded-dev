@@ -3,7 +3,7 @@ status: shipped
 ---
 # Nonblocking comparisons and search indexing
 
-App source merged in [youcoded#665](https://github.com/itsdestin/youcoded/pull/665) as `254ff9983aa3657a937dfd65011beb3c6e6508c9`, including reviewed candidate `c020d4f49248434ecccfa1ccaaae7e73a574e499`. This records source integration, not a release or installation. It does not resolve the original JPEG freeze; that investigation remains [active](../../active/plans/2026-10-18-file-viewer-freezes.md).
+App source merged in [youcoded#665](https://github.com/itsdestin/youcoded/pull/665) as `254ff9983aa3657a937dfd65011beb3c6e6508c9`, including reviewed candidate `c020d4f49248434ecccfa1ccaaae7e73a574e499`. This records source integration, not a release or installation. It does not resolve the original JPEG freeze; that investigation remains [archived with card #93](2026-10-18-file-viewer-freezes.md).
 
 ## Completed scope
 

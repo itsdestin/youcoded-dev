@@ -1,0 +1,37 @@
+/tmp/deskrep/profiles/bigfence-code-2000-B.cpuprofile
+  61232 ms wall, 233330 samples
+
+bucket(2000ms)  busy%  top functions (self ms)
+       0    24%  42ms s [index-DcIkRP39.js:264] | 37ms u [index-DcIkRP39.js:264] | 31ms set webkitSpeechRecognitionEvent
+    2000    23%  55ms s [index-DcIkRP39.js:264] | 44ms u [index-DcIkRP39.js:264] | 41ms set webkitSpeechRecognitionEvent
+    4000    25%  51ms s [index-DcIkRP39.js:264] | 50ms set webkitSpeechRecognitionEvent | 50ms u [index-DcIkRP39.js:264]
+    6000    24%  58ms s [index-DcIkRP39.js:264] | 44ms u [index-DcIkRP39.js:264] | 41ms set webkitSpeechRecognitionEvent
+    8000    23%  60ms s [index-DcIkRP39.js:264] | 43ms set webkitSpeechRecognitionEvent | 42ms u [index-DcIkRP39.js:264]
+   10000    23%  56ms s [index-DcIkRP39.js:264] | 47ms u [index-DcIkRP39.js:264] | 36ms set webkitSpeechRecognitionEvent
+   12000    21%  50ms s [index-DcIkRP39.js:264] | 41ms set webkitSpeechRecognitionEvent | 41ms u [index-DcIkRP39.js:264]
+   14000    19%  44ms s [index-DcIkRP39.js:264] | 34ms u [index-DcIkRP39.js:264] | 32ms set webkitSpeechRecognitionEvent
+   16000    17%  38ms s [index-DcIkRP39.js:264] | 28ms set webkitSpeechRecognitionEvent | 28ms u [index-DcIkRP39.js:264]
+   18000    16%  37ms s [index-DcIkRP39.js:264] | 26ms set webkitSpeechRecognitionEvent | 25ms u [index-DcIkRP39.js:264]
+   20000    15%  31ms s [index-DcIkRP39.js:264] | 29ms u [index-DcIkRP39.js:264] | 19ms exec [index-DcIkRP39.js:272]
+   22000    15%  31ms s [index-DcIkRP39.js:264] | 24ms u [index-DcIkRP39.js:264] | 24ms set webkitSpeechRecognitionEvent
+   24000    13%  26ms s [index-DcIkRP39.js:264] | 23ms u [index-DcIkRP39.js:264] | 20ms set webkitSpeechRecognitionEvent
+   26000    12%  27ms s [index-DcIkRP39.js:264] | 18ms u [index-DcIkRP39.js:264] | 18ms (garbage collector)
+   28000    12%  27ms s [index-DcIkRP39.js:264] | 20ms u [index-DcIkRP39.js:264] | 20ms set webkitSpeechRecognitionEvent
+   30000    12%  24ms s [index-DcIkRP39.js:264] | 22ms u [index-DcIkRP39.js:264] | 16ms (garbage collector)
+   32000    12%  23ms s [index-DcIkRP39.js:264] | 17ms u [index-DcIkRP39.js:264] | 17ms set webkitSpeechRecognitionEvent
+   34000    12%  22ms s [index-DcIkRP39.js:264] | 21ms u [index-DcIkRP39.js:264] | 19ms (garbage collector)
+   36000    11%  23ms s [index-DcIkRP39.js:264] | 15ms u [index-DcIkRP39.js:264] | 14ms set webkitSpeechRecognitionEvent
+   38000    10%  21ms s [index-DcIkRP39.js:264] | 15ms set webkitSpeechRecognitionEvent | 15ms u [index-DcIkRP39.js:264]
+   40000    11%  22ms s [index-DcIkRP39.js:264] | 21ms (garbage collector) | 16ms u [index-DcIkRP39.js:264]
+   42000    11%  20ms s [index-DcIkRP39.js:264] | 16ms u [index-DcIkRP39.js:264] | 16ms jSe [index-DcIkRP39.js:295]
+   44000    13%  43ms jSe [index-DcIkRP39.js:295] | 25ms removeChild | 10ms (garbage collector)
+   46000    11%  50ms jSe [index-DcIkRP39.js:295] | 13ms (garbage collector) | 10ms (anonymous)
+   48000    11%  55ms jSe [index-DcIkRP39.js:295] | 11ms handler | 10ms (anonymous)
+   50000    11%  59ms jSe [index-DcIkRP39.js:295] | 10ms (anonymous) | 9ms kSe [index-DcIkRP39.js:295]
+   52000    12%  64ms jSe [index-DcIkRP39.js:295] | 24ms (garbage collector) | 11ms (anonymous)
+   54000    12%  64ms jSe [index-DcIkRP39.js:295] | 11ms handler | 10ms kSe [index-DcIkRP39.js:295]
+   56000    12%  63ms jSe [index-DcIkRP39.js:295] | 11ms (garbage collector) | 11ms (anonymous)
+   58000    13%  70ms jSe [index-DcIkRP39.js:295] | 13ms tCe [index-DcIkRP39.js:309] | 12ms (anonymous)
+   60000     5%  19ms (garbage collector) | 7ms jSe [index-DcIkRP39.js:295] | 7ms v [index-DcIkRP39.js:256]
+
+unbroken busy blocks longer than 150 ms:

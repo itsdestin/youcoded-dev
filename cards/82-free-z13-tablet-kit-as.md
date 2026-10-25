@@ -11,6 +11,8 @@ summary: Package Destin's tablet setup and swipe keyboard as a free download for
 area: Release & business
 work: session/82-z13-keyboard-release
 ---
+Swipe Keyboard work now lives in ~/swipe-keyboard-dev (its own workspace, 2026-10-24); a copy of this card tracks the keyboard side there. This one keeps the YouCoded marketing post.
+
 Progress
 Done: Published Swipe Keyboard v0.1.0-r3 at https://github.com/itsdestin/swipe-keyboard/releases/tag/v0.1.0-r3 from source commit 0f458bb. All seven uploaded asset digests verified. Exact Arch package tested across Qt6.11/KF6.27 and Qt6.12/KF6.31; installed/activated on Destin CachyOS without OS update. All 96 installed payload files match; live KWin process loads system plugin; recording off; legacy files/settings/recordings preserved in private migration backup. Final Fedora RPM real KDE touchscreen/KWrite checks pass. Dedicated test VM stopped. Old release marked superseded, not overwritten.
 Next: Destin can try swipe/candidate/backspace on the device and use the public release/setup links for the first Reddit post. Draft supplied separately; no Reddit post submitted. Maintenance/update automation is follow-up #165; broader tablet kit/video remain deferred.
