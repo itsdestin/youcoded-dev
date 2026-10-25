@@ -1,0 +1,87 @@
+{
+ "deck": "pages-finish-step1-review",
+ "started": "2026-10-25T00:55:59.632Z",
+ "submitted": "2026-10-25T00:58:14Z",
+ "cur": 10,
+ "answers": {
+  "S-settings": {
+   "v": "yes",
+   "t": 1792889780195,
+   "seconds": 21,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-settings-together": {
+   "v": "yes",
+   "t": 1792889794340,
+   "seconds": 14,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-card-gear": {
+   "v": "yes",
+   "t": 1792889832356,
+   "note": "edit could probably become a button within settings instead of its own icon",
+   "seconds": 38,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-band-gear": {
+   "v": "yes",
+   "t": 1792889838422,
+   "seconds": 6,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-recipe": {
+   "v": "yes",
+   "t": 1792889855048,
+   "seconds": 17,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-signin-parts": {
+   "v": "yes",
+   "t": 1792889860471,
+   "seconds": 5,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-recipe-list": {
+   "v": "yes",
+   "t": 1792889868797,
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-together": {
+   "v": "yes",
+   "t": 1792889874031,
+   "seconds": 5,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-open-website": {
+   "v": "yes",
+   "t": 1792889880197,
+   "seconds": 6,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-phone": {
+   "v": "yes",
+   "t": 1792889888482,
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "Q-band-popup": {
+   "v": "pick",
+   "pick": "popup",
+   "t": 1792889894088,
+   "seconds": 6,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

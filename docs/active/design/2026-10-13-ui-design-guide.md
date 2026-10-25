@@ -127,7 +127,9 @@ A job none of these does needs a new shared piece and Destin's look for it — n
 - **Where something new opens from** (gt-r1#C-1): a **top-bar button opens a side panel or a full
   screen**, never a popup. **A popup over the chat opens only from Settings or a status-bar chip.** So a
   new feature is one of: a Settings row (opening a popup), a status-bar chip (a menu or popup), or a
-  top-bar button (a side panel, or a full screen with the band).
+  top-bar button (a side panel, or a full screen with the band). **One exception:** an open page's
+  gear beside its name in the band opens that page's **Page settings popup** — the same popup its
+  library card opens, so one window never has two shapes (pages-finish-step1-review#Q-band-popup).
 - **When a whole screen cannot load** (nothing on it to show), the screen shows **the full-screen error**
   (`ScreenError`), centred across the screen a little below its top — never only the small notice box at the top of
   an empty screen (gt-r1#B-3). One plain sentence saying what couldn't load, Try again filled and full

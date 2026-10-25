@@ -38,6 +38,18 @@ related: docs/active/investigations/2026-10-24-pages-finish-audit.md (what exist
   "update my version", the AI reviewer and programs in shared pages move to a **separate
   follow-up item** after this foundation is done.
 
+## Step 1 screens — approved (`pages-finish-step1.review.answers.json`, 2026-10-24)
+
+All ten screens approved, as built in the workbench on `session/90-pages-finish` (youcoded):
+Page settings (top card, "What it can reach", "Websites it opens without asking"); gear on
+each library card and beside an open page's name; the recipe approval card (`does` list,
+"Nothing else there can be reached."); named sign-in parts (Plaid now uses them too); one
+general "Together, this page could send…" amber line (`combinedRisk`); "Open this website?"
+with a per-site "Don't ask again" switch; phone width. Follow-up applied from S-card-gear:
+"Edit in chat" moved off the card into Page settings. Q-band-popup: the band gear opens the
+same popup — recorded as an exception in the design guide. Backend still to build:
+`pages.openWebsite`, `pages.forgetOpenSite` (mock-only), `does`/`parts`/`openSites` in main.
+
 ## The idea in one paragraph
 
 A page should not have its own private copies of things the app already does. It is a
