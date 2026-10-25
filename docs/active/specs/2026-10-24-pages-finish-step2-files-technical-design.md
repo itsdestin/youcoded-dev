@@ -13,6 +13,16 @@ access", Page settings → Files (change folder, forget a file, Remove), and You
 chooser for a phone's browser (tiles first, list switch, search, sortable columns, the place you
 are in as a menu first in the path, Save as). Paths below are relative to `youcoded/desktop/src/`.
 
+## Changed by design review 1 (all 21 triaged in `docs/active/reviews/2026-10-24-pages-finish-step2-files-design-review-1.md`)
+
+The review's triage lines are the binding version where they differ from the sections below:
+a separate write deny list and a wider read list; `all` confined to home; one `openConfined()`
+helper (no links, regular files only, identity re-checked); home/root/denied folders refused;
+handles bound to page + door + line, dropped on reload, removal and edit; a pending-pick state
+with a `pick-choice` op for the phone; byte and rate caps; phone write ops only at folder level;
+thumbnails from embedded previews or small images (full thumbnails: card #204); the Android app
+in step 2 is pick-and-read only (save-as, remember, folders: card #203).
+
 ## Promises
 
 1. **The page never holds a path.** It gets opaque handles and file contents; YouCoded does every

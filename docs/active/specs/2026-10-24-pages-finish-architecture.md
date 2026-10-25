@@ -50,6 +50,17 @@ with a per-site "Don't ask again" switch; phone width. Follow-up applied from S-
 same popup — recorded as an exception in the design guide. Backend still to build:
 `pages.openWebsite`, `pages.forgetOpenSite` (mock-only), `does`/`parts`/`openSites` in main.
 
+## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
+
+- **#202** — sharing phase 2: publishing without GitHub, versions/forks and "update my version",
+  the AI reviewer, programs in shared pages.
+- **#203** — the Android app's files: remembered files, saving back, saving a new file to
+  Downloads, folder and all-files access.
+- **#204** — real thumbnails for every picture in the file chooser.
+- **Step 5** — the bank page (Plaid) rebuilt on the "Sign in with…" system.
+- **Known limit, not a card:** a phone's own web browser cannot stop a page frame navigating
+  itself (the computer and the Android app can).
+
 ## The idea in one paragraph
 
 A page should not have its own private copies of things the app already does. It is a
