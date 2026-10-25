@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: 2026-10-24: step 1 built on session/90-pages-finish (youcoded + wecoded-marketplace page-builder 0.4.0): kind registry, service recipes (allow/parts), https-only credentials + per-hop re-checks, Open this website? with remembered sites (phone channels approved), frame guard desktop + Android, DNS pinning; verify.sh all green; dev window 'Pages step 1' (offset 90, profile pages90) open for Destin
-Next: Destin tries step 1 in the dev window; then step 1b (Plaid and Home as bundled recipes) before files
+Done: Step 2 (files) built on session/90-pages-finish: guard, file door, channels, folder approval, phone chooser with tile pictures, page-builder 0.5.0. Android deferred to #203.
+Next: Dev window for Destin to try step 2; then step 3 (chat in a page).
 Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
