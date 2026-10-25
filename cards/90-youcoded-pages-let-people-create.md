@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: Step 2 (files) built on session/90-pages-finish: guard, file door, channels, folder approval, phone chooser with tile pictures, page-builder 0.5.0. Android deferred to #203.
-Next: Dev window for Destin to try step 2; then step 3 (chat in a page).
+Done: Step 2 (files) tried by Destin in the dev window: working (2026-10-25). Practice page deleted, dev window closed.
+Next: Step 3 (chat in a page): Destin wants to think through the real use cases first — no deck or build until then.
 Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.
