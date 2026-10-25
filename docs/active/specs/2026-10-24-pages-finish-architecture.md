@@ -145,7 +145,12 @@ per-page settings window, which replaces today's "N connections" dialog.
 ## Proposed order (each step usable on its own)
 
 1. Foundation: kind registry, recipes (your pages move onto them unchanged), security fixes,
-   the page settings window, the combined-risk line.
+   the page settings window, the combined-risk line. **Built 2026-10-24** (step 1 technical
+   design). A phone's own browser cannot stop a page navigating its frame; the Android app
+   and the computer can — stated, not hidden.
+1b. Plaid and Home as bundled recipes: body-injected multi-part secrets, a host-held per-account
+   token store, a browser sign-in flow, and device protocol profiles — so the last two built-in
+   special cases become general mechanisms.
 2. Files.
 3. Chat in a page.
 4. Assistants and automations runner + spending limits + background (card #61 joins here).

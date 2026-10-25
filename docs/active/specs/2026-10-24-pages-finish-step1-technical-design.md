@@ -30,7 +30,22 @@ is what makes them real. Paths are relative to `youcoded/desktop/src/`.
   part; every door redacts every secret in raw, URL, JSON-escaped and base64 forms.
 - **Name-server pinning:** npm `undici` `fetch` + two shared agents (public, home) that resolve,
   check and connect in ONE lookup — no per-hop agents.
-- **Link hints** (`preconnect`, `dns-prefetch`): probed in the dev window before deciding.
+- **Link hints** (`preconnect`, `dns-prefetch`, `prefetch`, `preload`, `modulepreload`,
+  script-made hints, `sendBeacon`, images): probed 2026-10-24 in Chrome (headless, the same
+  Chromium family as Electron 41) with a sandboxed srcdoc frame carrying the page policy and a
+  local listening server — **zero connections** with the policy, twelve without it (control).
+  Already closed by the existing policy; nothing to build.
+
+## Built (2026-10-24, youcoded `session/90-pages-finish`; `verify.sh` all green)
+
+Kind registry (pin test) · recipes `allow` + `parts` · https-only credentials, full-origin
+carry-over, per-hop re-checks, request-path rules, layout-tied saved sign-ins, fuller
+redaction · remembered sites storage · `pages:open-website` / `pages:forget-open-site` on
+every surface (phone list widened: Destin "ok", 2026-10-24) · sandbox without popups, page
+bootstrap `youcoded.open`, host decision rule, the ask (no Enter, one at a time, 30 s quiet)
+· desktop frame guard + Android untapped sub-frame refusal (19/19 router tests) · DNS pinning
+with undici · page-builder 0.4.0 (wecoded-marketplace `session/90-pages-finish`).
+Not yet: Destin's dev-window try; Plaid and Home as bundled recipes (step 1b).
 
 ## Promises this step must keep
 
