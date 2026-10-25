@@ -1,0 +1,54 @@
+{
+  "title": "Finishing Pages, step 2 — choosing a computer file from your phone",
+  "key": "pages-finish-step2b-review",
+  "out": "pages-finish-step2b.review.html",
+  "stage": "review",
+  "images": "images/pages-finish-step2b.review",
+  "runs": { "after": "runs-step2b/after" },
+  "labels": { "after": "Proposed" },
+  "themes": ["golden-sunbreak", "midnight", "light"],
+  "steps": [
+    {
+      "id": "C-open",
+      "surface": "Pages",
+      "path": "A page used from your phone's browser → its 'Open a file' button",
+      "crop": "pages/page/file-chooser@panel",
+      "new": true,
+      "headline": "From your phone's browser, 'Open a file' shows YouCoded's own chooser over your computer's folders.",
+      "changed": "'Choose a file', with '<page> asks for a file on your computer.' under it. One card labelled 'Your computer': where you are (Home › Documents › …) as buttons you can go back to, then the folders and files there.",
+      "notice": "It starts at your computer's home folder. Password and key files never appear, and nothing outside your home folder can be reached.",
+      "risk": "Your computer's folder names show on the phone while you browse."
+    },
+    {
+      "id": "C-picked",
+      "surface": "Pages",
+      "path": "The chooser inside a folder, with a file chosen",
+      "crop": "pages/page/file-chooser#budgets@panel",
+      "new": true,
+      "headline": "Only the kinds of file the page works with are listed; the rest are counted, and the chosen file is highlighted.",
+      "changed": "Inside Documents › Budgets, the Budget page sees its .xlsx and .csv files, a line saying '1 other file is not shown', and Budget 2026.xlsx chosen. Open is filled; Cancel outlined beside it.",
+      "notice": "Open stays grey until a file is chosen (pointing at it says so). A double tap on a file opens it straight away."
+    },
+    {
+      "id": "C-save",
+      "surface": "Pages",
+      "path": "A page saving a new file, from your phone's browser",
+      "crop": "pages/page/file-chooser#save@panel",
+      "new": true,
+      "headline": "Saving works the same way: choose a folder on your computer, name the file, Save here.",
+      "changed": "'Save a file' — '<page> wants to save a file on your computer.' The same folder card, then 'Save as' with the file name box, the page's suggested name filled in.",
+      "notice": "Tapping an existing file puts its name in the box; saving over it will ask first.",
+      "risk": "A name the computer cannot use (a slash, for example) is refused with a plain sentence when you press Save here."
+    },
+    {
+      "id": "C-phone",
+      "surface": "Pages",
+      "path": "The chooser at phone size",
+      "crop": "pages/page/file-chooser#phone",
+      "new": true,
+      "headline": "At phone size the buttons stack, Open on top, and file sizes drop to keep names readable.",
+      "changed": "Same chooser, full width; Open over Cancel.",
+      "notice": "Long folder paths scroll sideways instead of wrapping."
+    }
+  ]
+}
