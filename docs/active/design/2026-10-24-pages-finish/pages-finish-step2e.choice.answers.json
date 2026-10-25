@@ -1,0 +1,24 @@
+{
+ "deck": "pages-finish-step2e-choice",
+ "started": "2026-10-25T04:09:47.521Z",
+ "submitted": "2026-10-25T04:10:27Z",
+ "cur": 1,
+ "answers": {
+  "C-places": {
+   "v": "pick",
+   "pick": "menu",
+   "t": 1792901422532,
+   "note": "good. but the name of the folder should be in the dropdown as the first breadcrumb item, not to the right of the dropdown",
+   "seconds": 35,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-phone-menu": {
+   "v": "yes",
+   "t": 1792901426475,
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}
