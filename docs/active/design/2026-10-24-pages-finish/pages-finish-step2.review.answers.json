@@ -1,0 +1,66 @@
+{
+ "deck": "pages-finish-step2-review",
+ "started": "2026-10-25T02:51:30.359Z",
+ "submitted": "2026-10-25T02:52:50Z",
+ "cur": 7,
+ "answers": {
+  "F-pick": {
+   "v": "yes",
+   "t": 1792896707915,
+   "seconds": 18,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "F-folder": {
+   "v": "yes",
+   "t": 1792896719286,
+   "seconds": 11,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "F-folder-chosen": {
+   "v": "yes",
+   "t": 1792896721340,
+   "seconds": 2,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "F-all": {
+   "v": "yes",
+   "t": 1792896734407,
+   "seconds": 13,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "F-settings": {
+   "v": "yes",
+   "t": 1792896738607,
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "F-heading": {
+   "v": "yes",
+   "t": 1792896741158,
+   "seconds": 3,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "Q-remote-pick": {
+   "v": "pick",
+   "pick": "app-browser",
+   "t": 1792896756249,
+   "seconds": 15,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "Q-android-folders": {
+   "v": "pick",
+   "pick": "later",
+   "t": 1792896769261,
+   "seconds": 13,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}
