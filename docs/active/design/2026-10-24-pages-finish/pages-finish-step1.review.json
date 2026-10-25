@@ -1,0 +1,162 @@
+{
+  "title": "Finishing Pages, step 1 — Page settings, the approval card, and opening websites",
+  "key": "pages-finish-step1-review",
+  "out": "pages-finish-step1.review.html",
+  "stage": "review",
+  "images": "images/pages-finish-step1.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": { "before": "Today", "after": "Proposed" },
+  "themes": ["golden-sunbreak", "midnight", "light"],
+  "steps": [
+    {
+      "id": "S-settings",
+      "surface": "Pages",
+      "path": "Manage pages → a page's card → its new gear button",
+      "crop": "pages/library/settings@panel",
+      "headline": "Each page gets one Page settings window, replacing today's 'connections' window.",
+      "changed": "The window is titled Page settings. It opens on a card about the page, then 'What it can reach' (each connection with Remove or Connect), then 'Websites it opens without asking', each with a trash button.",
+      "notice": "Later steps add their own sections here (files, assistants, spending, sharing), so this stays the one place to see and stop what a page can do. Nothing is saved with a button. Changes take effect at once, like Settings.",
+      "risk": "It opens from the page's top bar too (see the question at the end), and the design guide normally keeps popups out of top-bar buttons.",
+      "alsoChanges": ["An open page's top bar"]
+    },
+    {
+      "id": "S-settings-together",
+      "surface": "Pages",
+      "path": "Page settings for a page that reads something private and can also send things elsewhere",
+      "crop": "pages/library/settings#calendar@panel",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Page settings shows the same 'Together, this page could send…' warning as the approval card.",
+      "changed": "When a page could carry what it reads to somewhere else, one amber line under its list says exactly what and where. Here, the calendar page could send your events to the weather site.",
+      "notice": "You see the combined risk every time you look at a page's settings, not only once when you first allowed it.",
+      "risk": "The line stays as long as both connections do. Remove either one and it goes away."
+    },
+    {
+      "id": "S-card-gear",
+      "surface": "Pages",
+      "path": "Manage pages",
+      "crop": "pages/library",
+      "headline": "Every page card gets a gear button that opens Page settings, between Edit and Pin.",
+      "changed": "A gear sits with the card's other quick buttons. The '2 connections' words at the card's foot still work and open the same window.",
+      "notice": "A page with no connections can still be opened into its settings, for the website list and later sections.",
+      "risk": "Three small buttons on each card instead of two.",
+      "highlight": "auto"
+    },
+    {
+      "id": "S-band-gear",
+      "surface": "Pages",
+      "path": "An open page → the top bar beside its name",
+      "crop": "pages/page/page-analytics@1440x220+0+0",
+      "headline": "An open page has a gear beside its name in the top bar, opening its Page settings.",
+      "changed": "A small gear sits after the page's name and its 'updated' time.",
+      "notice": "You can check or remove what a page reaches while you are looking at it, without going back to Manage pages.",
+      "risk": "Built-in pages (Office) show no gear, because they have no settings of their own yet."
+    },
+    {
+      "id": "S-recipe",
+      "surface": "Pages",
+      "path": "Opening a new page for the first time → its approval card",
+      "crop": "pages/page/page-family-calendar@640x720+525+90",
+      "runs": ["after"],
+      "new": true,
+      "headline": "A page using a service nobody built into the app lists exactly what it may do there.",
+      "changed": "This practice page reaches iCloud's calendar through a written 'recipe', not code we built. The card reads 'Use iCloud Calendar … only to:' with one line per allowed action, then 'Nothing else there can be reached.'",
+      "notice": "Any service a page connects to reads this way: a list of what it may do, which the app enforces. Your Money and Home pages keep working underneath.",
+      "risk": "The page's builder writes the list in plain words. If the builder words an action vaguely, the card is only as clear as that wording."
+    },
+    {
+      "id": "S-signin-parts",
+      "surface": "Pages",
+      "path": "The approval card → Continue",
+      "crop": "pages/page/page-family-calendar#key@640x720+525+90",
+      "runs": ["after"],
+      "new": true,
+      "headline": "A service that signs in with more than one value gets one named box for each.",
+      "changed": "'Sign in to iCloud Calendar' asks for an Apple ID email and an app password, each named above its box, with a grey hint under the password. Your bank page's two Plaid boxes now use this same screen and get names above them too.",
+      "notice": "Services that need a username and password, or two keys, work without anything special built for them.",
+      "risk": "The bank page's key step changes slightly: its two boxes gain a name above each instead of grey words inside."
+    },
+    {
+      "id": "S-recipe-list",
+      "surface": "Pages",
+      "path": "The Task board practice page's approval card",
+      "crop": "pages/page/page-task-board@640x720+525+90",
+      "headline": "An existing page written as a recipe trades its general sentence for the actions it may take.",
+      "changed": "'Look up and change things on api.todoist.com… It can do whatever that key allows' becomes 'only to: See your tasks and projects · Add, complete and move tasks. Nothing else there can be reached.'",
+      "notice": "You approve a short list instead of 'whatever that key allows'.",
+      "risk": "A page that has not been rewritten as a recipe keeps today's general sentence until it is."
+    },
+    {
+      "id": "S-together",
+      "surface": "Pages",
+      "path": "The Work board's approval card",
+      "crop": "pages/page/page-work-board@640x720+525+90",
+      "headline": "The 'could send your chat list' note becomes one amber line about the whole page, for any mix of connections.",
+      "changed": "Today a grey note sits under the chats line only. Now an amber box under the list names what could leave and how: 'Together, this page could send your chat list anywhere, using work-items.mjs.'",
+      "notice": "The same line appears for any pair: calendar plus a weather site, a bank plus the internet, a saved key plus another address. If a later edit adds the second half, the page asks again.",
+      "risk": "Pages that read and send to the same service (Todoist to Todoist) show no line, because that is just using it."
+    },
+    {
+      "id": "S-open-website",
+      "surface": "Pages",
+      "path": "An open page → a link or button that opens a website",
+      "crop": "pages/page/open-website@panel",
+      "runs": ["after"],
+      "new": true,
+      "headline": "Before a page opens a website it cannot already reach, you see the full address and choose.",
+      "changed": "'Open this website?' names the page, shows the whole address with the real site in bold, and says anything in it goes to that site. A switch, off each time, stops asking for that site on this page. Open in browser or Cancel.",
+      "notice": "A page can no longer slip information out by opening an address. Links to sites the page already reaches, or that you said not to ask about, open straight away.",
+      "risk": "Pages full of links to many sites (a news reader) ask once per new site until you turn on 'Don't ask again' for each."
+    },
+    {
+      "id": "S-phone",
+      "surface": "Pages",
+      "path": "The same two windows on a phone",
+      "crop": ["pages/library/settings#phone", "pages/page/open-website#phone"],
+      "runs": ["after"],
+      "new": true,
+      "headline": "On a phone both windows fill the screen's width and scroll.",
+      "changed": "Page settings scrolls as one list; 'Open this website?' fits without scrolling and wraps the address.",
+      "notice": "Nothing is hidden at phone size.",
+      "risk": "Page settings is long on a phone once later steps add their sections; they will fold then."
+    },
+    {
+      "id": "Q-band-popup",
+      "words": true,
+      "surface": "Pages",
+      "path": "An open page → the gear beside its name",
+      "headline": "Should the top-bar gear open Page settings as a popup over the page?",
+      "today": "Nothing in a page's top bar opens settings. The design guide says a top-bar button opens a side panel or a full screen, never a popup, so popups don't stack up over what you're looking at.",
+      "problem": "You approved opening Page settings from the top bar. The window is a popup everywhere else (from the library card), so the top-bar gear either breaks that guide rule or needs a second shape.",
+      "proposal": "Pick how the gear opens it.",
+      "options": [
+        {
+          "id": "popup",
+          "label": "The same popup, over the page",
+          "pros": [
+            "One window, the same from the card and from the page.",
+            "Nothing new to build."
+          ],
+          "cons": [
+            "An exception to the guide's top-bar rule, written into the guide."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "side-panel",
+          "label": "A side panel beside the page",
+          "pros": [
+            "Follows the guide; you can see the page while changing its settings."
+          ],
+          "cons": [
+            "Two shapes of the same window to keep alike.",
+            "The page gets narrower while it is open."
+          ]
+        }
+      ]
+    }
+  ]
+}
