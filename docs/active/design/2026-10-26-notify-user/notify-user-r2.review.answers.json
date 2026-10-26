@@ -1,0 +1,24 @@
+{
+ "deck": "notify-user-r2-review",
+ "started": "2026-10-26T09:14:35.310Z",
+ "submitted": "2026-10-26T09:15:15Z",
+ "cur": 1,
+ "answers": {
+  "R2-1": {
+   "v": "pick",
+   "pick": "tab",
+   "t": 1793006108787,
+   "note": "needs refinement. notification message should go in the pill thing probably",
+   "seconds": 33,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1793006115069,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
