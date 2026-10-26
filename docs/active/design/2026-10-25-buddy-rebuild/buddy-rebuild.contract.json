@@ -12,7 +12,8 @@
     "buddy-rebuild-review2": "buddy-rebuild.review2.json",
     "buddy-rebuild-review3": "buddy-rebuild.review3.json",
     "buddy-rebuild-review4": "buddy-rebuild.review4.json",
-    "buddy-rebuild-review5": "buddy-rebuild.review5.json"
+    "buddy-rebuild-review5": "buddy-rebuild.review5.json",
+    "buddy-rebuild-gaps": "buddy-rebuild.gaps.json"
   },
   "steps": [
     {
@@ -191,6 +192,20 @@
           "checkedBy": "live-app",
           "threshold": "idle moment seen, in a dev instance",
           "source": "buddy-rebuild-questions#Q-8"
+        },
+        {
+          "id": "R25",
+          "statement": "Message times show only on the newest message; on any other, resting the pointer on it for half a second shows its time.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-gaps#G-1"
+        },
+        {
+          "id": "R26",
+          "statement": "A permission request in the buddy is one line saying what Claude wants to run, with Yes and No under it.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-gaps#G-2"
         }
       ]
     }
