@@ -77,3 +77,34 @@ Pins to add: buddy dot = main dot for every status (one source), buddy renders C
 question card for AskUserQuestion, buddy does not remount on show, blocked-send in buddy,
 attention pull on mount, mascot reaction table. Existing buddy-window-manager and geometry
 tests must stay green.
+
+## Decisions after the review rounds (2026-10-26)
+
+Review decks 1–5 (`buddy-rebuild-review`, `-review2` … `-review5`) settled the look; the renderer is built on
+the branch and these replace §1/§3 where they differ:
+
+- Small-window cards through `state/compact-surface-context.ts` (provided only by the buddy): one-question-at-a-time
+  question card with chips and "+ Note"; replies' steps/files/skills as ONE full-width pill-styled summary row
+  (`ReplySteps`); warnings and conversation rows tightened; times only on the last message, others after a 0.6 s hover.
+- The actions stay in their own window beside the mascot (`BuddyBarApp`), now FOUR (screenshot, size, open, hide),
+  drawn as the shared `Button` (ghost, icon) inside a `.layer-surface` panel with the shared `Tooltip` above each —
+  review5#C-5 "panel". The in-chat placements built for comparison (`BuddyActionsAt` other than 'beside',
+  `BuddyActions` icon buttons / menu / toolbar) are removed in the build.
+- Two chat sizes: 320×480 and 440×660 (review#B-1 / review2#B-2 approved the picture).
+
+## Build tasks
+
+1. **Clean-up:** drop the unchosen action placements and the old feed (`BubbleFeed`, `CompactToolStrip`,
+   `AttentionStrip`, `SessionPill`) once knip says nothing imports them; their tests move or go.
+2. **Bar window:** `BAR_CONTENT` for four 28 px buttons in the panel plus room ABOVE for the tooltip; the reveal
+   pop-in kept; geometry tests updated.
+3. **Chat size:** `buddy:toggle-chat-size` + `buddy:chat-size` push; `CHAT_SIZE` becomes the small size and the
+   group layout takes the current size as a parameter (never clamp a window alone — group rule); the choice
+   persists; window resize via `setBounds` in `place()` (KWin path: verify the helper keeps a self-resize).
+4. **One connection (S-2):** the buddy watches its session through the standard path so new asks reach it live
+   (`hook-window-route.ts`); remove `buddy:subscribe`/`unsubscribe` duplication; no remount on show.
+5. **Blocked send (card 85a):** `useBlockedSend` in the buddy's InputBar path.
+6. **Motion:** chat grows from the mascot's side; stepped mascot breathing; drag smoothness checked live.
+7. **Reactions + idle (card 85c):** mascot pose follows the watched session's dot colour; idle glance/stretch,
+   sleep after quiet minutes, woken by any status change, never while red/amber/blue.
+8. **Verify:** `scripts/verify.sh`, dev instance (`run-dev.sh`) try-it deck for motion.
