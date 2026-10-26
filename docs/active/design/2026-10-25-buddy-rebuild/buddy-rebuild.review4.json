@@ -1,0 +1,55 @@
+{
+  "title": "Buddy rebuild — round 4: the summary row, and the pill whose words appear",
+  "key": "buddy-rebuild-review4",
+  "out": "buddy-rebuild.review4.html",
+  "stage": "review",
+  "images": "images/buddy-rebuild.review4",
+  "runs": {
+    "before": "runs/round3",
+    "after": "runs/round4"
+  },
+  "labels": {"before": "Round 3", "after": "Round 4"},
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "A-2",
+      "surface": "Buddy chat",
+      "path": "The line under a reply that did more than talk",
+      "crop": "buddy/chat",
+      "highlight": "panel",
+      "headline": "The summary line is now a full-width row drawn like the small pill: rounded ends, the pill's colour and height, the words kept.",
+      "changed": "One row across the bubble with fully rounded ends, the darker pill colour and a thin outline, the pill's small height and text, a tick (or a spinner while working) at the left and an arrow at the right.",
+      "notice": "Pressing it opens the steps and files in place, as before."
+    },
+    {
+      "id": "C-4",
+      "surface": "Buddy",
+      "path": "The buttons beside the buddy",
+      "headline": "The four buttons as one pill, with their words appearing when you point. Which way should the words appear?",
+      "notice": "Each design shows the pill resting, then with the pointer on the second button (Bigger window). Words now say more: Screenshot desktop, Bigger window, Open YouCoded, Hide until restart. Pointing at a button also gives your computer's own tooltip after a moment.",
+      "variants": [
+        {
+          "id": "pill-grow",
+          "label": "One grows",
+          "crop": [{"crop": "buddy/group#pill-grow-0@780x150+100+510", "label": "Resting"}, {"crop": "buddy/group#pill-grow-2@780x150+100+510", "label": "Pointing"}],
+          "summary": "Only the button you point at widens to show its words; the pill grows to the right smoothly and shrinks back when you move away.",
+          "risk": "The buttons after it slide right while you point, so moving along the row shifts things under the pointer."
+        },
+        {
+          "id": "pill-open",
+          "label": "All open",
+          "crop": [{"crop": "buddy/group#pill-open-0@780x150+100+510", "label": "Resting"}, {"crop": "buddy/group#pill-open-2@780x150+100+510", "label": "Pointing"}],
+          "summary": "Pointing anywhere at the pill opens every button's words at once, so you read all four, then it folds back.",
+          "risk": "Opened it is about 630 px wide, wider than the chat, so he needs that much free room beside him."
+        },
+        {
+          "id": "pill-caption",
+          "label": "Caption below",
+          "crop": [{"crop": "buddy/group#pill-caption-0@780x150+100+510", "label": "Resting"}, {"crop": "buddy/group#pill-caption-2@780x150+100+510", "label": "Pointing"}],
+          "summary": "The pill never changes size; a small caption appears under the button you point at.",
+          "risk": "Nothing moves, but the words are smaller and sit below the pill."
+        }
+      ]
+    }
+  ]
+}
