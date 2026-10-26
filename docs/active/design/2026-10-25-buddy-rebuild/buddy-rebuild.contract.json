@@ -1,0 +1,198 @@
+{
+  "title": "Buddy rebuild — contract",
+  "key": "buddy-rebuild-contract",
+  "out": "buddy-rebuild.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/buddy-rebuild",
+  "sources": {
+    "buddy-rebuild-questions": "buddy-rebuild.questions.json",
+    "buddy-rebuild-review": "buddy-rebuild.review.json",
+    "buddy-rebuild-review2": "buddy-rebuild.review2.json",
+    "buddy-rebuild-review3": "buddy-rebuild.review3.json",
+    "buddy-rebuild-review4": "buddy-rebuild.review4.json",
+    "buddy-rebuild-review5": "buddy-rebuild.review5.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Buddy",
+      "path": "The buddy chat window and the buttons beside the buddy",
+      "headline": "This is what done means for the buddy rebuild.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The buddy's chat is a small version of the main window's chat, so improvements to one reach the other.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-questions#Q-2",
+          "note": "we should make this super optimized for the small window though. however we might best do that. reduce spacing between lines and margins or somethihng? idk. maximize visible text and reduce scroll burden"
+        },
+        {
+          "id": "R2",
+          "statement": "The buddy chat uses tighter spacing so more text shows than before.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review#A-1"
+        },
+        {
+          "id": "R3",
+          "statement": "Every status dot in the buddy looks and means exactly what it does in the main window.",
+          "checkedBy": "live-app",
+          "threshold": "dots match the main window, in a dev instance",
+          "source": "buddy-rebuild-questions#S-1"
+        },
+        {
+          "id": "R4",
+          "statement": "The buddy follows a conversation the same way a torn-off main window does.",
+          "checkedBy": "live-app",
+          "threshold": "buddy and torn-off window stay in step, in a dev instance",
+          "source": "buddy-rebuild-questions#S-2"
+        },
+        {
+          "id": "R5",
+          "statement": "Real question cards appear in the buddy, so you can answer anything Claude asks there.",
+          "checkedBy": "live-app",
+          "threshold": "a question is answered in the buddy, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-3",
+          "note": "the skill cards and even tool cards and such could look a little differently on the small window maybe though before expanding? try to optimize space for assistant message text? but only render cards differently in the buddy window?"
+        },
+        {
+          "id": "R6",
+          "statement": "Warnings in the buddy come with buttons, so you can fix a stuck session from there.",
+          "checkedBy": "live-app",
+          "threshold": "a warning's button works, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-3"
+        },
+        {
+          "id": "R7",
+          "statement": "Long conversations can be scrolled back through further in the buddy.",
+          "checkedBy": "live-app",
+          "threshold": "older messages load on scroll, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-3"
+        },
+        {
+          "id": "R8",
+          "statement": "The small extras of a conversation show in the buddy, so nothing is silently missing.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-questions#Q-3"
+        },
+        {
+          "id": "R9",
+          "statement": "You switch conversations in the buddy with the main window's All sessions menu, at the buddy's full width.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review#N-1"
+        },
+        {
+          "id": "R10",
+          "statement": "You switch conversations in the buddy with the main window's menu, not a separate list.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-questions#Q-4",
+          "note": "it will almost certainly need a narrow layout and to possible drop some information to fit. this might not be completely practicaly but idk"
+        },
+        {
+          "id": "R11",
+          "statement": "The buddy's chat window comes in two sizes, small and large.",
+          "checkedBy": "live-app",
+          "threshold": "both sizes work, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-6"
+        },
+        {
+          "id": "R12",
+          "statement": "The size button switches the chat to the larger window and back, and remembers your choice.",
+          "checkedBy": "live-app",
+          "threshold": "choice survives a restart, in a dev instance",
+          "source": "buddy-rebuild-review2#B-2"
+        },
+        {
+          "id": "R13",
+          "statement": "The question card shows one question at a time with small tappable choices and fits without scrolling.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review2#R-1"
+        },
+        {
+          "id": "R14",
+          "statement": "The warning box is tighter, with smaller padding and text and buttons under the sentence.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review2#R-2"
+        },
+        {
+          "id": "R15",
+          "statement": "There is a little more room between the words and the edge of each bubble.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review3#P-1"
+        },
+        {
+          "id": "R16",
+          "statement": "The summary line is a full-width row drawn like the small pill: rounded ends, the pill's colour and height.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review4#A-2"
+        },
+        {
+          "id": "R17",
+          "statement": "The buttons beside the buddy sit as four icons in one panel, with a hint appearing when you point.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "buddy-rebuild-review5#C-5"
+        },
+        {
+          "id": "R18",
+          "statement": "Opening and closing the buddy feels smooth.",
+          "checkedBy": "live-app",
+          "threshold": "smooth to Destin, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-7"
+        },
+        {
+          "id": "R19",
+          "statement": "Dragging the buddy feels smooth.",
+          "checkedBy": "live-app",
+          "threshold": "smooth to Destin, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-7"
+        },
+        {
+          "id": "R20",
+          "statement": "Replies arriving in the buddy's chat feel smooth.",
+          "checkedBy": "live-app",
+          "threshold": "smooth to Destin, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-7"
+        },
+        {
+          "id": "R21",
+          "statement": "The buddy's reactions are easy to read from the corner of your eye.",
+          "checkedBy": "live-app",
+          "threshold": "readable to Destin, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-7"
+        },
+        {
+          "id": "R22",
+          "statement": "Typing into menus works in the buddy, using the main window's message box rules.",
+          "checkedBy": "live-app",
+          "threshold": "typing into a menu works, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-8"
+        },
+        {
+          "id": "R23",
+          "statement": "Allow works on question cards in the buddy.",
+          "checkedBy": "live-app",
+          "threshold": "Allow answers a question, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-8"
+        },
+        {
+          "id": "R24",
+          "statement": "The buddy has idle moments that make him feel alive.",
+          "checkedBy": "live-app",
+          "threshold": "idle moment seen, in a dev instance",
+          "source": "buddy-rebuild-questions#Q-8"
+        }
+      ]
+    }
+  ]
+}
