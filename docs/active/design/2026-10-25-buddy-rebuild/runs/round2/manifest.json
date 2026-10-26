@@ -1,0 +1,376 @@
+[
+ {
+  "name": "buddy/chat",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat#summary",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat#summary/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat#summary",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat#summary/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat#hidden",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat#hidden/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat#hidden",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat#hidden/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat#large",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat#large/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 440,
+   "h": 660
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/chat#large",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/chat#large/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 440,
+   "h": 660
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/question",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/question/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/question",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/question/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/warning",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/warning/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/warning",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/warning/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 320,
+   "h": 480
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#menu",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#menu/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#menu",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#menu/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#mascot-menu",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#mascot-menu/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#mascot-menu",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#mascot-menu/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#hover-rest",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#hover-rest/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#hover-rest",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#hover-rest/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#hover-on",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#hover-on/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#hover-on",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#hover-on/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#toolbar",
+  "theme": "midnight",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#toolbar/midnight.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ },
+ {
+  "name": "buddy/group#toolbar",
+  "theme": "light",
+  "ok": true,
+  "reason": "",
+  "file": "/home/destin/youcoded-dev/worktrees/sessions/buddy-rebuild/docs/active/design/2026-10-25-buddy-rebuild/runs/round2/buddy/group#toolbar/light.png",
+  "ms": 0,
+  "errors": [],
+  "scale": 1,
+  "panel": {
+   "x": 0,
+   "y": 0,
+   "w": 560,
+   "h": 680
+  },
+  "parts": []
+ }
+]

@@ -1,0 +1,136 @@
+{
+  "title": "Buddy rebuild — round 2: smaller cards, quieter replies, more button options",
+  "key": "buddy-rebuild-review2",
+  "out": "buddy-rebuild.review2.html",
+  "stage": "review",
+  "images": "images/buddy-rebuild.review2",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs/round2"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Buddy chat",
+      "path": "When Claude asks you a multiple-choice question",
+      "crop": "buddy/question",
+      "highlight": "panel",
+      "headline": "The question card now shows one question at a time, with small choices you tap, and fits without scrolling.",
+      "changed": "Choices are small chips that wrap; each one's explanation shows when you point at it. The note box hides behind \"+ Note\" (picking Other opens it). With several questions it says 1/2, and picking an answer moves to the next one.",
+      "measured": "About 160 px tall for a two-question card, against more than 480 px (taller than the window) in round 1",
+      "notice": "You answer from the buddy without scrolling. Same answers reach Claude as from the main window's card.",
+      "risk": "Explanations are hidden until you point at a choice."
+    },
+    {
+      "id": "R-2",
+      "surface": "Buddy chat",
+      "path": "When a session gets stuck or its provider stalls",
+      "crop": "buddy/warning",
+      "highlight": "panel",
+      "headline": "The warning box is tighter: smaller padding and text, buttons under the sentence.",
+      "changed": "Less padding inside the box and slightly smaller words, so a short warning stays two lines.",
+      "notice": "Warnings take less of the window and still have their buttons."
+    },
+    {
+      "id": "R-3",
+      "surface": "Buddy chat",
+      "path": "Every message in the buddy chat",
+      "crop": "buddy/chat",
+      "highlight": "panel",
+      "headline": "Dates and times show only on the last message; on any other, point at it for a moment to see its time.",
+      "changed": "Times are folded away except on the newest message, and appear after the pointer rests on a message for about half a second. The tool steps and file cards in this picture use the slim style from the next question.",
+      "notice": "Less clutter between messages; the newest message still says when it arrived.",
+      "risk": "Checking an older message's time takes a short hover instead of a glance."
+    },
+    {
+      "id": "D-1",
+      "surface": "Buddy chat",
+      "path": "Inside Claude's replies in the buddy",
+      "headline": "How much room should a reply's tool steps and file cards take in the buddy?",
+      "notice": "Only the buddy changes; the main window keeps its full cards. Questions and permission requests always show in full whichever you pick.",
+      "variants": [
+        {
+          "id": "slim",
+          "label": "Slim lines",
+          "crop": "buddy/chat",
+          "summary": "Each step group and file card is one plain line with no box around it; press it to open the details as before.",
+          "risk": "Still one line per kind of thing a reply did."
+        },
+        {
+          "id": "summary",
+          "label": "One summary line",
+          "crop": "buddy/chat#summary",
+          "summary": "Everything a reply did beyond its words becomes one quiet line, such as \"1 step · 1 file\"; press it to see the cards.",
+          "risk": "Files Claude sent you are one press away instead of visible."
+        },
+        {
+          "id": "hidden",
+          "label": "Words only",
+          "crop": "buddy/chat#hidden",
+          "summary": "Only what Claude says. Steps and files are not shown in the buddy at all; you see them in the main window.",
+          "risk": "A file Claude sent you is not reachable from the buddy."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "surface": "Buddy",
+      "path": "The buddy and his chat on your desktop",
+      "headline": "Four more places for the buddy's actions (screenshot, bigger or smaller window, open YouCoded, hide). Which one?",
+      "notice": "Every option now includes the new size button (two diagonal arrows, \"Bigger window\"). Every option except Toolbar removes the separate round-button window, so dragging him has one less window to keep in step.",
+      "variants": [
+        {
+          "id": "menu",
+          "label": "One ⋯ menu",
+          "crop": "buddy/group#menu@440x630+120+50",
+          "summary": "One small \"⋯\" at the right of the top row holds all four actions (shown open).",
+          "risk": "Screenshot takes two presses instead of one."
+        },
+        {
+          "id": "mascot-menu",
+          "label": "Right-click him",
+          "crop": "buddy/group#mascot-menu@440x630+120+50",
+          "summary": "Screenshot sits by Attach and the size button in the top row; right-clicking the buddy himself gives Open YouCoded and Hide (shown open).",
+          "risk": "Right-click is hidden until you know about it; a touchscreen needs a long press."
+        },
+        {
+          "id": "hover",
+          "label": "Appear on hover",
+          "crop": "buddy/group#hover-on@440x630+120+50",
+          "summary": "The four icons appear in the top row only while your pointer is over it (shown pointed at); the rest of the time the session name keeps the full width.",
+          "risk": "Nothing hints the icons are there until you point at the top row; no hover on a touchscreen."
+        },
+        {
+          "id": "toolbar",
+          "label": "Labelled toolbar",
+          "crop": "buddy/group#toolbar@440x630+120+50",
+          "summary": "A thin row of small labelled buttons under the message box: Screenshot, Bigger, Open app, Hide.",
+          "risk": "Costs about 24 px of height in every chat."
+        }
+      ]
+    },
+    {
+      "id": "B-2",
+      "runs": [
+        "after"
+      ],
+      "surface": "Buddy chat",
+      "path": "The size button (two diagonal arrows)",
+      "crop": "buddy/chat#large",
+      "highlight": "panel",
+      "headline": "The size button switches the chat to this larger window and back, and remembers your choice.",
+      "changed": "The button is the two diagonal arrows; where it sits follows your pick above. The conversation rows Claude names in a reply lost their outer frame.",
+      "measured": "440 by 660 px against 320 by 480 px",
+      "notice": "Room for long replies and code when you want it; the small size the rest of the time.",
+      "risk": "On a small laptop screen the large size covers more of what is behind it."
+    }
+  ]
+}
