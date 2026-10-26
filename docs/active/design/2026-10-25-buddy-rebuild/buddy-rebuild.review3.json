@@ -1,0 +1,84 @@
+{
+  "title": "Buddy rebuild — round 3: the summary line's look and the buttons beside him",
+  "key": "buddy-rebuild-review3",
+  "out": "buddy-rebuild.review3.html",
+  "stage": "review",
+  "images": "images/buddy-rebuild.review3",
+  "runs": {
+    "before": "runs/round2",
+    "after": "runs/round3"
+  },
+  "labels": {"before": "Round 2", "after": "Round 3"},
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Buddy chat",
+      "path": "Every message bubble in the buddy",
+      "crop": "buddy/chat",
+      "highlight": "panel",
+      "headline": "A little more room between the words and the edge of each bubble.",
+      "changed": "Inside each bubble the sides went from 10 px to 13 px, top and bottom from 7 px to 8 px. Round 3 also uses the summary line you picked, so the step and file lines look different too.",
+      "measured": "13 px at the sides, against 10 px in round 2",
+      "notice": "Text no longer runs close to the bubble's rounded edge.",
+      "risk": "About one word fewer per line in a long message."
+    },
+    {
+      "id": "D-2",
+      "surface": "Buddy chat",
+      "path": "The line under a reply that did more than talk",
+      "headline": "Which look should the summary line have? Each borrows a pattern the main window already uses.",
+      "notice": "Pressing it opens the steps and files in place, in every look. While a step is still running the tick becomes the app's small spinner.",
+      "variants": [
+        {
+          "id": "row",
+          "label": "Tool row",
+          "crop": "buddy/chat#row",
+          "summary": "The main window's own tool-group row: a tick, a thin divider, the words (\"1 step · 1 file\") and an arrow, in a rounded frame."
+        },
+        {
+          "id": "pill",
+          "label": "Small pill",
+          "crop": "buddy/chat#pill",
+          "summary": "A small rounded pill like the app's status pills, with icons and counts instead of words.",
+          "risk": "Counts with icons are less obvious than words at first."
+        },
+        {
+          "id": "footer",
+          "label": "Divider footer",
+          "crop": "buddy/chat#footer",
+          "summary": "No frame: a faded divider line (the one the app's menus use), then the tick, the words and the arrow.",
+          "risk": "The quietest; easier to overlook."
+        }
+      ]
+    },
+    {
+      "id": "C-3",
+      "surface": "Buddy",
+      "path": "The buttons beside the buddy",
+      "headline": "Which look should the buttons beside him have? Every look now includes the size button.",
+      "notice": "In every look the buttons use the theme's colours and glass, react when pointed at, pop in one after another when the chat opens, and hold the size button (two diagonal arrows) as the second button. The top row of the chat has no buttons any more.",
+      "variants": [
+        {
+          "id": "circles",
+          "label": "Circles",
+          "crop": "buddy/group#bar-circles@440x200+200+480",
+          "summary": "Four separate frosted circles, slightly smaller than today's, with the accent ring on the one you point at."
+        },
+        {
+          "id": "pill",
+          "label": "One pill",
+          "crop": "buddy/group#bar-pill@440x200+200+480",
+          "summary": "One frosted pill holding all four, like a tiny toolbar; the one you point at lights up inside it."
+        },
+        {
+          "id": "labelled",
+          "label": "With words",
+          "crop": "buddy/group#bar-labelled@440x200+200+480",
+          "summary": "Four small frosted tiles with a word under each icon: Screenshot, Bigger, Open app, Hide.",
+          "risk": "About twice as wide as the others, so it needs more room beside him."
+        }
+      ]
+    }
+  ]
+}
