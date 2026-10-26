@@ -57,7 +57,7 @@
       "surface": "Buddy",
       "path": "The buttons beside the buddy",
       "headline": "Which look should the buttons beside him have? Every look now includes the size button.",
-      "notice": "In every look the buttons use the theme's colours and glass, react when pointed at, pop in one after another when the chat opens, and hold the size button (two diagonal arrows) as the second button. The top row of the chat has no buttons any more.",
+      "notice": "In every look the buttons use the theme's colours and glass, respond when pointed at, pop in one after another when the chat opens, and hold the size button (two diagonal arrows) as the second button. The top row of the chat has no buttons any more.",
       "variants": [
         {
           "id": "circles",
