@@ -59,3 +59,8 @@ rule:
         has:
           pattern: $O3.disconnect()
           stopBy: end
+    # The optional spelling too (`observer?.disconnect()` is a different AST node; 2026-10-22 it was flagged as missing).
+    - not:
+        has:
+          pattern: $O4?.disconnect()
+          stopBy: end

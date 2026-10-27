@@ -1,0 +1,208 @@
+{
+  "title": "Automatic updates — the questions before anything is drawn",
+  "key": "auto-updates-questions",
+  "out": "auto-updates.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-switch",
+      "words": true,
+      "surface": "Update settings",
+      "path": "Settings → Help & feedback, and the version chip's update popup",
+      "headline": "Should there be a switch to turn automatic updates off, and where?",
+      "today": "Nothing installs unless you open the version chip's popup and press Update now. The only update setting is \"Get beta builds\", which sits in Settings → Help & feedback and under the release notes in that popup.",
+      "problem": "Once updates download and install by themselves, someone who wants to stay on a version (a class demo, a flaky connection, a known-good setup) has no way to say no.",
+      "proposal": "A switch, \"Install updates automatically\", on unless you turn it off. Off brings back today's behaviour: you are told about the update and press the button yourself.",
+      "options": [
+        {
+          "id": "both-places",
+          "label": "Beside Get beta builds",
+          "summary": "In Settings → Help & feedback and in the update popup, right next to the beta switch.",
+          "pros": ["Sits with the only other update setting, so both are found together.", "Reachable from the moment you see an update, without hunting through settings."],
+          "cons": ["Two more rows on a popup that is mostly release notes."],
+          "recommended": true
+        },
+        {
+          "id": "settings-only",
+          "label": "Settings only",
+          "pros": ["The update popup stays as short as it is today."],
+          "cons": ["Someone surprised by an update has to know to look in Settings."]
+        },
+        {
+          "id": "no-switch",
+          "label": "No switch",
+          "pros": ["One less setting; everyone stays current."],
+          "cons": ["No way to hold back an update, even for a good reason."]
+        }
+      ]
+    },
+    {
+      "id": "Q-chip",
+      "words": true,
+      "surface": "Version chip",
+      "path": "The version label at the bottom right of the window",
+      "headline": "What should the version chip look like once an update is downloaded and waiting?",
+      "today": "When a new version exists the chip turns yellow, pulses gently, and reads \"v1.3.2 — Update available\" until you install it, which can be days.",
+      "problem": "With updates downloading by themselves, \"Update available\" is no longer true — it is already here and will install the next time you quit. A pulsing chip for something that will happen on its own is nagging.",
+      "proposal": "Change the words to say it is ready, and decide whether it keeps calling for attention.",
+      "options": [
+        {
+          "id": "calm-ready",
+          "label": "Calm \"Update ready\"",
+          "summary": "A plain chip reading \"v1.4.0 ready — restart to update\", with the yellow tint but no pulse.",
+          "pros": ["Tells you it is there without asking you to act.", "Nothing moves in the corner of your eye while you work."],
+          "cons": ["Easier to overlook if you want the update right away."],
+          "recommended": true
+        },
+        {
+          "id": "keep-pulse",
+          "label": "Pulse as today",
+          "summary": "Same yellow pulse, new words.",
+          "pros": ["Hard to miss."],
+          "cons": ["Keeps pulsing for something that needs nothing from you."]
+        },
+        {
+          "id": "hide-until-installed",
+          "label": "No change until it installs",
+          "summary": "The chip shows the version you have; the next launch shows the new one.",
+          "pros": ["Completely invisible."],
+          "cons": ["No way to know a restart would bring the fix you are waiting for."]
+        }
+      ]
+    },
+    {
+      "id": "Q-busy",
+      "words": true,
+      "surface": "Update popup",
+      "path": "Version chip → popup → Restart to update",
+      "headline": "If a chat is still working when you press Restart to update, should the app ask first?",
+      "today": "Update now closes the app straight away; a reply in the middle of being written stops there.",
+      "problem": "Restart to update is meant to be a one-click convenience, but a reply cut off halfway, or a long task stopped, costs real work.",
+      "proposal": "Check for chats that are still working before restarting.",
+      "options": [
+        {
+          "id": "ask-if-busy",
+          "label": "Ask only if busy",
+          "summary": "\"2 chats are still working. Restart anyway?\" with Restart and Wait. Restarts at once when nothing is working.",
+          "pros": ["One click when idle, a safety net when not.", "Matches how quitting an app with unsaved work usually behaves."],
+          "cons": ["One more click on the occasions a chat is busy."],
+          "recommended": true
+        },
+        {
+          "id": "wait-then-restart",
+          "label": "Wait, then restart",
+          "summary": "The button becomes \"Restarting when chats finish…\" and restarts on its own once nothing is working.",
+          "pros": ["Never interrupts work, never asks."],
+          "cons": ["The app restarts at a moment you did not pick, possibly while you are reading."]
+        },
+        {
+          "id": "just-restart",
+          "label": "Just restart",
+          "pros": ["Simplest."],
+          "cons": ["Loses whatever the busy chats were in the middle of."]
+        }
+      ]
+    },
+    {
+      "id": "Q-linux",
+      "words": true,
+      "surface": "Updates on Linux",
+      "path": "Linux installs from a .deb, .rpm or .pacman package (including yours)",
+      "headline": "On Linux package installs, which need your password, when should the update ask for it?",
+      "today": "Pressing Update now on a package install downloads the update, then shows the system's password box; after that it installs and restarts.",
+      "problem": "\"Install when you quit\" cannot work here without a password box popping up just as you close the app. Windows, Mac and the single-file Linux version need no password.",
+      "proposal": "Pick when the password box appears on these installs.",
+      "options": [
+        {
+          "id": "on-restart-only",
+          "label": "Only on Restart to update",
+          "summary": "It still downloads by itself; the chip says it is ready; the password box appears only when you press Restart to update.",
+          "pros": ["A password box never appears without you asking for it.", "Same button and chip as every other computer."],
+          "cons": ["Quitting does not install it, so these installs stay behind until you press the button."],
+          "recommended": true
+        },
+        {
+          "id": "on-quit",
+          "label": "Ask while quitting",
+          "pros": ["Installs as close to automatically as Linux allows."],
+          "cons": ["A password box after you close the app is surprising, and easy to dismiss by accident."]
+        }
+      ]
+    },
+    {
+      "id": "Q-mac",
+      "words": true,
+      "surface": "Updates on Mac",
+      "path": "The YouCoded app in the Mac's Applications folder",
+      "headline": "If a Mac will not let YouCoded replace itself, is falling back to today's drag-to-Applications step acceptable?",
+      "today": "Mac updates open a disk image and you drag the new app into Applications yourself.",
+      "problem": "The new automatic swap works when the person who installed YouCoded is the one using it (the usual case). On a Mac account that is not an administrator, the swap is refused.",
+      "proposal": "Yes: in that case the popup says it could not install automatically and opens the disk image as today. No: we look for another way first (for example asking for an administrator password), which is more work and new behaviour to design."
+    },
+    {
+      "id": "P-brake",
+      "page": "The emergency brake",
+      "intro": "For when a release turns out to be broken. These two decide how it is pulled and what people see."
+    },
+    {
+      "id": "Q-brake-how",
+      "words": true,
+      "surface": "Releases",
+      "path": "Behind the scenes, on the release itself",
+      "headline": "How should a broken release be pulled?",
+      "today": "Every release carries a signed list of its installers. Without that list, YouCoded refuses to install the release, but it still says an update is available.",
+      "problem": "Once updates install themselves, a broken release reaches everyone within hours. Pulling it must be one step, and must stop computers that downloaded it but have not installed it yet.",
+      "proposal": "Two ways to build the brake. Either way you ask me (\"pull 1.4.0\") and I do it; nothing for you to run.",
+      "options": [
+        {
+          "id": "pull-signed-list",
+          "label": "Pull the release's signed list",
+          "summary": "I remove the signed list and mark the release as not the latest, which also takes it off the website. Updated apps stop offering it; apps that already downloaded it check again before installing and drop it.",
+          "pros": ["Uses what already exists; nothing new on our server.", "Even today's 1.3.2 installs already refuse a release without the list."],
+          "cons": ["Takes effect when each app next checks: up to about 30 minutes."],
+          "recommended": true
+        },
+        {
+          "id": "server-switch",
+          "label": "A switch on our server",
+          "summary": "A new on/off setting on the marketplace server that the app reads before offering or installing anything.",
+          "pros": ["Could later grow into gradual rollout (sending a release to a few people first)."],
+          "cons": ["New server work to build and keep running.", "Only apps from this release onward would obey it."]
+        }
+      ]
+    },
+    {
+      "id": "Q-brake-notice",
+      "words": true,
+      "surface": "Status bar",
+      "path": "The announcement chip in the status bar",
+      "headline": "Should people who already installed a pulled release see a message?",
+      "today": "There is an announcement chip (orange star) we can turn on for everyone with one line in a file; it is how notices reach people today.",
+      "problem": "Pulling a release stops new installs, but whoever already has it keeps it until the fix arrives, without knowing anything is wrong.",
+      "proposal": "Choose whether pulling also tells them.",
+      "options": [
+        {
+          "id": "announcement-when-needed",
+          "label": "Use the announcement chip",
+          "summary": "Nothing automatic. When a problem is worth telling people about, I post a notice through the existing announcement chip.",
+          "pros": ["No new screens to build.", "You decide case by case whether a notice helps or only worries people."],
+          "cons": ["Reaches everyone, including people who never installed the broken release."],
+          "recommended": true
+        },
+        {
+          "id": "automatic-notice",
+          "label": "Automatic notice",
+          "summary": "Apps on a pulled release show \"This version has a known problem — a fix is on the way\" in the version chip.",
+          "pros": ["Only the people affected see it."],
+          "cons": ["A new message to design and build.", "It can sound more alarming than the problem deserves."]
+        },
+        {
+          "id": "silent",
+          "label": "Say nothing",
+          "pros": ["Simplest; the fix simply arrives as an update."],
+          "cons": ["People hitting the problem do not know help is coming."]
+        }
+      ]
+    }
+  ]
+}

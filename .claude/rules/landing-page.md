@@ -3,6 +3,8 @@ paths:
   - "**/docs/index.html"
   - "**/docs/media/**"
   - "**/docs/site/**"
+  - "**/docs/tools/gen-legal-pages.mjs"
+  - "**/docs/privacy.html"
   - "**/docs/gallery/**"
   - "scripts/ui-review/**"
   - "**/desktop/src/renderer/dev/workbench/**"
@@ -31,6 +33,10 @@ verify:
     contains: "turn_complete"
   - test: youcoded/desktop/tests/workbench-reply-script.test.ts
   - test: youcoded/desktop/tests/workbench-fixture-actions.test.ts
+  - path: youcoded/docs/tools/gen-legal-pages.mjs
+    contains: "changelog"
+  - path: youcoded/.github/workflows/site-deploy.yml
+    contains: "gen-legal-pages"
 ---
 # Landing page (itsdestin.github.io/youcoded) + demo-clip tooling
 
@@ -100,4 +106,11 @@ swapped on `load` read as "broken" (2026-09-14).
 description (all rejected).
 **Why:** neither is the review deck. The never-claim list is the audit's, from the spec's "Not in
 scope"; the footer's Anthropic sentence is verbatim.
-How-to + traps paid for: `README.md` → "Editing copy on the site". Guard: `test_site_copy_editor.py`.
+How-to + traps paid for: `README.md` → "Editing copy on the site". Guard: `scripts/ui-review/tests/test_site_copy_editor.py`.
+
+## Privacy, Terms, Security, Changelog pages are generated
+**Invariant:** `docs/{privacy,terms,security,changelog}.html` are built from the root
+`*.md` by `docs/tools/gen-legal-pages.mjs` (one `pages` table); never hand-edit them. A new
+page is a row there plus a footer link and a `sitemap.xml` line. `site-deploy.yml` regenerates
+them on every publish. **Why:** releases edit `CHANGELOG.md` outside `docs/`, so a committed
+page fell behind silently. **Guard:** `docs/tools/legal-pages.test.mjs`.

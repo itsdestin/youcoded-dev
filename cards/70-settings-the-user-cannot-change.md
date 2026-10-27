@@ -14,7 +14,7 @@ vision: chat.converse.native, chat.steer.specialists
 ---
 Progress
 Done: nothing recorded.
-Next: not decided.
+Next: Helper limits (c, #72) tracked with plans in docs/active/handoffs/2026-10-24-specialists-and-plans-START-HERE.md §4 C6; reply length and model recommendations (a, b) unchanged.
 Blocked: nothing recorded.
 
 See also #32: Both want the app's list of recommended models kept current instead of going stale (32a a scheduled check, 70b one maintained recommendation system).

@@ -1,0 +1,39 @@
+/tmp/deskrep/profiles/bigfence-code-2000-A.cpuprofile
+  61786 ms wall, 234550 samples
+
+bucket(2000ms)  busy%  top functions (self ms)
+       0    26%  54ms s [index-BZ_dIfJX.js:264] | 47ms u [index-BZ_dIfJX.js:264] | 39ms set webkitSpeechRecognitionEvent
+    2000    28%  77ms s [index-BZ_dIfJX.js:264] | 75ms u [index-BZ_dIfJX.js:264] | 57ms set webkitSpeechRecognitionEvent
+    4000    27%  75ms s [index-BZ_dIfJX.js:264] | 61ms set webkitSpeechRecognitionEvent | 61ms u [index-BZ_dIfJX.js:264]
+    6000    28%  75ms s [index-BZ_dIfJX.js:264] | 67ms u [index-BZ_dIfJX.js:264] | 61ms set webkitSpeechRecognitionEvent
+    8000    28%  74ms s [index-BZ_dIfJX.js:264] | 63ms u [index-BZ_dIfJX.js:264] | 62ms set webkitSpeechRecognitionEvent
+   10000    26%  74ms s [index-BZ_dIfJX.js:264] | 61ms u [index-BZ_dIfJX.js:264] | 60ms set webkitSpeechRecognitionEvent
+   12000    27%  75ms s [index-BZ_dIfJX.js:264] | 58ms set webkitSpeechRecognitionEvent | 56ms u [index-BZ_dIfJX.js:264]
+   14000    26%  80ms s [index-BZ_dIfJX.js:264] | 56ms set webkitSpeechRecognitionEvent | 55ms u [index-BZ_dIfJX.js:264]
+   16000    27%  78ms s [index-BZ_dIfJX.js:264] | 59ms u [index-BZ_dIfJX.js:264] | 57ms set webkitSpeechRecognitionEvent
+   18000    27%  73ms s [index-BZ_dIfJX.js:264] | 62ms set webkitSpeechRecognitionEvent | 59ms u [index-BZ_dIfJX.js:264]
+   20000    27%  72ms s [index-BZ_dIfJX.js:264] | 59ms set webkitSpeechRecognitionEvent | 59ms u [index-BZ_dIfJX.js:264]
+   22000    28%  76ms s [index-BZ_dIfJX.js:264] | 67ms u [index-BZ_dIfJX.js:264] | 54ms set webkitSpeechRecognitionEvent
+   24000    26%  74ms s [index-BZ_dIfJX.js:264] | 55ms u [index-BZ_dIfJX.js:264] | 49ms set webkitSpeechRecognitionEvent
+   26000    27%  76ms s [index-BZ_dIfJX.js:264] | 62ms u [index-BZ_dIfJX.js:264] | 50ms set webkitSpeechRecognitionEvent
+   28000    27%  77ms s [index-BZ_dIfJX.js:264] | 57ms u [index-BZ_dIfJX.js:264] | 57ms set webkitSpeechRecognitionEvent
+   30000    28%  79ms s [index-BZ_dIfJX.js:264] | 59ms u [index-BZ_dIfJX.js:264] | 53ms set webkitSpeechRecognitionEvent
+   32000    28%  82ms s [index-BZ_dIfJX.js:264] | 65ms u [index-BZ_dIfJX.js:264] | 54ms set webkitSpeechRecognitionEvent
+   34000    28%  77ms s [index-BZ_dIfJX.js:264] | 62ms u [index-BZ_dIfJX.js:264] | 46ms set webkitSpeechRecognitionEvent
+   36000    28%  77ms s [index-BZ_dIfJX.js:264] | 56ms set webkitSpeechRecognitionEvent | 54ms u [index-BZ_dIfJX.js:264]
+   38000    26%  74ms s [index-BZ_dIfJX.js:264] | 49ms u [index-BZ_dIfJX.js:264] | 48ms set webkitSpeechRecognitionEvent
+   40000    28%  76ms s [index-BZ_dIfJX.js:264] | 56ms u [index-BZ_dIfJX.js:264] | 53ms set webkitSpeechRecognitionEvent
+   42000    28%  78ms s [index-BZ_dIfJX.js:264] | 53ms set webkitSpeechRecognitionEvent | 53ms u [index-BZ_dIfJX.js:264]
+   44000    28%  70ms s [index-BZ_dIfJX.js:264] | 59ms set webkitSpeechRecognitionEvent | 55ms u [index-BZ_dIfJX.js:264]
+   46000    26%  73ms s [index-BZ_dIfJX.js:264] | 56ms u [index-BZ_dIfJX.js:264] | 51ms pSe [index-BZ_dIfJX.js:295]
+   48000    24%  61ms s [index-BZ_dIfJX.js:264] | 52ms pSe [index-BZ_dIfJX.js:295] | 48ms u [index-BZ_dIfJX.js:264]
+   50000    29%  69ms s [index-BZ_dIfJX.js:264] | 60ms pSe [index-BZ_dIfJX.js:295] | 59ms set webkitSpeechRecognitionEvent
+   52000    28%  76ms s [index-BZ_dIfJX.js:264] | 59ms pSe [index-BZ_dIfJX.js:295] | 58ms u [index-BZ_dIfJX.js:264]
+   54000    27%  76ms s [index-BZ_dIfJX.js:264] | 64ms pSe [index-BZ_dIfJX.js:295] | 53ms set webkitSpeechRecognitionEvent
+   56000    28%  74ms s [index-BZ_dIfJX.js:264] | 66ms pSe [index-BZ_dIfJX.js:295] | 53ms u [index-BZ_dIfJX.js:264]
+   58000    30%  71ms s [index-BZ_dIfJX.js:264] | 67ms pSe [index-BZ_dIfJX.js:295] | 60ms u [index-BZ_dIfJX.js:264]
+   60000    76%  1121ms qc [index-BZ_dIfJX.js:9] | 78ms s [index-BZ_dIfJX.js:264] | 34ms set webkitSpeechRecognitionEvent
+
+unbroken busy blocks longer than 150 ms:
+  @  60163 ms    1441 ms  1121ms qc [index-BZ_dIfJX.js:9] | 72ms s [index-BZ_dIfJX.js:264] | 29ms set webkitSpeechRecognitionEvent
+                          asked for by: 1121ms under gl [index-BZ_dIfJX.js:9] | 115ms under u [index-BZ_dIfJX.js:264]

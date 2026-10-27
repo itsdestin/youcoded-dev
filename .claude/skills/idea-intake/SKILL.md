@@ -12,6 +12,10 @@ are your bookkeeping: `cards/<n>-<name>.md`, managed by `scripts/cards.mjs`. Spe
 
 ## 1. Read what already exists
 
+First: is this YouCoded work? An idea for his desktop setup, Swipe Keyboard or another standalone project is
+not filed here (`CLAUDE.md` → About This Project); say which project folder it belongs in, and file it there
+if that project has cards (Swipe Keyboard: `~/swipe-keyboard-dev`, same `cards.mjs`).
+
 `node scripts/cards.mjs index` — every card (number, stage, title, tags, needs). The old roadmap's
 open entries were all moved into cards on 2026-10-15 (a card's `roadmap:` line names the entry it came from).
 Match his idea against it **by meaning, not wording**: "agents that run while I sleep" is the card

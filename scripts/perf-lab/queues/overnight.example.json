@@ -1,0 +1,19 @@
+{
+  "name": "overnight example: energy lane on the merged candidate",
+  "notes": "PLACEHOLDERS (not run; copy into \"items\" when wanted). A/B historical vs merged, quick mode: {\"label\":\"ab-historical-vs-merged-quick\",\"tool\":\"ab\",\"argv\":[\"--a\",\"/home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/youcoded\",\"--b\",\"/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded\",\"--mode\",\"quick\",\"--label\",\"historical-vs-merged\"],\"timeoutMinutes\":420,\"measureMinutes\":60}. A/B energy lane, both sides: {\"label\":\"ab-energy-historical-vs-merged\",\"tool\":\"ab\",\"argv\":[\"--a\",\"<historical checkout>\",\"--b\",\"/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded\",\"--mode\",\"energy\",\"--label\",\"energy-historical-vs-merged\"],\"timeoutMinutes\":600,\"measureMinutes\":45}. Full A/B: same with \"--mode\",\"full\" and a larger timeoutMinutes (a full run is several hours per side). Every checkout needs a cached build (--cached-only is implied by ab unless --build is given). Order matters: the queue runs items top to bottom and skips any that cannot finish before --until.",
+  "items": [
+    {
+      "label": "energy-lane-merged-candidate",
+      "tool": "run",
+      "argv": [
+        "--only", "energy",
+        "--checkout", "/home/destin/youcoded-dev/worktrees/sessions/96-merged-evaluation/youcoded",
+        "--cached-only",
+        "--label", "energy-merged"
+      ],
+      "timeoutMinutes": 360,
+      "measureMinutes": 45,
+      "notes": "Lane C: CPU-coverage self-check, then 7 baseline/workload/baseline repeats (>= 5 clean needed). Needs a cached build of the merged checkout and a genuinely quiet machine; waits up to --quiet-wait-hours for one."
+    }
+  ]
+}

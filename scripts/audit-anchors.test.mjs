@@ -881,3 +881,13 @@ test('undocumentedWorkbenchSwitches: reads every workbench source file, not only
   fs.writeFileSync(path.join(dir, 'fixtures', 'sessions.ts'), "new URLSearchParams(location.search).get('anthropicError');");
   assert.deepEqual(undocumentedWorkbenchSwitches(root), ['anthropicError', 'providerError']);
 });
+
+test('checkAnchor: a path in a sub-repo that is not on disk is skipped, not missing', () => {
+  // Workspace CI never clones the private youcoded-admin repo; its anchors are unverifiable there.
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'anchor-absent-'));
+  const r = checkAnchor(root, { path: 'youcoded-admin/skills/x/SKILL.md', contains: 'y' });
+  assert.equal(r.ok, true);
+  assert.match(r.skipped, /youcoded-admin not on disk/);
+  fs.mkdirSync(path.join(root, 'youcoded-admin', '.git'), { recursive: true });
+  assert.equal(checkAnchor(root, { path: 'youcoded-admin/skills/x/SKILL.md' }).ok, false);
+});

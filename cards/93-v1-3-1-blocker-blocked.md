@@ -1,7 +1,7 @@
 ---
 id: 93
 title: Background freezes, memory growth and whole-file reads
-stage: planning
+stage: merged
 priority: P1
 tags: perf, chat, desktop, performance, needs-repro, bug
 report: docs/active/plans/2026-09-16-simplification-phases.md
@@ -13,14 +13,16 @@ area: Chat
 side: behind
 platform: Desktop only
 vision: chat.converse
-work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge, session/93-batcher-counters
+work: session/93-session-freezes, session/93-file-viewer-freezes, session/85-windows-131-regressions, session/crash-recommendations-deck, session/93-crash-reliability, session/93-app-fixes-merge, session/93-batcher-counters, session/93-startup-stall, session/93-freeze-combined
 ---
 Progress
-Done: 2026-10-22 phone reliability: passive main-thread sampler ran ~4 h overnight — no freeze of 1 s or more caught (longest 0.53 s); git children near-constant, weak as a clue. Laptop measured 39 freezes ≥10 s in 2 days (longest 51 s) at ~0.5% CPU, i.e. waiting not working (docs/active/investigations/2026-10-22-phone-app-reliability-deep-dive.md §B)
-Next: Dev build that logs every synchronous child-process call and long main-thread wait, used for one normal working day (needs Destin's go-ahead)
-Blocked: No blocker for merged app subtask. Original incident, broader blocking/memory issues and production effectiveness remain unresolved. Local full Android payload was blocked by apk-version tooling; remote APK CI subsequently passed, not device runtime.
+Done: 2026-10-24 freeze hunt on session/93-freeze-combined (verify.sh --full green): 20,000-line reply stream-end freeze ~123 s -> 0.4 s; 700 KB block typing 3.6 s -> 0.3 s, memory 2.9 -> 1.2 GB; scroll jumps gone; compaction 7.6 s -> 11 ms; 4-8 s launch freeze (KDE wallet) fixed blind; 200k-row xlsx freeze 1.7 -> 0.46 s. Numbers: perf-reports/desktop-quiet-2026-10-23/
+Next: Merge the combined branch on Destin's word; afterwards compare freezes >=1 s per hour in hitches.jsonl before vs after
+Blocked: Windows/macOS unmeasured; Android only JVM tests (36) - packaging needs apk-version tooling; cold-wallet launch never reproduced
 
 Chats
+- 2026-10-24 session/93-freeze-combined: freeze hunt: code-block/scroll, chime, compaction, KDE-wallet launch freeze, xlsx/docx off the page; lab + quiet-desktop A/B (workspace session/93-file-viewer-freezes)
+- 2026-10-24 session/93-startup-stall: chat started
 - 2026-10-22 session/93-batcher-counters: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started
 - 2026-10-21 session/93-file-viewer-freezes: chat started

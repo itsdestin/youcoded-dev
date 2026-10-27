@@ -59,7 +59,12 @@ const results = await runQueue(pool, chosen, async (tab, name) => {
     // visual effects setting drops the blur. Pictures (shoot) keep the full look; explore too.
     await openApp(tab, base, start, { reducedEffects: true });
     const driver = makeDriver(tab, start);
-    for (i = 0; i < journey.steps.length; i++) await driver.perform(journey.steps[i]);
+    for (i = 0; i < journey.steps.length; i++) {
+      const step = journey.steps[i];
+      // A `check` step names a script beside the journeys (its in-page JS expression).
+      if (step.do === 'check' && step.file && !step.expression) step.expression = readFileSync(join(dir, step.file), 'utf8');
+      await driver.perform(step);
+    }
     r.ok = true;
   } catch (e) {
     const s = journey.steps[i];

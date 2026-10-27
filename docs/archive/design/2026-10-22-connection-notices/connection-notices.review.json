@@ -1,0 +1,50 @@
+{
+  "title": "Connection notices — above the message box",
+  "key": "connection-notices-review",
+  "out": "connection-notices.review.html",
+  "images": "images/connection-notices-review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat on your phone",
+      "path": "Coming back to the phone after the connection dropped",
+      "crop": "chat#phone-reconnecting",
+      "headline": "\"Reconnecting to your computer…\" now sits just above the message box instead of at the top of the chat.",
+      "changed": "The notice moved from a row under the header to the band above the message box — the same spot and the same band style as the voice typing \"Listening\" strip and the model-download strip. Wording, the \"Use this phone only\" button (Android app only) and timing are unchanged.",
+      "notice": "The notice is right where your thumb and eyes already are when you type. The chat no longer starts lower to make room for it at the top.",
+      "risk": "While it shows, the chat area above the box is that much shorter at the bottom instead of the top, so the newest message sits a little higher."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat on your phone",
+      "path": "After a refresh that did not finish",
+      "crop": "chat#phone-out-of-date",
+      "headline": "\"This conversation may be out of date\" and its Refresh button moved to the same band above the message box.",
+      "changed": "Same move as the reconnecting notice; the amber dot, the explanation and the Refresh button are the same.",
+      "notice": "Refresh is now next to where you type, so retrying is one short reach.",
+      "risk": ""
+    },
+    {
+      "id": "S-3",
+      "surface": "Chat on your phone",
+      "path": "Opening a conversation the phone has not loaded yet, or just after reconnecting",
+      "crop": "chat#phone-catching-up",
+      "headline": "\"Catching up with your computer…\" moved above the message box too.",
+      "changed": "Same move. \"Waiting for your computer…\" (the computer slow to answer) and the short \"Up to date.\" after a refresh move the same way; they are the same band with different words.",
+      "notice": "Every connection notice now appears in one place, so you learn to glance at one spot.",
+      "risk": ""
+    },
+    {
+      "id": "S-4",
+      "surface": "YouCoded in a computer-width browser",
+      "path": "Remote access opened on a laptop or tablet, while reconnecting",
+      "crop": "chat#remote-reconnecting-wide",
+      "headline": "On a wide screen the notice also sits above the message box, the full width of the box.",
+      "changed": "Same move at a wide width. Your computer's own YouCoded window never shows these notices — nothing there changes.",
+      "notice": "Same place as on the phone.",
+      "risk": "Like the other bands, it does not show in terminal view — the same as before, when it lived at the top of the chat."
+    }
+  ]
+}

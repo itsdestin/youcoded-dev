@@ -1,0 +1,110 @@
+[pathlist] r1-a pathlist-prose-2000
+[perf-lab 22:19:44] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 22:20:33] interference r1-a:pathlist-prose-2000: disturbed — other programs used 2.6 cores on average over 49 s (limit 1): git ×7 (pids 2200529, 2201610, 2201699, 2201921, +3 more) used 0.8 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.6 cores; chrome ×8 (pids 1851077, 1851157, 2131549, 2130110, +4 more) used 0.3 cores
+[pathlist]   -> slow
+[pathlist] r1-a pathlist-prose-5000
+[perf-lab 22:21:25] interference r1-a:pathlist-prose-5000: disturbed — other programs used 2.7 cores on average over 51 s (limit 1): git ×8 (pids 2202909, 2203150, 2203263, 2203352, +4 more) used 0.8 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.6 cores; chrome ×12 (pids 1851077, 1851157, 2131549, 1851164, +8 more) used 0.5 cores
+[pathlist]   -> slow
+[pathlist] r1-a pathlist-proseControl-2000
+[perf-lab 22:22:16] interference r1-a:pathlist-proseControl-2000: disturbed — other programs used 2.2 cores on average over 49 s (limit 1): chrome ×15 (pids 1851077, 1851157, 1851164, 2170911, +11 more) used 0.7 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.6 cores; git ×2 (pids 2204532, 2204878) used 0.2 cores
+[pathlist]   -> slow
+[pathlist] r1-a pathlist-proseControl-5000
+[perf-lab 22:23:09] interference r1-a:pathlist-proseControl-5000: disturbed — other programs used 2 cores on average over 51 s (limit 1): youcoded ×6 (pids 1342393, 1342460, 1342321, 1342549, +2 more) used 0.6 cores; chrome ×21 (pids 1851157, 2131549, 2170911, 1851077, +17 more) used 0.5 cores; git ×2 (pids 2206958, 2207211) used 0.2 cores
+[pathlist]   -> slow
+[pathlist] r1-a pathlist-code-2000
+[perf-lab 22:23:59] interference r1-a:pathlist-code-2000: disturbed — other programs used 1.9 cores on average over 49 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.6 cores; chrome ×8 (pids 1851077, 1851157, 2130110, 2131549, +4 more) used 0.4 cores; git ×3 (pids 2207211, 2208030, 2208080) used 0.3 cores
+[pathlist]   -> measured
+[pathlist] r1-a pathlist-code-5000
+[perf-lab 22:24:52] interference r1-a:pathlist-code-5000: disturbed — other programs used 2.5 cores on average over 51 s (limit 1): git ×5 (pids 2209548, 2209688, 2209866, 2209978, +1 more) used 0.6 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.6 cores; chrome ×13 (pids 1851077, 1851157, 2131549, 2130110, +9 more) used 0.6 cores
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-prose-2000
+[perf-lab 22:25:43] interference r1-b:pathlist-prose-2000: disturbed — other programs used 2.7 cores on average over 49 s (limit 1): git ×8 (pids 2210335, 2210687, 2211216, 2211307, +4 more) used 0.9 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.6 cores; chrome ×12 (pids 1851157, 2207479, 2130110, 2170911, +8 more) used 0.4 cores
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-prose-5000
+[perf-lab 22:26:36] interference r1-b:pathlist-prose-5000: disturbed — other programs used 3 cores on average over 51 s (limit 1): youcoded ×10 (pids 1342321, 1342393, 1342460, 1342549, +6 more) used 1.1 cores; claude ×10 (pids 1343193, 1497018, 1540338, 858671, +6 more) used 0.8 cores; chrome ×22 (pids 1851077, 1851157, 2207479, 2131549, +18 more) used 0.2 cores; youcoded (pid 1342393) held the graphics chip 7% of the time
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-proseControl-2000
+[perf-lab 22:27:27] interference r1-b:pathlist-proseControl-2000: disturbed — other programs used 2.7 cores on average over 49 s (limit 1): git ×9 (pids 2216723, 2216978, 2217213, 2217406, +5 more) used 0.9 cores; youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.8 cores; claude ×8 (pids 1343193, 1497018, 1540338, 1658190, +4 more) used 0.2 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-proseControl-5000
+[perf-lab 22:28:20] interference r1-b:pathlist-proseControl-5000: disturbed — other programs used 2.1 cores on average over 51 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.9 cores; git ×3 (pids 2218203, 2218772, 2218863) used 0.4 cores; claude ×8 (pids 1343193, 1658190, 1745093, 2212414, +4 more) used 0.2 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-code-2000
+[perf-lab 22:29:10] interference r1-b:pathlist-code-2000: disturbed — other programs used 2.7 cores on average over 49 s (limit 1): git ×7 (pids 2220107, 2220228, 2220668, 2220961, +3 more) used 0.7 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores; claude ×8 (pids 1343193, 1540338, 1658190, 2212414, +4 more) used 0.5 cores
+[pathlist]   -> measured
+[pathlist] r1-b pathlist-code-5000
+[perf-lab 22:30:03] interference r1-b:pathlist-code-5000: disturbed — other programs used 3.5 cores on average over 51 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 1 core; git ×18 (pids 2222568, 2223190, 2223338, 2223667, +14 more) used 0.8 cores; claude ×8 (pids 1497018, 1540338, 1658190, 2212414, +4 more) used 0.4 cores; youcoded (pid 1342393) held the graphics chip 5% of the time
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-prose-2000
+[perf-lab 22:31:02] interference r2-b:pathlist-prose-2000: disturbed — other programs used 12.8 cores on average over 57 s (limit 1): swipekb-nextwor ×33 (pids 2231064, 2231065, 2231066, 2231067, +29 more) used 6.7 cores; chrome ×207 (pids 1851077, 1851157, 1851164, 2131549, +203 more) used 2.3 cores; youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 1 core
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-prose-5000
+[perf-lab 22:32:00] interference r2-b:pathlist-prose-5000: disturbed — other programs used 16.2 cores on average over 52 s (limit 1): swipekb-nextwor ×27 (pids 2231064, 2231065, 2231067, 2231068, +23 more) used 12.5 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 1 core; git ×7 (pids 2232074, 2235901, 2236751, 2237016, +3 more) used 0.8 cores; youcoded (pid 1342393) held the graphics chip 5% of the time
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-proseControl-2000
+[perf-lab 22:32:52] interference r2-b:pathlist-proseControl-2000: disturbed — other programs used 18 cores on average over 50 s (limit 1): swipekb-nextwor ×36 (pids 2231067, 2231084, 2231101, 2239162, +32 more) used 15.1 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 1.2 cores; git ×7 (pids 2237776, 2238395, 2238581, 2238655, +3 more) used 0.9 cores; youcoded (pid 1342393) held the graphics chip 7% of the time
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-proseControl-5000
+[perf-lab 22:33:46] interference r2-b:pathlist-proseControl-5000: disturbed — other programs used 11.2 cores on average over 51 s (limit 1): swipekb-nextwor ×19 (pids 2239162, 2239165, 2239166, 2239168, +15 more) used 8.7 cores; git ×7 (pids 2239450, 2240211, 2240458, 2240724, +3 more) used 0.8 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-code-2000
+[perf-lab 22:34:37] interference r2-b:pathlist-code-2000: disturbed — other programs used 3.5 cores on average over 49 s (limit 1): git ×9 (pids 2241858, 2241908, 2242031, 2242547, +5 more) used 0.8 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores; claude ×8 (pids 1343193, 1658190, 1745093, 2212414, +4 more) used 0.6 cores
+[pathlist]   -> measured
+[pathlist] r2-b pathlist-code-5000
+[perf-lab 22:35:29] interference r2-b:pathlist-code-5000: disturbed — other programs used 5.4 cores on average over 51 s (limit 1): ffmpeg ×5 (pids 2245128, 2245700, 2245995, 2246668, +1 more) used 2.6 cores; git ×7 (pids 2244424, 2245001, 2245307, 2245522, +3 more) used 0.8 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-prose-2000
+[perf-lab 22:36:20] interference r2-a:pathlist-prose-2000: disturbed — other programs used 1.7 cores on average over 49 s (limit 1): youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.6 cores; claude ×8 (pids 1343193, 1497018, 1658190, 2212414, +4 more) used 0.3 cores; git ×2 (pids 2247632, 2247813) used 0.3 cores
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-prose-5000
+[perf-lab 22:37:13] interference r2-a:pathlist-prose-5000: disturbed — other programs used 1.8 cores on average over 51 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.6 cores; git ×3 (pids 2249784, 2250043, 2250562) used 0.3 cores; chrome ×15 (pids 1851157, 2207479, 1851077, 1851164, +11 more) used 0.2 cores
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-proseControl-2000
+[perf-lab 22:38:04] interference r2-a:pathlist-proseControl-2000: disturbed — other programs used 2 cores on average over 49 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 1.1 cores; git ×2 (pids 2250562, 2250904) used 0.2 cores; claude ×8 (pids 1497018, 1540338, 1658190, 1343193, +4 more) used 0.1 cores; youcoded (pid 1342393) held the graphics chip 9% of the time
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-proseControl-5000
+[perf-lab 22:38:57] interference r2-a:pathlist-proseControl-5000: disturbed — other programs used 1.8 cores on average over 51 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.9 cores; chrome ×9 (pids 1851157, 2207479, 1851164, 1851077, +5 more) used 0.3 cores; claude ×7 (pids 1497018, 1540338, 1658190, 858671, +3 more) used 0.2 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-code-2000
+[perf-lab 22:39:47] interference r2-a:pathlist-code-2000: disturbed — other programs used 3.1 cores on average over 49 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 1 core; git ×9 (pids 2253101, 2253779, 2253861, 2254588, +5 more) used 0.9 cores; claude ×7 (pids 1343193, 1497018, 1540338, 1658190, +3 more) used 0.5 cores; youcoded (pid 1342393) held the graphics chip 7% of the time
+[pathlist]   -> measured
+[pathlist] r2-a pathlist-code-5000
+[perf-lab 22:40:40] interference r2-a:pathlist-code-5000: disturbed — other programs used 3 cores on average over 51 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 1 core; git ×15 (pids 2255746, 2256216, 2256413, 2256660, +11 more) used 0.8 cores; claude ×7 (pids 1497018, 1658190, 1745093, 990913, +3 more) used 0.3 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[pathlist]   -> slow
+[pathlist] r3-a pathlist-prose-2000
+[perf-lab 22:41:31] interference r3-a:pathlist-prose-2000: disturbed — other programs used 2.6 cores on average over 49 s (limit 1): git ×8 (pids 2259137, 2259537, 2259637, 2259658, +4 more) used 0.9 cores; youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores; chrome ×11 (pids 1851077, 1851157, 1905546, 2207479, +7 more) used 0.4 cores
+[pathlist]   -> slow
+[pathlist] r3-a pathlist-prose-5000
+[perf-lab 22:42:23] interference r3-a:pathlist-prose-5000: disturbed — other programs used 2.2 cores on average over 51 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.7 cores; git ×3 (pids 2260901, 2261246, 2261323) used 0.5 cores; chrome ×16 (pids 1851077, 1851157, 2207479, 1851164, +12 more) used 0.5 cores
+[pathlist]   -> slow
+[pathlist] r3-a pathlist-proseControl-2000
+[perf-lab 22:43:14] interference r3-a:pathlist-proseControl-2000: disturbed — other programs used 2 cores on average over 49 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.7 cores; chrome ×13 (pids 1851077, 1851157, 2207479, 1851164, +9 more) used 0.4 cores; git ×2 (pids 2262863, 2263131) used 0.3 cores
+[pathlist]   -> slow
+[pathlist] r3-a pathlist-proseControl-5000
+[perf-lab 22:44:06] interference r3-a:pathlist-proseControl-5000: disturbed — other programs used 1.8 cores on average over 51 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.7 cores; git ×4 (pids 2263989, 2264062, 2264803, 2264911) used 0.4 cores; chrome ×8 (pids 1851077, 1851157, 2207479, 1851164, +4 more) used 0.3 cores
+[pathlist]   -> slow
+[pathlist] r3-a pathlist-code-2000
+[perf-lab 22:44:57] interference r3-a:pathlist-code-2000: disturbed — other programs used 2.1 cores on average over 49 s (limit 1): git ×6 (pids 2264911, 2265375, 2265525, 2265579, +2 more) used 0.8 cores; youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.7 cores; chrome ×6 (pids 1851077, 1851157, 2261549, 1851164, +2 more) used 0.2 cores
+[pathlist]   -> measured
+[pathlist] r3-a pathlist-code-5000
+[perf-lab 22:45:49] interference r3-a:pathlist-code-5000: disturbed — other programs used 2.1 cores on average over 51 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 0.7 cores; git ×7 (pids 2266546, 2266762, 2267108, 2267294, +3 more) used 0.7 cores; chrome ×8 (pids 1851077, 1851157, 2261549, 1851164, +4 more) used 0.2 cores
+[pathlist]   -> slow
+[pathlist] r3-b pathlist-prose-2000
+[perf-lab 22:46:40] interference r3-b:pathlist-prose-2000: disturbed — other programs used 1.9 cores on average over 49 s (limit 1): youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.7 cores; chrome ×14 (pids 1851077, 1851164, 2261549, 1851157, +10 more) used 0.4 cores; git (pid 2268057) used 0.2 cores
+[pathlist]   -> slow
+[pathlist] r3-b pathlist-prose-5000
+[perf-lab 22:47:33] interference r3-b:pathlist-prose-5000: disturbed — other programs used 2.2 cores on average over 51 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.9 cores; git ×4 (pids 2269546, 2269800, 2270324, 2270401) used 0.5 cores; chrome ×10 (pids 1851077, 1851157, 1851164, 1905546, +6 more) used 0.2 cores; youcoded (pid 1342393) held the graphics chip 7% of the time
+[pathlist]   -> slow
+[pathlist] r3-b pathlist-proseControl-2000
+[perf-lab 22:48:24] interference r3-b:pathlist-proseControl-2000: disturbed — other programs used 2 cores on average over 49 s (limit 1): youcoded ×6 (pids 1342321, 1342393, 1342460, 1342549, +2 more) used 1 core; claude ×7 (pids 1343193, 1540338, 1658190, 858671, +3 more) used 0.3 cores; node-MainThread ×9 (pids 4074650, 4074652, 1343186, 911660, +5 more) used 0.1 cores; youcoded (pid 1342393) held the graphics chip 7% of the time
+[pathlist]   -> slow
+[pathlist] r3-b pathlist-proseControl-5000
+[perf-lab 22:49:16] interference r3-b:pathlist-proseControl-5000: disturbed — other programs used 2.6 cores on average over 51 s (limit 1): youcoded ×8 (pids 1342321, 1342393, 1342460, 1342549, +4 more) used 0.9 cores; git ×7 (pids 2273033, 2273133, 2273291, 2273438, +3 more) used 0.7 cores; chrome ×9 (pids 1851157, 2261549, 1851077, 1851164, +5 more) used 0.3 cores
+[pathlist]   -> slow
+[pathlist] r3-b pathlist-code-2000
+[perf-lab 22:50:07] interference r3-b:pathlist-code-2000: disturbed — other programs used 1.9 cores on average over 49 s (limit 1): youcoded ×5 (pids 1342321, 1342393, 1342460, 1342549, +1 more) used 0.7 cores; git ×3 (pids 2274135, 2274647, 2274727) used 0.4 cores; chrome ×11 (pids 1851157, 2207479, 1851077, 1851164, +7 more) used 0.2 cores
+[pathlist]   -> slow
+[pathlist] r3-b pathlist-code-5000
+[perf-lab 22:51:00] interference r3-b:pathlist-code-5000: disturbed — other programs used 1.7 cores on average over 51 s (limit 1): youcoded ×7 (pids 1342321, 1342393, 1342460, 1342549, +3 more) used 0.7 cores; chrome ×11 (pids 1851157, 2207479, 2261549, 2268821, +7 more) used 0.5 cores; node-MainThread ×6 (pids 4074650, 4074652, 911660, 85640, +2 more) used 0.1 cores
+[pathlist]   -> slow
+[pathlist] report: /home/destin/youcoded-dev/worktrees/sessions/93-freeze-combined/perf-reports/pathlist-stream/pathlist-stream-202610222219-freeze-batch-2-pathlist.json / .md

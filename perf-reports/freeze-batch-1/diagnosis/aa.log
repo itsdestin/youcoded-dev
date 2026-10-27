@@ -1,0 +1,26 @@
+[pathlist] r1-a pathlist-code-2000
+[perf-lab 18:19:24] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 18:20:46] interference r1-a:pathlist-code-2000: disturbed — other programs used 29.1 cores on average over 82 s (limit 1): node-MainThread ×276 (pids 4074650, 4074652, 849455, 850127, +272 more) used 11.3 cores; qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 8.3 cores; chrome ×166 (pids 853693, 853698, 853704, 853711, +162 more) used 5.1 cores; youcoded (pid 1342393) held the graphics chip 6% of the time
+[pathlist]   -> slow
+[pathlist] r1-a pathlist-control-5000
+[perf-lab 18:21:46] interference r1-a:pathlist-control-5000: disturbed — other programs used 22.9 cores on average over 53 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 10.3 cores; chrome ×166 (pids 853693, 853698, 853704, 853706, +162 more) used 5.9 cores; node-MainThread ×16 (pids 4074650, 4074652, 850127, 861351, +12 more) used 2.7 cores; youcoded (pid 1342393) held the graphics chip 8% of the time
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-code-2000
+[perf-lab 18:22:41] interference r1-b:pathlist-code-2000: disturbed — other programs used 21.1 cores on average over 51 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 11 cores; chrome ×175 (pids 1362133, 1362199, 853693, 853698, +171 more) used 4.8 cores; node-MainThread ×18 (pids 4074650, 4074652, 850127, 861351, +14 more) used 1.5 cores; youcoded (pid 1342393) held the graphics chip 9% of the time; electron (pid 862482) held the graphics chip 9% of the time
+[pathlist]   -> slow
+[pathlist] r1-b pathlist-control-5000
+[perf-lab 18:23:37] interference r1-b:pathlist-control-5000: disturbed — other programs used 22.8 cores on average over 54 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 11.1 cores; chrome ×175 (pids 1362133, 1362199, 1362201, 853693, +171 more) used 6.3 cores; youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 1.5 cores; youcoded (pid 1342393) held the graphics chip 14% of the time; electron (pid 862482) held the graphics chip 9% of the time
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-code-2000
+[perf-lab 18:24:30] interference r2-b:pathlist-code-2000: disturbed — other programs used 21.1 cores on average over 50 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 9.9 cores; chrome ×168 (pids 853698, 853704, 853706, 853716, +164 more) used 5.3 cores; node-MainThread ×21 (pids 4074650, 4074652, 850127, 875901, +17 more) used 2.7 cores; youcoded (pid 1342393) held the graphics chip 14% of the time
+[pathlist]   -> slow
+[pathlist] r2-b pathlist-control-5000
+[perf-lab 18:25:26] interference r2-b:pathlist-control-5000: disturbed — other programs used 22.2 cores on average over 53 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 10.3 cores; chrome ×177 (pids 853698, 853704, 853706, 853711, +173 more) used 6 cores; node-MainThread ×15 (pids 4074650, 4074652, 850127, 875901, +11 more) used 1.4 cores; youcoded (pid 1342393) held the graphics chip 9% of the time
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-code-2000
+[perf-lab 18:26:18] interference r2-a:pathlist-code-2000: disturbed — other programs used 13.9 cores on average over 50 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 10 cores; youcoded ×9 (pids 1342321, 1342393, 1342460, 1342549, +5 more) used 1 core; node-MainThread ×11 (pids 4074650, 4074652, 850127, 284381, +7 more) used 0.9 cores; youcoded (pid 1342393) held the graphics chip 8% of the time
+[pathlist]   -> slow
+[pathlist] r2-a pathlist-control-5000
+[perf-lab 18:27:12] interference r2-a:pathlist-control-5000: disturbed — other programs used 14 cores on average over 51 s (limit 1): qemu-system-x86 ×3 (pids 642492, 642493, 642494) used 9.9 cores; node-MainThread ×13 (pids 4074650, 4074652, 886292, 284381, +9 more) used 1.1 cores; git ×8 (pids 886416, 887098, 887175, 887510, +4 more) used 0.9 cores; youcoded (pid 1342393) held the graphics chip 11% of the time
+[pathlist]   -> slow
+[pathlist] report: /home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/freeze-batch-1/diagnosis/pathlist-stream-202610221819-diag-aa.json / .md

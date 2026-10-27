@@ -1,7 +1,7 @@
 ---
 id: 183
 title: Automatic app updates with an emergency brake
-stage: planning
+stage: merged
 tags: desktop, updates, release, feature
 vision: everywhere.added.update
 branch: 183-automatic-app-updates-with-an
@@ -10,9 +10,10 @@ why: enable automatic updates for windows, macos, and linux if/where possible. B
 work: session/183-auto-updates
 ---
 Progress
-Done: nothing yet.
-Next: plan it.
-Blocked: nothing.
+Done: Built and accepted (contract 28 rows, acceptance all yes): auto-download, install on quit, Restart to update, password-only-on-Restart, Mac password + disk-image fallback, the brake (release skill in youcoded-admin). Branches session/183-auto-updates in youcoded, youcoded-dev, youcoded-admin, all pushed.
+Next: Destin's merge call. Before the first RELEASE carrying it: one real run on a Mac (admin and non-admin) and on Windows (quit install, Restart).
+Blocked: No Mac or Windows machine here to run the install paths for real.
 
 Chats
+- 2026-10-22 session/183-auto-updates: chat started
 - 2026-10-22 session/183-auto-updates: chat started

@@ -1,0 +1,75 @@
+/tmp/deskrep/profiles/bigfence-json-700-B.cpuprofile
+  73146 ms wall, 268377 samples
+
+bucket(2000ms)  busy%  top functions (self ms)
+       0    60%  195ms s [index-DcIkRP39.js:264] | 167ms u [index-DcIkRP39.js:264] | 143ms set webkitSpeechRecognitionEvent
+    2000    69%  289ms s [index-DcIkRP39.js:264] | 206ms u [index-DcIkRP39.js:264] | 154ms set webkitSpeechRecognitionEvent
+    4000    72%  370ms s [index-DcIkRP39.js:264] | 214ms u [index-DcIkRP39.js:264] | 159ms set webkitSpeechRecognitionEvent
+    6000    71%  390ms s [index-DcIkRP39.js:264] | 190ms u [index-DcIkRP39.js:264] | 149ms set webkitSpeechRecognitionEvent
+    8000    57%  245ms s [index-DcIkRP39.js:264] | 112ms u [index-DcIkRP39.js:264] | 87ms set webkitSpeechRecognitionEvent
+   10000    33%  153ms v [index-DcIkRP39.js:256] | 71ms g [index-DcIkRP39.js:256] | 53ms y [index-DcIkRP39.js:256]
+   12000    30%  147ms v [index-DcIkRP39.js:256] | 67ms g [index-DcIkRP39.js:256] | 43ms h [index-DcIkRP39.js:256]
+   14000    34%  151ms v [index-DcIkRP39.js:256] | 77ms g [index-DcIkRP39.js:256] | 50ms h [index-DcIkRP39.js:256]
+   16000    36%  169ms v [index-DcIkRP39.js:256] | 76ms g [index-DcIkRP39.js:256] | 52ms h [index-DcIkRP39.js:256]
+   18000    37%  155ms v [index-DcIkRP39.js:256] | 83ms g [index-DcIkRP39.js:256] | 49ms h [index-DcIkRP39.js:256]
+   20000    34%  164ms v [index-DcIkRP39.js:256] | 65ms g [index-DcIkRP39.js:256] | 53ms jSe [index-DcIkRP39.js:295]
+   22000    36%  169ms v [index-DcIkRP39.js:256] | 77ms g [index-DcIkRP39.js:256] | 56ms jSe [index-DcIkRP39.js:295]
+   24000    35%  184ms v [index-DcIkRP39.js:256] | 75ms g [index-DcIkRP39.js:256] | 54ms jSe [index-DcIkRP39.js:295]
+   26000    34%  181ms v [index-DcIkRP39.js:256] | 68ms g [index-DcIkRP39.js:256] | 54ms jSe [index-DcIkRP39.js:295]
+   28000    34%  160ms v [index-DcIkRP39.js:256] | 81ms g [index-DcIkRP39.js:256] | 49ms jSe [index-DcIkRP39.js:295]
+   30000    35%  179ms v [index-DcIkRP39.js:256] | 66ms g [index-DcIkRP39.js:256] | 51ms jSe [index-DcIkRP39.js:295]
+   32000    34%  167ms v [index-DcIkRP39.js:256] | 77ms g [index-DcIkRP39.js:256] | 50ms h [index-DcIkRP39.js:256]
+   34000    36%  172ms v [index-DcIkRP39.js:256] | 82ms g [index-DcIkRP39.js:256] | 54ms y [index-DcIkRP39.js:256]
+   36000    34%  157ms v [index-DcIkRP39.js:256] | 71ms g [index-DcIkRP39.js:256] | 64ms y [index-DcIkRP39.js:256]
+   38000    33%  154ms v [index-DcIkRP39.js:256] | 70ms g [index-DcIkRP39.js:256] | 57ms y [index-DcIkRP39.js:256]
+   40000    35%  166ms v [index-DcIkRP39.js:256] | 69ms g [index-DcIkRP39.js:256] | 59ms y [index-DcIkRP39.js:256]
+   42000    31%  147ms v [index-DcIkRP39.js:256] | 65ms g [index-DcIkRP39.js:256] | 56ms y [index-DcIkRP39.js:256]
+   44000    33%  135ms v [index-DcIkRP39.js:256] | 65ms g [index-DcIkRP39.js:256] | 61ms y [index-DcIkRP39.js:256]
+   46000    31%  136ms v [index-DcIkRP39.js:256] | 61ms g [index-DcIkRP39.js:256] | 57ms y [index-DcIkRP39.js:256]
+   48000    34%  148ms v [index-DcIkRP39.js:256] | 73ms g [index-DcIkRP39.js:256] | 66ms y [index-DcIkRP39.js:256]
+   50000    29%  128ms v [index-DcIkRP39.js:256] | 61ms g [index-DcIkRP39.js:256] | 52ms y [index-DcIkRP39.js:256]
+   52000    33%  148ms v [index-DcIkRP39.js:256] | 75ms g [index-DcIkRP39.js:256] | 60ms y [index-DcIkRP39.js:256]
+   54000    30%  144ms v [index-DcIkRP39.js:256] | 69ms g [index-DcIkRP39.js:256] | 46ms y [index-DcIkRP39.js:256]
+   56000    30%  133ms v [index-DcIkRP39.js:256] | 61ms g [index-DcIkRP39.js:256] | 47ms y [index-DcIkRP39.js:256]
+   58000    28%  126ms v [index-DcIkRP39.js:256] | 58ms g [index-DcIkRP39.js:256] | 51ms y [index-DcIkRP39.js:256]
+   60000    13%  45ms (anonymous) [index-DcIkRP39.js:376] | 45ms v [index-DcIkRP39.js:256] | 30ms (garbage collector)
+   62000     0%  1ms requestAnimationFrame | 0ms tick
+   64000     0%  1ms requestAnimationFrame | 0ms tick
+   66000     0%  1ms requestAnimationFrame | 0ms tick
+   68000     2%  36ms (garbage collector) | 2ms requestAnimationFrame | 0ms now
+   70000     0%  2ms requestAnimationFrame | 1ms tick | 0ms now
+   72000     0%  1ms (anonymous) | 0ms requestAnimationFrame | 0ms tick
+
+unbroken busy blocks longer than 150 ms:
+  @    362 ms     179 ms  17ms u [index-DcIkRP39.js:264] | 14ms s [index-DcIkRP39.js:264] | 11ms set webkitSpeechRecognitionEvent
+                          asked for by: 32ms under u [index-DcIkRP39.js:264] | 13ms under s [index-DcIkRP39.js:264]
+  @   4618 ms     155 ms  37ms s [index-DcIkRP39.js:264] | 22ms u [index-DcIkRP39.js:264] | 14ms set webkitSpeechRecognitionEvent
+                          asked for by: 60ms under u [index-DcIkRP39.js:264] | 17ms under s [index-DcIkRP39.js:264]
+  @   4948 ms     191 ms  39ms s [index-DcIkRP39.js:264] | 24ms u [index-DcIkRP39.js:264] | 19ms set webkitSpeechRecognitionEvent
+                          asked for by: 65ms under u [index-DcIkRP39.js:264] | 24ms under s [index-DcIkRP39.js:264]
+  @   5193 ms     167 ms  45ms s [index-DcIkRP39.js:264] | 22ms u [index-DcIkRP39.js:264] | 15ms set webkitSpeechRecognitionEvent
+                          asked for by: 69ms under u [index-DcIkRP39.js:264] | 19ms under s [index-DcIkRP39.js:264]
+  @   5404 ms     155 ms  40ms s [index-DcIkRP39.js:264] | 25ms u [index-DcIkRP39.js:264] | 17ms set webkitSpeechRecognitionEvent
+                          asked for by: 66ms under u [index-DcIkRP39.js:264] | 24ms under s [index-DcIkRP39.js:264]
+  @   5613 ms     178 ms  52ms s [index-DcIkRP39.js:264] | 25ms u [index-DcIkRP39.js:264] | 16ms set webkitSpeechRecognitionEvent
+                          asked for by: 78ms under u [index-DcIkRP39.js:264] | 21ms under s [index-DcIkRP39.js:264]
+  @   5846 ms     167 ms  45ms s [index-DcIkRP39.js:264] | 26ms u [index-DcIkRP39.js:264] | 20ms set webkitSpeechRecognitionEvent
+                          asked for by: 73ms under u [index-DcIkRP39.js:264] | 26ms under s [index-DcIkRP39.js:264]
+  @   6051 ms     218 ms  53ms s [index-DcIkRP39.js:264] | 28ms u [index-DcIkRP39.js:264] | 20ms set webkitSpeechRecognitionEvent
+                          asked for by: 82ms under u [index-DcIkRP39.js:264] | 25ms under s [index-DcIkRP39.js:264]
+  @   6318 ms     218 ms  63ms s [index-DcIkRP39.js:264] | 28ms u [index-DcIkRP39.js:264] | 23ms set webkitSpeechRecognitionEvent
+                          asked for by: 92ms under u [index-DcIkRP39.js:264] | 28ms under s [index-DcIkRP39.js:264]
+  @   6594 ms     222 ms  64ms s [index-DcIkRP39.js:264] | 28ms u [index-DcIkRP39.js:264] | 22ms set webkitSpeechRecognitionEvent
+                          asked for by: 94ms under u [index-DcIkRP39.js:264] | 27ms under s [index-DcIkRP39.js:264]
+  @   7040 ms     249 ms  63ms s [index-DcIkRP39.js:264] | 29ms u [index-DcIkRP39.js:264] | 29ms set webkitSpeechRecognitionEvent
+                          asked for by: 94ms under u [index-DcIkRP39.js:264] | 36ms under s [index-DcIkRP39.js:264]
+  @   7347 ms     251 ms  68ms s [index-DcIkRP39.js:264] | 38ms u [index-DcIkRP39.js:264] | 26ms set webkitSpeechRecognitionEvent
+                          asked for by: 107ms under u [index-DcIkRP39.js:264] | 31ms under s [index-DcIkRP39.js:264]
+  @   7669 ms     283 ms  78ms s [index-DcIkRP39.js:264] | 39ms u [index-DcIkRP39.js:264] | 27ms set webkitSpeechRecognitionEvent
+                          asked for by: 120ms under u [index-DcIkRP39.js:264] | 34ms under s [index-DcIkRP39.js:264]
+  @   8010 ms     269 ms  79ms s [index-DcIkRP39.js:264] | 36ms u [index-DcIkRP39.js:264] | 28ms set webkitSpeechRecognitionEvent
+                          asked for by: 119ms under u [index-DcIkRP39.js:264] | 36ms under s [index-DcIkRP39.js:264]
+  @   8333 ms     251 ms  77ms s [index-DcIkRP39.js:264] | 34ms u [index-DcIkRP39.js:264] | 29ms set webkitSpeechRecognitionEvent
+                          asked for by: 113ms under u [index-DcIkRP39.js:264] | 36ms under s [index-DcIkRP39.js:264]
+  @   8646 ms     299 ms  89ms s [index-DcIkRP39.js:264] | 42ms u [index-DcIkRP39.js:264] | 29ms set webkitSpeechRecognitionEvent
+                          asked for by: 132ms under u [index-DcIkRP39.js:264] | 37ms under s [index-DcIkRP39.js:264]

@@ -6,7 +6,7 @@ paths:
   - "**/desktop/src/renderer/state/session-totals.ts"
   - "**/desktop/src/renderer/state/usage-snapshot.ts"
   - "**/desktop/src/main/harness/pricing.ts"
-last_verified: 2026-09-16
+last_verified: 2026-10-23
 verify:
   - path: youcoded/desktop/src/renderer/state/status-widgets.ts
     contains: "anyUnpriced"

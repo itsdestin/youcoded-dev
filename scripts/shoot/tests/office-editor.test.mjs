@@ -4,12 +4,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync, mkdirSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createServer } from 'node:net';
-import { isOurServer, startEditorServer } from '../office-editor.mjs';
+import { isOurServer, startEditorServer, ensureOfficeAddon } from '../office-editor.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -95,3 +95,37 @@ setInterval(() => {}, 1000);
     } finally { if (run.exitCode === null) run.kill('SIGKILL'); rmSync(desktop, { recursive: true, force: true }); }
   });
 }
+
+// The add-on: a worktree takes the shared checkout's copy of the same pinned version, and a
+// download that stalls fails with a clear message instead of hanging the run (2026-10-22: one
+// froze for 25 minutes inside verify.sh).
+function addonDirs(sharedVersion, platform = `${process.platform}-${process.arch}`) {
+  const root = mkdtempSync(join(tmpdir(), 'yc-office-addon-test-'));
+  const mine = join(root, 'mine'), shared = join(root, 'shared');
+  mkdirSync(mine); mkdirSync(join(shared, 'office-addon'), { recursive: true });
+  writeFileSync(join(mine, 'office-pin.json'), JSON.stringify({ version: '0.1.41' }));
+  writeFileSync(join(shared, 'office-addon', 'manifest.json'), JSON.stringify({ version: sharedVersion, platform }));
+  writeFileSync(join(mine, 'sleep.mjs'), 'setTimeout(() => {}, 60_000);');
+  return { root, mine, shared };
+}
+
+test('a worktree copies the shared add-on when it is the pinned version for this platform', () => {
+  const { root, mine, shared } = addonDirs('0.1.41');
+  try {
+    assert.equal(ensureOfficeAddon(mine, { sharedDesktop: shared }), 'copied');
+    assert.ok(existsSync(join(mine, 'office-addon', 'manifest.json')));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('a different shared version is not copied, and a stalled download fails with a clear message', () => {
+  const { root, mine, shared } = addonDirs('0.1.40');
+  try {
+    const started = Date.now();
+    assert.throws(
+      () => ensureOfficeAddon(mine, { sharedDesktop: shared, fetchCmd: [process.execPath, ['sleep.mjs']], fetchTimeoutMs: 500 }),
+      /did not finish within 1 s/,
+    );
+    assert.ok(Date.now() - started < 10_000, 'the time limit, not the stalled download, ended it');
+    assert.ok(!existsSync(join(mine, 'office-addon')));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});

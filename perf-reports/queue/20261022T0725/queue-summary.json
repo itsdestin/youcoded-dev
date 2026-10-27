@@ -1,0 +1,26 @@
+{
+  "stamp": "20261022T0725",
+  "queueFile": "/home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/scripts/perf-lab/queues/overnight-1.json",
+  "name": "overnight 1: lane F (workload breadth + original JPEG) on the merged candidate",
+  "state": "halted",
+  "startedAt": "2026-10-22T07:25:07.067Z",
+  "finishedAt": "2026-10-22T07:30:25.602Z",
+  "deadline": "2026-10-22T14:00:00.000Z",
+  "quietWaitHours": 6,
+  "haltedBecause": "queue was stopped by a signal",
+  "items": [
+    {
+      "label": "workloads-lane-F-merged-candidate",
+      "tool": "run",
+      "status": "failed",
+      "reason": "exit code null: [perf-lab 07:28:53] machine busy (load 5.52, 13.6% cpu; waiting: qemu-system-x86 using 1.5 cores, youcoded ×4 using 0.7 cores, claude ×6 using 0.5 cores) — waiting for a quiet machine (36s so far, up to 210 min; does not use the --max-minutes budget) | [perf-lab 07:29:26] machine busy (load 5.13, 14% cpu; waiting: claude ×6 using 1.6 cores, git using 1 core, youcoded ×5 using 0.9 cores) — waiting ",
+      "reports": [],
+      "offenders": [],
+      "startedAt": "2026-10-22T07:25:07.081Z",
+      "log": "/home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/queue/20261022T0725/01-workloads-lane-F-merged-candidate.log",
+      "endedAt": "2026-10-22T07:30:25.594Z",
+      "exitCode": null,
+      "reasons": []
+    }
+  ]
+}

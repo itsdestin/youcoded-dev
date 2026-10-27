@@ -1,6 +1,7 @@
 // Tests for fake-provider.mjs — the real server, over real HTTP, on a throwaway port.
 // Run: node --test scripts/perf-lab/tests/fake-provider.test.mjs
 import assert from 'node:assert/strict';
+import { EventEmitter } from 'node:events';
 import { test } from 'node:test';
 import { FAKE_MODEL_ID, buildReplyText, splitDeltas, startFakeProvider } from '../fake-provider.mjs';
 
@@ -89,6 +90,56 @@ test('two streams of the same plan send identical bytes; a new plan changes them
     assert.notEqual(norm(a.text), norm(c.text));
     assert.equal(server.requests.length, 3);
   } finally {
+    await server.close();
+  }
+});
+
+test('opt-in producer completion keeps planned text/request identity and actual accepted writes distinct', async () => {
+  const server = await startFakeProvider({ port: 0 });
+  try {
+    const text = 'VBEG v0001 v0002 ZVEND';
+    server.plan({ deltas: 4, perSec: 1000, text, completionDiagnostic: true });
+    const { rec } = await streamOnce(server);
+    await new Promise(resolve => setImmediate(resolve)); // response end callback, not renderer acknowledgement
+    assert.equal(rec.index, 0);
+    assert.equal(rec.completionDiagnostic.plannedText, text);
+    assert.equal(rec.completionDiagnostic.contentWrites, 4);
+    assert.equal(rec.completionDiagnostic.writtenTextChars, text.length);
+    assert.equal(rec.completionDiagnostic.finishWritten, true);
+    assert.equal(rec.completionDiagnostic.doneWritten, true);
+    assert.equal(rec.completionDiagnostic.completed, true);
+    assert.equal(rec.aborted, false);
+    assert.equal(typeof rec.backpressureWaits, 'number');
+    assert.match(rec.completionDiagnostic.scope, /not renderer/);
+  } finally { await server.close(); }
+});
+
+test('diagnostic response completion requires successful end callback; close/error order cannot manufacture success', async () => {
+  for (const order of ['close-success', 'error', 'success-close', 'error-success', 'success-error']) {
+    let serve;
+    const server = await startFakeProvider({ port: 0, serverFactory: handler => {
+      serve = handler;
+      return { once() {}, off() {}, listen(_port, _host, cb) { cb(); }, address: () => ({ port: 12345 }), close: cb => cb() };
+    } });
+    server.plan({ deltas: 3, perSec: 1000, text: 'a b c', completionDiagnostic: true });
+    const req = new EventEmitter(); req.method = 'POST'; req.url = '/v1/chat/completions';
+    const res = new EventEmitter(); let endCallback;
+    res.writeHead = () => {}; res.write = () => true; res.end = cb => { endCallback = cb; res.writableEnded = true; };
+    res.destroy = () => { res.destroyed = true; res.emit('close'); };
+    const finished = server.expectCompletion(), handling = serve(req, res);
+    req.emit('data', Buffer.from(JSON.stringify({ stream: true }))); req.emit('end');
+    const rec = await finished; await handling;
+    assert.equal(rec.completionDiagnostic.completed, false, 'end requested is not callback completion');
+    assert.ok(rec.endedAt !== null, 'legacy endedAt remains request-end marker');
+    if (order === 'close-success') { res.emit('close'); endCallback(); }
+    if (order === 'error') endCallback(Error('write failed'));
+    if (order === 'success-close') { endCallback(); res.emit('close'); }
+    if (order === 'error-success') { endCallback(Error('write failed')); endCallback(); }
+    if (order === 'success-error') { endCallback(); endCallback(Error('late write failure')); }
+    assert.equal(rec.completionDiagnostic.completed, order === 'success-close', order);
+    assert.equal(rec.aborted, order !== 'success-close', order);
+    assert.equal(rec.completionDiagnostic.endRequested, true);
+    if (order.includes('error')) assert.match(rec.completionDiagnostic.writeError, /fail/);
     await server.close();
   }
 });

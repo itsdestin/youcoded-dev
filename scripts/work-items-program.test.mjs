@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { execFileSync } from 'node:child_process';
 import { handle } from './work-items-program.mjs';
 import { installWorkBoard } from './install-work-board.mjs';
@@ -59,4 +60,19 @@ test('install writes the program with this workspace\'s path, and never guesses 
   assert.match(fs.readFileSync(path.join(dir, 'work-items.mjs'), 'utf8'), /file:\/\/\/some\/workspace\/scripts\/work-items-program\.mjs/);
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'page.json'), 'utf8'));
   assert.deepEqual(manifest.connections.map((c) => c.kind), ['chats', 'program', 'session']);
+});
+
+// WHY (2026-10-23): the board opens on the last page drawn here, packed small enough for the app's 2 MB cap
+test('the last page drawn is answered at once, gzipped when asked; nothing before the first drawing', async () => {
+  process.env.WORK_BOARD_CACHE = fs.mkdtempSync(path.join(os.tmpdir(), 'wb-cache-'));
+  try {
+    assert.deepEqual(await handle(process.cwd(), { op: 'page', cached: true }), {});
+    const html = '<!doctype html><p>board</p>'.repeat(1000);
+    fs.writeFileSync(path.join(process.env.WORK_BOARD_CACHE, 'page.html'), html);
+    const plain = await handle(process.cwd(), { op: 'page', cached: true });
+    assert.equal(plain.html, html); assert.equal(typeof plain.at, 'number');
+    const packed = await handle(process.cwd(), { op: 'page', cached: true, gzip: true });
+    assert.equal(zlib.gunzipSync(Buffer.from(packed.gz, 'base64')).toString('utf8'), html);
+    assert.ok(packed.gz.length < html.length / 10);
+  } finally { delete process.env.WORK_BOARD_CACHE; }
 });

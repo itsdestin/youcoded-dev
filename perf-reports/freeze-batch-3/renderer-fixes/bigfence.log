@@ -1,0 +1,38 @@
+[bigfence] r1-a bigfence-code-2000
+[perf-lab 07:45:18] renderer: ANGLE (Mesa, llvmpipe (LLVM 23.1.1 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.4-arch3.1) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+[perf-lab 07:46:29] interference r1-a:bigfence-code-2000: disturbed — other programs used 2.1 cores on average over 71 s (limit 1): git ×24 (pids 1471195, 1469886, 1471297, 1471643, +20 more) used 0.8 cores; claude ×6 (pids 1357313, 1357316, 1357321, 1357322, +2 more) used 0.4 cores; chrome ×22 (pids 1354976, 1459094, 1459113, 1459594, +18 more) used 0.3 cores
+[bigfence]   -> slow
+[bigfence] r1-a bigfence-code-20000
+[perf-lab 07:50:10] interference r1-a:bigfence-code-20000: disturbed — other programs used 1.1 cores on average over 219 s (limit 1): git ×20 (pids 1476471, 1477030, 1477073, 1477165, +16 more) used 0.5 cores; youcoded ×8 (pids 1354978, 1355494, 1355602, 1356580, +4 more) used 0.2 cores; claude ×6 (pids 1357313, 1357316, 1357322, 1357315, +2 more) used 0.1 cores
+[bigfence]   -> failed:timeout (External case deadline 218998 ms)
+[bigfence] r1-a bigfence-json-700
+[perf-lab 07:52:09] interference r1-a:bigfence-json-700: clean (234 samples over 117.6 s; busiest other: git ×7 using 0.4 cores)
+[bigfence]   -> slow
+[bigfence] r1-b bigfence-code-2000
+[perf-lab 07:53:20] interference r1-b:bigfence-code-2000: disturbed — other programs used 3.4 cores on average over 69 s (limit 1): swipekb-swipene ×10 (pids 1485291, 1485367, 1485387, 1485651, +6 more) used 2.4 cores; git ×4 (pids 1484339, 1484904, 1484990, 1486376) used 0.2 cores; youcoded ×6 (pids 1354978, 1355494, 1355602, 1356580, +2 more) used 0.2 cores
+[bigfence]   -> slow
+[bigfence] r1-b bigfence-code-20000
+[perf-lab 07:55:26] interference r1-b:bigfence-code-20000: disturbed — other programs used 2.2 cores on average over 125 s (limit 1): swipekb-swipene ×13 (pids 1486481, 1487431, 1487775, 1488081, +9 more) used 1.5 cores; git ×5 (pids 1488576, 1488859, 1489231, 1489304, +1 more) used 0.2 cores; youcoded ×7 (pids 1354978, 1355494, 1355602, 1356580, +3 more) used 0.2 cores
+[bigfence]   -> slow
+[bigfence] r1-b bigfence-json-700
+[perf-lab 07:56:45] interference r1-b:bigfence-json-700: disturbed — other programs used 1.4 cores on average over 78 s (limit 1): git ×12 (pids 1491621, 1491728, 1491800, 1491982, +8 more) used 0.8 cores; youcoded ×5 (pids 1354978, 1355494, 1355602, 1356580, +1 more) used 0.2 cores; claude ×6 (pids 1357315, 1357322, 1357313, 1357314, +2 more) used 0.1 cores
+[bigfence]   -> slow
+[bigfence] r2-b bigfence-code-2000
+[perf-lab 07:57:56] interference r2-b:bigfence-code-2000: clean (139 samples over 69.4 s; busiest other: git ×5 using 0.4 cores)
+[bigfence]   -> slow
+[bigfence] r2-b bigfence-code-20000
+[perf-lab 08:00:02] interference r2-b:bigfence-code-20000: disturbed — other programs used 1.5 cores on average over 124 s (limit 1): git ×16 (pids 1494988, 1495465, 1495665, 1495759, +12 more) used 0.6 cores; youcoded ×8 (pids 1354978, 1355494, 1355602, 1356580, +4 more) used 0.3 cores; claude ×7 (pids 1357313, 1357316, 1357322, 1357314, +3 more) used 0.3 cores
+[bigfence]   -> slow
+[bigfence] r2-b bigfence-json-700
+[perf-lab 08:01:23] interference r2-b:bigfence-json-700: disturbed — other programs used 1.4 cores on average over 79 s (limit 1): git ×13 (pids 1500657, 1501302, 1501401, 1501473, +9 more) used 0.9 cores; youcoded ×6 (pids 1354978, 1355494, 1355602, 1356580, +2 more) used 0.2 cores; claude ×5 (pids 1357313, 1357314, 1357322, 1496489, +1 more) used 0.1 cores
+[bigfence]   -> slow
+[bigfence] r2-a bigfence-code-2000
+[perf-lab 08:02:35] interference r2-a:bigfence-code-2000: disturbed — other programs used 5.2 cores on average over 70 s (limit 1): cc1plus ×74 (pids 1504098, 1504100, 1504101, 1504102, +70 more) used 3.7 cores; git ×11 (pids 1502907, 1503390, 1503526, 1503599, +7 more) used 0.9 cores; youcoded ×7 (pids 1354978, 1355494, 1355602, 1356580, +3 more) used 0.1 cores
+[bigfence]   -> slow
+[bigfence] r2-a bigfence-code-20000
+[perf-lab 08:06:15] interference r2-a:bigfence-code-20000: disturbed — other programs used 3.2 cores on average over 219 s (limit 1): git ×45 (pids 1506214, 1506724, 1506829, 1506889, +41 more) used 1.2 cores; youcoded ×10 (pids 1354978, 1355494, 1355602, 1356580, +6 more) used 0.8 cores; tst_ownswipeint ×10 (pids 1507527, 1508089, 1509310, 1509655, +6 more) used 0.3 cores
+[bigfence]   -> failed:timeout (External case deadline 218998 ms)
+[bigfence] r2-a bigfence-json-700
+[perf-lab 08:09:56] interference r2-a:bigfence-json-700: disturbed — other programs used 19.4 cores on average over 219 s (limit 1): node-MainThread ×2219 (pids 4074650, 4074652, 1496481, 1367137, +2215 more) used 15.5 cores; youcoded ×12 (pids 1354978, 1355494, 1355602, 1356580, +8 more) used 0.8 cores; claude ×7 (pids 1357313, 1357315, 1357322, 1496489, +3 more) used 0.6 cores; youcoded (pid 1355494) held the graphics chip 6% of the time
+[bigfence]   -> failed:timeout (External case deadline 218988 ms)
+[bigfence] report: /home/destin/youcoded-dev/worktrees/sessions/93-file-viewer-freezes/perf-reports/freeze-batch-3/renderer-fixes/bigfence/bigfence-stream-202610230745-renderer-fixes.json / .md

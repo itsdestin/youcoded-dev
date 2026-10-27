@@ -21,7 +21,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
 import { loadCards, neededBy, setStage, deleteCards, combineCards, STAGES, STAGE_WORD } from './cards.mjs';
@@ -93,8 +93,29 @@ const LIVE_TTL = 60_000;
 let liveCache = { at: 0, root: '', facts: null };
 
 function sh(cmd, args, cwd) {
+  const pre = prefetched(cmd, args);
+  if (pre !== undefined) return pre;
   try { return execFileSync(cmd, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 20_000 }).trim(); } catch { return ''; }
 }
+
+// WHY prefetch (2026-10-23, Destin: the Work board "takes wayyyy too long"): the board asks GitHub six questions,
+// each ~1s, and asked them one after another. prefetch() starts them all at once before the git work; sh() and the
+// program's quiet() then take the answer from here instead of asking again.
+const PREFETCH = new Map();
+const keyOf = (cmd, args) => JSON.stringify([cmd, ...args]);
+export function prefetched(cmd, args) { return PREFETCH.get(keyOf(cmd, args)); }
+export function prefetch(calls, cwd) {
+  return Promise.all(calls.map(([cmd, args]) => new Promise((resolve) => {
+    execFile(cmd, args, { cwd, encoding: 'utf8', timeout: 20_000, maxBuffer: 16 * 1024 * 1024 }, (err, out) => {
+      PREFETCH.set(keyOf(cmd, args), err ? '' : String(out).trim()); resolve();
+    }).stdin?.end();
+  })));
+}
+/** The GitHub questions liveFacts() asks, exactly as it asks them (so prefetched answers match). */
+export const LIVE_GH_CALLS = ['youcoded-dev', 'youcoded'].flatMap((repo) => [
+  ['gh', ['pr', 'list', '-R', `itsdestin/${repo}`, '--state', 'open', '--limit', '100', '--json', 'number,headRefName,statusCheckRollup,reviewDecision']],
+  ['gh', ['pr', 'list', '-R', `itsdestin/${repo}`, '--state', 'merged', '--limit', '200', '--json', 'number,headRefName,mergedAt,title']],
+]);
 
 /** The main workspace folder (where youcoded/ lives), even when root is a session worktree. */
 function workspaceOf(root) {

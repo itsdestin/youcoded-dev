@@ -1,0 +1,43 @@
+{
+ "deck": "phone-reliability-review-2",
+ "started": "2026-10-22T17:16:19.815Z",
+ "submitted": "2026-10-22T17:16:50Z",
+ "cur": 4,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "t": 1792689384069,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "t": 1792689394449,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "t": 1792689399422,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R2-4": {
+   "v": "yes",
+   "t": 1792689404773,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R2-5": {
+   "v": "yes",
+   "t": 1792689408433,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

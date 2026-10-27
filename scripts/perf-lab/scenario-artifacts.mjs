@@ -37,12 +37,12 @@
 //     is materially worse per keystroke.
 //
 // READING THE OUTPUT: every step carries `probe` (renderer long tasks / frame
-// gaps for exactly that step's window) and `ipc` (main-process ping round trips
-// for exactly that step). Together they ATTRIBUTE a stall — see attributeStall()
-// below, and the long comment in probe-ipc.mjs. A step whose ipc stalled while
-// its renderer sat idle is a MAIN-PROCESS block, i.e. the whole-app freeze;
-// a step where both spiked together is the renderer. Neither number alone can
-// tell those apart, which is the entire reason both are reported per step.
+// gaps for exactly that step's window) and `ipc` (renderer-to-main round trips
+// over setup + operation + bounded drain, labeled in ipc.boundary.scope).
+// Attribution is conservative — see stall-attribution.mjs.
+// A renderer scheduling gap or long task is direct evidence of renderer delay;
+// low/absent long-task time does NOT establish that main blocked. A main verdict
+// requires a separate main-loop observation. Both probes remain in every step.
 //
 // WHICH NUMBER ANSWERS WHICH SUSPECT (the payoff — read this before the code):
 //   1 hastText / markdown parse .. open.mdLarge.openMs vs open.mdSmall.openMs,
@@ -72,7 +72,10 @@ import { waitFor } from './cdp.mjs';
 // teardown semantics (rAF cancel + observer disconnect) that took a real bug to
 // get right, and a second copy of it would drift.
 import { installProbe, readProbe, readProbeWindow, stopProbe, median, p95 } from './scenario-workload.mjs';
-import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { installIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
+import { attributeStall } from './stall-attribution.mjs';
+import { ipcBoundary, finishLegacyIpc } from './legacy-ipc-boundary.mjs';
+export { attributeStall } from './stall-attribution.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const round1 = (n) => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
@@ -258,44 +261,6 @@ export function summarise(samples) {
 }
 
 /**
- * The whole point of running both probes: decide WHICH thread blocked.
- *
- *   ipc stalled + renderer long task at the same magnitude -> the RENDERER blocked
- *   ipc stalled + renderer essentially idle                -> the MAIN PROCESS blocked
- *   neither                                                -> no stall in this step
- *
- * Thresholds match probe-ipc.mjs's stated perception scale (>250ms "the UI feels
- * stuck"). `verdict` is deliberately 'unclear' rather than a guess when the two
- * signals disagree by less than a factor of two — a confident wrong attribution
- * would send the next session to optimise the wrong process.
- */
-export function attributeStall(ipc, probe, { stallMs = 250 } = {}) {
-  const ipcMax = ipc && typeof ipc.maxMs === 'number' ? ipc.maxMs : null;
-  const ltMax = probe && typeof probe.longtaskMaxMs === 'number' ? probe.longtaskMaxMs : null;
-  // An observer that never ATTACHED must never be read as "the renderer was
-  // quiet". Without this the 'main' branch below fires on ltMax === 0 and names
-  // the main process as the culprit on the strength of a measurement that never
-  // happened — a fabricated indictment, and the same shape of error this project
-  // already made once at the whole-app level and had to retract.
-  if (probe && probe.longtaskSupported === false) {
-    return { verdict: 'unknown', why: 'the renderer long-task observer never attached, so which thread blocked is UNKNOWN — not "the main process"' };
-  }
-  if (ipcMax === null || ltMax === null) {
-    return { verdict: 'unknown', why: 'one of the two probes reported no data for this step' };
-  }
-  if (ipcMax <= stallMs) {
-    return { verdict: 'none', why: `worst IPC round trip was ${ipcMax}ms, under the ${stallMs}ms stall threshold` };
-  }
-  if (ltMax >= ipcMax / 2) {
-    return { verdict: 'renderer', why: `IPC stalled ${ipcMax}ms while the renderer ran a ${ltMax}ms long task — the renderer thread was the one blocked` };
-  }
-  if (ltMax < ipcMax / 4) {
-    return { verdict: 'main', why: `IPC stalled ${ipcMax}ms while the renderer's worst long task was only ${ltMax}ms — the MAIN process was blocked (app-wide freeze)` };
-  }
-  return { verdict: 'unclear', why: `IPC stalled ${ipcMax}ms and the renderer's worst long task was ${ltMax}ms — too close to attribute either way` };
-}
-
-/**
  * CDP Input.dispatchKeyEvent parameters for one printable character.
  *
  * WHY real key events and not a DOM value assignment: CodeMirror's editable
@@ -384,7 +349,11 @@ export async function installArtifactHelpers(cdp) {
         // WHY the aria-label fallback (2026-10-04): HeaderBar's Session Files button (and others) now carry a Tooltip +
         // aria-label and NO title attribute, so a title-only lookup silently found nothing and this whole scenario
         // died at its first click. Title still wins where a button has one.
-        const el = $('button[title=' + JSON.stringify(title) + ']', root) || $('button[aria-label=' + JSON.stringify(title) + ']', root);
+        // WHY case-insensitive fallback (2026-10-23, desktop quiet run): the app renamed "Session Files" to sentence case
+        // ("Session files"), and the exact-case lookup died at the first click on every current build. Exact match still wins.
+        const want = String(title).toLowerCase();
+        const el = $('button[title=' + JSON.stringify(title) + ']', root) || $('button[aria-label=' + JSON.stringify(title) + ']', root)
+          || all('button[title], button[aria-label]', root).find((b) => (b.getAttribute('title') || '').toLowerCase() === want || (b.getAttribute('aria-label') || '').toLowerCase() === want);
         if (!el) {
           const titles = all('button[title]', root).map((b) => b.getAttribute('title')).slice(0, 25);
           return { ok: false, reason: 'no button[title=' + JSON.stringify(title) + '] under ' + (scopeSel || 'document') + '; titles present: ' + JSON.stringify(titles) };
@@ -399,10 +368,13 @@ export async function installArtifactHelpers(cdp) {
        * drawer is not mounted at all. Null and [] must stay distinguishable:
        * "no drawer" and "an empty drawer" are different failures.
        */
+      // WHY nameSpan (2026-10-23, desktop quiet run): the list row now shows a thumbnail whose type badge ("TS") is the only
+      // span.font-mono; the file name moved to span.font-medium.truncate. Old selector listed ["TS","TS"] and every open missed.
       rowNames: () => {
         const p = pane();
         if (!p) return null;
-        return all('button', p).filter((b) => $('span.font-mono', b)).map((b) => txt($('span.font-mono', b)));
+        const nameSpan = (b) => $('span.font-medium.truncate', b) || $('span.font-mono', b);
+        return all('button', p).filter((b) => nameSpan(b)).map((b) => txt(nameSpan(b)));
       },
 
       /**
@@ -414,10 +386,11 @@ export async function installArtifactHelpers(cdp) {
       clickListRow: async (name) => {
         const p = pane();
         if (!p) return { ok: false, reason: 'the artifact drawer is not mounted (.framed-shell .drawer-pane is absent)' };
-        const rows = all('button', p).filter((b) => $('span.font-mono', b));
-        const hit = rows.find((b) => txt($('span.font-mono', b)) === name);
+        const nameSpan = (b) => $('span.font-medium.truncate', b) || $('span.font-mono', b);
+        const rows = all('button', p).filter((b) => nameSpan(b));
+        const hit = rows.find((b) => txt(nameSpan(b)) === name);
         if (!hit) {
-          return { ok: false, reason: 'no artifact row named ' + JSON.stringify(name) + '; rows in the drawer: ' + JSON.stringify(rows.map((b) => txt($('span.font-mono', b))).slice(0, 30)) };
+          return { ok: false, reason: 'no artifact row named ' + JSON.stringify(name) + '; rows in the drawer: ' + JSON.stringify(rows.map((b) => txt(nameSpan(b))).slice(0, 30)) };
         }
         hit.click();
         await nextFrame2();
@@ -688,19 +661,21 @@ export async function installArtifactHelpers(cdp) {
  * so the native-resume phase measures its steps the same way this file does.
  */
 export async function step(cdp, label, fn, { pingMs = 50 } = {}) {
-  await mark(cdp, `${label}:start`);
   await installIpcStallProbe(cdp, { everyMs: pingMs });
   let result, thrown = null;
   try {
+    // WHY outside the operation clock: initial ping dispatch is immediate but
+    // completion/timer readiness are asynchronous. Missing readiness is not speed.
+    const ready = await ipcBoundary(cdp);
+    if (!ready.ready) throw new Error('Legacy IPC probe never became timer/reply ready');
+    await mark(cdp, `${label}:start`);
     result = await fn();
   } catch (err) {
     thrown = err;
     result = { ok: false, reason: err.message };
   }
   await mark(cdp, `${label}:end`);
-  let ipc = null;
-  try { ipc = await readIpcStallProbe(cdp); } catch (err) { ipc = { error: err.message }; }
-  try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
+  const ipc = await finishLegacyIpc(cdp);
   let probe = null;
   try { probe = await readProbeWindow(cdp, `${label}:start`, `${label}:end`); } catch (err) { probe = { error: err.message }; }
   const out = { ...result, probe, ipc, stall: attributeStall(ipc, probe) };

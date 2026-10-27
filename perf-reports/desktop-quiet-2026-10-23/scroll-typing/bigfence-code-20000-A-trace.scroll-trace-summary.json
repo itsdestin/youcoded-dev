@@ -1,0 +1,157 @@
+{
+ "thread": "227993:227993",
+ "busyMs": 2194,
+ "spanMs": 4635,
+ "rows": [
+  {
+   "name": "Blink.Paint.UpdateTime",
+   "selfMs": 804,
+   "count": 279
+  },
+  {
+   "name": "ScrollLayer",
+   "selfMs": 791,
+   "count": 240
+  },
+  {
+   "name": "PaintArtifactCompositor::Update",
+   "selfMs": 180,
+   "count": 247
+  },
+  {
+   "name": "HitTest",
+   "selfMs": 68,
+   "count": 250
+  },
+  {
+   "name": "Paint",
+   "selfMs": 61,
+   "count": 587
+  },
+  {
+   "name": "FunctionCall",
+   "selfMs": 52,
+   "count": 3541
+  },
+  {
+   "name": "EventDispatch",
+   "selfMs": 26,
+   "count": 1456
+  },
+  {
+   "name": "RunTask",
+   "selfMs": 21,
+   "count": 1845
+  },
+  {
+   "name": "EventHandler::handleMouseMoveEvent",
+   "selfMs": 17,
+   "count": 240
+  },
+  {
+   "name": "PageAnimator::serviceScriptedAnimations",
+   "selfMs": 13,
+   "count": 279
+  },
+  {
+   "name": "Document::recalcStyle",
+   "selfMs": 11,
+   "count": 279
+  },
+  {
+   "name": "Blink.PrePaint.UpdateTime",
+   "selfMs": 11,
+   "count": 519
+  },
+  {
+   "name": "AnimationTimeline::serviceAnimations",
+   "selfMs": 10,
+   "count": 4743
+  },
+  {
+   "name": "LocalFrameView::RunPaintLifecyclePhase",
+   "selfMs": 10,
+   "count": 279
+  },
+  {
+   "name": "LocalFrameView::ScheduleAnimation",
+   "selfMs": 9,
+   "count": 1562
+  },
+  {
+   "name": "AsyncTask Run",
+   "selfMs": 9,
+   "count": 1235
+  },
+  {
+   "name": "RunMicrotasks",
+   "selfMs": 7,
+   "count": 242
+  },
+  {
+   "name": "WebFrameWidgetImpl::UpdateLifecycle",
+   "selfMs": 6,
+   "count": 279
+  },
+  {
+   "name": "Commit",
+   "selfMs": 6,
+   "count": 279
+  },
+  {
+   "name": "LayoutView::HitTest",
+   "selfMs": 6,
+   "count": 240
+  },
+  {
+   "name": "Document::updateStyle",
+   "selfMs": 5,
+   "count": 279
+  },
+  {
+   "name": "LocalFrameView::UpdateStyleAndLayout",
+   "selfMs": 4,
+   "count": 1014
+  },
+  {
+   "name": "IntersectionObserverController::computeIntersections",
+   "selfMs": 4,
+   "count": 558
+  },
+  {
+   "name": "ProxyMain::BeginMainFrame",
+   "selfMs": 4,
+   "count": 279
+  },
+  {
+   "name": "UpdateLayoutTree",
+   "selfMs": 3,
+   "count": 279
+  },
+  {
+   "name": "LocalFrameView::RunStyleAndLayoutLifecyclePhases",
+   "selfMs": 3,
+   "count": 519
+  },
+  {
+   "name": "Blink.CompositingInputs.UpdateTime",
+   "selfMs": 3,
+   "count": 519
+  },
+  {
+   "name": "LayerTreeHost::DoUpdateLayers",
+   "selfMs": 3,
+   "count": 251
+  },
+  {
+   "name": "ScrollableArea::SetScrollOffset",
+   "selfMs": 3,
+   "count": 241
+  },
+  {
+   "name": "ScrollTree::SetScrollOffset",
+   "selfMs": 3,
+   "count": 1715
+  }
+ ]
+}
