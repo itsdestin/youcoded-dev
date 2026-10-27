@@ -85,3 +85,33 @@ and noise ≤ 1 in 10 notifications, in both 3 and 4. Otherwise improve the inst
 2. Part 2 behind the log, with the stronger instructions.
 3. Tests 1–2 now; 3 if you approve the spend; 4 over the following week.
 4. Your call on switching over, from the numbers.
+
+## Decisions (questions deck, 2026-10-26)
+
+Q-1 phones answer Browser cards like any approval card (card #205) · Q-2 every Claude Code dialog card is red ·
+Q-3 gray when the assistant does not notify (no fallback) · Q-4 no week-long trial: build it and run tests ·
+Q-5 paid evaluator run, with a cap.
+
+## Results so far
+
+Built on `session/user-notify`: Part 1 (red for Browser cards, Claude Code dialog cards, failed native starts; phone
+Browser card) and Part 2 (capable sessions own "ready"; small local models keep the automatic blue). Not covered:
+pop-ups the app cannot read (a menu the person opens themselves would chime red) and MCP elicitation (no card yet).
+
+Claude Code, real `claude -p` runs with the app's MCP server (scratch runner; scored like the evaluator cases):
+
+| Instruction | Should notify (finished / decision / checkpoint) | Quick answer stays quiet |
+|---|---|---|
+| Tool description only (loaded up front) | Sonnet 0/15 | — |
+| + first system-prompt sentence | Opus 9/9, Sonnet 6/9 | 6/6 |
+| + firmer sentence | Sonnet 15/15 | Sonnet 0/5 (noise) |
+| + shipped sentence (`NOTIFY_INSTRUCTION`) | Opus 11/12 (one duplicate), Sonnet 12/12 | 8/8 |
+
+Two findings that shaped the build: Claude Code hides MCP tool descriptions behind ToolSearch unless the tool is marked
+`anthropic/alwaysLoad`; and the description alone does not make a model notify, the system-prompt sentence does.
+"Waiting on background work" cannot be measured with `claude -p` (print mode waits for the work to finish); the
+evaluator's native case measures it.
+
+Native sessions: evaluator plan `youcoded/desktop/test-engine/eval-plans/notify-user.json` (5 cases × 6 models × 3).
+Dry run estimates up to ~$68, a deliberate over-estimate (short cases priced as the full battery). Waiting on Destin's
+key file and spending cap.
