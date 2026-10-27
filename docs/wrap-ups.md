@@ -1223,6 +1223,18 @@ recurred — the repetition is the data.
 - Known issues filed as cards #176, #177 (Destin's request).
 - deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.
 
+## 2026-10-22 — search and AI discovery: site metadata, listings, README (session/seo-discovery, session/readme-refresh)
+- Knowing what the app does TODAY took a ~97k-token read-only sweep (20 claims checked against code); the README had drifted (macOS 11 vs Electron 41's macOS 12, 4 vs 6 themes, 2 vs 4 games, six weeks of features missing) → dropped as a workspace change: the README, llms.txt and Linux store text are now verified copies, and no cheap executable check can pin marketing claims to code.
+- Destin: public posts under his name are assembled from his own words (interview, voice notes), all lowercase on his social posts, never generated → applied: `~/system/me/preferences.md`; his voice notes saved at `docs/vision/2026-10-22-why-youcoded-voice-notes.md`.
+- New store listings each need per-release upkeep (winget manifest PR; AUR once registration reopens) → recorded on card #29's next steps (a new card was refused as overlapping #29); AUR stays card #186.
+- youcoded has auto-merge disabled, so a merge waits on CI by hand → dropped: a background `until` loop on `gh pr checks` covered it in one call.
+- Removing the merged session worktree failed on an untracked draft Destin had open in an editor → handled: waited for the editor lock to clear, saved the draft as `status: parked` before removing.
+- deleted/merged: the README's stale pitch, requirements and duplicated privacy notes replaced by one verified version; the Linux "Desktop GUI for Claude Code" synopsis and old store blurb replaced.
+- 2026-10-27 follow-up (same session key): that README never merged — the branch sat five days while the launch kit said "README rewritten" → applied: merged now with master's screenshots; dropped as new guidance, the existing "ask ready to merge?" rule covers it.
+- Destin: the verified rewrite was "still far too long and too repetitive/mechanical"; he then wrote the intro himself → applied: `~/system/me/preferences.md` (public copy: short, his voice, no feature inventories). The site's feature cards were reordered and reworded through a one-off drag-and-edit page in `scratch/`, since `site-copy-editor.py` cannot reorder.
+- verify.sh, run from this resumed five-day-old workspace branch, failed an ast-grep exemption already fixed on master → applied: merged origin/master first; dropped as a tool change, workspace-start already reported 211 incoming commits.
+- Editing SECURITY.md left the generated `docs/security.html` stale; `legal-pages.test.mjs` caught it → applied: regenerated. Guard already exists.
+
 ## 2026-10-22 — phone keeps disconnecting, can't refresh or send (session/remote-access-audit, card #182)
 - Destin's symptoms were filed nowhere and the session never joined an item → applied: card #182 in his words, linked to this branch, with the real-phone pass and the connection-status work (review F10, "computer is asleep", always-there reload) as next steps; laptop-freeze findings recorded on #93 with the next step (a dev build that logs synchronous child-process calls for a day).
 - After a compaction, the replayed stub of an earlier Read of the deck server's output (3 lines) was trusted over the finished file, which also held "submitted · 5 yes"; the session restarted the server and only learned of the answers from its rotation notice (~3 wasted calls) → dropped as a workspace change: `serve.py` already prints the summary on exit and its docstring says the exit is the signal; the lapse was not re-reading a finished task's output.
