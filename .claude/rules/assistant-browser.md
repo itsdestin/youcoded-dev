@@ -53,6 +53,8 @@ neutralises look-alike tags; the same function frames WebFetch. **Guard:**
 `assistant-browser.test.ts` ("page text is framed as untrusted"), the live `/inject` case.
 
 ## Desktop only
-**Invariant:** every `browser:*` channel is `desktopOnly`; screens gate on
-`capabilities.assistantBrowser` (false on phones and Android). **Guard:** `ipc-channels.test.ts`
+**Invariant:** every `browser:*` channel is `desktopOnly` except `browser:answer`; screens gate on
+`capabilities.assistantBrowser` (false on phones and Android). A phone gets the card as the session fact
+`session:live browser-ask` (also what turns the light red) and answers it with `browser:answer`
+(`PhoneBrowserAskCard`; card #205, Destin 2026-10-26). **Guard:** `ipc-channels.test.ts`
 ("browser:* channel parity").
