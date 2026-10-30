@@ -1,0 +1,42 @@
+{
+  "title": "File chips in chat that wouldn't open",
+  "key": "file-chips-review",
+  "out": "file-chips.review.html",
+  "stage": "review",
+  "images": "images/file-chips.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "crops": {
+    "found": ["chips", "found", "1440x900+0+0"],
+    "missing": ["chips", "missing", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat → file panel",
+      "path": "Click a file chip in a message, when the assistant made the file in a different folder from the one the chat started in",
+      "crop": "found",
+      "themes": ["meadow-mist"],
+      "headline": "A file chip now opens the file even when the assistant made it in another folder, and says which folder it came from.",
+      "changed": "Before, the app looked only in the chat's starting folder and said no file existed there (with a file already open, you saw nothing at all). Now it also looks next to the other files this chat worked on, opens the match, and shows a line naming that folder.",
+      "measured": "Looks in at most 20 folders, only ones this chat already used",
+      "notice": "Chips like s-bands.png from the icon chat open. The grey line above the file shows where it was found, so a wrong match would be obvious right away.",
+      "risk": "If two of this chat's folders both have a file with that name, nothing opens; the message lists both locations instead of guessing. Phones and remote access are unchanged: they still can't open files outside the chat's folder.",
+      "highlight": { "box": [66.4, 9.2, 32.4, 6.0] }
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat → file panel",
+      "path": "With a file already open in the side panel, click a chip for a file that can't be found",
+      "crop": "missing",
+      "themes": ["meadow-mist"],
+      "headline": "A chip that can't open now says why, even while another file is showing. Before, nothing visible happened at all.",
+      "changed": "The error used to go into the file list, which is hidden whenever a file is open, so the chip looked broken. Now the same message also shows above the open file.",
+      "notice": "Every chip click visibly does something. The message also says where the app looked (this chat's folder, and next to its other files).",
+      "risk": "The message stays above the open file until you click another file or chip, or close the panel.",
+      "highlight": { "box": [66.4, 9.2, 32.4, 6.0] }
+    }
+  ]
+}
