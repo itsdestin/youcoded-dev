@@ -1,0 +1,20 @@
+{
+ "deck": "buddy-rebuild-tryit3",
+ "started": "2026-10-30T08:21:41.814Z",
+ "submitted": "2026-10-30T08:25:13Z",
+ "cur": 0,
+ "answers": {
+  "V-1": {
+   "v": "yes",
+   "t": 1793348711617,
+   "seconds": 105,
+   "theme": "morning-rounds"
+  },
+  "V-2": {
+   "v": "yes",
+   "t": 1793348711617,
+   "seconds": 105,
+   "theme": "morning-rounds"
+  }
+ }
+}

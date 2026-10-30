@@ -1,0 +1,53 @@
+{
+ "deck": "buddy-rebuild-review2",
+ "started": "2026-10-26T07:54:24.649Z",
+ "submitted": "2026-10-26T07:56:39Z",
+ "cur": 5,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "t": 1793001281350,
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "t": 1793001293560,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "note": "text gets a lil close to the edge of the bubble",
+   "t": 1793001308788,
+   "v": "other",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "D-1": {
+   "note": "summary is good, but fix styling to make more youcoded-esque",
+   "t": 1793001337368,
+   "v": "other",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-2": {
+   "note": "i think i liked them as separate buttons by the buddy. i just want to make them nicer/clearer/prettier",
+   "t": 1793001388536,
+   "v": "other",
+   "seconds": 51,
+   "theme": "light",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "t": 1793001398321,
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

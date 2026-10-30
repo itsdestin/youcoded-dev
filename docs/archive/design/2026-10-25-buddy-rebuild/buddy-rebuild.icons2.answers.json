@@ -1,0 +1,24 @@
+{
+ "deck": "buddy-rebuild-icons2",
+ "started": "2026-10-30T19:36:43.377Z",
+ "submitted": "2026-10-30T19:38:31Z",
+ "cur": 1,
+ "answers": {
+  "I-2": {
+   "note": "i want a hybrid beween b (window) and c (winout). ",
+   "t": 1793389037222,
+   "v": "other",
+   "seconds": 34,
+   "theme": "light",
+   "zoom": 1
+  },
+  "I-3": {
+   "note": "i think the eye was better than these lets just go back to the eye style but we need to clean it up, it was messed up before and the pupil didn't look right. also the height/width of these looks/feels very inconsistent and the icons feel like theey zigzag a bit. we need to improve the visual balance of the icons.",
+   "t": 1793389110586,
+   "v": "other",
+   "seconds": 73,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

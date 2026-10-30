@@ -1,0 +1,118 @@
+{
+  "title": "Buddy rebuild — the new chat window",
+  "key": "buddy-rebuild-review",
+  "out": "buddy-rebuild.review.html",
+  "stage": "review",
+  "images": "images/buddy-rebuild.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Buddy chat",
+      "path": "Press the buddy to open his chat",
+      "crop": "buddy/chat",
+      "highlight": "panel",
+      "headline": "The buddy's chat is now the main window's chat, squeezed to fit, with tighter spacing so more text shows.",
+      "changed": "The top row is the main window's own session strip, with breathing status dots and the other sessions beside it. Gutters, bubble padding and gaps shrank; the text size did not. The compass button that did nothing in the buddy is gone.",
+      "measured": "Side gutters 16 px to 6 px; bubbles use 96% of the row instead of 85%",
+      "notice": "More words fit on each line and more lines fit on screen. The dots show real colours from the moment the chat opens (before, every dot was grey until something changed).",
+      "risk": "Denser text; bubbles sit closer to each other and to the window edge."
+    },
+    {
+      "id": "N-1",
+      "new": true,
+      "runs": [
+        "after"
+      ],
+      "surface": "Buddy chat",
+      "path": "The arrow at the right of the session strip",
+      "crop": "buddy/sessions",
+      "highlight": "panel",
+      "headline": "Switching conversations uses the main window's All sessions menu, at the buddy's full width.",
+      "changed": "The old plain list is gone. Every session shows its status in words (Working, Needs input, Response ready…), its folder and tags, plus Resume and New session at the bottom.",
+      "notice": "Same menu as the main window. In the buddy you cannot drag sessions around or tear one off into a new window, so nothing moves by accident.",
+      "risk": "Long session names are cut short at this width. Resume opens the main window, since the resume list needs more room."
+    },
+    {
+      "id": "N-2",
+      "new": true,
+      "runs": [
+        "after"
+      ],
+      "surface": "Buddy chat",
+      "path": "When Claude asks you a multiple-choice question",
+      "crop": "buddy/question",
+      "highlight": "panel",
+      "headline": "Questions, permission requests and plan approvals appear as the main window's real cards.",
+      "changed": "Before, the buddy only offered Allow and Deny, which could do nothing on a question. Now it is the same card as the main window: options, notes, Submit.",
+      "notice": "You can answer anything Claude asks without opening the main window. Typing into the box while Claude shows a menu will be stopped with \"Send anyway\", as in the main window.",
+      "risk": "A big question fills most of the small window; the large size (below) helps."
+    },
+    {
+      "id": "N-3",
+      "new": true,
+      "runs": [
+        "after"
+      ],
+      "surface": "Buddy chat",
+      "path": "When a session gets stuck or its provider stalls",
+      "crop": "buddy/warning",
+      "highlight": "panel",
+      "headline": "Warnings appear with their buttons, such as Try again and Stop, instead of a small text pill.",
+      "changed": "The main window's warning box. In the buddy the buttons wrap under the sentence so it stays readable at this width.",
+      "notice": "You can fix a stuck session from the buddy."
+    },
+    {
+      "id": "C-1",
+      "surface": "Buddy",
+      "path": "The buddy and his chat on your desktop",
+      "headline": "Where should the buddy's three actions (screenshot, open YouCoded, hide) live?",
+      "notice": "All three actions keep working the same way; only where you press them changes. These pictures use the app's own placement math, so each window sits where the real one would.",
+      "variants": [
+        {
+          "id": "beside",
+          "label": "Beside him (today)",
+          "crop": "buddy/group#beside@400x630+160+50",
+          "summary": "The three round buttons next to his hands, in their own little window.",
+          "risk": "Keeps the extra window that has to follow him when you drag, which is one of the hardest parts to make smooth."
+        },
+        {
+          "id": "header",
+          "label": "In the chat's top row",
+          "crop": "buddy/group#header@400x630+160+50",
+          "summary": "Three small icons at the right of the session strip; the round-button window goes away.",
+          "risk": "The session strip loses about 90 px, so the current session's name gets cut shorter."
+        },
+        {
+          "id": "composer",
+          "label": "Screenshot by Attach",
+          "crop": "buddy/group#composer@400x630+160+50",
+          "summary": "Screenshot sits next to Attach in the message box, where you add things to a message; Open and Hide are icons at the top right. The round-button window goes away.",
+          "risk": "Two icons still take about 60 px from the session strip."
+        }
+      ]
+    },
+    {
+      "id": "B-1",
+      "runs": [
+        "after"
+      ],
+      "surface": "Buddy chat",
+      "path": "A size button at the top of the buddy chat",
+      "crop": "buddy/chat#large",
+      "highlight": "panel",
+      "headline": "One button switches the chat between today's size and this larger one, and it remembers your choice.",
+      "changed": "A second size, about 40% bigger. The buddy and his chat still move together and stay on screen.",
+      "measured": "440 by 660 px against 320 by 480 px",
+      "notice": "Long replies, code and question cards have room when you want it, and the small size stays out of the way when you don't.",
+      "risk": "On a small laptop screen the large size can cover more of what is behind it."
+    }
+  ]
+}

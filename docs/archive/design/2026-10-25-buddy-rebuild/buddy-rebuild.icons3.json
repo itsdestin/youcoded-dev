@@ -1,0 +1,134 @@
+{
+  "title": "The buddy's buttons \u2014 round three: Open, Hide, and evening out the row",
+  "key": "buddy-rebuild-icons3",
+  "out": "buddy-rebuild.icons3.html",
+  "images": "images/buddy-rebuild.icons3",
+  "runs": {
+    "today": "runs/icons3"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "open-hybrid": [
+      "bar",
+      "open-hybrid",
+      "440x160+0+0"
+    ],
+    "open-hybridplain": [
+      "bar",
+      "open-hybridplain",
+      "440x160+0+0"
+    ],
+    "open-hybridsmall": [
+      "bar",
+      "open-hybridsmall",
+      "440x160+0+0"
+    ],
+    "hide-eyeslash": [
+      "bar",
+      "hide-eyeslash",
+      "440x160+0+0"
+    ],
+    "hide-eyesolid": [
+      "bar",
+      "hide-eyesolid",
+      "440x160+0+0"
+    ],
+    "hide-eyeclosed": [
+      "bar",
+      "hide-eyeclosed",
+      "440x160+0+0"
+    ],
+    "row-before": [
+      "bar",
+      "row-before",
+      "440x160+0+0"
+    ],
+    "row-even": [
+      "bar",
+      "row-even",
+      "440x160+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "I-4",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, third button",
+      "headline": "Which mix of \"App window\" and \"Window, arrow out\" says \"open YouCoded\" best?",
+      "notice": "All three keep the app window and send the arrow out through its top corner. Every row here already uses the evened-out sizes from I-6.",
+      "variants": [
+        {
+          "id": "hybrid",
+          "label": "Window with dots",
+          "crop": "open-hybrid",
+          "summary": "The window's title bar and its two little dots, with the arrow leaving through the open corner."
+        },
+        {
+          "id": "hybridplain",
+          "label": "Window, no dots",
+          "crop": "open-hybridplain",
+          "summary": "The same, without the dots: simpler, a little calmer at small size."
+        },
+        {
+          "id": "hybridsmall",
+          "label": "Smaller arrow",
+          "crop": "open-hybridsmall",
+          "summary": "Dots kept, the arrow shorter so the window itself is the bigger part.",
+          "risk": "At real size the arrow is easier to miss."
+        }
+      ]
+    },
+    {
+      "id": "I-5",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, last button",
+      "headline": "Which cleaned-up eye should Hide use?",
+      "notice": "The eye is redrawn as one smooth shape, and the slash now cuts a clean gap through it instead of crossing over the pupil.",
+      "variants": [
+        {
+          "id": "eyeslash",
+          "label": "Crossed eye, ring pupil",
+          "crop": "hide-eyeslash",
+          "summary": "The familiar \"hide\" eye, tidied: smooth outline, round pupil, a clean gap where the slash passes."
+        },
+        {
+          "id": "eyesolid",
+          "label": "Crossed eye, solid pupil",
+          "crop": "hide-eyesolid",
+          "summary": "The same with a filled pupil, which reads as an eye a little faster at small size."
+        },
+        {
+          "id": "eyeclosed",
+          "label": "Closed eye",
+          "crop": "hide-eyeclosed",
+          "summary": "A sleeping eye with lashes, no slash: friendlier, like he is resting.",
+          "risk": "Less common as a \"hide\" picture, so the label does more of the work."
+        }
+      ]
+    },
+    {
+      "id": "I-6",
+      "surface": "Buddy",
+      "path": "The whole button row",
+      "headline": "Should all four buttons be redrawn to one even size?",
+      "notice": "Before, each picture filled a different amount of its button and sat at a slightly different height, which is the zig-zag you saw. Evened out, all four fill the same height and share one middle line. The resize arrows are pulled in slightly too.",
+      "variants": [
+        {
+          "id": "before",
+          "label": "As before",
+          "crop": "row-before",
+          "summary": "Round two's pictures at their old sizes."
+        },
+        {
+          "id": "even",
+          "label": "Evened out",
+          "crop": "row-even",
+          "summary": "Same height, same middle line for all four."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+ "deck": "buddy-rebuild-review5",
+ "started": "2026-10-26T08:26:28.738Z",
+ "submitted": "2026-10-26T08:26:37Z",
+ "cur": 0,
+ "answers": {
+  "C-5": {
+   "v": "pick",
+   "pick": "panel",
+   "t": 1793003196012,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
