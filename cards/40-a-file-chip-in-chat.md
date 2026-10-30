@@ -15,8 +15,8 @@ vision: chat.files.drawer
 work: session/40-file-chip-wrong-folder
 ---
 Progress
-Done: nothing recorded.
-Next: check it still happens.
+Done: Short chip paths now also searched beside the chat's own files; failed chip clicks show their note while a file is open; assistant told to give full paths. Branch session/40-file-chip-wrong-folder, verify.sh green.
+Next: Destin reviews file-chips.review deck; then merge on his word.
 Blocked: nothing recorded.
 
 Chats
