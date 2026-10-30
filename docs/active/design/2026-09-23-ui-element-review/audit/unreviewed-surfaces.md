@@ -6,6 +6,8 @@ related: docs/active/design/2026-09-23-ui-element-review/decisions.md
 
 # Unreviewed surfaces — composer, file viewers, terminal, diff/Git review, buddy floater, games, guided tour, drag/share/thumbnails
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 Read-only review of eight surfaces the element-review effort never looked at (confirmed
 against `audit/completeness-components.md` and `audit/completeness-screens.md`). Source read
 directly under `youcoded/desktop/src/renderer/components` (`dev/` excluded); screenshots
