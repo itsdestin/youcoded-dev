@@ -217,6 +217,22 @@ VAR_FOR = re.compile(r"\bfor\s+\w+\s+in\s+" + _VAR + r"\s*(?:;|\n|$|\bdo\b)")
 _SPLITTING_SHELL = re.compile(r"(?:^|[|&;(]\s*|\s)(?:bash|sh|dash)\s+(?:-\S+\s+)*-l?c\s")
 
 
+# A command kept in a variable and run through it: `E="node x.mjs"; $E start`. zsh runs a
+# program literally named "node x.mjs", which fails — and a pipe after it (`| grep picture`)
+# hides even that, so the step reports nothing and looks like it ran (three wasted calls,
+# 2026-10-29). Only flagged when the SAME command assigns that name a value with a space.
+_ASSIGN_WITH_SPACE = re.compile(r"""(?:^|[;&|(]\s*|\s)([A-Za-z_]\w*)=(["'])[^"'\n]*\s[^"'\n]*\2""")
+
+
+def var_command_offender(body: str):
+    for m in _ASSIGN_WITH_SPACE.finditer(body):
+        name = m.group(1)
+        use = re.search(r"(?:^|[;&|(]\s*|\$\(\s*|\n\s*)\$(?:\{" + name + r"\}|" + name + r")(?![\w\[])", body[m.end():])
+        if use:
+            return use.group(0).strip(" ;&|(\n")
+    return None
+
+
 def unsplit_var_offender(command: str):
     """The offending text when a kill / set -- / for-in leans on zsh splitting an unquoted $VAR."""
     body = strip_heredocs(command)
@@ -226,7 +242,34 @@ def unsplit_var_offender(command: str):
         m = pat.search(body)
         if m:
             return m.group(0).strip()
-    return None
+    return var_command_offender(body)
+
+
+# ── guard 9: `pgrep -f` feeding a kill, unfiltered ───────────────────────────────────
+# The wrapper `zsh -c '<whole command>'` contains the pattern, so `pgrep -f X` lists the
+# calling shell too; `kill $(pgrep -f X)` (or a variable filled from it) kills the shell
+# running the command — exit 144, nothing reported. Hit 2026-10-29 stopping a review deck
+# server. Filtering the wrapper out (`| rg -v pgrep`, as guard 4 says) is allowed.
+_PGREP_F = r"pgrep\s+(?:[^|&;\n)]*\s)?-[a-zA-Z]*f"
+
+
+def pgrep_kill_offender(command: str):
+    body = strip_heredocs(command)
+    if not re.search(r"(?:^|[|&;(]\s*|\s)kill\s", body):
+        return False
+    for m in re.finditer(r"\$\(([^)]*" + _PGREP_F + r"[^)]*)\)", body):
+        if not re.search(r"-v\s+['\"]?pgrep", m.group(1)):
+            return True
+    return False
+
+
+PGREP_KILL_MESSAGE = (
+    "Blocked before it ran: `pgrep -f` here also lists the shell running this command (its "
+    "command line contains the pattern), so killing what it returns kills your own shell — "
+    "exit 144, nothing reported (2026-10-29).\n"
+    "Filter the wrapper out:  kill $(pgrep -f <name> | rg -v pgrep)\n"
+    "or look the pid up in one call and kill that number in the next."
+)
 
 
 UNSPLIT_VAR_MESSAGE = (
@@ -531,6 +574,13 @@ def main() -> int:
     try:
         if curl_readiness_offender(command):
             print(CURL_READY_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
+
+    try:
+        if pgrep_kill_offender(command):
+            print(PGREP_KILL_MESSAGE, file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook
