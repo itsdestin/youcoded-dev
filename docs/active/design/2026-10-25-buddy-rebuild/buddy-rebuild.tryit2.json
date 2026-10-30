@@ -1,5 +1,5 @@
 {
-  "title": "Buddy rebuild — re-test the three fixes",
+  "title": "Buddy rebuild — re-test the four fixes",
   "key": "buddy-rebuild-tryit2",
   "out": "buddy-rebuild.tryit2.html",
   "stage": "review",
@@ -56,6 +56,23 @@
       },
       "changed": "Session names and their folder line now start where \"All sessions\" does; the folder list is never wider than the window and opens upward when there is no room below; the menu's height follows the window; Launch in new window and Manage projects are hidden in the buddy, where they did nothing.",
       "notice": "No menu hangs off an edge, and nothing in them is a dead end.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "U-4",
+      "surface": "Buddy",
+      "path": "Switch the test window to the Morning Rounds theme, then let him doze off",
+      "headline": "With the dog theme, do his ears now stay on his head when he falls asleep?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "Hats, ears and glasses drawn on top of a buddy now move with his body in every pose. Before, only his body moved, so settling down to sleep left the dog's ears hanging in the air. This applies to every theme, not just the dog.",
+      "notice": "His ears sink and settle with him, and come back up when he wakes.",
       "yes": "Yes, it works",
       "no": "No, it does not"
     }
