@@ -1330,3 +1330,11 @@ recurred — the repetition is the data.
 - Read `serve`'s exit as a crash and restarted it; it exits on submit (AUTHORING.md says so) → dropped: documented, I didn't check.
 - Destin, review S-1: "why would we need a banner for this. remove that." (an "Opened from <folder>" line) → applied: removed. Not filed as a rule: CLAUDE.md's "minimal useful copy" already covers it.
 - deleted/merged: the stale Android-stub claim in artifacts.md; the `pillFoundIn` state/action that the dropped banner needed.
+
+## 2026-10-30 — comments on files outside the project ask first (session/207-comments-outside-project, app + workspace, card #207)
+- Widening the Word/Excel request queue to outside files kept its old "the chat's secret is enough" trust, but that secret sits in a file the assistant can read; a link inside the project also skipped the card. The independent reviewer caught both, not my tests → applied: the queue checks the app's own record of the person's answer (`claimOutsideApproval`), links that leave the project are refused, tests seen red. Dropped as a rule: the feature flow's fresh reviewer is exactly what caught it.
+- Testing in a real dev window cost ~25 calls of ad hoc CDP scripts; the dev profile's default AUTO mode never shows permission cards; long sends stuck in Claude Code's box → card #209 (driver script); the stuck sends were added to card #7.
+- "No" on the card reached Claude as a bare "Permission denied by hook", so it guessed at a safety check → applied: the deny carries a plain reason (`cc-outside-comments.ts`), test seen red.
+- Windows/macOS: master's own nightly runs fail exists-probe, sidecar-cleanup, resolve-artifact-path and a MarkdownContent CPU budget (3 days running, before this branch) → reported to Destin, not fixed here (outside this work); per the test rule not filed as a card.
+- Destin's 5 roundup comments stay in the old store until his app updates → card #208 (move them then, with his OK).
+- deleted/merged: timed-out-ask cleanup moved into the module (two copies in main.ts/headless-boot.ts dropped); the `office-outside` refusal path and its verdict kind were deleted when Word/Excel joined the same card.
