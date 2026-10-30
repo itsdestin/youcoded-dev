@@ -1,5 +1,7 @@
 # Error-handling inventory 3 — Marketplace, Skills, Games, Buddy, Guide
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 Worktree audited: `/home/destin/youcoded-dev/worktrees/sessions/error-states-unit-b/youcoded/desktop/src` (today's code, 2026-09-10). All paths below are relative to that `src/`. Read-only; no files changed except this report.
 
 **Counts:** severity 1 = 4 · severity 2 = 18 · severity 3 = 13 · intentional fallbacks (no defect) = 8.
