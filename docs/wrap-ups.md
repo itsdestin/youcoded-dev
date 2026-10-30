@@ -1320,3 +1320,13 @@ recurred — the repetition is the data.
 - zsh `nomatch` (`NOTICE*`, `test_site_copy_editor*`) and an unquoted `--include=*.json` (hook blocked) cost 3 calls → dropped: glob-guard already catches the worst case.
 - Destin's visibility ideas (Awesome Claude Code / Awesome Electron after 100 stars, Reddit, Show HN, AlternativeTo) → not filed: he chose only the license fix "for now"; offered as a card.
 - deleted/merged: the generator's hard-coded Privacy/Terms ternaries became one `pages` table serving four pages.
+
+## 2026-10-29 — file chips that wouldn't open (session/40-file-chip-wrong-folder, app + workspace, card #40)
+- Two bugs behind "chips stop working": a short path joined to the chat's STARTING folder after the assistant `cd`d elsewhere, and a failed tap's note rendered only in the file list, which is hidden while a file is open → applied: host searches beside the chat's own files (`nearbyCandidates`, computer door only), note also shows above the open file; tests seen red. The second bug surfaced only by clicking through `explore`, not from reading code.
+- `youcoded/docs/artifacts.md` still said Android stubs `artifacts:*` with `not-implemented-on-mobile`; the independent plan reviewer repeated it as fact. No `app/` source produces that code since the 2026-10-14 rebuild → applied: corrected, plus a depth note for the nearby search.
+- RECURRED (2026-10-22, "zsh did not word-split `$files`", dropped as one-off): `E="node …explore.mjs"; $E start | grep` ran nothing and printed nothing, 3 wasted calls → applied: glob-guard now blocks running a command through a variable assigned a spaced value in the same line.
+- `P=$(pgrep -f X …); kill ${=P}` killed my own shell (exit 144) — the global "never pkill -f your own command line" rule exists, the pgrep-into-kill spelling was unguarded → applied: glob-guard guard 9 (allowed with `| rg -v pgrep`); both guards seen red (5 tests) then green, 150/150.
+- `explore` renumbers controls after every step; clicking a stale number hit the zoom button and I briefly told Destin a false bug (corrected next turn) → dropped as tooling: re-`look` before every click (the README's step model already implies it); my error, one call.
+- Read `serve`'s exit as a crash and restarted it; it exits on submit (AUTHORING.md says so) → dropped: documented, I didn't check.
+- Destin, review S-1: "why would we need a banner for this. remove that." (an "Opened from <folder>" line) → applied: removed. Not filed as a rule: CLAUDE.md's "minimal useful copy" already covers it.
+- deleted/merged: the stale Android-stub claim in artifacts.md; the `pillFoundIn` state/action that the dropped banner needed.
