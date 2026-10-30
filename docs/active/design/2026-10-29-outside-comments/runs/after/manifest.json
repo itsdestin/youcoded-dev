@@ -1,0 +1,478 @@
+[
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/dark.png",
+    "ms": 1858,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/halftone-dimension.png",
+    "ms": 1027,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/light.png",
+    "ms": 1072,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/meadow-mist.png",
+    "ms": 1069,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/midnight.png",
+    "ms": 1068,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/creme.png",
+    "ms": 4629,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-today-cc",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-today-cc/youcoded-night.png",
+    "ms": 3661,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/dark.png",
+    "ms": 2121,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/creme.png",
+    "ms": 2186,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/halftone-dimension.png",
+    "ms": 2194,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/light.png",
+    "ms": 2211,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/meadow-mist.png",
+    "ms": 2235,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/dark.png",
+    "ms": 2488,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/midnight.png",
+    "ms": 2861,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/light.png",
+    "ms": 2949,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/halftone-dimension.png",
+    "ms": 3001,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/creme.png",
+    "ms": 3004,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/meadow-mist.png",
+    "ms": 3018,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/dark.png",
+    "ms": 3172,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/midnight.png",
+    "ms": 3668,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/halftone-dimension.png",
+    "ms": 1685,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/meadow-mist.png",
+    "ms": 1655,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/light.png",
+    "ms": 1852,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-phone",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-phone/youcoded-night.png",
+    "ms": 4613,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 370,
+      "h": 844
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/midnight.png",
+    "ms": 2409,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/creme.png",
+    "ms": 7536,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments-cc",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments-cc/youcoded-night.png",
+    "ms": 7540,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  },
+  {
+    "name": "chat#outside-comments",
+    "theme": "youcoded-night",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/207-comments-outside-project/docs/active/design/2026-10-29-outside-comments/runs/after/chat#outside-comments/youcoded-night.png",
+    "ms": 7148,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    },
+    "parts": []
+  }
+]
