@@ -1,7 +1,7 @@
 ---
 id: 40
 title: File links in chat fail for files outside the project
-stage: planning
+stage: merged
 priority: P3
 tags: files, chat, desktop, bug
 branch: 40-a-file-chip-in-chat
