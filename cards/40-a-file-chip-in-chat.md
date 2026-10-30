@@ -12,6 +12,7 @@ area: Chat
 side: screens
 platform: Desktop only
 vision: chat.files.drawer
+work: session/40-file-chip-wrong-folder
 ---
 Progress
 Done: nothing recorded.
@@ -19,6 +20,7 @@ Next: check it still happens.
 Blocked: nothing recorded.
 
 Chats
+- 2026-10-30 session/40-file-chip-wrong-folder: chat started
 
 From the old roadmap (files, status needs-verify, seen on desktop, last checked 2026-09-03)
 A file chip in chat for a file outside the project folder fails with "Couldn't open README.md — the file wasn't found in this project", and the chip shows only the bare filename so two READMEs look identical. The same click on a project file works (Destin, 2026-09-03, a document in his notes repo).
