@@ -30,7 +30,7 @@ verify:
   - test: youcoded/desktop/tests/chat-reducer.test.ts
   - test: youcoded/desktop/tests/attention-reducer.test.ts
   - test: youcoded/desktop/src/renderer/hooks/useAttentionClassifier.test.tsx
-  - test: youcoded/desktop/tests/attention-strip.test.tsx
+  - test: youcoded/desktop/tests/attention-banner.test.tsx
   - test: youcoded/desktop/tests/transcript-watcher.test.ts
   - test: youcoded/desktop/tests/transcript-page.test.ts
   - test: youcoded/desktop/tests/history-paging-reducer.test.ts
@@ -59,7 +59,7 @@ verify:
 
 ## Paged history (perf cycle 2)
 - **History arrives one PAGE at a time** (`transcript-page.ts`; 30 turns / 2 MB). `HISTORY_LOADED` and "See previous messages" are RETIRED.
-- **A transcript event becomes reducer actions in ONE place, `eventToAction`** (`transcript-event-actions.ts`) — main window, buddy, history pages all call it; never add a per-event case to `App.tsx` or `BubbleFeed.tsx`. Main window and buddy share ONE listener (`attachTranscriptFeed`); see `docs/remote-state-sync.md`. **The main window batches EVERY action via `routeTranscriptEvent` (`transcript-batch.ts`); no direct dispatch** — it reorders same-frame actions · guards: `transcript-event-surface-parity.test.ts`, `transcript-routing.test.ts`.
+- **A transcript event becomes reducer actions in ONE place, `eventToAction`** (`transcript-event-actions.ts`) — main window, buddy, history pages all call it; never add a per-event case to `App.tsx` or `useBuddyFeed.ts`. Main window and buddy share ONE listener (`attachTranscriptFeed`); see `docs/remote-state-sync.md`. **The main window batches EVERY action via `routeTranscriptEvent` (`transcript-batch.ts`); no direct dispatch** — it reorders same-frame actions · guards: `transcript-event-surface-parity.test.ts`, `transcript-routing.test.ts`.
 - **`HISTORY_PAGE_LOADED` PREPENDS by replaying through the same translator (`live:false`)**, on scratch state seeded with the session's `seenUuids` — never hand-build history entries or drop the seed (unseeded, it re-renders what is on screen).
 - **Set `HISTORY_PAGE_REQUESTED` BEFORE awaiting**: `history.loading` is the whole of paging's idempotency. The tailer starts at EOF and page one ends at `getStartOffset()` — that keeps page and live non-overlapping.
 - **Enumerate a broadcast's listeners by CHANNEL before removing it** — dropping whole-file replay broke FOUR features, uncaught by ~7,000 tests.
