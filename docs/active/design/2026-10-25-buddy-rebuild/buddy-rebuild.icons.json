@@ -1,0 +1,61 @@
+{
+  "title": "The buddy's buttons — clearer pictures for three of them",
+  "key": "buddy-rebuild-icons",
+  "out": "buddy-rebuild.icons.html",
+  "images": "images/buddy-rebuild.icons",
+  "runs": { "today": "runs/icons" },
+  "themes": ["light", "midnight"],
+  "crops": {
+    "today": ["bar", "today", "440x160+0+0"],
+    "shot-frame": ["bar", "shot-frame", "440x160+0+0"],
+    "shot-monitor": ["bar", "shot-monitor", "440x160+0+0"],
+    "shot-camera": ["bar", "shot-camera", "440x160+0+0"],
+    "open-external": ["bar", "open-external", "440x160+0+0"],
+    "open-window": ["bar", "open-window", "440x160+0+0"],
+    "open-home": ["bar", "open-home", "440x160+0+0"],
+    "hide-eyeoff": ["bar", "hide-eyeoff", "440x160+0+0"],
+    "hide-tuck": ["bar", "hide-tuck", "440x160+0+0"],
+    "hide-close": ["bar", "hide-close", "440x160+0+0"]
+  },
+  "steps": [
+    {
+      "id": "I-1",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, first button",
+      "headline": "Which picture best says \"put a picture of my screen into this chat\"?",
+      "notice": "Only the first button changes on this slide; the other three stay as they are today. Pictures are three times real size.",
+      "variants": [
+        { "id": "today", "label": "Today's camera", "crop": "today", "summary": "The camera as it is now. Reads as \"take a photo\", not \"of my screen\"." },
+        { "id": "frame", "label": "Capture corners", "crop": "shot-frame", "summary": "Four corners around a dot, like a phone's screenshot or scan mark. The common picture for \"capture what's on screen\"." },
+        { "id": "monitor", "label": "Screen with corners", "crop": "shot-monitor", "summary": "A computer screen with capture corners inside it. Says \"my screen\" most directly.", "risk": "The busiest of the three; the corners are small at real size." },
+        { "id": "camera", "label": "Tidied camera", "crop": "shot-camera", "summary": "The same camera idea, redrawn with cleaner, rounder lines. Keeps what people already learned." }
+      ]
+    },
+    {
+      "id": "I-2",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, third button",
+      "headline": "Which picture best says \"open the full YouCoded window\"?",
+      "notice": "Only the third button changes on this slide. The second button (bigger or smaller chat) stays as it is.",
+      "variants": [
+        { "id": "today", "label": "Today's window", "crop": "today", "summary": "A small window with an arrow cut into its corner. Cramped, and close to the size button's arrows." },
+        { "id": "external", "label": "Open elsewhere", "crop": "open-external", "summary": "A box with an arrow leaving it: the usual \"opens somewhere else\" mark on websites and apps." },
+        { "id": "window", "label": "App window", "crop": "open-window", "summary": "A plain window with a title bar. Says \"the app's window\" without an arrow.", "risk": "Doesn't say \"open\"; it could read as \"a new window\"." },
+        { "id": "home", "label": "House", "crop": "open-home", "summary": "A house: \"go back to the main app\". The simplest shape of the three.", "risk": "Some apps use a house for a start page, not a whole window." }
+      ]
+    },
+    {
+      "id": "I-3",
+      "surface": "Buddy",
+      "path": "The button row beside the buddy, last button",
+      "headline": "Which picture best says \"hide the buddy until I bring him back\"?",
+      "notice": "Hiding puts him away until the app restarts or you switch him back on in Settings. Only the last button changes on this slide.",
+      "variants": [
+        { "id": "today", "label": "Today's crossed eye", "crop": "today", "summary": "The crossed-out eye as it is now, with slightly uneven lines." },
+        { "id": "eyeoff", "label": "Tidied crossed eye", "crop": "hide-eyeoff", "summary": "The same \"not visible\" eye, redrawn evenly. The standard picture for \"hide\"." },
+        { "id": "tuck", "label": "Tuck away", "crop": "hide-tuck", "summary": "An arrow going down onto a line: \"put him down out of the way\".", "risk": "Is also the usual picture for \"download\"." },
+        { "id": "close", "label": "Cross", "crop": "hide-close", "summary": "A plain X. Everyone knows it means \"go away\".", "risk": "Could read as \"close the chat\" rather than \"hide the buddy\"." }
+      ]
+    }
+  ]
+}
