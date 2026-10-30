@@ -1,0 +1,217 @@
+{
+  "title": "Chat in a page — what would you actually use it for?",
+  "key": "pages-finish-step3-questions",
+  "out": "pages-finish-step3.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Situations: which ones should the first version handle?",
+      "intro": "Each card is one thing a person might type into a chat that sits beside a page. Yes means the first version must do it. No means leave it out. For 'later', pick Other and write 'later'."
+    },
+    {
+      "id": "U-ask-data",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A chat beside an open page, e.g. your Money page",
+      "headline": "Ask a question about what's in the page: \"Why was October so high?\"",
+      "today": "A page has no chat. To ask about your Money page you'd open a normal chat, and only a Claude Code chat can read a page's saved data; YouCoded's own assistant can't.",
+      "problem": "The answer is sitting in the page, but getting it means leaving the page and explaining which page you mean.",
+      "proposal": "The chat beside the page reads the page's saved data and answers in words, e.g. \"Three things: the flight on the 4th, rent went up, two restaurant weekends.\" It changes nothing."
+    },
+    {
+      "id": "U-change-data",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A chat beside an open page, e.g. a Work board",
+      "headline": "Change what's in the page by asking: \"Move everything due this week to the top\" or \"Add dentist Tuesday at 3\".",
+      "today": "You change a page's contents by clicking inside the page itself, one item at a time.",
+      "problem": "Big or fiddly changes (reorder twenty cards, add five entries from an email) take many clicks.",
+      "proposal": "The chat changes the page's saved data and the page updates in front of you. The page's design and buttons stay the same; only its contents change."
+    },
+    {
+      "id": "U-change-page",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A chat beside an open page",
+      "headline": "Change the page itself while you watch: \"Add a chart of spending by month\" or \"Make the cards smaller\".",
+      "today": "Page settings › Edit in chat opens a normal chat in the main window that rewrites the page. You switch back to the page to see the result.",
+      "problem": "Going back and forth between the chat and the page makes small tweaks slow, and it's hard to say \"no, that one\" about something you can't see.",
+      "proposal": "The chat sits beside the page and redraws it after each change, so you see the result as soon as it lands. This would replace Edit in chat going to the main window."
+    },
+    {
+      "id": "U-bring-in",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A chat beside an open page",
+      "headline": "Bring things in from outside: \"Add the receipts in my Downloads folder\" or \"Put this week's emails from my landlord on the board\".",
+      "today": "A page only reaches files or services you approved for it (step 2 built files). The chat beside it doesn't exist yet.",
+      "problem": "A lot of the value is gathering stuff from elsewhere into the page, which a page alone can't do unless it was built for exactly that.",
+      "proposal": "The chat can read from your files or connected services and put what it finds into the page. What it's allowed to reach is the next page's question."
+    },
+    {
+      "id": "U-page-button",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A button the page draws, e.g. \"Summarize this week\"",
+      "headline": "Should a page's own button use the assistant, with no chat shown? E.g. a \"Summarize this week\" button that fills in a box.",
+      "today": "Nothing like this exists. A page's buttons only do what the page's own code does.",
+      "problem": "Many apps want one smart action, not a conversation. Without this, the person has to type the request into a chat every time.",
+      "proposal": "The page can ask the assistant one thing and show the answer itself. Yes puts this in step 3. No leaves it for step 4 (assistants and automations), which is where it fits if it should run on its own or on a schedule."
+    },
+    {
+      "id": "U-phone",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A page opened on your phone",
+      "headline": "Should the page's chat work on your phone too, in the first version?",
+      "today": "Pages open on the phone (browser and Android app). The phone screen is too narrow for a page and a chat side by side.",
+      "problem": "If it's desktop-only, a page you rely on behaves differently on your phone.",
+      "proposal": "Yes: on a phone the chat becomes a sheet you pull up over the page. No: desktop first, phone recorded as a follow-up like Android files."
+    },
+    {
+      "id": "P-2",
+      "page": "Rules for the chat",
+      "intro": "These decide how the chat behaves, whichever situations you picked above."
+    },
+    {
+      "id": "R-reach",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "A chat beside an open page",
+      "headline": "What can a page's chat reach?",
+      "today": "A normal chat can read your files, browse the web and run tools, asking you first under your usual permission setting. A page can reach only what you approved on its card.",
+      "problem": "If the page's chat can do everything a normal chat can, a page you installed from someone else gets a powerful assistant attached. If it can only do what the page can, it can't bring things in from outside.",
+      "proposal": "Pick how far the chat beside a page can reach.",
+      "options": [
+        {
+          "id": "normal-chat",
+          "label": "Same as a normal chat",
+          "pros": [
+            "It can do anything you'd ask in the main window, with the same yes/no asks you're used to.",
+            "Nothing new to learn or approve."
+          ],
+          "cons": [
+            "A page you didn't build still sits next to an assistant that can reach your whole computer; the page's own instructions could steer it.",
+            "\"What can this page touch?\" no longer has a short answer."
+          ]
+        },
+        {
+          "id": "page-plus-asks",
+          "label": "The page's approvals, plus asks",
+          "pros": [
+            "By default it touches only what the page was approved for, so a page's card still tells the whole story.",
+            "Reaching beyond that (another folder, the web) asks you each time, so \"add my receipts\" still works."
+          ],
+          "cons": [
+            "More asks than a normal chat when you bring things in.",
+            "One more rule to explain on the page's settings."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page-only",
+          "label": "Only what the page can reach",
+          "pros": [
+            "Simplest and safest: the chat can never do more than the page."
+          ],
+          "cons": [
+            "\"Add the receipts in my Downloads folder\" doesn't work unless the page was built with that folder."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-which",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "An open page's top band",
+      "headline": "Which pages get a chat?",
+      "today": "No page has one.",
+      "problem": "A chat on every page is clutter on pages that don't need one (a timer, a simple game). Only on some means someone decides.",
+      "proposal": "Pick who decides.",
+      "options": [
+        {
+          "id": "every-page",
+          "label": "Every page, behind a button",
+          "pros": [
+            "Works the same everywhere; you can always ask a page about itself or change it.",
+            "Takes the place of Edit in chat, so nothing new to find."
+          ],
+          "cons": [
+            "One more button on pages that never need it, though it stays closed until pressed."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "builder-decides",
+          "label": "Only pages built with one",
+          "pros": [
+            "A page that wants a chat can put it exactly where it fits its design."
+          ],
+          "cons": [
+            "Older pages and pages from others may not have one, so it's inconsistent.",
+            "You'd still need Edit in chat for the rest."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-memory",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "Opening the chat on a page you used last week",
+      "headline": "When you open a page's chat again, what's there?",
+      "today": "Normal chats are separate conversations in your chat list; you start new ones or resume old ones.",
+      "problem": "One endless chat per page gets long and slow, and old talk can confuse it. Always starting fresh loses \"like we said last time\".",
+      "proposal": "Pick what the chat shows when you open it.",
+      "options": [
+        {
+          "id": "last-chat",
+          "label": "Your last chat, with a New chat button",
+          "pros": [
+            "Picks up where you left off, like reopening a normal chat.",
+            "Older chats for this page are still in your chat list, marked with the page's icon."
+          ],
+          "cons": [
+            "If you forget to press New chat, old topics carry over."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "fresh",
+          "label": "A fresh chat every time",
+          "pros": [
+            "Always quick and focused on what you're asking now."
+          ],
+          "cons": [
+            "Follow-ups from yesterday have to be explained again (the page's own data still carries over)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-undo",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "After the chat changes the page",
+      "headline": "When the chat changes the page or its contents, should it go ahead and offer Undo, rather than ask first?",
+      "today": "Pages keep a history; the page builder can already put a page back to an earlier version.",
+      "problem": "Asking before every change is slow when you're tweaking. Going ahead means a wrong change is on screen until you undo it.",
+      "proposal": "Yes: changes land right away, each with an Undo next to it in the chat. No: the chat describes the change and waits for your OK. Deleting a lot of contents (say, clearing a board) would always ask first either way."
+    },
+    {
+      "id": "R-other",
+      "words": true,
+      "surface": "Chat in a page",
+      "path": "Anywhere",
+      "headline": "Is there a situation you've been thinking about that isn't on these cards?",
+      "today": "These cards are my guesses at what matters.",
+      "problem": "The real use case you had in mind could be different from all of them.",
+      "proposal": "Write it in your own words: what page, what you'd type, what you'd expect to happen.",
+      "answer": "words",
+      "prompt": "e.g. On my YouCoded-Dev page I'd type…"
+    }
+  ]
+}
