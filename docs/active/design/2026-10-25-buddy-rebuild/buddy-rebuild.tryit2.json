@@ -1,0 +1,63 @@
+{
+  "title": "Buddy rebuild — re-test the three fixes",
+  "key": "buddy-rebuild-tryit2",
+  "out": "buddy-rebuild.tryit2.html",
+  "stage": "review",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "words": true,
+      "id": "U-1",
+      "surface": "Buddy",
+      "path": "The size button in the panel beside the buddy (two diagonal arrows)",
+      "headline": "Press the size button a few times: does the chat now shrink back as well as grow?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "The window system was refusing to make the chat smaller again after it had grown; it is now told the new size limits first. Checked in the test window: small, large, small, large.",
+      "notice": "Each press switches size; the buddy and chat stay together.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "U-2",
+      "surface": "Buddy",
+      "path": "Leave him until he dozes off (about four minutes), then point at him or press him",
+      "headline": "Once he has dozed off, does pointing at him or pressing him wake him up?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "Before, only a change in a session's status woke him, so touching a sleeping buddy did nothing. Now pointing at him or pressing him wakes him and restarts his quiet clock.",
+      "notice": "He wakes the moment you touch him, and does not drop straight back to sleep.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "U-3",
+      "surface": "Buddy",
+      "path": "The arrow at the right of the buddy's session strip, then New session and its folder picker",
+      "headline": "Do the menus fit the window now: names lined up under All sessions, the folder list inside the window, the menu following the size button?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "Session names and their folder line now start where \"All sessions\" does; the folder list is never wider than the window and opens upward when there is no room below; the menu's height follows the window; Launch in new window and Manage projects are hidden in the buddy, where they did nothing.",
+      "notice": "No menu hangs off an edge, and nothing in them is a dead end.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    }
+  ]
+}
