@@ -100,6 +100,14 @@ in `permissions.json`; `isCrossProjectRule` (Task + `^(read-only|read-write):fil
 which `nativeStoreSlug` never emits.
 **Guard:** `permission-store.test.ts`, `native-session-host.test.ts` (cross-project cases).
 
+## Ask first asks about each new website (2026-10-31)
+**Invariant:** WebFetch's permission subject is the site key (`shared/site-key.ts`), never
+the URL; only `rulesForMode('ask')` adds the WebFetch ask; a helper's WebFetch ask is NOT
+turned into an allow by its launch envelope (`child-permissions.ts` 5b).
+**Why:** the question is about a website, so the remembered rule, the card and the
+chat memory (`HarnessSession.approvedSites`) must all agree on what one site is.
+**Guard:** `web-visit-ask.test.ts`, `site-key.test.ts`, `specialist-child-permissions.test.ts`.
+
 ## Surfaces
 `permissions:list` / `:remove` / `:remove-project` are one table entry each (`main/ipc/permissions.ts`),
 plus `remote-shim`. NOT gated on `native.supported`
