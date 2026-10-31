@@ -1338,3 +1338,10 @@ recurred — the repetition is the data.
 - Windows/macOS: master's own nightly runs fail exists-probe, sidecar-cleanup, resolve-artifact-path and a MarkdownContent CPU budget (3 days running, before this branch) → reported to Destin, not fixed here (outside this work); per the test rule not filed as a card.
 - Destin's 5 roundup comments stay in the old store until his app updates → card #208 (move them then, with his OK).
 - deleted/merged: timed-out-ask cleanup moved into the module (two copies in main.ts/headless-boot.ts dropped); the `office-outside` refusal path and its verdict kind were deleted when Word/Excel joined the same card.
+
+## 2026-10-31 — buddy rebuild follow-up: taskbar gap, doc sweep, leftover tray icon (session/buddy-followup, app + workspace, cards #85 #210)
+- I told Destin the buddy "never sleeps on its own"; it has since the rebuild (`mascot-mood.ts`). Source: card #85's progress note, which I wrote myself at the #709 merge without checking item (c) against the code → applied: #85 closed as shipped. Dropped as a rule: evidence-before-claims already covers it; my lapse.
+- Taskbar-style gap (34 px, a rebuild regression) was found only because the final reviewer did geometry by hand; the workbench has no taskbar-style view → applied: fix + geometry/CSS pin + manager test seen red. Not added: a workbench view (one-off; the pin now executes).
+- Leftover tray icon on KDE: Electron's `Tray.destroy()` leaves KDE's tray entry until the app quits (measured with a 15-line Electron script + `busctl`; a helper process holding the tray measured ~200 MB) → card #210 holds the measurements and fix; WHY note at `buddy-tray.ts` `destroy()` so a tray session finds it.
+- Doc sweep found ~30 stale buddy claims (design guide, MAP had no buddy row, old inventories) → applied on this branch; audit-anchors clean.
+- deleted/merged: stale buddy component names from ~15 code comments and 4 app docs; card #85 retired.
