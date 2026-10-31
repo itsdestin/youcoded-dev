@@ -7,6 +7,8 @@ topic: Where the app does work nobody asked for, does the same job twice, or car
 
 # Simplification audit — less code, less work, same app
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 > **2026-09-24:** D1, D2, D3 and M5 are scheduled as R1–R4 of
 > `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md`, and D9 as A3 of
 > `docs/archive/plans/2026-09-24-android-rebuild-plan.md`. D10 is reopened there as a decision
