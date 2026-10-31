@@ -891,3 +891,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-24 #200 Swipe Keyboard: test builds in under 10 minutes, releases in under 15 (itsdestin/swipe-keyboard#13 (a9ed380), follow-up #15)
 - [x] 2026-10-30 #40 File links in chat fail for files outside the project (youcoded#705, youcoded-dev#323)
 - [x] 2026-10-30 #207 Let the assistant read comments on files outside the project (youcoded#707, youcoded-dev#325)
+- [x] 2026-10-31 #85 Buddy window: three open items (youcoded#709 (buddy rebuild: menu-typing guard, real question card, idle moments + sleep in mascot-mood.ts))

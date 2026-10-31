@@ -1,7 +1,7 @@
 ---
 id: 85
 title: Buddy window: three open items
-stage: planning
+stage: merged
 priority: P3
 tags: other-features, buddy, buddy-window, desktop, bug
 branch: 85-buddy-window-3-open-items
