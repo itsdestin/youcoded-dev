@@ -526,9 +526,9 @@ function main(args) {
     console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. Only merged, clean, unused worktrees idle 3+ days are removed automatically. This is not a sandbox.`);
   }
   runWorktreeSweep(opts.root, result.session, json);
-  // A development machine's own YouCoded app counts as a team device, not a user (scripts/team-device.mjs).
+  // The OWNER's computers count as team devices, not users; a contributor's never do (scripts/team-device.mjs).
   const team = markTeamDevice();
-  if (!json && team === 'created') console.log(`analytics: marked this computer as a team device (${teamDeviceFile()})`);
+  if (!json && team === 'created') console.log(`analytics: marked this computer as the owner's team device (${teamDeviceFile()})`);
   else if (!json && team.startsWith('failed')) console.log(`analytics: could not mark this computer as a team device — ${team}`);
   if (opts.item) linkItem(result.workspace, opts.item, result.session, json);
 }

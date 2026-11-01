@@ -223,10 +223,10 @@ Only official release builds send the app's anonymous daily check-in (`desktop/s
 
 | Situation | Use | Effect |
 |---|---|---|
-| A computer or phone you keep (yours, a contributor's, a long-lived test machine) | the **team-device file** `~/.claude/youcoded-team-device` | still checks in, marked `team`; the owner dashboard leaves it out unless **My devices** is on, and counts it under "Left out" |
+| The owner's computers, or any long-lived test machine | the **team-device file** `~/.claude/youcoded-team-device` | still checks in, marked `team`; the owner dashboard leaves it out unless **My devices** is on, and counts it under "Left out" |
 | A throwaway run (a VM you delete, an automated test, a script) | **`YOUCODED_NO_ANALYTICS=1`** in the app's environment | sends nothing at all |
 
-- `workspace-start.mjs` and `setup.sh` create the team-device file on every machine that has this workspace (`scripts/team-device.mjs`).
+- **Having this workspace does NOT make a computer a team device** — anyone can use it to improve the app, and their everyday YouCoded is a real user. `workspace-start.mjs` and `setup.sh` create the file only when `gh` is signed in as the owner (`itsdestin`; `scripts/team-device.mjs`). A contributor who wants their own test machine left out creates the file by hand.
 - `scripts/vm/vm.sh <vm> load …` and `fedora.sh load` write it inside the guest, so an installer test never reads as a new user. A VM made any other way: create `~/.claude/youcoded-team-device` (Windows: `%USERPROFILE%\.claude\youcoded-team-device`) before first launching the app, or launch it with `YOUCODED_NO_ANALYTICS=1`.
 - A phone: the app identifies it by its Android ID, so add its hash to the owner's list instead — `node youcoded-admin/skills/analytics/scripts/device-hash.mjs --android <ANDROID_ID>` (see that skill's "Admin filter").
 - The vitest suite sets `YOUCODED_NO_ANALYTICS=1` for every test (`desktop/vitest.config.ts`).

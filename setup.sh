@@ -96,7 +96,7 @@
     exit 0
   fi
 
-  # A development machine's own YouCoded app counts as a team device, not a user (scripts/team-device.mjs).
+  # The OWNER's computers count as team devices, not users; a contributor's never do (scripts/team-device.mjs).
   node "$ROOT/scripts/team-device.mjs" || true
   echo ""
   echo "Workspace ready. All repos are up to date."

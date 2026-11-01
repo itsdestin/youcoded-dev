@@ -5,13 +5,24 @@ import os from 'node:os';
 import path from 'node:path';
 import { markTeamDevice, teamDeviceFile } from './team-device.mjs';
 
-test('marks a computer as a team device once, then leaves the file alone', () => {
+test("a contributor's computer is never marked, however often the workspace starts", () => {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'team-device-'));
   try {
-    assert.equal(markTeamDevice(home), 'created');
+    assert.equal(markTeamDevice(home, 'some-contributor'), 'not-owner');
+    assert.equal(markTeamDevice(home, ''), 'not-owner');
+    assert.equal(fs.existsSync(teamDeviceFile(home)), false);
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true, maxRetries: 3 });
+  }
+});
+
+test("marks the owner's computer once, then leaves the file alone without asking GitHub again", () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'team-device-'));
+  try {
+    assert.equal(markTeamDevice(home, 'itsdestin'), 'created');
     assert.equal(teamDeviceFile(home), path.join(home, '.claude', 'youcoded-team-device'));
     assert.ok(fs.existsSync(teamDeviceFile(home)));
-    assert.equal(markTeamDevice(home), 'present');
+    assert.equal(markTeamDevice(home, () => { throw new Error('must not look up the login'); }), 'present');
   } finally {
     fs.rmSync(home, { recursive: true, force: true, maxRetries: 3 });
   }
