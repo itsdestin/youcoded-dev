@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
 import { sweep, formatSweep } from './prune-worktrees.mjs';
+import { markTeamDevice, teamDeviceFile } from './team-device.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
 function git(root, ...args) {
@@ -525,6 +526,10 @@ function main(args) {
     console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. Only merged, clean, unused worktrees idle 3+ days are removed automatically. This is not a sandbox.`);
   }
   runWorktreeSweep(opts.root, result.session, json);
+  // A development machine's own YouCoded app counts as a team device, not a user (scripts/team-device.mjs).
+  const team = markTeamDevice();
+  if (!json && team === 'created') console.log(`analytics: marked this computer as a team device (${teamDeviceFile()})`);
+  else if (!json && team.startsWith('failed')) console.log(`analytics: could not mark this computer as a team device — ${team}`);
   if (opts.item) linkItem(result.workspace, opts.item, result.session, json);
 }
 
