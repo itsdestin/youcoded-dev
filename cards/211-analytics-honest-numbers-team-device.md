@@ -10,8 +10,8 @@ why: Audit 2026-10-31 found phones counted as Desktop, own/test devices leaking 
 work: session/analytics-proposals
 ---
 Progress
-Done: App, worker, website, workspace and dashboard changes built on session/analytics-proposals in all four repos; tests green
-Next: Independent review findings; Destin's look at the dashboard; Android build unverified here (no JDK)
+Done: Independent review: 8 findings, 7 fixed (switch-off race, damaged file, prompt answers, reload counts, expired visits, weekly time zone, contributor gh call, double load); history note made honest
+Next: Destin's review; after deploy, confirm old check-ins still show (blob8 on pre-change rows); Android build unverified here
 Blocked: nothing.
 
 Chats
