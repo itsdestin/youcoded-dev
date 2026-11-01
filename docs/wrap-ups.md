@@ -1345,3 +1345,13 @@ recurred — the repetition is the data.
 - Leftover tray icon on KDE: Electron's `Tray.destroy()` leaves KDE's tray entry until the app quits (measured with a 15-line Electron script + `busctl`; a helper process holding the tray measured ~200 MB) → card #210 holds the measurements and fix; WHY note at `buddy-tray.ts` `destroy()` so a tray session finds it.
 - Doc sweep found ~30 stale buddy claims (design guide, MAP had no buddy row, old inventories) → applied on this branch; audit-anchors clean.
 - deleted/merged: stale buddy component names from ~15 code comments and 4 app docs; card #85 retired.
+
+## 2026-11-01 — analytics audit, 17 approved proposals built, dashboard rebuilt twice (session/analytics-proposals, app + worker + admin + workspace, card #211)
+- Audit found Android 1.3.1+ checking in as "desktop" (headless backend hard-coded it) and own-phone exclusion broken; nothing in docs said the phone runs analytics-service → applied: fixes + worker-backend rule ("empty OS is a phone", blob layout) + `docs/local-dev.md` → "Analytics: team devices and test runs".
+- I first auto-marked EVERY workspace machine as a team device; Destin caught that contributors would vanish from analytics → applied: owner-only (`gh` login = itsdestin) in `scripts/team-device.mjs`, contributor case pinned by test seen red.
+- RECURRED (card #195, third time): `gitleaks … -q; echo` — bad flag, echo reset the exit code, push went out unscanned (clean on re-scan) → card #195 progress.
+- RECURRED (preferences 2026-10-14 / 2026-10-27): "just say retention" and "use the existing (i) styling" — both preferences were on file in `~/system/me/preferences.md`, unread before designing → applied: recurrence lines + a new numbers-first dashboard preference there.
+- Worker worktree had stale shared deps (vitest-pool-workers 0.5 vs lockfile ^0.22) and the hook blocks npm ci in worktrees; ~6 calls to work around → card #212.
+- Independent reviewer found 8 issues my tests missed (opt-out undone by a racing write, damaged file read as a fresh install, reload click undercount, …) → applied: 7 fixed with tests seen red; 1 (blob8 on pre-change AE rows) needs a check after deploy, noted on #211.
+- Two worker tests (presence, site-analytics) failed once at load 59 from other sessions, passed on 2 reruns → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: website.css merged into dashboard.css; the dashboard's weekly charts, by-version chart, journey table and every card sub-line removed; the inline App script replaced by modules sharing one chart/tab helper.
