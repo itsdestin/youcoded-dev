@@ -16,6 +16,22 @@ test("a contributor's computer is never marked, however often the workspace star
   }
 });
 
+test("a contributor is asked GitHub at most once a week", () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'team-device-'));
+  const checkedFile = path.join(home, 'checked');
+  try {
+    let asked = 0;
+    const login = () => { asked++; return 'some-contributor'; };
+    assert.equal(markTeamDevice(home, login, { checkedFile }), 'not-owner');
+    assert.equal(markTeamDevice(home, login, { checkedFile }), 'not-owner');
+    assert.equal(asked, 1);
+    assert.equal(markTeamDevice(home, login, { checkedFile, now: Date.now() + 8 * 864e5 }), 'not-owner');
+    assert.equal(asked, 2);
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true, maxRetries: 3 });
+  }
+});
+
 test("marks the owner's computer once, then leaves the file alone without asking GitHub again", () => {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'team-device-'));
   try {

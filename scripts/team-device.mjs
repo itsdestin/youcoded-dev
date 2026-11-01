@@ -29,12 +29,21 @@ export function teamDeviceFile(home = os.homedir()) {
 }
 
 // Returns "created", "present", "not-owner", or "failed: <reason>". Never throws.
-// `login` is looked up only when the file is missing (one gh call, then never again).
-export function markTeamDevice(home = os.homedir(), login = githubLogin) {
+// `login` is looked up only while the file is missing. `checkedFile` (optional)
+// remembers a "not the owner" answer for a week, so a contributor's session start
+// does not wait on a GitHub call every time.
+export const RECHECK_MS = 7 * 24 * 60 * 60 * 1000;
+export function markTeamDevice(home = os.homedir(), login = githubLogin, { checkedFile = null, now = Date.now() } = {}) {
   const file = teamDeviceFile(home);
   try {
     if (fs.existsSync(file)) return 'present';
-    if ((typeof login === 'function' ? login() : login) !== OWNER) return 'not-owner';
+    if (checkedFile) {
+      try { if (now - fs.statSync(checkedFile).mtimeMs < RECHECK_MS) return 'not-owner'; } catch { /* never checked */ }
+    }
+    if ((typeof login === 'function' ? login() : login) !== OWNER) {
+      if (checkedFile) { try { fs.writeFileSync(checkedFile, 'not the YouCoded owner\n'); } catch { /* re-check next time */ } }
+      return 'not-owner';
+    }
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, 'The YouCoded owner\'s computer: its analytics check-ins are marked "team" and left out of the dashboard.\n');
     return 'created';

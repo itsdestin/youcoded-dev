@@ -527,7 +527,7 @@ function main(args) {
   }
   runWorktreeSweep(opts.root, result.session, json);
   // The OWNER's computers count as team devices, not users; a contributor's never do (scripts/team-device.mjs).
-  const team = markTeamDevice();
+  const team = markTeamDevice(undefined, undefined, { checkedFile: path.join(opts.root, '.git', 'youcoded-team-device-checked') });
   if (!json && team === 'created') console.log(`analytics: marked this computer as the owner's team device (${teamDeviceFile()})`);
   else if (!json && team.startsWith('failed')) console.log(`analytics: could not mark this computer as a team device — ${team}`);
   if (opts.item) linkItem(result.workspace, opts.item, result.session, json);
