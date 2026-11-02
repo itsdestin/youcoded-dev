@@ -138,6 +138,20 @@ truly broken.
   (5) the assistant saves a file the user asked for, checked on disk. Step (3), the default choices, is recorded as a
   known failure and doesn't stop the run. Its fix (install Claude Code on Start, a route-matching default and a
   key-choice screen) waits for card #213 to merge, then follows the short UI route (Destin, 2026-11-02).
+- **Session steps passing (2026-11-02):**
+  - rename, tag and note a chat;
+  - close and reopen the app: the "Welcome back" panel offers the chat with its name and tag;
+  - resume: earlier messages are back and it answers again ("56");
+  - the note is still there;
+  - close the chat from All sessions;
+  - search the Resume list: finds it by "taco", not by nonsense.
+- **More findings from these steps (not yet filed):**
+  - The buddy's tip bubble sits on top of the "Close session" prompt's confirm button. A user must dismiss the
+    tip first.
+  - The "All sessions" arrow and each row's close ✕ have no accessible name until hovered (the tooltip names them
+    only then). A screen reader can't find them.
+  - With the only chat already open, the Resume list says "No previous sessions found" while the tip beside it
+    says "You have a session from earlier".
 - **Seen, not yet checked:** a fresh Linux desktop install with sync never set up shows a red "Sync failing" badge.
   The Android report saw the same on phones. The sync step should check this.
 - **Findings to report (not yet filed):**
