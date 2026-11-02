@@ -498,6 +498,33 @@ box for its opened list.
 - A list that can grow long shows a fixed number of rows (the sessions menu shows about 6½, so the cut
   row says "there is more") and fades see-through at the edge that has more.
 
+### New UI stays standard and quiet (reuse, no one-offs, copy budget)
+Destin, security-changes review, 2026-11-01: "our design guide needs to help eliminate these kind of
+random non-standard and extra busy ui elements in new build." Four rules, each from one rejected piece.
+
+- **New UI copies an existing surface's pattern and its shared piece. No one-off styled cards.** If
+  the job is a permission ask, it is the chat's permission card (header line, then Yes / Always allow /
+  No in green / blue / red, then one small note) — even when it is not a tool call. If it looks
+  different from the card for the same job elsewhere, it is wrong. Example: the browser's "send a form?"
+  ask had its own boxed style; it now uses `StandardAskCard`, the same card as a website or command ask
+  (security-changes#W-2; guard: `tests/BrowserAskCard.test.tsx`).
+- **A notice that does not block the person is a small dismissable chip, details on expansion.** Not a
+  `Callout` box across the panel. Use a `Pill` in its status tone, press to open the details and the
+  fix, an ✕ to hide it. Say how long hiding lasts (until the app is next opened is the default).
+  Reserve the `Callout` box for something the person must act on or that stopped a job. Example: the
+  Browser's "Extra protection off" (security-changes#S-1).
+- **Copy budget: one short line per control; detail goes behind expansion or a confirm step.** A setting
+  or button gets a label and, at most, one short hint. A consequence the person must read before
+  committing appears after they press, in a confirm strip in the same card (Cancel / the action), not
+  on the page all the time. Example: "Sign out everywhere" is one button and "Lost a device?"; the
+  "every device, paired phones stay paired" sentence only shows once pressed (security-changes#A-1).
+- **Say a fact once.** If the screen already shows it (the title, the list of what is sent), do not
+  write it again as a sentence. Keep only what the screen cannot show. Example: the ticket review
+  keeps one line, "Posted publicly on GitHub in itsdestin/youcoded — anyone can read it", and the
+  "Sent with it" list itself shows what goes (security-changes#T-1).
+- **Before showing Destin new UI, count:** how many boxes, sentences and buttons does it add, and could
+  each live behind a press? If a sentence is longer than the control it explains, it is too long.
+
 ### Status and notices
 - A status label is a **small tinted pill in its status colour, sentence case** (`Pill`: "Installed",
   "Needed"). Its words are the normal text colour. A live status (a session Working / Inactive, the

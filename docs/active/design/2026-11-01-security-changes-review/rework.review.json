@@ -1,0 +1,124 @@
+{
+  "title": "Security changes, round 2: the four pieces you sent back",
+  "key": "security-changes-rework",
+  "out": "rework.review.html",
+  "images": "images/rework.review",
+  "runs": {
+    "before": "runs-rework/before",
+    "after": "runs-rework/after"
+  },
+  "labels": {
+    "before": "Last round (what you rejected)",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "W-2",
+      "surface": "Chat · assistant browser",
+      "path": "When the assistant tries to send a form on a website",
+      "crop": "chat#browser-form@940x150+10+640",
+      "headline": "The send-a-form question is now the same permission card the chat uses for every other question.",
+      "changed": "It had its own boxed style. It is now the standard card: a header line, the question, then Yes, Always allow and No in the usual colours. Copied from the website-visit card.",
+      "notice": "It looks like every other ask. Buttons are Yes / Always allow / No. Behaviour is the same: Yes is one form, Always allow remembers the site.",
+      "risk": "Click only (no Enter key), as before. Other browser questions keep the old style; say if you want them moved too.",
+      "highlight": {
+        "box": [
+          1,
+          24,
+          98,
+          72
+        ]
+      }
+    },
+    {
+      "id": "A-1",
+      "surface": "Settings · Account",
+      "path": "Account",
+      "crop": "settings/account#signed-in@440x230+500+290",
+      "headline": "Sign out everywhere is now one short line and one button.",
+      "changed": "The long sentence and the long button are gone. It reads “Lost a device?” with a “Sign out everywhere” button, on the same kind of row as Sign out. Modelled on the Sign out row just above it, and on the delete-confirm strip in Local models.",
+      "notice": "The page is quieter. Nothing happens until you press the button; it then asks first (next slide).",
+      "risk": "The facts (it signs out this computer too, paired phones stay paired) are no longer visible until you press. They are in the confirm step, before anything happens.",
+      "highlight": "panel"
+    },
+    {
+      "id": "A-1b",
+      "surface": "Settings · Account",
+      "path": "Account, then press Sign out everywhere",
+      "crop": "settings/account#sign-out-everywhere@440x230+500+290",
+      "headline": "Pressing it shows the facts and asks you to confirm.",
+      "changed": "The row turns into: “Ends your YouCoded sign-in on every device, this one too. Phones paired for remote access stay paired.” with Cancel and Sign out everywhere.",
+      "notice": "Cancel puts the row back. Confirming signs this computer out as well. If the server cannot be reached, nothing changes and a short message says so.",
+      "risk": "One extra press compared with last round.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "new": true
+    },
+    {
+      "id": "T-1",
+      "surface": "Settings · Report a bug",
+      "path": "Settings, Development, Report a bug, then Review ticket",
+      "crop": "settings/development/bug-report#review-logs@600x165+420+285",
+      "headline": "The ticket review now has one short line saying it is public.",
+      "changed": "Three sentences became one: “Posted publicly on GitHub in itsdestin/youcoded — anyone can read it.”",
+      "notice": "Quieter. The “Sent with it” list below still shows what goes.",
+      "risk": "Dropped: “posted from your GitHub account” and “edits stay visible”.",
+      "highlight": "panel"
+    },
+    {
+      "id": "S-1",
+      "surface": "Chat · Browser panel",
+      "path": "Browser panel, on a computer that blocks the browser’s extra protection",
+      "crop": "chat/browser#protection-off@500x300+940+50",
+      "headline": "The “Extra browser protection is off” box is now a small chip with an X.",
+      "changed": "The big notice is replaced by a small amber pill, “Extra protection off”, with an X beside it. Modelled on the app’s status pills and the ✕ used in popups.",
+      "notice": "Almost no room taken at the top of the panel. The X hides it. Hiding lasts until you next open YouCoded, so it comes back once per launch and never nags while you work.",
+      "risk": "Because it is small, it is easier to ignore. That is the point, but the warning is real: the browser has less protection on that computer.",
+      "highlight": {
+        "box": [
+          0,
+          22,
+          100,
+          45
+        ]
+      }
+    },
+    {
+      "id": "S-1b",
+      "surface": "Chat · Browser panel",
+      "path": "Browser panel, press the chip",
+      "crop": "chat/browser#protection-off-open@500x300+940+50",
+      "headline": "Pressing the chip opens the details and the fix; pressing it again closes them.",
+      "changed": "Under the chip: “This computer doesn’t allow the browser’s built-in protection against harmful websites. Pages still load, but be careful which sites the assistant visits. To turn it back on, allow ‘unprivileged user namespaces’ in your system settings.”",
+      "notice": "The picture below the chip moves down a little while it is open, and back up when you close it.",
+      "risk": "The fix step is technical; it is the only fix there is.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "new": true
+    },
+    {
+      "id": "G-1",
+      "words": true,
+      "surface": "Design guide",
+      "path": "docs/active/design/2026-10-13-ui-design-guide.md, new section “New UI stays standard and quiet”",
+      "headline": "Add these rules to the design guide so new screens stop arriving busy or one-off?",
+      "today": "The guide says to copy an existing surface and use the shared pieces, but nothing says a notice should be small, or how much copy a control may carry. The four pieces in this deck slipped through.",
+      "problem": "New screens keep arriving with their own styled boxes, long sentences on the page, and big notice boxes for things that do not block you.",
+      "proposal": "A new section with five rules, each tied to one of these examples: (1) copy an existing surface and its shared piece; no one-off cards (the form ask). (2) A notice that does not block you is a small amber chip with details on press and an X (protection off). (3) One short line per control; detail goes behind a press or a confirm step (sign out everywhere). (4) Say a fact once; do not repeat what the screen already shows (ticket review). (5) Before showing you new UI, the builder counts the boxes, sentences and buttons it adds. A test already checks that the form ask uses the shared card.",
+      "risk": "Rules are advice to future builders, not an automatic block; only the form ask has a test behind it so far."
+    }
+  ]
+}
