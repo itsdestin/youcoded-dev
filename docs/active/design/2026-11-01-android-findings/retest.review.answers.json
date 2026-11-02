@@ -1,0 +1,69 @@
+{
+ "deck": "android-retest-review",
+ "started": "2026-11-02T06:34:59.290Z",
+ "submitted": "2026-11-02T06:42:40Z",
+ "cur": 7,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "t": 1793601311715,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "note": "we should stop showin mib and show mb/gb so it makes more sense to normal users. also the conversations pill at the top is gut off, and this popup also feels a bit too long. i feel like we could further optimize popups and reduce dead space in mobile. probabliy same for chats, reduce space between lines, space between bubbles, left/right margins, etc to get more text on each page, kinda like what we've done for the buddy floater but better. just to optimize for less screen real estate. maybe more collapsed sections on mobile. conversations pill inaccessible in backup and sync tab. ",
+   "t": 1793601521981,
+   "v": "yes",
+   "seconds": 210,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "note": "the top of the page border is cut off. i thought we already had and fixed this issue on desktop> i should be able to see the border. also the side-panel expansion button should gain the style of the games/file panel button in chat mode, since it's on the right side.",
+   "t": 1793601635566,
+   "v": "yes",
+   "seconds": 114,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-4": {
+   "note": "we can make this copy a bit prettier while making it take up less space i think. also idk if this styling matches existing permission cards and such?",
+   "t": 1793601666306,
+   "v": "other",
+   "seconds": 31,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "yes",
+   "t": 1793601672432,
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "t": 1793601683274,
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-7": {
+   "note": "yes that's good. also what is that yellow \"cross-session messaging is off\" warning about? is that something we could fix simply without modifying the cc binary?",
+   "t": 1793601722863,
+   "v": "yes",
+   "seconds": 40,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-8": {
+   "v": "other",
+   "t": 1793601759419,
+   "note": "can we even offer the \"use a folder already on this phone\" option honestly? does the app have filesystem access needed to do that?",
+   "seconds": 37,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
