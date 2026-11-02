@@ -1,0 +1,174 @@
+{
+ "title": "Security changes, round 3: reuse what the app already has",
+ "key": "security-changes-round3",
+ "out": "round3.review.html",
+ "images": "images/round3.review",
+ "runs": {
+  "before": "runs-round3/before",
+  "after": "runs-round3/after"
+ },
+ "labels": {
+  "before": "Last round (rejected)",
+  "after": "Now"
+ },
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ],
+ "stage": "review",
+ "steps": [
+  {
+   "id": "W-2",
+   "surface": "Chat \u00b7 assistant browser",
+   "path": "When the assistant tries to send a form on a website",
+   "crop": [
+    {
+     "crop": "chat#web-visit@640x150+25+112",
+     "label": "Existing ask"
+    },
+    {
+     "crop": "chat#browser-form@640x180+20+625",
+     "label": "Browser ask"
+    }
+   ],
+   "headline": "The send-a-form question now sits in the same frosted card as the chat's other permission questions.",
+   "changed": "It is now drawn by the chat's own permission card, inside the same frosted bubble. The old one sat directly on the chat, so the wallpaper showed through.",
+   "notice": "Same look, same Yes / Always allow / No buttons, and Enter works like it does on every other question.",
+   "risk": "Yes is one form; Always allow remembers the site, as before."
+  },
+  {
+   "id": "W-3",
+   "surface": "Chat \u00b7 assistant browser",
+   "path": "When the assistant first uses a site",
+   "crop": [
+    {
+     "crop": "chat#web-visit@640x150+25+112",
+     "label": "Existing ask"
+    },
+    {
+     "crop": "chat#browser-site@640x180+20+625",
+     "label": "Browser ask"
+    }
+   ],
+   "headline": "The website question uses the same card: Yes, Always allow, No.",
+   "changed": "Replaces Not now / Always allow / Allow for this chat. Yes now means for this chat.",
+   "notice": "The three buttons match every other question.",
+   "risk": "Always allow still remembers the site."
+  },
+  {
+   "id": "W-4",
+   "surface": "Chat \u00b7 assistant browser",
+   "path": "When the assistant is about to click a step that buys or sends",
+   "crop": [
+    {
+     "crop": "chat#web-visit@640x150+25+112",
+     "label": "Existing ask"
+    },
+    {
+     "crop": "chat#browser-final@640x180+20+625",
+     "label": "Browser ask"
+    }
+   ],
+   "headline": "The last-step question (buying, sending, deleting) uses the same card: Yes or No.",
+   "changed": "Replaces Don't allow / Allow this once. Yes allows this one step only.",
+   "notice": "Same card. There is no Always allow here, as before.",
+   "risk": "Enter does not answer this one, only a click, so a stray key can never buy something."
+  },
+  {
+   "id": "W-5",
+   "surface": "Chat \u00b7 assistant browser",
+   "path": "When the assistant wants an address on your home network",
+   "crop": [
+    {
+     "crop": "chat#web-visit@640x150+25+112",
+     "label": "Existing ask"
+    },
+    {
+     "crop": "chat#browser-local@640x180+20+625",
+     "label": "Browser ask"
+    }
+   ],
+   "headline": "The home-network question uses the same card: Yes or No.",
+   "changed": "Replaces Don't allow / Allow for this chat. Yes covers this chat.",
+   "notice": "Same card, no Always allow.",
+   "risk": "None beyond the shared card."
+  },
+  {
+   "id": "A-1",
+   "surface": "Settings \u00b7 Account",
+   "path": "Account",
+   "crop": "settings/account#signed-in@panel",
+   "headline": "The Account page loses the Sign out everywhere row.",
+   "changed": "\"Lost a device?\" and its button are gone from this page.",
+   "notice": "A quieter page. Sign out everywhere moved one level down, next to Delete account.",
+   "risk": "It is one press further away (Edit account, then scroll down).",
+   "highlight": "panel"
+  },
+  {
+   "id": "A-1b",
+   "surface": "Settings \u00b7 Account",
+   "path": "Account, Edit account, Danger zone",
+   "crop": [
+    {
+     "crop": "settings/account#delete-account-ref@440x330+500+420",
+     "label": "Existing: Delete account"
+    },
+    {
+     "crop": "settings/account#sign-out-everywhere@440x330+500+420",
+     "label": "Sign out everywhere"
+    }
+   ],
+   "headline": "Sign out everywhere now works like Delete account: a red button, then a red note with Cancel and the action.",
+   "changed": "It sits in the Danger zone on Edit account. Pressing it shows one note: \"Ends your YouCoded sign-in on every device, this one too. Phones paired for remote access stay paired.\"",
+   "notice": "Same two-step as deleting an account, without the typed word, since signing in again undoes it.",
+   "risk": "If the server cannot be reached, nothing changes and a short message says so.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "S-1",
+   "surface": "Chat \u00b7 Browser panel",
+   "path": "Browser panel, on a computer that blocks the browser's extra protection",
+   "crop": "chat/browser#protection-off@470x230+955+110",
+   "headline": "\"Extra protection off\" is now the app's normal warning box: one line and a Got it button.",
+   "changed": "The custom chip is gone. This is the same amber notice box used elsewhere, with the explanation folded under Details.",
+   "notice": "Small at rest. Got it hides it until you next open YouCoded.",
+   "risk": "It is a warning box, so it takes a little more room than a chip did."
+  },
+  {
+   "id": "S-1b",
+   "surface": "Chat \u00b7 Browser panel",
+   "path": "Browser panel, press Details",
+   "crop": [
+    {
+     "crop": "settings/development/contribute#failed-details@400x215+520+395",
+     "label": "Existing: error with Details"
+    },
+    {
+     "crop": "chat/browser#protection-off-open@470x300+955+110",
+     "label": "Browser notice"
+    }
+   ],
+   "headline": "Details opens inside the box, exactly like other errors with Details.",
+   "changed": "The explanation and the fix sit in the same Details fold the app's errors use.",
+   "notice": "The picture below moves down a little while it is open.",
+   "risk": "None beyond the shared notice."
+  },
+  {
+   "id": "G-1",
+   "words": true,
+   "surface": "Design guide",
+   "path": "docs/active/design/2026-10-13-ui-design-guide.md, section \"New UI reuses what exists, and stays short\"",
+   "headline": "Replace last round's design guide section with these two rules?",
+   "today": "Last round's section listed five rules, including a small amber chip, and went further than you asked.",
+   "problem": "New screens kept arriving with their own styling and too many words.",
+   "proposal": "Two rules only. (1) Reuse the existing screen and its styling; find one that does the same job, put it beside yours, and build yours from that same piece. (2) Keep copy minimal: one short line, details behind an existing expand or confirm, say a fact once.",
+   "risk": "Advice to future builders, not an automatic block."
+  }
+ ]
+}
