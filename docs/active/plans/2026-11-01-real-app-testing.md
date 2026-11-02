@@ -96,10 +96,12 @@ Each of these is a single trial that decides how later phases are built.
   - `api.youcoded.ai/health`: sign-in, marketplace, friends, the sync hub.
   - The marketplace and theme lists.
   - The update check.
-  - OpenRouter models.
   - The games server.
   - npm, which first-time setup needs.
-  - The ChatGPT route is already watched (`chatgpt-route-watch.yml`).
+  - **Other sign-in routes (Destin, 2026-11-01):** the walk-through chats only through the one Anthropic test key,
+    for both Claude Code and the app's own assistant. OpenRouter and ChatGPT are covered here instead. The check
+    confirms their sign-in pages load and their free addresses (e.g. OpenRouter's model list) answer. The ChatGPT
+    route is already watched (`chatgpt-route-watch.yml`).
 - **First:** confirm where online games really live now. The old games address is gone, but the marketplace
   server has a games section, so games may have moved there. Trace this before writing the check, so it watches
   the right address.
@@ -217,9 +219,11 @@ automatic check will flag new ones, and the rule note gets a line saying why.
 
 ## Decisions needed from Destin before building
 
-1. **A test Claude account.** The walk-through needs its own Claude Code sign-in so it never touches yours.
-2. **A test OpenRouter key** with a monthly cap (e.g. $10) for the app's own assistant.
-3. **The phone screens,** decided after Phase 0.2. If no free pretend phone works, the choices are your Flip7 per
+1. ~~A test Claude account / OpenRouter key.~~ **Done 2026-11-01:** one Anthropic API key for both Claude Code and
+   the app's own assistant. It lives in a separate "testing" workspace with a $15 monthly limit. It's stored in
+   GitHub as the secret `YOUCODED_TEST_ANTHROPIC_KEY`, and locally in `~/.config/youcoded-test/anthropic.key`
+   (readable only by Destin's account).
+2. **The phone screens,** decided after Phase 0.2. If no free pretend phone works, the choices are your Flip7 per
    release (~20–40 minutes plugged in) or a cheap dedicated phone (~$150–250).
 
 ## Rough size
