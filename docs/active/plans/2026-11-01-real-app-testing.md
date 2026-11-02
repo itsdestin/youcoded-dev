@@ -152,6 +152,21 @@ truly broken.
     only then). A screen reader can't find them.
   - With the only chat already open, the Resume list says "No previous sessions found" while the tip beside it
     says "You have a session from earlier".
+- **File steps passing (2026-11-02):**
+  - open the saved file from the Files panel;
+  - edit and save it in the viewer, with the change confirmed on disk;
+  - open the user's own spreadsheet from Projects, with the SUM formula's total shown;
+  - open the user's own Word document.
+
+  Sample files: `youcoded/.github/real-app/walkthrough/fixtures/`.
+- **More findings (not yet filed):**
+  - The viewer's floating Edit button is hidden while the file list is open beside the file
+    (`SessionDrawer.tsx`, opacity-0 unless `!showList`).
+  - Projects → Files for the Home folder lists hidden setup folders (`.cache`, `.claude`, `.config`, `.youcoded`
+    with `providers.json`) as "Project files". The Android report saw the same.
+  - Possible: once, Enter right after a new chat opened left the message in the box with no feedback. The
+    walk-through now retries and reports any wait.
+  - Unconfirmed: Escape didn't close the Word preview in the walk-through; its ✕ does.
 - **Seen, not yet checked:** a fresh Linux desktop install with sync never set up shows a red "Sync failing" badge.
   The Android report saw the same on phones. The sync step should check this.
 - **Findings to report (not yet filed):**
