@@ -126,12 +126,16 @@ truly broken.
   - a keyring;
   - the Chrome sandbox set up the way the `.deb` installer does it;
   - to present itself as a GNOME desktop.
-- **Failing / under investigation:** (3) the first chat with the default choices. Pressing "Start session" folds
+- **Failing: (3) the first chat with the default choices. Cause confirmed (2026-11-02):** on the API-key route,
+  Claude Code is never installed (no `claude` on PATH or in the home folder). Yet the welcome form defaults to
+  Claude Code, and `session:create` for a missing Claude Code answers "active" and then nothing appears: no chat,
+  no error. Two app faults: the wrong default, and the silent start. The original investigation notes follow.
+- **Original notes:** (3) the first chat with the default choices. Pressing "Start session" folds
   the form back to "New session". No session is created and no error shows. Calling `window.claude.session.create`
   directly does create a Claude Code session, so the backend works. Still to establish: does the button never send
   the request (an app bug), or is the walk-through's click wrong?
 - **Findings to report (not yet filed):**
-  - When no secure storage backend is found, the keychain helper shows "could not start or receive the request".
+  - **Fixed on `session/first-run-fixes` (8b591a362):** when no secure storage backend is found, the keychain helper showed "could not start or receive the request".
     `keychain-client.ts` swallows the real reason (`keychain-launch.ts`: "A secure storage backend is not
     available"). Users on less common Linux desktops would get a misleading message.
   - After a new user signs in with an Anthropic API key, which powers the app's own assistant, the first-session
