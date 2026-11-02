@@ -1,0 +1,25 @@
+{
+ "deck": "pages-finish-step3-choice",
+ "started": "2026-11-02T03:17:35.111Z",
+ "submitted": "2026-11-02T03:21:37Z",
+ "cur": 1,
+ "answers": {
+  "C-desktop": {
+   "v": "pick",
+   "pick": "left",
+   "t": 1793589546776,
+   "note": "i was enisioning on the left, but you seem to have dropped the sidebar to change pages? need to think through how these two elements interact",
+   "seconds": 92,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "C-phone": {
+   "note": "unsure how i feel about this. also, more generally, i dont love this chat ui. it violates a few youcoded design principles (horizontal line across the top header), idk what the pencil icon does, i don't think it needs to re-display the page icon, and it should have a real session name intead of just being \"money chat\". i think the x would probably be better as a minimize button, if the chat resumes in the same place when reopened, as X reads as \"end chat permananetly\".",
+   "t": 1793589695557,
+   "v": "other",
+   "seconds": 149,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}
