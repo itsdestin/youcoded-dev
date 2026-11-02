@@ -115,6 +115,28 @@ truly broken.
 - **Not yet checked:** the phone check's "engine answers the screen" step can't be checked against a passing engine
   until the ICU fix exists. Check it against the first build with that fix.
 
+### Phase 3 progress (2026-11-02)
+
+- **Where it lives:** `youcoded/.github/workflows/release-walkthrough.yml` and
+  `.github/real-app/walkthrough/walkthrough.mjs`. It is Linux only so far, and uses the nightly packaged app.
+- **How it drives the app:** Chromium's `--remote-debugging-port` switch plus `playwright-core`. The app needs no
+  changes. Every on-screen word it relies on is listed in one `WORDS` table.
+- **Passing:** (1) the app opens; (2) a brand-new user signs in by pasting the test key. To get there, the machine
+  needed:
+  - a keyring;
+  - the Chrome sandbox set up the way the `.deb` installer does it;
+  - to present itself as a GNOME desktop.
+- **Failing / under investigation:** (3) the first chat with the default choices. Pressing "Start session" folds
+  the form back to "New session". No session is created and no error shows. Calling `window.claude.session.create`
+  directly does create a Claude Code session, so the backend works. Still to establish: does the button never send
+  the request (an app bug), or is the walk-through's click wrong?
+- **Findings to report (not yet filed):**
+  - When no secure storage backend is found, the keychain helper shows "could not start or receive the request".
+    `keychain-client.ts` swallows the real reason (`keychain-launch.ts`: "A secure storage backend is not
+    available"). Users on less common Linux desktops would get a misleading message.
+  - After a new user signs in with an Anthropic API key, which powers the app's own assistant, the first-session
+    form defaults to "Sonnet · Claude Code". Claude Code was never signed in or installed on that route.
+
 ## Phase 1: the morning engine check
 
 - **What:** each night, on free GitHub machines, start the real app engine:
