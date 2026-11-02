@@ -45,9 +45,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * that rather than the neighbouring `inert` prop, because on React versions that
  * serialize `inert={false}` as `inert=""` an `[inert]` test would match EVERY view.
  *
- * BubbleFeed.tsx:442 renders a parallel `.timeline-entry` for the same conversation,
- * but it is (a) not inside any `.chat-scroll` — BuddyChat.tsx:170 wraps it in a plain
- * overflow:hidden div — and (b) only mounted in the buddy window, which is a separate
+ * The buddy chat draws the same conversation with its own ChatView (`.timeline-entry`
+ * inside a `.chat-scroll`), but only in the buddy window, which is a separate
  * CDP target that cdp.mjs's waitForMainTarget explicitly excludes (`!t.url.includes('mode=')`).
  * So it can neither be reached nor accidentally counted from here; the `.chat-scroll`
  * prefix is what guarantees that.

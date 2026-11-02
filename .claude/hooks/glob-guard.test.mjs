@@ -426,6 +426,9 @@ for (const cmd of [
   'r="1 2 3"; set -- $r; echo $1',
   'for x in $LIST; do echo $x; done',
   'for spot in $SPOTS\ndo\n  echo $spot\ndone',
+  // 2026-10-29: a command kept in a variable ran as one program name and printed nothing.
+  'E="node scripts/shoot/explore.mjs"; $E start | grep picture',
+  "E='node x.mjs'; N=$($E look | rg foo)",
 ]) {
   test(`blocks: ${cmd.replace(/\n/g, '⏎')}`, () => {
     const { blocked, message } = run(cmd);
@@ -454,6 +457,9 @@ for (const cmd of [
   'echo $PIDS',
   'set -e; set -- "$@"',
   "cat <<'EOF'\nkill $PIDS is the trap\nEOF",
+  'E=node; $E x.mjs',
+  'MSG="two words"; echo $MSG',
+  'D="a b"; ls "$D"',
 ]) {
   test(`allows: ${cmd.replace(/\n/g, '⏎')}`, () => {
     assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
@@ -507,3 +513,29 @@ test('guard 8 allows a fresh install that first cds to a scratch folder (card #1
 test('guard 8 allows npm install in the shared checkout', () => {
   assert.equal(runIn('npm install pngjs', SHARED).blocked, false);
 });
+
+// ---------------------------------------------------------------------------
+// Guard 9 — `pgrep -f` feeding kill lists (and kills) the calling shell (2026-10-29).
+// ---------------------------------------------------------------------------
+for (const cmd of [
+  'kill $(pgrep -f review-cards)',
+  'P=$(pgrep -f "serve --no-build x" | head -5); [ -n "$P" ] && kill ${=P}',
+  'kill -9 $(pgrep -af vite | awk \'{print $1}\')',
+]) {
+  test(`blocks: ${cmd}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, true, `should have blocked: ${cmd}`);
+    assert.match(message, /rg -v pgrep/);
+  });
+}
+for (const cmd of [
+  'kill $(pgrep -f vite | rg -v pgrep)',
+  "kill $(pgrep -f vite | grep -v 'pgrep')",
+  'pgrep -af review-cards',
+  'kill $(pgrep node)',
+  'kill 1234',
+]) {
+  test(`allows: ${cmd}`, () => {
+    assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
+  });
+}

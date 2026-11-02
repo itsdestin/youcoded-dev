@@ -1351,8 +1351,9 @@ renderer does when each commit lands in its own frame. Getting a conclusive read
 needs a faster local model or a longer window; reporting `coalesced` there would have
 been a pass the data does not support.
 
-This is what re-gates cycle 1, and it is the detector the unfixed buddy-window twin
-(`BubbleFeed.tsx`) needs. It does **not** cover buddy windows yet: no scenario opens one.
+This is what re-gates cycle 1. The buddy window's old twin (`BubbleFeed.tsx`) is gone: since
+the 2026-10-30 rebuild the buddy draws ChatView, so the fix covers it. It does **not**
+measure buddy windows yet: no scenario opens one.
 
 ### Is anything late to the screen? — `late-content.mjs`
 

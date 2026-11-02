@@ -16,7 +16,7 @@ work: session/7-compaction-boundaries
 ---
 Progress
 Done: Compaction-boundary repair shipped in app PR #661, merge 2cbea256388667b304b8704b8bf47fe09b5ae48c. Exact tested-tree match; local desktop gates passed; hosted Linux shards/all four packages and Android JVM/debug/releaseTest APKs passed (run39437693807). Approved reviews and scoped plan archived under docs/archive/*/2026-10-19-compaction-boundaries*.
-Next: Other existing chat-view glitch requests on this broad card remain open; compaction-boundary scope is complete.
+Next: Other existing chat-view glitch requests on this broad card remain open; compaction-boundary scope is complete. New 2026-10-30 (card #207 dev-window test): long messages (~200 characters, with a long file path) sent to a Claude Code chat sometimes sat in Claude Code's typing box and never sent; 53-character messages always went through. Seen 4 times. Twice the text was sent by calling window.claude.session.sendInput from outside, which skips the message box's retry; twice through the message box itself (filled in from outside, then the send button or real Enter keystrokes), when the box emptied and no bubble appeared, with nothing in either chat's transcript. Separately, one Bash approval showed only in the terminal view, with no card in chat. Next: reproduce by hand in a dev window by typing a long message with a long path; turn on the pty-worker trace (ECHO_TIMEOUT lines) to see whether the echo wait ran out.
 Blocked: No blocker for the shipped compaction scope. No release/installed-app/device-runtime or Windows/macOS validation claim.
 
 Chats

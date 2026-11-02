@@ -16,8 +16,8 @@ work: session/page-start-session, session/ha-pages-connection, session/google-co
 vision: pages.agents.attached, pages.connect.files, pages.build.phone
 ---
 Progress
-Done: 2026-10-24 consolidation: audited every Pages chat and doc (all chats already closed except the Work board planning chat, now closed); generality audit and architecture proposal approved in direction on two question decks (docs/active/specs/2026-10-24-pages-finish-architecture.md). Work board installed 2026-10-18; held skill updates were published (Page Builder 0.3.0).
-Next: Step 1 screens: page Settings window, approval card with recipes and the combined-risk line, the 'Open this website?' ask. Before steps 3-4: a choice deck for where a page's chat lives, and a catalogue of autonomous-assistant use cases.
+Done: Step 2 (files) tried by Destin in the dev window: working (2026-10-25). Practice page deleted, dev window closed.
+Next: Step 3 (chat in a page): Destin wants to think through the real use cases first — no deck or build until then.
 Blocked: none
 
 See also #91: 91 is the follow-up list for the YouCoded Pages work in 90.

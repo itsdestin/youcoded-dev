@@ -1,0 +1,23 @@
+{
+ "deck": "outside-comments-review",
+ "started": "2026-10-30T05:26:09.284Z",
+ "submitted": "2026-10-30T05:26:37Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "these buttons dont seem to actually match how we'd style other/similar cards?",
+   "t": 1793337994508,
+   "v": "other",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "other",
+   "t": 1793337996973,
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

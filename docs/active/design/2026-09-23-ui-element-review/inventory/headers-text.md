@@ -1,5 +1,7 @@
 # Headers & Text Styling Inventory
 
+> **Note (2026-10-30):** the buddy files named below (`BubbleFeed`, `CompactToolStrip`, `AttentionStrip`, `SessionPill`) were deleted in the buddy rebuild; the buddy chat now uses the main window's SessionStrip, ChatView, InputBar and cards (`docs/archive/specs/2026-10-25-buddy-rebuild-design.md`). Findings about them are closed by deletion.
+
 Scope: every header level (window/app title → eyebrow label) and every distinct
 body/secondary/caption/code/link text treatment in `desktop/src/renderer`
 (excluding `src/renderer/dev/`). Method: read the type scale in

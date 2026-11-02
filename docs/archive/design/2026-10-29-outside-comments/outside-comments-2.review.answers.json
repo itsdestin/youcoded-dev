@@ -1,0 +1,22 @@
+{
+ "deck": "outside-comments-review-2",
+ "started": "2026-10-30T08:20:34.525Z",
+ "submitted": "2026-10-30T08:21:07Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1793348457195,
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1793348466236,
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

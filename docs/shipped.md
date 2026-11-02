@@ -889,3 +889,7 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-10-24 #170 Add offline next-word prediction to Swipe Keyboard (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
 - [x] 2026-10-24 #187 Tap a word to see and swap alternatives in Swipe Keyboard (itsdestin/swipe-keyboard#11 (8d9b81d, v0.5.0-1))
 - [x] 2026-10-24 #200 Swipe Keyboard: test builds in under 10 minutes, releases in under 15 (itsdestin/swipe-keyboard#13 (a9ed380), follow-up #15)
+- [x] 2026-10-30 #40 File links in chat fail for files outside the project (youcoded#705, youcoded-dev#323)
+- [x] 2026-10-30 #207 Let the assistant read comments on files outside the project (youcoded#707, youcoded-dev#325)
+- [x] 2026-10-31 #85 Buddy window: three open items (youcoded#709 (buddy rebuild: menu-typing guard, real question card, idle moments + sleep in mascot-mood.ts))
+- [x] 2026-11-02 #211 Analytics: honest numbers, team-device exclusion and a clearer dashboard (youcoded#711, wecoded-marketplace#113, youcoded-admin#21, youcoded-dev#330)

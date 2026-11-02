@@ -1,0 +1,31 @@
+{
+  "title": "Comments on files outside the project, round 3: Word and Excel files too",
+  "key": "outside-comments-review-3",
+  "out": "outside-comments-3.review.html",
+  "images": "images/outside-comments-3.review",
+  "runs": { "before": "runs3/before", "after": "runs3/after" },
+  "labels": { "before": "Approved in round 2", "after": "After" },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Any chat, when the assistant reaches for comments on a file in another folder",
+      "crop": "chat#outside-comments-cc@1000x340+0+70",
+      "headline": "Only the note under the buttons changes: it now says Word and Excel comments are saved inside the file.",
+      "changed": "Word and Excel files in another folder now get this same card instead of a \"not supported yet\" refusal. Their comments live inside the file itself, so the old line \"never lets the assistant change the files\" would have been untrue for them. The buttons are the ones you approved in round 2.",
+      "notice": "After Yes on a Word or Excel file, the assistant can read and add comments in that file. After Allow for this chat, it can do that in any outside Word or Excel file until the chat ends, without asking again.",
+      "risk": "The comments the assistant adds to a Word or Excel file really are written into that file, the same as comments it adds to a Word file inside the project today. Other files are still never changed.",
+      "alsoChanges": ["The app's own assistant (same card)", "Phone and remote browser (same card)"]
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat on a phone",
+      "path": "The same card at phone width",
+      "crop": "chat#outside-comments-phone",
+      "headline": "On a phone the longer note wraps onto one more line; the buttons stay as approved.",
+      "changed": "The same note, drawn narrow.",
+      "notice": "Nothing else on the card moves.",
+      "risk": "The card is a little taller on a phone than in round 2."
+    }
+  ]
+}

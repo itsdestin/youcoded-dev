@@ -1,0 +1,31 @@
+{
+ "deck": "buddy-rebuild-review3",
+ "started": "2026-10-26T08:02:36.073Z",
+ "submitted": "2026-10-26T08:03:50Z",
+ "cur": 2,
+ "answers": {
+  "P-1": {
+   "v": "yes",
+   "t": 1793001763504,
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "D-2": {
+   "note": "between row/pill. keep it as a full width row, but with the color/height/style of the pill there",
+   "t": 1793001799533,
+   "v": "other",
+   "seconds": 36,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-3": {
+   "note": "i think i want a few pill options where the button explaination expands on hover",
+   "t": 1793001828802,
+   "v": "other",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1223,6 +1223,18 @@ recurred — the repetition is the data.
 - Known issues filed as cards #176, #177 (Destin's request).
 - deleted/merged: closed the manual demo-refresh PR (#676) and removed the release skill's "ask about betas" step.
 
+## 2026-10-22 — search and AI discovery: site metadata, listings, README (session/seo-discovery, session/readme-refresh)
+- Knowing what the app does TODAY took a ~97k-token read-only sweep (20 claims checked against code); the README had drifted (macOS 11 vs Electron 41's macOS 12, 4 vs 6 themes, 2 vs 4 games, six weeks of features missing) → dropped as a workspace change: the README, llms.txt and Linux store text are now verified copies, and no cheap executable check can pin marketing claims to code.
+- Destin: public posts under his name are assembled from his own words (interview, voice notes), all lowercase on his social posts, never generated → applied: `~/system/me/preferences.md`; his voice notes saved at `docs/vision/2026-10-22-why-youcoded-voice-notes.md`.
+- New store listings each need per-release upkeep (winget manifest PR; AUR once registration reopens) → recorded on card #29's next steps (a new card was refused as overlapping #29); AUR stays card #186.
+- youcoded has auto-merge disabled, so a merge waits on CI by hand → dropped: a background `until` loop on `gh pr checks` covered it in one call.
+- Removing the merged session worktree failed on an untracked draft Destin had open in an editor → handled: waited for the editor lock to clear, saved the draft as `status: parked` before removing.
+- deleted/merged: the README's stale pitch, requirements and duplicated privacy notes replaced by one verified version; the Linux "Desktop GUI for Claude Code" synopsis and old store blurb replaced.
+- 2026-10-27 follow-up (same session key): that README never merged — the branch sat five days while the launch kit said "README rewritten" → applied: merged now with master's screenshots; dropped as new guidance, the existing "ask ready to merge?" rule covers it.
+- Destin: the verified rewrite was "still far too long and too repetitive/mechanical"; he then wrote the intro himself → applied: `~/system/me/preferences.md` (public copy: short, his voice, no feature inventories). The site's feature cards were reordered and reworded through a one-off drag-and-edit page in `scratch/`, since `site-copy-editor.py` cannot reorder.
+- verify.sh, run from this resumed five-day-old workspace branch, failed an ast-grep exemption already fixed on master → applied: merged origin/master first; dropped as a tool change, workspace-start already reported 211 incoming commits.
+- Editing SECURITY.md left the generated `docs/security.html` stale; `legal-pages.test.mjs` caught it → applied: regenerated. Guard already exists.
+
 ## 2026-10-22 — phone keeps disconnecting, can't refresh or send (session/remote-access-audit, card #182)
 - Destin's symptoms were filed nowhere and the session never joined an item → applied: card #182 in his words, linked to this branch, with the real-phone pass and the connection-status work (review F10, "computer is asleep", always-there reload) as next steps; laptop-freeze findings recorded on #93 with the next step (a dev build that logs synchronous child-process calls for a day).
 - After a compaction, the replayed stub of an earlier Read of the deck server's output (3 lines) was trusted over the finished file, which also held "submitted · 5 yes"; the session restarted the server and only learned of the answers from its rotation notice (~3 wasted calls) → dropped as a workspace change: `serve.py` already prints the summary on exit and its docstring says the exit is the signal; the lapse was not re-reading a finished task's output.
@@ -1300,3 +1312,46 @@ recurred — the repetition is the data.
 - RECURRED (card #195): ~10 more hand-rolled regex secrets scans, and a `knip | tail && git push` chain pushed past a failing check because the pipe hid the exit code → card #195 progress records the recurrence (a checked scan-then-push script would have stopped both).
 - Destin's machine facts went to the brain: USB-C "UBTC" notices vs whole-desktop freezes → `~/system/machines/z13/issues.md`; quiet-desktop lab steps → `scripts/perf-lab/README.md`. His roadmap ideas this session were filed as cards #197-199.
 - deleted/merged: the busy-laptop A/B summaries moved from a scratch workspace copy into `perf-reports/busy-laptop-2026-10-22/` (raw JSON dropped); performance rules 10-13 added to the existing `performance.md`, no new rule file.
+
+## 2026-10-25 — awesome-list submission, license detected as MIT, site Security/Changelog pages (session/site-legal-links, no card)
+- Changelog page would have gone stale after every release: `site-deploy.yml` ran only on `docs/**`, but releases edit root `CHANGELOG.md` → applied: workflow regenerates the Markdown-built pages on every publish and triggers on the four root files.
+- The landing-page rule never mentioned the generated Privacy/Terms pages; found `gen-legal-pages.mjs` by sweeping (~3 calls) → applied: new section + anchors in `.claude/rules/landing-page.md`; its guard now names the copy-editor test's real path (2 wasted calls finding it).
+- Told Destin AUR was a new visibility idea; `packaging/aur/PKGBUILD` already existed → dropped: my unchecked claim, corrected in chat; existing evidence-before-claims rule covers it.
+- zsh `nomatch` (`NOTICE*`, `test_site_copy_editor*`) and an unquoted `--include=*.json` (hook blocked) cost 3 calls → dropped: glob-guard already catches the worst case.
+- Destin's visibility ideas (Awesome Claude Code / Awesome Electron after 100 stars, Reddit, Show HN, AlternativeTo) → not filed: he chose only the license fix "for now"; offered as a card.
+- deleted/merged: the generator's hard-coded Privacy/Terms ternaries became one `pages` table serving four pages.
+
+## 2026-10-29 — file chips that wouldn't open (session/40-file-chip-wrong-folder, app + workspace, card #40)
+- Two bugs behind "chips stop working": a short path joined to the chat's STARTING folder after the assistant `cd`d elsewhere, and a failed tap's note rendered only in the file list, which is hidden while a file is open → applied: host searches beside the chat's own files (`nearbyCandidates`, computer door only), note also shows above the open file; tests seen red. The second bug surfaced only by clicking through `explore`, not from reading code.
+- `youcoded/docs/artifacts.md` still said Android stubs `artifacts:*` with `not-implemented-on-mobile`; the independent plan reviewer repeated it as fact. No `app/` source produces that code since the 2026-10-14 rebuild → applied: corrected, plus a depth note for the nearby search.
+- RECURRED (2026-10-22, "zsh did not word-split `$files`", dropped as one-off): `E="node …explore.mjs"; $E start | grep` ran nothing and printed nothing, 3 wasted calls → applied: glob-guard now blocks running a command through a variable assigned a spaced value in the same line.
+- `P=$(pgrep -f X …); kill ${=P}` killed my own shell (exit 144) — the global "never pkill -f your own command line" rule exists, the pgrep-into-kill spelling was unguarded → applied: glob-guard guard 9 (allowed with `| rg -v pgrep`); both guards seen red (5 tests) then green, 150/150.
+- `explore` renumbers controls after every step; clicking a stale number hit the zoom button and I briefly told Destin a false bug (corrected next turn) → dropped as tooling: re-`look` before every click (the README's step model already implies it); my error, one call.
+- Read `serve`'s exit as a crash and restarted it; it exits on submit (AUTHORING.md says so) → dropped: documented, I didn't check.
+- Destin, review S-1: "why would we need a banner for this. remove that." (an "Opened from <folder>" line) → applied: removed. Not filed as a rule: CLAUDE.md's "minimal useful copy" already covers it.
+- deleted/merged: the stale Android-stub claim in artifacts.md; the `pillFoundIn` state/action that the dropped banner needed.
+
+## 2026-10-30 — comments on files outside the project ask first (session/207-comments-outside-project, app + workspace, card #207)
+- Widening the Word/Excel request queue to outside files kept its old "the chat's secret is enough" trust, but that secret sits in a file the assistant can read; a link inside the project also skipped the card. The independent reviewer caught both, not my tests → applied: the queue checks the app's own record of the person's answer (`claimOutsideApproval`), links that leave the project are refused, tests seen red. Dropped as a rule: the feature flow's fresh reviewer is exactly what caught it.
+- Testing in a real dev window cost ~25 calls of ad hoc CDP scripts; the dev profile's default AUTO mode never shows permission cards; long sends stuck in Claude Code's box → card #209 (driver script); the stuck sends were added to card #7.
+- "No" on the card reached Claude as a bare "Permission denied by hook", so it guessed at a safety check → applied: the deny carries a plain reason (`cc-outside-comments.ts`), test seen red.
+- Windows/macOS: master's own nightly runs fail exists-probe, sidecar-cleanup, resolve-artifact-path and a MarkdownContent CPU budget (3 days running, before this branch) → reported to Destin, not fixed here (outside this work); per the test rule not filed as a card.
+- Destin's 5 roundup comments stay in the old store until his app updates → card #208 (move them then, with his OK).
+- deleted/merged: timed-out-ask cleanup moved into the module (two copies in main.ts/headless-boot.ts dropped); the `office-outside` refusal path and its verdict kind were deleted when Word/Excel joined the same card.
+
+## 2026-10-31 — buddy rebuild follow-up: taskbar gap, doc sweep, leftover tray icon (session/buddy-followup, app + workspace, cards #85 #210)
+- I told Destin the buddy "never sleeps on its own"; it has since the rebuild (`mascot-mood.ts`). Source: card #85's progress note, which I wrote myself at the #709 merge without checking item (c) against the code → applied: #85 closed as shipped. Dropped as a rule: evidence-before-claims already covers it; my lapse.
+- Taskbar-style gap (34 px, a rebuild regression) was found only because the final reviewer did geometry by hand; the workbench has no taskbar-style view → applied: fix + geometry/CSS pin + manager test seen red. Not added: a workbench view (one-off; the pin now executes).
+- Leftover tray icon on KDE: Electron's `Tray.destroy()` leaves KDE's tray entry until the app quits (measured with a 15-line Electron script + `busctl`; a helper process holding the tray measured ~200 MB) → card #210 holds the measurements and fix; WHY note at `buddy-tray.ts` `destroy()` so a tray session finds it.
+- Doc sweep found ~30 stale buddy claims (design guide, MAP had no buddy row, old inventories) → applied on this branch; audit-anchors clean.
+- deleted/merged: stale buddy component names from ~15 code comments and 4 app docs; card #85 retired.
+
+## 2026-11-01 — analytics audit, 17 approved proposals built, dashboard rebuilt twice (session/analytics-proposals, app + worker + admin + workspace, card #211)
+- Audit found Android 1.3.1+ checking in as "desktop" (headless backend hard-coded it) and own-phone exclusion broken; nothing in docs said the phone runs analytics-service → applied: fixes + worker-backend rule ("empty OS is a phone", blob layout) + `docs/local-dev.md` → "Analytics: team devices and test runs".
+- I first auto-marked EVERY workspace machine as a team device; Destin caught that contributors would vanish from analytics → applied: owner-only (`gh` login = itsdestin) in `scripts/team-device.mjs`, contributor case pinned by test seen red.
+- RECURRED (card #195, third time): `gitleaks … -q; echo` — bad flag, echo reset the exit code, push went out unscanned (clean on re-scan) → card #195 progress.
+- RECURRED (preferences 2026-10-14 / 2026-10-27): "just say retention" and "use the existing (i) styling" — both preferences were on file in `~/system/me/preferences.md`, unread before designing → applied: recurrence lines + a new numbers-first dashboard preference there.
+- Worker worktree had stale shared deps (vitest-pool-workers 0.5 vs lockfile ^0.22) and the hook blocks npm ci in worktrees; ~6 calls to work around → card #212.
+- Independent reviewer found 8 issues my tests missed (opt-out undone by a racing write, damaged file read as a fresh install, reload click undercount, …) → applied: 7 fixed with tests seen red; 1 (blob8 on pre-change AE rows) needs a check after deploy, noted on #211.
+- Two worker tests (presence, site-analytics) failed once at load 59 from other sessions, passed on 2 reruns → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: website.css merged into dashboard.css; the dashboard's weekly charts, by-version chart, journey table and every card sub-line removed; the inline App script replaced by modules sharing one chart/tab helper.

@@ -96,6 +96,8 @@
     exit 0
   fi
 
+  # The OWNER's computers count as team devices, not users; a contributor's never do (scripts/team-device.mjs).
+  node "$ROOT/scripts/team-device.mjs" || true
   echo ""
   echo "Workspace ready. All repos are up to date."
   exit 0

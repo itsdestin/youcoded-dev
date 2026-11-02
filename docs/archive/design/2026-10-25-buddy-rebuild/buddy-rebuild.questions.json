@@ -1,0 +1,340 @@
+{
+  "title": "Buddy rebuild — the questions before anything is drawn",
+  "key": "buddy-rebuild-questions",
+  "out": "buddy-rebuild.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "answer": "words",
+      "prompt": "e.g. it feels laggy when…, the dots never…, I can't…",
+      "surface": "Buddy",
+      "path": "The floating buddy, its chat window and its three round buttons",
+      "headline": "What bothers you most about the buddy today?",
+      "today": "The buddy is the little character that floats over your desktop. Pressing him opens a small chat window beside him, and three round buttons appear next to his hands.",
+      "problem": "Most of it was built before version 1.0 and has only been patched since, while the main window got a long list of looks and speed improvements the buddy never received.",
+      "proposal": "A few words on what annoys you in daily use, so the rebuild fixes what you actually feel first. Anything is useful: something slow, ugly, confusing or missing."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Buddy chat",
+      "path": "The chat window that opens when you press the buddy",
+      "headline": "How closely should the buddy's chat copy the main window's chat?",
+      "today": "The buddy's chat draws messages with some of the main window's parts, but its own versions of the status dots, the session switcher, the Allow/Deny buttons and the warning strip. Those home-made parts have drifted from the main window.",
+      "problem": "The same conversation looks and behaves differently in the two places. Example: a session waiting for your answer shows a red dot in the main window and an amber dot in the buddy.",
+      "proposal": "Choose how far the rebuild goes.",
+      "options": [
+        {
+          "id": "small-main",
+          "label": "A small main chat",
+          "summary": "The buddy shows exactly the main window's chat, squeezed to fit: same dots, same cards, same warnings, same buttons.",
+          "pros": [
+            "Anything that improves in the main window improves in the buddy too, with no extra work.",
+            "Nothing to relearn: every card works the same in both places."
+          ],
+          "cons": [
+            "Some main-window cards are roomy and may feel crowded in a 320-pixel-wide window until they are tuned for it.",
+            "The biggest rebuild of the three."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "fix-own",
+          "label": "Keep its own, fix it",
+          "summary": "Keep the buddy's own simpler design and correct every place it disagrees with the main window.",
+          "pros": [
+            "Smaller job; the buddy keeps its lighter, simpler feel."
+          ],
+          "cons": [
+            "The two drift apart again with every future main-window change, which is how it got here.",
+            "The missing pieces (warning buttons, question cards) still have to be rebuilt by hand."
+          ]
+        },
+        {
+          "id": "fresh",
+          "label": "A new design",
+          "summary": "Design the buddy chat from scratch as its own thing, quicker and lighter than the main chat.",
+          "pros": [
+            "Free to invent something that suits a tiny floating window."
+          ],
+          "cons": [
+            "Longest to design and the most decks to review.",
+            "Same drift risk as keeping its own."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Buddy chat",
+      "path": "The status dots in the buddy's session pill and session list",
+      "headline": "Every status dot in the buddy will look and mean exactly what it does in the main window.",
+      "changed": "Today the buddy's dots never breathe, never glow, start grey when the buddy opens until something changes, and the session list shows raw words like \"awaiting\" or \"stuck\". Its tool dots even use green for done and blue for running, the opposite of the main window. After: the main window's dots, the same breathing, and its words (Working, Needs input, Needs a look, Response ready, Inactive).",
+      "notice": "A glance at the buddy tells you the same thing a glance at the main window does, from the moment it opens.",
+      "yes": "Yes, match them",
+      "no": "No"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Buddy chat",
+      "path": "Behind the scenes: how the buddy follows a conversation",
+      "headline": "The buddy will follow a conversation the same way a torn-off main window does, through one shared connection.",
+      "changed": "Today the buddy keeps its own separate set of connections for picking, following and switching conversations, some of them doubled up, and a new permission question may not reach it until you reopen it. After: it uses the app's one standard path.",
+      "notice": "Questions and permission requests appear in the buddy as soon as they appear in the main window; switching conversations in the buddy feels instant; fewer odd \"buddy is out of date\" moments.",
+      "yes": "Yes, simplify it",
+      "no": "No"
+    },
+    {
+      "id": "P-2",
+      "page": "What the buddy chat can do",
+      "intro": "These decide which main-window abilities come to the buddy, and what happens to the parts only the buddy has."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "pick": "several",
+      "surface": "Buddy chat",
+      "path": "The messages area of the buddy chat",
+      "headline": "Which main-window abilities should the buddy chat gain?",
+      "today": "When Claude asks a multiple-choice question, the buddy only offers Allow and Deny, which may do nothing. Warnings like \"may be stuck\" show as a small text pill with no buttons. You cannot scroll back past the most recent part of a long conversation. Skill cards and the queued-messages strip never appear.",
+      "problem": "For anything beyond a quick reply you have to open the main window, which defeats having the buddy.",
+      "proposal": "Pick everything the buddy should do. Each is the main window's own version, fitted to the small window.",
+      "options": [
+        {
+          "id": "asks",
+          "label": "Real question cards",
+          "summary": "Permission requests, multiple-choice questions and plan approvals as the main window's cards.",
+          "pros": ["You can answer anything Claude asks without leaving the buddy."],
+          "cons": ["Taller cards; a big question fills most of the window."],
+          "recommended": true
+        },
+        {
+          "id": "warnings",
+          "label": "Warnings with buttons",
+          "summary": "The main window's warning box for \"may be stuck\", \"stopped\" or \"provider may have stalled\", with its buttons.",
+          "pros": ["You can fix a stuck session from the buddy."],
+          "cons": ["One more box that can appear in a small space."]
+        },
+        {
+          "id": "history",
+          "label": "Scroll back further",
+          "summary": "Scrolling up loads older messages, as in the main window.",
+          "pros": ["Long conversations are fully readable in the buddy."],
+          "cons": ["None you would notice."]
+        },
+        {
+          "id": "extras",
+          "label": "The small extras",
+          "summary": "Skill cards, the queued-messages strip, the Keep going button and the model-loading bar.",
+          "pros": ["Nothing in a conversation is silently missing from the buddy."],
+          "cons": ["Slightly busier window."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Buddy chat",
+      "path": "The rounded pill at the top of the buddy chat",
+      "headline": "How should you switch conversations in the buddy?",
+      "today": "A rounded pill at the top shows the conversation's name and a dot. Pressing it drops a plain list of conversations with \"+ New session…\" at the bottom.",
+      "problem": "The list looks nothing like the main window's All sessions menu, shows raw status words, and gives no hint which conversation needs you most.",
+      "proposal": "Two ways to make it match.",
+      "options": [
+        {
+          "id": "main-menu",
+          "label": "The main window's menu",
+          "summary": "Keep the pill, but pressing it opens the same All sessions menu the main window uses, with its status pills, fitted to the buddy's width.",
+          "pros": ["One menu to learn; it already shows which conversation needs you.", "Gains future improvements to that menu for free."],
+          "cons": ["The menu may need a narrow layout to fit 320 pixels."],
+          "recommended": true
+        },
+        {
+          "id": "own-list",
+          "label": "Keep its own list",
+          "summary": "Keep today's list but give it the main window's dots and status words.",
+          "pros": ["Smallest change, stays compact."],
+          "cons": ["Still two different lists that will drift apart again."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Buddy",
+      "path": "The three round buttons beside the buddy's hands",
+      "headline": "What should happen to the three round buttons beside the buddy?",
+      "today": "When the chat is open, three round buttons pop in next to the buddy: take a desktop screenshot into the chat, open the main YouCoded window, and hide the buddy until you restart.",
+      "problem": "They live in a separate little window that has to be lined up with the buddy, which is one of the fiddliest parts to keep smooth when he moves. They also sit apart from the chat they act on.",
+      "proposal": "Where the three actions should live.",
+      "options": [
+        {
+          "id": "chat-header",
+          "label": "Into the chat's top row",
+          "summary": "Small icon buttons beside the session pill at the top of the chat.",
+          "pros": ["Next to what they act on; one less window to keep lined up, so moving the buddy is smoother."],
+          "cons": ["Loses the playful pop-out beside his hands.", "The top row gets more crowded."],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep them beside him",
+          "summary": "Same three buttons in the same place, just polished.",
+          "pros": ["Keeps the character feel you have now."],
+          "cons": ["Keeps the extra window and its alignment work."]
+        },
+        {
+          "id": "screenshot-only",
+          "label": "Only the screenshot",
+          "summary": "Screenshot moves next to the message box's attach button; Open YouCoded and Hide go into a small menu.",
+          "pros": ["The cleanest window; screenshot sits where you attach things anyway."],
+          "cons": ["Open and Hide take one more click."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Feel, motion and scope",
+      "intro": "How smooth it should feel, how the window behaves, and what else rides along with this rebuild."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Buddy chat",
+      "path": "The buddy chat window itself",
+      "headline": "Should you be able to change the size of the buddy's chat window?",
+      "today": "The chat is always 320 by 480 pixels.",
+      "problem": "Long replies, code and the bigger cards from earlier questions get cramped at that size.",
+      "proposal": "How the size should work.",
+      "options": [
+        {
+          "id": "drag",
+          "label": "Drag to resize",
+          "summary": "Drag an edge to resize; it remembers your size.",
+          "pros": ["Any size you like, remembered."],
+          "cons": ["Needs a grab edge on a see-through window; the buddy's group has to make room, so it is the hardest to make smooth."]
+        },
+        {
+          "id": "two-sizes",
+          "label": "Small and large",
+          "summary": "A button switches between today's size and a taller, wider one.",
+          "pros": ["One click; both sizes can be designed to look right."],
+          "cons": ["Only two choices."],
+          "recommended": true
+        },
+        {
+          "id": "fixed",
+          "label": "Keep it fixed",
+          "pros": ["Nothing new to learn or break."],
+          "cons": ["Stays cramped for long replies."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "pick": "several",
+      "surface": "Buddy",
+      "path": "The buddy character and his chat",
+      "headline": "Which kinds of smoothness matter most to you?",
+      "today": "The chat fades in and out, the buddy bounces once when a session needs you, breathes gently, and glides when you drop him near a screen edge. His gentle breathing redraws on every screen refresh, which the main window stopped doing to its own animations because it costs battery.",
+      "problem": "The main window has had many rounds of speed and motion work; the buddy has had almost none, so it can feel stiffer or heavier next to it.",
+      "proposal": "Pick what the rebuild should focus on. All of them get a look; your picks get the most care.",
+      "options": [
+        {
+          "id": "open-close",
+          "label": "Opening and closing",
+          "summary": "The chat grows out of the buddy and tucks back in, quickly.",
+          "pros": ["The moment you notice most often."],
+          "cons": ["None."]
+        },
+        {
+          "id": "drag",
+          "label": "Dragging him",
+          "summary": "The buddy and his chat move together without lag or jumps.",
+          "pros": ["Moving him is where any jerkiness shows."],
+          "cons": ["None."]
+        },
+        {
+          "id": "replies",
+          "label": "Replies arriving",
+          "summary": "Text streams in as smoothly as in the main window and the chat never jumps while you read.",
+          "pros": ["The most-watched part of the chat."],
+          "cons": ["None."]
+        },
+        {
+          "id": "reactions",
+          "label": "His reactions",
+          "summary": "He visibly reacts when Claude is working, finishes, or needs you, matching the dot colours.",
+          "pros": ["You can read what is happening from the corner of your eye."],
+          "cons": ["More motion on screen; it would stay calmer than the \"needs you\" bounce."]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "pick": "several",
+      "surface": "Buddy",
+      "path": "Three earlier buddy requests still waiting",
+      "headline": "Which of the three waiting buddy requests should this rebuild include?",
+      "today": "Three earlier buddy requests are still open: typing in the buddy while Claude shows a menu can accidentally pick an option; the Allow button may do nothing on multiple-choice questions; and he never does anything on his own, like glancing around or dozing off after a quiet while (the sleeping pose is already drawn and approved).",
+      "problem": "The first two are bugs that the rebuild touches anyway. The third is new behaviour.",
+      "proposal": "Pick the ones to fold in. Anything not picked stays on its own list for later.",
+      "options": [
+        {
+          "id": "typing-menu",
+          "label": "Typing into menus",
+          "summary": "The buddy refuses and offers \"Send anyway\", exactly as the main window does.",
+          "pros": ["Comes almost free if the buddy uses the main window's message box rules."],
+          "cons": ["None."],
+          "recommended": true
+        },
+        {
+          "id": "allow-questions",
+          "label": "Allow on questions",
+          "summary": "Fixed by giving the buddy real question cards.",
+          "pros": ["Comes free with real question cards."],
+          "cons": ["None."]
+        },
+        {
+          "id": "idle",
+          "label": "Idle moments",
+          "summary": "Small glances, stretches and dozing off, waking the moment anything happens.",
+          "pros": ["Makes him feel alive."],
+          "cons": ["New behaviour to design and review; makes this rebuild longer."]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "How we work",
+      "path": "The review steps for this rebuild",
+      "headline": "Should this rebuild go through the full review steps?",
+      "today": "Big features go through the full route: these questions, picture decks, a fresh outside tester before you see designs, a signed list of what \"done\" means, independent code review and grading, then a final yes from you. Small fixes skip most of it.",
+      "problem": "The full route takes longer and uses roughly a dozen helper runs; the short route is faster but leaves you as the only checker.",
+      "proposal": "Pick the route.",
+      "options": [
+        {
+          "id": "full",
+          "label": "Full route",
+          "pros": ["A rebuild this size touches many screens; outside testers and reviewers catch what I miss.", "A signed list of done means nothing you approved gets quietly dropped."],
+          "cons": ["Slower, more decks for you."],
+          "recommended": true
+        },
+        {
+          "id": "short",
+          "label": "Short route",
+          "summary": "I design and build, then show you before-and-after pictures to approve.",
+          "pros": ["Fastest; fewer decks."],
+          "cons": ["Less checking; problems are more likely to reach you."]
+        }
+      ]
+    }
+  ]
+}

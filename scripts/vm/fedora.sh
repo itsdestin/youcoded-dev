@@ -88,7 +88,8 @@ load_file() {
   fi
   url="http://10.0.2.2:$port/$base"
   # WHY native xattr: stock KDE has no GVfs metadata backend; this writes user.xdg.origin.url.
-  gssh "mkdir -p ~/Downloads && curl -fSL -o ~/Downloads/$base '$url' && gio set -t string ~/Downloads/$base xattr::xdg.origin.url '$url' && test -s ~/Downloads/$base"
+  # WHY the team-device file: a test guest must not count as a new real user (vm.sh load says more).
+  gssh "mkdir -p ~/Downloads ~/.claude && touch ~/.claude/youcoded-team-device && curl -fSL -o ~/Downloads/$base '$url' && gio set -t string ~/Downloads/$base xattr::xdg.origin.url '$url' && test -s ~/Downloads/$base"
   echo "Loaded $base into Fedora Downloads over HTTP (download URI recorded)."
 }
 

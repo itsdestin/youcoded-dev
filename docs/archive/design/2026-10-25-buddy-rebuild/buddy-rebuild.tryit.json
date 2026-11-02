@@ -1,0 +1,150 @@
+{
+  "title": "Buddy rebuild — try it in the test window",
+  "key": "buddy-rebuild-tryit",
+  "out": "buddy-rebuild.tryit.html",
+  "stage": "review",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "words": true,
+      "id": "T-1",
+      "surface": "Buddy",
+      "path": "In the window titled \"YouCoded - Buddy rebuild\": Settings, then turn the buddy on",
+      "headline": "Press the buddy: does the chat grow out of him quickly, and close just as quickly?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "This test window runs the rebuilt buddy with its own settings, separate from your everyday app. The chat now opens without reloading the conversation each time.",
+      "notice": "It springs open from the side he is on (above or below him), in about a quarter of a second, with the conversation already there.",
+      "yes": "Yes, it works",
+      "no": "No, it does not",
+      "risk": "It is a second buddy on your desktop beside your everyday one; I will close the test window when you are done."
+    },
+    {
+      "words": true,
+      "id": "T-2",
+      "surface": "Buddy",
+      "path": "Drag the buddy around with the chat open",
+      "headline": "Drag him around with the chat open: do the buddy, his chat and his buttons move together smoothly?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "The buttons beside him are now one panel of four (screenshot, size, open YouCoded, hide).",
+      "notice": "No lag between the three, no jumps, and the chat never covers him.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-3",
+      "surface": "Buddy",
+      "path": "The second button in the panel beside him (two diagonal arrows)",
+      "headline": "Press the size button: does the chat get bigger, then smaller again, and stay the size you left it after closing and reopening?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "Two sizes: 320 by 480 and 440 by 660. Point at the button to see its hint (Bigger chat / Smaller chat).",
+      "notice": "The chat and the buddy stay together and on screen; the size you left is the size it reopens at.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-4",
+      "surface": "Buddy chat",
+      "path": "Type in the buddy chat: \"ask me a multiple-choice question with two parts\"",
+      "headline": "When Claude asks a question, does it appear in the buddy at once, one question at a time, and does answering work?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "New questions now reach the buddy as soon as they are asked (before, only after reopening it).",
+      "notice": "Small choices you tap, \"+ Note\" if you want to add something, Next, then Submit; Claude gets your answers.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-5",
+      "surface": "Buddy chat",
+      "path": "While a permission request or Claude's menu is showing, type a message and press Enter",
+      "headline": "Does the buddy refuse to type into Claude's menu and offer \"Send anyway\", like the main window?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "Before, typing into the buddy at that moment could pick an option in Claude's menu by accident.",
+      "notice": "A small notice explains why it did not send, with Send anyway.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-6",
+      "surface": "Buddy",
+      "path": "Run something in a session and watch the dots and the buddy",
+      "headline": "Do the dots match the main window's, and does the buddy show it: a focused look while working, a wave when a reply is ready?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "He follows the same colours as the dots: red or amber is today's surprised bounce, green is a focused look, blue (reply ready) is a short wave.",
+      "notice": "You can tell what is happening from the corner of your eye, and the dots never disagree with the main window.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-7",
+      "surface": "Buddy",
+      "path": "Leave everything quiet for a few minutes",
+      "headline": "Left alone, does he glance around or stretch now and then, doze off after about four minutes, and wake when anything happens?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "Idle moments come every one to two minutes; he falls asleep after four quiet minutes and never does either while a session is busy or needs you.",
+      "notice": "Quieter than his \"needs you\" bounce; anything that changes a dot wakes him at once.",
+      "yes": "Yes, it works",
+      "no": "No, it does not",
+      "risk": "His breathing now moves in tiny steps to save battery; tell me if it looks jerky."
+    },
+    {
+      "words": true,
+      "id": "T-8",
+      "surface": "Buddy chat",
+      "path": "Use the buddy chat for a minute: scroll, switch conversations, read a reply as it arrives",
+      "headline": "Overall, does the buddy chat feel as smooth and look as finished as the main window?",
+      "dev": {
+        "worktree": "session/buddy-rebuild",
+        "label": "Buddy rebuild",
+        "offset": 70,
+        "profile": "buddy-rebuild"
+      },
+      "changed": "The chat is the main window's own chat, with the tighter spacing, summary row, short times and one-line permission requests you approved.",
+      "notice": "Scrolling back loads older messages; replies stream in without jumping; the All sessions menu works.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    }
+  ]
+}

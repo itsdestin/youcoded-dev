@@ -729,17 +729,21 @@ Known deviations:
   shows it.
 
 ### Buddy windows
-*Documents current behaviour; not yet reviewed by Destin.*
+*Rebuilt 2026-10-30 (buddy rebuild: signed contract in `docs/archive/design/2026-10-25-buddy-rebuild/`).*
 Files: `main/main.ts` (`createAppWindow({buddy})`), `main/buddy-window-manager.ts`, `main/buddy-tray.ts`,
-`shared/buddy-geometry.ts`; renderer `components/buddy/` (`BuddyChatApp`, `BuddyChat`, `SessionPill`,
-`BuddyWelcome`, `BuddyNewSessionForm`, `BuddyResumeList`, `BuddyBarApp`, `AttentionStrip`,
-`CompactToolStrip`, `BubbleFeed`, `BuddyMascot`), `styles/buddy.css`.
+`shared/buddy-geometry.ts`; renderer `components/buddy/` (`BuddyChatApp`, `BuddyChat`, `useBuddyFeed`,
+`BuddyWelcome`, `BuddyNewSessionForm`, `BuddyResumeList`, `BuddyBarApp`, `BuddyActions`, `BuddyMascot`),
+`components/AskQuestionCompact.tsx`, `styles/buddy.css`.
 - Three see-through, frameless, always-on-top windows that move together: the **mascot** (112×112, drag
-  to move, a press opens or closes the chat), the **chat** (320×480), and a small **action bar** (three
-  round icon buttons: screenshot the desktop, open YouCoded, hide the buddy). A tray-icon style replaces
-  the mascot with a system tray icon and menu.
-- The chat is one frosted panel: a session pill at the top (opens a session list with "+ New session…"),
-  the messages, a compact message box, an attention strip for waiting questions.
+  to move, a press opens or closes the chat), the **chat** (320×480, or 440×660 from the size button,
+  remembered), and the **action bar**: four ghost icon Buttons in the popup surface, each with the shared
+  Tooltip — Screenshot desktop, Bigger/Smaller chat, Open YouCoded, Hide buddy. It sits beside the
+  mascot, its bottom level with his feet. A taskbar-icon style replaces the mascot with a tray icon; the
+  bar then hangs under the chat with its hints below.
+- The chat is the main window's own chat in a small window: its SessionStrip (`viewer`: no drag, tear-off
+  or move menu), ChatView and InputBar, with spacing — never text — shrunk in `buddy.css`. Cards,
+  warnings and permission rows are the main window's; a question card draws one question at a time
+  (`AskQuestionCompact`). Message times show on the newest message only (others after a 0.6 s hover).
 - No session open: "No active session" and two stacked full-width buttons, New session (filled) and
   Resume session (outlined).
 - In the YouCoded themes the mascot is the glass buddy (decisions "Glass buddy"); the windows around it
@@ -748,12 +752,8 @@ Files: `main/main.ts` (`createAppWindow({buddy})`), `main/buddy-window-manager.t
 
 Known deviations:
 - **No ✕ on the chat window** — a frameless window, not a popup: where a ✕ goes beside the mascot
-  press and Esc needs a design. The session list drops from the pill like a menu, and menus have no
-  ✕ (Lists and menus) — the main session menu has none either; ruled neither way.
-- The session pill, the collapsed "N tools used" pill and the attention strip are fixed full pills;
-  the main window's session strip is too, so there is no theme-shaped reference to copy.
-- Allow / Deny / Always ("✕ Deny") and "Dismiss — I answered in the terminal" are hand-made, at 10px —
-  permission prompts are exempt until their rework (decisions "Permission row and tool cards").
+  press and Esc needs a design. The session menu has no ✕ (Lists and menus), as in the main window;
+  ruled neither way.
 
 ### Game boards
 *Documents current behaviour; not yet reviewed by Destin.*
