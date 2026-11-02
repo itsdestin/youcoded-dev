@@ -167,6 +167,16 @@ truly broken.
   - Possible: once, Enter right after a new chat opened left the message in the box with no feedback. The
     walk-through now retries and reports any wait.
   - Unconfirmed: Escape didn't close the Word preview in the walk-through; its ✕ does.
+- **Attach passing (2026-11-02):** a file picked through the system file chooser reaches the assistant, which
+  answers from it. The walk-through answers the chooser through Electron's `--inspect` main-process hook
+  (`answerFilePicker`).
+- **Marketplace steps (in progress):** install Civic Report (checked on disk) and install and apply Golden
+  Sunbreak (checked by the page's `data-theme`). The last run's result was unread when GitHub's request limit was
+  hit, at about 10:47 UTC.
+- **Finding:** with no chat open there is no way into the skills marketplace. It's only reachable from the compass
+  in a chat's message bar; Settings has no entry. The Android report noted the same.
+- **Tooling note:** `gh run watch` at its default interval, plus many runs, hit GitHub's request limit, which is
+  shared with other sessions. Use `-i 30`.
 - **Seen, not yet checked:** a fresh Linux desktop install with sync never set up shows a red "Sync failing" badge.
   The Android report saw the same on phones. The sync step should check this.
 - **Findings to report (not yet filed):**
