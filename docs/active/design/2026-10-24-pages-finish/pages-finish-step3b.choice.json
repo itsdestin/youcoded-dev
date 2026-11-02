@@ -1,0 +1,45 @@
+{
+  "title": "Finishing Pages, step 3 — the page's chat, round 2",
+  "key": "pages-finish-step3b-choice",
+  "out": "pages-finish-step3b.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step3b.choice",
+  "runs": { "after": "runs-step3b/after" },
+  "themes": ["morning-rounds", "midnight", "light"],
+  "steps": [
+    {
+      "id": "C-left",
+      "surface": "Pages",
+      "path": "An open page → the chat button beside the gear",
+      "crop": "pages/page/page-money#chat-left",
+      "new": true,
+      "headline": "The chat opens on the left and the page list folds to its icons beside it, so another page is still one click away.",
+      "changed": "From round 1: the page list no longer disappears. The chat's title row has the conversation's own name, a 'New chat' button in words, and a minimize (–) instead of ✕. No page icon and no line under the title.",
+      "notice": "Clicking another page's icon opens that page with its own chat beside it. Hovering an icon shows the page's name. Close the chat and the full list comes back.",
+      "risk": "Minimize only hides the chat. It keeps working and opens where you left it. The page list's own fold button is hidden while the chat is open, because it can't unfold beside the chat."
+    },
+    {
+      "id": "C-phone",
+      "surface": "Pages",
+      "path": "A page on your phone → the chat button",
+      "headline": "On a phone, should the chat rise over part of the page or take the whole screen?",
+      "notice": "Both have the same title row: the conversation's name, New chat, and minimize to get back to the page.",
+      "variants": [
+        {
+          "id": "sheet",
+          "label": "Over part of the page",
+          "crop": "pages/focus/page-money#chat-phone",
+          "summary": "The top of the page stays visible above the chat, so you can see a change land while you talk.",
+          "risk": "About a quarter of the screen is left for the page, so a change lower down is out of sight until you minimize."
+        },
+        {
+          "id": "full",
+          "label": "The whole screen",
+          "crop": "pages/focus/page-money#chat-phone-full",
+          "summary": "The chat gets the whole phone, like a normal chat. Minimize to see the page.",
+          "risk": "You can't see the page change while you talk. You flip back to check."
+        }
+      ]
+    }
+  ]
+}

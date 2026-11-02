@@ -1,0 +1,155 @@
+[
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/page/page-money#chat-left/light.png",
+    "ms": 1464,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 478,
+      "y": 40,
+      "w": 952,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/page/page-money#chat-left/midnight.png",
+    "ms": 1484,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 478,
+      "y": 40,
+      "w": 952,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/focus/page-money#chat-phone/midnight.png",
+    "ms": 1502,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone-full",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/focus/page-money#chat-phone-full/midnight.png",
+    "ms": 1641,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/focus/page-money#chat-phone/light.png",
+    "ms": 1670,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone-full",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/focus/page-money#chat-phone-full/morning-rounds.png",
+    "ms": 2105,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone-full",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/focus/page-money#chat-phone-full/light.png",
+    "ms": 2296,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/focus/page-money#chat-phone/morning-rounds.png",
+    "ms": 2298,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3b/after/pages/page/page-money#chat-left/morning-rounds.png",
+    "ms": 2453,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 478,
+      "y": 40,
+      "w": 952,
+      "h": 850
+    },
+    "parts": []
+  }
+]
