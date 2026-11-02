@@ -75,6 +75,30 @@ Each of these is a single trial that decides how later phases are built.
      home for the computer walk-through, ahead of the local test virtual machines (`scripts/vm/`). The local Mac one
      is an old Intel-style Mac and is slow to drive.
 
+### Phase 0 results (2026-11-01, released v1.3.3 downloads)
+
+The trials live in `youcoded/.github/workflows/probe-phase0.yml` and `.github/probes/`, on branch `session/test-suite-rethink` only.
+
+- **0.1 Phone engine on a free arm64 machine: works.** It reproduced both shipped phone show-stoppers with no phone:
+  - `TypeError: Internal error. Icu error.` at `pages-types.js:37` when the engine starts;
+  - git making repos without `.git/info` (the sync failure).
+
+  Bundled Node in 1.3.3 is v24.18.1. Script: `.github/probes/android-engine.sh`.
+- **0.2 Pretend phone on free arm64: not possible.** `/dev/kvm` is absent. The phone *screens* need a real phone at
+  release time.
+- **0.3 Claude Code with the test key: works, unattended.** First-run screens in 2.1.300:
+  1. text style (Enter);
+  2. "use this API key?", where the default is **No**: test-only, answer Yes;
+  3. security notes (Enter);
+  4. "trust this folder?", where the default is **"No, exit"**;
+  5. the message box, with **auto mode on by default** (why card #209 saw AUTO).
+
+  The message was sent. The reply was "Credit balance too low": the test workspace had a monthly limit but no
+  prepaid credit yet. Script: `.github/probes/claude-first-run.py`. It hides key-shaped text, because Claude Code's
+  API-key screen shows the key's last 20 characters and these logs are public.
+- **0.4 Real installers on free Windows and Mac machines: work.** A silent install of the 1.3.3 installer / dmg drew
+  its first screen in about 6–7 seconds.
+
 ## Phase 1: the morning engine check
 
 - **What:** each night, on free GitHub machines, start the real app engine:
