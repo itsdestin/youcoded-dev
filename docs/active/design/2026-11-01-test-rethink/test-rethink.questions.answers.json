@@ -1,0 +1,126 @@
+{
+ "deck": "test-rethink-questions",
+ "started": "2026-11-02T03:35:53.811Z",
+ "submitted": "2026-11-02T03:43:25Z",
+ "cur": 4,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1793590581975,
+   "seconds": 9,
+   "theme": "morning-rounds"
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1793590581975,
+   "seconds": 9,
+   "theme": "morning-rounds"
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1793590581975,
+   "seconds": 9,
+   "theme": "morning-rounds"
+  },
+  "Q-1": {
+   "v": "picks",
+   "picks": [
+    "install-open",
+    "first-chat",
+    "chat-tasks",
+    "files",
+    "sessions",
+    "sync",
+    "browser",
+    "marketplace"
+   ],
+   "t": 1793590668137,
+   "seconds": 43,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "wrote",
+   "text": "nah this is fine to start",
+   "t": 1793590668137,
+   "seconds": 43,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "release-only",
+   "t": 1793591002909,
+   "note": "everyday changs should be extremely quick, dont want to introduce a multi-minute increase in the wait to make quick iterations on app features. ",
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "script",
+   "t": 1793591002909,
+   "note": "may introduce automated ai tester later, but not yet. script is acceptable for now",
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "other",
+   "t": 1793591002909,
+   "note": "real assistant at release only, but we aren't using this full walkthrough for smaller changes anyway.",
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "other",
+   "seconds": 34,
+   "theme": "morning-rounds",
+   "t": 1793591002909,
+   "note": "can we not just do this on the free github runners like we do with windows/mac/linux? "
+  },
+  "Q-7": {
+   "v": "yes",
+   "seconds": 34,
+   "theme": "morning-rounds",
+   "t": 1793591002909
+  },
+  "Q-8": {
+   "v": "pick",
+   "seconds": 34,
+   "theme": "morning-rounds",
+   "t": 1793591002909,
+   "pick": "block-override"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "changed-only",
+   "t": 1793590844149,
+   "seconds": 10,
+   "theme": "morning-rounds"
+  },
+  "Q-10": {
+   "v": "yes",
+   "t": 1793590844149,
+   "seconds": 10,
+   "theme": "morning-rounds"
+  },
+  "Q-11": {
+   "v": "other",
+   "t": 1793590844149,
+   "note": "youcoded/youcoded-night",
+   "seconds": 10,
+   "theme": "morning-rounds"
+  },
+  "S-4": {
+   "v": "other",
+   "t": 1793590945244,
+   "note": "unsure. i think we should review these more thoroughly and look for anything that feels wasteful or unhelpful. we shouldn't waste time testing a small element, if that small element breaking would break a bigger element we could test instead. if the test is as long as the code its testing, its probably wasteful and more effort than its worth. i may be mistaken, but my guess is that there are a lot of elements we could consolidate or drop entirely.",
+   "seconds": 51,
+   "theme": "morning-rounds"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "build-first",
+   "t": 1793590945244,
+   "seconds": 51,
+   "theme": "morning-rounds"
+  }
+ }
+}
