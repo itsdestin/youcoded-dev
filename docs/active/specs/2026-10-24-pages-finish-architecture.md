@@ -50,6 +50,40 @@ with a per-site "Don't ask again" switch; phone width. Follow-up applied from S-
 same popup — recorded as an exception in the design guide. Backend still to build:
 `pages.openWebsite`, `pages.forgetOpenSite` (mock-only), `does`/`parts`/`openSites` in main.
 
+## Step 3 decisions (`pages-finish-step3.questions.answers.json` + chat, 2026-11-02)
+
+- **All six situations are in the first version:** ask about a page's data, change its data,
+  change the page itself live, bring things in from files/services, a page button that uses
+  the assistant, and the phone.
+- **Two assistant modes** (Destin's R-which/R-reach notes):
+  - **The page's assistant (step 3):** every page gets it, replacing Edit in chat. A normal,
+    full chat with the usual permission modes. Layout: the narrow chat on one side, the live
+    page on the other (Destin's U-change-page note) — ONE view for asking, changing and
+    redesigning, not a separate builder plus a chat beside the page. Reopening shows the last
+    chat with a New chat button (R-memory).
+  - **Page buttons / background helpers (step 4):** case by case per page; a fixed,
+    pre-approved list of what each may touch, never asking per run; runs hidden from resume
+    history (U-page-button note). The unattended-ask question stays open there.
+- **Where the chat starts:** in the page's PROJECT folder (e.g. `~/YouCoded/Personal`), not the
+  page folder, so its chats sit under a real project in the resume list (marked with the
+  page's icon). YouCoded adds an opening note naming the page and carrying its `page.md`.
+- **`page.md`** beside `page.html`/`page.json` holds the page's instructions for the
+  assistant; the page builder writes and maintains it. `dataHelp` may move into it. Not
+  `AGENTS.md`: a chat touching the folder would pick that up on its own and leak the page's
+  rules into unrelated chats.
+- **Approval:** a page you made needs none; a page from someone else shows its `page.md`
+  once (Allow / Don't use them) and asks again when an update changes it.
+- **Untrusted framing** (Destin, "kinda like we do for content pulled from outside webpages"):
+  someone else's `page.md`, page data, and files/services the chat brings in reach the model
+  inside `<untrusted-content>`. Page data is DONE for the Claude Code page tools
+  (`claude-code-pages-mcp.ts` ReadPageData, 2026-11-01); the rest is step 3 work. It is a
+  speed bump, not a wall: asks, approvals and step 4's fixed lists stay the real limits.
+- **Undo:** Destin unsure in the abstract — each assistant change becomes a history point with
+  Undo beside its message; judged in the mockup, not decided here.
+- **Skills:** a page names the skills it works best with and the chat offers the marketplace
+  install; a page never carries its own. Later, not step 3.
+- **Next:** layout mockups of the page's assistant view (desktop + phone) on a choice deck.
+
 ## Follow-ups recorded (Destin, 2026-10-24: "record anything that is gonna be a follow up")
 
 - **#202** — sharing phase 2: publishing without GitHub, versions/forks and "update my version",
@@ -64,6 +98,10 @@ same popup — recorded as an exception in the design guide. Backend still to bu
 - **Step 5** — the bank page (Plaid) rebuilt on the "Sign in with…" system.
 - **Known limit, not a card:** a phone's own web browser cannot stop a page frame navigating
   itself (the computer and the Android app can).
+- **Skills a page asks for** — the chat offers to install them from the marketplace (step 3
+  decisions); after step 3.
+- **Idea, not filed (awaiting Destin's yes):** rearranging the main window, e.g. a sidebar
+  session list instead of the top bar (step 3 deck, R-other). Not a Pages item.
 
 ## The idea in one paragraph
 
