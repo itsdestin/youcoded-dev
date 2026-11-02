@@ -1,0 +1,205 @@
+{
+ "title": "Security changes — what you will see",
+ "key": "security-changes-review",
+ "out": "security-changes.review.html",
+ "images": "images/security-changes.review",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "After"
+ },
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ],
+ "stage": "review",
+ "steps": [
+  {
+   "id": "G-1",
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to upload a file with curl",
+   "crop": "chat#grant-curl-upload",
+   "headline": "Uploading with curl no longer offers a broad “Any curl command” permission.",
+   "changed": "The choice list is gone. Always allow now remembers only this exact command, and says so.",
+   "notice": "You can no longer give one permission that covers every future curl upload. Each different upload asks again.",
+   "risk": "More cards if the assistant sends files out often.",
+   "highlight": "panel"
+  },
+  {
+   "id": "G-2",
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to download with curl",
+   "crop": "chat#grant-curl-download",
+   "headline": "Downloading with curl still offers a broad choice, but it now covers downloads only.",
+   "changed": "The wide choice is worded as downloading, and it no longer covers sending files out.",
+   "notice": "Everyday downloads stop asking after one Always allow. Uploads and risky options still ask.",
+   "risk": "Your old “Any curl command” permissions quietly cover less (see the Permissions page slide).",
+   "highlight": "panel"
+  },
+  {
+   "id": "G-3",
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to run npm install",
+   "crop": "chat#grant-npm-install",
+   "headline": "Plain package installs can be allowed broadly. Installs that run setup scripts ask each time.",
+   "changed": "The broad choice is worded for plain installs only; the risky forms are kept out of it.",
+   "notice": "Normal installs stop asking after one Always allow. Installs that run package scripts still ask.",
+   "risk": "A project that needs setup scripts asks every time.",
+   "highlight": "panel"
+  },
+  {
+   "id": "W-1",
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to visit a website in Ask first mode",
+   "crop": "chat#web-visit",
+   "headline": "A new website now asks first, naming the site and what each answer covers.",
+   "changed": "The card used to say only “Opening a webpage”. It now asks “Visit python.org?” with a line saying what Yes and Always allow do.",
+   "notice": "In Ask first, the first visit to each new site interrupts you once. Yes lasts for that chat; Always allow remembers it for that folder.",
+   "risk": "Only chats with the built-in assistant ask. Claude Code chats and Auto edit or Full auto do not. A site it was already allowed to visit could redirect somewhere new without asking.",
+   "highlight": "panel"
+  },
+  {
+   "id": "W-2",
+   "surface": "Chat · assistant browser",
+   "path": "When the assistant tries to send a form on a website",
+   "crop": "chat#browser-form",
+   "headline": "The assistant browser now asks before it sends a form, separately from clicking and typing.",
+   "changed": "A new card: “Let the assistant submit a form on library.example.org?” with Don’t allow, Always allow on the site, and Allow once.",
+   "notice": "Typing into a site is allowed as before; sending what you typed asks first. Buying, sending and deleting still ask every time. A new “Sites where it can send forms” list in Settings, Assistant, Browser (below the fold, not photographed) lets you remove sites.",
+   "risk": "Only real web forms are caught. Many modern sites send without one, so some sends will not ask.",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "labels": {
+    "after": "Now"
+   },
+   "highlight": "panel"
+  },
+  {
+   "id": "P-1",
+   "surface": "Settings · Permissions",
+   "path": "Settings, Assistant, Permissions",
+   "crop": "settings/assistant/permissions",
+   "headline": "The Permissions page now mentions websites and look-only commands, and warns Full auto cannot catch everything.",
+   "changed": "Ask first now reads: “Checks with you before changing a file, running a command or visiting a new website. Reading and searching inside your project, and look-only commands, never interrupt you.” Full auto’s list now says the stops “can’t catch everything”. Older broad Always allow rows are marked as covering less.",
+   "notice": "Commands like ls and git status now run with no question. Asking will not stop for them.",
+   "risk": "Reading and searching inside your project run silently, including a project’s own files. Side effect: ls, cat and grep on a folder you did not expect will not ask."
+  },
+  {
+   "id": "P-2",
+   "surface": "Settings · Permissions",
+   "path": "Settings, Assistant, Permissions, “Look-only commands”",
+   "crop": "settings/assistant/permissions#never-ask-open",
+   "headline": "A new closed section lists every look-only command that never asks.",
+   "changed": "“Commands that never ask” opens to a plain list: ls, cat, grep, find, git status and more. It is for reading only; nothing can be turned on or off.",
+   "notice": "You can see exactly what runs silently. The list grows only when the app is updated.",
+   "risk": "The list includes cat, grep and git remote. They ask when they point at passwords, keys or files outside the project.",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "labels": {
+    "after": "Now"
+   },
+   "highlight": "panel"
+  },
+  {
+   "id": "A-1",
+   "surface": "Settings · Account",
+   "path": "Account",
+   "crop": "settings/account#signed-in",
+   "headline": "Account gains a “Sign out of your YouCoded account everywhere” button.",
+   "changed": "A new line and button under Sign out: “Lost a device? Sign out of your YouCoded account everywhere, including this one. Phones paired to this computer are managed under Remote access.”",
+   "notice": "One press ends every sign-in of your YouCoded account, including this window. It does not unpair phones.",
+   "risk": "In the picture the sentence squeezes into a narrow column beside a long button and looks cramped. Fails with a message if the server cannot be reached."
+  },
+  {
+   "id": "R-1",
+   "surface": "Settings · Remote access",
+   "path": "Settings, Remote access",
+   "crop": "settings/remote#devices",
+   "headline": "Paired devices now show when they were last used, because unused ones sign out after 90 days.",
+   "changed": "An offline device reads “Offline · Last used Oct 12”. Devices unused for 90 days are signed out.",
+   "notice": "A phone you stop using for three months must be paired again with the password. It then sees “signed this phone out after 90 days without use”.",
+   "risk": "A phone left connected all the time could be signed out in rare restarts."
+  },
+  {
+   "id": "T-1",
+   "surface": "Settings · Report a bug",
+   "path": "Settings, Development, Report a bug, then Review ticket",
+   "crop": "settings/development/bug-report#review-logs",
+   "headline": "SIGN-OFF: the ticket now says what is sent, where it appears, and who can read it.",
+   "changed": "Three new lines: “Sent: the title and description above, plus everything under ‘Sent with it’.” “It becomes a public ticket in the itsdestin/youcoded project on GitHub, posted from your GitHub account (if the app isn’t connected to one, you finish in your browser).” “Anyone on the internet can read it. Closing it doesn’t hide it, and GitHub keeps a visible history of any edits.” Say Yes only if this wording is enough.",
+   "notice": "Before sending you see, in plain words, that the ticket is public and permanent. This was your requirement to explain what is uploaded and where it is visible.",
+   "risk": "More text above the Submit button."
+  },
+  {
+   "id": "T-2",
+   "surface": "Settings · Report a bug",
+   "path": "Settings, Development, Report a bug",
+   "crop": "settings/development/bug-report",
+   "headline": "The Recent logs switch now warns that logs are posted publicly and may hold private text.",
+   "changed": "Now: “…posted publicly. Passwords and keys it recognizes are hidden, but it can miss some, so read them and remove anything private before sending.”",
+   "notice": "You are told to read the logs before sending, not told they are clean."
+  },
+  {
+   "id": "F-1",
+   "surface": "Chat · first-time warning",
+   "path": "First time you pick Full auto",
+   "crop": "chat/first-time-warning/full-auto",
+   "headline": "The Full auto warning admits its safety stops are not complete.",
+   "changed": "Added: “Those stops catch the most dangerous commands, but they can’t catch everything.”",
+   "notice": "A slightly longer warning the first time."
+  },
+  {
+   "id": "S-1",
+   "surface": "Browser panel",
+   "path": "Open the assistant browser on a computer that blocks its protection",
+   "crop": "chat#browser-sandbox",
+   "headline": "A notice appears when the browser’s built-in protection is off.",
+   "changed": "“Extra browser protection is off” with an explanation that this computer does not allow the browser’s protection, and what setting turns it back on.",
+   "notice": "Only on some Linux computers. Before, it was silent. Pages still load.",
+   "risk": "Not shown when using your own Chrome.",
+   "runs": [
+    "after"
+   ],
+   "new": true,
+   "labels": {
+    "after": "Now"
+   },
+   "highlight": "panel"
+  },
+  {
+   "id": "M-1",
+   "words": true,
+   "surface": "Update and sync messages",
+   "path": "Only shown when something goes wrong",
+   "headline": "Two error messages changed or are new. Keep them?",
+   "changed": "UPDATE: “The download was damaged, so it wasn't installed.” is now “This update is older than a version you've already run on this computer, so it wasn't installed.” when that is the real reason. SYNC (new): “Sync is paused because the GitHub repository “NAME” is public, so anyone could read what YouCoded syncs there. Make it private on GitHub (Settings, then Danger Zone), or delete it so YouCoded can create a private one, then try again.”",
+   "notice": "A re-posted older update is refused with no Try again button. Sync stops until a public backup repository is made private."
+  },
+  {
+   "id": "M-2",
+   "words": true,
+   "surface": "Sign-in and file messages",
+   "path": "Only shown when something goes wrong",
+   "headline": "Sign-in timeout and blocked-file messages changed. Keep them?",
+   "changed": "SIGN-IN: “sign-in timed out — please try again” is now “Sign-in didn't finish. Finish signing in with your web browser on this computer, then try again.” (also “YouCoded didn't hear back from your web browser. Finish signing in on this computer, then try again.”). BLOCKED FILE: “…looks like a stored credential. This cannot be overridden.” now adds “If you want help with it, paste the parts you need into the chat (without any passwords or tokens).” NEW CARD TITLE: “Stopped before changing safety settings”.",
+   "notice": "Sign-in must be finished in a browser on the same computer. Files like .npmrc or .pem in your project can no longer be read by the assistant, with no way to allow one."
+  },
+  {
+   "id": "M-3",
+   "words": true,
+   "surface": "Phone and remote messages",
+   "path": "Only shown when something goes wrong",
+   "headline": "Phone messages are new. They could not be photographed. Keep them?",
+   "changed": "TAILSCALE: “YouCoded only connects to your computer over Tailscale, and this address isn’t one. Turn on Tailscale on both devices and add the computer again using its Tailscale address.” OLD COMPUTER: “Cannot reach host…” now ends “If YouCoded on your computer is not up to date, update it to connect.” LOCKOUT: “Too many wrong passwords. Wait a few minutes and try again.” EXPIRED: “This device was signed out after 90 days without use. Enter the password to connect again.”",
+   "notice": "A phone saved with a home Wi-Fi address (not Tailscale) can no longer connect. A phone updated before its computer cannot connect either.",
+   "risk": "Android could not be photographed here."
+  }
+ ]
+}
