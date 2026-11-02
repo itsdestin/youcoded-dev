@@ -280,10 +280,13 @@ async function makeTab(b, targetId) {
   let errors = []; const listeners = new Set();
   b.sessions.set(sessionId, (m) => {
     if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text ?? '?');
+    // WHY (2026-10-30 security audit F4): the app page now carries a Content-Security-Policy; a screen that needs something the policy
+    // refuses logs a browser message, not an exception, so it would never reach the PAGE ERROR list. Surface it there.
+    if (m.method === 'Log.entryAdded' && /Content Security Policy/i.test(m.params?.entry?.text ?? '')) errors.push(`CSP: ${m.params.entry.text}`.slice(0, 400));
     for (const f of listeners) f(m);
   });
   const send = (method, params, ms) => b.send(method, params, sessionId, ms);
-  await send('Runtime.enable'); await send('Page.enable');
+  await send('Runtime.enable'); await send('Page.enable'); await send('Log.enable').catch(() => {});
   await send('Page.addScriptToEvaluateOnNewDocument', { source: INFLIGHT });
   await send('Runtime.evaluate', { expression: INFLIGHT }).catch(() => {});
   const evaluate = async (expression, ms) => {
