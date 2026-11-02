@@ -115,7 +115,7 @@
    "headline": "Account gains a “Sign out of your YouCoded account everywhere” button.",
    "changed": "A new line and button under Sign out: “Lost a device? Sign out of your YouCoded account everywhere, including this one. Phones paired to this computer are managed under Remote access.”",
    "notice": "One press ends every sign-in of your YouCoded account, including this window. It does not unpair phones.",
-   "risk": "In the picture the sentence squeezes into a narrow column beside a long button and looks cramped. Fails with a message if the server cannot be reached."
+   "risk": "It also signs out this computer. If the server cannot be reached, nothing changes and a message says so."
   },
   {
    "id": "R-1",
