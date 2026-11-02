@@ -134,6 +134,12 @@ truly broken.
   the form back to "New session". No session is created and no error shows. Calling `window.claude.session.create`
   directly does create a Claude Code session, so the backend works. Still to establish: does the button never send
   the request (an app bug), or is the walk-through's click wrong?
+- **Passing too (2026-11-02):** (4) a first chat with the app's own assistant: Haiku 4.5 replied "42";
+  (5) the assistant saves a file the user asked for, checked on disk. Step (3), the default choices, is recorded as a
+  known failure and doesn't stop the run. Its fix (install Claude Code on Start, a route-matching default and a
+  key-choice screen) waits for card #213 to merge, then follows the short UI route (Destin, 2026-11-02).
+- **Seen, not yet checked:** a fresh Linux desktop install with sync never set up shows a red "Sync failing" badge.
+  The Android report saw the same on phones. The sync step should check this.
 - **Findings to report (not yet filed):**
   - **Fixed on `session/first-run-fixes` (8b591a362):** when no secure storage backend is found, the keychain helper showed "could not start or receive the request".
     `keychain-client.ts` swallows the real reason (`keychain-launch.ts`: "A secure storage backend is not
