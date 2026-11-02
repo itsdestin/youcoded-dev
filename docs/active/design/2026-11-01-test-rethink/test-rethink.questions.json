@@ -1,0 +1,430 @@
+{
+  "title": "Testing the app the way users use it",
+  "key": "test-rethink-questions",
+  "out": "test-rethink.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Testing",
+      "path": "Every release",
+      "headline": "Each release must prove the finished app works for a real user, on every platform, before it ships.",
+      "changed": "Today about 6,300 automatic tests check small parts of the app on their own. Not one starts the finished app, which is how 1.3.1–1.3.3 shipped a phone app that can't start its assistant and nobody noticed the games server vanished.",
+      "notice": "Before every release, a short report lists the things a real user does — open the app, chat, sync, play a game — and says each one was tried on the real downloadable build and worked.",
+      "yes": "That's the goal",
+      "no": "Not quite"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Testing",
+      "path": "The automatic test suite",
+      "headline": "No test ever checks exact wording or styling again; the ones that do are deleted or loosened.",
+      "changed": "About 1 in 8 tests (maybe 1 in 5) freeze wording, a style name or how the code is laid out, and break on harmless changes. Another 1 in 8 that check real behaviour also check exact wording on the side.",
+      "notice": "Rewording a button or restyling a screen stops causing failed tests and busywork. Wording and looks are checked by you, by eye, on the visual change review below.",
+      "yes": "Agreed",
+      "no": "Not quite"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Testing",
+      "path": "The automatic test suite",
+      "headline": "Tests for your personal Home Assistant and money pages move out of the app's test suite.",
+      "changed": "5 of the 150 tests sampled cover pages that live only on your computer and never ship in the app, yet run on every app change.",
+      "notice": "App checks get slightly faster. Your personal pages keep their tests, in their own folder, so they still catch breaks there.",
+      "yes": "Agreed",
+      "no": "Not quite"
+    },
+    {
+      "id": "P-2",
+      "page": "What the real-app check walks through",
+      "intro": "These are the things the check does on the real app, the way a new user would. Tick everything that must work before a release can ship."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Testing",
+      "path": "The real-app check",
+      "headline": "Which of these must the real-app check try before every release?",
+      "today": "None of these is tried on a real build before release. Your Android test on 2026-11-01 found show-stoppers in the first hour.",
+      "problem": "Each one left untried is a way a release can ship broken without anyone knowing until users hit it.",
+      "proposal": "Pick every one that must work. Each says what it would have caught and what it costs to check. More picks = a longer check, not a harder one.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "install-open",
+          "label": "Download, install, open",
+          "summary": "Install the real release file on a clean machine or phone, open it, and see the first screen.",
+          "pros": ["Catches an app that won't open or shows a blank window.", "Catches a first screen that spills off a phone (found 2026-11-01)."],
+          "cons": ["Needs clean test machines for each platform; those exist for Windows, Mac and Linux."]
+        },
+        {
+          "id": "first-chat",
+          "label": "Sign in and first chat",
+          "summary": "As a brand-new user: sign in, start a chat with Claude Code and with the app's own assistant, and get a reply.",
+          "pros": ["Would have caught 'can't start its assistant' — the 1.3.1–1.3.3 phone failure.", "Would have caught the hidden Claude Code setup screen that blocks a new user's first chat."],
+          "cons": ["Each run uses a little real assistant usage (see cost question)."]
+        },
+        {
+          "id": "chat-tasks",
+          "label": "Real chat tasks",
+          "summary": "A set of ordinary requests that use many tools: write and save a file, research online, run a command, build a Page, a long task with the app in the background.",
+          "pros": ["Proves the assistant can actually do work, not just reply.", "Catches broken tools and permission cards that don't show."],
+          "cons": ["The slowest part — a few minutes per task.", "Answers vary run to run, so it checks the outcome (file saved, Page made) rather than exact words."]
+        },
+        {
+          "id": "files",
+          "label": "Make, open, edit, save files",
+          "summary": "Open a saved file in the viewer, edit it (text, Word, spreadsheet), save, and reopen it to check nothing was lost.",
+          "pros": ["Catches lost edits and files that won't open.", "Catches 'attach file does nothing' (found 2026-11-01)."],
+          "cons": ["Office files need extra setup on each test machine."]
+        },
+        {
+          "id": "sessions",
+          "label": "Manage sessions",
+          "summary": "Rename a chat, add tags and notes, resume it after closing the app, search old chats.",
+          "pros": ["Catches lost names, tags or notes after a restart.", "Catches Resume not finding old chats."],
+          "cons": ["Fast and cheap; nothing big against it."]
+        },
+        {
+          "id": "sync",
+          "label": "Backup & sync",
+          "summary": "Turn on sync, change something on one device, and see it arrive on another.",
+          "pros": ["Would have caught 'sync always fails on Android' (found 2026-11-01)."],
+          "cons": ["Needs a test sync account and two devices or two test copies.", "Slower: waits for the round trip."]
+        },
+        {
+          "id": "games",
+          "label": "Games",
+          "summary": "Play a solo game, and connect two test players for an online game.",
+          "pros": ["Would have caught the online games server vanishing (found 2026-11-01).", "Catches 2048 not working with swipes on a phone."],
+          "cons": ["Two test players means two app copies running at once."]
+        },
+        {
+          "id": "browser",
+          "label": "Assistant's browser",
+          "summary": "Ask the assistant to open a website, read it and click something.",
+          "pros": ["Catches the browser panel failing to open or the assistant losing control of it."],
+          "cons": ["Depends on a website staying up; we'd use a page we control."]
+        },
+        {
+          "id": "marketplace",
+          "label": "Install a skill and theme",
+          "summary": "Browse the marketplace, install a skill and a theme, apply the theme, use the skill.",
+          "pros": ["Catches a broken marketplace or an install that silently fails."],
+          "cons": ["Leaves a test install behind on the test machine (cleaned up after)."]
+        },
+        {
+          "id": "remote",
+          "label": "Phone connects to computer",
+          "summary": "Connect the phone app to a computer running the app and chat through it.",
+          "pros": ["Catches the phone hiding its 'connect to computer' screen (found 2026-11-01)."],
+          "cons": ["Needs a phone and a computer on the same network during the check."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Testing",
+      "path": "The real-app check",
+      "headline": "Is anything a user does missing from that list?",
+      "today": "The list above came from your 2026-11-01 Android test and your message: games, sync, sessions, browser, files, chat tasks.",
+      "problem": "Anything left off won't be tried before a release.",
+      "proposal": "Type anything missing, or leave it at Don't know.",
+      "answer": "words",
+      "prompt": "e.g. voice input, buddy, remote access from a browser…"
+    },
+    {
+      "id": "P-3",
+      "page": "How the check runs",
+      "intro": "These decide how close to a real user the check gets, and what it costs."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Testing",
+      "path": "The real-app check",
+      "headline": "How should the check be split between every code change and every release?",
+      "today": "Every code change runs about 6,300 small tests in the cloud (free, ~minutes). Releases add one check that the computer app's window isn't blank.",
+      "problem": "Running the full user walk-through on every change would be slow; running it only at release means a break can sit unnoticed for weeks before release day.",
+      "proposal": "Two layers: a quick 'does the real app start and answer one message' on every change, and the full walk-through on real installed builds before each release.",
+      "options": [
+        {
+          "id": "two-layers",
+          "label": "Quick check + full walk-through",
+          "summary": "Every change: start the real app engine on Linux and phone-style hardware in the cloud, send one message. Every release: the full list above on real installed builds.",
+          "pros": ["A startup crash like the phone's is caught the same day it's written, not at release.", "The full walk-through still happens before anything ships.", "Cloud machines are free for an open-source project like YouCoded."],
+          "cons": ["Two things to build instead of one.", "The quick check adds a few minutes to every change."],
+          "recommended": true
+        },
+        {
+          "id": "release-only",
+          "label": "Full walk-through at release only",
+          "pros": ["One thing to build.", "No extra wait on everyday changes."],
+          "cons": ["A break can sit unnoticed for weeks and pile up with others before release day, making it harder to find what caused it."]
+        },
+        {
+          "id": "every-change",
+          "label": "Full walk-through every change",
+          "pros": ["Every break found almost immediately."],
+          "cons": ["Probably 30–60 minutes per change (rough guess).", "Uses real assistant usage dozens of times a day."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Testing",
+      "path": "The real-app check",
+      "headline": "Who judges the walk-through: a script with pass/fail rules, an AI tester using the app like a person, or both?",
+      "today": "Your 2026-11-01 Android test was an AI session using the app like a person. It found the 6 show-stoppers and 23 smaller problems, like the welcome card spilling off the screen and 'computer' wording on a phone.",
+      "problem": "A script only catches what it was told to look for ('was the file saved?'). It misses 'this feels broken' — confusing wording, things off screen, a button that should exist.",
+      "proposal": "A script decides pass/fail for the must-work list, and an AI tester then explores like a new user and writes up anything that felt wrong.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Both",
+          "pros": ["The script gives a clear yes/no that can stop a release.", "The AI tester catches the 'this feels wrong' problems a script never would — most of what your Android test found."],
+          "cons": ["The AI tester's report needs a read each release (a few minutes).", "It can report things that are fine; you'd skim and dismiss those."],
+          "recommended": true
+        },
+        {
+          "id": "script",
+          "label": "Script only",
+          "pros": ["Same result every time; nothing to read."],
+          "cons": ["Misses layout, wording and 'feels broken' problems."]
+        },
+        {
+          "id": "ai",
+          "label": "AI tester only",
+          "pros": ["Closest to a real user; one thing to build."],
+          "cons": ["No firm yes/no to stop a release; results vary run to run."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Testing",
+      "path": "The real-app check",
+      "headline": "Should the check's chats use the real assistant, or pre-recorded replies?",
+      "today": "Nothing in testing talks to a real assistant today.",
+      "problem": "Pre-recorded replies are free but can't notice that a real sign-in or a real model stopped working — like the outside games server, the thing you depend on can vanish.",
+      "proposal": "Real assistant for the release walk-through, with a spending cap; pre-recorded replies for the quick everyday check.",
+      "options": [
+        {
+          "id": "mixed",
+          "label": "Real at release, recorded daily",
+          "pros": ["The release proves real sign-in and real replies work.", "Everyday checks cost nothing."],
+          "cons": ["Roughly $1–3 of model usage per release walk-through, plus some of your Claude plan's usage (rough guess; I'd measure the first run)."],
+          "recommended": true
+        },
+        {
+          "id": "real",
+          "label": "Real assistant always",
+          "pros": ["Most realistic everywhere."],
+          "cons": ["Cost grows with every code change, maybe dozens of runs a day."]
+        },
+        {
+          "id": "recorded",
+          "label": "Recorded replies always",
+          "pros": ["Free."],
+          "cons": ["Can't catch a broken sign-in or a model that stopped working."]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Testing",
+      "path": "The real-app check on Android",
+      "headline": "What phone should the release check run on?",
+      "today": "The only Android test so far ran on your Flip7 over a cable, with side-by-side test copies. The emulator on the computer can't run the app's bundled programs.",
+      "problem": "A phone check that needs you there each release will get skipped on busy days — that's partly how 1.3.1–1.3.3 shipped untried.",
+      "proposal": "A cheap dedicated Android phone, always plugged into this computer, so the phone check runs by itself.",
+      "options": [
+        {
+          "id": "dedicated",
+          "label": "A cheap test phone",
+          "pros": ["Runs without you; never touches your own phone.", "Can be wiped clean before each run, like a new user's phone."],
+          "cons": ["About $150–250 once.", "Stays plugged into this computer."],
+          "recommended": true
+        },
+        {
+          "id": "flip7",
+          "label": "Your Flip7",
+          "pros": ["Free; already proven to work."],
+          "cons": ["Needs you to plug it in and leave it unlocked ~20–40 minutes each release.", "Easy to skip when busy."]
+        },
+        {
+          "id": "cloud-phones",
+          "label": "Rented cloud phones",
+          "pros": ["Many phone models; nothing to plug in."],
+          "cons": ["Pay per minute each run.", "Harder to set up for sign-in and two-device tests like sync."]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Testing",
+      "path": "Outside services",
+      "headline": "Should a daily check confirm the outside services the app relies on still exist?",
+      "today": "The games server, marketplace, sign-in pages and model providers are outside the app. When the games server vanished, nothing noticed.",
+      "problem": "These can break any day, with no code change from us, so a release check alone would miss them for weeks.",
+      "proposal": "Yes: a free daily check visits each one and alerts you (e.g. a work board card) if one stops answering. No: rely on the release check and user reports."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Testing",
+      "path": "Releasing",
+      "headline": "If the release check fails, should the release be stopped?",
+      "today": "Releases go out after code-reading reviews and the small tests pass. No check of the real app can stop one.",
+      "problem": "A check that only warns tends to get waved through on release day.",
+      "proposal": "Pick how firm it is.",
+      "options": [
+        {
+          "id": "block-override",
+          "label": "Stop, unless you say why",
+          "pros": ["Nothing ships broken by accident.", "You can still ship deliberately — e.g. a fix for something worse — with your reason written into the release record."],
+          "cons": ["A false alarm in the check delays the release until it's looked at."],
+          "recommended": true
+        },
+        {
+          "id": "block",
+          "label": "Always stop",
+          "pros": ["Strictest."],
+          "cons": ["A broken test machine could hold up an urgent fix."]
+        },
+        {
+          "id": "warn",
+          "label": "Warn only",
+          "pros": ["Never delays a release."],
+          "cons": ["Easy to ignore, which is the situation today."]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Seeing what changed",
+      "intro": "This replaces the wording and styling tests: you look instead."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Work board",
+      "path": "Work board → Screens",
+      "headline": "Should the work board get a 'What changed since last release' button?",
+      "today": "The Screens tab shows a picture of every screen at one point in time. The screenshot tool can compare two versions, but only when a session runs it for one piece of work.",
+      "problem": "There's no one place to see every look and wording change heading into a release, so surprises reach users.",
+      "proposal": "One button photographs every screen on the last release and on the latest code, and lists only the screens that changed, with the changed parts highlighted.",
+      "options": [
+        {
+          "id": "changed-only",
+          "label": "Changed screens, highlighted",
+          "pros": ["You see only what's different, so it stays short.", "Highlights point at the exact change, including one-word wording edits."],
+          "cons": ["Photographing every screen twice takes a while (likely 10–20 minutes; it can run ahead of time)."],
+          "recommended": true
+        },
+        {
+          "id": "all-screens",
+          "label": "Every screen, side by side",
+          "pros": ["Nothing filtered out."],
+          "cons": ["Hundreds of identical pairs to scroll past."]
+        }
+      ]
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Work board",
+      "path": "Work board → What changed",
+      "headline": "Should approving those changed screens be part of every release?",
+      "today": "Nothing asks you to look at a release's screens before it ships.",
+      "problem": "Without a step, the review is easy to skip.",
+      "proposal": "Yes: each changed screen gets Keep / Not this, and the release waits until every one is answered. No: the button exists for when you want to look."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Work board",
+      "path": "Work board → What changed",
+      "headline": "Which themes should the change review show?",
+      "today": "The screenshot tool can photograph in any theme; more themes means more pictures.",
+      "problem": "Some breaks only show in one theme (e.g. text invisible on a dark background).",
+      "proposal": "Pick how many.",
+      "options": [
+        {
+          "id": "light-dark",
+          "label": "One light, one dark",
+          "pros": ["Catches most colour breaks.", "Twice the pictures, not ten times."],
+          "cons": ["A break in a single community theme could slip by."],
+          "recommended": true
+        },
+        {
+          "id": "current",
+          "label": "Only your theme",
+          "pros": ["Fewest pictures."],
+          "cons": ["Misses breaks other users see."]
+        },
+        {
+          "id": "all",
+          "label": "Every built-in theme",
+          "pros": ["Nothing slips."],
+          "cons": ["Many times the pictures and the wait."]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Cleaning up the old tests",
+      "intro": "What happens to the 1,255 existing test files."
+    },
+    {
+      "id": "S-4",
+      "words": true,
+      "surface": "Testing",
+      "path": "The automatic test suite",
+      "headline": "The ~79% of tests that try real code and check the result stay.",
+      "changed": "Sorting 150 random tests found most check real outcomes of one part: a file saved, a secret kept off disk, a crash not losing data. They're fast and catch real logic mistakes.",
+      "notice": "Nothing for you. They keep running on every change; the new real-app check covers what they can't — the assembled app.",
+      "yes": "Keep them",
+      "no": "Cut more"
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Testing",
+      "path": "The automatic test suite",
+      "headline": "Build the new real-app checks first, or delete the wording tests first?",
+      "today": "The wording/style tests are annoying but harmless; the real-app check doesn't exist yet.",
+      "problem": "Order decides which problem gets fixed sooner.",
+      "proposal": "Pick the order.",
+      "options": [
+        {
+          "id": "build-first",
+          "label": "Real checks first",
+          "pros": ["The thing that would have caught the phone failure exists soonest.", "No stretch where coverage drops."],
+          "cons": ["The wording tests keep causing busywork a bit longer."],
+          "recommended": true
+        },
+        {
+          "id": "delete-first",
+          "label": "Delete wording tests first",
+          "pros": ["Quick win; less busywork right away."],
+          "cons": ["Delays the check that actually protects users."]
+        },
+        {
+          "id": "together",
+          "label": "Both at once",
+          "pros": ["Everything moves together."],
+          "cons": ["Bigger, slower to review; more chance something is missed."]
+        }
+      ]
+    }
+  ]
+}
