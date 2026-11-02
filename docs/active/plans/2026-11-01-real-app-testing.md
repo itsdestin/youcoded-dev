@@ -99,6 +99,22 @@ The trials live in `youcoded/.github/workflows/probe-phase0.yml` and `.github/pr
 - **0.4 Real installers on free Windows and Mac machines: work.** A silent install of the 1.3.3 installer / dmg drew
   its first screen in about 6–7 seconds.
 
+### Phase 1 and 2 status (2026-11-01)
+
+Both are built on youcoded branch `session/test-suite-rethink`, and both ran green as checks: they flag what is
+truly broken.
+
+- **Morning check:** `.github/workflows/nightly-real-app.yml`. Run on nightly 41315939585's builds, the Linux app
+  opened. The phone engine failed: master still has the ICU crash and the git `info/` bug.
+- **Outside-services check:** `.github/workflows/daily-outside-services.yml`. 15 of 16 services answer. Online games
+  is down: the app still points at `youcoded-games.itsdestin.partykit.dev` (`party-client.ts:8`), which no longer
+  resolves. The Worker's `games/` routes are only leaderboards and records, not the live game rooms.
+- **Not live yet:** both start running on their schedule only once they're on master. GitHub ignores schedules on
+  other branches. Before merge, remove their development-only `push:` triggers. Both will stay red each morning
+  until the phone and games show-stoppers are fixed (separate work).
+- **Not yet checked:** the phone check's "engine answers the screen" step can't be checked against a passing engine
+  until the ICU fix exists. Check it against the first build with that fix.
+
 ## Phase 1: the morning engine check
 
 - **What:** each night, on free GitHub machines, start the real app engine:
