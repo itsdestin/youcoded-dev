@@ -1,124 +1,319 @@
 {
-  "title": "Security changes, round 2: the four pieces you sent back",
-  "key": "security-changes-rework",
-  "out": "rework.review.html",
-  "images": "images/rework.review",
-  "runs": {
-    "before": "runs-rework/before",
-    "after": "runs-rework/after"
+ "title": "Security changes, round 2: the four pieces you sent back",
+ "key": "security-changes-rework",
+ "out": "rework.review.html",
+ "images": "images/rework.review",
+ "runs": {
+  "before": "runs-rework/before",
+  "after": "runs-rework/after"
+ },
+ "labels": {
+  "before": "Last round (what you rejected)",
+  "after": "Now"
+ },
+ "themes": [
+  "meadow-mist",
+  "halftone-dimension"
+ ],
+ "stage": "review",
+ "steps": [
+  {
+   "id": "W-2",
+   "surface": "Chat · assistant browser",
+   "path": "When the assistant tries to send a form on a website",
+   "crop": "chat#browser-form@940x150+10+640",
+   "headline": "The send-a-form question is now the same permission card the chat uses for every other question.",
+   "changed": "It had its own boxed style. It is now the standard card: a header line, the question, then Yes, Always allow and No in the usual colours. Copied from the website-visit card.",
+   "notice": "It looks like every other ask. Buttons are Yes / Always allow / No. Behaviour is the same: Yes is one form, Always allow remembers the site.",
+   "risk": "Click only (no Enter key), as before. The browser's other questions keep the old style for now; question 5 asks about moving them."
   },
-  "labels": {
-    "before": "Last round (what you rejected)",
+  {
+   "id": "A-1",
+   "surface": "Settings · Account",
+   "path": "Account",
+   "crop": "settings/account#signed-in@440x230+500+290",
+   "headline": "Sign out everywhere is now one short line and one button.",
+   "changed": "The long sentence and the long button are gone. It reads “Lost a device?” with a “Sign out everywhere” button, on the same kind of row as Sign out. Modelled on the Sign out row just above it, and on the delete-confirm strip in Local models.",
+   "notice": "The page is quieter. Nothing happens until you press the button; it then asks first (next slide).",
+   "risk": "The facts (it signs out this computer too, paired phones stay paired) are no longer visible until you press. They are in the confirm step, before anything happens.",
+   "highlight": "panel"
+  },
+  {
+   "id": "A-1b",
+   "surface": "Settings · Account",
+   "path": "Account, then press Sign out everywhere",
+   "crop": "settings/account#sign-out-everywhere@440x230+500+290",
+   "headline": "Pressing it shows the facts and asks you to confirm.",
+   "changed": "The row turns into: “Ends your YouCoded sign-in on every device, this one too. Phones paired for remote access stay paired.” with Cancel and Sign out everywhere.",
+   "notice": "Cancel puts the row back. Confirming signs this computer out as well. If the server cannot be reached, nothing changes and a short message says so.",
+   "risk": "One extra press compared with last round.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
     "after": "Now"
+   },
+   "new": true
   },
-  "themes": [
-    "meadow-mist",
-    "halftone-dimension"
-  ],
-  "stage": "review",
-  "steps": [
+  {
+   "id": "T-1",
+   "surface": "Settings · Report a bug",
+   "path": "Settings, Development, Report a bug, then Review ticket",
+   "crop": "settings/development/bug-report#review-logs@600x165+420+285",
+   "headline": "The ticket review now has one short line saying it is public.",
+   "changed": "Three sentences became one: “Posted publicly on GitHub in itsdestin/youcoded — anyone can read it.”",
+   "notice": "Quieter. The “Sent with it” list below still shows what goes.",
+   "risk": "Dropped: “posted from your GitHub account” and “edits stay visible”.",
+   "highlight": "panel"
+  },
+  {
+   "id": "S-1",
+   "surface": "Chat · Browser panel",
+   "path": "Browser panel, on a computer that blocks the browser’s extra protection",
+   "crop": "chat/browser#protection-off@500x300+940+50",
+   "headline": "The “Extra browser protection is off” box is now a small chip with an X.",
+   "changed": "The big notice is replaced by a small amber pill, “Extra protection off”, with an X beside it. Modelled on the app’s status pills and the ✕ used in popups.",
+   "notice": "Almost no room taken at the top of the panel. The X hides it. Hiding lasts until you next open YouCoded, so it comes back once per launch and never nags while you work.",
+   "risk": "Because it is small, it is easier to ignore. That is the point, but the warning is real: the browser has less protection on that computer.",
+   "highlight": {
+    "box": [
+     0,
+     22,
+     100,
+     45
+    ]
+   }
+  },
+  {
+   "id": "S-1b",
+   "surface": "Chat · Browser panel",
+   "path": "Browser panel, press the chip",
+   "crop": "chat/browser#protection-off-open@500x300+940+50",
+   "headline": "Pressing the chip opens the details and the fix; pressing it again closes them.",
+   "changed": "Under the chip: “This computer doesn’t allow the browser’s built-in protection against harmful websites. Pages still load, but be careful which sites the assistant visits. To turn it back on, allow ‘unprivileged user namespaces’ in your system settings.”",
+   "notice": "The picture below the chip moves down a little while it is open, and back up when you close it.",
+   "risk": "The fix step is technical; it is the only fix there is.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "G-1",
+   "words": true,
+   "surface": "Design guide",
+   "path": "docs/active/design/2026-10-13-ui-design-guide.md, new section “New UI stays standard and quiet”",
+   "headline": "Add these rules to the design guide so new screens stop arriving busy or one-off?",
+   "today": "The guide says to copy an existing surface and use the shared pieces, but nothing says a notice should be small, or how much copy a control may carry. The four pieces in this deck slipped through.",
+   "problem": "New screens keep arriving with their own styled boxes, long sentences on the page, and big notice boxes for things that do not block you.",
+   "proposal": "A new section with five rules, each tied to one of these examples: (1) copy an existing surface and its shared piece; no one-off cards (the form ask). (2) A notice that does not block you is a small amber chip with details on press and an X (protection off). (3) One short line per control; detail goes behind a press or a confirm step (sign out everywhere). (4) Say a fact once; do not repeat what the screen already shows (ticket review). (5) Before showing you new UI, the builder counts the boxes, sentences and buttons it adds. A test already checks that the form ask uses the shared card.",
+   "risk": "Rules are advice to future builders, not an automatic block; only the form ask has a test behind it so far."
+  },
+  {
+   "id": "Q-1",
+   "words": true,
+   "surface": "Chat · permission card",
+   "path": "When the assistant runs two commands joined together, like \"go to the app folder, then run the tests\"",
+   "headline": "When you pick Always allow on a joined-up command, should each part be remembered on its own?",
+   "today": "Compared with Claude Code, Codex, OpenCode, Gemini, Cursor, Cline, Aider and Copilot, we are the strictest: most remember the first word or two of a command, we split by what it does. Questions 1–6 are where others are more convenient. Today a joined-up command can only be remembered word for word; run it from another folder and it asks again.",
+   "problem": "This is the assistant's most common habit, so it is the most common repeat question.",
+   "proposal": "Always allow on a joined-up command would remember each safe part separately (e.g. \"run the tests in this project\"). Risky parts (deleting, uploading, installs with setup scripts) stay word-for-word only. Claude Code, Codex and Gemini do this.",
+   "options": [
     {
-      "id": "W-2",
-      "surface": "Chat · assistant browser",
-      "path": "When the assistant tries to send a form on a website",
-      "crop": "chat#browser-form@940x150+10+640",
-      "headline": "The send-a-form question is now the same permission card the chat uses for every other question.",
-      "changed": "It had its own boxed style. It is now the standard card: a header line, the question, then Yes, Always allow and No in the usual colours. Copied from the website-visit card.",
-      "notice": "It looks like every other ask. Buttons are Yes / Always allow / No. Behaviour is the same: Yes is one form, Always allow remembers the site.",
-      "risk": "Click only (no Enter key), as before. Other browser questions keep the old style; say if you want them moved too.",
-      "highlight": {
-        "box": [
-          1,
-          24,
-          98,
-          72
-        ]
-      }
+     "id": "yes",
+     "label": "Yes, add it",
+     "pros": [
+      "Far fewer repeat questions.",
+      "Same rule others use, with our risky-part limits kept."
+     ],
+     "cons": [
+      "The card gets one more line listing what will be remembered."
+     ],
+     "recommended": true
     },
     {
-      "id": "A-1",
-      "surface": "Settings · Account",
-      "path": "Account",
-      "crop": "settings/account#signed-in@440x230+500+290",
-      "headline": "Sign out everywhere is now one short line and one button.",
-      "changed": "The long sentence and the long button are gone. It reads “Lost a device?” with a “Sign out everywhere” button, on the same kind of row as Sign out. Modelled on the Sign out row just above it, and on the delete-confirm strip in Local models.",
-      "notice": "The page is quieter. Nothing happens until you press the button; it then asks first (next slide).",
-      "risk": "The facts (it signs out this computer too, paired phones stay paired) are no longer visible until you press. They are in the confirm step, before anything happens.",
-      "highlight": "panel"
-    },
-    {
-      "id": "A-1b",
-      "surface": "Settings · Account",
-      "path": "Account, then press Sign out everywhere",
-      "crop": "settings/account#sign-out-everywhere@440x230+500+290",
-      "headline": "Pressing it shows the facts and asks you to confirm.",
-      "changed": "The row turns into: “Ends your YouCoded sign-in on every device, this one too. Phones paired for remote access stay paired.” with Cancel and Sign out everywhere.",
-      "notice": "Cancel puts the row back. Confirming signs this computer out as well. If the server cannot be reached, nothing changes and a short message says so.",
-      "risk": "One extra press compared with last round.",
-      "runs": [
-        "after"
-      ],
-      "labels": {
-        "after": "Now"
-      },
-      "new": true
-    },
-    {
-      "id": "T-1",
-      "surface": "Settings · Report a bug",
-      "path": "Settings, Development, Report a bug, then Review ticket",
-      "crop": "settings/development/bug-report#review-logs@600x165+420+285",
-      "headline": "The ticket review now has one short line saying it is public.",
-      "changed": "Three sentences became one: “Posted publicly on GitHub in itsdestin/youcoded — anyone can read it.”",
-      "notice": "Quieter. The “Sent with it” list below still shows what goes.",
-      "risk": "Dropped: “posted from your GitHub account” and “edits stay visible”.",
-      "highlight": "panel"
-    },
-    {
-      "id": "S-1",
-      "surface": "Chat · Browser panel",
-      "path": "Browser panel, on a computer that blocks the browser’s extra protection",
-      "crop": "chat/browser#protection-off@500x300+940+50",
-      "headline": "The “Extra browser protection is off” box is now a small chip with an X.",
-      "changed": "The big notice is replaced by a small amber pill, “Extra protection off”, with an X beside it. Modelled on the app’s status pills and the ✕ used in popups.",
-      "notice": "Almost no room taken at the top of the panel. The X hides it. Hiding lasts until you next open YouCoded, so it comes back once per launch and never nags while you work.",
-      "risk": "Because it is small, it is easier to ignore. That is the point, but the warning is real: the browser has less protection on that computer.",
-      "highlight": {
-        "box": [
-          0,
-          22,
-          100,
-          45
-        ]
-      }
-    },
-    {
-      "id": "S-1b",
-      "surface": "Chat · Browser panel",
-      "path": "Browser panel, press the chip",
-      "crop": "chat/browser#protection-off-open@500x300+940+50",
-      "headline": "Pressing the chip opens the details and the fix; pressing it again closes them.",
-      "changed": "Under the chip: “This computer doesn’t allow the browser’s built-in protection against harmful websites. Pages still load, but be careful which sites the assistant visits. To turn it back on, allow ‘unprivileged user namespaces’ in your system settings.”",
-      "notice": "The picture below the chip moves down a little while it is open, and back up when you close it.",
-      "risk": "The fix step is technical; it is the only fix there is.",
-      "runs": [
-        "after"
-      ],
-      "labels": {
-        "after": "Now"
-      },
-      "new": true
-    },
-    {
-      "id": "G-1",
-      "words": true,
-      "surface": "Design guide",
-      "path": "docs/active/design/2026-10-13-ui-design-guide.md, new section “New UI stays standard and quiet”",
-      "headline": "Add these rules to the design guide so new screens stop arriving busy or one-off?",
-      "today": "The guide says to copy an existing surface and use the shared pieces, but nothing says a notice should be small, or how much copy a control may carry. The four pieces in this deck slipped through.",
-      "problem": "New screens keep arriving with their own styled boxes, long sentences on the page, and big notice boxes for things that do not block you.",
-      "proposal": "A new section with five rules, each tied to one of these examples: (1) copy an existing surface and its shared piece; no one-off cards (the form ask). (2) A notice that does not block you is a small amber chip with details on press and an X (protection off). (3) One short line per control; detail goes behind a press or a confirm step (sign out everywhere). (4) Say a fact once; do not repeat what the screen already shows (ticket review). (5) Before showing you new UI, the builder counts the boxes, sentences and buttons it adds. A test already checks that the form ask uses the shared card.",
-      "risk": "Rules are advice to future builders, not an automatic block; only the form ask has a test behind it so far."
+     "id": "no",
+     "label": "No, keep as is",
+     "pros": [
+      "Nothing changes."
+     ],
+     "cons": [
+      "The most common repeat question stays."
+     ]
     }
-  ]
+   ]
+  },
+  {
+   "id": "Q-2",
+   "words": true,
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to edit a file",
+   "headline": "Should file edits get an \"allow for this conversation\" choice?",
+   "today": "An edit can be allowed once, or forever in this project. Nothing in between.",
+   "problem": "People often want \"stop asking while I'm working on this\" without leaving a permanent rule behind.",
+   "proposal": "A third choice: allow edits until this conversation ends. Nothing is saved to Settings. Claude Code does exactly this for edits. Commands stay as they are for now.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, add it",
+     "pros": [
+      "Fewer questions during a working session.",
+      "Nothing permanent left behind to forget about."
+     ],
+     "cons": [
+      "One more choice on the edit card."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "No, keep as is",
+     "pros": [
+      "Card stays simple."
+     ],
+     "cons": [
+      "You keep choosing between once and forever."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-3",
+   "words": true,
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to edit a file",
+   "headline": "Should Always allow on an edit cover the whole folder, not just that one file?",
+   "today": "Always allow on an edit remembers that one exact file. A new file in the same folder asks again. No other assistant is this narrow by default.",
+   "problem": "Building something touches many files, so you answer the same question over and over.",
+   "proposal": "Always allow would offer \"files in this folder\". Password and key files, and files outside the project, stay blocked as today.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, add it",
+     "pros": [
+      "Far fewer edit questions."
+     ],
+     "cons": [
+      "Wider trust: the assistant can then change any ordinary file in that folder without asking.",
+      "Auto-edit mode already does this for the whole project, so it overlaps a little."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "No, keep as is",
+     "pros": [
+      "Narrowest possible.",
+      "Auto-edit mode is there for people who want fewer questions."
+     ],
+     "cons": [
+      "Repeat questions for every new file."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-4",
+   "words": true,
+   "surface": "Chat · permission card",
+   "path": "When the assistant runs a look-only command like \"list all the .ts files\"",
+   "headline": "Should look-only commands with a wildcard (like \"list every .ts file\") stop asking, as in Claude Code?",
+   "today": "Look-only commands run without asking, unless they contain a wildcard such as *.ts, or start with a timing helper like \"timeout 30\". Then they ask.",
+   "problem": "These are harmless look-only commands, so the question is noise.",
+   "proposal": "Allow wildcards only for look-only commands where every option is on our safe list (never for find, sort, sed or git), and ignore the timing helpers timeout, time, nice, nohup and stdbuf when checking what runs. Both follow Claude Code.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, add it",
+     "pros": [
+      "Fewer pointless questions."
+     ],
+     "cons": [
+      "Slightly more to check in the safe list, which already has about 1,050 tests."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "No, keep as is",
+     "pros": [
+      "No change."
+     ],
+     "cons": [
+      "Harmless commands keep asking."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-5",
+   "words": true,
+   "surface": "Chat · assistant browser",
+   "path": "The other questions the assistant's browser asks (visiting a new site, the last step before buying, reaching a device on your home network)",
+   "headline": "Should the browser's other questions also use the standard permission card, like the form question now does?",
+   "today": "The form question now uses the standard card (page 1). The browser's other questions still have their own boxed style.",
+   "problem": "Same inconsistency you flagged on the form question.",
+   "proposal": "Move them to the same standard card. Behaviour stays the same; only the look and button names change.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, add it",
+     "pros": [
+      "Every question in the app looks the same."
+     ],
+     "cons": [
+      "Button names change (e.g. to Yes / Always allow / No) on screens people already know."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "no",
+     "label": "No, keep as is",
+     "pros": [
+      "No visual changes."
+     ],
+     "cons": [
+      "Two styles of question in the browser."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-6",
+   "words": true,
+   "surface": "Chat · permission card",
+   "path": "When the assistant downloads something with curl",
+   "headline": "Should Always allow on downloads be limited to one website (e.g. \"downloads from github.com only\")?",
+   "today": "Always allow on a download covers any download from anywhere.",
+   "problem": "A web address can carry information out in it, so \"any download\" is not perfectly harmless. Codex lets you allow one site.",
+   "proposal": "Offer \"downloads from this site only\" instead.",
+   "options": [
+    {
+     "id": "yes",
+     "label": "Yes, add it",
+     "pros": [
+      "Tighter."
+     ],
+     "cons": [
+      "Claude Code's own docs warn these site-limited rules are easy to get around (redirects, tricks in the address), so the safety gain is small.",
+      "More questions when a project downloads from several sites."
+     ]
+    },
+    {
+     "id": "no",
+     "label": "No, keep as is",
+     "pros": [
+      "Simpler, and the gain is small."
+     ],
+     "cons": [
+      "Any download stays covered."
+     ],
+     "recommended": true
+    }
+   ]
+  }
+ ]
 }
