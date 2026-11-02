@@ -1,7 +1,7 @@
 ---
 id: 211
 title: Analytics: honest numbers, team-device exclusion and a clearer dashboard
-stage: build
+stage: merged
 tags: analytics, backend, dashboard, website
 branch: 211-analytics-honest-numbers-team-device
 finish: Phones counted as Android with stable IDs; team devices and test runs excluded automatically; setup staircase, stopped-coming-back and Overview on the dashboard; website visits deduped on reload and rate-limited
