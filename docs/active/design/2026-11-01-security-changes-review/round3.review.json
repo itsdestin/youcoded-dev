@@ -19,7 +19,7 @@
  "steps": [
   {
    "id": "W-2",
-   "surface": "Chat \u00b7 assistant browser",
+   "surface": "Chat · assistant browser",
    "path": "When the assistant tries to send a form on a website",
    "crop": [
     {
@@ -38,7 +38,7 @@
   },
   {
    "id": "W-3",
-   "surface": "Chat \u00b7 assistant browser",
+   "surface": "Chat · assistant browser",
    "path": "When the assistant first uses a site",
    "crop": [
     {
@@ -57,7 +57,7 @@
   },
   {
    "id": "W-4",
-   "surface": "Chat \u00b7 assistant browser",
+   "surface": "Chat · assistant browser",
    "path": "When the assistant is about to click a step that buys or sends",
    "crop": [
     {
@@ -76,7 +76,7 @@
   },
   {
    "id": "W-5",
-   "surface": "Chat \u00b7 assistant browser",
+   "surface": "Chat · assistant browser",
    "path": "When the assistant wants an address on your home network",
    "crop": [
     {
@@ -95,7 +95,7 @@
   },
   {
    "id": "A-1",
-   "surface": "Settings \u00b7 Account",
+   "surface": "Settings · Account",
    "path": "Account",
    "crop": "settings/account#signed-in@panel",
    "headline": "The Account page loses the Sign out everywhere row.",
@@ -106,7 +106,7 @@
   },
   {
    "id": "A-1b",
-   "surface": "Settings \u00b7 Account",
+   "surface": "Settings · Account",
    "path": "Account, Edit account, Danger zone",
    "crop": [
     {
@@ -132,7 +132,7 @@
   },
   {
    "id": "S-1",
-   "surface": "Chat \u00b7 Browser panel",
+   "surface": "Chat · Browser panel",
    "path": "Browser panel, on a computer that blocks the browser's extra protection",
    "crop": "chat/browser#protection-off@470x230+955+110",
    "headline": "\"Extra protection off\" is now the app's normal warning box: one line and a Got it button.",
@@ -142,7 +142,7 @@
   },
   {
    "id": "S-1b",
-   "surface": "Chat \u00b7 Browser panel",
+   "surface": "Chat · Browser panel",
    "path": "Browser panel, press Details",
    "crop": [
     {
@@ -169,6 +169,142 @@
    "problem": "New screens kept arriving with their own styling and too many words.",
    "proposal": "Two rules only. (1) Reuse the existing screen and its styling; find one that does the same job, put it beside yours, and build yours from that same piece. (2) Keep copy minimal: one short line, details behind an existing expand or confirm, say a fact once.",
    "risk": "Advice to future builders, not an automatic block."
+  },
+  {
+   "id": "C-1",
+   "surface": "Chat · permission card",
+   "path": "Always allow on a joined-up command like \"cd app && npm test\"",
+   "crop": "chat#grant-chain@840x270+10+100",
+   "headline": "Joined-up commands: you can now remember each part on its own (you said yes to this).",
+   "changed": "Always allow offers \"Only this exact command\" or \"Each part on its own\", listing what each part becomes (here: \"Any npm test command\").",
+   "notice": "Running the tests from a different folder no longer asks again.",
+   "risk": "Deleting, uploading and installs with setup scripts are still remembered word for word. Not offered in Windows PowerShell, where it can't work.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "C-2",
+   "surface": "Chat · permission card",
+   "path": "A joined-up command with a risky part",
+   "crop": "chat#grant-chain-risky@840x270+10+100",
+   "headline": "A risky part in a joined-up command is remembered word for word only.",
+   "changed": "The list shows it as \"Exactly: npm install left-pad\".",
+   "notice": "You can see which parts are remembered widely and which only exactly.",
+   "risk": "A part that can never be remembered (like a plain git push) removes the \"each part\" choice.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "E-1",
+   "surface": "Chat · permission card",
+   "path": "When the assistant wants to edit a file",
+   "crop": "chat#edit-ask@840x270+10+100",
+   "headline": "File edits get a \"For this conversation\" button (you said yes to this).",
+   "changed": "The row is Yes / For this conversation / Always allow / No, with: \"For this conversation allows file changes in this project until the conversation ends. Nothing is saved.\"",
+   "notice": "Fewer questions while you work; nothing left behind in Settings.",
+   "risk": "Password and key files and files outside the project still ask. Helpers working for the assistant don't get this button yet.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "E-2",
+   "surface": "Chat · permission card",
+   "path": "Always allow on a file edit",
+   "crop": "chat#edit-choices@840x270+10+100",
+   "headline": "Always allow on an edit can now cover the folder (you said yes to this).",
+   "changed": "Choices: \"Only this file\" or \"Files in src/components\". Covers that folder only, not folders inside it.",
+   "notice": "New files in the same folder stop asking.",
+   "risk": "One extra click: Always allow now asks which of the two before saving.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "D-1",
+   "surface": "Chat · permission card",
+   "path": "Always allow on a download",
+   "crop": "chat#grant-curl-download@840x270+10+100",
+   "headline": "Downloads are remembered for one website only (you said yes to this).",
+   "changed": "\"Always allow downloads from github.com only\". Downloads you already allowed for any website keep working; Settings now labels them \"(any website)\" so you can remove them.",
+   "notice": "Downloads from other websites ask again.",
+   "risk": "See the next two pages.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "D-2",
+   "surface": "Chat · permission card",
+   "path": "Always allow on a download that follows links to other sites",
+   "crop": "chat#grant-curl-redirect@840x270+10+100",
+   "headline": "A download that can follow links on to other websites only offers \"this exact command\".",
+   "changed": "The card says: \"Only this exact command is remembered, because it follows links on to other websites.\"",
+   "notice": "This is most downloads the assistant runs: it nearly always uses the \"follow links\" option. So in practice most downloads won't get the one-website choice.",
+   "risk": "The next question asks what you want here.",
+   "runs": [
+    "after"
+   ],
+   "labels": {
+    "after": "Now"
+   },
+   "new": true
+  },
+  {
+   "id": "Q-7",
+   "words": true,
+   "surface": "Chat · permission card",
+   "path": "Always allow on a download that follows links",
+   "headline": "Should \"downloads from this website only\" also cover downloads that follow links within that same website?",
+   "today": "A download that is allowed to follow links (the assistant's usual habit) can only be remembered word for word, because the link could lead to a different website.",
+   "problem": "So the one-website choice you approved will rarely appear, and the same downloads keep asking.",
+   "proposal": "Option A: allow following links only while they stay on the same website; if a link leads elsewhere, the download stops and asks. Option B: keep today's strict rule.",
+   "options": [
+    {
+     "id": "same-site",
+     "label": "Follow same-site links",
+     "pros": [
+      "The one-website choice appears for most downloads.",
+      "A link to another website still stops and asks."
+     ],
+     "cons": [
+      "More code checking each link hop, so a bit more to get right."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "strict",
+     "label": "Keep strict",
+     "pros": [
+      "Simplest; nothing new to trust."
+     ],
+     "cons": [
+      "Most downloads keep asking every time."
+     ]
+    }
+   ]
   }
  ]
 }
