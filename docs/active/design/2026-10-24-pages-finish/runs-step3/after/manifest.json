@@ -1,0 +1,274 @@
+[
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-left/golden-sunbreak.png",
+    "ms": 2778,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 40,
+      "w": 1010,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-right",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-right/golden-sunbreak.png",
+    "ms": 2828,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 760,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-float/golden-sunbreak.png",
+    "ms": 2854,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "golden-sunbreak",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/focus/page-money#chat-phone/golden-sunbreak.png",
+    "ms": 2887,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-right",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-right/light.png",
+    "ms": 1644,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 760,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-right",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-right/midnight.png",
+    "ms": 1662,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 760,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-float/midnight.png",
+    "ms": 1719,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-left/light.png",
+    "ms": 1793,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 40,
+      "w": 1010,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/focus/page-money#chat-phone/midnight.png",
+    "ms": 1998,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-left/midnight.png",
+    "ms": 2204,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 40,
+      "w": 1010,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-float/light.png",
+    "ms": 2602,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/focus/page-money#chat-phone/light.png",
+    "ms": 2652,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-right",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-right/morning-rounds.png",
+    "ms": 2769,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 760,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-left/morning-rounds.png",
+    "ms": 2777,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 420,
+      "y": 40,
+      "w": 1010,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/focus/page-money#chat-phone/morning-rounds.png",
+    "ms": 3023,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3/after/pages/page/page-money#chat-float/morning-rounds.png",
+    "ms": 3066,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  }
+]

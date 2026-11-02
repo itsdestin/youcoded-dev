@@ -1,0 +1,51 @@
+{
+  "title": "Finishing Pages, step 3 — where the page's chat sits",
+  "key": "pages-finish-step3-choice",
+  "out": "pages-finish-step3.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step3.choice",
+  "runs": { "after": "runs-step3/after" },
+  "themes": ["morning-rounds", "midnight", "light"],
+  "steps": [
+    {
+      "id": "C-desktop",
+      "surface": "Pages",
+      "path": "An open page → the chat button beside the gear, next to the page's name",
+      "headline": "On a computer, where should a page's chat sit?",
+      "notice": "The chat is your normal chat, just narrower, the same way the buddy shows it. The button beside the page's settings gear opens and closes it. The conversation is a sample about the Money page.",
+      "risk": "Mockup: the chat shows a sample conversation. New chat and which conversation each page keeps come with the build.",
+      "variants": [
+        {
+          "id": "left",
+          "label": "Chat on the left",
+          "crop": "pages/page/page-money#chat-left",
+          "summary": "The chat takes the page list's place, and the page keeps its full width. The list comes back when you close the chat. This is closest to what you described: chat on one side, page on the other."
+        },
+        {
+          "id": "right",
+          "label": "Chat on the right",
+          "crop": "pages/page/page-money#chat-right",
+          "summary": "The page list stays and the chat opens on the right, like Files beside a chat. You can switch pages without closing the chat.",
+          "risk": "The page is squeezed between the two: look at how the Needs you cards wrap."
+        },
+        {
+          "id": "float",
+          "label": "Chat floating over",
+          "crop": "pages/page/page-money#chat-float",
+          "summary": "The page keeps everything, and the chat is a card over its bottom right corner. Good for quick questions.",
+          "risk": "It covers part of the page, so a change it makes there can be hidden under it."
+        }
+      ]
+    },
+    {
+      "id": "C-phone",
+      "surface": "Pages",
+      "path": "A page on your phone → the chat button",
+      "crop": "pages/focus/page-money#chat-phone",
+      "new": true,
+      "headline": "On a phone, the chat rises as a sheet over the bottom of the page, leaving the top of the page visible.",
+      "changed": "A phone has no room beside the page, so the chat slides up over it, with the same title row (New chat, close) and message box.",
+      "notice": "You still see the top of the page, so a change the chat makes up there shows while you talk."
+    }
+  ]
+}
