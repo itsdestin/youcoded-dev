@@ -43,6 +43,8 @@ the stream once. **Guard:** `assistant-browser-host.test.ts`, `BrowserPanel.test
 (`permission-types.ts`) and pre-approved for Claude Code (`--allowedTools`); the runners ask
 through the Browser's own card (site once per chat, final steps every time, home addresses
 per host:port, metadata never). Every ask and every call returns within `CALL_DEADLINE_MS`.
+Submitting any form asks too, until Always allow (kept in `alwaysAllowedFormSites`, separate from the
+visit list); only Full Auto skips it.
 **Why:** one policy for both kinds; Claude Code auto-backgrounds a tool call after 120 s
 (`youcoded/docs/cc-dependencies.md`). **Guard:** `assistant-browser-live.test.ts`,
 `assistant-browser-native.test.ts`, `assistant-browser.test.ts`.
