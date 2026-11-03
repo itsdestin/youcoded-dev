@@ -349,8 +349,21 @@ development `push:` trigger before merging.
 - **Seen once:** the `first-draw-stability` click path failed one full verify (chat drifted 20 px while scrolling)
   while the machine was busy; it passed 3 runs alone, at 4×–20× browser CPU slowdown, and in the next full verify.
   Not reproduced; not caused by this work (comments and tests only).
-- **Next:** LOOSEN and PART edits; Destin's call on the 22 developer-tool tests; then the wording search over
-  component tests; then merge and shrink.
+- **Developer-tool tests (Destin: "proceed as you see fit"):** kept, except 4 that only pinned review mock-up
+  source (`custom-popup-review`, `marketplace-detail-header-fixture`, `resume-shell-review-fixture`,
+  `workbench-live-esc`), dropped.
+- **LOOSEN/PART done** (youcoded d9075d1a3): 31 files trimmed, ~1,300 lines out. Kept on purpose though they read
+  source or CSS, each the only guard of something real: Windows-shutdown update skip (`app-restart`), askpass
+  socket-dir leak (`askpass-server`), drawer filter not re-rendering the shell (`command-drawer-slash-filter`),
+  navigation guard wiring (`office-frame-guard`), ROCm "Check again" refresh (`rocm-prereqs`), half-open and
+  finished-request memory (`remote-recovery`), Reduced Effects and reduced-motion gating
+  (`reduced-effects-animations`, `wallpaper-header-runtime`), dialog flex layout (`dialog-shell`), the
+  setting-row exemption table `check.sh` reads. Now unguarded, screenshot review only: the terminal background
+  variants, built-in theme JSON vs the first-paint copy in `globals.css`, float-chrome style rules.
+  Full verify green: 1,193 files, 21,633 tests.
+- **Next:** the wording search over component tests; replace `remote-status-channel` and
+  `terminal-touch-bottom-chrome` with behaviour tests; untangle `callout-authority` / `status-strip-authority` from
+  `check.sh`; then merge and shrink.
 
 **A rule going forward:** no new test may check exact wording or a style name. A new test that reads app code as text
 is allowed only for the narrow case the existing rule already names: keeping the phone and computer halves in step
