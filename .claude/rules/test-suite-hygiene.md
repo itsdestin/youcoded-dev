@@ -91,6 +91,13 @@ Run only the test you are proving (`-t "<name>"`); break the real site, not a lo
 **A new source-text guard needs a reason a rule cannot express** (cross-language parity,
 CSS↔TSX coupling).
 
+## Never pin wording or styling
+**Invariant:** no test asserts exact user-facing copy, a CSS class or a style value — find
+elements by role/label, then assert what happened. Looks and copy are judged on the
+before/after screenshot review; whether things work, by the release walk-through.
+**Why:** Destin, 2026-11-01: "we should literally never pin exact wording. waste of code/effort."
+**Guard:** none — candidate (plan `docs/active/plans/2026-11-01-real-app-testing.md`, cleanup).
+
 ## A test lives with its feature and is named for its behaviour
 **Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), named for
 what it renders or calls — never a new file per task. Titles state behaviour: no dates, `§`,
