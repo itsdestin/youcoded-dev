@@ -176,6 +176,13 @@ truly broken.
 - **Browser passing (2026-11-02):** the walk-through serves its own page on the test machine with a code word made
   up each run, asks the assistant to read it with its browser, allows the "local address" card, and passes only
   when the page was really visited and the word is in the chat. The runner's own Google Chrome is the browser.
+- **Run a command passing (2026-11-02):** the assistant is asked for the sha256 of a word made up that run; the
+  test computes the answer itself, so only a real command run can match.
+- **Windows and Mac passing (2026-11-02, run 41573958801):** both install the real installer silently (Windows
+  `/S`; Mac copies the .app out of the dmg) and walk the same 20 steps: 19 pass, the same known first-chat failure
+  as Linux. They use the machine's own home folder (each runner is new; a made-up home cuts the Mac app off from
+  its keychain). Installers come from a Desktop Test Build run (`installers` input) or else the latest published
+  release. Windows restart took 24s against 7s elsewhere — watch it.
 - **Sync step waits:** sync needs a signed-in YouCoded account and stores its data on GitHub, so it needs a
   dedicated test account. #213 is changing sync now; propose the test account to Destin after it merges.
 - **Finding:** with no chat open there is no way into the skills marketplace. It's only reachable from the compass
