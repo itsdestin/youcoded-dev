@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "date": "2026-11-03T07:09:34.700Z",
+    "label": "probe",
+    "device": "SM-F766U1",
+    "android": "17",
+    "webview": "Chrome/156.0.8078.47",
+    "refreshHz": 120,
+    "frameMs": 8.3,
+    "screen": {
+      "w": 1080,
+      "h": 2520
+    },
+    "repeat": 1,
+    "trace": false,
+    "experiment": "(()=>{const desc=a=>{const t=a.effect&&a.effect.target;return (a.animationName||a.transitionProperty||a.constructor.name)+' @ '+(t?(t.tagName+'.'+String(t.className).slice(0,80)):'?')};\nconst mo=new MutationObserver(()=>{if(document.querySelector('[role=dialog][aria-label=\"Appearance\"]')&&!window.__got){window.__got=1;\nconst snap=()=>document.getAnimations().map(desc);\nconst out=[snap()];setTimeout(()=>{out.push(snap());sessionStorage.setItem('__anims',JSON.stringify(out))},150);}});\nmo.observe(document.body,{childList:true,subtree:true});return 'armed'})()"
+  },
+  "results": [
+    {
+      "step": "appearance-open",
+      "what": "In Settings, tap Appearance; its popup opens",
+      "slowFrames": 10,
+      "droppedFrames": 27,
+      "worstFrameMs": 58,
+      "p95FrameMs": 25,
+      "longFrames": 2,
+      "longFramesMs": 124,
+      "tapResponseMs": 48,
+      "shownMs": 36,
+      "pageBusyMs": null,
+      "graphicsBusyMs": null,
+      "compositorBusyMs": null,
+      "pageKinds": null,
+      "cpuAppPct": 46,
+      "cpuAssistantPct": 11,
+      "memoryMb": 540,
+      "screenJanky": 11,
+      "screenFrames": 17,
+      "screenP99": 81,
+      "failed": 0,
+      "first": {
+        "shownMs": 36,
+        "slowFrames": 10,
+        "worstFrameMs": 58,
+        "longFramesMs": 124
+      },
+      "runs": [
+        {
+          "frames": 95,
+          "slowFrames": 10,
+          "droppedFrames": 27,
+          "worstFrameMs": 58,
+          "p95FrameMs": 25,
+          "longFrames": 2,
+          "longFramesMs": 124,
+          "longFrameTop": [
+            {
+              "d": 63,
+              "block": 10,
+              "style": 0,
+              "script": 0,
+              "top": []
+            },
+            {
+              "d": 61,
+              "block": 0,
+              "style": 1,
+              "script": 0,
+              "top": []
+            }
+          ],
+          "tapResponseMs": 48,
+          "shownMs": 36,
+          "cpuAppPct": 46,
+          "cpuAssistantPct": 11,
+          "threads": null,
+          "memoryMb": 540,
+          "worked": true,
+          "screenFrames": 17,
+          "screenJanky": 11,
+          "screenP90": 77,
+          "screenP99": 81
+        }
+      ]
+    }
+  ]
+}
