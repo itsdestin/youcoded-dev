@@ -1355,3 +1355,10 @@ recurred — the repetition is the data.
 - Independent reviewer found 8 issues my tests missed (opt-out undone by a racing write, damaged file read as a fresh install, reload click undercount, …) → applied: 7 fixed with tests seen red; 1 (blob8 on pre-change AE rows) needs a check after deploy, noted on #211.
 - Two worker tests (presence, site-analytics) failed once at load 59 from other sessions, passed on 2 reruns → dropped: not reproducible without manufacturing load; reported to Destin.
 - deleted/merged: website.css merged into dashboard.css; the dashboard's weekly charts, by-version chart, journey table and every card sub-line removed; the inline App script replaced by modules sharing one chart/tab helper.
+
+## 2026-11-03 — voice typing heard nothing: muted mic, app now says so (session/voice-no-sound, app + workspace, no card)
+- Cause was the Z13's system mic muted (found in 2 calls with `wpctl status`/`pw-record`), not the app; but the app gave no sign: "Listening" over pure zeros, then an empty box → applied: amber "No sound detected — device may be muted" after 3 s of digital silence, and a card after an empty Stop (no sound / too quiet / no words); 6 tests in `useVoiceInput.test.ts` seen red with detection off. Machine fact → `~/system/machines/z13/issues.md`.
+- InputBar went 7 lines over its line budget → applied: the listening band moved into `VoiceButton.tsx` instead of raising the budget.
+- `preview` refuses an answered deck; a one-step follow-up deck (`no-sound-2.live.json`) carried the N-1 revision → dropped: AUTHORING.md documents it; one call.
+- `first-draw-stability` journey failed once at load 69 (67.8 px drift), passed on two reruns at load 74–97; unrelated to voice → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: the listening band's markup left InputBar (one component in VoiceButton); InputBar's `StatusStrip` import removed.
