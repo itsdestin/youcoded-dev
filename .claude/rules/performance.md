@@ -17,7 +17,7 @@ verify:
   - path: scripts/ast-grep/rules/filestab-no-artifact-context.yml
   - path: scripts/ast-grep/rules/mascot-rig-pauses-when-hidden.yml
   - path: scripts/ast-grep/rules/no-unstepped-infinite-animation.yml
-  - test: youcoded/desktop/tests/SessionStrip-layout-effects.test.ts
+  - test: youcoded/desktop/tests/SessionStrip.test.tsx
   - test: youcoded/desktop/tests/animation-frame-budget.test.ts
   - test: youcoded/desktop/tests/main-blocking-calls.test.ts
   - test: youcoded/desktop/tests/busy-app-render-budget.test.tsx
@@ -84,7 +84,7 @@ main-process blocking-call ratchet** (`desktop/tests/main-blocking-calls.test.ts
    (not `@property` — it kills `var(--x, fallback)` fallbacks and visibly moves layout); an
    `infinite` animation carries `steps()`. **Why:** ~120 forced style recalcs/s in
    SessionStrip; root variables rewritten per keystroke recalc the whole document; one
-   smooth pulsing dot cost ~29% of a core at 180 Hz. **Guard:** `SessionStrip-layout-effects`,
+   smooth pulsing dot cost ~29% of a core at 180 Hz. **Guard:** `SessionStrip.test.tsx` (layout effects),
    `animation-frame-budget`, `no-unstepped-infinite-animation`.
 
 7. **Lists of the user's things draw only what is visible** — `.claude/rules/renderer-lists.md`.

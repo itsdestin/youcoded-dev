@@ -46,7 +46,7 @@ verify:
   - test: youcoded/desktop/tests/wire-adapter.test.ts
   - test: youcoded/desktop/tests/harness-session.test.ts
   - test: youcoded/desktop/tests/native-session-host.test.ts
-  - test: youcoded/desktop/tests/native-send.test.ts
+  - test: youcoded/desktop/tests/native-send.test.tsx
   - test: youcoded/desktop/tests/native-home.test.ts
   - test: youcoded/desktop/tests/session-namer.test.ts
   - test: youcoded/desktop/tests/provider-registry.test.ts
