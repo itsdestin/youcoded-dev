@@ -124,10 +124,12 @@ function findShift(pairs) {
 // ─── Classifying ─────────────────────────────────────────────────────────────
 const BRAILLE = /^[\u2800-\u28ff\s]+$/;
 const DURATION = /\b\d+\s?(?:d|h|m|s)\b/g;
-/** Words that change by themselves: a spinner glyph, or the same text with only a countdown different. */
+const CLOCK = /\b\d{1,2}:\d{2}(?::\d{2})?\s?(?:[AaPp][Mm])?/g;
+const SPINNER = /[\u2800-\u28ff]/g;
+const steady = (t) => t.replace(SPINNER, '').replace(CLOCK, '#').replace(DURATION, '#').replace(/\s+/g, ' ').trim();
+/** Words that change by themselves: a spinner glyph, a countdown or a clock time. True when the two texts are the same without those. */
 export function volatileText(o, n) {
-  if (BRAILLE.test(o) && BRAILLE.test(n)) return true;
-  return o !== n && o.replace(DURATION, '#') === n.replace(DURATION, '#');
+  return o !== n && steady(o) === steady(n);
 }
 const MOVE_TOL = 2;   // CSS px: smaller moves are rounding, not changes
 const STYLE_PROPS = ['color', 'background', 'border', 'radius', 'font', 'opacity'];

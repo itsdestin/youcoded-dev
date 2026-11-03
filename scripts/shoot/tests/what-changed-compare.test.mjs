@@ -121,3 +121,9 @@ test('the recorder expression is valid script text (it is sent to the page as te
   const { MEASURE_ELEMENTS } = await import('../elements.mjs');
   assert.doesNotThrow(() => new Function(`return ${MEASURE_ELEMENTS}`));
 });
+
+test('a clock time or a spinner glyph inside a label is not a wording change either', () => {
+  const r = run([el('control', 'button', '⠧ 1 Subagent', 10, 10), el('text', null, 'Sent 4:13 PM', 10, 50)], [el('control', 'button', '⠦ 1 Subagent', 10, 10), el('text', null, 'Sent 4:22 PM', 10, 50)]);
+  assert.deepEqual(r.changes, []);
+  assert.deepEqual(kinds(run([el('text', null, 'Sent 4:13 PM', 10, 50)], [el('text', null, 'Posted 4:13 PM', 10, 50)])), ['text']);
+});
