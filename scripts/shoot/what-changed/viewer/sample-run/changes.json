@@ -1,0 +1,413 @@
+{
+  "before": {
+    "label": "v1.3.3",
+    "commit": "abc1233"
+  },
+  "after": {
+    "label": "master",
+    "commit": "def4560"
+  },
+  "generatedAt": "2026-11-03T15:00:00Z",
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "screens": [
+    {
+      "name": "settings/about",
+      "theme": "meadow-mist",
+      "status": "changed",
+      "scale": 1.5,
+      "before": "before/settings/about/meadow-mist.png",
+      "after": "after/settings/about/meadow-mist.png",
+      "mask": "diff/settings/about/meadow-mist.mask.png",
+      "changes": [
+        {
+          "kind": "text",
+          "role": "button",
+          "name": "Check for updates",
+          "oldText": "Check for updates",
+          "newText": "Look for updates",
+          "words": [
+            {
+              "old": "Check",
+              "new": "Look"
+            },
+            {
+              "same": "for updates"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 80,
+            "w": 130,
+            "h": 32
+          }
+        },
+        {
+          "kind": "text",
+          "role": "text",
+          "name": "Version",
+          "oldText": "YouCoded version 1.3.3",
+          "newText": "YouCoded version 1.4.0",
+          "words": [
+            {
+              "same": "YouCoded version"
+            },
+            {
+              "old": "1.3.3",
+              "new": "1.4.0"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 50,
+            "w": 130,
+            "h": 12
+          }
+        },
+        {
+          "kind": "added",
+          "role": "button",
+          "name": "Copy details",
+          "side": "after",
+          "box": {
+            "x": 284,
+            "y": 80,
+            "w": 110,
+            "h": 32
+          }
+        },
+        {
+          "kind": "restyled",
+          "role": "link",
+          "name": "Release notes",
+          "styleChanges": [
+            {
+              "prop": "color",
+              "from": "rgb(79, 143, 91)",
+              "to": "rgb(42, 58, 44)"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 128,
+            "w": 66,
+            "h": 12
+          }
+        },
+        {
+          "kind": "pixels",
+          "side": "after",
+          "box": {
+            "x": 420,
+            "y": 50,
+            "w": 32,
+            "h": 32
+          }
+        }
+      ]
+    },
+    {
+      "name": "settings/appearance",
+      "theme": "meadow-mist",
+      "status": "changed",
+      "scale": 1.5,
+      "before": "before/settings/appearance/meadow-mist.png",
+      "after": "after/settings/appearance/meadow-mist.png",
+      "changes": [
+        {
+          "kind": "moved",
+          "role": "slider",
+          "name": "Font size",
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 168,
+            "w": 160,
+            "h": 6
+          },
+          "beforeBox": {
+            "x": 140,
+            "y": 148,
+            "w": 160,
+            "h": 6
+          }
+        },
+        {
+          "kind": "removed",
+          "role": "switch",
+          "name": "Reduce motion",
+          "side": "before",
+          "box": {
+            "x": 420,
+            "y": 186,
+            "w": 36,
+            "h": 18
+          }
+        }
+      ]
+    },
+    {
+      "name": "chat/composer",
+      "theme": "meadow-mist",
+      "status": "changed",
+      "scale": 1.5,
+      "before": "before/chat/composer/meadow-mist.png",
+      "after": "after/chat/composer/meadow-mist.png",
+      "changes": [
+        {
+          "kind": "text",
+          "role": "textbox",
+          "name": "Message",
+          "oldText": "Type a message",
+          "newText": "Message YouCoded",
+          "words": [
+            {
+              "old": "Type a",
+              "new": "YouCoded"
+            },
+            {
+              "same": "message"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 148,
+            "y": 252,
+            "w": 100,
+            "h": 14
+          }
+        }
+      ]
+    },
+    {
+      "name": "chat/empty",
+      "theme": "meadow-mist",
+      "status": "new",
+      "scale": 1.5,
+      "after": "after/chat/empty/meadow-mist.png",
+      "reason": "added since the last release",
+      "changes": []
+    },
+    {
+      "name": "library/themes",
+      "theme": "meadow-mist",
+      "status": "unchanged",
+      "scale": 1.5,
+      "before": "before/library/themes/meadow-mist.png",
+      "after": "after/library/themes/meadow-mist.png",
+      "changes": []
+    },
+    {
+      "name": "settings/about",
+      "theme": "halftone-dimension",
+      "status": "changed",
+      "scale": 1.5,
+      "before": "before/settings/about/halftone-dimension.png",
+      "after": "after/settings/about/halftone-dimension.png",
+      "mask": "diff/settings/about/halftone-dimension.mask.png",
+      "changes": [
+        {
+          "kind": "text",
+          "role": "button",
+          "name": "Check for updates",
+          "oldText": "Check for updates",
+          "newText": "Look for updates",
+          "words": [
+            {
+              "old": "Check",
+              "new": "Look"
+            },
+            {
+              "same": "for updates"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 80,
+            "w": 130,
+            "h": 32
+          }
+        },
+        {
+          "kind": "text",
+          "role": "text",
+          "name": "Version",
+          "oldText": "YouCoded version 1.3.3",
+          "newText": "YouCoded version 1.4.0",
+          "words": [
+            {
+              "same": "YouCoded version"
+            },
+            {
+              "old": "1.3.3",
+              "new": "1.4.0"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 50,
+            "w": 130,
+            "h": 12
+          }
+        },
+        {
+          "kind": "added",
+          "role": "button",
+          "name": "Copy details",
+          "side": "after",
+          "box": {
+            "x": 284,
+            "y": 80,
+            "w": 110,
+            "h": 32
+          }
+        },
+        {
+          "kind": "restyled",
+          "role": "link",
+          "name": "Release notes",
+          "styleChanges": [
+            {
+              "prop": "color",
+              "from": "rgb(79, 143, 91)",
+              "to": "rgb(42, 58, 44)"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 128,
+            "w": 66,
+            "h": 12
+          }
+        },
+        {
+          "kind": "pixels",
+          "side": "after",
+          "box": {
+            "x": 420,
+            "y": 50,
+            "w": 32,
+            "h": 32
+          }
+        }
+      ]
+    },
+    {
+      "name": "settings/appearance",
+      "theme": "halftone-dimension",
+      "status": "changed",
+      "scale": 1.5,
+      "before": "before/settings/appearance/halftone-dimension.png",
+      "after": "after/settings/appearance/halftone-dimension.png",
+      "changes": [
+        {
+          "kind": "moved",
+          "role": "slider",
+          "name": "Font size",
+          "side": "after",
+          "box": {
+            "x": 140,
+            "y": 168,
+            "w": 160,
+            "h": 6
+          },
+          "beforeBox": {
+            "x": 140,
+            "y": 148,
+            "w": 160,
+            "h": 6
+          }
+        },
+        {
+          "kind": "removed",
+          "role": "switch",
+          "name": "Reduce motion",
+          "side": "before",
+          "box": {
+            "x": 420,
+            "y": 186,
+            "w": 36,
+            "h": 18
+          }
+        }
+      ]
+    },
+    {
+      "name": "chat/composer",
+      "theme": "halftone-dimension",
+      "status": "changed",
+      "scale": 1.5,
+      "before": "before/chat/composer/halftone-dimension.png",
+      "after": "after/chat/composer/halftone-dimension.png",
+      "changes": [
+        {
+          "kind": "text",
+          "role": "textbox",
+          "name": "Message",
+          "oldText": "Type a message",
+          "newText": "Message YouCoded",
+          "words": [
+            {
+              "old": "Type a",
+              "new": "YouCoded"
+            },
+            {
+              "same": "message"
+            }
+          ],
+          "side": "after",
+          "box": {
+            "x": 148,
+            "y": 252,
+            "w": 100,
+            "h": 14
+          }
+        }
+      ]
+    },
+    {
+      "name": "chat/empty",
+      "theme": "halftone-dimension",
+      "status": "new",
+      "scale": 1.5,
+      "after": "after/chat/empty/halftone-dimension.png",
+      "reason": "added since the last release",
+      "changes": []
+    },
+    {
+      "name": "library/themes",
+      "theme": "halftone-dimension",
+      "status": "unchanged",
+      "scale": 1.5,
+      "before": "before/library/themes/halftone-dimension.png",
+      "after": "after/library/themes/halftone-dimension.png",
+      "changes": []
+    },
+    {
+      "name": "library/skills",
+      "theme": "meadow-mist",
+      "status": "removed",
+      "scale": 1.5,
+      "before": "before/library/skills/meadow-mist.png",
+      "after": null,
+      "reason": "This screen is gone in the current code.",
+      "changes": []
+    },
+    {
+      "name": "onboarding/welcome",
+      "theme": "meadow-mist",
+      "status": "failed",
+      "scale": 1.5,
+      "reason": "The screen never finished loading (waited 20 s).",
+      "changes": []
+    }
+  ]
+}

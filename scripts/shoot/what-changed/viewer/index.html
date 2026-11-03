@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>What changed since last release</title>
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<header class="top">
+  <div class="title">
+    <h1>What changed</h1>
+    <span id="versions" class="muted"></span>
+  </div>
+  <div id="counts" class="counts" aria-label="Totals"></div>
+  <div class="progress"><span id="progressText"></span><div class="bar"><i id="progressBar"></i></div></div>
+  <div class="actions">
+    <span id="saveState" class="muted" role="status"></span>
+    <button id="copyBtn" class="ghost" type="button">Copy answers</button>
+    <button id="dlBtn" class="ghost" type="button">Download</button>
+    <button id="keysBtn" class="ghost" type="button" aria-expanded="false">Keys</button>
+  </div>
+</header>
+<div id="keys" class="keys" hidden>
+  <span><kbd>j</kbd> next screen</span><span><kbd>k</kbd> previous screen</span>
+  <span><kbd>y</kbd> keep, then next</span><span><kbd>n</kbd> not this, then next</span><span><kbd>u</kbd> clear answer</span>
+  <span><kbd>v</kbd> change view</span><span><kbd>t</kbd> next theme</span><span><kbd>m</kbd> changed-pixel mask</span>
+  <span><kbd>/</kbd> search</span>
+</div>
+<div class="layout">
+  <nav class="side" aria-label="Changed screens">
+    <div class="tools">
+      <input id="search" type="search" placeholder="Search screens and words" aria-label="Search">
+      <div id="filters" class="chips" role="group" aria-label="Show"></div>
+    </div>
+    <div id="list"></div>
+    <details id="failedBox" class="failed" hidden><summary id="failedSummary"></summary><ul id="failedList"></ul></details>
+  </nav>
+  <main id="detail" class="detail" aria-live="polite"></main>
+</div>
+<div id="loader" class="loader" hidden>
+  <p>Open this page through the viewer server so it can read the run and save your answers:</p>
+  <code>node scripts/shoot/what-changed/serve.mjs &lt;run folder&gt;</code>
+  <p>Or choose a <b>changes.json</b> file here (answers are then kept in this browser only).</p>
+  <input id="filePick" type="file" accept="application/json,.json">
+</div>
+<script type="module" src="viewer.js"></script>
+</body>
+</html>
