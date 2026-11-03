@@ -160,6 +160,7 @@ async function main() {
       longFrames: sum('longFrames'), longFramesMs: sum('longFramesMs'), tapResponseMs: sum('tapResponseMs'),
       shownMs: runs.some((x) => x.shownMs === 'never') ? 'never' : sum('shownMs'),
       pageBusyMs: thread('page'), graphicsBusyMs: thread('graphics'), compositorBusyMs: thread('compositor'),
+      pageKinds: runs.find((x) => x.threads?.pageKinds)?.threads.pageKinds ?? null,
       cpuAppPct: sum('cpuAppPct'), cpuAssistantPct: sum('cpuAssistantPct'), memoryMb: sum('memoryMb'),
       screenJanky: sum('screenJanky'), screenFrames: sum('screenFrames'), screenP99: sum('screenP99'),
       failed: runs.filter((x) => !x.worked).length,
@@ -171,6 +172,12 @@ async function main() {
     results.push(row);
     if (row.failed) console.log(`${step.name.padEnd(22)} ${row.failed} of ${runs.length} runs did NOT do the step — not a result`);
     console.log(`${step.name.padEnd(22)} slow ${String(row.slowFrames).padStart(3)} · dropped ${String(row.droppedFrames).padStart(3)} · worst ${String(row.worstFrameMs).padStart(4)}ms · long ${row.longFrames}/${row.longFramesMs}ms · tap ${row.tapResponseMs}ms · shows ${row.shownMs ?? '-'}ms · page ${row.pageBusyMs ?? '-'}ms · gfx ${row.graphicsBusyMs ?? '-'}ms · shown late ${row.screenJanky ?? '-'}/${row.screenFrames ?? '-'} (p99 ${row.screenP99 ?? '-'}ms) · app ${row.cpuAppPct}% · ${row.memoryMb}MB · first: shows ${row.first?.shownMs ?? '-'}ms worst ${row.first?.worstFrameMs ?? '-'}ms`);
+  }
+  // An experiment's change lasts until the page reloads: reload now, so it can never leak into a later run (it did
+  // once — a hidden Settings panel made the next run's Settings open invisible, 2026-11-02).
+  if (pageJs) {
+    await page.evaluate('location.reload()').catch(() => {});
+    console.log('experiment undone: page reloaded');
   }
   page.close();
   mkdirSync(REPORTS, { recursive: true });
@@ -186,6 +193,8 @@ function markdown(meta, results) {
     '| Step | Shown late (Android) | Slow frames | Dropped | Worst frame | Long frames | Tap response | Shows | First time: shows / worst frame | Page busy | Graphics busy | App CPU | Memory |',
     '|---|---|---|---|---|---|---|---|---|---|---|---|---|'];
   for (const r of results) L.push(`| ${r.step} — ${r.what}${r.failed ? ` **(${r.failed} run(s) failed)**` : ''} | ${r.screenJanky ?? '–'} of ${r.screenFrames ?? '–'} (p99 ${r.screenP99 ?? '–'} ms) | ${r.slowFrames} | ${r.droppedFrames} | ${r.worstFrameMs} ms | ${r.longFrames} (${r.longFramesMs} ms) | ${r.tapResponseMs} ms | ${r.shownMs ?? '–'}${typeof r.shownMs === 'number' ? ' ms' : ''} | ${r.first?.shownMs ?? '–'} / ${r.first?.worstFrameMs ?? '–'} ms | ${r.pageBusyMs ?? '–'} ms | ${r.graphicsBusyMs ?? '–'} ms | ${r.cpuAppPct}% | ${r.memoryMb} MB |`);
+  L.push('', '## What the page thread was busy with (first run)', '');
+  for (const r of results) if (r.pageKinds) L.push(`- **${r.step}**: ${Object.entries(r.pageKinds).filter(([, v]) => v > 0).map(([k, v]) => `${k} ${v} ms`).join(' · ')}`);
   L.push('', '## What filled the long frames', '');
   for (const r of results) {
     const top = r.runs.flatMap((x) => x.longFrameTop).sort((a, b) => b.d - a.d).slice(0, 3);
