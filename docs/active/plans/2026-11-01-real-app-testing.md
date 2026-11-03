@@ -173,6 +173,11 @@ truly broken.
 - **Marketplace steps (in progress):** install Civic Report (checked on disk) and install and apply Golden
   Sunbreak (checked by the page's `data-theme`). The last run's result was unread when GitHub's request limit was
   hit, at about 10:47 UTC.
+- **Browser passing (2026-11-02):** the walk-through serves its own page on the test machine with a code word made
+  up each run, asks the assistant to read it with its browser, allows the "local address" card, and passes only
+  when the page was really visited and the word is in the chat. The runner's own Google Chrome is the browser.
+- **Sync step waits:** sync needs a signed-in YouCoded account and stores its data on GitHub, so it needs a
+  dedicated test account. #213 is changing sync now; propose the test account to Destin after it merges.
 - **Finding:** with no chat open there is no way into the skills marketplace. It's only reachable from the compass
   in a chat's message bar; Settings has no entry. The Android report noted the same.
 - **Tooling note:** `gh run watch` at its default interval, plus many runs, hit GitHub's request limit, which is
