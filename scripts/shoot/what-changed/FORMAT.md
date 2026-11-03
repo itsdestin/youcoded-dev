@@ -94,3 +94,11 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 ```
 
 Decisions are per screen name (both themes together).
+
+## Edge cases the viewer relies on
+
+- `removed` screen: `after` is `null`; only the before picture shows.
+- `failed` screen: `before` / `after` may be absent; no picture shows.
+- `moved` change: `beforeBox` is drawn dashed on the before picture.
+- `decisions.json`'s `run` is the run folder's name (the server fills it in; `changes.json` carries none).
+- Counts: a screen name is "changed" when any of its themes is; "changed" includes removed.
