@@ -1,0 +1,24 @@
+{
+ "deck": "pages-finish-step3b-choice",
+ "started": "2026-11-03T03:50:09.115Z",
+ "submitted": "2026-11-03T03:53:57Z",
+ "cur": 1,
+ "answers": {
+  "C-left": {
+   "v": "other",
+   "t": 1793677920995,
+   "note": "no i dont like this. i dont want to see all of the icons when a chat is open, and i still dont like how the chat window is styled visually. other pages should be hidden behind the normal expand icon",
+   "seconds": 112,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "C-phone": {
+   "v": "other",
+   "t": 1793678036556,
+   "note": "i think it needs to be floating, much more compact text (kinda like the main phone window has been compacted) and hidden behind a floating chat button in the bottom right of each page.",
+   "seconds": 116,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

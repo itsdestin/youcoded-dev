@@ -1,0 +1,74 @@
+{
+  "title": "Finishing Pages, step 3 — the page's chat, round 3",
+  "key": "pages-finish-step3c-choice",
+  "out": "pages-finish-step3c.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step3c.choice",
+  "runs": {
+    "after": "runs-step3c/after"
+  },
+  "themes": [
+    "morning-rounds",
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "C-computer",
+      "surface": "Pages",
+      "path": "An open page → the chat",
+      "headline": "On a computer: chat on the left with the page list tucked away, or the same floating chat as the phone?",
+      "notice": "Both use the new smaller text and tighter message bubbles, a smaller title row, and no outline around the chat.",
+      "variants": [
+        {
+          "id": "left",
+          "label": "On the left, list tucked away",
+          "crop": "pages/page/page-money#chat-left",
+          "summary": "No page icons beside the chat. The usual expand icon (top left of the chat) brings the page list back beside it. The chat button in the top bar opens and hides the chat.",
+          "risk": "Changing pages takes two clicks while the chat is open, not one."
+        },
+        {
+          "id": "float",
+          "label": "Floating, like the phone",
+          "crop": "pages/page/page-money#chat-float",
+          "summary": "The page keeps its whole width and the list stays. The chat floats over the page's bottom right, and minimizing turns it back into a round chat button in that corner.",
+          "risk": "The chat covers part of the page while it is open. Whatever is under it is hidden until you minimize."
+        }
+      ]
+    },
+    {
+      "id": "C-float-button",
+      "surface": "Pages",
+      "path": "An open page, chat hidden",
+      "crop": "pages/page/page-money#chat-float-closed",
+      "new": true,
+      "headline": "If the chat floats, this is the round chat button every page gets in its bottom right corner.",
+      "notice": "One click opens the chat where you left it. Minimize (–) puts it back to this button.",
+      "risk": "The button sits over the page, so it can cover whatever the page draws in that corner.",
+      "changed": "New in round 3: there was no button before; the chat opened only from the top bar."
+    },
+    {
+      "id": "C-phone",
+      "surface": "Pages",
+      "path": "A page on your phone",
+      "headline": "On a phone the chat hides behind a round button in the bottom right and opens as a floating card with smaller text.",
+      "changed": "From round 2: no longer a sheet or the whole screen. It floats with a margin all round, and the text is a size smaller.",
+      "notice": "The top of the page stays visible above the card.",
+      "risk": "About a third of the screen is left for the page while the chat is open.",
+      "variants": [
+        {
+          "id": "closed",
+          "label": "Chat hidden",
+          "crop": "pages/focus/page-money#chat-phone-closed",
+          "summary": "Just the round chat button over the page."
+        },
+        {
+          "id": "open",
+          "label": "Chat open",
+          "crop": "pages/focus/page-money#chat-phone",
+          "summary": "The floating card, with the conversation's name, New chat and minimize."
+        }
+      ]
+    }
+  ]
+}

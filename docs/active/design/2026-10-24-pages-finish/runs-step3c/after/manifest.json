@@ -1,0 +1,257 @@
+[
+  {
+    "name": "pages/page/page-money#chat-float-closed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-float-closed/midnight.png",
+    "ms": 1448,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone-closed",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/focus/page-money#chat-phone-closed/midnight.png",
+    "ms": 1505,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/focus/page-money#chat-phone/midnight.png",
+    "ms": 1583,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-left/light.png",
+    "ms": 1584,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 380,
+      "y": 40,
+      "w": 1050,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-float/light.png",
+    "ms": 1590,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-float/midnight.png",
+    "ms": 1641,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-left/midnight.png",
+    "ms": 1744,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 380,
+      "y": 40,
+      "w": 1050,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone-closed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/focus/page-money#chat-phone-closed/light.png",
+    "ms": 2092,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone-closed",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/focus/page-money#chat-phone-closed/morning-rounds.png",
+    "ms": 2248,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float-closed",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-float-closed/morning-rounds.png",
+    "ms": 2260,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/focus/page-money#chat-phone/light.png",
+    "ms": 2325,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-left",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-left/morning-rounds.png",
+    "ms": 2410,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 380,
+      "y": 40,
+      "w": 1050,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float-closed",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-float-closed/light.png",
+    "ms": 2411,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/focus/page-money#chat-phone",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/focus/page-money#chat-phone/morning-rounds.png",
+    "ms": 2566,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 10,
+      "y": 40,
+      "w": 370,
+      "h": 794
+    },
+    "parts": []
+  },
+  {
+    "name": "pages/page/page-money#chat-float",
+    "theme": "morning-rounds",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/90-pages-finish/docs/active/design/2026-10-24-pages-finish/runs-step3c/after/pages/page/page-money#chat-float/morning-rounds.png",
+    "ms": 2569,
+    "errors": [],
+    "scale": 1.5,
+    "panel": {
+      "x": 260,
+      "y": 40,
+      "w": 1170,
+      "h": 850
+    },
+    "parts": []
+  }
+]
