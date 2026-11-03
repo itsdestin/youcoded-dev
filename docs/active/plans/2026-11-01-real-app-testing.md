@@ -361,9 +361,18 @@ development `push:` trigger before merging.
   setting-row exemption table `check.sh` reads. Now unguarded, screenshot review only: the terminal background
   variants, built-in theme JSON vs the first-paint copy in `globals.css`, float-chrome style rules.
   Full verify green: 1,193 files, 21,633 tests.
-- **Next:** the wording search over component tests; replace `remote-status-channel` and
-  `terminal-touch-bottom-chrome` with behaviour tests; untangle `callout-authority` / `status-strip-authority` from
-  `check.sh`; then merge and shrink.
+- **Wording search (2026-11-03, youcoded 7ae64911a):** finding a control by role and name stays (the rule allows it;
+  ~1,800 `getByText` and ~1,500 `getByRole({name})` locators). The pins were ~217 checks comparing a whole sentence
+  (search: a literal of 6+ words in `ByText`/`toHaveTextContent`/`toBe`/`toContain`/`toMatch`), in 92 files. Loosened
+  to the facts carried, a role, a data attribute or one key word; model-facing text, parser input and fixtures left.
+  ~9 proved red by breaking the app. One dead negative found (`PagesView`: its sentence no longer existed).
+- **Two line pins replaced (youcoded fa7152b68):** the remote light is `remote/remote-indicator.ts` + tests in
+  `SettingsPanel.test.tsx`, plus a real-server test in `remote-server-bind.test.ts`, which **found a real bug**: a
+  taken port threw an uncaught error (ws re-emits it with no listener), hung the Settings switch and showed no reason
+  — fixed. The phone key row is the `touch-terminal-keys` journey (forces hit-testing on, so it sees what is DRAWN
+  on top; proved red with `.bottom-docked` emptied).
+- **Next:** untangle `callout-authority` / `status-strip-authority` from `check.sh`; then merge and shrink small
+  tests into bigger ones; a possible automatic check for new sentence pins.
 
 **A rule going forward:** no new test may check exact wording or a style name. A new test that reads app code as text
 is allowed only for the narrow case the existing rule already names: keeping the phone and computer halves in step
