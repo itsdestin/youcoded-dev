@@ -1,7 +1,7 @@
 ---
 id: 215
 title: Voice typing: say when the microphone hears nothing
-stage: polish
+stage: merged
 tags: input-bar, bug
 branch: 215-voice-typing-say-when-the
 finish: Listening band warns after 3 s of pure silence; an empty Stop opens a card saying no sound / too quiet / no words.
