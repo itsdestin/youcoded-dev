@@ -371,8 +371,25 @@ development `push:` trigger before merging.
   taken port threw an uncaught error (ws re-emits it with no listener), hung the Settings switch and showed no reason
   — fixed. The phone key row is the `touch-terminal-keys` journey (forces hit-testing on, so it sees what is DRAWN
   on top; proved red with `.bottom-docked` emptied).
-- **Next:** untangle `callout-authority` / `status-strip-authority` from `check.sh`; then merge and shrink small
-  tests into bigger ones; a possible automatic check for new sentence pins.
+- **Untangled (2026-11-03):** callout and status-strip tests keep layout only; their two styling count tables and
+  `check.sh` pairings are gone; the not-invented-error-cause count stays. `no-centred-status-paragraph` now holds
+  FirstRunView and ShareSheet to zero.
+- **Guard for new sentence pins:** `tests/no-sentence-pins.test.ts` (a 6+ word sentence in an on-screen text check
+  that the test never supplies itself). Self-tested.
+- **Merge and shrink, done:** waves over the name-prefix groups (session, remote, sync, native) and then every file
+  of 450+ lines (excluding developer tools). App test lines 284,041 → 265,490 in this phase (from 293k at the plan's
+  start, with the personal pages moved: ~9%). **The "a third" estimate was wrong**: helper after helper found most
+  large files are genuinely distinct behaviours; the honest cuts were shared setup, case tables and history
+  comments. Files under 450 lines were not swept (small savings, rising risk).
+- **Proof method:** a scratch-only coverage recorder (an inspector-based setup file plus `covered.py`, never
+  committed) compared which app functions and branches each file's tests ran before and after. It caught six real
+  dropped inputs (kwin cached lookup, a missing-parent path walk, two IPC cases, a spinner tick, a qdbus branch),
+  all restored. **A real bug found and fixed** on the way (youcoded fa7152b68): a taken remote port hung Settings.
+- **Style pins:** ~265 class/style assertions in 71 files reviewed; look-only ones deleted (~580 lines), behaviour
+  ones kept (computed geometry, hidden-means-idle, touch targets, classes CSS reads).
+- **Dev push triggers removed** from the three real-app workflows (youcoded, 2026-11-03).
+- **Left:** the "What changed" button (Phase 5, needs a design review with Destin — it changes his work board);
+  the first-run fix and the walk-through sync step wait for #213.
 
 **A rule going forward:** no new test may check exact wording or a style name. A new test that reads app code as text
 is allowed only for the narrow case the existing rule already names: keeping the phone and computer halves in step
