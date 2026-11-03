@@ -278,6 +278,12 @@ truly broken.
 
 ## Phase 4: the release gate
 
+**Built (2026-11-02), youcoded-admin `session/test-suite-rethink` 491be32:** release skill section 3 step 5 "Real-app
+gate"; overrides go to `skills/release/data/release-overrides.md` (private repo); the contract test fails if the gate
+is weakened (proved: red with "blocks" changed to "advisory"). **Merge order:** the youcoded branch (which adds
+`release-walkthrough.yml`) must land first — the admin contract test reads that workflow. Remove the walk-through's
+development `push:` trigger before merging.
+
 - **Where:** the release steps (`youcoded-admin/skills/release/SKILL.md`), between "the candidate's checks are
   green" and your "Final go/no-go".
 - **What:** the walk-through report goes into the go/no-go summary, along with the list of changed screens from the
