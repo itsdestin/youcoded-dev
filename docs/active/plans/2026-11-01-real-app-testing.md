@@ -332,6 +332,26 @@ development `push:` trigger before merging.
 3. **Merge and shrink**, one feature at a time. Each starts with writing the bigger test, then removing the small
    ones it covers.
 
+**Progress (2026-11-02):**
+
+- **Personal pages moved:** 43 files, 353 checks, ~5,300 lines now in `desktop/tests/personal-pages/`, excluded from
+  the app's run; `npm run test:personal-pages` runs them (all pass).
+- **Source-text readers reviewed:** all 314 test files that read something as text were sorted by four reviewers;
+  verdicts in `docs/active/design/2026-11-01-test-rethink/source-reader-verdicts.tsv`. KEEP 238, DROP 22, LOOSEN 12,
+  PART 20, DEVTOOL 22. Far fewer drops than the sample predicted: most of these files read their own output, not
+  app code. The wording pins are mostly elsewhere — in component tests asserting exact text (the second search).
+- **Dropped 14** pure look/wording files (~1,100 lines). Of the other 8 marked DROP: `code-block-holds-real-height`
+  guards a typing-speed problem (kept); `remote-status-channel` and `terminal-touch-bottom-chrome` guard real bugs by
+  pinning lines (replace with behaviour tests, then drop); `callout-authority` and `status-strip-authority` feed
+  exemption lists to `scripts/ast-grep/check.sh` (untangle first); `auto-title-contract` and
+  `menu-row-reachability` kept (unclear); `line-budgets` treated as developer tooling. `primitive-adoption`'s macOS
+  Settings clearance case kept as `settings-drawer-mac-clearance.test.ts` (proved red with the CSS rule renamed).
+- **Seen once:** the `first-draw-stability` click path failed one full verify (chat drifted 20 px while scrolling)
+  while the machine was busy; it passed 3 runs alone, at 4×–20× browser CPU slowdown, and in the next full verify.
+  Not reproduced; not caused by this work (comments and tests only).
+- **Next:** LOOSEN and PART edits; Destin's call on the 22 developer-tool tests; then the wording search over
+  component tests; then merge and shrink.
+
 **A rule going forward:** no new test may check exact wording or a style name. A new test that reads app code as text
 is allowed only for the narrow case the existing rule already names: keeping the phone and computer halves in step
 (`.claude/rules/test-suite-hygiene.md` → "A new source-text guard needs a reason a rule cannot express"). An

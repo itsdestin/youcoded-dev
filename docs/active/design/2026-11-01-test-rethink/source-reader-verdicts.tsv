@@ -1,0 +1,315 @@
+file	verdict	test_lines	reason	what_still_covers_it
+tests/accepted-history-privacy.test.ts	KEEP	234	Proves private reasoning ciphertext never leaks into transcripts, logs or reports; a privacy invariant.	-
+tests/accepted-history-store.test.ts	KEEP	889	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/add-vision.test.ts	KEEP	582	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/admin-command.test.ts	KEEP	257	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/admin-password-wiring.test.ts	KEEP	342	Proves sudo password helper path is the executable wrapper and malformed passwords are rejected and never logged; security.	-
+tests/android-host-channels.test.ts	KEEP	35	Keeps the page's Android requests and the Kotlin handler list identical, so no button hangs on the phone.	-
+tests/android-manifest-voice.test.ts	KEEP	43	Phone manifest must declare mic permission and speech service; dropping it silently kills the voice button.	-
+tests/android-shell.test.ts	KEEP	55	Android parity guards (notification permission, ABI filter, untracked bundle) that desktop runs never reveal.	-
+tests/animation-css-budget.test.ts	KEEP	135	Source pins keep infinite animations stepped to stop idle CPU burn; unsure, a user would feel battery/CPU cost only indirectly.	-
+tests/animation-frame-budget.test.ts	PART	192	Drop the 'motion vocabulary' curve/duration/token pins and SessionStrip declaration count; keep finite-iteration, reduced-motion gating and stepped microphone animations.	Screenshot review covers motion look; reduced-motion and stepped pins stay.
+tests/app-icon-runtime.test.ts	KEEP	136	Runtime icon choice must match what electron-builder ships per platform and Mac Dock rules; unsure about one source-scan test.	-
+tests/app-icons.test.ts	KEEP	146	Build packaging check: icon files exist, right format and size per platform; broken icons ship silently otherwise.	-
+tests/app-restart.test.ts	LOOSEN	269	Remove the 'main.ts decides quit-install with the system-shutdown flag' it(), which only regex-matches main.ts source; behaviour tests stay.	The other quit/restart behaviour tests in this file.
+tests/arcade-authority.test.ts	LOOSEN	202	Remove the 'theming' describe (no unsanctioned Tailwind colour in game files); keep registry, key-ownership, score-boundary and resize checks.	Screenshot review covers game colours; ast-grep rules cover other pins.
+tests/aria-props.test.ts	KEEP	102	Type-checker scan that aria labels reach real elements; screen readers get no name otherwise and no lint can express it.	-
+tests/artifacts/artifact-store.test.ts	KEEP	872	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/artifacts/cas-write.test.ts	KEEP	268	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/artifacts/import-file.test.ts	KEEP	328	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/artifacts/project-manager.test.ts	KEEP	145	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/artifacts/sidecar-cleanup.test.ts	KEEP	431	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/artifacts/version-retention.test.ts	KEEP	225	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/askpass-server.test.ts	PART	718	Keep the password-prompt security tests; drop the final meta-test that scans other test files for a socket-dir override (test hygiene).	Remaining askpass security tests.
+tests/assistant-browser-host.test.ts	KEEP	236	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/assistant-browser-live.test.ts	KEEP	609	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/atomic-write.test.ts	KEEP	57	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/attention-classifier.test.ts	KEEP	374	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/auto-title-contract.test.ts	DROP	28	Checks only that a shell script contains the words 'else' and 'CURRENT_TOPIC'; pure source-text pin.	nothing — accepted loss: title hook is exercised when a chat gets renamed in the walk-through.
+tests/bash-background.test.ts	KEEP	282	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/bash-secret-paths.test.ts	KEEP	253	Security: blocks shell commands that read secret files like .env; text read is just test input.	-
+tests/beta-version-workflows.test.ts	DEVTOOL	68	Parses GitHub Actions workflow files for beta version wiring; CI release tooling, not the shipped app.	-
+tests/brand-colour-modes.test.ts	KEEP	164	Computes real contrast ratios for provider colours on light and dark modes; unsure, part pins CSS block order.	-
+tests/buddy-bar-geometry.test.ts	LOOSEN	252	Remove the buddy.css regex lines inside 'the button row sits just under the chat'; keep all pure window-position math tests.	Layout math tests plus screenshot review of the buddy.
+tests/BuddyChat.test.tsx	LOOSEN	150	Remove the 'message times in the buddy' describe that regexes buddy.css; keep question card and reopen-without-rebuild behaviour.	Screenshot review of buddy chat; the remaining behaviour tests.
+tests/buddy-title-guard.test.ts	KEEP	113	Window name is the Wayland move channel; source scans stop anything renaming it, which would strand the mascot.	-
+tests/buddy-window-manager.test.ts	KEEP	1075	Mostly behaviour of buddy windows; the source scans guard the Wayland position invariant no behaviour test reaches (unsure).	-
+tests/buddy-zoom.test.ts	KEEP	35	Runs the real preload in a sandbox to prove buddy windows pin zoom to 1 and others are untouched.	-
+tests/callout-authority.test.tsx	DROP	247	Pins notice-box geometry, tone surfaces, text colours and adoption/exemption lists in source; all look-and-feel.	Before/after screenshot review plus ast-grep rules.
+tests/capabilities.test.ts	KEEP	70	Handshake capability parsing and preload/remote-server copies must agree; phone and desktop parity.	-
+tests/channel-table-complete.test.ts	KEEP	258	Scans main process so no feature channel is hand-written beside the shared table; desktop/phone parity.	-
+tests/channel-table-families.test.ts	KEEP	443	Proves desktop and phone doors serve every shared channel through one handler, plus refusals and settings path safety.	-
+tests/chatgpt-auth.test.ts	KEEP	1436	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatgpt-oauth.test.ts	KEEP	443	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatgpt-official-route.test.ts	KEEP	311	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatgpt-request-diagnostics.test.ts	KEEP	209	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-index-service.test.ts	KEEP	397	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-index-store.test.ts	KEEP	307	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-index-worker.test.ts	KEEP	148	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-meta-reader.test.ts	KEEP	121	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-outbox.test.ts	KEEP	514	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-refs.test.ts	KEEP	178	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/chatsearch-transcript-reader.test.ts	KEEP	274	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/choice-group-authority.test.ts	DROP	41	Only counts that at least four files use a SegmentedTabs component; nobody could notice.	nothing — accepted loss: code-consistency count with no user effect; ast-grep rule covers hand-rolled controls.
+tests/claude-code-browser-mcp.test.ts	KEEP	207	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-code-doc-comments-mcp.test.ts	KEEP	747	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-code-mcp.test.ts	KEEP	190	Runs the deployed link server over stdio; the source checks guard packaging of the embedded script (unsure).	-
+tests/claude-code-pages-mcp.test.ts	KEEP	135	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-control-bridge.test.ts	KEEP	378	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-queue-attachments.test.ts	KEEP	22	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-queue-runtime.test.ts	KEEP	156	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-queue-store.test.ts	KEEP	124	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/claude-settings.test.ts	KEEP	241	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/code-block-holds-real-height.test.tsx	DROP	59	Pins inline placeholder-height numbers and stylesheet text for code blocks; real jump is covered by the first-draw-stability journey.	tests/journeys first-draw-stability journey.
+tests/command-drawer-slash-filter.test.tsx	LOOSEN	101	Remove 'App wires the drawer filter through the store' source-text check; keep the drawer filtering and only-drawer-rerenders behaviour test.	The remaining render test with sentinel.
+tests/CommentsMargin.test.tsx	LOOSEN	284	Remove className asserts on 'absolute' and 'border-dashed' in the narrow-mode detached-comment test; keep grouping, counts and render-cost checks.	Screenshot review plus the remaining behaviour and cost tests.
+tests/conversation-reconciler.test.ts	KEEP	421	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/conversation-store.test.ts	KEEP	795	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/create-runtime.test.ts	KEEP	199	Keeps the assistant core free of Electron so the Android backend can run it; also key-storage checks.	-
+tests/custom-popup-review.test.ts	DEVTOOL	26	Checks workbench review mockup source and CSS for the popup comparison panes; team tooling.	-
+tests/custom-popup-shell.test.tsx	DROP	56	Pins 16px semibold title, 8% divider line and fade styling of two popups; style values.	Before/after screenshot review.
+tests/debounced-json-writer.test.ts	KEEP	59	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/desktop-ci.test.ts	DEVTOOL	238	Tests the CI workflow YAML and Gradle wiring; continuous-integration tooling.	-
+tests/device-identity.test.ts	KEEP	102	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/dev-load-recovery.test.tsx	DEVTOOL	91	Tests the dev-instance blank-screen watchdog against index.html; dev-only helper.	-
+tests/dev-tools-handlers.test.ts	KEEP	407	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/dialog-shell.test.tsx	LOOSEN	254	Remove style pins: 16px title/8% divider, fade, flex-column panel, size widths and proportions, Today pane; keep closed render, close button, Escape, nested popup layering.	Before/after screenshot review; remaining Escape and layering tests.
+tests/disable-prompt-suggestion.test.ts	KEEP	122	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/doc-comments-json-sidecar-fixture-parity.test.ts	KEEP	277	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/doc-comments-kotlin-write-golden.test.ts	KEEP	176	Behaviour or data-safety test; any text it reads is its own output files or fixtures, not source code.	-
+tests/doc-comments-live.test.ts	KEEP	171	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/doc-comments-store.test.ts	KEEP	611	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/doc-comments-write-golden-staleness.test.ts	KEEP	411	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/docx-comments.test.ts	KEEP	1511	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/download-manifest.test.ts	KEEP	227	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/drawer-card-glass.test.ts	KEEP	109	Scans CSS/source so command-drawer tiles never get their own blur; the Windows-only blinking-cards bug shipped twice and Linux walk-through would not reveal it (unsure, pins style).	-
+tests/engine-acquisition.test.ts	KEEP	658	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/engine-manager-router.test.ts	KEEP	2000	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/engine-manager.test.ts	KEEP	1480	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/enter-to-confirm-authority.test.ts	KEEP	75	Source scan keeping Enter handling in one place after four real close-prompt bugs; a lint cannot resolve the handler.	-
+tests/field-error-adoption.test.ts	DROP	46	Counts a hand-written Tailwind class string in two files; an ast-grep rule already guards the same thing and a user cannot notice it.	ast-grep rule no-hand-rolled-field-error plus screenshot review
+tests/files-channels.test.ts	KEEP	312	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/files-tab-list-view.test.tsx	LOOSEN	320	Behaviour tests of the file list are worth keeping; delete the last it (view preference) that greps ProjectView source for a localStorage key string.	Remaining render tests; walk-through file browsing
+tests/fill-native-markers.test.ts	LOOSEN	177	Reducer tests for cleared/compaction dividers are real behaviour; delete the first it in the last describe that pins strings inside five source files.	Second test in that block exercises the same page path via the reducer
+tests/first-run-chatgpt.test.ts	KEEP	824	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/fit-estimator.test.ts	KEEP	682	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/fixtures/doc-comments/generate-docx-golden.mjs	KEEP	85	Not a test: script that regenerates golden docx/xlsx files used by desktop and Android parity tests (unsure, support file).	-
+tests/fixtures/doc-comments/generate-docx-write-golden.mjs	KEEP	212	Not a test: script that regenerates golden docx/xlsx files used by desktop and Android parity tests (unsure, support file).	-
+tests/fixtures/doc-comments/generate-xlsx-golden.mjs	KEEP	102	Not a test: script that regenerates golden docx/xlsx files used by desktop and Android parity tests (unsure, support file).	-
+tests/fixtures/doc-comments/generate-xlsx-note-reference.mjs	KEEP	88	Not a test: script that regenerates golden docx/xlsx files used by desktop and Android parity tests (unsure, support file).	-
+tests/fixtures/doc-comments/generate-xlsx-write-golden.mjs	KEEP	314	Not a test: script that regenerates golden docx/xlsx files used by desktop and Android parity tests (unsure, support file).	-
+tests/fixtures/old-remote-shim/remote-shim.ts	KEEP	3125	Not a test: frozen copy of the v1.3.0 phone page code used by old-phone-page.test to prove old phones still connect.	-
+tests/float-chrome-pops.test.ts	LOOSEN	231	Keep the two applyThemeToDom attribute tests (float style only appears when a theme picks it); delete the other CSS/source-pinning its (rules gated, frost blur, pills, header band, scroll bars).	Screenshot review covers look; kept tests cover opt-in isolation
+tests/folders-service.test.ts	KEEP	130	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/generate-preload-channels.test.ts	KEEP	71	Checks generated preload channel list matches the shared contract (desktop/Android parity).	-
+tests/gguf-header.test.ts	KEEP	758	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/git/git-service.test.ts	KEEP	551	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/github-client.test.ts	KEEP	298	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/guard-scope-reader.test.ts	DEVTOOL	19	Tests the test-suite helper that reads source files for guards (CRLF handling), not the app.	-
+tests/handoff-freshness-integration.test.ts	KEEP	274	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/handoff-transcript.test.ts	KEEP	338	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/harness-eval-estimate.test.ts	DEVTOOL	343	Tests the paid harness evaluator under src/main/harness/eval, developer tooling that is excluded from the shipped app.	-
+tests/harness-eval-key-leak.test.ts	DEVTOOL	278	Tests the paid harness evaluator under src/main/harness/eval, developer tooling that is excluded from the shipped app.	-
+tests/harness-eval-not-shipped.test.ts	KEEP	109	Guards that the paid evaluator is excluded from installers; packaging correctness.	-
+tests/harness-eval-orchestrator.test.ts	DEVTOOL	2037	Tests the paid harness evaluator under src/main/harness/eval, developer tooling that is excluded from the shipped app.	-
+tests/harness-review-fixture.test.ts	DEVTOOL	163	Tests the paid harness evaluator under src/main/harness/eval, developer tooling that is excluded from the shipped app.	-
+tests/harness-review-runner.test.ts	DEVTOOL	1253	Tests the paid harness evaluator under src/main/harness/eval, developer tooling that is excluded from the shipped app.	-
+tests/harness-session-loop.test.ts	KEEP	3832	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/harness-tools-core.test.ts	KEEP	2093	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/helpers/guard-scope.ts	KEEP	142	Not a test: shared source-reading helper; keep only while the guard tests that use it remain.	-
+tests/helpers/main-blocking-calls.ts	KEEP	223	Not a test: scanner used by main-blocking-calls.test, which guards main-process freezes.	-
+tests/helpers/plan-menu-fixtures.ts	KEEP	102	Not a test: loader of recorded Claude Code terminal captures used by menu parser tests.	-
+tests/hitch-log-writer.test.ts	KEEP	103	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/hitch-preload.test.ts	KEEP	282	Runs real preload telemetry code; checks privacy sanitising (no text, keys, URLs) and bounded work.	-
+tests/hitch-recorder-wiring.test.ts	KEEP	60	Pins channel agreement across preload, contract and main, and no sync fs in the recorder.	-
+tests/hitch-switch.test.ts	KEEP	382	Runs real preload switch tracker with virtual clock; counted-work bounds and no leaked observers (unsure, telemetry).	-
+tests/hook-reconciler-prune.test.ts	KEEP	266	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/hook-relay.test.ts	KEEP	490	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/hover-press-ladder.test.ts	DROP	196	Pins CSS hover/press rules, class names and transition properties in motion.css and Button; pure styling a user sees in screenshots.	Screenshot review plus ast-grep chrome-control-no-glyph-nudge-hover
+tests/image-prepare.test.ts	KEEP	194	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/image-resize.test.ts	KEEP	151	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/index-html-version-check.test.ts	KEEP	51	Runs the real stale-phone-page reload script against a fake browser; user-visible behaviour.	-
+tests/infinite-animation-allowlist.test.ts	KEEP	220	Scans CSS for perpetual smooth animations that burn CPU/battery; unsure, pins style values but guards performance.	-
+tests/ink-select-parser.test.ts	KEEP	478	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/installer-artifact-names.test.ts	KEEP	101	Build/release packaging: installer names must match what updater and website expect.	-
+tests/ipc-channels.test.ts	KEEP	2135	Keeps desktop preload, shared contract and phone shim channel lists in step; classic parity guard.	-
+tests/ipc-error.test.ts	KEEP	118	plainMessage behaviour plus a scan that no catch shows raw transport errors to users (unsure, partly source scan).	-
+tests/ipc-handlers.test.ts	KEEP	1562	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/kept-card-binding.test.ts	KEEP	122	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/keychain-helper.test.ts	KEEP	55	Runs the real keychain helper and checks it refuses malformed requests; security.	-
+tests/keychain-launch.test.ts	KEEP	43	Keychain helper launch isolation, no insecure backends; security.	-
+tests/kwin-helper.test.ts	KEEP	871	Identity gate stopping web pages from controlling window placement; security (one main.ts order check is a source pin, unsure).	-
+tests/launch-settings-chores.test.ts	KEEP	198	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/lease-client.test.ts	KEEP	511	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/line-budgets.test.ts	DROP	135	Source-file size ratchet; counts lines in source code, nothing a user experiences.	nothing — accepted loss: code-size hygiene only, no user effect
+tests/macos-signing-config.test.ts	KEEP	92	Release signing config and credential protection across workflows; security and packaging.	-
+tests/main-blocking-calls.allowlist.json	KEEP	639	Not a test: data file for main-blocking-calls.test, which guards against UI freezes from blocking calls.	-
+tests/main-blocking-calls.test.ts	KEEP	450	Ratchet against blocking calls on the main thread, which froze the whole app for minutes before.	-
+tests/managed-workspace-setup.test.ts	KEEP	202	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/manifest-backfill.test.ts	KEEP	674	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/marketplace-detail-header-fixture.test.ts	DEVTOOL	31	Checks workbench mockup fixtures and CSS of a design-preview page, not the shipped app.	-
+tests/marketplace-detail-shell.test.ts	DROP	49	Greps marketplace components and demo CSS for imports, absent "Esc · Close" text and padding class names; implementation and wording pinning.	Walk-through marketplace install plus screenshot review
+tests/menu-row-reachability.test.ts	DROP	36	One source-text check that a portal element sits inside a host; most siblings already moved to ast-grep rules.	ast-grep rules shortcuts-dialog and session-menu plus screenshot review
+tests/mock-shim.test.ts	DEVTOOL	1097	Tests the UI Workbench fake backend, not the shipped app.	-
+tests/mock-shim-window.test.ts	DEVTOOL	578	Tests the UI Workbench fake backend, not the shipped app.	-
+tests/model-downloader.test.ts	KEEP	437	Behaviour test on real temp files or logic (reads files as input/output), guards data safety or logic worth keeping.	-
+tests/model-manager.test.ts	KEEP	538	Behaviour test of model download and cache on disk; reads only a model file it wrote itself.	-
+tests/model-presets.test.ts	KEEP	558	Checks the generated per-model settings file the local engine reads; real output a wrong value would break.	-
+tests/naming-store.test.ts	KEEP	259	Protects chat names from loss: path escapes refused and sync-conflict copies merged.	-
+tests/native-channels.test.ts	PART	364	Behaviour tests of what a phone may do are worth keeping; the last test only checks source text imports a helper and has no temp rename.	One shared atomic-write helper; model-preference behaviour test above it still catches half-written files
+tests/native-compact.test.ts	PART	505	Compaction behaviour tests are real; the last test pins preload/shim/handler source text for the focus argument and a toast test pins wording.	IPC parity tests and the remaining behaviour tests
+tests/native-home.test.ts	KEEP	260	Behaviour test of the native assistant's home folder setup.	-
+tests/native-session-host-continuation.test.ts	KEEP	980	Behaviour test of resuming and continuing native chats across restarts and oversized history.	-
+tests/native-session-host.test.ts	KEEP	6698	Large behaviour test of the native chat engine; reads only files it created. Unsure about size but behaviour.	-
+tests/native-tools-polish.test.ts	PART	435	Keep CRLF/BOM preservation, 50 KB read cut, placeholder refusal and folder listing; drop tests that pin tool description wording (D-1, D-6 description, G-4, G-13, T-3).	Harness evaluator offered separately; behaviour tests remain
+tests/no-bare-disclosure.test.ts	DROP	62	Scans every screen's source for a bare dropdown element; a look-and-feel rule, not behaviour.	Screenshot review and design guide
+tests/office/editor-settings.test.ts	KEEP	61	Behaviour test that editor settings persist and a bad file is tolerated.	-
+tests/office/fetch-office.test.ts	KEEP	307	Guards the office add-on download and its manifest being written only on success.	-
+tests/office/office-commands.test.ts	KEEP	1018	Behaviour test of document commands (open, save) in the Office feature.	-
+tests/office/office-frame-guard.test.ts	PART	79	Navigation-blocking tests are security and worth keeping; the last test only reads main.ts to confirm the guard is wired (unsure, keep if no end-to-end check).	Walk-through opening docx/xlsx exercises editor but not escape attempts
+tests/office/office-home.test.ts	KEEP	210	Behaviour test of the Office home folder.	-
+tests/office/office-ipc.test.ts	KEEP	999	Behaviour test of Office channels, including what a phone may or may not do.	-
+tests/office/office-pictures.test.ts	KEEP	471	Behaviour test of picture handling inside documents.	-
+tests/office/office-protocol.test.ts	KEEP	217	Security-relevant test of the office:// page protocol (what it may serve).	-
+tests/office/office-recovery.test.ts	KEEP	303	Data-safety test: recovering unsaved documents after a crash.	-
+tests/office/office-session-registry.test.ts	KEEP	191	Behaviour test of which windows own which open documents.	-
+tests/office/recent.test.ts	KEEP	152	Behaviour test of the recent-files list kept on disk.	-
+tests/office-theme-see-through.test.ts	PART	24	First test is real behaviour; second pins exact CSS rule text in two stylesheets.	Screenshot review of Office in themes
+tests/office/versions.test.ts	KEEP	266	Data-safety test of saved document versions.	-
+tests/office/x2t.test.ts	KEEP	434	Behaviour test of the file-conversion step for docx/xlsx.	-
+tests/openrouter-health.test.ts	KEEP	181	Behaviour test of provider health check and its saved file.	-
+tests/page-connections-store.test.ts	KEEP	159	Checks saved connection data is stored safely on disk.	-
+tests/page-device-connection.test.ts	KEEP	323	Behaviour test of pages connecting to a device.	-
+tests/page-kit.test.ts	PART	295	Most tests are page behaviour; one test pins the kit's CSS to scroll-mask.css word for word.	Screenshot review of fades
+tests/pages-connections-service.test.ts	KEEP	450	Behaviour test of the pages connection service.	-
+tests/pages-plaid.test.ts	KEEP	255	Security test: bank access tokens never written in plain text.	-
+tests/pages-store.test.ts	KEEP	199	Data-safety test of how page data is saved and replaced.	-
+tests/pending-mutation-queue.test.ts	KEEP	763	Data-safety test of queued edits surviving crashes.	-
+tests/perf-marks-placement.test.ts	DEVTOOL	94	Pins perf-lab timing marker names and order in main.ts source; only the team's perf lab reads them.	Perf lab itself
+tests/perf-marks.test.ts	KEEP	48	Behaviour test of the startup timing log, including writing nothing when unset.	-
+tests/permission-auto-approve-list.test.ts	KEEP	40	Security: plan approval and questions must never auto-allow; desktop and Android once drifted here.	-
+tests/permission-store.test.ts	KEEP	328	Security test of saved permission decisions on disk.	-
+tests/permission-timeout-margins.test.ts	KEEP	53	Pins three timeout values across files so Claude Code never times out first and wedges; exact literals are the invariant.	-
+tests/personal-pages/money-page.test.ts	DEVTOOL	408	Tests a Money page kept as a workbench fixture HTML file, not the shipped app; unsure whether owner treats it as a product page.	-
+tests/phone-abilities.test.ts	KEEP	347	Behaviour test of what the phone is allowed to do and skill scanning cost.	-
+tests/PlanApprovalCard.test.tsx	KEEP	312	Behaviour: plan card types only the chosen number and refuses stale menus; real user flow.	-
+tests/plan-menu-parser.test.ts	KEEP	278	Parses Claude Code's plan menu from terminal text; wrong parse breaks plan approval.	-
+tests/plugin-installer-git-upgrade.test.ts	KEEP	147	Behaviour test of plugin upgrades, no data loss.	-
+tests/plugin-installer-upgrade.test.ts	KEEP	142	Behaviour test of plugin upgrades keeping installed records right.	-
+tests/popup-corpus-replay.test.tsx	KEEP	186	Replays recorded terminal output to check prompts are recognised; real inputs.	-
+tests/prefs-service.test.ts	KEEP	121	Behaviour test of saved preferences.	-
+tests/primitive-adoption.test.ts	DROP	156	Checks every shared UI building block has a user somewhere in source and a drawer's css and tsx agree; code tidiness, not user behaviour.	knip unused-export check and screenshot review
+tests/project-detail-overlay.test.tsx	LOOSEN	58	Remove first test (8% divider, text-base font-semibold, CSS regex); keep the scroll-fade behaviour test.	Screenshot review
+tests/project-watcher.test.ts	KEEP	781	Behaviour test of file watching that feeds the files panel.	-
+tests/prompt-git-snapshot-precomputed.test.ts	KEEP	51	Behaviour test of the git summary passed to the assistant.	-
+tests/provider-registry.test.ts	KEEP	798	Behaviour test of saved providers and API keys, including the file on disk.	-
+tests/reduced-effects-animations.test.ts	LOOSEN	89	Real user setting (Reduced Effects stops animations), but guarded by matching CSS text in globals.css. Keep only if no render check; the selector-name pins are implementation.	Walk-through unlikely; nothing else — accepted loss: animation CPU cost only
+tests/release-manifest-roundtrip.test.ts	KEEP	105	Build and release correctness: signed update manifest must pass the app's own verifier; also protects update security.	-
+tests/remote-channel-parity.test.ts	KEEP	284	Keeps desktop and phone halves in step: every channel exists on every surface.	-
+tests/remote-config.test.ts	KEEP	355	Behaviour and security test of remote-access settings.	-
+tests/remote-devices.test.ts	KEEP	153	Security test of paired-device storage.	-
+tests/remote-download.test.ts	KEEP	880	Behaviour and path-safety test of phone file downloads.	-
+tests/remote-files.test.ts	KEEP	598	Path-containment and behaviour test of phone file access.	-
+tests/remote-password-always-required.test.ts	KEEP	41	Security: no code anywhere may let a network address replace the password; scan covers Kotlin too.	-
+tests/remote-phone-findings.test.ts	KEEP	159	Behaviour test of phone-specific fixes.	-
+tests/remote-recovery.test.ts	PART	61	Guards against repeating a sent request and losing a pairing, but asserts exact source lines; keep the safety idea, rewrite as behaviour test (unsure).	remote-shim behaviour tests partly
+tests/remote-shim-refusals.test.ts	PART	859	Channel-parity and failure-rejection scans are worth keeping; drop tests pinning wording such as 'on the phone' and announcements in plain words.	Phone/desktop parity scans and screenshot review of copy
+tests/remote-shim.test.ts	KEEP	1176	Behaviour test of the phone/remote bridge keeping it in step with the desktop.	-
+tests/remote-status-channel.test.ts	DROP	40	Asserts specific lines and message text exist in remote-server and SettingsPanel source (indicator green logic and Not running wording).	Screenshot review plus walk-through; accepted loss: indicator could show wrong colour
+tests/resume-shell-review-fixture.test.ts	DEVTOOL	26	Checks a review-deck comparison mockup file contains certain strings.	-
+tests/resume-shell-treatment.test.ts	DROP	28	Pins CSS values, class names and heading text of the Resume session screen in source.	Screenshot review
+tests/retention-default.test.ts	KEEP	81	Behaviour test that chat retention default never clobbers user settings.	-
+tests/rocm-prereqs.test.ts	PART	311	Prereq detection tests are real behaviour; one test greps engine.ts for the refresh flag, which a behaviour test could cover.	Remaining cache/refresh behaviour tests
+tests/sanitize-rig-svg.test.tsx	KEEP	159	Security test: mascot drawings stripped of scripts; the shipped-drawing check is a real fixture read.	-
+tests/scan-cache.test.ts	KEEP	95	Behaviour test of a scan cache.	-
+tests/search-backends.test.ts	KEEP	152	Behaviour test of chat search using sample fixture files.	-
+tests/secrets-store.test.ts	KEEP	152	Security test that secrets are encrypted and never left in plain text.	-
+tests/secret-storage-wiring.test.ts	KEEP	52	Security test of keychain helper wiring; compiles the real source and runs it.	-
+tests/section-label-authority.test.ts	DROP	72	Closed list of files allowed to use a spaced-caps label style; pure styling rule.	Screenshot review and ast-grep rules
+tests/send-blocked-by-popup.test.tsx	KEEP	126	Replays a recorded terminal fixture to check sending is blocked correctly.	-
+tests/session-context.test.ts	KEEP	188	Behaviour test of reading session context files, including odd cases.	-
+tests/SessionDrawer.test.tsx	PART	754	Drop showDeletedArtifacts source-text describe, the 84x48 layout test and exact-copy label tests; keep tag/note rollback, resume and Escape tests.	Behaviour tests and screenshot review
+tests/session-list-sync.test.ts	PART	87	Pill-dropping behaviour tests are real; last test reads App.tsx to confirm two exact call lines exist.	Behaviour tests above
+tests/session-live-facts.test.ts	KEEP	574	Behaviour test of live session facts.	-
+tests/session-manager.test.ts	KEEP	1086	Behaviour test of starting and ending sessions.	-
+tests/session-publish-coverage.test.ts	KEEP	101	Keeps desktop and phone in step: every session event must reach the phone through one door.	-
+tests/session-selected-channel.test.ts	KEEP	45	Keeps the desktop and phone halves of the session:selected channel in step; a dropped line would silently break phone opening on the right chat.	-
+tests/session-store.test.ts	KEEP	544	Data-safety behaviour tests of session persistence; temp-file reads.	-
+tests/SessionStrip-layout-effects.test.ts	KEEP	81	Source-pattern guard on layout effect dependencies protects the tab strip from per-switch layout thrash; unsure, hard to see by running.	-
+tests/setting-row-authority.test.tsx	PART	211	Drop the class-name density tests, the title wrap/truncate test and the adoption scan; keep button-vs-control, no double-fire and radio tile behaviour tests.	Screenshot review covers look and spacing of settings rows.
+tests/SettingsPanel.test.tsx	PART	336	Drop drawer-edge CSS regex tests, Today-pane demo CSS test and class asserts; keep remote-access behaviour tests (confirm before unpairing, failed check not inventing a cause).	Screenshot review covers look; kept tests cover behaviour.
+tests/shell-registry.test.ts	KEEP	639	Behaviour tests of shell registry on temp output.	-
+tests/shell-words.test.ts	KEEP	62	Shell tokenizer plus everyday-command fixture is a permission and safety floor for the assistant running commands.	-
+tests/shoot-screens.test.ts	DEVTOOL	117	Checks the screenshot tool screen list against screen registrations in source.	-
+tests/skill-config-store.test.ts	KEEP	158	Behaviour tests of persisted favourites and migrations; the themes folder read is only test input.	-
+tests/skill-provider-catalog.test.ts	KEEP	243	Behaviour tests of skill provider catalog.	-
+tests/skill-scanner.test.ts	KEEP	154	Behaviour tests of skill discovery on temp folders.	-
+tests/slug-encoding.test.ts	KEEP	54	Pins project folder naming against fixtures of directories Claude Code created; wrong names would lose chat history.	-
+tests/slug-repair.test.ts	KEEP	957	Data-safety repair of project folder names; temp files.	-
+tests/smoke-probe.test.ts	KEEP	55	Guards the installer launch check used for release packaging, including its ready and blank-window lines.	-
+tests/socket-repair.test.ts	KEEP	92	Security: socket file mode, refuses open folders, never touches foreign files; call-site scan ensures every socket is re-checked.	-
+tests/specialist-catalog.test.ts	KEEP	333	Behaviour tests of specialist catalog; only temp-file reads.	-
+tests/specialist-run.test.ts	KEEP	2017	Behaviour tests of specialist runs; only temp-file reads.	-
+tests/stall-profiler.test.ts	KEEP	108	Behaviour test of profile files written and pruned; reads its own output.	-
+tests/startup-dialog-log.test.ts	KEEP	111	Behaviour test using recorded real Claude Code output fixtures.	-
+tests/statusline-rate-limits.test.ts	KEEP	293	Security check that no shipped script touches the Claude.ai OAuth token, plus real behaviour of the statusline parser and cache.	-
+tests/status-strip-authority.test.tsx	DROP	197	Pins status strip geometry, dot versus spinner and settings-page layout via classes and source scans; looks and copy are screenshot territory.	Screenshot before/after review.
+tests/step-guard-row.test.tsx	PART	160	Drop the first test that greps pages.tsx for a guard; keep the load, save, rollback, retry and ordering behaviour tests.	Behaviour tests kept; native-only visibility covered by screenshots.
+tests/subagent-watcher.test.ts	KEEP	720	Behaviour tests of subagent transcript watching; reads only temp output.	-
+tests/switch-arrival-glass.test.tsx	DROP	98	Pins CSS keyframes, opacity and import lines for the frosted tab-switch fade; purely visual.	Screenshot review and walk-through opening chats.
+tests/switch-marks.test.ts	PART	112	Drop the source-scan describe that greps for announcement calls; keep timing-mark behaviour tests (profiling rig, unsure if DEVTOOL).	Remaining behaviour tests.
+tests/switch-model-popup.test.ts	KEEP	191	Behaviour test using recorded popup fixtures; phone card and send refusal.	-
+tests/symlink-sweep.test.ts	KEEP	238	Behaviour test of symlink handling on temp folders (path containment).	-
+tests/sync-service.test.ts	KEEP	516	Data-safety behaviour tests of sync, temp files only.	-
+tests/sync-spaces-daily-backup.test.ts	KEEP	189	Data-safety backup behaviour on temp files.	-
+tests/sync-spaces-engine.test.ts	KEEP	803	Data-safety sync engine behaviour on temp files.	-
+tests/sync-spaces-git-transport.test.ts	KEEP	1151	Data-safety git transport behaviour on temp repos.	-
+tests/sync-spaces-import.test.ts	KEEP	383	Data-safety import behaviour on temp files.	-
+tests/sync-spaces-project-discovery.test.ts	KEEP	140	Behaviour test of project discovery on temp folders.	-
+tests/sync-spaces-repair.test.ts	KEEP	380	Data-safety repair behaviour on temp files.	-
+tests/sync-spaces-space-manager.test.ts	KEEP	279	Behaviour of space management on temp files.	-
+tests/sync-transport-contract.ts	KEEP	228	Shared contract suite for sync transports; data safety.	-
+tests/syntax-colors.test.ts	KEEP	48	Measured contrast check (readability) across built-in themes, not exact colours.	-
+tests/terminal-touch-bottom-chrome.test.ts	DROP	28	Greps App.tsx and globals.css for a class name and layer order; pure styling.	Screenshot review of touch terminal view.
+tests/TerminalView-flow-and-thumb.test.tsx	KEEP	128	Counted-work performance test of scroll thumb updates and write acknowledgement; source read is a wiring check.	-
+tests/TerminalView.test.tsx	PART	888	Drop the font-size tests (12px/14px), termBacking opacity/colour variant tests and the globals.css strip test; keep atlas-heal, hidden-pause, resize and mount-behaviour tests.	Screenshot review covers terminal looks.
+tests/terminal-widths.test.ts	KEEP	56	Behaviour test of emoji width handling with a real recorded fixture.	-
+tests/theme-builtin-sources.test.ts	PART	174	Drop the token-matches-globals.css tests and creme exact-value test; keep contrast, link colour and legibility checks.	Contrast tests kept; screenshot review covers look.
+tests/theme-default.test.ts	KEEP	76	Behaviour tests of default-theme migration and write ordering, temp files.	-
+tests/theme-migration.test.ts	KEEP	55	Behaviour test of theme folder migration; data safety.	-
+tests/theme-preview-sync.test.ts	DROP	156	Greps globals.css and marketplace preview CSS for matching rules; pure style text.	Screenshot review of theme preview.
+tests/threadpool-size.test.ts	KEEP	31	Performance setting must be applied before first import in both desktop and headless entry; hard to notice otherwise.	-
+tests/toggle-motion-policy.test.ts	DROP	59	Greps globals.css for transition declarations; motion styling.	Screenshot review and reduced-motion check by eye.
+tests/tools-path-lock.test.ts	KEEP	67	Behaviour test that parallel edits and writes to one file both land (the assistant saving files).	-
+tests/transcript-event-surface-parity.test.ts	KEEP	123	Behaviour parity matrix of main window and buddy; small source scans are secondary (unsure).	-
+tests/transcript-mirror.test.ts	KEEP	336	Behaviour tests on temp transcripts.	-
+tests/transcript-page-channel-parity.test.ts	KEEP	58	Keeps desktop, preload and phone remote-shim in step for the transcript:page channel.	-
+tests/transcript-page.test.ts	KEEP	286	Behaviour tests of transcript paging on temp files.	-
+tests/try-again-wording.test.tsx	DROP	55	Pins the exact words of the retry button across all source and a failure sentence; wording is covered by review.	Screenshot and copy review; error-message standards doc.
+tests/tsconfig-tests-scope.test.ts	DEVTOOL	24	Checks the team's own test type-check config includes every test.	-
+tests/unselectable-chrome.test.ts	DROP	61	Greps globals.css for user-select rules; styling only.	Screenshot review / manual feel.
+tests/update-installer.test.ts	KEEP	777	Behaviour tests of the update installer, temp files.	-
+tests/update-install-ipc.test.ts	KEEP	46	IPC channel parity across preload, remote-shim and host for the update installer.	-
+tests/update-service.test.ts	KEEP	1024	Behaviour tests of update checks; release correctness.	-
+tests/update-settings.test.ts	KEEP	145	Behaviour tests of update settings persistence.	-
+tests/update-staging.test.ts	KEEP	435	Security and data safety: signed-hash check, signer check, cleanup of half copies.	-
+tests/video-playback-seam-pin.test.ts	DEVTOOL	22	Pins that a test seam belongs to the workbench only.	-
+tests/visible-intervals.test.ts	KEEP	93	Source scan guarding idle CPU and battery (timers gated on visibility); users feel it but running rarely reveals it; unsure.	-
+tests/vite-mascot-pictures.test.ts	KEEP	38	Build correctness: rebuilt mascot pictures must equal shipped files.	-
+tests/voice-assets.test.ts	KEEP	457	Packaging check of electron-builder voice resources plus download and verify behaviour.	-
+tests/voice-service.test.ts	KEEP	755	Behaviour tests of voice worker hosting and ownership.	-
+tests/voice-vocabulary.test.ts	KEEP	86	Data-safety behaviour tests of saved phrases (corrupt data never overwritten).	-
+tests/voice-worker.test.ts	KEEP	925	Behaviour tests of speech segmentation with fixtures.	-
+tests/wallpaper-header-runtime.test.tsx	PART	429	Drop the float-chrome.css read and colour-tint style tests; keep stale-decode, unmount cleanup, hidden-header and resize-trigger behaviour tests (unsure).	Screenshot review covers header ink readability.
+tests/web-fetch-tool.test.ts	KEEP	1290	Security: private-address blocking, DNS stop and hostile-page limits for the assistant's web fetch.	-
+tests/welcome-back-store.test.ts	KEEP	383	Data-safety behaviour tests of the saved session list.	-
+tests/wheel-scroll-stays-native.test.ts	KEEP	274	Source scan guards scroll smoothness (no listener that makes scrolling wait) with allowlist; users feel jank but tests cannot see it; unsure.	-
+tests/windows-signing-config.test.ts	KEEP	67	Release packaging correctness of Windows signing config.	-
+tests/wire-shape-parity.test.ts	KEEP	250	Keeps preload, remote-shim and handlers sending the same keys; desktop and phone parity.	-
+tests/workbench-event-contract.test.ts	DEVTOOL	68	Checks the workbench fake dispatches only events the real app does.	-
+tests/workbench-fixture-actions.test.ts	DEVTOOL	308	Tests workbench fixture replay.	-
+tests/workbench-live-esc.test.ts	DEVTOOL	14	Greps workbench index for provider mount.	-
+tests/write-guard-contract.test.ts	KEEP	26	Security: bundled write-guard script blocks with exit 2 and stderr message per Claude Code deny contract.	-
+tests/write-pipeline.test.ts	KEEP	329	Behaviour test of the write pipeline (assistant saving files).	-
+tests/xlsx-comments.test.ts	KEEP	1402	Behaviour tests parsing real Excel and Google Sheets comment fixtures.	-
+tests/zoom-loupe.test.tsx	KEEP	177	Behaviour tests of the loupe, including the security guarantee it never reads pixels back.	-
