@@ -304,6 +304,8 @@ async function makeTab(b, targetId) {
     /** `reducedEffects`: turn on the app's own Reduce visual effects setting (its localStorage key)
      *  before the page loads — journeys only; pictures leave it alone so they keep showing the glass. */
     async prepare({ theme, width: w, height: h, reducedEffects = false }) {
+      // WHY (first-draw-stability under load): SHOOT_CPU_THROTTLE=N slows only THIS page N times, to reproduce a busy machine deterministically.
+      if (process.env.SHOOT_CPU_THROTTLE) await send('Emulation.setCPUThrottlingRate', { rate: Number(process.env.SHOOT_CPU_THROTTLE) });
       if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
       const effects = reducedEffects ? `localStorage.setItem('youcoded-reduced-effects','1');` : '';
