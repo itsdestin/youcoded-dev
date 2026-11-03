@@ -13,7 +13,7 @@
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
-// Also: --no-elements (skip the <theme>.elements.json list written beside each picture) · --no-montage (before/after: skip the side-by-sides)
+// Also: --freeze (switch off animations and transitions for a steady picture) · --no-elements (skip the <theme>.elements.json list written beside each picture) · --no-montage (before/after: skip the side-by-sides)
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
 // the main one) · --themes a,b | all · --width N [--height N] · --contrast · --collect <classes.json> · --out <dir>
 //
@@ -47,7 +47,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, freeze: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -58,6 +58,9 @@ for (let i = 0; i < args.length; i++) {
   // WHY on by default: the "What changed" comparer needs it, and it costs one page evaluate per picture.
   else if (a === '--no-elements') opt.noElements = true;
   // WHY: the what-changed run compares itself; the ImageMagick side-by-sides for ~800 pictures are wasted time.
+  // WHY: pulsing status dots and spinners are caught at a random moment of their loop, so two pictures of
+  // the same screen differ (what-changed full run: dozens of "changed" chat screens that were one dot's glow).
+  else if (a === '--freeze') opt.freeze = true;
   else if (a === '--no-montage') opt.noMontage = true;
   else if (a === '--collect') opt.collect = JSON.parse(readFileSync(resolve(next()), 'utf8'));
   else if (a === '--out') opt.out = resolve(next());
@@ -274,6 +277,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // WHY wait for pictures to finish loading (what-changed run, 2026-11-03): a theme preview image
     // in Appearance was blank in one picture and loaded in the next, which reads as a change.
     await waitFor(tab, `[...document.images].every((i) => i.complete)`, 5_000);
+    if (opt.freeze) await tab.evaluate(`(() => { const st = document.createElement('style'); st.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; }'; document.head.appendChild(st); })()`, 5000).catch(() => {});
     await tab.still(500);
     // WHY measured just before the picture, after the screen is proven showing and settled: the
     // element list must describe exactly what the picture shows (what-changed/FORMAT.md).
@@ -283,7 +287,10 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
     if (elements) writeFileSync(join(dir, `${theme}.elements.json`), JSON.stringify({ screen: screen.name, theme, scale: shotScale(), viewport: { w, h }, elements }));
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
-    r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
+    // WHY a byte array (what-changed full run, 2026-11-03): a plain array of numbers is 8 bytes a
+    // pixel; ~900 pictures of it, held for both sides of a before/after, ran node out of its 4 GB.
+    const thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
+    r.thumb = thumb ? Uint8Array.from(thumb) : null;
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
     // Parts agree (parts-agree.mjs): marked chip and button rows — one height, room inside a clip.
     r.parts = partsFindings((await tab.evaluate(MEASURE_PARTS, 10_000).catch(() => null)) ?? []);

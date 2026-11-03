@@ -59,7 +59,7 @@ writeFileSync(join(out, 'run.json'), JSON.stringify({
 }, null, 1));
 
 console.error(`[what-changed] ${tag} (${before.dir}) vs ${afterCheckout} → ${out}`);
-const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['--all']), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', ...(opt.themes ? ['--themes', opt.themes] : [])];
+const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['--all']), '--before', before.dir, '--after', afterCheckout, '--out', out, '--no-montage', '--freeze', ...(opt.themes ? ['--themes', opt.themes] : [])];
 const shot = spawnSync(process.execPath, shootArgs, { stdio: 'inherit' });
 if (shot.status !== 0) die(`shoot stopped with exit code ${shot.status} — see above`);
 
