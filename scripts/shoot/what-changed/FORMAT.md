@@ -9,6 +9,7 @@ Change this file first when a part needs a new field.
 
 ```
 <run>/
+  run.json                             written by what-changed.mjs: { before: {label, commit, dir}, after: {...} } (labels for changes.json)
   changes.json                         the comparer's result (below)
   before/<screen name>/<theme>.png     shoot's own --before/--after layout, untouched
   before/<screen name>/<theme>.elements.json
@@ -82,6 +83,9 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 }
 ```
 
+- A `text` change may carry `field: "title" | "placeholder"` when it is a tooltip / hint that changed (absent = the visible words).
+- Left out on purpose: a spinner glyph and a countdown (`resets in 2h 59m` vs `3h 0m`) change by themselves.
+- `new` = the picture exists only on the after side (`reason` says so); `removed` the reverse. `failed` = either side's picture was not taken (`reason` says which side and why).
 - `box` is in CSS pixels on `side` (`removed` uses `before`; everything else `after`).
 - `pixels` is a changed area no element explains (an icon, a picture, a border).
 - `shift` is a shared offset the comparer found (a row inserted above), reported once so the elements

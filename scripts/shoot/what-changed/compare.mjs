@@ -122,6 +122,13 @@ function findShift(pairs) {
 }
 
 // ─── Classifying ─────────────────────────────────────────────────────────────
+const BRAILLE = /^[\u2800-\u28ff\s]+$/;
+const DURATION = /\b\d+\s?(?:d|h|m|s)\b/g;
+/** Words that change by themselves: a spinner glyph, or the same text with only a countdown different. */
+export function volatileText(o, n) {
+  if (BRAILLE.test(o) && BRAILLE.test(n)) return true;
+  return o !== n && o.replace(DURATION, '#') === n.replace(DURATION, '#');
+}
 const MOVE_TOL = 2;   // CSS px: smaller moves are rounding, not changes
 const STYLE_PROPS = ['color', 'background', 'border', 'radius', 'font', 'opacity'];
 const sameStyle = (p, a, b) => p === 'opacity' ? Math.abs(Number(a) - Number(b)) < 0.02 : a === b;
@@ -129,8 +136,11 @@ const sameStyle = (p, a, b) => p === 'opacity' ? Math.abs(Number(a) - Number(b))
 /** Changes for the matched pairs, plus the removed / added elements. */
 export function classify({ pairs, removed, added, shift }) {
   const changes = [];
+  const ignored = [];  // boxes of things that change by themselves: their pixels are explained too
   const fromY = [];   // after-side top edges of elements that rode along with the shift
   for (const { b, a } of pairs) {
+    // A spinner is animation, not content: its glyph and colour differ between any two pictures.
+    if (BRAILLE.test(b.text ?? '') && BRAILLE.test(a.text ?? '')) { ignored.push(a.box, b.box); continue; }
     const base = { role: a.role ?? b.role ?? null, name: a.name || b.name || '' };
     let wording = false;
     for (const field of ['text', 'title', 'placeholder']) {
@@ -138,7 +148,10 @@ export function classify({ pairs, removed, added, shift }) {
       if (o === n) continue;
       // A control whose words are empty on one side and an icon on the other is not a wording change we can show.
       if (field === 'text' && !o && !n) continue;
+      // WHY skipped: a countdown ("resets in 2h 59m") and a braille spinner change on their own
+      // between two pictures taken minutes apart; they are not changes to the app.
       wording = true;
+      if (field === 'text' && volatileText(o, n)) { ignored.push(a.box, b.box); continue; }
       changes.push({ kind: 'text', ...base, ...(field === 'text' ? {} : { field }), oldText: o, newText: n, words: wordDiff(o, n), side: 'after', box: a.box, beforeBox: b.box });
     }
     const dy = a.box.y - b.box.y, dx = a.box.x - b.box.x;
@@ -153,7 +166,7 @@ export function classify({ pairs, removed, added, shift }) {
   }
   for (const e of removed) changes.push({ kind: 'removed', role: e.role ?? null, name: e.name, ...(e.text ? { oldText: e.text } : {}), side: 'before', box: e.box });
   for (const e of added) changes.push({ kind: 'added', role: e.role ?? null, name: e.name, ...(e.text ? { newText: e.text } : {}), side: 'after', box: e.box });
-  return { changes, shift: shift || 0, shiftFromY: fromY.length ? Math.min(...fromY) : 0 };
+  return { changes, ignored, shift: shift || 0, shiftFromY: fromY.length ? Math.min(...fromY) : 0 };
 }
 
 // ─── Pixels ──────────────────────────────────────────────────────────────────
@@ -167,6 +180,15 @@ function delta(d1, i1, d2, i2) {
   const i = (r1 - r2) * 0.59597799 - (g1 - g2) * 0.2741761 - (b1 - b2) * 0.32180189;
   const q = (r1 - r2) * 0.21147017 - (g1 - g2) * 0.52261711 + (b1 - b2) * 0.31114694;
   return 0.5053 * y * y + 0.299 * i * i + 0.1957 * q * q;
+}
+
+/** Is this pixel unlike one of its four neighbours (a glyph edge, a border) rather than part of a flat area? */
+function isEdge(d, i, w, x, y, h, limit) {
+  if (x > 0 && delta(d, i, d, i - 4) > limit) return true;
+  if (x < w - 1 && delta(d, i, d, i + 4) > limit) return true;
+  if (y > 0 && delta(d, i, d, i - w * 4) > limit) return true;
+  if (y < h - 1 && delta(d, i, d, i + w * 4) > limit) return true;
+  return false;
 }
 
 /**
@@ -189,11 +211,17 @@ export function diffPixels(A, B, { threshold = 0.1, dyPx = 0, fromY = 0 } = {}) 
       const ia = (y * w + x) * 4, ib = (ys * B.width + x) * 4;
       if (da[ia] === db[ib] && da[ia + 1] === db[ib + 1] && da[ia + 2] === db[ib + 2] && da[ia + 3] === db[ib + 3]) continue;
       if (delta(da, ia, db, ib) <= limit) continue;
+      // WHY two strengths: on a glyph edge (a pixel unlike its own neighbours) a sub-pixel text nudge
+      // moves anti-aliased greys by ~40/255, so the neighbour test is looser there (measured on
+      // settings/sound, where invisible 0.1 px text offsets lit up 1 000 pixels). In a flat area any
+      // colour change beyond the strict limit counts.
+      const edge = isEdge(da, ia, w, x, y, h, limit) || isEdge(db, ib, B.width, x, ys, B.height, limit);
+      const lim = edge ? limit * 6 : limit;
       let aMatches = false, bMatches = false;
       for (let oy = -1; oy <= 1 && !(aMatches && bMatches); oy++) for (let ox = -1; ox <= 1; ox++) {
         const xb = x + ox, yb = ys + oy, xa = x + ox, ya = y + oy;
-        if (!aMatches && xb >= 0 && xb < B.width && yb >= 0 && yb < B.height && delta(da, ia, db, (yb * B.width + xb) * 4) <= limit) aMatches = true;
-        if (!bMatches && xa >= 0 && xa < w && ya >= 0 && ya < h && delta(db, ib, da, (ya * w + xa) * 4) <= limit) bMatches = true;
+        if (!aMatches && xb >= 0 && xb < B.width && yb >= 0 && yb < B.height && delta(da, ia, db, (yb * B.width + xb) * 4) <= lim) aMatches = true;
+        if (!bMatches && xa >= 0 && xa < w && ya >= 0 && ya < h && delta(db, ib, da, (ya * w + xa) * 4) <= lim) bMatches = true;
       }
       if (!(aMatches && bMatches)) { mask[y * w + x] = 1; count++; }
     }
@@ -244,9 +272,9 @@ const PAD = 3;   // CSS px of slack around an explained element
  * Returns { changes, shift, mask?: { data, w, h } }.
  */
 export function compareScreen(before, after, scale = 1) {
-  let changes = [], shift = 0, shiftFromY = 0;
+  let changes = [], ignored = [], shift = 0, shiftFromY = 0;
   const haveEls = Array.isArray(before.elements) && Array.isArray(after.elements);
-  if (haveEls) ({ changes, shift, shiftFromY } = classify(matchElements(before.elements, after.elements)));
+  if (haveEls) ({ changes, ignored, shift, shiftFromY } = classify(matchElements(before.elements, after.elements)));
   if (!before.png || !after.png) return { changes, shift };
   if (before.bytes && after.bytes && before.bytes.equals(after.bytes)) return { changes, shift };
   const A = after.png, B = before.png;
@@ -261,6 +289,7 @@ export function compareScreen(before, after, scale = 1) {
   for (const c of changes) for (const b of [c.box, c.beforeBox]) if (b) {
     for (const dy of c.beforeBox === b || c.side === 'before' ? [0, shift] : [0]) boxes.push({ x: (b.x - PAD) * scale, y: (b.y + dy - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
   }
+  for (const b of ignored) boxes.push({ x: (b.x - PAD) * scale, y: (b.y - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
   clearBoxes(mask, A.width, A.height, boxes);
   const found = regions(mask, A.width, A.height);
   if (!found.length) return { changes, shift };

@@ -271,6 +271,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (fam) document.fonts.load('16px ' + fam);
       return document.fonts.status === 'loaded' && (!fam || document.fonts.check('16px ' + fam));
     })()`, 10_000);
+    // WHY wait for pictures to finish loading (what-changed run, 2026-11-03): a theme preview image
+    // in Appearance was blank in one picture and loaded in the next, which reads as a change.
+    await waitFor(tab, `[...document.images].every((i) => i.complete)`, 5_000);
     await tab.still(500);
     // WHY measured just before the picture, after the screen is proven showing and settled: the
     // element list must describe exactly what the picture shows (what-changed/FORMAT.md).

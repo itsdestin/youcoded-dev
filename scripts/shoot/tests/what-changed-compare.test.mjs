@@ -100,3 +100,24 @@ test('content pushed down by an inserted row is not a wall of changed pixels', (
   assert.equal(r.shift, 40);
   assert.deepEqual(r.changes.map((c) => c.kind), ['added']);
 });
+
+test('a countdown or a spinner changing by itself is not a wording change', () => {
+  const r = run([el('text', null, '5-hour limit · resets in 3h 0m', 10, 10), el('text', null, '⠋', 10, 50, 10, 16)], [el('text', null, '5-hour limit · resets in 2h 59m', 10, 10), el('text', null, '⠙', 10, 50, 10, 16, { style: { ...style, color: 'rgb(9, 9, 9)' } })]);
+  assert.deepEqual(r.changes, []);
+});
+
+test('a version number or a real number change in a sentence still counts', () => {
+  assert.deepEqual(kinds(run([el('text', null, 'Version 1.3.3', 10, 10)], [el('text', null, 'Version 1.3.4', 10, 10)])), ['text']);
+});
+
+test('a tiny glyph-edge difference is forgiven but a flat colour shift is not', () => {
+  const text = (g) => pic(100, 40, (x, y) => (y > 15 && y < 25 && x > 20 && x < 60 ? [g, g, g] : null));
+  assert.deepEqual(compareScreen(side(text(0)), side(pic(100, 40, (x, y) => (y > 15 && y < 25 && x > 20 && x < 60 ? [(x % 2) ? 30 : 0, 0, 0] : null))), 1).changes, []);
+  const flat = (v) => pic(100, 40, () => [v, 200, 200]);
+  assert.equal(compareScreen(side(flat(200)), side(flat(150)), 1).changes[0].kind, 'pixels');
+});
+
+test('the recorder expression is valid script text (it is sent to the page as text)', async () => {
+  const { MEASURE_ELEMENTS } = await import('../elements.mjs');
+  assert.doesNotThrow(() => new Function(`return ${MEASURE_ELEMENTS}`));
+});
