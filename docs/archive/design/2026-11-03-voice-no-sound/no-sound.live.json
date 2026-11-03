@@ -1,0 +1,55 @@
+{
+  "title": "Voice typing — when the mic hears nothing",
+  "key": "voice-no-sound-live",
+  "out": "no-sound.live.html",
+  "themes": ["midnight", "light"],
+  "live": { "worktree": "sessions/voice-no-sound/youcoded", "paneWidth": 520 },
+  "steps": [
+    {
+      "id": "N-1",
+      "surface": "Chat",
+      "path": "The band above the message box while the mic is on",
+      "headline": "While listening, the band now warns you when no sound at all is reaching the microphone.",
+      "changed": "After three seconds of pure silence from the mic, the green Listening band turns amber and says no sound is coming from your microphone, with what to check.",
+      "measured": "3 seconds of silence before it warns",
+      "notice": "A muted mic is caught while you are still talking, instead of after you stop. It turns green again the moment any sound arrives.",
+      "risk": "Only fires on true silence. A working mic in a quiet room still sends faint hiss, so a normal pause should never trigger it.",
+      "live": { "surface": "voice-no-sound", "round": 1 },
+      "variants": [
+        { "id": "before", "label": "Before", "candidate": "strip-before", "summary": "Today: green Listening even when the mic sends nothing." },
+        { "id": "after", "label": "After", "candidate": "strip-silent", "summary": "Amber warning after 3 seconds of pure silence." }
+      ]
+    },
+    {
+      "id": "N-2",
+      "surface": "Chat",
+      "path": "The card above the mic button, after you stop",
+      "headline": "If the mic sent only silence, a card now says so instead of leaving the box empty.",
+      "changed": "Before, stopping with nothing heard just stopped the spinner and left nothing. Now this card opens.",
+      "notice": "Try again starts listening straight away; tapping the mic does the same.",
+      "risk": "",
+      "live": { "surface": "voice-no-sound", "round": 1, "candidate": "card-no-sound" }
+    },
+    {
+      "id": "N-3",
+      "surface": "Chat",
+      "path": "The card above the mic button, after you stop",
+      "headline": "If sound arrived but too quietly to make out words, the card says to speak closer or turn the mic up.",
+      "changed": "New card for a microphone that is on but turned too far down.",
+      "measured": "Shown when the loudest moment never reached the speech engine's own speech level",
+      "notice": "Points you at the microphone volume rather than leaving you guessing.",
+      "risk": "Someone who whispered would also see this; the advice still fits.",
+      "live": { "surface": "voice-no-sound", "round": 1, "candidate": "card-too-quiet" }
+    },
+    {
+      "id": "N-4",
+      "surface": "Chat",
+      "path": "The card above the mic button, after you stop",
+      "headline": "If the sound was loud enough but no words came out, the card says no words were heard.",
+      "changed": "New card for the last case. On a phone, where the phone itself listens, this is the only one shown.",
+      "notice": "You always get an answer when nothing lands in the box.",
+      "risk": "",
+      "live": { "surface": "voice-no-sound", "round": 1, "candidate": "card-no-words" }
+    }
+  ]
+}
