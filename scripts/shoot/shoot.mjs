@@ -208,6 +208,14 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // WHY: use the renderer's explicit workbench theme route as well as the storage mirror;
     // a capture must not be labelled Dark/Halftone while actually showing Light.
     q.set('theme', theme);
+    // WHY a fixed "random" under --freeze (what-changed run, 2026-11-03): the thinking line picks a
+    // phrase at random, so the same screen read "Chewing on it" in one version and "Rearranging
+    // neurons" in the other — a wording change that never happened, on ~8 chat screens. Every new
+    // page restarts the same sequence, and it works on an old release's code, which can't be changed.
+    if (opt.freeze && !tab.seededRandom) {
+      await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let s = 0x2545F491; Math.random = () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; })();` });
+      tab.seededRandom = true;
+    }
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
