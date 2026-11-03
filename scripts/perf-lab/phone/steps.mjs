@@ -15,7 +15,7 @@ async function closeEverything(ctx) {
   // Back closes the topmost popup, menu or drawer. Never pressed with nothing open: on the plain chat, Back sends the
   // app to the background. A full screen (Projects, Pages) is left with its own "Back to chat".
   for (let i = 0; i < 5; i++) {
-    const overlay = await ctx.page.evaluate(`!!(document.querySelector('[role=dialog]') || document.querySelector('[role=menu]') || document.querySelector('.command-drawer.translate-y-0'))`);
+    const overlay = await ctx.page.evaluate(`!!(document.querySelector('[role=dialog]') || document.querySelector('[role=menu]') || (() => { const d = document.querySelector('.command-drawer'); return !!d && d.getBoundingClientRect().top < innerHeight - 1; })())`);
     if (overlay || await ctx.find('[aria-label="Close settings"]')) { ctx.key(4); await ctx.sleep(500); continue; }
     if (await ctx.find(null, 'Back to chat')) { await ctx.tapOn(null, 'Back to chat'); await ctx.sleep(700); continue; }
     break;
