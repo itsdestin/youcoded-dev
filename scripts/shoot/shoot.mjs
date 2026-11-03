@@ -13,6 +13,7 @@
 //   shoot --all                                       everything
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
+// Also: --no-elements (skip the <theme>.elements.json list written beside each picture) · --no-montage (before/after: skip the side-by-sides)
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
 // the main one) · --themes a,b | all · --width N [--height N] · --contrast · --collect <classes.json> · --out <dir>
 //
@@ -30,6 +31,7 @@ import { ensureOfficeEditor } from './office-editor.mjs';
 import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
+import { MEASURE_ELEMENTS } from './elements.mjs';
 import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -45,7 +47,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, noElements: false, noMontage: false, collect: null, out: null, worktree: null, before: null, after: null, beforeFiles: [], list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -53,6 +55,10 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--width') opt.width = Number(next());
   else if (a === '--height') opt.height = Number(next());
   else if (a === '--contrast') opt.contrast = true;
+  // WHY on by default: the "What changed" comparer needs it, and it costs one page evaluate per picture.
+  else if (a === '--no-elements') opt.noElements = true;
+  // WHY: the what-changed run compares itself; the ImageMagick side-by-sides for ~800 pictures are wasted time.
+  else if (a === '--no-montage') opt.noMontage = true;
   else if (a === '--collect') opt.collect = JSON.parse(readFileSync(resolve(next()), 'utf8'));
   else if (a === '--out') opt.out = resolve(next());
   else if (a === '--worktree') opt.worktree = next();
@@ -266,9 +272,13 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       return document.fonts.status === 'loaded' && (!fam || document.fonts.check('16px ' + fam));
     })()`, 10_000);
     await tab.still(500);
+    // WHY measured just before the picture, after the screen is proven showing and settled: the
+    // element list must describe exactly what the picture shows (what-changed/FORMAT.md).
+    const elements = opt.noElements || opt.check ? null : await tab.evaluate(MEASURE_ELEMENTS, 15_000).catch(() => null);
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
+    if (elements) writeFileSync(join(dir, `${theme}.elements.json`), JSON.stringify({ screen: screen.name, theme, scale: shotScale(), viewport: { w, h }, elements }));
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
@@ -465,7 +475,7 @@ if (opt.before || opt.after) {
   }
   summarize('before: ', results.before, join(outDir, 'before'));
   summarize('after:  ', results.after, join(outDir, 'after'));
-  compare(results.before, results.after, outDir);
+  if (!opt.noMontage) compare(results.before, results.after, outDir);
   console.log(`done in ${((Date.now() - t0) / 1000).toFixed(1)}s → ${outDir}`);
   process.exit(0);
 }
