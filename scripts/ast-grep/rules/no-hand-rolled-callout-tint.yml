@@ -23,21 +23,16 @@ note: |
   OTHER components/ subdirectory is listed under ignores:),
   components/development/*.tsx, components/ui/*.tsx — Callout.tsx itself is
   ignored (where the three tones are defined).
-  EXEMPT (carried as `ignores:`, from the retired test's NOT_CALLOUTS table):
+  EXEMPT (carried as `ignores:`):
   Button.tsx (danger-outline's hover fill — a control's own state),
-  ModelPickerPopup.tsx (Fast mode's warning box — a hand-rolled warning
-  callout, follow-up filed separately), ThemeShareSheet.tsx (an <a> styled
+  ThemeShareSheet.tsx (an <a> styled
   as a button), AssistantTurnBubble.tsx (the Plan card — not a menu surface),
   SessionContextBanner.tsx / SettingsPanel.tsx / SpecialistsChip.tsx (K5
   status strips or state pills, per NOT_CALLOUTS). SyncPanel.tsx left the list
   2026-09-28: its backend rows are plain nested boxes now (nothing-bare-3#N3-2).
-  scripts/ast-grep/check.sh fails if the marked ignores: block and the
-  NOT_CALLOUTS keys differ (review of u10, 2026-09-16).
-  LIMITATION: NOT_CALLOUTS counted per file (e.g. SyncPanel.tsx: exactly 4)
-  so a FIFTH tinted block there would have failed the retired test; a
-  whole-file `ignores:` cannot express "at most N here". That exact-count
-  case ("every exemption still exists and still applies") is kept as a text
-  read in the trimmed test file per global.md's "at most N matches" guidance.
+  LIMITATION: a whole-file `ignores:` cannot express "at most N here", so a
+  second tinted block in an exempt file is not caught (the per-file count test
+  was dropped 2026-11-03: styling is judged on the screenshot review).
   Matched on (a) one string or template literal holding BOTH the tint token
   and the word `border`, and (b) FIX (review of t6a, 2026-09-16) one
   `className` attribute — or one mergeClasses(…) call — whose pieces hold
@@ -95,10 +90,9 @@ ignores:
   - "**/components/specialists/**"
   - "**/components/tags/**"
   - "**/components/tool-views/**"
-  # exemption-table: NOT_CALLOUTS — counted in tests/callout-authority.test.tsx,
-  # not here; check.sh fails if this block and that table differ. Keep it last.
+  # Files whose one tinted block is not a callout (see the message above). Their per-file counts
+  # were a test until 2026-11-03 (never pin styling); the screenshot review judges them now.
   - "**/Button.tsx"
-  - "**/ModelPickerPopup.tsx"
   - "**/ThemeShareSheet.tsx"
   - "**/AssistantTurnBubble.tsx"
   - "**/SessionContextBanner.tsx"

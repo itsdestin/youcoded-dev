@@ -544,9 +544,7 @@ fi
 #     starting `};`.
 EXEMPTION_TABLES=(
     "no-hand-rolled-setting-row-toggle.yml|setting-row-authority.test.tsx|TOGGLES_OUTSIDE_A_ROW"
-    "no-centred-status-paragraph.yml|status-strip-authority.test.tsx|CENTRED_STATUS_ELSEWHERE"
     "no-hardcoded-error-fallback.yml|status-strip-authority.test.tsx|HARDCODED_ERROR_FALLBACK"
-    "no-hand-rolled-callout-tint.yml|callout-authority.test.tsx|NOT_CALLOUTS"
 )
 echo "== exemption tables (a test's counted files = its rule's ignores:) =="
 if ! command -v python3 >/dev/null 2>&1; then

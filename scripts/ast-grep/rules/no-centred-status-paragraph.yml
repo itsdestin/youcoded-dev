@@ -14,10 +14,8 @@ note: |
   `text-(green|amber|red)-\d{3}` or `text-destructive-fg`, requiring 0
   outside its CENTRED_STATUS_ELSEWHERE list. The regex below is that pair in
   one (the colour before or after text-center, inside the one quoted span).
-  The listed files (FirstRunView, ShareSheet; ThemeShareSheet left 2026-10-13) are under
-  ignores: here; their exact per-file counts are still pinned by that case,
-  kept as a source read, because a per-file count is not something a rule
-  can express.
+  Its last two exempt files (FirstRunView, ShareSheet) reached zero, so since
+  2026-11-03 the rule holds them to zero too and the count case is gone.
   MATCHING: the retired case ran its regex over each file's whole text with
   comments blanked, and its `[^"]*` spans run on from a single-quoted
   string or a template into whatever follows, up to the next `"`. So the
@@ -71,10 +69,6 @@ ignores:
   - "**/components/specialists/**"
   - "**/components/tags/**"
   - "**/components/tool-views/**"
-  # exemption-table: CENTRED_STATUS_ELSEWHERE — counted in tests/status-strip-authority.test.tsx,
-  # not here; check.sh fails if this block and that table differ.
-  - "**/FirstRunView.tsx"
-  - "**/ShareSheet.tsx"
 utils:
   holds-match:
     regex: "className=\"[^\"]*(?:text-center[^\"]*(?:text-(?:green|amber|red)-\\d{3}|text-destructive-fg)|(?:text-(?:green|amber|red)-\\d{3}|text-destructive-fg)[^\"]*text-center)[^\"]*\""
