@@ -1,0 +1,31 @@
+{
+  "title": "Finishing Pages, step 3 — the page's chat, round 4",
+  "key": "pages-finish-step3d-choice",
+  "out": "pages-finish-step3d.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step3d.choice",
+  "runs": { "after": "runs-step3d/after" },
+  "themes": ["morning-rounds", "midnight", "light"],
+  "steps": [
+    {
+      "id": "H-computer",
+      "surface": "Pages",
+      "path": "An open page → the round chat button",
+      "crop": "pages/page/page-money#chat-float",
+      "headline": "The chat's title row is now the buddy's: the main window's own conversation pill, and the window's own minimize button.",
+      "changed": "From round 3: the made-up title row is gone. The name sits in the same pill as the main window's top bar, with its arrow for the list of chats. The minimize button is the one beside the window's maximize and close. Messages also use the buddy's sizes, and only the newest one keeps its time.",
+      "notice": "In the build, the pill's list holds only this page's chats, and starting a new one there starts it in the page's project. The separate New chat button is gone.",
+      "risk": "The pill's arrow is the only way to a new chat now, one click deeper than the old New chat button."
+    },
+    {
+      "id": "H-phone",
+      "surface": "Pages",
+      "path": "A page on your phone → the round chat button",
+      "crop": "pages/focus/page-money#chat-phone",
+      "headline": "The same title row on a phone.",
+      "changed": "From round 3: the same changes as on a computer.",
+      "notice": "Messages slide up behind the pill as you scroll and fade out at the card's top edge, as they do in the buddy.",
+      "risk": "In themes where the bar matches the chat's colour, the pill and minimize look like they float on their own, the way the main window's top bar does in those themes."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+ "deck": "pages-finish-step3c-choice",
+ "started": "2026-11-03T21:35:04.121Z",
+ "submitted": "2026-11-03T21:36:46Z",
+ "cur": 2,
+ "answers": {
+  "C-computer": {
+   "note": "you still haven't fixed the header. it still looks like an entirely unique window/element that matches nothing else used in the app",
+   "t": 1793741762741,
+   "v": "pick",
+   "pick": "float",
+   "seconds": 59,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "C-float-button": {
+   "v": "yes",
+   "t": 1793741769492,
+   "seconds": 7,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "C-phone": {
+   "v": "other",
+   "t": 1793741805059,
+   "note": "okay. this deck/slide was stsupid. why are you offering these to me like theyre exclusive options?",
+   "seconds": 36,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}
