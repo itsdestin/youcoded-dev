@@ -17,7 +17,6 @@ verify:
   - path: youcoded/desktop/src/renderer/components/ui/Button.tsx
     contains: "mergeClasses"
   - test: youcoded/desktop/src/renderer/components/ui/Button.test.tsx
-  - test: youcoded/desktop/tests/primitive-adoption.test.ts
   - path: scripts/ast-grep/rules/no-hardcoded-z-index-or-scrim.yml
   - test: youcoded/desktop/tests/drawer-card-glass.test.ts
   - path: youcoded/desktop/src/renderer/platform.ts
@@ -54,9 +53,9 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **`showCaptionButtons` must include Linux** — frameless on BOTH; gate window-chrome on "not macOS", NEVER `navigator.platform === 'Win32'`. Announcement lives in StatusBar.
 
 ## Control primitives (`components/ui/`)
-- **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
+- **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`.
 - **Padding groups are per-axis** (`px-`/`py-` independent; `p-N` in ALL groups) — an `px-`-only override must NOT drop `py-` · guard: `Button.test.tsx` if you touch `CONFLICT_GROUPS`.
-- **Chrome is unselectable** (`<button>`s/`select-none` roots; content buttons add `select-text`) · guard: ast-grep `chrome-root-select-none-*`/`file-name-button-select-text` (classes), `unselectable-chrome.test.ts` (CSS).
+- **Chrome is unselectable** (`<button>`s/`select-none` roots; content buttons add `select-text`) · guard: ast-grep `chrome-root-select-none-*`/`file-name-button-select-text` (classes).
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.
