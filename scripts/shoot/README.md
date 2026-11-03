@@ -206,3 +206,13 @@ exactly the top layer closed — or, for a screen whose entry sets `escapeStepsB
 inside a popup that owns its own ✕ and Escape, like the add-a-backup wizard), unless every layer stayed open.
 
 Spec: `docs/archive/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.
+
+## What changed since the last release
+
+`node scripts/shoot/what-changed.mjs [--since v1.3.3] [--after .] [--themes a,b|all] [--only 'settings/*'] [--out <dir>]`
+makes (once, reused) a detached checkout of the newest `v*` tag at `scratch/release-<tag>` with a hardlink copy of this
+checkout's `node_modules` (refuses if the lockfiles differ), shoots every screen on both sides, and writes
+`<out>/changes.json` (format: `what-changed/FORMAT.md`). Every picture shoot takes also gets a
+`<theme>.elements.json` beside it (buttons, fields, words, pictures with boxes; `--no-elements` turns it off).
+`--compare-only <run>` redoes just the comparison. Remove the release checkout with
+`git -C youcoded worktree remove --force scratch/release-<tag>`.
