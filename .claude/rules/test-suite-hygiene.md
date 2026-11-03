@@ -96,7 +96,7 @@ CSS↔TSX coupling).
 elements by role/label, then assert what happened. Looks and copy are judged on the
 before/after screenshot review; whether things work, by the release walk-through.
 **Why:** Destin, 2026-11-01: "we should literally never pin exact wording. waste of code/effort."
-**Guard:** none — candidate (plan `docs/active/plans/2026-11-01-real-app-testing.md`, cleanup).
+**Guard:** `tests/no-sentence-pins.test.ts` (whole on-screen sentences; a sentence the test supplies itself is allowed); CSS classes — candidate.
 
 ## A test lives with its feature and is named for its behaviour
 **Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), named for
