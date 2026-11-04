@@ -283,7 +283,7 @@ const PAD = 3;   // CSS px of slack around an explained element
  * before/after: { elements: [...]|null, png: PNG|null, bytes?: Buffer }. scale: picture px per CSS px.
  * Returns { changes, shift, mask?: { data, w, h } }.
  */
-export function compareScreen(before, after, scale = 1) {
+export function compareScreen(before, after, scale = 1, repeat = {}) {
   let changes = [], ignored = [], shift = 0, shiftFromY = 0;
   const haveEls = Array.isArray(before.elements) && Array.isArray(after.elements);
   if (haveEls) ({ changes, ignored, shift, shiftFromY } = classify(matchElements(before.elements, after.elements)));
@@ -303,13 +303,38 @@ export function compareScreen(before, after, scale = 1) {
   }
   for (const b of ignored) boxes.push({ x: (b.x - PAD) * scale, y: (b.y - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
   clearBoxes(mask, A.width, A.height, boxes);
-  const found = regions(mask, A.width, A.height);
-  if (!found.length) return { changes, shift };
+  let found = regions(mask, A.width, A.height);
+  // WHY (flicker filter): `repeat.before/after` are a second picture of the same screen from the
+  // SAME side. Where a side's own two pictures differ, that side is unstable (a glow, a blinking
+  // thing, a late-loading image), so a difference there says nothing about the release. A region
+  // touching such a spot is dropped and counted.
+  let unstable = 0;
+  const flicker = repeat.before || repeat.after ? flickerMask(A, B, repeat) : null;
+  if (flicker && found.length) {
+    const kept = found.filter((r) => !touches(flicker, A.width, A.height, r, 4));
+    unstable = found.length - kept.length; found = kept;
+  }
+  if (!found.length) return { changes, shift, unstable };
   // Only the surviving regions stay in the mask picture.
   const keep = new Uint8Array(mask.length);
   for (const r of found) for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (mask[y * A.width + x]) keep[y * A.width + x] = 1;
   for (const r of found) changes.push({ kind: 'pixels', role: null, name: '', side: 'after', box: { x: round1((r.x - 1) / scale), y: round1((r.y - 1) / scale), w: round1((r.w + 2) / scale), h: round1((r.h + 2) / scale) } });
-  return { changes, shift, mask: { data: keep, w: A.width, h: A.height } };
+  return { changes, shift, unstable, mask: { data: keep, w: A.width, h: A.height } };
+}
+
+/** Pixels where a side's picture differs from its own repeat (same size only). */
+function flickerMask(A, B, repeat) {
+  const out = new Uint8Array(A.width * A.height);
+  for (const [pic, again] of [[A, repeat.after], [B, repeat.before]]) {
+    if (!again || again.width !== pic.width || again.height !== pic.height) continue;
+    const { mask } = diffPixels(pic, again);
+    for (let i = 0; i < mask.length; i++) if (mask[i]) out[i] = 1;
+  }
+  return out;
+}
+function touches(mask, w, h, r, pad) {
+  for (let y = Math.max(0, r.y - pad); y < Math.min(h, r.y + r.h + pad); y++) for (let x = Math.max(0, r.x - pad); x < Math.min(w, r.x + r.w + pad); x++) if (mask[y * w + x]) return true;
+  return false;
 }
 const round1 = (n) => Math.round(n * 10) / 10;
 
@@ -350,6 +375,8 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     try { rememberRandomPhrases(randomPhrasesFrom(readFileSync(join(dir, 'desktop/src/renderer/components/ThinkingIndicator.tsx'), 'utf8'))); } catch { /* no checkout recorded: the phrases stay unknown */ }
   }
   const B = findPictures(join(run, 'before')), A = findPictures(join(run, 'after'));
+  // Second pictures from each side (the flicker filter): before-2/ and after-2/, present only when the wrapper took them.
+  const B2 = findPictures(join(run, 'before-2')), A2 = findPictures(join(run, 'after-2'));
   const failB = failures(join(run, 'before')), failA = failures(join(run, 'after'));
   const keys = new Set([...B.keys(), ...A.keys(), ...[...failB].filter(([, v]) => v).map(([k]) => k), ...[...failA].filter(([, v]) => v).map(([k]) => k)]);
   const screens = [];
@@ -368,8 +395,9 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     };
     const b = side(B, 'before'), a = side(A, 'after');
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;
-    const r = compareScreen(b, a, scale);
-    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift } } : {}), changes: r.changes };
+    const again = (map) => (map.has(key) ? PNG.sync.read(readFileSync(map.get(key))) : null);
+    const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) });
+    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }
     screens.push(row);

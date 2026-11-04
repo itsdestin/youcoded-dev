@@ -309,6 +309,14 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     await waitFor(tab, `[...document.images].every((i) => i.complete)`, 5_000);
     if (opt.freeze) await tab.evaluate(`(() => { const st = document.createElement('style'); st.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; }'; document.head.appendChild(st); })()`, 5000).catch(() => {});
     await tab.still(500);
+    // WHY a steadiness loop under --freeze (what-changed, 2026-11-03): on a busy machine the Office
+    // editor and Pages frames finish drawing AFTER the screen proved itself showing, so two runs of the
+    // same code differed in big regions (office/spreadsheet: a 1324x95 toolbar band). Take the picture
+    // until two in a row are byte-identical (at most 5 tries, ~0.4 s apart) and keep the last.
+    if (opt.freeze) {
+      let prev = await tab.png();
+      for (let i = 0; i < 5; i++) { await tab.still(400); const cur = await tab.png(); const same = cur.equals(prev); prev = cur; if (same) break; }
+    }
     // WHY measured just before the picture, after the screen is proven showing and settled: the
     // element list must describe exactly what the picture shows (what-changed/FORMAT.md).
     const elements = opt.noElements || opt.check ? null : await tab.evaluate(MEASURE_ELEMENTS, 15_000).catch(() => null);

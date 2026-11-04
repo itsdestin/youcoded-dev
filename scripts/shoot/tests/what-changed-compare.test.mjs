@@ -135,3 +135,19 @@ test('a swap between two of the app\'s random thinking phrases is not a wording 
   assert.equal(volatileText('Calibrating', 'Perplexing'), true);
   assert.equal(volatileText('Calibrating', 'Save'), false);
 });
+
+test('flicker filter: a difference where a side differs from its own second picture is dropped and counted', () => {
+  const block = (c) => pic(200, 100, (x, y) => (x >= 50 && x < 80 && y >= 40 && y < 60 ? c : null));
+  const b = pic(200, 100, () => null);
+  // after = red block; after's own second picture = no block, so the spot flickers
+  const kept = compareScreen(side(b), side(block([220, 30, 30])), 1, {});
+  assert.equal(kept.changes.length, 1);
+  const dropped = compareScreen(side(b), side(block([220, 30, 30])), 1, { after: pic(200, 100, () => null) });
+  assert.deepEqual(dropped.changes, []); assert.equal(dropped.unstable, 1);
+  // the same reasoning on the before side
+  const droppedB = compareScreen(side(b), side(block([220, 30, 30])), 1, { before: block([0, 0, 255]) });
+  assert.equal(droppedB.unstable, 1);
+  // a steady side (second picture identical) keeps the change
+  const steady = compareScreen(side(b), side(block([220, 30, 30])), 1, { after: block([220, 30, 30]), before: pic(200, 100, () => null) });
+  assert.equal(steady.changes.length, 1); assert.ok(!steady.unstable);
+});

@@ -10,7 +10,7 @@
 //   --after   the current code: a worktree or folder, as for shoot (default: this workspace's youcoded/)
 //   --only    screen names/globs to limit the run (default: every screen); repeatable
 //   --out     run folder (default: scratch/what-changed/<since>-<timestamp>)
-//   --compare-only <run>   skip the shooting and redo only the comparison of an existing run
+//   --compare-only <run>   skip the shooting and redo only the comparison of an existing run (uses its before-2/ after-2/ repeat pictures if present)
 // Remove the release checkout when done:  git -C youcoded worktree remove --force scratch/release-<tag>
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -63,5 +63,22 @@ const shootArgs = [join(HERE, 'shoot.mjs'), ...(opt.only.length ? opt.only : ['-
 const shot = spawnSync(process.execPath, shootArgs, { stdio: 'inherit' });
 if (shot.status !== 0) die(`shoot stopped with exit code ${shot.status} — see above`);
 
-const result = compareRun(out);
-console.log(`\n${summaryLine(result)}\nrun folder: ${out}\ndone in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+let result = compareRun(out);
+
+// WHY a second pass (flicker filter): a few spots change between two pictures of the SAME code
+// (a glow, a late image). Every screen x theme with a pixel difference is shot once more on each
+// side, and compare.mjs drops differences that also differ between a side's own two pictures.
+// One shoot per side, so the browser starts twice, not once per screen.
+const flagged = result.screens.filter((s) => s.status === 'changed' && s.changes.some((c) => c.kind === 'pixels'));
+if (flagged.length) {
+  const names = [...new Set(flagged.map((s) => s.name))];
+  const themes = [...new Set(flagged.map((s) => s.theme))];
+  console.error(`[what-changed] flicker check: ${flagged.length} picture(s) with pixel differences shot once more per side`);
+  for (const [dir, folder] of [[before.dir, 'before-2'], [afterCheckout, 'after-2']]) {
+    const r = spawnSync(process.execPath, [join(HERE, 'shoot.mjs'), ...names, '--worktree', dir, '--themes', themes.join(','), '--out', join(out, folder), '--no-montage', '--freeze'], { stdio: 'inherit' });
+    if (r.status !== 0) console.error(`[what-changed] the repeat pictures (${folder}) did not finish; their flicker check is skipped`);
+  }
+  result = compareRun(out);
+}
+const unstable = result.screens.reduce((n, s) => n + (s.unstable ?? 0), 0);
+console.log(`\n${summaryLine(result)}${unstable ? ` · ${unstable} flickering spot(s) ignored` : ''}\nrun folder: ${out}\ndone in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
