@@ -12,7 +12,7 @@
 //   --out     run folder (default: scratch/what-changed/<since>-<timestamp>)
 //   --compare-only <run>   skip the shooting and redo only the comparison of an existing run (uses its before-2/ after-2/ repeat pictures if present)
 // Remove the release checkout when done:  git -C youcoded worktree remove --force scratch/release-<tag>
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,9 +36,29 @@ for (let i = 0; i < args.length; i++) {
 
 const appRepo = join(WORKSPACE, 'youcoded');
 const t0 = Date.now();
+// WHY a second pass (flicker filter): a few spots change between two pictures of the SAME code (a
+// glow, a late image, an Office cursor). Every changed screen x theme is shot once more on each side,
+// and compare.mjs drops differences that also differ between a side's own two pictures. One shoot per
+// side, so the browser starts twice, not once per screen. Pictures already in before-2/ and after-2/
+// are reused, so a repeated --compare-only costs nothing.
+function repeatPass(out, result, beforeDir, afterDir) {
+  const have = (side, s) => existsSync(join(out, side, ...s.name.split('/'), `${s.theme}.png`));
+  const flagged = result.screens.filter((s) => s.status === 'changed' && !(have('before-2', s) && have('after-2', s)));
+  if (!flagged.length) return result;
+  const names = [...new Set(flagged.map((s) => s.name))];
+  const themes = [...new Set(flagged.map((s) => s.theme))];
+  console.error(`[what-changed] flicker check: ${flagged.length} changed picture(s) shot once more per side`);
+  for (const [dir, folder] of [[beforeDir, 'before-2'], [afterDir, 'after-2']]) {
+    const r = spawnSync(process.execPath, [join(HERE, 'shoot.mjs'), ...names, '--worktree', dir, '--themes', themes.join(','), '--out', join(out, folder), '--no-montage', '--freeze'], { stdio: 'inherit' });
+    if (r.status !== 0) console.error(`[what-changed] the repeat pictures (${folder}) did not finish; their flicker check is skipped`);
+  }
+  return compareRun(out);
+}
 if (opt.compareOnly) {
-  const out = compareRun(opt.compareOnly);
-  console.log(`${summaryLine(out)}\n${join(opt.compareOnly, 'changes.json')}`);
+  let res = compareRun(opt.compareOnly);
+  const meta = JSON.parse(readFileSync(join(opt.compareOnly, 'run.json'), 'utf8'));
+  res = repeatPass(opt.compareOnly, res, meta.before.dir, meta.after.dir);
+  console.log(`${summaryLine(res)}\n${join(opt.compareOnly, 'changes.json')}`);
   process.exit(0);
 }
 
@@ -65,20 +85,6 @@ if (shot.status !== 0) die(`shoot stopped with exit code ${shot.status} — see 
 
 let result = compareRun(out);
 
-// WHY a second pass (flicker filter): a few spots change between two pictures of the SAME code
-// (a glow, a late image). Every screen x theme with a pixel difference is shot once more on each
-// side, and compare.mjs drops differences that also differ between a side's own two pictures.
-// One shoot per side, so the browser starts twice, not once per screen.
-const flagged = result.screens.filter((s) => s.status === 'changed' && s.changes.some((c) => c.kind === 'pixels'));
-if (flagged.length) {
-  const names = [...new Set(flagged.map((s) => s.name))];
-  const themes = [...new Set(flagged.map((s) => s.theme))];
-  console.error(`[what-changed] flicker check: ${flagged.length} picture(s) with pixel differences shot once more per side`);
-  for (const [dir, folder] of [[before.dir, 'before-2'], [afterCheckout, 'after-2']]) {
-    const r = spawnSync(process.execPath, [join(HERE, 'shoot.mjs'), ...names, '--worktree', dir, '--themes', themes.join(','), '--out', join(out, folder), '--no-montage', '--freeze'], { stdio: 'inherit' });
-    if (r.status !== 0) console.error(`[what-changed] the repeat pictures (${folder}) did not finish; their flicker check is skipped`);
-  }
-  result = compareRun(out);
-}
+result = repeatPass(out, result, before.dir, afterCheckout);
 const unstable = result.screens.reduce((n, s) => n + (s.unstable ?? 0), 0);
 console.log(`\n${summaryLine(result)}${unstable ? ` · ${unstable} flickering spot(s) ignored` : ''}\nrun folder: ${out}\ndone in ${((Date.now() - t0) / 1000).toFixed(0)}s`);

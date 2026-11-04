@@ -151,3 +151,24 @@ test('flicker filter: a difference where a side differs from its own second pict
   const steady = compareScreen(side(b), side(block([220, 30, 30])), 1, { after: block([220, 30, 30]), before: pic(200, 100, () => null) });
   assert.equal(steady.changes.length, 1); assert.ok(!steady.unstable);
 });
+
+test('a row pushed sideways as a whole by a changed clock is not a list of moves', () => {
+  const row = (dx, clock) => [el('text', null, clock, 10, 10, 90 + dx / 2, 15), el('text', null, 'Cost:', 120 + dx, 10, 30, 15), el('text', null, '$0.42', 160 + dx, 10, 30, 15), el('text', null, 'In:', 200 + dx, 10, 20, 15)];
+  const r = run(row(0, 'Saturday @ 6:42pm'), row(20, 'Saturday @ 7:04pm'));
+  assert.deepEqual(r.changes, []);
+  assert.deepEqual(kinds(run([el('control', 'button', 'Solo', 100, 10)], [el('control', 'button', 'Solo', 130, 10)])), ['moved'], 'one element moving alone still counts');
+});
+
+test('an Office text cursor (a thin one-line region) is ignored only on office screens', () => {
+  const b = pic(300, 120, () => null), a = pic(300, 120, (x, y) => (x >= 100 && x < 103 && y >= 50 && y < 67 ? [0, 0, 0] : null));
+  assert.equal(compareScreen(side(b), side(a), 1, {}, { ignoreCaret: true }).changes.length, 0);
+  assert.equal(compareScreen(side(b), side(a), 1, {}, {}).changes.length, 1);
+});
+
+test('flicker also drops element changes that sit on a spot the side itself flickers at', () => {
+  const b = pic(200, 100, () => null), a = pic(200, 100, (x, y) => (x >= 50 && x < 90 && y >= 40 && y < 60 ? [220, 30, 30] : null));
+  const bEls = [el('text', null, 'Slide one', 50, 40, 40, 20)], aEls = [el('text', null, 'Slide two', 50, 40, 40, 20)];
+  assert.equal(compareScreen(side(b, bEls), side(a, aEls), 1, {}).changes.length, 1);
+  const r = compareScreen(side(b, bEls), side(a, aEls), 1, { after: pic(200, 100, () => null) });
+  assert.deepEqual(r.changes, []); assert.ok(r.unstable >= 1);
+});

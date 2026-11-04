@@ -148,6 +148,7 @@ const sameStyle = (p, a, b) => p === 'opacity' ? Math.abs(Number(a) - Number(b))
 /** Changes for the matched pairs, plus the removed / added elements. */
 export function classify({ pairs, removed, added, shift }) {
   const changes = [];
+  const slid = [];     // `moved` changes, kept to spot a row pushed sideways as a whole
   const ignored = [];  // boxes of things that change by themselves: their pixels are explained too
   const fromY = [];   // after-side top edges of elements that rode along with the shift
   for (const { b, a } of pairs) {
@@ -172,10 +173,21 @@ export function classify({ pairs, removed, added, shift }) {
     // Wording changes resize and re-centre their own box: only a vertical move counts then.
     const moved = wording ? Math.abs(dy - (rode ? shift : 0)) > MOVE_TOL
       : Math.abs(dx) > MOVE_TOL || Math.abs(dy - (rode ? shift : 0)) > MOVE_TOL || Math.abs(a.box.w - b.box.w) > MOVE_TOL || Math.abs(a.box.h - b.box.h) > MOVE_TOL;
-    if (moved) changes.push({ kind: 'moved', ...base, side: 'after', box: a.box, beforeBox: b.box });
+    if (moved) {
+      const m = { kind: 'moved', ...base, side: 'after', box: a.box, beforeBox: b.box };
+      // Candidates for the sideways ride-along below: same size, same row, only pushed left/right.
+      slid.push({ m, dx, plain: !wording && Math.abs(dy - (rode ? shift : 0)) <= MOVE_TOL && Math.abs(a.box.w - b.box.w) <= MOVE_TOL && Math.abs(a.box.h - b.box.h) <= MOVE_TOL });
+      changes.push(m);
+    }
     const styleChanges = STYLE_PROPS.filter((p) => !sameStyle(p, a.style?.[p], b.style?.[p])).map((p) => ({ prop: p, from: b.style?.[p], to: a.style?.[p] }));
     if (styleChanges.length) changes.push({ kind: 'restyled', ...base, styleChanges, side: 'after', box: a.box, beforeBox: b.box });
   }
+  // WHY (what-changed run 5, chat#statusbar-cc): a clock reading changed width ("6:42pm" to "7:04pm"), so
+  // every chip after it slid sideways by the same amount — one cause, seven `moved`. Elements that only slid
+  // by one shared distance are the same kind of ride-along as the vertical shift: dropped from the list.
+  const byDx = new Map();
+  for (const x of slid) if (x.plain) { const k = Math.round(x.dx); const near = [...byDx.keys()].find((q) => Math.abs(q - k) <= 1) ?? k; byDx.set(near, (byDx.get(near) ?? []).concat(x)); }
+  for (const group of byDx.values()) if (group.length >= 2) for (const x of group) { ignored.push(x.m.box, x.m.beforeBox); changes.splice(changes.indexOf(x.m), 1); }
   for (const e of removed) changes.push({ kind: 'removed', role: e.role ?? null, name: e.name, ...(e.text ? { oldText: e.text } : {}), side: 'before', box: e.box });
   for (const e of added) changes.push({ kind: 'added', role: e.role ?? null, name: e.name, ...(e.text ? { newText: e.text } : {}), side: 'after', box: e.box });
   return { changes, ignored, shift: shift || 0, shiftFromY: fromY.length ? Math.min(...fromY) : 0 };
@@ -283,8 +295,8 @@ const PAD = 3;   // CSS px of slack around an explained element
  * before/after: { elements: [...]|null, png: PNG|null, bytes?: Buffer }. scale: picture px per CSS px.
  * Returns { changes, shift, mask?: { data, w, h } }.
  */
-export function compareScreen(before, after, scale = 1, repeat = {}) {
-  let changes = [], ignored = [], shift = 0, shiftFromY = 0;
+export function compareScreen(before, after, scale = 1, repeat = {}, opts = {}) {
+  let changes = [], ignored = [], shift = 0, shiftFromY = 0, unstable = 0;
   const haveEls = Array.isArray(before.elements) && Array.isArray(after.elements);
   if (haveEls) ({ changes, ignored, shift, shiftFromY } = classify(matchElements(before.elements, after.elements)));
   if (!before.png || !after.png) return { changes, shift };
@@ -304,15 +316,21 @@ export function compareScreen(before, after, scale = 1, repeat = {}) {
   for (const b of ignored) boxes.push({ x: (b.x - PAD) * scale, y: (b.y - PAD) * scale, w: (b.w + 2 * PAD) * scale, h: (b.h + 2 * PAD) * scale });
   clearBoxes(mask, A.width, A.height, boxes);
   let found = regions(mask, A.width, A.height);
+  // WHY (Office editor caret): the editor draws a blinking text cursor on its own canvas, which no style
+  // can hide. A region a few pixels wide and one text line tall on an office screen is that cursor.
+  if (opts.ignoreCaret) { const n = found.length; found = found.filter((r) => !(r.w <= 5 * scale && r.h <= 26 * scale)); unstable += n - found.length; }
   // WHY (flicker filter): `repeat.before/after` are a second picture of the same screen from the
   // SAME side. Where a side's own two pictures differ, that side is unstable (a glow, a blinking
-  // thing, a late-loading image), so a difference there says nothing about the release. A region
-  // touching such a spot is dropped and counted.
-  let unstable = 0;
+  // thing, a late-loading image), so a difference there says nothing about the release. A change
+  // touching such a spot is dropped and counted — pixel regions and element changes alike.
   const flicker = repeat.before || repeat.after ? flickerMask(A, B, repeat) : null;
-  if (flicker && found.length) {
+  if (flicker) {
     const kept = found.filter((r) => !touches(flicker, A.width, A.height, r, 4));
-    unstable = found.length - kept.length; found = kept;
+    unstable += found.length - kept.length; found = kept;
+    const css = (b) => ({ x: b.x * scale, y: b.y * scale, w: b.w * scale, h: b.h * scale });
+    const stays = (c) => !(c.box && touches(flicker, A.width, A.height, css(c.box), 4)) && !(c.beforeBox && touches(flicker, A.width, A.height, css(c.beforeBox), 4));
+    const keptEls = changes.filter((c) => c.kind === 'pixels' || stays(c));
+    unstable += changes.length - keptEls.length; changes = keptEls;
   }
   if (!found.length) return { changes, shift, unstable };
   // Only the surviving regions stay in the mask picture.
@@ -396,7 +414,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const b = side(B, 'before'), a = side(A, 'after');
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;
     const again = (map) => (map.has(key) ? PNG.sync.read(readFileSync(map.get(key))) : null);
-    const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) });
+    const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) }, { ignoreCaret: name.startsWith('office/') });
     const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }
