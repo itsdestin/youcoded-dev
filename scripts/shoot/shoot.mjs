@@ -282,13 +282,24 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // and its family list falls back to a monospace font, so a shot taken before it lands
     // shows a different typeface. `document.fonts.status` alone is not enough: before the
     // stylesheet arrives no font is pending, so it already reads 'loaded'.
-    await waitFor(tab, `(() => {
+    // WHY a loaded FACE is required, and a miss refuses the picture (what-changed run 2, 2026-11-03): a
+    // v1.3.3 picture came out in the monospace fallback. When the Google stylesheet fails to arrive, no
+    // face of the family is registered, and `fonts.check` answers true for a family it has no face for —
+    // so the old wait passed, or timed out silently, and the shot went ahead in the wrong font. Its rows
+    // reflowed, which read as "added" items. A failed fetch gets one fresh try before the picture fails.
+    const FONT_READY = `(() => {
       const l = document.getElementById('theme-google-font');
       if (l && !l.sheet) return false;
-      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font-sans').split(',')[0].trim();
-      if (fam) document.fonts.load('16px ' + fam);
-      return document.fonts.status === 'loaded' && (!fam || document.fonts.check('16px ' + fam));
-    })()`, 10_000);
+      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font-sans').split(',')[0].trim().replace(/["']/g, '');
+      if (fam) document.fonts.load('16px "' + fam + '"');
+      if (document.fonts.status !== 'loaded') return false;
+      if (!l || !fam) return true;
+      return [...document.fonts].some((f) => f.family.replace(/["']/g, '') === fam && f.status === 'loaded');
+    })()`;
+    if (!(await waitFor(tab, FONT_READY, 10_000))) {
+      await tab.evaluate(`(() => { const l = document.getElementById('theme-google-font'); if (l) { const n = l.cloneNode(); n.href = l.href + (l.href.includes('?') ? '&' : '?') + 'retry=' + Date.now(); l.replaceWith(n); } })()`, 5000).catch(() => {});
+      if (!(await waitFor(tab, FONT_READY, 15_000))) throw new Error("the theme's font did not load (the picture would show the fallback font)");
+    }
     // WHY wait for pictures to finish loading (what-changed run, 2026-11-03): a theme preview image
     // in Appearance was blank in one picture and loaded in the next, which reads as a change.
     await waitFor(tab, `[...document.images].every((i) => i.complete)`, 5_000);
