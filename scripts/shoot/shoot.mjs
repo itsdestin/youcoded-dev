@@ -214,6 +214,10 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // page restarts the same sequence, and it works on an old release's code, which can't be changed.
     if (opt.freeze && !tab.seededRandom) {
       await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { let s = 0x2545F491; Math.random = () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; })();` });
+      // WHY also here (what-changed run 3, 2026-11-03): the evaluate below stops animation in the app's own
+      // page only. A Page is drawn in its own frame, so its "now playing" bars kept moving and ~30 Pages
+      // screens differed by a few pixels. A script added this way runs in every frame the tab loads.
+      await tab.send('Page.addScriptToEvaluateOnNewDocument', { source: `(() => { const add = () => { const st = document.createElement('style'); st.textContent = '*, *::before, *::after { animation-play-state: paused !important; animation-delay: 0s !important; animation-duration: 0s !important; transition: none !important; caret-color: transparent !important; }'; (document.head || document.documentElement).appendChild(st); }; if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add); else add(); })();` });
       tab.seededRandom = true;
     }
     await tab.navigate(`${base}?${q}`);
