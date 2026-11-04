@@ -32,7 +32,7 @@ import { MEASURE_PARTS, partsFindings } from './parts-agree.mjs';
 import { mergeManifest, readManifest } from './manifest.mjs';
 import { parseBeforeFile, prepareBeforeCopy } from './before-file.mjs';
 import { MEASURE_ELEMENTS } from './elements.mjs';
-import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES } from './themes.mjs';
+import { allThemes, builtinThemeSlugs, COMMUNITY_THEMES, themeAppliedExpr } from './themes.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -269,6 +269,13 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
       if (!why?.panel) throw new Error(`not showing after its ${screen.waitMs} ms wait: ${why}`);
     }
     r.panel = why.panel;
+    // WHY wait for the theme itself, and refuse the picture if it never arrives (2026-11-03): see
+    // themes.mjs. A screen whose theme list loads slowly shows Light first; shooting it labelled
+    // meadow-mist is a wrong picture, so it fails ("unreviewed, not fine") instead.
+    if (!(await waitFor(tab, themeAppliedExpr(theme), 20_000))) {
+      const shown = await tab.evaluate(`document.documentElement.getAttribute('data-theme')`, 5000).catch(() => null);
+      throw new Error(`the app is showing the "${shown}" theme, not "${theme}"`);
+    }
     // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
     // back with the theme's font on one side and the fallback on the other, at random. A
     // theme font (meadow-mist's Nunito) is a Google Fonts stylesheet fetched over the network,

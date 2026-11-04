@@ -22,3 +22,11 @@ export function allThemes(builtin, community) {
 
 /** The expression a practice-app tab answers with its community theme slugs. */
 export const COMMUNITY_THEMES = "(async () => { try { return window.claude && window.claude.theme && window.claude.theme.list ? await window.claude.theme.list() : []; } catch { return []; } })()";
+
+// WHY (theme-debug, 2026-11-03): a picture of meadow-mist came out as the built-in Light theme on
+// screens that run with practice latency (`latency: '150'` — the app reads its 8 theme files one at
+// a time, ~1.2 s, and wears Light until the last one lands; v1.3.3 does the same, it is not a
+// regression). The old check only waited for the theme's FONT, and Light has none to wait for, so
+// the picture was taken at once. The app writes the slug it is actually showing to
+// <html data-theme>; a picture is only taken once that equals the requested theme.
+export const themeAppliedExpr = (slug) => `document.documentElement.getAttribute('data-theme') === ${JSON.stringify(slug)}`;
