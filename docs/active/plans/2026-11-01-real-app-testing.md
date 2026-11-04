@@ -388,7 +388,20 @@ development `push:` trigger before merging.
 - **Style pins:** ~265 class/style assertions in 71 files reviewed; look-only ones deleted (~580 lines), behaviour
   ones kept (computed geometry, hidden-means-idle, touch targets, classes CSS reads).
 - **Dev push triggers removed** from the three real-app workflows (youcoded, 2026-11-03).
-- **Left:** the "What changed" button (Phase 5, needs a design review with Destin — it changes his work board);
+- **Phase 5 started 2026-11-03 (Destin: "this button should show me every single visual element… highlighted if
+  they change").** Built as a review page first, no work-board change yet:
+  - `node scripts/shoot/what-changed.mjs [--since v1.3.3]`: photographs every screen at the release and now,
+    records each visible control and text with its box (`<theme>.elements.json`), then `compare.mjs` lists
+    added / removed / reworded / moved / restyled controls plus unexplained pixels (`scripts/shoot/what-changed/FORMAT.md`).
+  - `node scripts/shoot/what-changed/serve.mjs <run>`: the viewer — changed screens by area, side by side / slider /
+    fade, boxes, old vs new words, Keep / Not this saved to `decisions.json`.
+  - No off-the-shelf tool marks changes per element (all free ones are pixel-only), so only the pixel compare is ours too.
+  - Coverage 477 → 514 screens (tool cards, 4 tour stops, 16 overlays, 8 menus/tooltips). Still unphotographed: 3 tour
+    stops and 2 project menus (Escape closes the panel under them), dialogs reached only by clicking (shoot checks the
+    mark before its open steps), deep popovers, rare toasts, buddy windows, real Android layouts.
+  - shoot now refuses a picture whose theme had not applied (a slow theme load had shown Light), and `--freeze` fixes
+    `Math.random` so random wording reads the same on both sides.
+- **Left:** a work-board button that opens the viewer (needs Destin's yes: it changes his real app's board);
   the first-run fix and the walk-through sync step wait for #213.
 
 **A rule going forward:** no new test may check exact wording or a style name. A new test that reads app code as text
