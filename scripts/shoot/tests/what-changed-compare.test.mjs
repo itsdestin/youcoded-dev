@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { classify, compareScreen, matchElements, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareScreen, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -126,4 +126,12 @@ test('a clock time or a spinner glyph inside a label is not a wording change eit
   const r = run([el('control', 'button', '⠧ 1 Subagent', 10, 10), el('text', null, 'Sent 4:13 PM', 10, 50)], [el('control', 'button', '⠦ 1 Subagent', 10, 10), el('text', null, 'Sent 4:22 PM', 10, 50)]);
   assert.deepEqual(r.changes, []);
   assert.deepEqual(kinds(run([el('text', null, 'Sent 4:13 PM', 10, 50)], [el('text', null, 'Posted 4:13 PM', 10, 50)])), ['text']);
+});
+
+test('a swap between two of the app\'s random thinking phrases is not a wording change; other words still are', () => {
+  const phrases = randomPhrasesFrom("const THINKING_LINES = [\n  'Calibrating',\n  \"Perplexing\",\n];");
+  assert.deepEqual(phrases, ['Calibrating', 'Perplexing']);
+  rememberRandomPhrases(phrases);
+  assert.equal(volatileText('Calibrating', 'Perplexing'), true);
+  assert.equal(volatileText('Calibrating', 'Save'), false);
 });

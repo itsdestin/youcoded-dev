@@ -129,8 +129,18 @@ const SPINNER = /[\u2800-\u28ff]/g;
 const steady = (t) => t.replace(SPINNER, '').replace(CLOCK, '#').replace(DURATION, '#').replace(/\s+/g, ' ').trim();
 /** Words that change by themselves: a spinner glyph, a countdown or a clock time. True when the two texts are the same without those. */
 export function volatileText(o, n) {
-  return o !== n && steady(o) === steady(n);
+  return o !== n && (steady(o) === steady(n) || (RANDOM_PHRASES.has(o) && RANDOM_PHRASES.has(n)));
 }
+// WHY (what-changed run 2, 2026-11-03): the thinking line shows a phrase picked at random. shoot --freeze fixes
+// the random sequence, but the two versions draw a different number of random numbers first, so "Calibrating"
+// still faced "Perplexing" on the same screen. A swap between two of those phrases is not a change; the list is
+// read from each side's own ThinkingIndicator.tsx so a phrase added or removed in the app is still known.
+const RANDOM_PHRASES = new Set();
+export function randomPhrasesFrom(source) {
+  const list = /THINKING_LINES[^=]*=\s*\[([\s\S]*?)\]/.exec(source ?? '')?.[1] ?? '';
+  return [...list.matchAll(/'([^']+)'|"([^"]+)"/g)].map((m) => m[1] ?? m[2]);
+}
+export function rememberRandomPhrases(phrases) { for (const p of phrases) RANDOM_PHRASES.add(p); }
 const MOVE_TOL = 2;   // CSS px: smaller moves are rounding, not changes
 const STYLE_PROPS = ['color', 'background', 'border', 'radius', 'font', 'opacity'];
 const sameStyle = (p, a, b) => p === 'opacity' ? Math.abs(Number(a) - Number(b)) < 0.02 : a === b;
@@ -336,6 +346,9 @@ function failures(side) {
 export function compareRun(run, { beforeLabel, afterLabel } = {}) {
   run = resolve(run);
   const meta = readJson(join(run, 'run.json')) ?? {};
+  for (const dir of [meta.before?.dir, meta.after?.dir]) {
+    try { rememberRandomPhrases(randomPhrasesFrom(readFileSync(join(dir, 'desktop/src/renderer/components/ThinkingIndicator.tsx'), 'utf8'))); } catch { /* no checkout recorded: the phrases stay unknown */ }
+  }
   const B = findPictures(join(run, 'before')), A = findPictures(join(run, 'after'));
   const failB = failures(join(run, 'before')), failA = failures(join(run, 'after'));
   const keys = new Set([...B.keys(), ...A.keys(), ...[...failB].filter(([, v]) => v).map(([k]) => k), ...[...failA].filter(([, v]) => v).map(([k]) => k)]);
