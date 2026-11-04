@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { startServer, resolveInRun } from '../what-changed/serve.mjs';
 import {
   boxToPercent, boxSide, areaOf, aggregateScreens, countStatuses, groupByArea, matchesFilter,
-  matchesQuery, categories, wordParts, progress, buildDecisions, validateDecisions,
+  matchesQuery, categories, rowLabel, describeStyle, describeMove, groupChanges, wordParts, progress, buildDecisions, validateDecisions,
 } from '../what-changed/viewer/helpers.js';
 
 const screens = [
@@ -135,3 +135,39 @@ function net_connect(port, text, cb) {
   const sock = net.connect(port, '127.0.0.1', () => sock.write(text));
   let d = ''; sock.on('data', (c) => (d += c)); sock.on('close', () => cb(d));
 }
+
+test('areas split at the first slash or hash, and the rest is the row label', () => {
+  assert.equal(areaOf('chat#admin-approval'), 'chat');
+  assert.equal(areaOf('settings/assistant/cloud#x'), 'settings');
+  assert.equal(rowLabel('settings/assistant/cloud#x'), 'assistant/cloud#x');
+  assert.equal(rowLabel('dev/overlay#trust'), 'overlay#trust');
+  assert.equal(rowLabel('lonely'), 'lonely');
+});
+
+test('screens with wording, added or removed changes list first within an area', () => {
+  const rows = (name, kind) => ({ name, theme: 'a', status: 'changed', changes: [{ kind }] });
+  const g = groupByArea(aggregateScreens([rows('a/pix', 'pixels'), rows('a/moved', 'moved'), rows('a/word', 'text'), rows('a/style', 'restyled')]));
+  assert.deepEqual(g[0].items.map((e) => e.name), ['a/word', 'a/style', 'a/moved', 'a/pix']);
+  assert.deepEqual(g[0].items[0].kinds, ['text']);
+});
+
+test('style and position changes are said in plain words; invisible ones are dropped', () => {
+  assert.equal(describeStyle({ prop: 'radius', from: '8px', to: '6px' }).label, 'Corners less rounded');
+  assert.equal(describeStyle({ prop: 'font', from: '16px 500 Nunito', to: '18px 500 Nunito' }).label, 'Text size larger');
+  assert.equal(describeStyle({ prop: 'border', from: '0px solid rgb(1, 1, 1)', to: '0px solid rgb(2, 2, 2)' }), null);
+  assert.deepEqual(describeStyle({ prop: 'color', from: 'rgb(1, 2, 3)', to: 'rgb(4, 5, 6)' }).swatch, { from: 'rgb(1, 2, 3)', to: 'rgb(4, 5, 6)' });
+  assert.equal(describeMove({ box: { x: 11, y: 14, w: 36, h: 24 }, beforeBox: { x: 20, y: 20, w: 24, h: 24 } }), 'Moved left 9 px, up 6 px, Wider by 12 px');
+});
+
+test('repeated changes fold into one group; wording and added come first, pixels last', () => {
+  const btn = (name, dx) => ({ kind: 'restyled', role: 'button', name, styleChanges: [{ prop: 'color', from: 'rgb(1, 1, 1)', to: 'rgb(2, 2, 2)' }], box: { x: dx, y: 0, w: 1, h: 1 }, beforeBox: { x: 0, y: 0, w: 1, h: 1 } });
+  const changes = [{ kind: 'pixels', box: { x: 0, y: 0, w: 1, h: 1 } }, btn('a', 5), btn('b', 9), btn('c', 2),
+    { kind: 'moved', role: 'button', name: 'm1', box: { x: 1, y: 1, w: 1, h: 1 }, beforeBox: { x: 0, y: 0, w: 1, h: 1 } },
+    { kind: 'moved', role: 'button', name: 'm2', box: { x: 3, y: 1, w: 1, h: 1 }, beforeBox: { x: 0, y: 0, w: 1, h: 1 } },
+    { kind: 'text', role: 'button', name: 'T', oldText: 'a', newText: 'b' }];
+  const g = groupChanges(changes);
+  assert.deepEqual(g.map((x) => x.kind), ['text', 'restyled', 'moved', 'pixels']);
+  assert.equal(g[1].title, '3 buttons restyled');
+  assert.deepEqual(g[1].lines.map((l) => l.text), ['Text colour changed']);
+  assert.equal(g[2].items.length, 2);
+});

@@ -3,7 +3,7 @@
 // Keep / Not this answers in <run>/decisions.json. No build step, no dependencies.
 import {
   KINDS, kindLabel, categories, boxToPercent, boxSide, aggregateScreens, countStatuses, isReviewable,
-  matchesFilter, matchesQuery, groupByArea, wordParts, progress, buildDecisions,
+  matchesFilter, matchesQuery, groupByArea, wordParts, progress, buildDecisions, rowLabel, groupChanges, describeChange,
 } from './helpers.js';
 
 const $ = (id) => document.getElementById(id);
@@ -25,7 +25,7 @@ function h(tag, props = {}, ...kids) {
 const S = {
   data: null, entries: [], runName: 'run', base: 'run/', mode: 'server',
   filter: 'all', query: '', name: null, themeIdx: 0, view: 'side', mask: false, boxes: true, sel: -1,
-  decisions: {}, slider: 50,
+  decisions: {}, slider: 50, hideList: false, big: false,
 };
 const FILTERS = [['all', 'All'], ['controls', 'Buttons & controls'], ['wording', 'Wording'], ['other', 'Other look changes']];
 const STATUS_LABEL = { changed: 'Changed', new: 'New', removed: 'Removed', unchanged: 'Unchanged', failed: "Couldn't photograph" };
@@ -107,11 +107,13 @@ function renderList() {
   for (const g of groupByArea(vis)) {
     list.append(h('div', { class: 'area', text: g.area }));
     for (const e of g.items) {
-      const short = e.name.includes('/') ? e.name.slice(e.name.indexOf('/') + 1) : e.name;
+      const short = rowLabel(e.name);
       list.append(h('div', { class: 'row', tabindex: '0', role: 'button', 'data-name': e.name,
         'aria-current': e.name === S.name ? 'true' : 'false',
         onclick: () => selectScreen(e.name), onkeydown: (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); selectScreen(e.name); } } },
-        h('span', { class: 'nm', text: short }),
+        h('span', { class: 'nm', text: short, title: e.name }),
+        // Tiny coloured squares: which kinds of change are on this screen.
+        h('span', { class: 'dots' }, e.kinds.map((k) => h('i', { class: 'sw', style: `background:${kindColor(k)}`, title: kindLabel(k) }))),
         e.status === 'new' ? h('span', { class: 'pill new', text: 'New' }) : null,
         e.status !== 'new' && e.changeCount ? h('span', { class: 'pill', text: String(e.changeCount) }) : null,
         verdictPill(e.name)));
@@ -140,13 +142,23 @@ function step(d) {
   selectScreen(vis[Math.min(vis.length - 1, Math.max(0, i + d))].name);
 }
 
+// Folded changes for a row, cached on it; also maps each change index to its group id.
+function groupsOf(row) {
+  if (!row._groups) {
+    row._groups = groupChanges(row.changes || []);
+    row._gmap = {};
+    row._groups.forEach((g) => g.items.forEach((i) => { row._gmap[i] = g.id; }));
+  }
+  return row._groups;
+}
+
 // ---------- pictures ----------
 // Overlay boxes once the picture's real size is known (percentages of it, so any display size works).
 function whenSized(img, fn) {
   const go = () => fn(img.naturalWidth, img.naturalHeight);
   if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
 }
-function overlay(img, items, scale, which) {
+function overlay(img, items, scale, which, gmap) {
   // which: 'before' | 'after' | 'both'. Removed things only exist in the before picture, so their
   // box is drawn on the before picture; a moved thing also shows where it used to be, dashed, on before.
   const ovl = h('div', { class: 'ovl' });
@@ -154,47 +166,56 @@ function overlay(img, items, scale, which) {
     items.forEach((c, i) => {
       const draw = (box, ghost) => {
         const p = boxToPercent(box, scale, w, hgt); if (!p) return;
-        ovl.append(h('div', { class: 'box' + (ghost ? ' ghost' : '') + (i === S.sel ? ' sel' : ''), 'data-i': String(i),
+        ovl.append(h('div', { class: 'box' + (ghost ? ' ghost' : '') + (gmap[i] === S.sel ? ' sel' : ''), 'data-g': String(gmap[i]),
           title: describe(c), style: `--c:${kindColor(c.kind)};left:${p.left}%;top:${p.top}%;width:${p.width}%;height:${p.height}%`,
-          onclick: (ev) => { ev.stopPropagation(); selectChange(i); } }));
+          onclick: (ev) => { ev.stopPropagation(); selectChange(gmap[i]); } }));
       };
       const side = boxSide(c);
       if (which === 'both' || which === side) draw(c.box, false);
-      if (c.kind === 'moved' && c.beforeBox && (which === 'both' || which === 'before')) draw(c.beforeBox, true);
+      // The dashed "where it was" box only appears for the selected change; for every moved thing at once it buries the picture.
+      if (c.kind === 'moved' && c.beforeBox && gmap[i] === S.sel && (which === 'both' || which === 'before')) draw(c.beforeBox, true);
     });
   });
   return ovl;
 }
 const describe = (c) => `${kindLabel(c.kind)}: ${[c.role, c.name].filter(Boolean).join(' ') || 'area of the screen'}`;
 
-function picture(row, which, changes, scale) {
+// A picture never grows past its own size, so phone-shaped screens are not stretched. Once its real
+// size is known: CSS width = picture pixels / scale (or full picture pixels in the enlarged view).
+function capWidth(img, wrap, scale, big) {
+  whenSized(img, (w) => { wrap.style.maxWidth = (big ? w : w / (scale || 1)) + 'px'; });
+}
+function picture(row, which, changes, scale, big) {
   const img = h('img', { class: 'base', src: src(row[which]), loading: 'lazy', alt: which === 'before' ? 'Before' : 'After' });
-  const wrap = h('div', { class: 'pic' }, img);
-  if (S.boxes) wrap.append(overlay(img, changes, scale, which));
+  const wrap = h('div', { class: 'pic' + (big ? '' : ' zoomable'), title: big ? '' : 'Click to enlarge', onclick: big ? null : () => openBig() }, img);
+  capWidth(img, wrap, scale, big);
+  groupsOf(row);
+  if (S.boxes) wrap.append(overlay(img, changes, scale, which, row._gmap));
   if (S.mask && row.mask && which === 'after') wrap.append(h('img', { class: 'mask', src: src(row.mask), alt: '' }));
   return wrap;
 }
 
-function stage(row) {
+function stage(row, big = false) {
   const scale = row.scale || 1;
   const changes = row.changes || [];
   if (row.status === 'new' || row.status === 'unchanged') {
     return h('div', {}, row.status === 'new' ? h('div', { class: 'notice', text: row.reason ? `New screen: ${row.reason}` : 'New screen. It did not exist in the last release, so there is nothing to compare.' }) : null,
-      h('div', { class: 'cap', text: 'After' }), row.after ? picture(row, 'after', [], scale) : null);
+      h('div', { class: 'cap', text: 'After' }), row.after ? picture(row, 'after', [], scale, big) : null);
   }
-  if (row.status === 'removed') return h('div', {}, h('div', { class: 'notice', text: row.reason || 'This screen no longer exists.' }), h('div', { class: 'cap', text: 'Before' }), picture(row, 'before', [], scale));
+  if (row.status === 'removed') return h('div', {}, h('div', { class: 'notice', text: row.reason || 'This screen no longer exists.' }), h('div', { class: 'cap', text: 'Before' }), picture(row, 'before', [], scale, big));
   if (row.status === 'failed') return h('div', { class: 'notice', text: row.reason ? `Couldn't photograph this one: ${row.reason}` : "Couldn't photograph this one." });
   if (!row.before || !row.after) return h('div', { class: 'notice', text: 'A picture is missing for this screen.' });
 
   if (S.view === 'side') {
-    return h('div', { class: 'pair' },
-      h('div', {}, h('div', { class: 'cap', text: 'Before' }), picture(row, 'before', changes, scale)),
-      h('div', {}, h('div', { class: 'cap', text: 'After' }), picture(row, 'after', changes, scale)));
+    return h('div', { class: 'pair' + (big ? ' stacked' : '') },
+      h('div', {}, h('div', { class: 'cap', text: 'Before' }), picture(row, 'before', changes, scale, big)),
+      h('div', {}, h('div', { class: 'cap', text: 'After' }), picture(row, 'after', changes, scale, big)));
   }
   // Slider and fade stack both pictures; one overlay (after-side boxes + removed boxes) sits on top.
   const after = h('img', { class: 'base', src: src(row.after), loading: 'lazy', alt: 'After' });
   const before = h('img', { class: 'layer', src: src(row.before), loading: 'lazy', alt: 'Before' });
-  const wrap = h('div', { class: 'pic' }, after, before);
+  const wrap = h('div', { class: 'pic' + (big ? '' : ' zoomable'), onclick: big ? null : () => openBig() }, after, before);
+  capWidth(after, wrap, scale, big); groupsOf(row);
   const handle = S.view === 'slider' ? h('div', { class: 'slider-handle' }) : null;
   const apply = () => {
     if (S.view === 'slider') { before.style.clipPath = `inset(0 ${100 - S.slider}% 0 0)`; handle.style.left = S.slider + '%'; }
@@ -202,37 +223,54 @@ function stage(row) {
   };
   if (handle) wrap.append(handle);
   wrap.append(h('span', { class: 'lbl', style: 'left:6px', text: 'Before' }), h('span', { class: 'lbl', style: 'right:6px', text: 'After' }));
-  if (S.boxes) wrap.append(overlay(after, changes, scale, 'both'));
+  if (S.boxes) wrap.append(overlay(after, changes, scale, 'both', row._gmap));
   if (S.mask && row.mask) wrap.append(h('img', { class: 'mask', src: src(row.mask), alt: '' }));
   apply();
   const range = h('input', { class: 'range', type: 'range', min: '0', max: '100', value: String(S.slider),
     'aria-label': S.view === 'slider' ? 'Slide between before and after' : 'Fade between before and after',
     oninput: (e) => { S.slider = +e.target.value; apply(); } });
+  capWidth(after, range, scale, big);
   return h('div', {}, wrap, range);
 }
 
 // ---------- changes list + wording ----------
 function changeList(row) {
+  const groups = groupsOf(row); const changes = row.changes || [];
   const box = h('div', { class: 'changes' });
-  const changes = row.changes || [];
-  if (!changes.length) box.append(h('p', { class: 'muted', text: 'No individual changes listed.' }));
-  changes.forEach((c, i) => {
-    const bits = [];
-    if (c.kind === 'text') bits.push(`"${c.oldText ?? ''}" to "${c.newText ?? ''}"`);
-    for (const s of c.styleChanges || []) bits.push(`${s.prop}: ${s.from} to ${s.to}`);
-    if (c.kind === 'moved' && c.beforeBox && c.box) bits.push(`moved from ${Math.round(c.beforeBox.x)},${Math.round(c.beforeBox.y)} to ${Math.round(c.box.x)},${Math.round(c.box.y)}`);
-    box.append(h('button', { type: 'button', class: 'chg' + (i === S.sel ? ' sel' : ''), 'data-i': String(i), style: `--c:${kindColor(c.kind)}`, onclick: () => selectChange(i) },
-      h('span', { class: 'k', text: kindLabel(c.kind) }), ' ', [c.role, c.name].filter(Boolean).join(' ') || 'Area of the screen',
-      bits.length ? h('small', { text: bits.join(' · ') }) : null));
-  });
+  if (!groups.length) box.append(h('p', { class: 'muted', text: 'No individual changes listed.' }));
+  for (const g of groups) {
+    const card = h('div', { class: 'chg' + (g.id === S.sel ? ' sel' : ''), 'data-g': String(g.id), style: `--c:${kindColor(g.kind)}` },
+      h('button', { type: 'button', class: 'chead', onclick: () => selectChange(g.id) },
+        h('span', { class: 'k', text: kindLabel(g.kind) }), ' ', g.title,
+        g.lines.map((l) => h('small', {}, l.text, l.swatch ? [' ', swatch(l.swatch.from), ' to ', swatch(l.swatch.to)] : null)).flat()));
+    if (g.items.length > 1 || g.kind === 'restyled' || g.kind === 'moved') {
+      // Raw values stay one click away, never in the main text.
+      card.append(h('details', {}, h('summary', { text: g.items.length > 1 ? `Show all ${g.items.length}` : 'Details' }),
+        g.items.map((i) => { const d = describeChange(changes[i]); const c = changes[i];
+          return h('div', { class: 'mem', title: d.raw },
+            [c.role, c.name].filter(Boolean).join(' ') || 'Area of the screen', ': ', d.lines.map((l) => l.text).join(', ')); })));
+    }
+    box.append(card);
+  }
   return box;
 }
-function selectChange(i) {
-  S.sel = S.sel === i ? -1 : i;
-  document.querySelectorAll('[data-i]').forEach((el) => el.classList.toggle('sel', +el.dataset.i === S.sel));
-  const target = document.querySelector(`.box[data-i="${S.sel}"]`);
+const swatch = (color) => h('i', { class: 'colr', style: `background:${color}`, title: color });
+function selectChange(id) {
+  S.sel = S.sel === id ? -1 : id;
+  document.querySelectorAll('[data-g]').forEach((el) => el.classList.toggle('sel', +el.dataset.g === S.sel));
+  const target = document.querySelector(`.box[data-g="${S.sel}"]`);
   if (target) target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
+
+// Click-to-enlarge: the same view again, at the window's width, boxes still aligned.
+function openBig() {
+  const e = current(); const row = currentRow(e); if (!row) return;
+  closeBig();
+  const lb = h('div', { class: 'lightbox', id: 'lightbox', onclick: (ev) => { if (ev.target === lb) closeBig(); } },
+    h('div', { class: 'lb-inner' }, h('button', { type: 'button', class: 'lb-close', text: 'Close (Esc)', onclick: closeBig }), stage(row, true)));
+  document.body.append(lb);
+}
+function closeBig() { $('lightbox')?.remove(); }
 
 function wordingTable(row) {
   const rows = (row.changes || []).filter((c) => c.kind === 'text');
@@ -279,9 +317,9 @@ function renderDetail() {
   if (e.rows.length > 1 && row.status === 'failed') bar.append(h('span', { class: 'muted', text: 'This theme could not be photographed.' }));
 
   const legend = h('div', { class: 'legend' }, KINDS.map((k) => h('span', {}, h('i', { class: 'sw', style: `background:${kindColor(k.kind)}` }), k.label)));
-  const side = compare || (row.changes || []).length ? h('div', {}, h('div', { class: 'cap', text: `${(row.changes || []).length} changes` }), changeList(row)) : null;
+  const side = compare || (row.changes || []).length ? h('div', { class: 'below' }, h('div', { class: 'cap', text: `${(row.changes || []).length} changes${groupsOf(row).length < (row.changes || []).length ? ', grouped by what they have in common' : ''}` }), changeList(row)) : null;
   d.append(h('div', { class: 'card' }, bar, compare ? legend : null,
-    h('div', { class: side ? 'stage' : '', style: 'margin-top:10px' }, h('div', { class: 'pics' }, stage(row)), side)));
+    h('div', { class: 'pics', style: 'margin-top:10px' }, stage(row)), side));
   const w = wordingTable(row); if (w) d.append(w);
 }
 
@@ -331,6 +369,7 @@ function downloadAnswers() {
 
 // ---------- keys ----------
 document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape' && $('lightbox')) { closeBig(); return; }
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
   const t = ev.target;
   if (t && (t.tagName === 'INPUT' && t.type !== 'checkbox' && t.type !== 'range' || t.tagName === 'TEXTAREA')) { if (ev.key === 'Escape') t.blur(); return; }
@@ -344,6 +383,8 @@ document.addEventListener('keydown', (ev) => {
     case 'v': S.view = { side: 'slider', slider: 'fade', fade: 'side' }[S.view]; renderDetail(); break;
     case 't': if (e && e.rows.length > 1) { S.themeIdx = (S.themeIdx + 1) % e.rows.length; S.sel = -1; renderDetail(); } break;
     case 'm': S.mask = !S.mask; renderDetail(); break;
+    case 'l': S.hideList = !S.hideList; document.querySelector('.layout').classList.toggle('nolist', S.hideList); break;
+    case 'e': openBig(); break;
     case '/': ev.preventDefault(); $('search').focus(); break;
     case '?': $('keysBtn').click(); break;
     default:
@@ -351,6 +392,7 @@ document.addEventListener('keydown', (ev) => {
 });
 
 function renderAll() { renderHeader(); renderFilters(); renderList(); renderDetail(); }
+$('listBtn').addEventListener('click', () => { S.hideList = !S.hideList; document.querySelector('.layout').classList.toggle('nolist', S.hideList); $('listBtn').textContent = S.hideList ? 'Show list' : 'Hide list'; });
 $('search').addEventListener('input', (ev) => { S.query = ev.target.value; renderList(); ensureSelection(); renderDetail(); });
 $('copyBtn').addEventListener('click', copyAnswers);
 $('dlBtn').addEventListener('click', downloadAnswers);
