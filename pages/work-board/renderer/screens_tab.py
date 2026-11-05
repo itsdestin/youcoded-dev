@@ -69,10 +69,29 @@ def state_label(name):
     if '#' not in name: return 'Usual'
     return pretty(name.split('#', 1)[1])
 
+# SINCE THE RELEASE — 'changed' when any situation differs in any theme, 'new' when no situation existed
+# then, else None (the same, or no what-changed run given)
+def since_of(states):
+    sts = [t['status'] for st in states for t in (st.get('ch') or {}).values()]
+    if not sts: return None
+    if 'changed' in sts or 'removed' in sts: return 'changed'
+    if all(x == 'new' for x in sts): return 'new'
+    return 'new' if any(x == 'new' for x in sts) and not any(x == 'unchanged' for x in sts) else None
+
+def change_meta(changes):
+    """What the page script needs to name the two sides: the release's label and the themes photographed."""
+    if not changes: return None
+    lbl = changes['before']['label']
+    return dict(release=re.sub(r'^v', '', lbl), themes=changes['themes'], tile=changes.get('tileTheme'))
+
 # ---------------------------------------------------------------------------------------- build
-def build(here, names, place_of, desc, efforts, release_pats, questions, matches):
-    defs = {d['name']: d for d in json.load(open(os.path.join(here, 'screen-defs.json')))}
-    sizes = json.load(open(os.path.join(here, 'shots', 'sizes.json')))
+def build(here, names, place_of, desc, efforts, release_pats, questions, matches, pics=None, changes=None):
+    # WHY pics (2026-11-04): a what-changed run brings its own, newer pictures and screen list (make_changes.py)
+    src = pics['dir'] if pics else here
+    defs = {d['name']: d for d in json.load(open(os.path.join(src if os.path.exists(os.path.join(src, 'screen-defs.json')) else here, 'screen-defs.json')))}
+    sizes = json.load(open(os.path.join(src, 'sizes.json') if pics else os.path.join(here, 'shots', 'sizes.json')))
+    url = pics['url'] if pics else ''
+    CH = (changes or {}).get('screens', {})
     names = [n for n in names if n in sizes]
     groups = {}
     for n in names: groups.setdefault(n.split('#')[0], []).append(n)
@@ -114,7 +133,8 @@ def build(here, names, place_of, desc, efforts, release_pats, questions, matches
             sz = sizes[x]
             # WHY %23: a '#' in a file name would be read as the end of the address, so states never loaded
             f = x.replace('/', '__').replace('#', '%23') + '.jpg'
-            stl.append(dict(n=x, l=state_label(x), img='shots/' + f, win='thumbs/' + f,
+            # WHY ch: what changed on this state since the release, per theme (FORMAT.md's changes, trimmed)
+            stl.append(dict(n=x, l=state_label(x), img=url + 'shots/' + f, win=url + 'thumbs/' + f, ch=CH.get(x),
                             crop=sz['crop'], ar=round(sz['w'] / sz['h'], 3), ph=phone(x, dx), er=problem(dx), ty=types_in(x, dx)))
         title = pretty(segs[-1])
         out.append(dict(
@@ -122,7 +142,7 @@ def build(here, names, place_of, desc, efforts, release_pats, questions, matches
             kind=kind_of((d0 or {}).get('tags', [])), place=place_of(k), desc=desc.get(k),
             states=stl,
             fl=dict(type=any(s['ty'] for s in stl), first=first_only(k), phone=any(s['ph'] for s in stl), err=any(s['er'] for s in stl)),
-            work=wk, rel=rel, q=qs,
+            work=wk, rel=rel, q=qs, since=since_of(stl),
             recent=min([efforts[i]['days'] for i in wk], default=None)))
     kids = {}
     for g in out:
@@ -134,7 +154,7 @@ def build(here, names, place_of, desc, efforts, release_pats, questions, matches
 # ---------------------------------------------------------------------------------------- page parts
 SHOW_ME = ['Talks to the AI', 'Changes how it behaves', 'Add-ons', 'Permissions']
 
-def head_controls(tip):
+def head_controls(tip, changes=None):
     """The one control row, in the tab's fixed head. WHY this few (2026-10-13, Destin: "this is a
     confusing fucking disaster to navigate.... just wayyy too many controls"): a search box, five
     filter pills and one "Show me…" question. The Pictures/Tree/Trail switch, Group by, the sort
@@ -143,7 +163,12 @@ def head_controls(tip):
     pills = ''.join(f'<button class="fchip" data-f="{f}" aria-pressed="false" data-tip="{T(k)}">{E(lbl)}</button>' for f, lbl, k in (
         ('kind:popup', 'Popups', 'scr.popups'), ('kind:menu', 'Menus', 'scr.menus'), ('first', 'First launch', 'scr.first'),
         ('phone', 'Phone', 'scr.phone'), ('work', 'Changing now', 'scr.work')))
+    # WHY one more pill only when a run is given: the filter Destin asked for (2026-11-03, "what changed since
+    # last release"); new screens are a "Show me" question, so the row stays short (2026-10-13 cut)
+    meta = change_meta(changes)
+    if meta: pills += f'<button class="fchip" data-f="since" aria-pressed="false" data-tip="{T("scr.since")}">Changed since {E(meta["release"])}</button>'
     opts = '<option value="">Show me… (every screen)</option>' + ''.join(f'<option value="{i}">{E(q)}</option>' for i, q in enumerate(SHOW_ME))
+    if meta: opts += f'<option value="new">New since {E(meta["release"])}</option>'
     return f'''<div class="lensbar sbar">
   <input class="field" id="sq" type="search" placeholder="Find a screen" aria-label="Find a screen" data-tip="{T('scr.search')}">
   <div class="fchips" role="group" aria-label="Show only">{pills}</div>
@@ -233,6 +258,27 @@ button.dimg{cursor:zoom-in;font:inherit} button.dimg.full{cursor:zoom-out} butto
 .factlist{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px} .factlist dt{color:var(--fg-muted)} .factlist dd{margin:0;color:var(--fg)}
 .dbody .row{margin-bottom:6px}
 @media (max-width:900px){.dgrid{grid-template-columns:1fr}}
+/* ---- the comparison inside the popup. References: this popup's own picture well (.dimg), the Git review's
+   diff tints (design guide "The code-change view": removed red, added green, status hues only as a tint) ---- */
+.dcmp{display:flex;flex-direction:column;gap:12px}
+.cmpbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cmpbar .tabs button{font-size:12px;line-height:16px;padding:4px 10px}
+.cmppics{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px} .cmppics.one{grid-template-columns:minmax(0,1fr)}
+.cmppic{margin:0;min-width:0} .cmppic .eyebrow{margin:0 0 4px 2px}
+.cmpwell{width:100%;font:inherit;color:inherit;background:var(--well);border:1px solid var(--edge-card);border-radius:var(--radius-lg);padding:8px;display:flex;align-items:center;justify-content:center;min-height:120px}
+button.cmpwell{cursor:zoom-in} button.cmpwell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cmpstage{position:relative;display:inline-block;max-width:100%;line-height:0}
+.cmpstage img{display:block;max-width:100%;max-height:max(260px,calc(100vh - 360px));width:auto;height:auto;border-radius:var(--radius-md)}
+.hl{position:absolute;border:2px solid;border-radius:var(--radius-sm);pointer-events:none;transition:outline-color var(--dur-hover)}
+.hl.old{background:color-mix(in srgb,var(--status-error) 12%,transparent);border-color:color-mix(in srgb,var(--status-error) 75%,transparent)}
+.hl.new{background:color-mix(in srgb,var(--status-ok) 12%,transparent);border-color:color-mix(in srgb,var(--status-ok) 75%,transparent)}
+.hl.hot{outline:2px solid var(--accent);outline-offset:2px}
+.cmplist{display:flex;flex-direction:column;gap:6px}
+.cmplist .sechead{margin-bottom:2px}
+.wd{border-radius:var(--radius-sm);padding:0 3px;color:var(--fg)}
+.wd.old{background:color-mix(in srgb,var(--status-error) 16%,transparent);text-decoration:line-through}
+.wd.new{background:color-mix(in srgb,var(--status-ok) 16%,transparent)}
+@media (max-width:760px){.cmppics{grid-template-columns:minmax(0,1fr)} .cmpbar .tabs{overflow-x:auto;max-width:100%}}
 @media (max-width:760px){
   .field{width:100%}
   .dialog{max-width:100vw;max-height:calc(100vh - 2rem)}
@@ -245,7 +291,7 @@ button.dimg{cursor:zoom-in;font:inherit} button.dimg.full{cursor:zoom-out} butto
 
 JS = r'''
 // ---------------------------------------------------------------- Screens tab
-const SG=%s, EFF=%s, KINDW=%s, PLACES=%s, TIP=%s;
+const SG=%s, EFF=%s, KINDW=%s, PLACES=%s, TIP=%s, CM=%s;
 const GI=Object.fromEntries(SG.map(g=>[g.id,g]));
 // WHY this little state (2026-10-13 cut): one search, five pills, one question; always grouped by place
 const S={q:'',f:new Set(),ask:null,only:null,open:{}};
@@ -256,8 +302,8 @@ function pathText(g){return g.crumbs.map(c=>c.w).join(' › ')}
 // WHY: Popups and Menus widen each other (either kind); every other pill narrows (Popups AND Phone)
 function pass(g){
   const fam={};S.f.forEach(f=>{const k=f.startsWith('kind:')?'kind':f;(fam[k]=fam[k]||[]).push(f)});
-  for(const k in fam){if(!fam[k].some(f=>f.startsWith('kind:')?g.kind===f.slice(5):f==='work'?g.work.length>0:g.fl[f]))return false}
-  if(S.ask!==null&&!g.q.includes(S.ask))return false;
+  for(const k in fam){if(!fam[k].some(f=>f.startsWith('kind:')?g.kind===f.slice(5):f==='work'?g.work.length>0:f==='since'?g.since==='changed':g.fl[f]))return false}
+  if(S.ask==='new'){if(g.since!=='new')return false}else if(S.ask!==null&&!g.q.includes(S.ask))return false;
   if(S.only&&!S.only.ids.has(g.id))return false;
   if(S.q){const t=(g.t+' '+g.id+' '+(g.desc||'')+' '+g.place).toLowerCase();if(!S.q.split(/\s+/).every(w=>t.includes(w)))return false}
   return true}
@@ -265,7 +311,7 @@ const byPath=(a,b)=>a.id<b.id?-1:1;
 // a phone filter shows the phone picture
 function pick(g){return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0]):g.states[0]}
 function tile(g,extra,cls,st){st=st||pick(g);const full=!st.crop&&!st.ph; // WHY: a phone picture is tall and thin; filling the tile would crop it
-  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'');
+  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since&&CM?`<span class="badge" data-tip="${T(g.since==='new'?'scr.badge.new':'scr.badge.changed')}">${g.since==='new'?'New':'Changed'}</span>`:'');
   const tip=cls==='here'?'This is the screen you are looking at.':(g.desc?g.desc+' Click to open it.':TIP['scr.tile']);
   return `<figure class="tile${extra?' extra':''}${cls?' '+cls:''}" data-id="${esc(g.id)}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async"><span class="tov">${badges}</span></div>
   <figcaption class="tcap"><span class="tn">${esc(g.t)}</span><span class="tp">${esc(pathText(g)||KINDW[g.kind])}</span></figcaption></figure>`}
@@ -288,11 +334,16 @@ function sRender(){const list=SG.filter(pass);VIS=list.slice().sort((a,b)=>PLACE
   if(S.only)ec.querySelector('button').onclick=()=>{S.only=null;sRender()};
   fades()}
 $$('.sbar [data-f]').forEach(b=>b.onclick=()=>{const f=b.dataset.f;S.f.has(f)?S.f.delete(f):S.f.add(f);sRender()});
-$('#sshow').onchange=e=>{S.ask=e.target.value===''?null:+e.target.value;sRender()};
+$('#sshow').onchange=e=>{const v=e.target.value;S.ask=v===''?null:v==='new'?'new':+v;sRender()};
 $('#sq').oninput=e=>{S.q=e.target.value.trim().toLowerCase();sRender()};
 // ---- the picture popup
 let DCUR=null,DST=0,DWIN=false,DPATH=false,LASTFOCUS=null;
-function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DST=stIdx??Math.max(0,g.states.indexOf(pick(g)));DWIN=false;drawShot();
+// WHY compare state lives with the popup (2026-11-04): the comparison is this popup's "What changed" view, not
+// a page of its own. DCMP on = the two sides; DMODE side by side, or one side at full width; DTH the theme.
+let DCMP=false,DMODE='side',DTH=null;
+function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DST=stIdx??Math.max(0,g.states.indexOf(pick(g)));DWIN=false;
+  // WHY: opened while looking for changes, the popup opens on the comparison
+  if(CM&&(S.f.has('since')||S.ask==='new'))DCMP=true;DTH=null;drawShot();
   $('#scrim').hidden=false;$('#dwrap').hidden=false;$('#dbody').scrollTop=0;fades();$('#dclose').focus({preventScroll:true})}
 function pathHTML(g){const chain=g.chain.map(id=>GI[id]);const kids=g.kids.map(k=>GI[k]).sort(byPath);
   return `<section class="dpath" id="dpath"><div class="sechead"><div class="gtext"><h3 class="gh" data-tip="${T('pop.way')}">How you get here</h3><p class="gdesc">${g.depth===1?'It opens straight from the main window.':'Start at the main window and click through these, left to right.'}</p></div></div>
@@ -306,6 +357,7 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
   // WHY one picture you click instead of a Close up / In the window switch (2026-10-13 cut): the close-up shows first; clicking it shows the whole window
   const img=`<img src="${DWIN?st.win:st.img}" alt="${esc(g.t)}">`;
   const pic=st.crop?`<button class="dimg${DWIN?' full':''}" id="dzoom" data-tip="${DWIN?T('pop.zoomin'):T('pop.zoomout')}">${img}</button>`:`<div class="dimg full">${img}</div>`;
+  if(DCMP&&CM){$('#dbody').innerHTML=cmpHTML(g,st)+(DPATH?pathHTML(g):'');wireCmp(g)}else
   $('#dbody').innerHTML=`<div class="dgrid"><div class="dleft">${pic}
   <div class="dbar"><span class="t-xs muted">${g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}</span></div>
   ${g.states.length>1?`<div class="sstrip" role="group" aria-label="Situations">${g.states.map((s,i)=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:''}
@@ -315,13 +367,74 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
     <dl class="factlist"><dt data-tip="${T('pop.kind')}">Kind</dt><dd>${KINDW[g.kind]}</dd><dt data-tip="${T('pop.place')}">Place</dt><dd>${esc(g.place)}</dd><dt data-tip="${T('pop.clicks')}">Clicks to reach</dt><dd>${g.depth}</dd>${flags.length?`<dt data-tip="${T('pop.also')}">Also</dt><dd>${flags.join('<br>')}</dd>`:''}</dl>
     <div><div class="eyebrow" data-tip="${T('pop.work')}">Work changing it</div>${work.length?work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${esc(w.title)}</div><div class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</div></div></div>`).join(''):'<div class="t-xs muted">Nothing open.</div>'}</div>
   </div></div>${DPATH?pathHTML(g):''}`;
-  $('#dfoot').innerHTML=`<button class="btn" id="dpathbtn" aria-expanded="${DPATH}" data-tip="${DPATH?T('pop.path.hide'):T('pop.path')}">${DPATH?'Hide the way here':'How do I get here?'}</button><button class="btn" data-does data-tip="${T('pop.changed')}">What changed last time</button><button class="btn" data-does data-tip="${T('pop.ask')}">Ask the assistant about it</button><button class="btn primary" data-does data-tip="${T('pop.note')}">Leave a note</button>`;
+  $('#dfoot').innerHTML=`<button class="btn" id="dpathbtn" aria-expanded="${DPATH}" data-tip="${DPATH?T('pop.path.hide'):T('pop.path')}">${DPATH?'Hide the way here':'How do I get here?'}</button>${CM?`<button class="btn" id="dcmpbtn" aria-expanded="${DCMP}" data-tip="${DCMP?T('pop.compare.hide'):T('pop.compare')}">${DCMP?'Hide the comparison':'Compare with '+esc(CM.release)}</button>`:`<button class="btn" data-does data-tip="${T('pop.changed')}">What changed last time</button>`}<button class="btn" data-does data-tip="${T('pop.ask')}">Ask the assistant about it</button><button class="btn primary" data-does data-tip="${T('pop.note')}">Leave a note</button>`;
   $$('#dbody [data-st]').forEach(b=>b.onclick=()=>{DST=+b.dataset.st;drawShot()});
   const z=$('#dzoom');if(z)z.onclick=()=>{DWIN=!DWIN;drawShot()};
   $$('#dpath .tile:not(.here)').forEach(t=>{t.onclick=()=>openShot(t.dataset.id);t.onkeydown=e=>{if(e.key==='Enter')openShot(t.dataset.id)}});
+  const cb=$('#dcmpbtn');if(cb)cb.onclick=()=>{DCMP=!DCMP;drawShot()};
   $('#dpathbtn').onclick=()=>{DPATH=!DPATH;drawShot();if(DPATH)requestAnimationFrame(()=>$('#dpath').scrollIntoView({block:'start',behavior:'smooth'}))};
   const i=VIS.findIndex(x=>x.id===DCUR);$('#dprev').disabled=i<=0;$('#dnext').disabled=i<0||i>=VIS.length-1;
   requestAnimationFrame(()=>fade($('#dbody')))}
+// ---- the comparison: both sides of one screen, marked like the Git review's diff (red = how it was, green = now)
+const ROLEW={button:['button','buttons'],link:['link','links'],checkbox:['tick box','tick boxes'],switch:['switch','switches'],textbox:['text box','text boxes'],combobox:['menu','menus'],tab:['tab','tabs'],img:['picture','pictures'],heading:['heading','headings'],menuitem:['menu item','menu items'],radio:['option','options']};
+const PROPW={color:'text colour',background:'background',border:'outline',radius:'corners',font:'font',opacity:'transparency'};
+const themeName=t=>t.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+function roleW(c,n){const r=ROLEW[c.role];if(r)return r[n>1?1:0];return c.kind==='pixels'?'':(n>1?'pieces of text':'text')}
+const px=v=>Math.round(Math.abs(v));
+// WHY words, not numbers in boxes (design guide: "say what happens"): "20 px wider", "moved 12 px down"
+function shiftWords(c){const a=c.box,b=c.beforeBox;if(!a||!b)return '';const w=[],dw=a.w-b.w,dh=a.h-b.h,dx=a.x-b.x,dy=a.y-b.y;
+  if(px(dw))w.push(px(dw)+' px '+(dw>0?'wider':'narrower'));if(px(dh))w.push(px(dh)+' px '+(dh>0?'taller':'shorter'));
+  if(px(dx))w.push('moved '+px(dx)+' px '+(dx>0?'right':'left'));if(px(dy))w.push('moved '+px(dy)+' px '+(dy>0?'down':'up'));return w.join(', ')}
+// one row per kind of change; the same change on many things (every session row 20 px wider) is one row
+function groupChanges(list){const G=[],by={};list.forEach(c=>{const k=c.kind+'|'+(c.role||'')+'|'+(c.kind==='moved'?shiftWords(c):c.kind==='restyled'?(c.styleChanges||[]).map(x=>x.prop).join(','):c.kind==='pixels'?'':c.kind+(c.name||'')+(c.oldText||'')+(c.newText||''));
+  if(!by[k]){by[k]={k:c.kind,items:[]};G.push(by[k])}by[k].items.push(c)});return G}
+function names(items){const n=items.filter(c=>c.name).map(c=>'“'+c.name+'”');return n.length<=3?n.join(', '):n.slice(0,3).join(', ')+' and '+(n.length-3)+' more'}
+// WHY the join rule: the comparer trims each piece, so a space goes between pieces except before punctuation
+function wordsHTML(c){if(c.words&&c.words.length){let out='';c.words.forEach((w,i)=>{const first=w.same!=null?w.same:(w.old||w.new||'');
+    if(i&&!/^[,.;:!?)]/.test(first))out+=' ';out+=w.same!=null?esc(w.same):(w.old?`<span class="wd old">${esc(w.old)}</span>`:'')+(w.old&&w.new?' ':'')+(w.new?`<span class="wd new">${esc(w.new)}</span>`:'')});return out}
+  return `<span class="wd old">${esc(c.oldText||'')}</span> <span class="wd new">${esc(c.newText||'')}</span>`}
+function rowText(gr){const c=gr.items[0],n=gr.items.length,r=roleW(c,n),one=n===1&&c.name?' “'+esc(c.name)+'”':'',cnt=n>1?n+' ':'';
+  const fieldW=c.field==='title'?'hover hint':c.field==='placeholder'?'hint text':'words';
+  switch(gr.k){
+    case 'added':return [`New ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'Not there in '+esc(CM.release)+'.'];
+    case 'removed':return [`Gone: ${cnt}${r}${one}`,n>1?esc(names(gr.items)):'It was there in '+esc(CM.release)+'.'];
+    case 'text':return [`New ${fieldW} on ${r?'the '+r:'the screen'}${c.name&&c.kind==='text'&&c.role?' “'+esc(c.name)+'”':''}`,wordsHTML(c)];
+    case 'moved':return [`${n>1?cnt+r:(r||'Something')[0].toUpperCase()+(r||'something').slice(1)+one} ${n>1?'are':'is'} ${esc(shiftWords(c))}`,n>1?esc(names(gr.items)):''];
+    case 'restyled':return [`New look: ${cnt}${r}${one}`,'Its '+(c.styleChanges||[]).map(x=>PROPW[x.prop]||x.prop).join(', ')+(n>1?' · '+esc(names(gr.items)):'')];
+    default:return [n>1?`Something else looks different in ${n} spots`:'Something else looks different here','An icon, a picture, a border or the background, in the marked '+(n>1?'areas':'area')+'.']}}
+function boxStyle(b,t){return `left:${b.x/t.vw*100}%%;top:${b.y/t.vh*100}%%;width:${b.w/t.vw*100}%%;height:${b.h/t.vh*100}%%`}
+function marks(list,side,t){return list.map((gr,gi)=>gr.items.map(c=>{const b=side==='before'?(c.kind==='added'?null:c.kind==='removed'?c.box:(c.beforeBox||c.box)):(c.kind==='removed'?null:c.box);
+  return b?`<span class="hl ${side==='before'?'old':'new'}" data-g="${gi}" style="${boxStyle(b,t)}" aria-hidden="true"></span>`:''}).join('')).join('')}
+function cmpPic(g,st,t,side,list){const f=st.n.replace(/\//g,'__').replace(/#/g,'%%23');const has=t[side];
+  const lab=side==='before'?esc(CM.release):'Now';
+  // WHY a button in side by side: clicking a picture shows it at full width, as the popup's own picture zooms
+  const tag=DMODE==='side'&&has?'button':'div',attr=tag==='button'?` data-zoom="${side}" data-tip="${T('cmp.zoom')}"`:'';
+  return `<figure class="cmppic"><div class="eyebrow">${lab}</div><${tag} class="cmpwell"${attr}>${has?`<div class="cmpstage"><img src="changes/cmp/${DTH}/${f}.${side}.jpg" alt="${esc(g.t)}, ${lab}">${marks(list,side,t)}</div>`:`<p class="t-xs muted">${side==='before'?'This screen did not exist in '+esc(CM.release)+'.':'This screen is gone now.'}</p>`}</${tag}></figure>`}
+function cmpHTML(g,st){const ch=st.ch||{};const th=CM.themes.filter(x=>ch[x]);
+  if(!th.length)return `<div class="callout">This screen was not photographed in the comparison with ${esc(CM.release)}.</div>`;
+  if(!DTH||!ch[DTH])DTH=th.find(x=>ch[x].status==='changed')||(ch[CM.tile]?CM.tile:th[0]);
+  const t=ch[DTH];const list=groupChanges(t.changes||[]);
+  // WHY one side for a new or removed screen: the other side would be an empty box (design guide: no dead space)
+  const one=t.status==='new'?'after':t.status==='removed'?'before':null;
+  const modes=[['side','Side by side','cmp.mode.side'],['before',CM.release,'cmp.mode.before'],['after','Now','cmp.mode.after']];
+  const bar=`<div class="cmpbar">${one?'<span></span>':`<div class="tabs" role="group" aria-label="Show">${modes.map(([m,l,k])=>`<button data-mode="${m}" aria-pressed="${DMODE===m}" data-tip="${T(k)}">${esc(l)}</button>`).join('')}</div>`}
+    ${th.length>1?`<div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))}${ch[x].status==='changed'?` <span class="count" data-tip="${T('cmp.count')}">${groupChanges(ch[x].changes).length}</span>`:''}</button>`).join('')}</div>`:''}</div>`;
+  let body;
+  if(t.status==='failed')body=`<div class="callout">This screen could not be photographed for the comparison: ${esc(t.reason||'no reason was given')}.</div>`;
+  else{const sides=one?[one]:DMODE==='side'?['before','after']:[DMODE];
+    body=`<div class="cmppics${sides.length===1?' one':''}">${sides.map(sd=>cmpPic(g,st,t,sd,list)).join('')}</div>`}
+  const head=t.status==='new'?`New since ${esc(CM.release)}`:t.status==='unchanged'?`The same as in ${esc(CM.release)}`:'What changed';
+  const rows=list.map((gr,gi)=>{const [a,b]=rowText(gr);return `<button class="row rowbtn slim cmprow" data-g="${gi}" data-tip="${T('cmp.row')}"><div class="body"><div class="t-xs">${a}</div>${b?`<div class="hint wrap">${b}</div>`:''}</div></button>`}).join('');
+  const note=t.status==='new'?'This screen did not exist then.':t.status==='unchanged'?'Nothing a person can see is different in this theme.':'Red marks how it was in '+esc(CM.release)+'; green marks how it is now. Point at a line to find it in the pictures.';
+  const steady=t.unstable?`<p class="t-xs muted">${t.unstable} ${t.unstable===1?'spot':'spots'} that change by themselves (an animation, a clock) are left out.</p>`:'';
+  return `<div class="dcmp">${bar}${body}<section class="cmplist"><div class="sechead"><div class="gtext"><h3 class="gh">${head}${list.length?`<span class="cnt" data-tip="${T('cmp.count')}">${list.length}</span>`:''}</h3><p class="gdesc">${note}</p></div></div>${rows}${steady}</section></div>`}
+function wireCmp(g){$$('#dbody [data-mode]').forEach(b=>b.onclick=()=>{DMODE=b.dataset.mode;drawShot()});
+  $$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.dataset.th;drawShot()});
+  $$('#dbody [data-zoom]').forEach(b=>b.onclick=()=>{DMODE=b.dataset.zoom;drawShot()});
+  // WHY light up on point and on keyboard focus: the line and its marks are found together
+  $$('#dbody .cmprow').forEach(r=>{const on=v=>$$('#dbody .hl[data-g="'+r.dataset.g+'"]').forEach(h=>h.classList.toggle('hot',v));
+    r.onmouseenter=()=>on(true);r.onmouseleave=()=>on(false);r.onfocus=()=>on(true);r.onblur=()=>on(false);
+    r.onclick=()=>{const h=$('#dbody .hl[data-g="'+r.dataset.g+'"]');if(h)h.scrollIntoView({block:'nearest',behavior:'smooth'})}})}
 function stepShot(d){const i=VIS.findIndex(x=>x.id===DCUR);const n=VIS[i+d];if(n)openShot(n.id)}
 function closeShot(){if(!DCUR)return;DCUR=null;$('#scrim').hidden=true;$('#dwrap').hidden=true;hideTip();if(LASTFOCUS&&LASTFOCUS.focus)LASTFOCUS.focus({preventScroll:true})}
 $('#dclose').onclick=closeShot;$('#scrim').onclick=closeShot;$('#dwrap').onclick=e=>{if(e.target.id==='dwrap')closeShot()};

@@ -2,7 +2,9 @@
 
 The contract between the three parts of "What changed since last release": the **recorder** (inside
 `shoot`, writes one `*.elements.json` beside each picture), the **comparer** (`compare.mjs`, writes
-`changes.json` and the highlight pictures) and the **viewer** (`viewer/`, reads `changes.json`).
+`changes.json` and the highlight pictures) and the **viewer**: the work board's Screens tab (`pages/work-board/renderer/make_changes.py <run>` turns a
+run into `<run>/board/`; `node scripts/manage.mjs --changes <run>` shows it — Destin, 2026-11-04: the comparison
+lives in the existing Screens tab and its picture popup, not a page of its own). The older `viewer/` is superseded.
 Change this file first when a part needs a new field.
 
 ## Folder

@@ -280,8 +280,14 @@ else:
 # control row and the picture popup; this only feeds it the page's data.
 QPATS = [(q, pats) for q, pats in QUESTIONS if pats and not pats[0].startswith('#')]
 REL_PATS = sorted({s for g in RELEASE['groups'] for s in g[2]})
-SGROUPS = stab.build(HERE, names, place_of, DESC, EFFORTS, REL_PATS, QPATS, matches)
-app = [stab.head_controls(TIP), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
+# WHY `--changes <run>/board` (Destin, 2026-11-04: the Screens tab "should've gotten you 90% there"): a
+# what-changed run, prepared by make_changes.py, feeds this tab its newest pictures of every screen and what
+# changed on each since the release; the popup shows both sides. Without it the tab is as it was.
+CHANGES_DIR = _arg('--changes')
+CHANGES = json.load(open(os.path.join(CHANGES_DIR, 'changes.json'))) if CHANGES_DIR else None
+_snames = sorted(json.load(open(os.path.join(CHANGES_DIR, 'sizes.json')))) if CHANGES_DIR else names
+SGROUPS = stab.build(HERE, _snames, place_of, DESC, EFFORTS, REL_PATS, QPATS, matches, pics=CHANGES_DIR and dict(dir=CHANGES_DIR, url='changes/'), changes=CHANGES)
+app = [stab.head_controls(TIP, CHANGES), '<p class="t-xs muted scount" id="scount"></p><div id="sbody"></div>']
 cols = ['Chat','Projects','Pages','Marketplace','Settings','Devices & sync']
 BDOT = {2: 'bdot.2', 1: 'bdot.1', 0: 'bdot.0'}
 bt = ['<p class="t-xs muted">Filled dot: you set it here. Hollow: it is used here. A first draft; it will be built properly later.</p><div class="tablewrap"><table class="blocks"><thead><tr><th></th>' + ''.join(f'<th><span data-tip="{T("scr.blocks.col")}">{E(c)}</span></th>' for c in cols) + '<th></th></tr></thead><tbody>']
@@ -407,7 +413,7 @@ document.addEventListener('keydown',e=>{{if(e.key==='Escape'&&!(typeof DCUR!=='u
 $$('[data-view]').forEach(b=>b.onclick=()=>{{$$('[data-view]').forEach(x=>x.setAttribute('aria-selected',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));closePanel();$('#scroller').scrollTop=0;$$('#panehead .lensbar').forEach(l=>l.hidden=l.dataset.view!==b.dataset.view);fades()}});
 $('#theme').onchange=e=>document.documentElement.dataset.theme=e.target.value;
 </script><script>
-{stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP))}
+{stab.JS % (json.dumps(SGROUPS), json.dumps([dict(title=e['title'], days=e['days']) for e in EFFORTS]), json.dumps({k: w for k, _, w in stab.KINDS}), json.dumps([p for p, _ in PLACES] + ['Other']), json.dumps(TIP), json.dumps(stab.change_meta(CHANGES)))}
 </script><script>
 {(VJS % (json.dumps(vision_nodes), json.dumps(STATUS_WORD)))}
 {bptab.JS}

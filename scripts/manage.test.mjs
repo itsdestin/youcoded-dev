@@ -46,3 +46,23 @@ test('a post from another page is refused', () => withServer(async (base, root) 
   const r = await post(base, '/api/delete', { ids: [1] }, { origin: 'http://evil.example' });
   assert.equal(r.status, 403); assert.equal(loadCards(root).length, 3);
 }));
+
+// WHY (2026-11-04): the Screens tab's "Changed since <release>" reads a what-changed run's pictures from the run's
+// own board/ folder; only that folder is served under changes/, never anything beside or above it.
+test('a what-changed run\'s pictures are served from its board folder, and nothing outside it', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-'));
+  const run = fs.mkdtempSync(path.join(os.tmpdir(), 'run-'));
+  fs.mkdirSync(path.join(run, 'board', 'shots'), { recursive: true });
+  fs.writeFileSync(path.join(run, 'board', 'shots', 'chat#x.jpg'), 'picture');
+  fs.writeFileSync(path.join(run, 'changes.json'), 'secret-ish');
+  const srv = makeServer(root, { useGit: false, changes: run });
+  await new Promise(r => srv.listen(0, '127.0.0.1', r));
+  const base = `http://127.0.0.1:${srv.address().port}`;
+  try {
+    const ok = await fetch(base + '/changes/shots/chat%23x.jpg');
+    assert.equal(ok.status, 200);
+    assert.equal(await ok.text(), 'picture');
+    assert.equal((await fetch(base + '/changes/..%2Fchanges.json')).status, 404);
+    assert.equal((await fetch(base + '/changes/shots/missing.jpg')).status, 404);
+  } finally { srv.close(); }
+});

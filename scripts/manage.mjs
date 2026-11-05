@@ -9,7 +9,9 @@
 // and pushed so nothing lives only on this computer.
 //
 // Usage:
-//   node scripts/manage.mjs [--root <dir>] [--port 0] [--no-git]
+//   node scripts/manage.mjs [--root <dir>] [--port 0] [--no-git] [--changes <what-changed run>]
+//     --changes the Screens tab shows that run's pictures and what changed since its release (the run is first
+//               prepared by pages/work-board/renderer/make_changes.py, which writes <run>/board/)
 //     --root    the checkout whose cards/ to show and edit; defaults to the git checkout you are IN
 //     --no-git  edit files only; no pull, commit or push (tests, trying it out)
 //   Prints "[manage] http://127.0.0.1:<port>/" — open that. Stops with Ctrl+C.
@@ -37,16 +39,16 @@ const TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'
 
 /** Build the full page from the cards. Cached until a card file changes. */
 let cache = { key: '', html: '' };
-export function buildPage(root, { pageMode = false, tidy = null } = {}) {
+export function buildPage(root, { pageMode = false, tidy = null, changes = null } = {}) {
   const dir = path.join(root, 'cards');
-  const key = (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
+  const key = (changes ? 'changes|' + changes + '|' : '') + (pageMode ? 'page|' + JSON.stringify(tidy) + '|' : '') + (fs.existsSync(dir) ? fs.readdirSync(dir).map(f => f + fs.statSync(path.join(dir, f)).mtimeMs).join('|') : '');
   if (key === cache.key && cache.html) return cache.html;
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'manage-page-'));
   try {
     // WHY no guessed "Working" in page mode (Destin, plan deck S-3): inside YouCoded the page asks the app which
     // chats are open right now, so a branch saved in the last day must not pass for a chat that is working
     fs.writeFileSync(path.join(tmp, 'cards.json'), JSON.stringify({ ...cardsPayload(root, { guessWorking: !pageMode }), ...(tidy ? { tidy } : {}) }));
-    execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html'), ...(pageMode ? ['--page-mode'] : [])], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
+    execFileSync('python3', [path.join(PAGE_DIR, 'build.py'), '--cards-json', path.join(tmp, 'cards.json'), '--out', path.join(tmp, 'page.html'), ...(pageMode ? ['--page-mode'] : []), ...(changes ? ['--changes', changes] : [])], { cwd: PAGE_DIR, stdio: ['ignore', 'pipe', 'pipe'] });
     cache = { key, html: fs.readFileSync(path.join(tmp, 'page.html'), 'utf8') };
     return cache.html;
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
@@ -236,19 +238,23 @@ function readBody(req) {
   return new Promise((res, rej) => { let b = ''; req.on('data', d => { b += d; if (b.length > 1e6) req.destroy(); }); req.on('end', () => { try { res(JSON.parse(b || '{}')); } catch (e) { rej(e); } }); });
 }
 
-export function makeServer(root, { useGit = true } = {}) {
+export function makeServer(root, { useGit = true, changes = null } = {}) {
+  // WHY a folder of its own: a run's pictures live with the run (scratch/), never copied into the page's folder
+  const board = changes ? path.resolve(changes, 'board') : null;
   return http.createServer(async (req, res) => {
     const send = (code, obj, type = 'application/json') => { res.writeHead(code, { 'content-type': type, 'cache-control': 'no-store' }); res.end(type === 'application/json' ? JSON.stringify(obj) : obj); };
     try {
       // WHY only 127.0.0.1 and same-origin posts: this server writes files; nothing else on the network or in another tab may drive it
       const origin = req.headers.origin;
       if (req.method === 'POST' && origin && origin !== `http://${req.headers.host}`) return send(403, { error: 'Refused: request came from another page.' });
-      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root), 'text/html; charset=utf-8'); }
+      if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) { if (useGit) pull(root); return send(200, buildPage(root, { changes: board }), 'text/html; charset=utf-8'); }
       if (req.method === 'GET' && !req.url.startsWith('/api/')) {
-        // WHY the containment check: only files inside the page's own folder are served, never ../ outside it
-        const rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '');
-        const file = path.resolve(PAGE_DIR, rel);
-        if (!file.startsWith(path.resolve(PAGE_DIR) + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return send(404, { error: 'Not found.' });
+        // WHY the containment check: only files inside the page's own folder (or the run's board/) are served, never ../ outside it
+        let rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '');
+        let base = PAGE_DIR;
+        if (board && rel.startsWith('changes/')) { base = board; rel = rel.slice('changes/'.length); }
+        const file = path.resolve(base, rel);
+        if (!file.startsWith(path.resolve(base) + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) return send(404, { error: 'Not found.' });
         res.writeHead(200, { 'content-type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'cache-control': 'max-age=3600' });
         return fs.createReadStream(file).pipe(res);
       }
@@ -274,7 +280,7 @@ function main() {
   const argv = process.argv.slice(2);
   const opt = k => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : undefined; };
   const root = opt('--root') || execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-  const srv = makeServer(root, { useGit: !argv.includes('--no-git') });
+  const srv = makeServer(root, { useGit: !argv.includes('--no-git'), changes: opt('--changes') });
   srv.listen(Number(opt('--port') || 0), '127.0.0.1', () => console.log(`[manage] http://127.0.0.1:${srv.address().port}/`));
 }
 
