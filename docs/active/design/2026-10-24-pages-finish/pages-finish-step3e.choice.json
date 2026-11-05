@@ -1,0 +1,50 @@
+{
+  "title": "Finishing Pages, step 3 — the page's chat, round 5",
+  "key": "pages-finish-step3e-choice",
+  "out": "pages-finish-step3e.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step3e.choice",
+  "runs": {
+    "after": "runs-step3e/after"
+  },
+  "themes": [
+    "morning-rounds",
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "J-computer",
+      "surface": "Pages",
+      "path": "An open page → the round chat button",
+      "headline": "The chat is now drawn as a Pages panel, the page list's twin. Should it float over the page or sit beside it?",
+      "notice": "Both are the same panel. It uses the page list's card, edge and see-through glass in every theme. The conversation's name sits in the list's small grey label style (like “Built in”), and its buttons are the list's quiet icons: earlier chats, new chat, hide. The buddy's pill and window buttons are gone.",
+      "variants": [
+        {
+          "id": "float",
+          "label": "Floating over the page",
+          "crop": "pages/page/page-money#chat-float",
+          "summary": "This is what you picked in round 3, redrawn. The page keeps its full width. The down arrow hides the chat back into the round button.",
+          "risk": "While it's open, it covers the page's bottom right corner."
+        },
+        {
+          "id": "dock",
+          "label": "Beside the page",
+          "crop": "pages/page/page-money#chat-dock",
+          "summary": "A third panel on the right, mirroring the page list on the left. Nothing on the page is covered; the page gets narrower and rearranges to fit. The hide button folds it away like the page list's.",
+          "risk": "Opening or hiding the chat makes the page change shape. Here, the three money boxes moved from the right side to a row under the chart."
+        }
+      ]
+    },
+    {
+      "id": "J-phone",
+      "surface": "Pages",
+      "path": "A page on your phone → the round chat button",
+      "crop": "pages/focus/page-money#chat-phone",
+      "headline": "On a phone it is the same Pages panel, always floating.",
+      "changed": "From round 4: the same title row as on a computer, the grey conversation name with three quiet icons. Messages fade out just below that row, so nothing shows through it.",
+      "notice": "A phone has no room for the panel beside the page, so it floats whichever you pick for computers.",
+      "risk": "The three icons are 28 pixels each, the same size as the page list's buttons, which is on the small side for a finger."
+    }
+  ]
+}

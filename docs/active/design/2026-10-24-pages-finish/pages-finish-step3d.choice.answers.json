@@ -1,0 +1,23 @@
+{
+ "deck": "pages-finish-step3d-choice",
+ "started": "2026-11-05T05:17:33.495Z",
+ "submitted": "2026-11-05T05:18:39Z",
+ "cur": 1,
+ "answers": {
+  "H-computer": {
+   "note": "i think that's almost worse somehow. we need a conversation/chat window that feels native to these screens. ",
+   "t": 1793855912045,
+   "v": "other",
+   "seconds": 59,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "H-phone": {
+   "v": "other",
+   "t": 1793855918079,
+   "seconds": 6,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}
