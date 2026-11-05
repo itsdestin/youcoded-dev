@@ -69,8 +69,13 @@ A leaked GitHub token of Destin's: he revokes it (first-minute list); then check
 
 ### 5. A community plugin turns out to be malicious
 - Retire it from the catalog (the ingest's retire list) so nobody new installs it.
-- Add its id to the plugin off-switch list so installed copies are turned off with a notice (built after
-  the November 2026 review; until then, retiring only stops new installs).
+- Add its id to the plugin off-switch list, `wecoded-marketplace/worker/src/security/blocked-plugins.ts`
+  (one line, with a plain-words reason), in a PR; it goes live when merged (the worker deploys on merge).
+  Every app checks at launch and hourly, so installed copies are off within about an hour: hooks and
+  connected tools removed, folder held at `~/.claude/youcoded-turned-off-plugins/<id>`, settings kept, a
+  "Turned off" card plus a one-time notice. Only apps released after this change do this; older ones
+  still need the retire step above. Removing the line puts the plugin back for everyone who has it.
+- Check the app actually applied it: its log has `plugin-off-switch` lines (`plugins changed`).
 - If it shipped in the official Anthropic collection, report it to Anthropic as well.
 
 ### 6. A theme turns out to be harmful
