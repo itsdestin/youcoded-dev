@@ -37,3 +37,11 @@ Tapping the session name still opened the plain session list.
 `session/narrow-screen-proposals`). The hub pieces are `PhoneRecent`, the `hub` cases in
 `header/phone-session-menu.tsx`, `RowTiles` in `OverflowMenu.tsx` and the `hubMode` lines in
 `SessionStrip.tsx`. Apply with `git apply` on a branch of that era, or read it as a recipe.
+
+## Where it is meant to come back
+
+Destin, round 4 (`narrow-screens-4.live.answers.json` Q-1, choosing no Appearance choice for now):
+*"this would be a later thing to replace with the full screen/side panel hub and a different title
+style. not a thing today."* So the future alternative mobile mode is this panel (as a full screen
+or a side panel) plus its own top-bar title style, offered as a choice — not today's bar vs the
+lights bar.
