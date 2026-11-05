@@ -9,10 +9,7 @@ Destin, round 3 of the narrow-screens design (`docs/active/design/2026-11-04-nar
 `narrow-screens-3.live.answers.json` L-2): *"for now it should stay today. but i want to keep a
 version of hub as a reference for the future full buildout of an alternative mobile mode."*
 
-So the phone ☰ keeps today's small menu, and this panel is NOT shipped. The narrow-screens status
-page is `docs/active/design/2026-11-04-narrow-screens/README.md`. The broader idea of letting
-people rearrange the main window (a sidebar of chats instead of the top bar) is card #222, and
-this panel is a worked example for it. It is kept here because the
+So the phone ☰ keeps today's small menu, and this panel is NOT shipped. It is kept here because the
 branch's workbench switch for it is deleted once the narrow-screens work settles.
 
 ## What it was
@@ -40,11 +37,3 @@ Tapping the session name still opened the plain session list.
 `session/narrow-screen-proposals`). The hub pieces are `PhoneRecent`, the `hub` cases in
 `header/phone-session-menu.tsx`, `RowTiles` in `OverflowMenu.tsx` and the `hubMode` lines in
 `SessionStrip.tsx`. Apply with `git apply` on a branch of that era, or read it as a recipe.
-
-## Where it is meant to come back
-
-Destin, round 4 (`narrow-screens-4.live.answers.json` Q-1, choosing no Appearance choice for now):
-*"this would be a later thing to replace with the full screen/side panel hub and a different title
-style. not a thing today."* So the future alternative mobile mode is this panel (as a full screen
-or a side panel) plus its own top-bar title style, offered as a choice — not today's bar vs the
-lights bar.
