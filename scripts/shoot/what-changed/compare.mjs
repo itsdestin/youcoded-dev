@@ -385,6 +385,30 @@ function failures(side) {
   for (const r of Array.isArray(m) ? m : []) out.set(`${r.name}|${r.theme}`, r.ok ? null : r.reason || 'not taken');
   return out;
 }
+/** Each picture's panel box (CSS pixels): the part of the window that IS this screen (shoot's mark). */
+function panels(side) {
+  const m = readJson(join(side, 'manifest.json')); const out = new Map();
+  for (const r of Array.isArray(m) ? m : []) if (r.ok && r.panel) out.set(`${r.name}|${r.theme}`, r.panel);
+  return out;
+}
+
+const hits = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+/**
+ * WHY (Destin, 2026-11-05, a theme popup flagged "Changed" for a speck in the blurred page behind it:
+ * "we're attributing the change to the wrong page"): a popup's picture also shows the page under it, and
+ * that page is its own screen with its own comparison. When the screen's panel covers well under the whole
+ * window (a popup, a menu, a card), only changes touching that panel on either side belong to this screen;
+ * the rest are dropped and counted as `outside`. A full-window screen, or a panel box too small to be real
+ * (a 12 px mark is a misplaced mark, not the screen), keeps everything rather than guessing.
+ */
+export function keepInsidePanel(changes, panelBefore, panelAfter, vw, vh) {
+  const ps = [panelBefore, panelAfter].filter((p) => p && p.w >= 40 && p.h >= 40);
+  if (!ps.length || !vw || !vh || ps.every((p) => p.w * p.h >= 0.6 * vw * vh)) return { changes, outside: 0 };
+  const PADC = 4; // a change hugging the panel's edge (its shadow, its border) still belongs to it
+  const grow = (p) => ({ x: p.x - PADC, y: p.y - PADC, w: p.w + 2 * PADC, h: p.h + 2 * PADC });
+  const kept = changes.filter((c) => [c.box, c.beforeBox].some((b) => b && ps.some((p) => hits(b, grow(p)))));
+  return { changes: kept, outside: changes.length - kept.length };
+}
 
 export function compareRun(run, { beforeLabel, afterLabel } = {}) {
   run = resolve(run);
@@ -396,6 +420,7 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
   // Second pictures from each side (the flicker filter): before-2/ and after-2/, present only when the wrapper took them.
   const B2 = findPictures(join(run, 'before-2')), A2 = findPictures(join(run, 'after-2'));
   const failB = failures(join(run, 'before')), failA = failures(join(run, 'after'));
+  const panB = panels(join(run, 'before')), panA = panels(join(run, 'after'));
   const keys = new Set([...B.keys(), ...A.keys(), ...[...failB].filter(([, v]) => v).map(([k]) => k), ...[...failA].filter(([, v]) => v).map(([k]) => k)]);
   const screens = [];
   for (const key of [...keys].sort()) {
@@ -415,7 +440,12 @@ export function compareRun(run, { beforeLabel, afterLabel } = {}) {
     const scale = a.meta?.scale ?? meta.scale ?? 1.5;
     const again = (map) => (map.has(key) ? PNG.sync.read(readFileSync(map.get(key))) : null);
     const r = compareScreen(b, a, scale, { before: again(B2), after: again(A2) }, { ignoreCaret: name.startsWith('office/') });
-    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}) };
+    const vp = a.meta?.viewport ?? { w: a.png.width / scale, h: a.png.height / scale };
+    const inside = keepInsidePanel(r.changes, panB.get(key), panA.get(key), vp.w, vp.h);
+    // A shift that lies outside the panel (the page behind moved) is the page's business too.
+    if (inside.outside && !inside.changes.length) r.shift = 0;
+    r.changes = inside.changes;
+    const row = { ...entry, status: r.changes.length || r.shift ? 'changed' : 'unchanged', before: rel('before', true), after: rel('after', true), scale, ...(r.shift ? { shift: { y: r.shift } } : {}), changes: r.changes, ...(r.unstable ? { unstable: r.unstable } : {}), ...(inside.outside ? { outside: inside.outside } : {}) };
     if (!b.elements || !a.elements) row.reason = 'no element lists beside the pictures: pixels only';
     if (r.mask) { const mf = join('diff', name, `${theme}.mask.png`); writeMask(join(run, mf), r.mask); row.mask = mf; }
     screens.push(row);

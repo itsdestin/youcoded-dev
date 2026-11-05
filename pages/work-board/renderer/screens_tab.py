@@ -311,7 +311,7 @@ const byPath=(a,b)=>a.id<b.id?-1:1;
 // a phone filter shows the phone picture
 function pick(g){return S.f.has('phone')?(g.states.find(st=>st.ph)||g.states[0]):g.states[0]}
 function tile(g,extra,cls,st){st=st||pick(g);const full=!st.crop&&!st.ph; // WHY: a phone picture is tall and thin; filling the tile would crop it
-  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since&&CM?`<span class="badge" data-tip="${T(g.since==='new'?'scr.badge.new':'scr.badge.changed')}">${g.since==='new'?'New':'Changed'}</span>`:'');
+  const badges=(g.states.length>1?`<span class="badge" data-tip="${T('scr.situations')}">${g.states.length} situations</span>`:'')+(g.work.length&&!S.f.has('work')&&!S.f.has('since')?`<span class="spill" data-tip="${T('scr.changing')}"><span class="dot"></span>being changed</span>`:'')+(g.since&&CM?`<span class="badge" data-tip="${T(g.since==='new'?'scr.badge.new':'scr.badge.changed')}">${g.since==='new'?'New':'Changed'}</span>`:'');
   const tip=cls==='here'?'This is the screen you are looking at.':(g.desc?g.desc+' Click to open it.':TIP['scr.tile']);
   return `<figure class="tile${extra?' extra':''}${cls?' '+cls:''}" data-id="${esc(g.id)}" tabindex="0" data-tip="${esc(tip)}"><div class="timg${full?' full':''}"><img src="${st.img}" alt="" decoding="async"><span class="tov">${badges}</span></div>
   <figcaption class="tcap"><span class="tn">${esc(g.t)}</span><span class="tp">${esc(pathText(g)||KINDW[g.kind])}</span></figcaption></figure>`}
@@ -339,11 +339,18 @@ $('#sq').oninput=e=>{S.q=e.target.value.trim().toLowerCase();sRender()};
 // ---- the picture popup
 let DCUR=null,DST=0,DWIN=false,DPATH=false,LASTFOCUS=null;
 // WHY compare state lives with the popup (2026-11-04): the comparison is this popup's "What changed" view, not
-// a page of its own. DCMP on = the two sides; DMODE side by side, or one side at full width; DTH the theme.
-let DCMP=false,DMODE='side',DTH=null;
-function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DST=stIdx??Math.max(0,g.states.indexOf(pick(g)));DWIN=false;
-  // WHY: opened while looking for changes, the popup opens on the comparison
-  if(CM&&(S.f.has('since')||S.ask==='new'))DCMP=true;DTH=null;drawShot();
+// a page of its own. DCMP on = the two sides; DTH the theme.
+// DZOOM: one side shown at full width (click a picture), else both side by side.
+let DCMP=false,DZOOM=null,DTH=null;
+// WHY per situation (Destin, 2026-11-05: "for page without changes, the ui can be much simplified instead of
+// offering 8 different pages of (nothing actually changed)"): the comparison is offered only on a situation
+// that changed; one that is the same, or has no release picture, just says so under the usual picture.
+function stSince(st){const v=Object.values(st.ch||{}).map(t=>t.status);if(!v.length)return null;
+  return v.includes('changed')||v.includes('removed')?'changed':v.includes('new')?'new':'same'}
+function openShot(id,stIdx){const g=GI[id];if(!g)return;if(!DCUR)LASTFOCUS=document.activeElement;DCUR=id;DWIN=false;DZOOM=null;DTH=null;
+  // WHY: opened while looking for changes, the popup opens on the first situation that changed, compared
+  const hunting=CM&&S.f.has('since'),first=g.states.findIndex(s=>stSince(s)==='changed');
+  DST=stIdx??(hunting&&first>=0?first:Math.max(0,g.states.indexOf(pick(g))));if(hunting)DCMP=true;drawShot();
   $('#scrim').hidden=false;$('#dwrap').hidden=false;$('#dbody').scrollTop=0;fades();$('#dclose').focus({preventScroll:true})}
 function pathHTML(g){const chain=g.chain.map(id=>GI[id]);const kids=g.kids.map(k=>GI[k]).sort(byPath);
   return `<section class="dpath" id="dpath"><div class="sechead"><div class="gtext"><h3 class="gh" data-tip="${T('pop.way')}">How you get here</h3><p class="gdesc">${g.depth===1?'It opens straight from the main window.':'Start at the main window and click through these, left to right.'}</p></div></div>
@@ -357,9 +364,10 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
   // WHY one picture you click instead of a Close up / In the window switch (2026-10-13 cut): the close-up shows first; clicking it shows the whole window
   const img=`<img src="${DWIN?st.win:st.img}" alt="${esc(g.t)}">`;
   const pic=st.crop?`<button class="dimg${DWIN?' full':''}" id="dzoom" data-tip="${DWIN?T('pop.zoomin'):T('pop.zoomout')}">${img}</button>`:`<div class="dimg full">${img}</div>`;
-  if(DCMP&&CM){$('#dbody').innerHTML=cmpHTML(g,st)+(DPATH?pathHTML(g):'');wireCmp(g)}else
+  const since=CM?stSince(st):null,cmpOn=DCMP&&since==='changed';
+  if(cmpOn){$('#dbody').innerHTML=cmpHTML(g,st)+(DPATH?pathHTML(g):'');wireCmp(g)}else
   $('#dbody').innerHTML=`<div class="dgrid"><div class="dleft">${pic}
-  <div class="dbar"><span class="t-xs muted">${g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}</span></div>
+  <div class="dbar"><span class="t-xs muted">${g.states.length>1?`Situation ${DST+1} of ${g.states.length}: ${esc(st.l)}`:'One situation photographed'}${st.ph?' · phone size':''}${st.crop?(DWIN?' · click the picture to zoom back in':' · click the picture to see the whole window'):''}${since==='same'?' · looks the same as in '+esc(CM.release):since==='new'?' · no picture of it from '+esc(CM.release):''}</span></div>
   ${g.states.length>1?`<div class="sstrip" role="group" aria-label="Situations">${g.states.map((s,i)=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:''}
   </div><div class="dfacts">
     <div><div class="eyebrow" data-tip="${T('pop.where')}">Where it is</div><div class="crumbs">${where}</div></div>
@@ -367,11 +375,11 @@ function drawShot(){const g=GI[DCUR],st=g.states[DST];$('#dti').textContent=g.t+
     <dl class="factlist"><dt data-tip="${T('pop.kind')}">Kind</dt><dd>${KINDW[g.kind]}</dd><dt data-tip="${T('pop.place')}">Place</dt><dd>${esc(g.place)}</dd><dt data-tip="${T('pop.clicks')}">Clicks to reach</dt><dd>${g.depth}</dd>${flags.length?`<dt data-tip="${T('pop.also')}">Also</dt><dd>${flags.join('<br>')}</dd>`:''}</dl>
     <div><div class="eyebrow" data-tip="${T('pop.work')}">Work changing it</div>${work.length?work.map(w=>`<div class="row slim"><div class="body"><div class="t-xs">${esc(w.title)}</div><div class="hint">last worked on ${w.days===0?'today':w.days+' days ago'}</div></div></div>`).join(''):'<div class="t-xs muted">Nothing open.</div>'}</div>
   </div></div>${DPATH?pathHTML(g):''}`;
-  $('#dfoot').innerHTML=`<button class="btn" id="dpathbtn" aria-expanded="${DPATH}" data-tip="${DPATH?T('pop.path.hide'):T('pop.path')}">${DPATH?'Hide the way here':'How do I get here?'}</button>${CM?`<button class="btn" id="dcmpbtn" aria-expanded="${DCMP}" data-tip="${DCMP?T('pop.compare.hide'):T('pop.compare')}">${DCMP?'Hide the comparison':'Compare with '+esc(CM.release)}</button>`:`<button class="btn" data-does data-tip="${T('pop.changed')}">What changed last time</button>`}<button class="btn" data-does data-tip="${T('pop.ask')}">Ask the assistant about it</button><button class="btn primary" data-does data-tip="${T('pop.note')}">Leave a note</button>`;
+  $('#dfoot').innerHTML=`<button class="btn" id="dpathbtn" aria-expanded="${DPATH}" data-tip="${DPATH?T('pop.path.hide'):T('pop.path')}">${DPATH?'Hide the way here':'How do I get here?'}</button>${CM?(since==='changed'?`<button class="btn" id="dcmpbtn" aria-expanded="${cmpOn}" data-tip="${cmpOn?T('pop.compare.hide'):T('pop.compare')}">${cmpOn?'Back to the screen':'Compare with '+esc(CM.release)}</button>`:''):`<button class="btn" data-does data-tip="${T('pop.changed')}">What changed last time</button>`}<button class="btn" data-does data-tip="${T('pop.ask')}">Ask the assistant about it</button><button class="btn primary" data-does data-tip="${T('pop.note')}">Leave a note</button>`;
   $$('#dbody [data-st]').forEach(b=>b.onclick=()=>{DST=+b.dataset.st;drawShot()});
   const z=$('#dzoom');if(z)z.onclick=()=>{DWIN=!DWIN;drawShot()};
   $$('#dpath .tile:not(.here)').forEach(t=>{t.onclick=()=>openShot(t.dataset.id);t.onkeydown=e=>{if(e.key==='Enter')openShot(t.dataset.id)}});
-  const cb=$('#dcmpbtn');if(cb)cb.onclick=()=>{DCMP=!DCMP;drawShot()};
+  const cb=$('#dcmpbtn');if(cb)cb.onclick=()=>{DCMP=!cmpOn;DZOOM=null;drawShot()};
   $('#dpathbtn').onclick=()=>{DPATH=!DPATH;drawShot();if(DPATH)requestAnimationFrame(()=>$('#dpath').scrollIntoView({block:'start',behavior:'smooth'}))};
   const i=VIS.findIndex(x=>x.id===DCUR);$('#dprev').disabled=i<=0;$('#dnext').disabled=i<0||i>=VIS.length-1;
   requestAnimationFrame(()=>fade($('#dbody')))}
@@ -407,34 +415,37 @@ function marks(list,side,t){return list.map((gr,gi)=>gr.items.map(c=>{const b=si
   return b?`<span class="hl ${side==='before'?'old':'new'}" data-g="${gi}" style="${boxStyle(b,t)}" aria-hidden="true"></span>`:''}).join('')).join('')}
 function cmpPic(g,st,t,side,list){const f=st.n.replace(/\//g,'__').replace(/#/g,'%%23');const has=t[side];
   const lab=side==='before'?esc(CM.release):'Now';
-  // WHY a button in side by side: clicking a picture shows it at full width, as the popup's own picture zooms
-  const tag=DMODE==='side'&&has?'button':'div',attr=tag==='button'?` data-zoom="${side}" data-tip="${T('cmp.zoom')}"`:'';
+  // WHY a button: clicking a picture shows it at full width and clicking again shows both, as the popup's own
+  // picture zooms (this replaced a Side by side / 1.3.3 / Now switch: one control fewer)
+  const tag=has?'button':'div',attr=tag==='button'?` data-zoom="${side}" data-tip="${T(DZOOM?'cmp.unzoom':'cmp.zoom')}"`:'';
   return `<figure class="cmppic"><div class="eyebrow">${lab}</div><${tag} class="cmpwell"${attr}>${has?`<div class="cmpstage"><img src="changes/cmp/${DTH}/${f}.${side}.jpg" alt="${esc(g.t)}, ${lab}">${marks(list,side,t)}</div>`:`<p class="t-xs muted">${side==='before'?'This screen did not exist in '+esc(CM.release)+'.':'This screen is gone now.'}</p>`}</${tag}></figure>`}
-function cmpHTML(g,st){const ch=st.ch||{};const th=CM.themes.filter(x=>ch[x]);
-  if(!th.length)return `<div class="callout">This screen was not photographed in the comparison with ${esc(CM.release)}.</div>`;
-  if(!DTH||!ch[DTH])DTH=th.find(x=>ch[x].status==='changed')||(ch[CM.tile]?CM.tile:th[0]);
+function cmpHTML(g,st){const ch=st.ch||{};
+  // WHY only the themes that changed get a tab: a tab that opens "nothing is different" is a dead end
+  const th=CM.themes.filter(x=>ch[x]&&ch[x].status==='changed'),same=CM.themes.filter(x=>ch[x]&&!th.includes(x));
+  if(!DTH||!th.includes(DTH))DTH=th.includes(CM.tile)?CM.tile:th[0];
   const t=ch[DTH];const list=groupChanges(t.changes||[]);
-  // WHY one side for a new or removed screen: the other side would be an empty box (design guide: no dead space)
-  const one=t.status==='new'?'after':t.status==='removed'?'before':null;
-  const modes=[['side','Side by side','cmp.mode.side'],['before',CM.release,'cmp.mode.before'],['after','Now','cmp.mode.after']];
-  const bar=`<div class="cmpbar">${one?'<span></span>':`<div class="tabs" role="group" aria-label="Show">${modes.map(([m,l,k])=>`<button data-mode="${m}" aria-pressed="${DMODE===m}" data-tip="${T(k)}">${esc(l)}</button>`).join('')}</div>`}
-    ${th.length>1?`<div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))}${ch[x].status==='changed'?` <span class="count" data-tip="${T('cmp.count')}">${groupChanges(ch[x].changes).length}</span>`:''}</button>`).join('')}</div>`:''}</div>`;
-  let body;
-  if(t.status==='failed')body=`<div class="callout">This screen could not be photographed for the comparison: ${esc(t.reason||'no reason was given')}.</div>`;
-  else{const sides=one?[one]:DMODE==='side'?['before','after']:[DMODE];
-    body=`<div class="cmppics${sides.length===1?' one':''}">${sides.map(sd=>cmpPic(g,st,t,sd,list)).join('')}</div>`}
-  const head=t.status==='new'?`New since ${esc(CM.release)}`:t.status==='unchanged'?`The same as in ${esc(CM.release)}`:'What changed';
+  const tabs=th.length>1?`<div class="cmpbar"><div class="tabs" role="group" aria-label="Theme">${th.map(x=>`<button data-th="${x}" aria-pressed="${x===DTH}" data-tip="${T('cmp.theme')}">${esc(themeName(x))} <span class="count" data-tip="${T('cmp.count')}">${groupChanges(ch[x].changes).length}</span></button>`).join('')}</div></div>`:'';
+  // WHY only the situations that changed: the same ones are summed up in one line instead
+  const chg=g.states.map((s,i)=>[s,i]).filter(([s])=>stSince(s)==='changed');
+  const strip=chg.length>1?`<div class="sstrip" role="group" aria-label="Situations that changed">${chg.map(([s,i])=>`<button aria-pressed="${i===DST}" data-st="${i}" data-tip="${T('pop.situation')} (${esc(s.l)})"><span class="si"><img src="${s.img}" alt=""></span><span>${esc(s.l)}</span></button>`).join('')}</div>`:'';
+  const sides=DZOOM?[DZOOM]:['before','after'];
+  const body=`<div class="cmppics${sides.length===1?' one':''}">${sides.map(sd=>cmpPic(g,st,t,sd,list)).join('')}</div>`;
   const rows=list.map((gr,gi)=>{const [a,b]=rowText(gr);return `<button class="row rowbtn slim cmprow" data-g="${gi}" data-tip="${T('cmp.row')}"><div class="body"><div class="t-xs">${a}</div>${b?`<div class="hint wrap">${b}</div>`:''}</div></button>`}).join('');
-  const note=t.status==='new'?'This screen did not exist then.':t.status==='unchanged'?'Nothing a person can see is different in this theme.':'Red marks how it was in '+esc(CM.release)+'; green marks how it is now. Point at a line to find it in the pictures.';
-  const steady=t.unstable?`<p class="t-xs muted">${t.unstable} ${t.unstable===1?'spot':'spots'} that change by themselves (an animation, a clock) are left out.</p>`:'';
-  return `<div class="dcmp">${bar}${body}<section class="cmplist"><div class="sechead"><div class="gtext"><h3 class="gh">${head}${list.length?`<span class="cnt" data-tip="${T('cmp.count')}">${list.length}</span>`:''}</h3><p class="gdesc">${note}</p></div></div>${rows}${steady}</section></div>`}
-function wireCmp(g){$$('#dbody [data-mode]').forEach(b=>b.onclick=()=>{DMODE=b.dataset.mode;drawShot()});
-  $$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.dataset.th;drawShot()});
-  $$('#dbody [data-zoom]').forEach(b=>b.onclick=()=>{DMODE=b.dataset.zoom;drawShot()});
+  const left=g.states.length-chg.length;
+  const also=[th.length===1&&same.length?`Only in ${esc(themeName(DTH))}; ${same.map(x=>esc(themeName(x))).join(', ')} looks the same.`:'',
+    left?(left===1?'1 other situation looks the same.':left+' other situations look the same.'):''].filter(Boolean).join(' ');
+  const note=`Red is ${esc(CM.release)}, green is now. Point at or tap a line to find it.${also?' '+also:''}`;
+  const steady=t.unstable?`<p class="t-xs muted">Parts that move by themselves, like animations and clocks, were left out.</p>`:'';
+  const listHTML=`<section class="cmplist"><div class="sechead"><div class="gtext"><h3 class="gh">What changed<span class="cnt" data-tip="${T('cmp.count')}">${list.length}</span></h3><p class="gdesc">${note}</p></div></div>${rows}${steady}</section>`;
+  return `<div class="dcmp">${tabs}${strip}${body}${listHTML}</div>`}
+function wireCmp(g){$$('#dbody [data-th]').forEach(b=>b.onclick=()=>{DTH=b.dataset.th;drawShot()});
+  $$('#dbody [data-st]').forEach(b=>b.onclick=()=>{DST=+b.dataset.st;DZOOM=null;drawShot()});
+  $$('#dbody [data-zoom]').forEach(b=>b.onclick=()=>{DZOOM=DZOOM?null:b.dataset.zoom;drawShot()});
   // WHY light up on point and on keyboard focus: the line and its marks are found together
   $$('#dbody .cmprow').forEach(r=>{const on=v=>$$('#dbody .hl[data-g="'+r.dataset.g+'"]').forEach(h=>h.classList.toggle('hot',v));
     r.onmouseenter=()=>on(true);r.onmouseleave=()=>on(false);r.onfocus=()=>on(true);r.onblur=()=>on(false);
-    r.onclick=()=>{const h=$('#dbody .hl[data-g="'+r.dataset.g+'"]');if(h)h.scrollIntoView({block:'nearest',behavior:'smooth'})}})}
+    // WHY a tap keeps its marks lit: a phone has no pointing, so the tap is how the line is found there
+    r.onclick=()=>{$$('#dbody .hl.hot').forEach(h=>h.classList.remove('hot'));on(true);const h=$('#dbody .hl[data-g="'+r.dataset.g+'"]');if(h)h.scrollIntoView({block:'nearest',behavior:'smooth'})}})}
 function stepShot(d){const i=VIS.findIndex(x=>x.id===DCUR);const n=VIS[i+d];if(n)openShot(n.id)}
 function closeShot(){if(!DCUR)return;DCUR=null;$('#scrim').hidden=true;$('#dwrap').hidden=true;hideTip();if(LASTFOCUS&&LASTFOCUS.focus)LASTFOCUS.focus({preventScroll:true})}
 $('#dclose').onclick=closeShot;$('#scrim').onclick=closeShot;$('#dwrap').onclick=e=>{if(e.target.id==='dwrap')closeShot()};

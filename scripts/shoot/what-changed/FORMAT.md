@@ -90,6 +90,8 @@ clipped or fully covered. Text inside a control belongs to the control (`text`),
 - `new` = the picture exists only on the after side (`reason` says so); `removed` the reverse. `failed` = either side's picture was not taken (`reason` says which side and why).
 - `box` is in CSS pixels on `side` (`removed` uses `before`; everything else `after`).
 - `pixels` is a changed area no element explains (an icon, a picture, a border).
+- `outside` counts changes dropped because they sit outside a popup's own panel (on the page behind it, which is
+  its own screen). Only screens whose panel covers well under the window are filtered this way.
 - `shift` is a shared offset the comparer found (a row inserted above), reported once so the elements
   below are not each listed as `moved`.
 

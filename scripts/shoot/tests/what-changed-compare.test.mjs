@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { classify, compareScreen, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
+import { classify, compareScreen, keepInsidePanel, matchElements, randomPhrasesFrom, rememberRandomPhrases, volatileText, wordDiff } from '../what-changed/compare.mjs';
 
 const WORKSPACE = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const { PNG } = createRequire(join(WORKSPACE, 'youcoded', 'desktop', 'package.json'))('pngjs');
@@ -171,4 +171,15 @@ test('flicker also drops element changes that sit on a spot the side itself flic
   assert.equal(compareScreen(side(b, bEls), side(a, aEls), 1, {}).changes.length, 1);
   const r = compareScreen(side(b, bEls), side(a, aEls), 1, { after: pic(200, 100, () => null) });
   assert.deepEqual(r.changes, []); assert.ok(r.unstable >= 1);
+});
+
+test('a popup owns only the changes on it; a change on the page behind belongs to that page', () => {
+  const popup = { x: 310, y: 238, w: 820, h: 424 };
+  const behind = { kind: 'pixels', box: { x: 112, y: 142, w: 11, h: 11 } }, onIt = { kind: 'text', box: { x: 400, y: 300, w: 80, h: 20 } };
+  const r = keepInsidePanel([behind, onIt], popup, popup, 1440, 900);
+  assert.deepEqual(r.changes, [onIt]);
+  assert.equal(r.outside, 1);
+  // a screen that fills the window, or one whose mark is too small to be the screen, keeps everything
+  assert.equal(keepInsidePanel([behind], { x: 0, y: 0, w: 1440, h: 900 }, null, 1440, 900).changes.length, 1);
+  assert.equal(keepInsidePanel([behind], { x: 0, y: 0, w: 12, h: 12 }, null, 1440, 900).changes.length, 1);
 });
