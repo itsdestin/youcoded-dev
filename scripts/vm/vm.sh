@@ -192,17 +192,20 @@ case "$CMD" in
         # WHY the Zone.Identifier stream: it is the "Mark of the Web" a browser download carries;
         # SmartScreen only checks marked files. Runs as SYSTEM, so write into the user's profile.
         # WHY ProgressPreference: PowerShell's progress bar slows Invoke-WebRequest roughly tenfold.
-        ps="\$ProgressPreference='SilentlyContinue'; \$d='C:\\Users\\$GUEST_USER\\Downloads\\$base'; Invoke-WebRequest -UseBasicParsing '$url' -OutFile \$d; Set-Content -Path \$d -Stream Zone.Identifier -Value \"[ZoneTransfer]\`r\`nZoneId=3\`r\`nHostUrl=https://youcoded.ai/\"; (Get-Item \$d).Length"
+        # WHY the team-device file (analytics deck D-2/D-3): a test VM runs an official installer, so
+        # without it every fresh guest counts as a brand-new real user. The app marks its check-ins
+        # "team" and the owner dashboard leaves them out. It sits beside, not inside, setup's state.
+        ps="New-Item -ItemType Directory -Force 'C:\\Users\\$GUEST_USER\\.claude' | Out-Null; New-Item -ItemType File -Force 'C:\\Users\\$GUEST_USER\\.claude\\youcoded-team-device' | Out-Null; \$ProgressPreference='SilentlyContinue'; \$d='C:\\Users\\$GUEST_USER\\Downloads\\$base'; Invoke-WebRequest -UseBasicParsing '$url' -OutFile \$d; Set-Content -Path \$d -Stream Zone.Identifier -Value \"[ZoneTransfer]\`r\`nZoneId=3\`r\`nHostUrl=https://youcoded.ai/\"; (Get-Item \$d).Length"
         out=$(VM_EXEC_TIMEOUT=900 bash "$(dirname "$0")/vm-exec.sh" "$DIR" powershell.exe -NoProfile -Command "$ps")
         echo "$out" | grep -q "^exitcode: 0" || { echo "$out" >&2; echo "load failed" >&2; exit 1; } ;;
       linux)
         # WHY wget: stock Ubuntu desktop ships without curl.
-        gssh "wget -q -O ~/Downloads/$base '$url' && ls -l ~/Downloads/$base" ;;
+        gssh "mkdir -p ~/.claude && touch ~/.claude/youcoded-team-device && wget -q -O ~/Downloads/$base '$url' && ls -l ~/Downloads/$base" ;;
       mac)
         # WHY the quarantine xattr: Gatekeeper only assesses files a browser marked as downloaded.
-        gssh "curl -fsSL -o ~/Downloads/$base '$url' && xattr -w com.apple.quarantine '0081;$(printf '%x' "$(date +%s)");Safari;' ~/Downloads/$base && ls -l ~/Downloads/$base" ;;
+        gssh "mkdir -p ~/.claude && touch ~/.claude/youcoded-team-device && curl -fsSL -o ~/Downloads/$base '$url' && xattr -w com.apple.quarantine '0081;$(printf '%x' "$(date +%s)");Safari;' ~/Downloads/$base && ls -l ~/Downloads/$base" ;;
     esac
-    echo "loaded $base into $NAME's Downloads (marked as an internet download)"
+    echo "loaded $base into $NAME's Downloads (marked as an internet download; guest marked as a team device for analytics)"
     ;;
 
   view) running || { echo "$NAME is not running" >&2; exit 1; }; open_view ;;

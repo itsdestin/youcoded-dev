@@ -1346,6 +1346,23 @@ recurred — the repetition is the data.
 - Doc sweep found ~30 stale buddy claims (design guide, MAP had no buddy row, old inventories) → applied on this branch; audit-anchors clean.
 - deleted/merged: stale buddy component names from ~15 code comments and 4 app docs; card #85 retired.
 
+## 2026-11-01 — analytics audit, 17 approved proposals built, dashboard rebuilt twice (session/analytics-proposals, app + worker + admin + workspace, card #211)
+- Audit found Android 1.3.1+ checking in as "desktop" (headless backend hard-coded it) and own-phone exclusion broken; nothing in docs said the phone runs analytics-service → applied: fixes + worker-backend rule ("empty OS is a phone", blob layout) + `docs/local-dev.md` → "Analytics: team devices and test runs".
+- I first auto-marked EVERY workspace machine as a team device; Destin caught that contributors would vanish from analytics → applied: owner-only (`gh` login = itsdestin) in `scripts/team-device.mjs`, contributor case pinned by test seen red.
+- RECURRED (card #195, third time): `gitleaks … -q; echo` — bad flag, echo reset the exit code, push went out unscanned (clean on re-scan) → card #195 progress.
+- RECURRED (preferences 2026-10-14 / 2026-10-27): "just say retention" and "use the existing (i) styling" — both preferences were on file in `~/system/me/preferences.md`, unread before designing → applied: recurrence lines + a new numbers-first dashboard preference there.
+- Worker worktree had stale shared deps (vitest-pool-workers 0.5 vs lockfile ^0.22) and the hook blocks npm ci in worktrees; ~6 calls to work around → card #212.
+- Independent reviewer found 8 issues my tests missed (opt-out undone by a racing write, damaged file read as a fresh install, reload click undercount, …) → applied: 7 fixed with tests seen red; 1 (blob8 on pre-change AE rows) needs a check after deploy, noted on #211.
+- Two worker tests (presence, site-analytics) failed once at load 59 from other sessions, passed on 2 reruns → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: website.css merged into dashboard.css; the dashboard's weekly charts, by-version chart, journey table and every card sub-line removed; the inline App script replaced by modules sharing one chart/tab helper.
+
+## 2026-11-03 — voice typing heard nothing: muted mic, app now says so (session/voice-no-sound, app + workspace, no card)
+- Cause was the Z13's system mic muted (found in 2 calls with `wpctl status`/`pw-record`), not the app; but the app gave no sign: "Listening" over pure zeros, then an empty box → applied: amber "No sound detected — device may be muted" after 3 s of digital silence, and a card after an empty Stop (no sound / too quiet / no words); 6 tests in `useVoiceInput.test.ts` seen red with detection off. Machine fact → `~/system/machines/z13/issues.md`.
+- InputBar went 7 lines over its line budget → applied: the listening band moved into `VoiceButton.tsx` instead of raising the budget.
+- `preview` refuses an answered deck; a one-step follow-up deck (`no-sound-2.live.json`) carried the N-1 revision → dropped: AUTHORING.md documents it; one call.
+- `first-draw-stability` journey failed once at load 69 (67.8 px drift), passed on two reruns at load 74–97; unrelated to voice → dropped: not reproducible without manufacturing load; reported to Destin.
+- deleted/merged: the listening band's markup left InputBar (one component in VoiceButton); InputBar's `StatusStrip` import removed.
+
 ## 2026-11-04 — security audit fixes, five review decks (session/sec-integration app + workspace, session/sec-worker-hardening marketplace, no card)
 - Danger-zone screen was marked `newIn: 'after'` though Delete account existed before, so the deck showed only the new side; Destin: "i need to review all of these surfaces" → applied: mark removed (`screens/settings.ts`), round 5 walked every step. Dropped as a rule: `scripts/shoot/README.md` already says `newIn` is for states only the new code has; my lapse.
 - First round-5 crop used image pixels (2160x1350) instead of the 1440x900 CSS pixels → dropped: AUTHORING.md `crop` row already says CSS pixels; one rebuild.

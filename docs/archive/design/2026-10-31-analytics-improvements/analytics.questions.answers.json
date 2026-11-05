@@ -1,0 +1,142 @@
+{
+ "deck": "analytics-improvements-questions",
+ "started": "2026-10-31T23:13:58.235Z",
+ "submitted": "2026-10-31T23:20:54Z",
+ "cur": 4,
+ "answers": {
+  "F-1": {
+   "v": "pick",
+   "pick": "fix-and-relabel",
+   "t": 1793488467491,
+   "seconds": 8,
+   "theme": "morning-rounds"
+  },
+  "F-2": {
+   "v": "yes",
+   "t": 1793488467491,
+   "seconds": 8,
+   "theme": "morning-rounds"
+  },
+  "F-3": {
+   "v": "yes",
+   "t": 1793488467491,
+   "seconds": 8,
+   "theme": "morning-rounds",
+   "note": "add little (i) popup menus"
+  },
+  "U-1": {
+   "v": "pick",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1793488849551,
+   "pick": "leave"
+  },
+  "U-2": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1793488849551,
+   "note": ""
+  },
+  "U-3": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1793488849551
+  },
+  "U-4": {
+   "v": "pick",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1793488849551,
+   "pick": "totals"
+  },
+  "U-5": {
+   "v": "other",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1793488849551,
+   "dk": true,
+   "note": "unsure how we would track/deduplicate/value these downloads? i think theyd also include updates and such probably? and maybe double count website clicks? idk"
+  },
+  "U-6": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "morning-rounds",
+   "t": 1793488849551
+  },
+  "D-1": {
+   "v": "yes",
+   "t": 1793488852396,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "D-2": {
+   "v": "pick",
+   "pick": "flag",
+   "t": 1793488852396,
+   "note": "and the dev workspace should include instructions to utilize this when building with vms or whatever else.",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "D-3": {
+   "v": "yes",
+   "t": 1793488852396,
+   "note": "how would this differ/interact with the \"team device\" flag you mentioned?",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "D-4": {
+   "v": "other",
+   "t": 1793488852396,
+   "dk": true,
+   "note": "could we possibly deduplicate visits/downloads for devices and other users? so like a single person clicking download 5 times or refreshing a bunch gets automatically counted as just 1 on the same device? or would that be too difficult to implement",
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "D-5": {
+   "v": "yes",
+   "t": 1793488852396,
+   "seconds": 36,
+   "theme": "morning-rounds"
+  },
+  "X-1": {
+   "v": "pick",
+   "pick": "overview",
+   "t": 1793488743391,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  },
+  "X-2": {
+   "v": "yes",
+   "t": 1793488743391,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  },
+  "X-3": {
+   "v": "yes",
+   "t": 1793488743391,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  },
+  "X-4": {
+   "v": "pick",
+   "pick": "time-window",
+   "t": 1793488743391,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  },
+  "T-1": {
+   "v": "yes",
+   "t": 1793488853121,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  },
+  "T-2": {
+   "v": "yes",
+   "t": 1793488853121,
+   "seconds": 13,
+   "theme": "morning-rounds"
+  }
+ }
+}
