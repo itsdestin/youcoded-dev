@@ -1345,3 +1345,11 @@ recurred — the repetition is the data.
 - Leftover tray icon on KDE: Electron's `Tray.destroy()` leaves KDE's tray entry until the app quits (measured with a 15-line Electron script + `busctl`; a helper process holding the tray measured ~200 MB) → card #210 holds the measurements and fix; WHY note at `buddy-tray.ts` `destroy()` so a tray session finds it.
 - Doc sweep found ~30 stale buddy claims (design guide, MAP had no buddy row, old inventories) → applied on this branch; audit-anchors clean.
 - deleted/merged: stale buddy component names from ~15 code comments and 4 app docs; card #85 retired.
+
+## 2026-11-04 — security audit fixes, five review decks (session/sec-integration app + workspace, session/sec-worker-hardening marketplace, no card)
+- Danger-zone screen was marked `newIn: 'after'` though Delete account existed before, so the deck showed only the new side; Destin: "i need to review all of these surfaces" → applied: mark removed (`screens/settings.ts`), round 5 walked every step. Dropped as a rule: `scripts/shoot/README.md` already says `newIn` is for states only the new code has; my lapse.
+- First round-5 crop used image pixels (2160x1350) instead of the 1440x900 CSS pixels → dropped: AUTHORING.md `crop` row already says CSS pixels; one rebuild.
+- Real-website run of the download guard: GitHub archive and release downloads always hop to codeload.github.com / release-assets.githubusercontent.com, so a "github.com only" rule stops them and asks → reported to Destin (design consequence of Q-7 exact-site, not a bug).
+- Android `./gradlew test` stops at `buildRuntimeDebug` here (needs Alpine `apk version -t`); `testDebugUnitTest -x bundleWebUi -x buildRuntimeDebug` ran 41 green → dropped as a doc edit: CLAUDE.md's Android paragraph deliberately names commands, not verdicts.
+- Destin: "that was a bit too verbose, just tell me what you need" → dropped: `~/system/global.md` already says fewest words; recurrence of my habit, not a missing rule.
+- deleted/merged: none found; looked at the deck and shoot docs, both already covered this session's mistakes.
