@@ -243,6 +243,10 @@ Every small label is plain (final-review#ST-21).
 - **A control that exists on one platform says which**: "Remove KDE helper" (nothing-bare-3#N3-3).
 
 ### Spacing
+- **No dividing lines across a container or the screen.** Separate things with space (the scale below) or by
+  making each its own control, never a 1px rule that cuts a card, a pair of buttons or the whole width in two
+  (Destin, 2026-11-05: "i don't like horizontal lines that bisect a container or the full screen. the line between the
+  arrows is grodi").
 - One scale: **4 · 8 · 12 · 16 · 24 px.** 4 between an icon and its label; 8 between things inside a
   card; 12 inside a card's edge; 16 between groups; 24 for major breaks.
 - In popups: **16px between groups, 8px between neighbouring boxes or rows** (the Settings list's gap,
