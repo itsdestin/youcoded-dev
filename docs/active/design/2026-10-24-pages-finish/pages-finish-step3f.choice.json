@@ -1,0 +1,95 @@
+{
+  "title": "Finishing Pages, step 3 — taking back the assistant's changes",
+  "key": "pages-finish-step3f-choice",
+  "out": "pages-finish-step3f.choice.html",
+  "stage": "design",
+  "images": "images/pages-finish-step3f.choice",
+  "runs": {
+    "after": "runs-step3f/after"
+  },
+  "themes": [
+    "morning-rounds",
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "K-undo",
+      "surface": "Pages",
+      "path": "An open page → its chat, after asking it to change things",
+      "headline": "When the page's assistant changes something, how do you take it back?",
+      "notice": "In this chat you asked for two changes. One changed what the page holds (Netflix's due date). The other changed the page itself (a note on each bill). Either way, the change happens right away; nothing asks you first.",
+      "variants": [
+        {
+          "id": "reply",
+          "label": "Undo under each reply that changed something",
+          "crop": "pages/page/page-money#chat-float",
+          "summary": "A quiet line at the end of the reply says what changed, with Undo beside it. Undo puts the page back to how it was just before that reply.",
+          "risk": "A line under every changing reply is one more thing to read in a small chat."
+        },
+        {
+          "id": "versions",
+          "label": "A list of earlier versions",
+          "crop": "pages/page/page-money#chat-versions",
+          "summary": "Replies stay as they are. A new button in the chat's title row (the arrow turning back) lists the page as it was before each request, newest first, each with Put back.",
+          "risk": "You have to go and find the change in a list instead of undoing it where you saw it happen. The title row gets a fourth small button."
+        }
+      ]
+    },
+    {
+      "id": "K-undone",
+      "surface": "Pages",
+      "path": "The same chat → Undo on the newest reply",
+      "crop": "pages/page/page-money#chat-undone",
+      "new": true,
+      "headline": "If Undo goes under the reply: this is just after pressing it.",
+      "notice": "The line is crossed out and says Undone. Redo brings the change back.",
+      "risk": "The practice page doesn't redraw for these made-up changes, so the page behind the chat looks the same in every picture. In the real app the notes would disappear from the bills.",
+      "changed": "New: before this round, the chat had no way to take a change back."
+    },
+    {
+      "id": "K-which",
+      "words": true,
+      "surface": "Pages",
+      "path": "The page's chat, several changes in a row",
+      "headline": "Can you undo an older change on its own, or only the newest?",
+      "today": "Pages already keep a saved history (every 15 seconds or so), and the page builder can put an old version back if you ask it in words.",
+      "problem": "After three changes, undoing the first one on its own can clash with the two after it. For example, it removes a box the later changes added to.",
+      "proposal": "Pick how far back Undo reaches.",
+      "options": [
+        {
+          "id": "newest",
+          "label": "Newest first, like Undo everywhere else",
+          "recommended": true,
+          "pros": [
+            "Never clashes: each Undo steps back one change, then the one before.",
+            "Works the way Undo works in a document."
+          ],
+          "cons": [
+            "To get rid of an older change you undo the newer ones too, then ask again for what you still want."
+          ]
+        },
+        {
+          "id": "any",
+          "label": "Any change on its own",
+          "pros": [
+            "Keep later changes and drop just the one you don't like."
+          ],
+          "cons": [
+            "Sometimes it can't be done cleanly. Then the chat has to say so and offer to ask the assistant to fix it instead."
+          ]
+        },
+        {
+          "id": "back-to",
+          "label": "Go back to before any reply",
+          "pros": [
+            "One press to get back to a known good point."
+          ],
+          "cons": [
+            "It also throws away every change after that reply, which is easy to do by mistake."
+          ]
+        }
+      ]
+    }
+  ]
+}
