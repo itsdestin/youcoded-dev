@@ -512,6 +512,45 @@ WORKTREE_INSTALL_MESSAGE = (
 )
 
 
+# ── note (not a block): a wait loop with no time limit of its own ─────────────────────
+# `until <cond>; do sleep N; done` runs forever when <cond> never comes true — and the Bash
+# tool's `timeout` stops applying once Claude Code moves a long command to the background.
+# On 2026-11-03 a helper's `until rg -q "journeys:" log …` ran 32 hours: the run it waited on
+# had failed before writing that word. Most such loops are fine (~2,400 in past transcripts),
+# so this only ADDS A NOTE for Claude and lets the command run (Destin chose warn, 2026-11-05).
+WAIT_LOOP = re.compile(r"\b(?:until|while)\b.{0,400}?\bdo\b.{0,300}?\bsleep\b", re.S)
+# Anything that can end the loop on its own: a `timeout N` wrapper, elapsed-time or counter
+# arithmetic, a numeric comparison, or a `break`.
+LOOP_BOUND = re.compile(r"\btimeout\s+-?\w*\s*\d|\$SECONDS|\(\(|\$\[|\bseq\b|-(?:ge|gt|le|lt)\b|\bbreak\b")
+
+
+def unbounded_wait_loop(command: str) -> bool:
+    body = strip_heredocs(command)
+    return bool(WAIT_LOOP.search(body)) and not LOOP_BOUND.search(body)
+
+
+WAIT_LOOP_NOTE = (
+    "Note from the workspace guard (the command was allowed to run): this waits in an "
+    "`until`/`while … sleep` loop with no time limit of its own. If what it waits for never "
+    "happens, it runs forever — once Claude Code moves a command to the background, the Bash "
+    "tool's timeout no longer applies (a helper's loop ran 32 hours on 2026-11-03). Next time put "
+    "the limit in the command text: `timeout 600 bash -c 'until …; do sleep 5; done'`, or wait on "
+    "the thing itself with run_in_background. If this one is backgrounded and no longer needed, "
+    "stop it with TaskStop."
+)
+
+
+def allow_with_notes(command: str) -> int:
+    """Exit 0 (allowed), adding the wait-loop note as context for Claude when it applies."""
+    try:
+        if unbounded_wait_loop(command):
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse", "additionalContext": WAIT_LOOP_NOTE}}))
+    except Exception:
+        pass   # fail open
+    return 0
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -596,10 +635,10 @@ def main() -> int:
     try:
         token = find_offender(command)
     except Exception:
-        return 0
+        return allow_with_notes(command)
 
     if not token:
-        return 0
+        return allow_with_notes(command)
 
     first = command.strip().split()[0] if command.strip().split() else "the tool"
     print(MESSAGE.format(tok=token, glob=glob_part(token), cmd=first), file=sys.stderr)
