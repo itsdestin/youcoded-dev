@@ -1371,3 +1371,11 @@ recurred — the repetition is the data.
 - Destin: "that was a bit too verbose, just tell me what you need" → dropped: `~/system/global.md` already says fewest words; recurrence of my habit, not a missing rule.
 - The Electron 41→44 upgrade (audit) made every packaged Linux file world-writable: Electron 44's own zip stores 0666/0777. verify.sh and the local tests were green; only CI's AppImage payload check (`ci-evidence.mjs` verifyInstalled) caught it, and deb/rpm/pacman passed while shipping the bad modes → applied: `desktop/scripts/after-pack-permissions.cjs` afterPack hook + `tests/after-pack-permissions.test.ts`, seen red then green; local `--dir` build has 0 world-writable files.
 - deleted/merged: none found; looked at the deck and shoot docs, both already covered this session's mistakes.
+
+## 2026-11-05 — background commands stuck "Running"/"Watching" forever (session/stuck-background-commands, app + workspace, card #220 for the unchecked native half)
+- Three causes from one screenshot: Monitor time-limit notices carry no `<status>` (24% of 980 Monitors stuck), a helper's launch ignored an end read earlier on reopen, the restart reap never matched helper commands (the last found only by the independent reviewer) → applied: `transcript-watcher.ts`, `cc-background.ts`, `chat-reducer.ts`, 4 tests each seen red; `cc-dependencies.md` notes the expiry wording.
+- A helper's `until rg -q …; do sleep 10; done` ran 32 h: Claude Code drops the Bash timeout once it auto-backgrounds a command → applied: glob-guard adds a note (never a block, Destin chose warn) for wait loops with no limit; 5 tests, seen red. Loop killed with Destin's OK.
+- chat-reducer.ts went +10 over its line budget → applied: launch-record merge moved to `commandWithKnownEnd` (one copy instead of two).
+- Native sessions not investigated → card #220 (Destin's words).
+- I cd'd into worktrees during read-only investigation and the session's working directory followed (5 environment-change notices) → dropped: harmless here, absolute paths used throughout.
+- deleted/merged: the duplicated "end already read" record-building in chat-reducer (two copies → one helper in cc-background.ts).
