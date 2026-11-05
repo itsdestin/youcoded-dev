@@ -1,0 +1,17 @@
+{
+ "deck": "terminal-keys-looks2",
+ "started": "2026-11-05T09:42:09.832Z",
+ "submitted": "2026-11-05T09:44:36Z",
+ "cur": 0,
+ "answers": {
+  "L2-1": {
+   "v": "pick",
+   "t": 1793871875930,
+   "pick": "tray",
+   "note": "torn between b/c. the size/spacing on both feels a bit weird though. should be more similar to the quick chips in chat probably. and i think we should just go back to left/right arrows instead of space",
+   "seconds": 146,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

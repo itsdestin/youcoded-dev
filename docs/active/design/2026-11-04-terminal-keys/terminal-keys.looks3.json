@@ -1,0 +1,77 @@
+{
+  "title": "Phone terminal keys — chip-sized",
+  "key": "terminal-keys-looks3",
+  "out": "terminal-keys.looks3.html",
+  "images": "images/terminal-keys.looks3",
+  "runs": {
+    "today": "runs-looks3/today"
+  },
+  "steps": [
+    {
+      "id": "L3-1",
+      "surface": "Terminal view on a phone",
+      "path": "The row of keys above the message box, and the up/down arrows on the right",
+      "headline": "The tray you picked, and plain chip keys, both sized like the chat's quick chips",
+      "notice": "Both are now exactly the quick chips' height (32 px), with their small text and corner shape, so switching between chat and terminal view no longer changes the row's size. Space is gone; ← and → are back at the end. The six keys still share the row edge to edge.",
+      "risk": "In the tray the keys are 28 px tall inside a 32 px track, so they look a little shorter than a quick chip; your finger still gets the usual 44 px tap area.",
+      "variants": [
+        {
+          "id": "tray",
+          "label": "Keys in a tray",
+          "crop": "chat/terminal#keys-tray@390x300+0+544",
+          "summary": "Your pick: one soft track the height of a quick chip, holding the six keys."
+        },
+        {
+          "id": "chips",
+          "label": "Keys like quick chips",
+          "crop": "chat/terminal#keys-chips@390x300+0+544",
+          "summary": "No track: each key is drawn the same way as a quick chip in chat view, so the two views' rows look alike."
+        }
+      ]
+    },
+    {
+      "id": "L3-2",
+      "words": true,
+      "surface": "Terminal view on a phone",
+      "path": "A Claude Code menu where you tick several boxes (for example, choosing which add-on servers to allow)",
+      "headline": "With Space gone, how should ticking boxes work?",
+      "today": "In Claude Code's tick-several-boxes menus, Space ticks or unticks the highlighted box and Enter confirms. Space was added to the row for exactly that.",
+      "problem": "Without a Space key, a phone in terminal view can move through such a menu and confirm it, but cannot tick a box. Typing a space into the message box does not reach the menu. The main one, the startup question about which add-on servers to allow, only appears in terminal view.",
+      "proposal": "Pick how to handle it.",
+      "options": [
+        {
+          "id": "accept",
+          "label": "Accept it",
+          "pros": [
+            "Six keys, as you asked",
+            "These menus are rare"
+          ],
+          "cons": [
+            "When the add-on servers question appears, you cannot tick its boxes from the phone"
+          ]
+        },
+        {
+          "id": "seven",
+          "label": "Keep Space as a seventh key",
+          "pros": [
+            "Every menu can be answered from the phone, the add-on servers question included"
+          ],
+          "cons": [
+            "Seven keys make each one narrower (about 44 px on a phone); on wide-lettered themes the row may scroll sideways"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "typed",
+          "label": "Let a space typed in the message box tick it",
+          "pros": [
+            "No extra key"
+          ],
+          "cons": [
+            "Only while a menu is showing; a little more work and one more special case to get right"
+          ]
+        }
+      ]
+    }
+  ]
+}
