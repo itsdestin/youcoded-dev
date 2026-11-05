@@ -1,0 +1,105 @@
+{
+ "deck": "security-decisions-questions",
+ "started": "2026-10-31T22:03:31.720Z",
+ "submitted": "2026-10-31T22:10:24Z",
+ "cur": 3,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "ask-new-sites",
+   "t": 1793484345827,
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1793484345827,
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "note": "i think it already does show a warning the first time?",
+   "t": 1793484345827,
+   "v": "other",
+   "dk": true,
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "other",
+   "dk": true,
+   "t": 1793484345827,
+   "note": "how do other harnesses handle this?",
+   "seconds": 34,
+   "theme": "morning-rounds"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "min-8",
+   "t": 1793484430821,
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "90-days",
+   "t": 1793484430821,
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "tailscale-only",
+   "t": 1793484430821,
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "with-app",
+   "t": 1793484517181,
+   "seconds": 43,
+   "theme": "morning-rounds"
+  },
+  "Q-9": {
+   "v": "yes",
+   "t": 1793484517181,
+   "note": "want to think through how this interacts with always allow modes and such",
+   "seconds": 43,
+   "theme": "morning-rounds"
+  },
+  "Q-10": {
+   "v": "yes",
+   "t": 1793484623163,
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "keep",
+   "t": 1793484623163,
+   "note": "just make sure we adequately explain to users what they're uploading, where its visible, etc",
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "Q-12": {
+   "v": "yes",
+   "t": 1793484623163,
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "Q-13": {
+   "v": "yes",
+   "t": 1793484623163,
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "Q-14": {
+   "v": "yes",
+   "t": 1793484623163,
+   "seconds": 21,
+   "theme": "morning-rounds"
+  }
+ }
+}
