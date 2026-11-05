@@ -116,3 +116,5 @@ that cover the command in hand and, if wide, admit nothing in `HOSTILE_CORPUS`.
 
 Depth: `docs/archive/specs/2026-08-11-native-permissions-management-ui.md`,
 `docs/archive/specs/2026-08-13-bash-always-allow-rule-shape.md`.
+
+- **"Commands that never ask" (2026-10-31): `shared/safe-readonly-commands.ts` is an ALLOWLIST (command -> exact flag spellings; no abbreviations; whole line must lex as plain words), wired as the pattern-less rule `{tool:Bash, match:"safe-readonly"}` right after the blanket ask in Ask first/Auto edit only (never Full auto). The deny-list and remembered rules still outrank it; the Bash floors still run beneath it. File-level checks (`tools/readonly-guard.ts`: secret/device/app-settings paths, folders holding credentials, git repo settings+hooks, PATH) must pass or it asks; missing checks = ask. Settings lists it from `READONLY_COMMAND_GROUPS`. Add a command only with a hostile-corpus entry in `tests/safe-readonly-commands.test.ts`.**

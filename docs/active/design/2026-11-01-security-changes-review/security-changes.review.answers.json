@@ -1,0 +1,125 @@
+{
+ "deck": "security-changes-review",
+ "started": "2026-11-02T03:57:35.541Z",
+ "submitted": "2026-11-02T04:55:11Z",
+ "cur": 15,
+ "answers": {
+  "G-1": {
+   "note": "i want to do one final comparison of how claude code, codex, opencode, etc split/handle various \"always allow\" options for different command types. how do we comapre?",
+   "t": 1793591910216,
+   "v": "other",
+   "seconds": 55,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "yes",
+   "t": 1793591917308,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-3": {
+   "v": "yes",
+   "t": 1793591925826,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-1": {
+   "v": "yes",
+   "t": 1793592247950,
+   "seconds": 322,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-2": {
+   "v": "yes",
+   "t": 1793592290576,
+   "note": "we should also just make this a more standard permission card. idk why this has unique styling",
+   "seconds": 43,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-1": {
+   "v": "yes",
+   "t": 1793592294650,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "t": 1793595070221,
+   "seconds": 2776,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "A-1": {
+   "note": "way too much copy bruv. way too busy",
+   "t": 1793595091244,
+   "v": "other",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-1": {
+   "v": "yes",
+   "t": 1793595107503,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-1": {
+   "note": "also too much copy and too busy",
+   "t": 1793595140320,
+   "v": "other",
+   "seconds": 33,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-2": {
+   "v": "yes",
+   "t": 1793595145471,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-1": {
+   "v": "yes",
+   "t": 1793595152089,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "note": "that just looks bad. and is it not dismissable? it should be a much smaller error/chip or something with details on expansion. our design guide needs to help eliminate these kind of random non-standard and extra busy ui elements in new build",
+   "t": 1793595274886,
+   "v": "other",
+   "seconds": 123,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "M-1": {
+   "v": "yes",
+   "t": 1793595285261,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "t": 1793595301299,
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "M-3": {
+   "v": "yes",
+   "t": 1793595310407,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

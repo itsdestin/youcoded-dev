@@ -1,0 +1,100 @@
+{
+  "title": "Security changes, round 4: your fixes",
+  "key": "security-changes-round4",
+  "out": "round4.review.html",
+  "images": "images/round4.review",
+  "runs": {
+    "before": "runs-round3/after",
+    "after": "runs-round4/after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "stage": "review",
+  "steps": [
+    {
+      "id": "E-1",
+      "surface": "Chat · permission card",
+      "path": "When the assistant wants to edit a file",
+      "crop": [
+        {
+          "crop": "chat#outside-comments@700x150+10+185",
+          "label": "Existing: chat button"
+        },
+        {
+          "crop": "chat#edit-ask@700x150+10+100",
+          "label": "Edit card"
+        }
+      ],
+      "headline": "The edit card's chat button now copies the app's existing \"Allow for this chat\" button.",
+      "changed": "Pale green \"For this conversation\" became the same blue \"Allow for this chat\" the comments card uses. The note under it is one line.",
+      "notice": "Same buttons, colours and note style as the existing card on the left.",
+      "risk": "Two blue buttons sit side by side (Allow for this chat, Always allow). On a phone a button drops to a second row rather than splitting.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "new": true
+    },
+    {
+      "id": "A-1b",
+      "surface": "Settings · Account",
+      "path": "Account, Edit account, Danger zone, press Sign out everywhere",
+      "crop": [
+        {
+          "crop": "settings/account#delete-account@440x330+500+420",
+          "label": "Existing: Delete account"
+        },
+        {
+          "crop": "settings/account#sign-out-everywhere@440x330+500+420",
+          "label": "Sign out everywhere"
+        }
+      ],
+      "headline": "The sign-out confirmation is one line, and Delete account hides while it is open.",
+      "changed": "The note is now \"Signs out every device, this one too.\" The red Delete account button under it is hidden until you press Cancel (and the same the other way round).",
+      "notice": "Only the action you pressed shows, like Delete account's own confirmation.",
+      "risk": "The note no longer says paired phones stay paired. They still do.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "new": true
+    },
+    {
+      "id": "S-1",
+      "surface": "Chat · Browser panel",
+      "path": "Browser panel, on a computer that blocks the browser's extra protection",
+      "crop": "chat/browser#protection-off@470x230+955+110",
+      "headline": "The protection notice now closes with an X in the top right, instead of a Got it button.",
+      "changed": "It is the app's existing close X, the same one on other dismissible notices.",
+      "notice": "Closing it hides it until you next open YouCoded.",
+      "risk": "None beyond the smaller close target."
+    },
+    {
+      "id": "D-3",
+      "surface": "Chat · permission card",
+      "path": "Always allow on a download that follows links, like curl -L",
+      "crop": "chat#grant-curl-redirect-site@860x250+10+100",
+      "headline": "Downloads that follow links can now be remembered for one website (your pick: follow same-site links).",
+      "changed": "\"Always allow downloads from example.com only\" now appears for these downloads too. While it runs, each link is checked first; one that leads to a different website stops the download before anything is fetched from there.",
+      "notice": "The assistant is told it was stopped and why, so its next try asks you about the new website.",
+      "risk": "GitHub release downloads jump to a different address (objects.githubusercontent.com), so they stop and ask about that address, which you can Always allow as well.",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "new": true
+    }
+  ]
+}
